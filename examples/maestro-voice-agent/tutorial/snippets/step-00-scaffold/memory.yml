@@ -1,0 +1,25 @@
+# Project-wide memory shared across skills (session.project.*)
+customer_id:
+  type: text
+  description: Demo traveler id used by travel tools.
+  initial_value: "456"
+customer_first_name:
+  type: text
+  description: Demo traveler first name used in greetings.
+  initial_value: Maya
+customer_last_name:
+  type: text
+  description: Demo traveler last name on file.
+  initial_value: Chen
+authenticated:
+  type: bool
+  description: Whether the traveler has completed voice authentication.
+  initial_value: false
+# Handed from find_booking to whichever skill acts on the booking, so these
+# live at project scope rather than in either skill's own namespace.
+selected_booking_ref:
+  type: text
+  description: Booking reference the traveler has settled on for this request.
+selected_trip_name:
+  type: text
+  description: Trip name for the selected booking.

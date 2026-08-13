@@ -1,0 +1,26 @@
+# External integrations for the Poly voice insurance agent.
+
+llm:
+  provider: openai
+  model: gpt-5.2
+  api_key_env: OPENAI_API_KEY
+  # Do not set temperature — GPT-5 reasoning models reject a non-default value.
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    # Deepgram end-to-end: speech-to-text (ASR / Flux) and text-to-speech (TTS / Aura)
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en

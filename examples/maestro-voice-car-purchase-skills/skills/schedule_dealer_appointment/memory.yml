@@ -1,0 +1,25 @@
+schema:
+  public:
+    dealer_choice:
+      type: text
+      description: Dealer the customer wants to visit when none is on file yet.
+      llm_settable: true
+    appointment_purpose:
+      type: categorical
+      description: What the dealer visit is for.
+      enum_values: [test_drive, paperwork, collection, valuation]
+      llm_settable: true
+    selected_slot_date:
+      type: text
+      description: Chosen appointment date in YYYY-MM-DD.
+      llm_settable: true
+    selected_slot_time:
+      type: text
+      description: Chosen appointment start time in HH:MM, 24 hour.
+      llm_settable: true
+    slots_loaded:
+      type: bool
+    appointment_booked:
+      type: bool
+    appointment_reference:
+      type: text

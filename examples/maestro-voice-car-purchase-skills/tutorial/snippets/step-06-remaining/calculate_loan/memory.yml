@@ -1,0 +1,25 @@
+schema:
+  public:
+    quoted_price:
+      type: float
+      description: Price to base the quote on when no car has been reserved.
+      llm_settable: true
+    down_payment:
+      type: float
+      description: Cash the customer will put down up front.
+      llm_settable: true
+    term_months:
+      type: int
+      description: Preferred loan term in months (36, 48, or 60).
+      enum_values: [36, 48, 60]
+      llm_settable: true
+    account_number:
+      type: text
+      description: Account checked for a possible deposit.
+      llm_settable: true
+    account_balance:
+      type: float
+    monthly_payment:
+      type: float
+    financing_quoted:
+      type: bool

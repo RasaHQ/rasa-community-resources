@@ -1,0 +1,31 @@
+schema:
+  public:
+    payee_name:
+      type: text
+      description: Name of the payee being added.
+      llm_settable: true
+    account_number:
+      type: text
+      description: Payee account number.
+      llm_settable: true
+    sort_code:
+      type: text
+      description: Payee sort code.
+      llm_settable: true
+    payee_type:
+      type: categorical
+      description: person or business
+      enum_values: [person, business]
+      llm_settable: true
+    reference:
+      type: text
+      description: Short relationship label for the payee.
+      llm_settable: true
+    payee_exists:
+      type: bool
+    payee_added:
+      type: bool
+    payee_confirmed:
+      type: bool
+      description: Customer confirmed the payee details are correct.
+      llm_settable: true

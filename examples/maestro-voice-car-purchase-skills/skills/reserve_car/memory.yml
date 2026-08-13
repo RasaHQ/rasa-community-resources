@@ -1,0 +1,38 @@
+schema:
+  public:
+    requested_model:
+      type: text
+      description: Car the customer asked to have held, before stock is checked.
+      llm_settable: true
+    selected_model:
+      type: text
+      description: Exact model the customer chose to reserve.
+      llm_settable: true
+    selected_dealer:
+      type: text
+      description: Dealer holding the chosen car.
+      llm_settable: true
+    selected_price:
+      type: float
+      description: Advertised price of the chosen car.
+      llm_settable: true
+    reservation_reason:
+      type: categorical
+      description: Why the car is being held.
+      enum_values: [test_drive, purchase_intent, hold]
+      llm_settable: true
+    payment_method:
+      type: categorical
+      description: How the customer plans to pay.
+      enum_values: [cash, finance]
+      llm_settable: true
+    reservation_confirmed:
+      type: bool
+      description: Customer confirmed the model, price, and dealer.
+      llm_settable: true
+    car_available:
+      type: bool
+    reserved:
+      type: bool
+    reservation_reference:
+      type: text

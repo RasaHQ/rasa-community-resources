@@ -1,0 +1,31 @@
+schema:
+  public:
+    booking_ref:
+      type: text
+      description: Booking associated with the bag.
+      llm_settable: true
+    bag_issue:
+      type: categorical
+      enum_values: [delayed, lost, stolen]
+      description: What happened to the bag.
+      llm_settable: true
+    bag_tag:
+      type: text
+      description: Bag tag number or unknown.
+      llm_settable: true
+    last_seen:
+      type: text
+      description: Where the bag was last seen.
+      llm_settable: true
+    description:
+      type: text
+      description: Short physical description of the bag.
+      llm_settable: true
+    details_verified:
+      type: bool
+      description: Traveler confirmed the report summary.
+      llm_settable: true
+    # Written by submit_baggage_report, never set by the LLM, so it carries no
+    # description: the engine only surfaces descriptions for settable fields.
+    submitted_report_id:
+      type: text

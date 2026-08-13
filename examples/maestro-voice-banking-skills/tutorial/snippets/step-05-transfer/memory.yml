@@ -1,0 +1,39 @@
+schema:
+  public:
+    account_number:
+      type: text
+      description: Source account number for the transfer.
+      llm_settable: true
+    payee_name:
+      type: text
+      description: Destination payee name.
+      llm_settable: true
+    amount:
+      type: float
+      description: Transfer amount.
+      llm_settable: true
+    payee_exists:
+      type: bool
+    sufficient_funds:
+      type: bool
+    account_balance:
+      type: float
+    timing:
+      type: categorical
+      description: immediate or scheduled payment
+      enum_values: [immediate, scheduled]
+      llm_settable: true
+    payment_date:
+      type: text
+      description: Scheduled payment date in YYYY-MM-DD.
+      llm_settable: true
+    order_confirmed:
+      type: bool
+      description: Customer confirmed the transfer details.
+      llm_settable: true
+    payment_processed:
+      type: bool
+    payment_scheduled:
+      type: bool
+    transfer_reference:
+      type: text

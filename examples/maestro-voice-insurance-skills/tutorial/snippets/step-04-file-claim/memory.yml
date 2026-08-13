@@ -1,0 +1,44 @@
+schema:
+  public:
+    policy_num:
+      type: text
+      description: Policy number selected for the new claim.
+      llm_settable: true
+    policy_name:
+      type: categorical
+      description: Policy type selected for the claim.
+      enum_values: [Car, Homeowner]
+      llm_settable: true
+    claim_description:
+      type: text
+      description: What happened and what caused the damage.
+      llm_settable: true
+    incident_date:
+      type: text
+      description: >
+        Calendar date the incident happened (MM/DD/YYYY). The customer may
+        give a relative date such as last Tuesday or yesterday.
+      llm_settable: true
+    incident_time:
+      type: text
+      description: Time of the incident for auto claims.
+      llm_settable: true
+    incident_location:
+      type: text
+      description: Where the incident happened for auto claims.
+      llm_settable: true
+    additional_claim_info:
+      type: text
+      description: Witnesses, police report, or other notes for the claim.
+      llm_settable: true
+    details_verified:
+      type: bool
+      description: >
+        Whether the customer confirms the claim summary is correct. Set to
+        True for affirmatives such as yes or looks good; False if details
+        are wrong.
+      llm_settable: true
+    claim_submitted:
+      type: bool
+    submitted_claim_number:
+      type: text

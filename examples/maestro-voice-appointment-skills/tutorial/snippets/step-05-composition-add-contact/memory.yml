@@ -1,0 +1,55 @@
+schema:
+  public:
+    visit_reason:
+      type: categorical
+      description: Why the patient is coming in.
+      enum_values: [routine, urgent, follow_up]
+      llm_settable: true
+    preferred_doctor:
+      type: text
+      description: Doctor the patient asked for, or "any" if they have no preference.
+      llm_settable: true
+    preferred_start_date:
+      type: text
+      description: Earliest date the patient can attend, in DD/MM/YYYY format.
+      llm_settable: true
+    preferred_end_date:
+      type: text
+      description: Latest date the patient can attend, in DD/MM/YYYY format.
+      llm_settable: true
+    preferred_start_time:
+      type: text
+      description: Earliest time of day the patient can attend, in HH:MM format.
+      llm_settable: true
+    preferred_end_time:
+      type: text
+      description: Latest time of day the patient can attend, in HH:MM format.
+      llm_settable: true
+    selected_slot:
+      type: text
+      description: The slot the patient chose, copied exactly from the tool result.
+      llm_settable: true
+    selected_slot_spoken:
+      type: text
+      description: >
+        The chosen slot written the way it should be said aloud, copied from the
+        tool result, for example "Tuesday 11 August at 9:30 AM".
+      llm_settable: true
+    booking_confirmed:
+      type: bool
+      description: Patient confirmed the doctor, day, and time are correct.
+      llm_settable: true
+    save_doctor_as_contact:
+      type: bool
+      description: Patient asked to save the doctor to their contacts.
+      llm_settable: true
+    doctor_contact_handle:
+      type: text
+      description: Handle to save the doctor under, for example @DrPatel.
+      llm_settable: true
+    slots_found:
+      type: int
+    booked:
+      type: bool
+    booking_reference:
+      type: text

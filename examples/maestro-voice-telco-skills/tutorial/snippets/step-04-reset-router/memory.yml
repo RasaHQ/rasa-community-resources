@@ -1,0 +1,21 @@
+schema:
+  public:
+    reset_reason:
+      type: categorical
+      description: Why the router is being factory-reset.
+      enum_values: [still_slow_after_reboot, wifi_broken, unknown_settings, moving, other]
+      llm_settable: true
+    selected_device_id:
+      type: text
+      description: Router device id selected for factory reset.
+      llm_settable: true
+    selected_device_label:
+      type: text
+      description: Human-readable router model shown to the customer.
+      llm_settable: true
+    routers_loaded:
+      type: bool
+    router_reset:
+      type: bool
+    network_speed:
+      type: float
