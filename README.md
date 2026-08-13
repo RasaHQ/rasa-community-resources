@@ -74,7 +74,7 @@ Every resource directory opens its `README.md` with a block like this:
 Author:        Rod Rivera
 Assessed on:   2026-08-13
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev3, Python 3.11+, uv
+Verified with: rasa-pro 3.19.0.dev5, Python 3.11+, uv
 Audience:      Practitioners building voice agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -96,6 +96,23 @@ Resources here typically assume:
 - For voice examples: a `DEEPGRAM_API_KEY`
 
 Individual resources state any additional requirements.
+
+---
+
+## Keeping resources on the latest Rasa Pro
+
+Every runnable resource pins the same Rasa Pro version, recorded in
+[`RASA_PRO_VERSION`](RASA_PRO_VERSION). From the repository root:
+
+```bash
+make status        # detect pin / lock / README drift
+make migrate       # rewrite pins, docs, and uv.lock files
+make check-all     # sync + assert version + validate_project
+make test-all      # also rasa train when RASA_LICENSE is available
+```
+
+Override the target with `make migrate VERSION=3.19.0.dev5`. Full maintainer
+and local-user notes: [`docs/MIGRATING.md`](docs/MIGRATING.md).
 
 ---
 

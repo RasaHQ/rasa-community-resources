@@ -3,7 +3,7 @@
 This directory is a **Rasa Skills / Maestro** agent that teaches building a
 **voice** travel assistant with **Deepgram** ASR + TTS.
 
-Pin: `rasa-pro==3.19.0.dev3`. LLM: `gpt-5.2`. Scaffold command for new
+Pin: `rasa-pro==3.19.0.dev5`. LLM: `gpt-5.2`. Scaffold command for new
 projects: `rasa init --engine maestro` (not `--template voice`).
 
 ## Layout

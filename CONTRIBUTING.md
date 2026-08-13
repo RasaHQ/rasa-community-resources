@@ -53,6 +53,10 @@ Full review standards and response expectations live in [MAINTAINERS.md](MAINTAI
    [snippets](snippets/README.md)).
 4. Add one row to the category README catalog when your resource lands.
 5. Keep secrets out of git — `.env.example` only; never commit keys.
+6. Pin `rasa-pro` to the version in [`RASA_PRO_VERSION`](RASA_PRO_VERSION).
+   After adding a resource, run `make status` from the repo root. When bumping
+   Rasa Pro across the catalog, use `make migrate` then `make check-all`
+   (see [docs/MIGRATING.md](docs/MIGRATING.md)).
 
 ### Metadata block (required)
 

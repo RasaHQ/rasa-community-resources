@@ -4,7 +4,7 @@
 Author:        Rod Rivera
 Assessed on:   2026-08-13
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev3, Python 3.11+, uv
+Verified with: rasa-pro 3.19.0.dev5, Python 3.11+, uv
 Audience:      Practitioners building voice banking agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -114,9 +114,9 @@ Run `make` with no arguments for the full grouped help screen.
 | `make clean` | Remove models / caches / local db |
 | `make clean-all` | Also remove `.venv` (full reset) |
 
-## Notes for Rasa 3.19.0.dev3
+## Notes for Rasa 3.19.0.dev5
 
-- Package: `rasa-pro==3.19.0.dev3` (pre-release; `uv` prereleases enabled)
+- Package: `rasa-pro==3.19.0.dev5` (pre-release; `uv` prereleases enabled)
 - Scaffold a fresh Maestro project with `rasa init --engine maestro`
   (there is no `--template voice`)
 - LLM is `gpt-5.2`; do not set `temperature` (GPT-5 reasoning models only

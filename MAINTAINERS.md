@@ -47,6 +47,16 @@ Reviews are done in batches rather than continuously. A slower first response wi
 
 ---
 
+## Rasa Pro version bumps
+
+The catalog pin is [`RASA_PRO_VERSION`](RASA_PRO_VERSION). To roll every
+resource forward: `make migrate` (or `make migrate VERSION=…`), then
+`make check-all` (and `make test-all` when licenses are available). Details:
+[docs/MIGRATING.md](docs/MIGRATING.md). After accepting a new resource, run
+`make status` so its pin cannot drift from the catalog.
+
+---
+
 ## Review standards
 
 A contribution is accepted when all of the following hold.
