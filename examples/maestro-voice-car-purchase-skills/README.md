@@ -1,5 +1,14 @@
 # Autono — Voice Car Purchasing with Rasa Maestro
 
+```text
+Author:        Rod Rivera
+Assessed on:   2026-08-13
+Assessed by:   Rod Rivera
+Verified with: rasa-pro 3.19.0.dev3, Python 3.11+, uv
+Audience:      Practitioners building voice auto-retail agents with Rasa Skills
+Time:          75–90 minutes
+```
+
 A production-style **voice car-purchase agent** built with the new Rasa **Skills / Maestro** architecture and **Deepgram** for speech-to-text and text-to-speech.
 
 Autono is the voice assistant for **Rasa Motors**. It can research the inventory, recommend cars, reserve a vehicle at a dealer, book a dealer appointment, run a credit check, work out affordability, quote financing, and hand the conversation off to a human — all through voice or text.

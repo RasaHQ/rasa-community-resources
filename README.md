@@ -2,114 +2,133 @@
 
 **Tutorials, example projects, and reference code for practitioners building and operating agents with Rasa.**
 
-This is the code companion to [rasa.community](https://rasa.community/).
-
----
-
-## Summarized
-
-If you learn by reading, start with [rasa.community](https://rasa.community/). If you learn by doing, start here. Every resource in this repository is a directory you can run in full, study, or copy piece by piece into your own project. Each one states the date it was last verified and the versions it was verified against.
-
----
-
-## What this is
-
-- **Tutorials** — end-to-end walkthroughs, each self-contained, each runnable.
-- **Example projects** — complete agents you can clone and adapt, not fragments.
-- **Reference code** — patterns for the problems that recur: tool design, evaluation, deployment, observability, human handover.
-- **Workshop material** — slides, exercises, and solutions from community sessions and conference workshops.
-
-## What this is not
-
-- **Not the product documentation.** The canonical reference for the framework is [rasa.com/docs](https://rasa.com/docs/). This repository is educational material.
-- **Not the Rasa framework itself.** Rasa Pro is a commercial framework. This repository contains community-facing teaching material only; installing and running it requires a licence key, which is free for developers (see below).
-- **Not a support channel.** Product issues belong in the product repositories or with Rasa support. Questions about the material here belong in [Discussions](../../discussions/) or in the community Discord.
+This is the code companion to [rasa.community](https://rasa.community/). Every resource is a directory you can run in full, study, or copy piece by piece into your own project. Each one states who wrote it, when it was last verified, and which versions it was verified against.
 
 ---
 
 ## Start here
 
-**If you have never run Rasa before.** Request a free [Developer Edition licence key](https://rasa.com/rasa-pro-developer-edition-license-key-request/) — 1,000 conversations per month, no cost — then work through `tutorials/getting-started/`.
+**New to Rasa Skills / Maestro voice agents.** Request a free [Developer Edition licence key](https://rasa.com/rasa-pro-developer-edition-license-key-request/), then clone and run the flagship Atlas travel agent:
 
-**If you are building something specific.** Go to the repository map below and find the closest example project. Clone it, run it, then change one thing at a time.
+1. [`examples/maestro-voice-agent`](examples/maestro-voice-agent) — finished agent you can run with `make install` → `make inspect`
+2. Hosted walkthrough: [Build a Voice AI Agent with Rasa Skills](https://rasa.community/library/tutorials/voice-ai-agent/)
 
-**If you want the people.** Apply to the [community](https://info.rasa.com/community/). The application includes access to the Discord, where the practitioners maintaining much of this material spend their time.
+**Building something specific.** Browse [Featured resources](#featured-resources) or open the category catalog that matches your goal ([examples](examples/README.md), [tutorials](tutorials/README.md), [patterns](patterns/README.md)).
 
-**If you want to learn the discipline.** Rod writes about harness engineering at the [rasa.community/library/](https://rasa.community/library/) and at [profrod.ai](https://profrod.ai).
+**Looking for people.** Apply to the [community](https://info.rasa.com/community/) for Discord access. Practitioners who maintain and extend this material spend time there.
+
+**Want the discipline behind the material.** The community library lives at [rasa.community/library/](https://rasa.community/library/); harness-engineering writing continues at [profrod.ai](https://profrod.ai).
+
+---
+
+## What this is
+
+- **Tutorials** — end-to-end walkthroughs, each self-contained, each runnable
+- **Example projects** — complete agents you can clone and adapt, not fragments
+- **Reference code** — patterns for recurring problems: tool design, evaluation, deployment, observability, human handover
+- **Workshop material** — slides, exercises, and solutions from community sessions and conferences
+
+## What this is not
+
+- **Not the product documentation.** The canonical reference is [rasa.com/docs](https://rasa.com/docs/). This repository is educational material.
+- **Not the Rasa framework itself.** Rasa Pro is commercial. Running these resources requires a licence key (free for developers — see Requirements).
+- **Not a support channel.** Product issues belong with Rasa support or the product repositories. Questions about material here belong in [Discussions](../../discussions/) or Discord.
+
+---
+
+## Featured resources
+
+| Resource | Persona | Domain | Path |
+|---|---|---|---|
+| Atlas voice travel agent | Atlas | Horizon Travel | [`examples/maestro-voice-agent`](examples/maestro-voice-agent) |
+| Rasano voice banking | Rasano | Retail banking | [`examples/maestro-voice-banking-skills`](examples/maestro-voice-banking-skills) |
+| Telano voice telecom care | Telano | Telecom | [`examples/maestro-voice-telco-skills`](examples/maestro-voice-telco-skills) |
+| Poly voice insurance | Poly | Insurance | [`examples/maestro-voice-insurance-skills`](examples/maestro-voice-insurance-skills) |
+| Schedora voice appointments | Schedora | Clinic booking | [`examples/maestro-voice-appointment-skills`](examples/maestro-voice-appointment-skills) |
+| Autono voice car purchase | Autono | Auto retail | [`examples/maestro-voice-car-purchase-skills`](examples/maestro-voice-car-purchase-skills) |
+| Atlas voice tutorial tree | Atlas | Horizon Travel | [`tutorials/rasa-voice-agent-tutorial`](tutorials/rasa-voice-agent-tutorial) |
+
+Full catalogs (including empty areas accepting contributions) live in each category README below.
 
 ---
 
 ## Repository map
 
-| Path | What it holds |
-|---|---|
-| `tutorials/` | Step-by-step walkthroughs. One directory per tutorial, each with its own README and runnable code. |
-| `examples/` | Complete example agents. Clone-and-run. |
-| `patterns/` | Small, focused reference implementations of recurring problems. |
-| `workshops/` | Slides, exercises, and solutions from community and conference sessions. |
-| `snippets/` | Short pieces of code that are useful but too small to be a pattern. |
+| Path | What it holds | Catalog |
+|---|---|---|
+| [`tutorials/`](tutorials/) | Step-by-step walkthroughs with runnable code | [tutorials/README.md](tutorials/README.md) |
+| [`examples/`](examples/) | Complete clone-and-run agents | [examples/README.md](examples/README.md) |
+| [`patterns/`](patterns/) | Small reference implementations of recurring problems | [patterns/README.md](patterns/README.md) — accepting contributions |
+| [`workshops/`](workshops/) | Slides, exercises, and solutions from sessions | [workshops/README.md](workshops/README.md) — accepting contributions |
+| [`snippets/`](snippets/) | Short pieces too small to be a pattern | [snippets/README.md](snippets/README.md) — accepting contributions |
+
+As the repository grows, **category READMEs are the live inventory**. This root page stays a map and a starting point — not a list of every subdirectory.
 
 ---
 
-## How to read a resource in this repository
+## How to read a resource
 
-Every directory contains a `README.md` that opens with a block like this:
+Every resource directory opens its `README.md` with a block like this:
 
-```
+```text
 Author:        Rod Rivera
 Assessed on:   2026-08-13
-Verified with: rasa-pro 3.x, Python 3.11, uv 0.5
-Audience:      Practitioners who have deployed at least one agent
-Time:          45 minutes
+Assessed by:   Rod Rivera
+Verified with: rasa-pro 3.19.0.dev3, Python 3.11+, uv
+Audience:      Practitioners building voice agents with Rasa Skills
+Time:          75–90 minutes
 ```
 
-Read the **Assessed on** date first. If it is more than six months old, likely the version number has moved on. Feel free to open an issue if something no longer runs. Material that cannot be re-verified is archived.
+Read **Assessed on** first. If it is more than six months old, the pin has likely moved. Open an issue if something no longer runs. Material that cannot be re-verified is archived rather than left implying it still works.
+
+Multiple authors are listed comma-separated on the `Author` line. Credit is permanent — see [MAINTAINERS.md](MAINTAINERS.md).
 
 ---
 
 ## Requirements
 
-Resources here assume:
+Resources here typically assume:
 
-- Python 3.10 or later
-- [uv](https://docs.astral.sh/uv/) for dependency management (`uv add rasa-pro`)
-- A `RASA_LICENSE` key in your environment — the [Developer Edition](https://rasa.com/rasa-pro-developer-edition-license-key-request/) key is free
+- Python 3.11 or later (see each resource’s `Verified with` line)
+- [uv](https://docs.astral.sh/uv/) for dependency management
+- A `RASA_LICENSE` key — the [Developer Edition](https://rasa.com/rasa-pro-developer-edition-license-key-request/) key is free
 - An LLM provider key, typically `OPENAI_API_KEY`
+- For voice examples: a `DEEPGRAM_API_KEY`
 
-Individual resources state their own additional requirements.
+Individual resources state any additional requirements.
 
 ---
 
 ## Contributing
 
-Contributions are welcome, and contributors are credited by name in the resource they contribute to.
+Contributions are welcome. Contributors are credited by name on the resources they write.
 
 The three things that matter most:
 
-1. **One resource per pull request.** A tutorial, an example, or a pattern — not a mix.
-2. **It has to run.** Include the versions you verified against and the date you verified them. A contribution that works on your machine and nowhere else is a maintenance liability rather than a gift.
-3. **Write for peers.** The reader is a working practitioner. Do not over-explain the basics and do not skip the failure modes. If something breaks in production, say what breaks and why.
+1. **One resource per pull request**
+2. **It has to run** — with versions and an assessment date in the README
+3. **Write for peers** — including what breaks
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full detail, and [MAINTAINERS.md](MAINTAINERS.md) for who reviews what and how long it takes.
-
-If you have built something with Rasa that belongs in the [showcase](https://rasa.community/showcase/), the route is the [community application](https://info.rasa.com/community/) rather than a pull request here.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for folder choice, the resource template, and the PR checklist. Review ownership and response times are in [MAINTAINERS.md](MAINTAINERS.md). Everyone participates under the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
 ## Going further
 
-- **[Rasa University](https://rasa.com/university/)** — structured courses and the Developer Certification.
-- **[rasa.community](https://rasa.community/)** — our community hub, heroes programme, and educational library.
-- **[rasa.com/docs](https://rasa.com/docs/)** — the product documentation.
+- **[Rasa University](https://rasa.com/university/)** — structured courses and Developer Certification
+- **[rasa.community](https://rasa.community/)** — community hub, heroes programme, and educational library
+- **[rasa.com/docs](https://rasa.com/docs/)** — product documentation
 
 ---
 
 ## Maintainers
 
-This repository is maintained by **[Rod Rivera](https://profrod.ai/)**, DevRel at Rasa, Professor of the Practice at ITAM, and lecturer at Nebius Academy. He writes about harness engineering and the operation of long-running agents at [profrod.ai](https://profrod.ai/).
+Editorial direction and day-to-day stewardship of this catalog are led by **[Rod Rivera](https://profrod.ai/)** (DevRel at Rasa), with area ownership open to practitioners who contribute and stay. The goal is a multi-author commons: resources name their authors, area owners review their folders, and credit is never stripped.
 
-Full ownership, review scope, and response expectations are in [MAINTAINERS.md](MAINTAINERS.md).
+Full ownership tables, review standards, and succession notes: [MAINTAINERS.md](MAINTAINERS.md).
+
+Security reports: [SECURITY.md](SECURITY.md) — do not open a public issue.
 
 ## Licence
 
-The tutorials, examples, and reference code in this repository are released under the Apache License 2.0 — see [LICENSE](LICENSE). This licence covers the teaching material in this repository only. Rasa Pro is a commercial framework governed by its own licence terms.
+The tutorials, examples, and reference code in this repository are released under the Apache License 2.0 — see [LICENSE](LICENSE). That licence covers the teaching material here only. Rasa Pro is a commercial framework under its own terms.

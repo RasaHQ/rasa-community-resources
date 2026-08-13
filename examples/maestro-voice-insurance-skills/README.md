@@ -1,5 +1,14 @@
 # Poly — Voice Insurance with Rasa Maestro
 
+```text
+Author:        Rod Rivera
+Assessed on:   2026-08-13
+Assessed by:   Rod Rivera
+Verified with: rasa-pro 3.19.0.dev3, Python 3.11+, uv
+Audience:      Practitioners building voice insurance agents with Rasa Skills
+Time:          75–90 minutes
+```
+
 A production-style **voice insurance agent** built with Rasa **Skills / Maestro** (`calm_v2`) and **Deepgram** for speech-to-text (Flux) and text-to-speech (Aura).
 
 Poly can file auto and homeowners claims, check claim status, view policies, answer insurance questions, schedule inspections, and hand conversations off to a human — through voice or text.

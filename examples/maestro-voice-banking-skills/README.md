@@ -1,5 +1,14 @@
 # Rasa Maestro Voice Banking Skills
 
+```text
+Author:        Rod Rivera
+Assessed on:   2026-08-13
+Assessed by:   Rod Rivera
+Verified with: rasa-pro 3.19.0.dev3, Python 3.11+, uv
+Audience:      Practitioners building voice banking agents with Rasa Skills
+Time:          75–90 minutes
+```
+
 Build a **voice** retail banking agent with the new Rasa **Skills / Maestro**
 architecture and **Deepgram** for speech-to-text and text-to-speech.
 

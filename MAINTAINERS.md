@@ -73,7 +73,7 @@ Contributions that are technically sound but out of scope will be declined with 
 
 ## Security
 
-Do not report security issues in public issues or pull requests. Follow the disclosure process at [rasa.com/security-at-rasa/](https://rasa.com/security-at-rasa/).
+Do not report security issues in public issues or pull requests. Follow [SECURITY.md](SECURITY.md), which points to the disclosure process at [rasa.com/security-at-rasa/](https://rasa.com/security-at-rasa/).
 
 ---
 

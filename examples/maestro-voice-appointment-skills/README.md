@@ -1,5 +1,14 @@
 # Schedora — Voice Appointment Booking with Rasa Maestro
 
+```text
+Author:        Rod Rivera
+Assessed on:   2026-08-13
+Assessed by:   Rod Rivera
+Verified with: rasa-pro 3.19.0.dev3, Python 3.11+, uv
+Audience:      Practitioners building voice appointment agents with Rasa Skills
+Time:          60–75 minutes
+```
+
 A production-style **voice appointment-booking agent** for a medical clinic, built with the new Rasa **Skills / Maestro** architecture and **Deepgram** for speech-to-text and text-to-speech.
 
 Schedora books appointments, manages the patient's saved contacts, answers clinic questions, and hands conversations off to the clinic team — all through voice or text.

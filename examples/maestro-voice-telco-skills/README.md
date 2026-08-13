@@ -1,5 +1,14 @@
 # Telano — Voice Telecom Care with Rasa Maestro
 
+```text
+Author:        Rod Rivera
+Assessed on:   2026-08-13
+Assessed by:   Rod Rivera
+Verified with: rasa-pro 3.19.0.dev3, Python 3.11+, uv
+Audience:      Practitioners building voice telecom care agents with Rasa Skills
+Time:          75–90 minutes
+```
+
 A production-style **voice telecom care agent** built with the new Rasa **Skills / Maestro** architecture and **Deepgram** for speech-to-text and text-to-speech.
 
 Telano can troubleshoot slow internet, guide router reboots, remotely factory-reset a router, explain bills, answer telecom FAQs, and hand conversations off to a human — all through voice or text.
