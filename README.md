@@ -17,7 +17,7 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 
 **Looking for people.** Apply to the [community](https://info.rasa.com/community/) for Discord access. Practitioners who maintain and extend this material spend time there.
 
-**Want the discipline behind the material.** The community library lives at [rasa.community/library/](https://rasa.community/library/); harness-engineering writing continues at [profrod.ai](https://profrod.ai).
+**Want the discipline behind the material.** The community library lives at [rasa.community/library/](https://rasa.community/library/) and Rod also writes about harness-engineering at [profrod.ai](https://profrod.ai).
 
 ---
 
@@ -32,7 +32,7 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 
 - **Not the product documentation.** The canonical reference is [rasa.com/docs](https://rasa.com/docs/). This repository is educational material.
 - **Not the Rasa framework itself.** Rasa Pro is commercial. Running these resources requires a licence key (free for developers — see Requirements).
-- **Not a support channel.** Product issues belong with Rasa support or the product repositories. Questions about material here belong in [Discussions](../../discussions/) or Discord.
+- **Not a support channel.** Product issues belong with Rasa support or the product repositories. Questions about material here belong in [Discussions](../../discussions/) or in the [community](https://info.rasa.com/community).
 
 ---
 
