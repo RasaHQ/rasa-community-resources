@@ -59,8 +59,10 @@ Required secrets in `.env`:
 | Variable | Purpose |
 | --- | --- |
 | `RASA_LICENSE` | Rasa Pro Developer Edition license |
-| `OPENAI_API_KEY` | LLM for routing + conversation |
+| `OPENAI_API_KEY` / `GEMINI_API_KEY` | LLM for routing + conversation (OpenAI by default, or Google Gemini) |
 | `DEEPGRAM_API_KEY` | Speech-to-text **and** text-to-speech |
+
+> **Using Google Gemini:** You can easily swap to Google Gemini (`gemini-2.5-flash`) by setting `GEMINI_API_KEY` in `.env` and switching the `llm:` provider block in `integrations.yml`. Knowledge base references use local embeddings (`sentence-transformers`) out-of-the-box.
 
 ---
 

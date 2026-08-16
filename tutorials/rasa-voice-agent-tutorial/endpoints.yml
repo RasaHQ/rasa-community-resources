@@ -17,23 +17,27 @@ nlg:
   type: rephrase
   llm:
     model_group: openai-llm
+    # model_group: gemini-llm
 
 # ---------------------------------------------------------------------------
 # Model groups (LLMs / embeddings referenced by endpoints features)
 # ---------------------------------------------------------------------------
 # https://rasa.com/docs/reference/config/components/llm-configuration/
 model_groups:
+  # Option 1: OpenAI (Default)
   - id: openai-llm
     models:
       - provider: openai
         model: gpt-4.1-mini
         api_key: ${OPENAI_API_KEY}
         temperature: 0.0
-  - id: openai-embeddings
-    models:
-      - provider: openai
-        model: text-embedding-3-large
-        api_key: ${OPENAI_API_KEY}
+  # Option 2: Google Gemini (Alternative)
+  # - id: gemini-llm
+  #   models:
+  #     - provider: gemini
+  #       model: gemini-2.5-flash
+  #       api_key: ${GEMINI_API_KEY}
+  #       temperature: 0.0
 
 # ---------------------------------------------------------------------------
 # Optional production services (defaults are fine for this demo)

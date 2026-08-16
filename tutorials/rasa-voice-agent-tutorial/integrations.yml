@@ -1,10 +1,24 @@
 # External integrations for the Atlas voice travel agent.
 
+# Option 1: OpenAI (Default)
 llm:
   provider: openai
   model: gpt-4.1-mini
   api_key_env: OPENAI_API_KEY
   temperature: 0.0
+
+# Option 2: Google Gemini (Alternative)
+# llm:
+#   provider: gemini
+#   model: gemini-2.5-flash
+#   api_key_env: GEMINI_API_KEY
+#   temperature: 0.0
+
+model_groups:
+  - id: local-embeddings
+    models:
+      - provider: huggingface_local
+        model: sentence-transformers/all-MiniLM-L6-v2
 
 channels:
   rest:
