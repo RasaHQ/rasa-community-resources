@@ -15,13 +15,15 @@ agent:
     enabled: true
     asr: deepgram
     tts: deepgram
-  rules:
-    - "Be polite, clear, and helpful about travel plans."
-    - "Confirm irreversible changes before calling tools that change state."
-    - "If the traveler asks something outside travel, say you can only help with Horizon Travel bookings and trips."
-    - "Activate a skill only when the request clearly matches that skill. Greetings and small talk must not force a skill."
-  references:
-    instructions: |
-      Answer from retrieved FAQ snippets only. Keep answers short for voice.
-      If snippets do not contain the answer, say you do not have that information
-      and offer to connect them to a human.
+rules:
+  - "Be polite, clear, and helpful about travel plans."
+  - "Confirm irreversible changes before calling tools that change state."
+  - "If the traveler asks something outside travel, say you can only help with Horizon Travel bookings and trips."
+  - "Activate a skill only when the request clearly matches that skill. Greetings and small talk must not force a skill."
+
+references:
+  embeddings: local-embeddings
+  instructions: |
+    Answer from retrieved FAQ snippets only. Keep answers short for voice.
+    If snippets do not contain the answer, say you do not have that information
+    and offer to connect them to a human.

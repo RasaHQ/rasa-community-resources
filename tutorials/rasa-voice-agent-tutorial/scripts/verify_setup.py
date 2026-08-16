@@ -245,12 +245,32 @@ def check_api_key(report: Report, var: str, label: str, signup: str) -> bool:
 def check_secrets(report: Report) -> None:
     section("Secrets (.env)")
     check_license(report)
-    check_api_key(
-        report,
-        "OPENAI_API_KEY",
-        "OpenAI API key       (LLM routing + conversation)",
-        "https://platform.openai.com/api-keys",
-    )
+
+    llm_var = "OPENAI_API_KEY"
+    try:
+        import yaml
+        integrations_path = PROJECT_ROOT / "integrations.yml"
+        if integrations_path.is_file():
+            data = yaml.safe_load(integrations_path.read_text()) or {}
+            llm_var = data.get("llm", {}).get("api_key_env", "OPENAI_API_KEY")
+    except Exception:
+        pass
+
+    if llm_var == "GEMINI_API_KEY" or os.getenv("GEMINI_API_KEY"):
+        check_api_key(
+            report,
+            "GEMINI_API_KEY",
+            "Google Gemini API key(LLM routing + conversation)",
+            "https://aistudio.google.com/app/apikey",
+        )
+    else:
+        check_api_key(
+            report,
+            "OPENAI_API_KEY",
+            "OpenAI API key       (LLM routing + conversation)",
+            "https://platform.openai.com/api-keys",
+        )
+
     check_api_key(
         report,
         "DEEPGRAM_API_KEY",
@@ -441,15 +461,36 @@ def _check_service(
 def check_connectivity(report: Report) -> None:
     section("Service connectivity")
 
-    openai_key = os.getenv("OPENAI_API_KEY", "").strip()
-    _check_service(
-        report,
-        "OpenAI     (LLM)",
-        "https://api.openai.com/v1/models",
-        {"Authorization": f"Bearer {openai_key}"},
-        openai_key,
-        "OPENAI_API_KEY",
-    )
+    llm_var = "OPENAI_API_KEY"
+    try:
+        import yaml
+        integrations_path = PROJECT_ROOT / "integrations.yml"
+        if integrations_path.is_file():
+            data = yaml.safe_load(integrations_path.read_text()) or {}
+            llm_var = data.get("llm", {}).get("api_key_env", "OPENAI_API_KEY")
+    except Exception:
+        pass
+
+    if llm_var == "GEMINI_API_KEY" or os.getenv("GEMINI_API_KEY"):
+        gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+        _check_service(
+            report,
+            "Gemini     (LLM)",
+            "https://generativelanguage.googleapis.com/v1beta/models",
+            {"x-goog-api-key": gemini_key},
+            gemini_key,
+            "GEMINI_API_KEY",
+        )
+    else:
+        openai_key = os.getenv("OPENAI_API_KEY", "").strip()
+        _check_service(
+            report,
+            "OpenAI     (LLM)",
+            "https://api.openai.com/v1/models",
+            {"Authorization": f"Bearer {openai_key}"},
+            openai_key,
+            "OPENAI_API_KEY",
+        )
 
     deepgram_key = os.getenv("DEEPGRAM_API_KEY", "").strip()
     _check_service(
