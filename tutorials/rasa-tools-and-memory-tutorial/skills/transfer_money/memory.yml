@@ -1,0 +1,22 @@
+schema:
+  public:
+    amount:
+      type: float
+      description: Amount the caller asked to send.
+      llm_settable: true
+    payee_name:
+      type: text
+      description: Who the money is going to.
+      llm_settable: true
+    transfer_confirmed:
+      type: bool
+      description: Caller explicitly confirmed the transfer details.
+      initial_value: false
+      llm_settable: true
+  private:
+    # Private and PII: the caller's stated reason never leaves this skill.
+    transfer_reason:
+      type: text
+      description: Free-text reason the caller gave for the payment.
+      pii: true
+      llm_settable: true
