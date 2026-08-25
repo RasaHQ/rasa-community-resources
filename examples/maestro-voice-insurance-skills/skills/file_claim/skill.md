@@ -50,20 +50,18 @@ steps:
     complete_when: session.file_claim.incident_date
   - id: collect_auto_fields
     instructions: |
-      if: session.file_claim.policy_name == "Car"
-      Ask for the incident time and set incident_time.
-      Ask where it happened and set incident_location.
-      if: session.file_claim.policy_name == "Homeowner"
-      Skip time and location. Continue.
+      These fields apply to Car policies only. When the selected policy type
+      (@memory.file_claim.policy_name) is Car, ask for the incident time and set
+      incident_time, then ask where it happened and set incident_location.
+      When it is Homeowner, skip time and location and continue.
     complete_when: >
       (session.file_claim.policy_name == "Homeowner") or
       (session.file_claim.incident_time and session.file_claim.incident_location)
   - id: collect_additional
     instructions: |
-      if: session.file_claim.policy_name == "Car"
-      Ask for witness contacts and police report number if available.
-      if: session.file_claim.policy_name == "Homeowner"
-      Ask for any additional information they want to share.
+      When the selected policy type (@memory.file_claim.policy_name) is Car, ask
+      for witness contacts and a police report number if available. When it is
+      Homeowner, ask for any additional information they want to share.
       Set additional_claim_info.
     complete_when: session.file_claim.additional_claim_info
   - id: verify_summary

@@ -1,0 +1,122 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly: catches a resource going stale because an upstream release moved,
+    # not because anyone touched this repository. The `upstream` job is what
+    # makes that true — every other job here resolves against the committed
+    # uv.lock and would not notice a new release at all.
+    - cron: "0 6 * * 1"
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: offline gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # No dependencies to install: the tooling is stdlib-only by design.
+      - name: make validate
+        run: make validate STRICT=1
+
+      # Machine-readable findings for anything that wants to consume them.
+      - name: lint report
+        if: always()
+        run: python scripts/lint_repo.py --json > lint-report.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lint-report
+          path: lint-report.json
+
+  upstream:
+    name: upstream release check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The only step in this workflow that queries PyPI. It reports the newest
+      # rasa-pro overall — not just the newest on the pinned release line — and
+      # inspects that release for the Maestro engine module, so the run says
+      # whether RASA_PRO_VERSION_LINE can finally be lifted.
+      #
+      # Informational by design: a new upstream release is news, not a broken
+      # repository, so this never fails the build.
+      - name: make outdated
+        run: |
+          make outdated 2>&1 | tee /tmp/outdated.txt
+          {
+            echo '## Upstream rasa-pro'
+            echo ''
+            echo '```'
+            tail -n 6 /tmp/outdated.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  discover:
+    name: discover projects
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.list.outputs.projects }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - id: list
+        run: |
+          printf 'projects=' >> "$GITHUB_OUTPUT"
+          python scripts/list_projects.py --paths-only \
+            | python -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))' \
+            >> "$GITHUB_OUTPUT"
+
+  check:
+    name: ${{ matrix.project }}
+    needs: [validate, discover]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJSON(needs.discover.outputs.projects) }}
+    # Job-level so the training step's `if:` can test it. Secrets are not
+    # readable from a step-level `if:` that references its own step env.
+    env:
+      RASA_LICENSE: ${{ secrets.RASA_LICENSE }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      DEEPGRAM_API_KEY: ${{ secrets.DEEPGRAM_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "${{ matrix.project }}/uv.lock"
+
+      # Installs the project and asserts the pinned rasa-pro plus a working
+      # rasa.calm_v2, then runs validate_project.
+      - name: check ${{ matrix.project }}
+        run: python scripts/check_project.py "${{ matrix.project }}"
+
+      # Training needs a licence. It only runs where the secret exists, and
+      # --require-license makes a missing one a hard failure rather than a
+      # silent skip that looks like a pass.
+      - name: train ${{ matrix.project }}
+        if: env.RASA_LICENSE != ''
+        run: |
+          python scripts/check_project.py "${{ matrix.project }}" \
+            --train --require-license --skip-sync

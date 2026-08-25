@@ -1,1 +1,170 @@
-scripts/__pycache__/
+# ==============================================================================
+# Rasa Community Resources — repository-wide ignores
+# ==============================================================================
+# Per-project ignores (generated DBs, project models, etc.) live in each
+# resource's own .gitignore under examples/ and tutorials/.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Secrets & local configuration
+# ------------------------------------------------------------------------------
+.env
+.env.*
+.envrc
+!.env.example
+!.env.*.example
+*.pem
+*.key
+credentials.json
+service-account*.json
+
+# Rasa Pro licence must never be committed
+RASA_LICENSE
+rasa_license*
+
+# ------------------------------------------------------------------------------
+# Rasa build artifacts
+# ------------------------------------------------------------------------------
+.rasa/
+models/
+logs/
+results/
+errors.json
+story_confmat.pdf
+rasa.db
+events.db
+tracker.db
+*.tar.gz
+
+# ------------------------------------------------------------------------------
+# Python
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[codz]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+sdist/
+wheels/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+venv.bak/
+env.bak/
+
+# Packaging / dependency tooling
+#   uv.lock IS committed here — every resource pins to RASA_PRO_VERSION.
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+.pdm-python
+.pdm-build/
+__pypackages__/
+.pypirc
+
+# Test, coverage & type-checker caches
+.pytest_cache/
+.tox/
+.nox/
+.cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+cover/
+*.cover
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+cython_debug/
+
+# Notebooks
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# ------------------------------------------------------------------------------
+# Node (docs tooling, snippet builders)
+# ------------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ------------------------------------------------------------------------------
+# AI coding assistants — local agent state, caches, and machine-specific config
+# ------------------------------------------------------------------------------
+# NOTE: AGENTS.md files are intentionally tracked. They are part of each
+# resource's published content, not local assistant state.
+
+# Claude / Claude Code
+.claude/
+.claude.json
+.claude.json.backup
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json
+.anthropic/
+
+# Cursor
+.cursor/
+.cursorrules
+.cursorignore
+.cursorindexingignore
+
+# Codex
+.codex/
+codex.md
+.codex.toml
+
+# Other assistants / agent scratch space
+.aider*
+.windsurf/
+.windsurfrules
+.continue/
+.github/copilot-instructions.md
+.agent/
+.agents/
+scratchpad/
+
+# ------------------------------------------------------------------------------
+# Editors & OS
+# ------------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+Desktop.ini
+
+# ------------------------------------------------------------------------------
+# Misc scratch
+# ------------------------------------------------------------------------------
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+*.rej

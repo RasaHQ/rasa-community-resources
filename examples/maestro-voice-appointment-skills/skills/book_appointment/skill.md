@@ -26,7 +26,7 @@ Help the patient book an appointment. Never invent an available time — only
 offer slots that query_available_slots returned.
 
 The patient's profile is loaded at session start. In the rare case that
-`session.project.username` is empty, call load_customer_profile before writing
+`@memory.project.username` is empty, call load_customer_profile before writing
 anything to the clinic diary.
 
 ## Understand the visit

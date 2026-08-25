@@ -78,9 +78,35 @@ rather than replacing the original name. See the attribution policy in
 
 ---
 
+## Validating your change
+
+Run this before opening a pull request. It is offline, needs no `uv` and no
+virtualenv, and takes about two seconds:
+
+```bash
+make validate
+```
+
+It runs the tooling unit tests, lints the whole catalog (version consistency,
+lockfile sync, skill authoring rules, resource metadata, committed secrets), and
+fails on pin drift. CI runs the same target, so a green `make validate` locally
+means a green gate on the PR.
+
+If you changed a runnable resource, also install and validate it for real:
+
+```bash
+make ci                      # every project: install + validate_project
+make check-all KEEP_GOING=1  # same, but report all failures instead of stopping
+```
+
+`make validate-full` additionally trains every agent, which needs a real
+`RASA_LICENSE`. See [`docs/VALIDATION.md`](docs/VALIDATION.md) for what each
+check enforces and how to fix a failure.
+
 ## Pull request checklist
 
 - [ ] One resource only
+- [ ] `make validate` passes
 - [ ] README includes the metadata block above
 - [ ] Verified on a clean environment; `Assessed on` / `Verified with` are current
 - [ ] Category README catalog updated with a new row

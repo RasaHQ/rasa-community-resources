@@ -19,7 +19,11 @@ _SCRIPTS = Path(__file__).resolve().parent
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
-from rasa_projects import REPO_ROOT, read_expected_version  # noqa: E402
+from rasa_projects import (  # noqa: E402
+    REPO_ROOT,
+    read_expected_version,
+    uv_prerelease_args,
+)
 
 
 def _c(code: str) -> str:
@@ -49,10 +53,11 @@ def info(msg: str) -> None:
     print(f"{BLUE}  ℹ  {msg}{RESET}")
 
 
-def _load_dotenv(project: Path) -> None:
-    env_path = project / ".env"
+def _load_env_file(env_path: Path) -> int:
+    """Fill gaps in os.environ from a dotenv file. Never overrides an export."""
     if not env_path.is_file():
-        return
+        return 0
+    loaded = 0
     for line in env_path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line or line.startswith("#") or "=" not in line:
@@ -60,9 +65,25 @@ def _load_dotenv(project: Path) -> None:
         key, _, value = line.partition("=")
         key = key.strip()
         value = value.strip().strip("'").strip('"')
-        # Project .env fills gaps; do not override an already-exported var.
         if key and key not in os.environ:
             os.environ[key] = value
+            loaded += 1
+    return loaded
+
+
+def _load_dotenv(project: Path) -> None:
+    """Load the project's .env, then fall back to the repo-root .env.
+
+    Precedence is exported vars > project .env > repo-root .env. The root file
+    is what lets a maintainer keep one RASA_LICENSE / provider key set for the
+    whole catalog instead of copying credentials into all seven projects.
+    """
+    _load_env_file(project / ".env")
+    root_env = REPO_ROOT / ".env"
+    if root_env.is_file() and root_env != (project / ".env"):
+        count = _load_env_file(root_env)
+        if count:
+            info(f"loaded {count} var(s) from repo-root .env")
 
 
 def _run(cmd: list[str], *, cwd: Path) -> None:
@@ -74,7 +95,14 @@ def _has_license() -> bool:
     return bool(value) and not value.startswith("your-") and value.count(".") == 2
 
 
-def check_project(project: Path, expected: str, *, train: bool, skip_sync: bool) -> int:
+def check_project(
+    project: Path,
+    expected: str,
+    *,
+    train: bool,
+    skip_sync: bool,
+    require_license: bool = False,
+) -> int:
     rel = project.relative_to(REPO_ROOT).as_posix() if project.is_relative_to(REPO_ROOT) else str(project)
     print(f"\n{BLUE}═══ {rel} ═══{RESET}")
 
@@ -95,10 +123,13 @@ def check_project(project: Path, expected: str, *, train: bool, skip_sync: bool)
     env.setdefault("RASA_LOG_LEVEL", "ERROR")
 
     if not skip_sync:
-        info("uv sync --prerelease=allow")
+        # Only allow prereleases when the pin itself is one; a stable pin should
+        # not license every other dependency to resolve to a prerelease.
+        sync_cmd = [uv, "sync", *uv_prerelease_args(expected), "--quiet"]
+        info(" ".join(["uv", "sync", *uv_prerelease_args(expected)]))
         try:
             subprocess.run(
-                [uv, "sync", "--prerelease=allow", "--quiet"],
+                sync_cmd,
                 cwd=project,
                 check=True,
                 capture_output=True,
@@ -171,7 +202,16 @@ print("validate_project: ok")
 
     if train:
         if not _has_license():
-            warn("RASA_LICENSE missing or placeholder — skipping rasa train")
+            if require_license:
+                fail(
+                    "RASA_LICENSE missing or placeholder — cannot run rasa train. "
+                    "Set it in the environment, the project .env, or the repo-root "
+                    ".env (or drop --require-license to skip training)."
+                )
+                return 1
+            # Best-effort by default, but say so loudly: a skipped train must not
+            # be mistaken for a passing one.
+            warn("RASA_LICENSE missing or placeholder — SKIPPING rasa train (not verified)")
             return 0
         info("rasa train")
         try:
@@ -201,6 +241,11 @@ def main() -> int:
         help="Also run rasa train when RASA_LICENSE is available",
     )
     parser.add_argument(
+        "--require-license",
+        action="store_true",
+        help="Fail instead of skipping when RASA_LICENSE is missing (CI)",
+    )
+    parser.add_argument(
         "--skip-sync",
         action="store_true",
         help="Skip uv sync (assume install-all already ran)",
@@ -219,6 +264,7 @@ def main() -> int:
         expected,
         train=args.train,
         skip_sync=args.skip_sync,
+        require_license=args.require_license,
     )
 
 

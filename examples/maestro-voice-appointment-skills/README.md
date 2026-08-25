@@ -2,9 +2,9 @@
 
 ```text
 Author:        Rod Rivera
-Assessed on:   2026-08-13
+Assessed on:   2026-08-25
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev5, Python 3.11+, uv
+Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
 Audience:      Practitioners building voice appointment agents with Rasa Skills
 Time:          60–75 minutes
 ```
@@ -604,12 +604,13 @@ make train
 This repository currently targets:
 
 ```text
-rasa-pro==3.19.0.dev5
+rasa-pro==3.19.0.dev7
 ```
 
 on `gpt-5.2`, configured in `integrations.yml` and `endpoints.yml`.
 
-This is a **pre-release** version, so installation uses:
+This is a **pre-release** version — the Maestro / Skills engine (`rasa.calm_v2`)
+ships only on the `3.19.0.devN` line — so installation uses:
 
 ```bash
 uv sync --prerelease=allow

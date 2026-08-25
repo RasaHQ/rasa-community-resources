@@ -2,9 +2,9 @@
 
 ```text
 Author:        Rod Rivera
-Assessed on:   2026-08-13
+Assessed on:   2026-08-25
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev5, Python 3.11+, uv
+Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
 Audience:      Practitioners building voice telecom care agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -361,7 +361,7 @@ make verify
 
 | Target | Purpose |
 | --- | --- |
-| `make install` | Install deps with uv (`prerelease=allow`) |
+| `make install` | Install deps with uv |
 | `make env` | Create `.env` from `.env.example` |
 | `make verify` | Full pre-flight diagnostics |
 | `make validate` | Fast calm_v2 validation |
@@ -396,7 +396,7 @@ Common fixes are printed inline by the verifier (`make install`, `make env`,
 Pinned in `pyproject.toml`:
 
 ```text
-rasa-pro==3.19.0.dev5
+rasa-pro==3.19.0.dev7
 ```
 
 LLM: `gpt-5.2` in `integrations.yml` and `endpoints.yml` — do not set `temperature`.

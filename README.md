@@ -74,7 +74,7 @@ Every resource directory opens its `README.md` with a block like this:
 Author:        Rod Rivera
 Assessed on:   2026-08-13
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev5, Python 3.11+, uv
+Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
 Audience:      Practitioners building voice agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -99,6 +99,25 @@ Individual resources state any additional requirements.
 
 ---
 
+## Validating the catalog
+
+Correctness here is checked by running a command, not by reading the tree. From
+the repository root:
+
+```bash
+make validate        # ~2s, offline, no uv needed — run before every commit
+make ci              # + install every resource and run validate_project
+make validate-full   # + rasa train everywhere (needs RASA_LICENSE)
+```
+
+`make validate` unit-tests the tooling, then lints the whole catalog: version and
+lockfile consistency, skill authoring rules, resource metadata, and committed
+secrets. The same target runs in CI on every pull request and weekly. What each
+check enforces — and how to fix a failure — is in
+[`docs/VALIDATION.md`](docs/VALIDATION.md).
+
+---
+
 ## Keeping resources on the latest Rasa Pro
 
 Every runnable resource pins the same Rasa Pro version, recorded in
@@ -106,13 +125,16 @@ Every runnable resource pins the same Rasa Pro version, recorded in
 
 ```bash
 make status        # detect pin / lock / README drift
+make outdated      # check PyPI for a newer rasa-pro release
 make migrate       # rewrite pins, docs, and uv.lock files
 make check-all     # sync + assert version + validate_project
 make test-all      # also rasa train when RASA_LICENSE is available
 ```
 
-Override the target with `make migrate VERSION=3.19.0.dev5`. Full maintainer
-and local-user notes: [`docs/MIGRATING.md`](docs/MIGRATING.md).
+Override the target with `make migrate VERSION=3.19.0.dev7`, preview it first with
+`make migrate-dry VERSION=3.19.0.dev7`, or jump to the newest stable release with
+`make latest`. Full maintainer and local-user notes:
+[`docs/MIGRATING.md`](docs/MIGRATING.md).
 
 ---
 

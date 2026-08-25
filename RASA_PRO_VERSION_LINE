@@ -1,0 +1,19 @@
+# Release line that `make latest` / `--latest` must stay within.
+#
+# Every resource in this catalog imports the Maestro / Skills engine as
+# `rasa.calm_v2`, which ships ONLY on the 3.19.0.devN pre-release line.
+#
+# Verified against PyPI on 2026-08-25 by inspecting the published wheels:
+#   3.19.0.dev7  contains rasa/calm_v2/   (2180 files)
+#   3.19.1       does NOT                 (1932 files)
+#   3.19.0       does NOT
+# `calm_v2` is the only package that differs between the two; stable adds no
+# renamed replacement, exposes no `calm` extra, and no separate rasa-calm
+# distribution exists. So "newest on PyPI" (3.19.1) is a release that cannot
+# import a single resource here.
+#
+# This is no longer enforced by comment alone: `make outdated` probes the
+# newest release for the module and `make migrate VERSION=...` refuses a target
+# that lacks it. When Maestro reaches the stable line, `make outdated` will say
+# so — at that point delete this file and run `make migrate VERSION=<stable>`.
+3.19.0.dev
