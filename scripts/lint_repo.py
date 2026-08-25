@@ -462,6 +462,42 @@ def check_secret_hygiene() -> list[Finding]:
     return findings
 
 
+USES_RE = re.compile(r"^\s*-?\s*uses:\s*(?P<ref>\S+)")
+SHA_PINNED_RE = re.compile(r"^[^@]+@[0-9a-f]{40}$")
+
+
+def check_workflow_pins() -> list[Finding]:
+    """Every GitHub Action must be pinned to a full-length commit SHA.
+
+    RasaHQ enforces this org-wide, so an unpinned `uses:` fails the run before
+    a single step executes. Catching it here turns a red CI run into a local
+    lint finding. It is also the correct supply-chain posture: a mutable tag
+    like `@v4` can be repointed at arbitrary code after review.
+    """
+    findings: list[Finding] = []
+    for workflow in _tracked_files(".github/workflows/*.yml", ".github/workflows/*.yaml"):
+        for lineno, line in _numbered(_read(workflow)):
+            match = USES_RE.match(line)
+            if not match:
+                continue
+            ref = match.group("ref").strip("'\"")
+            # Local (./path) and container (docker://) refs are not tag-pinned.
+            if ref.startswith((".", "docker://")):
+                continue
+            if not SHA_PINNED_RE.match(ref):
+                findings.append(
+                    Finding(
+                        "workflow-pins",
+                        _rel(workflow),
+                        lineno,
+                        f"{ref!r} is not pinned to a full 40-character commit SHA; "
+                        f"org policy rejects the run. Resolve with: "
+                        f"gh api repos/<owner>/<repo>/git/ref/tags/<tag>",
+                    )
+                )
+    return findings
+
+
 def check_env_examples(projects: list[Project]) -> list[Finding]:
     """Every resource ships a .env.example so `make env` works on a clean clone."""
     return [
@@ -488,6 +524,7 @@ CHECKS = {
     "nested-if": lambda p, e: check_nested_if(),
     "resource-metadata": lambda p, e: check_resource_metadata(p),
     "secret-hygiene": lambda p, e: check_secret_hygiene(),
+    "workflow-pins": lambda p, e: check_workflow_pins(),
     "env-example": lambda p, e: check_env_examples(p),
 }
 

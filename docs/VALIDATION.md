@@ -58,7 +58,45 @@ Every check below exists because the failure it describes actually happened here
 | `nested-if` | No indented `if:` — it is only a condition at the top level of a skill body | Move the branch to the top level, or phrase it in natural language |
 | `resource-metadata` | Each resource README carries `Author` / `Assessed on` / `Assessed by` / `Verified with`, with a sane date | Fill in the metadata block |
 | `secret-hygiene` | No tracked `.env`, no committed API keys or licence JWTs | Remove the secret, rotate it, keep it in `.env` |
+| `workflow-pins` | Every GitHub Action pinned to a full 40-character commit SHA | See below |
 | `env-example` | Each resource ships `.env.example` so `make env` works on a clean clone | Add the file |
+
+### Pinning GitHub Actions
+
+RasaHQ enforces SHA-pinned actions org-wide. An unpinned `uses:` fails the run
+before a single step executes, with:
+
+```
+Error: The actions actions/checkout@v4 ... are not allowed in
+RasaHQ/rasa-community-resources because all actions must be pinned to a
+full-length commit SHA.
+```
+
+That is a policy error, not a test failure, so nothing in the workflow runs and
+the message is the only output. The `workflow-pins` check turns it into a local
+lint finding instead.
+
+Resolve a tag to its commit SHA — never copy one from memory or another repo:
+
+```bash
+gh api repos/actions/checkout/git/ref/tags/v4 --jq '.object.sha'
+```
+
+If `.object.type` is `tag` (an annotated tag) dereference it once more:
+
+```bash
+gh api repos/actions/checkout/git/tags/<sha> --jq '.object.sha'
+```
+
+Then pin with the human-readable release in a trailing comment, which is what
+Dependabot reads when it proposes an update:
+
+```yaml
+- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+```
+
+Beyond satisfying the policy, this is the correct supply-chain posture: a
+mutable tag like `@v4` can be repointed at arbitrary code after review.
 
 ### The two skill authoring rules, in detail
 

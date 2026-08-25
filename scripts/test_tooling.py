@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import subprocess
 import sys
 import tomllib
 import unittest
@@ -417,6 +418,73 @@ class TestMigrationEngineGuard(unittest.TestCase):
 
         with mock.patch.object(migrate_rasa_pro, "release_carries_engine", _boom):
             migrate_rasa_pro.verify_engine_support("3.19.1", skip=True)
+
+
+class TestWorkflowPins(unittest.TestCase):
+    """Org policy rejects any action not pinned to a full commit SHA."""
+
+    SHA = "11d5960a326750d5838078e36cf38b85af677262"
+
+    def _findings(self, body: str):
+        with mock.patch.object(lint_repo, "_tracked_files", return_value=[Path("wf.yml")]), \
+             mock.patch.object(lint_repo, "_read", return_value=body):
+            return lint_repo.check_workflow_pins()
+
+    def test_tag_ref_is_rejected(self):
+        found = self._findings("      - uses: actions/checkout@v4\n")
+        self.assertEqual(len(found), 1)
+        self.assertIn("not pinned", found[0].message)
+
+    def test_branch_and_short_sha_are_rejected(self):
+        for ref in ("actions/checkout@main", f"actions/checkout@{self.SHA[:7]}"):
+            self.assertEqual(len(self._findings(f"      - uses: {ref}\n")), 1, ref)
+
+    def test_full_sha_is_accepted_with_or_without_comment(self):
+        for line in (
+            f"      - uses: actions/checkout@{self.SHA}\n",
+            f"      - uses: actions/checkout@{self.SHA} # v4.4.0\n",
+        ):
+            self.assertEqual(self._findings(line), [], line)
+
+    def test_local_and_docker_refs_are_exempt(self):
+        for ref in ("./.github/actions/setup", "docker://alpine:3.20"):
+            self.assertEqual(self._findings(f"      - uses: {ref}\n"), [], ref)
+
+    def test_real_workflows_are_pinned(self):
+        self.assertEqual(
+            [f.message for f in lint_repo.check_workflow_pins()], []
+        )
+
+
+class TestCliExitCodes(unittest.TestCase):
+    """0 = clean, 1 = well-formed request that failed, 2 = bad invocation.
+
+    Only offline paths are asserted here: each of these is rejected during
+    argument resolution, before the migrator touches the network.
+    """
+
+    def _run(self, *args: str) -> int:
+        return subprocess.run(
+            [sys.executable, str(_SCRIPTS / "migrate_rasa_pro.py"), *args],
+            capture_output=True,
+            text=True,
+        ).returncode
+
+    def test_malformed_version_is_a_usage_error(self):
+        self.assertEqual(self._run("--version", "not-a-version", "--dry-run"), 2)
+
+    def test_mutually_exclusive_selectors(self):
+        self.assertEqual(self._run("--latest", "--version", "3.19.1", "--dry-run"), 2)
+
+    def test_argparse_rejects_unknown_flags(self):
+        self.assertEqual(self._run("--nope"), 2)
+
+    def test_lint_rejects_unknown_check_name(self):
+        rc = subprocess.run(
+            [sys.executable, str(_SCRIPTS / "lint_repo.py"), "--check", "nope"],
+            capture_output=True, text=True,
+        ).returncode
+        self.assertEqual(rc, 2)
 
 
 if __name__ == "__main__":

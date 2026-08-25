@@ -343,11 +343,22 @@ def migrate_project(
 # ------------------------------------------------------------------------------
 
 
+def _usage_error(message: str) -> "SystemExit":
+    """Exit 2 for a bad invocation, matching argparse.
+
+    Exit 1 is reserved for a well-formed request that failed — the release does
+    not exist, the index is unreachable, a project would not migrate. Keeping
+    those apart lets a caller tell "you typed it wrong" from "it did not work".
+    """
+    print(f"error: {message}", file=sys.stderr)
+    return SystemExit(2)
+
+
 def resolve_target(args: argparse.Namespace) -> tuple[str, bool]:
     """Return (version, came_from_cli) or raise SystemExit with a clear message."""
     if args.latest:
         if args.version:
-            raise SystemExit("error: pass --latest or --version, not both")
+            raise _usage_error("pass --latest or --version, not both")
         prefix = args.match if args.match is not None else read_version_line()
         try:
             version = latest_version(
@@ -365,7 +376,7 @@ def resolve_target(args: argparse.Namespace) -> tuple[str, bool]:
     if args.version:
         version = args.version.strip()
         if not is_valid_version(version):
-            raise SystemExit(f"error: {version!r} is not a valid version string")
+            raise _usage_error(f"{version!r} is not a valid version string")
         return version, True
 
     return read_expected_version(), False
