@@ -25,6 +25,7 @@ import subprocess
 import sys
 import tomllib
 import unittest
+from datetime import date, timedelta
 from unittest import mock
 from pathlib import Path
 
@@ -485,6 +486,47 @@ class TestCliExitCodes(unittest.TestCase):
             capture_output=True, text=True,
         ).returncode
         self.assertEqual(rc, 2)
+
+
+class TestAssessedOnDate(unittest.TestCase):
+    """`Assessed on` is timezone-less, so today differs by locale.
+
+    Regression: a README stamped with the author's local date failed CI on a
+    UTC runner that had not reached that date yet.
+    """
+
+    def _findings(self, assessed: str):
+        readme = (
+            "```text\n"
+            "Author:        A\n"
+            f"Assessed on:   {assessed}\n"
+            "Assessed by:   A\n"
+            "Verified with: rasa-pro 1.0.0, Python 3.11+, uv\n"
+            "```\n"
+        )
+        project = rasa_projects.Project(Path("examples/demo"))
+        with mock.patch("pathlib.Path.is_file", return_value=True), \
+             mock.patch.object(lint_repo, "_read", return_value=readme):
+            return lint_repo.check_resource_metadata([project])
+
+    def test_tomorrow_is_tolerated_as_timezone_skew(self):
+        tomorrow = date.today() + timedelta(days=1)
+        self.assertEqual(self._findings(tomorrow.isoformat()), [])
+
+    def test_today_and_past_are_fine(self):
+        for when in (date.today(), date.today() - timedelta(days=400)):
+            self.assertEqual(self._findings(when.isoformat()), [], when)
+
+    def test_genuinely_future_date_is_still_caught(self):
+        soon = date.today() + timedelta(days=3)
+        found = self._findings(soon.isoformat())
+        self.assertEqual(len(found), 1)
+        self.assertIn("in the future", found[0].message)
+
+    def test_malformed_date_is_reported(self):
+        found = self._findings("2026-13-45")
+        self.assertEqual(len(found), 1)
+        self.assertIn("not a valid date", found[0].message)
 
 
 if __name__ == "__main__":

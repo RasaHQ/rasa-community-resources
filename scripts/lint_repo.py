@@ -22,7 +22,7 @@ import re
 import subprocess
 import sys
 from dataclasses import asdict, dataclass
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 _SCRIPTS = Path(__file__).resolve().parent
@@ -422,11 +422,18 @@ def check_resource_metadata(projects: list[Project]) -> list[Finding]:
                     )
                 )
             else:
-                if assessed > today:
+                # `Assessed on` is a bare date with no timezone, so "today"
+                # depends on where the check runs. An author west-to-east of a
+                # CI runner legitimately stamps a date the runner still calls
+                # tomorrow — that is calendar skew, not a bad value. One day of
+                # slack absorbs every real offset (max ±14h) while still
+                # catching a genuinely wrong date.
+                if assessed > today + timedelta(days=1):
                     findings.append(
                         Finding(
                             "resource-metadata", _rel(readme), None,
-                            f"'Assessed on: {assessed}' is in the future",
+                            f"'Assessed on: {assessed}' is in the future "
+                            f"(today is {today}; one day of timezone slack allowed)",
                         )
                     )
     return findings
