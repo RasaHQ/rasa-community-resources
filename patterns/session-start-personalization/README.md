@@ -95,22 +95,6 @@ Names only; never commit values. See `.env.example`.
    render together and the model sees conflicting instructions. The account
    branches here split cleanly on whether a usual account is on file.
 
-## What breaks / caveats
-
-- **Engine package is `rasa.mantle`.** The tool files import from
-  `rasa.mantle.tools.*` (the engine package renamed from `rasa.calm_v2`). This
-  needs a rasa-pro build that ships the `mantle` engine; on an older build where
-  it is still `rasa.calm_v2`, swap the two `import` lines in the skills' `tools.py`.
-- **Fields are tool-set, never LLM-settable** — that is deliberate, so the agent
-  cannot invent a name or tier. If you make a field `llm_settable`, you lose that
-  guarantee.
-- **`time_of_day` uses the server clock.** For real locale-aware greetings, derive
-  it from the customer's timezone in the lookup instead.
-- **The profile is hard-coded mock data.** Replace `_CUSTOMER_PROFILE` in
-  `skills/default_session_start/tools.py` with your authenticated-session lookup.
-- **`rephrase: true`** on the greeting lets the LLM restyle the wording; drop it if
-  you need the greeting verbatim.
-
 ## Licence
 
 Apache 2.0 — see the repository root [LICENSE](../../LICENSE). Rasa Pro is a
