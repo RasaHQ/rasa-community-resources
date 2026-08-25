@@ -1,0 +1,11 @@
+# Overrides the bundled utter_greet with a warm, personalized opening line.
+# Placeholders resolve from project memory at delivery; rephrase lets the LLM
+# smooth the wording into the agent's persona while keeping the facts.
+responses:
+  utter_greet:
+    - text: >-
+        Good {session.project.time_of_day}, {session.project.customer_name}!
+        Always great to see a {session.project.customer_tier} member who's been
+        with us since {session.project.member_since}. How can I help you today?
+      metadata:
+        rephrase: true
