@@ -139,6 +139,7 @@ memory this way in the first place.
 agent.yml                 persona and rules
 integrations.yml          LLM and channels
 memory.yml                PROJECT memory
+lib/engine.py             engine imports, resolved in one place
 lib/directory.py          in-memory demo data (no database to set up)
 tools/customer.py         GLOBAL tools
 skills/<skill>/skill.md   instructions + frontmatter
