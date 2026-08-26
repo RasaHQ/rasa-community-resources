@@ -38,7 +38,7 @@ help: ## Show this help message
 	@echo '  $(GREEN)make reset-db$(RESET)         Reseed the demo travel DB from data/source/'
 	@echo ''
 	@echo '$(YELLOW)Where this came from:$(RESET)'
-	@echo '  Upstream Atlas (OpenAI):  $(GREEN)examples/maestro-voice-agent$(RESET)'
+	@echo '  Upstream Atlas (OpenAI):  $(GREEN)examples/mantle-voice-agent$(RESET)'
 	@echo '  Full walkthrough: https://rasa.community/library/tutorials/voice-ai-agent/'
 	@echo ''
 

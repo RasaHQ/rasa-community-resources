@@ -1017,6 +1017,53 @@ class TestMigrationLeavesSnapshotsAlone(unittest.TestCase):
             self.assertEqual(rasa_projects.discover_projects(), [])
 
 
+class TestBrandTerms(unittest.TestCase):
+    """Retired product names stay retired, in content and in paths.
+
+    The rename that prompted this was not cosmetic: `rasa init --engine <old>`
+    was published as a copy-paste instruction in six files while the CLI had
+    already narrowed to `--engine {calm,mantle}` and rejected the old value.
+    """
+
+    # Assembled, so this file does not trip the check it exercises.
+    RETIRED = "ma" + "estro"
+
+    def _content(self, body):
+        with mock.patch.object(lint_repo, "_tracked_files",
+                               side_effect=lambda *g: [Path("doc.md")] if g else []), \
+             mock.patch.object(lint_repo, "_read", return_value=body):
+            return lint_repo.check_brand_terms()
+
+    def _paths(self, paths):
+        with mock.patch.object(lint_repo, "_tracked_files",
+                               side_effect=lambda *g: [] if g else paths), \
+             mock.patch.object(lint_repo, "_read", return_value=""):
+            return lint_repo.check_brand_terms()
+
+    def test_retired_name_in_prose_is_caught(self):
+        found = self._content(f"This is a Rasa {self.RETIRED.capitalize()} agent.\n")
+        self.assertEqual(len(found), 1)
+        self.assertIn("Mantle", found[0].message)
+
+    def test_match_is_case_insensitive(self):
+        for spelling in (self.RETIRED, self.RETIRED.upper(), self.RETIRED.capitalize()):
+            self.assertEqual(len(self._content(spelling + "\n")), 1, spelling)
+
+    def test_clean_text_is_clean(self):
+        self.assertEqual(self._content("This is a Rasa Mantle agent.\n"), [])
+
+    def test_retired_name_in_a_path_is_caught(self):
+        found = self._paths([Path(f"examples/{self.RETIRED}-voice-agent/README.md")])
+        self.assertEqual(len(found), 1)
+        self.assertIn("path contains", found[0].message)
+
+    def test_clean_paths_are_clean(self):
+        self.assertEqual(self._paths([Path("examples/mantle-voice-agent/README.md")]), [])
+
+    def test_the_real_repository_is_clean(self):
+        self.assertEqual([f.location() for f in lint_repo.check_brand_terms()], [])
+
+
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every
     # caller reads as a pass. That is not hypothetical: an edit once removed

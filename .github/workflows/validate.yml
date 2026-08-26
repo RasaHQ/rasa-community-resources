@@ -50,7 +50,7 @@ jobs:
 
       # The only step in this workflow that queries PyPI. It reports the newest
       # rasa-pro overall — not just the newest on the pinned release line — and
-      # inspects that release for the Maestro engine module, so the run says
+      # inspects that release for the Mantle engine module, so the run says
       # whether RASA_PRO_VERSION_LINE can finally be lifted.
       #
       # Informational by design: a new upstream release is news, not a broken
@@ -158,22 +158,17 @@ jobs:
             --train --require-license --skip-sync
 
   snapshots:
-    # A frozen resource is only worth keeping if the claim on its README is
-    # true, and the claim is "this installs and validates at the version I
-    # pinned". So it is asserted against its own pin — never RASA_PRO_VERSION,
-    # which it is exempt from by design. See docs/SNAPSHOTS.md.
+    # One job that loops, rather than a matrix over wave projects.
     #
-    # No training step: a past cohort's project should not need live secrets,
-    # and a train failure two years on is an archive decision, not a red build
-    # on somebody else's pull request.
-    name: snapshot ${{ matrix.project }}
+    # `heroes/` is empty until the first cohort lands, and an empty matrix does
+    # not simply vanish: GitHub lists the job as skipped and renders its name as
+    # the literal matrix expression, so every pull request carries a check that
+    # looks broken and is not. A single job with a static name costs parallelism
+    # only when several wave projects change at once, which has not happened
+    # yet. Make it a matrix again when it does.
+    name: frozen snapshots
     needs: [validate, discover]
-    if: needs.discover.outputs.snapshots != '[]'
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project: ${{ fromJSON(needs.discover.outputs.snapshots) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -182,7 +177,36 @@ jobs:
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           enable-cache: true
-          cache-dependency-glob: "${{ matrix.project }}/uv.lock"
 
-      - name: check ${{ matrix.project }}
-        run: python scripts/check_project.py "${{ matrix.project }}" --use-project-pin
+      # A frozen resource is only worth keeping if the claim on its README is
+      # true, and the claim is "this installs and validates at the version I
+      # pinned". So it is asserted against its own pin — never RASA_PRO_VERSION,
+      # which it is exempt from by design. See docs/SNAPSHOTS.md.
+      #
+      # No training step: a past cohort's project should not need live secrets,
+      # and a train failure two years on is an archive decision, not a red build
+      # on somebody else's pull request.
+      - name: check frozen snapshots
+        env:
+          SNAPSHOTS: ${{ needs.discover.outputs.snapshots }}
+        run: |
+          set -euo pipefail
+          mapfile -t PROJECTS < <(
+            printf '%s' "$SNAPSHOTS" |
+              python -c 'import json,sys; [print(p) for p in json.load(sys.stdin)]'
+          )
+          if [ "${#PROJECTS[@]}" -eq 0 ]; then
+            echo "No frozen wave projects to check."
+            echo "No frozen wave projects to check." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          failed=0
+          for project in "${PROJECTS[@]}"; do
+            echo "::group::${project}"
+            if ! python scripts/check_project.py "${project}" --use-project-pin; then
+              failed=1
+              echo "::error::${project} failed its own-pin check"
+            fi
+            echo "::endgroup::"
+          done
+          exit "${failed}"

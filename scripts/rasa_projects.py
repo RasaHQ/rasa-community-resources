@@ -19,7 +19,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 VERSION_FILE = REPO_ROOT / "RASA_PRO_VERSION"
 # Optional guard rail: a version prefix that `--latest` must stay within.
-# This catalog runs on the Maestro / Skills engine (`rasa.calm_v2`), which
+# This catalog runs on the Mantle / Skills engine (`rasa.calm_v2`), which
 # ships only on the 3.19.0.devN line — "newest on PyPI" is a stable release
 # that does not contain it at all. See docs/MIGRATING.md.
 VERSION_LINE_FILE = REPO_ROOT / "RASA_PRO_VERSION_LINE"

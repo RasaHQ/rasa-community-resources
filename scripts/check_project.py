@@ -2,8 +2,8 @@
 """Smoke-check (and optionally train) one Rasa Pro community resource project.
 
 Usage:
-    python scripts/check_project.py examples/maestro-voice-agent
-    python scripts/check_project.py examples/maestro-voice-agent --train
+    python scripts/check_project.py examples/mantle-voice-agent
+    python scripts/check_project.py examples/mantle-voice-agent --train
 """
 
 from __future__ import annotations
@@ -148,7 +148,7 @@ def check_project(
                 print(detail, file=sys.stderr)
             return 1
 
-    # Assert installed package version + Maestro import inside the project venv.
+    # Assert installed package version + Mantle import inside the project venv.
     version_probe = f"""
 import importlib.metadata
 import importlib.util

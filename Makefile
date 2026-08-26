@@ -73,7 +73,7 @@ help: ## Show this help message
 	@if [ -f $(ROOT)/RASA_PRO_VERSION_LINE ]; then \
 		echo '  $(RED)The newest rasa-pro on PyPI is usually NOT the one to pin.$(RESET)'; \
 		echo ''; \
-		echo '  Every resource here imports $(YELLOW)rasa.calm_v2$(RESET) (the Maestro engine),'; \
+		echo '  Every resource here imports $(YELLOW)rasa.calm_v2$(RESET) (the Mantle engine),'; \
 		echo '  which ships only on the release line above. The newest stable'; \
 		echo '  release does not contain it, so pinning "latest" would break all'; \
 		echo '  $(words $(PROJECTS)) projects at import time.'; \

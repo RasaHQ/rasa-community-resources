@@ -149,7 +149,7 @@ def check_version_line(expected: str) -> list[Finding]:
                 _rel(VERSION_LINE_FILE),
                 None,
                 f"RASA_PRO_VERSION is {expected}, which is not on the required "
-                f"line {prefix!r}. The Maestro engine (rasa.calm_v2) ships only "
+                f"line {prefix!r}. The Mantle engine (rasa.calm_v2) ships only "
                 f"on that line; widen or remove this file if that has changed.",
             )
         ]
@@ -614,6 +614,62 @@ def check_agent_config_keys() -> list[Finding]:
     return findings
 
 
+# Product names that have been retired, mapped to what replaces them. Spelled
+# in parts so this file does not trip its own check — which also means the rule
+# needs no path exemptions, and holds for the linter as much as the catalog.
+RETIRED_TERMS = {
+    "ma" + "estro": "Mantle",
+}
+
+
+def check_brand_terms() -> list[Finding]:
+    """Retired product names appear nowhere in tracked content or paths.
+
+    Not cosmetics. The engine was renamed before this check existed, and the
+    old name was not only in prose: `rasa init --engine <old>` sat in six
+    READMEs and AGENTS files as a copy-paste instruction, while the CLI had
+    already narrowed to `--engine {calm,mantle}` and rejected it outright. A
+    stale brand in a runnable command is a broken command.
+    """
+    findings: list[Finding] = []
+    for retired, replacement in RETIRED_TERMS.items():
+        pattern = re.compile(re.escape(retired), re.IGNORECASE)
+
+        for path in _tracked_files(
+            "*.md", "*.toml", "*.yml", "*.yaml", "*.py", "*.example",
+            "Makefile", "**/Makefile", ".gitignore", "**/.gitignore",
+        ):
+            if path.name == "uv.lock":
+                continue
+            for lineno, line in _numbered(_read(path)):
+                if pattern.search(line):
+                    findings.append(
+                        Finding(
+                            "brand-terms",
+                            _rel(path),
+                            lineno,
+                            f"{retired!r} is retired; use {replacement!r}",
+                        )
+                    )
+
+        # Paths matter as much as content: a directory carrying the old name
+        # keeps it alive in every link, clone URL and catalog row that points
+        # at it.
+        for path in _tracked_files():
+            rel = _rel(path)
+            if pattern.search(rel):
+                findings.append(
+                    Finding(
+                        "brand-terms",
+                        rel,
+                        None,
+                        f"path contains the retired name {retired!r}; "
+                        f"rename it to use {replacement.lower()!r}",
+                    )
+                )
+    return findings
+
+
 def check_env_examples(projects: list[Project]) -> list[Finding]:
     """Every resource ships a .env.example that names the keys it actually needs."""
     findings: list[Finding] = []
@@ -868,6 +924,7 @@ CHECKS = {
     "secret-hygiene": lambda p, s, e: check_secret_hygiene(),
     "workflow-pins": lambda p, s, e: check_workflow_pins(),
     "agent-config-keys": lambda p, s, e: check_agent_config_keys(),
+    "brand-terms": lambda p, s, e: check_brand_terms(),
     "env-example": lambda p, s, e: check_env_examples(p + s),
     "snapshot-pin": lambda p, s, e: check_snapshot_pins(s),
     # Both tiers: `community/` is maintained, `heroes/` is frozen, and a

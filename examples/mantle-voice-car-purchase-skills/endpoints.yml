@@ -1,0 +1,70 @@
+# Platform endpoints for the Autono Mantle (calm_v2) agent.
+#
+# LLM routing and Inspector Deepgram ASR/TTS live in integrations.yml.
+# This file is still read by `rasa train` / `rasa inspect` for optional
+# platform services (NLG, tracker store, tracing, etc.).
+#
+# Docs: https://rasa.com/docs/pro/build/configuring-assistant/
+
+# ---------------------------------------------------------------------------
+# Contextual response rephraser
+# ---------------------------------------------------------------------------
+# Honours `metadata.rephrase: true` on responses (for example utter_greet).
+# Uses the same OpenAI model family as integrations.yml.
+# https://rasa.com/docs/pro/build/configuring-assistant/#contextual-response-rephraser
+nlg:
+  type: rephrase
+  llm:
+    model_group: openai-llm
+
+# ---------------------------------------------------------------------------
+# Model groups (LLMs / embeddings referenced by endpoints features)
+# ---------------------------------------------------------------------------
+# https://rasa.com/docs/reference/config/components/llm-configuration/
+model_groups:
+  - id: openai-llm
+    models:
+      - provider: openai
+        model: gpt-4.1-mini
+        api_key: ${OPENAI_API_KEY}
+        temperature: 0.0
+  - id: openai-embeddings
+    models:
+      - provider: openai
+        model: text-embedding-3-large
+        api_key: ${OPENAI_API_KEY}
+
+# ---------------------------------------------------------------------------
+# Optional production services (defaults are fine for local demos)
+# ---------------------------------------------------------------------------
+# Tracker store — conversations stay in memory unless configured:
+# https://rasa.com/docs/pro/build/configuring-assistant/#tracker-store
+#tracker_store:
+#  type: sql
+#  dialect: sqlite
+#  db: tracker.db
+
+# Event broker:
+# https://rasa.com/docs/pro/build/configuring-assistant/#event-broker
+#event_broker:
+#  type: pika
+#  url: localhost
+#  username: username
+#  password: password
+#  queues:
+#    - rasa_events
+
+# Remote model storage:
+# https://rasa.com/docs/pro/build/configuring-assistant/#models
+#models:
+#  url: http://my-server.com/models/default_core@latest
+#  wait_time_between_pulls: 10
+
+# Backend tracing (jaeger / otlp):
+#tracing:
+#  type: otlp
+#  endpoint: localhost:4317
+#  service_name: autono
+
+# NOTE: Do not add a classic `action_endpoint` / `actions_module` here.
+# Side effects use calm_v2 `@tool` functions under tools/, not rasa-sdk actions.

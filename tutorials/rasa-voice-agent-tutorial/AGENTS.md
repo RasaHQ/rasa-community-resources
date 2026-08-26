@@ -1,6 +1,6 @@
 # Rasa Skills project — Atlas voice travel
 
-This directory is a **Rasa Skills / Maestro** agent that teaches building a
+This directory is a **Rasa Skills / Mantle** agent that teaches building a
 **voice** travel assistant with **Deepgram** ASR + TTS.
 
 ## Layout

@@ -6,11 +6,11 @@ Kind:          example
 Assessed on:   2026-08-26
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
-Audience:      Practitioners who want a Maestro voice agent without an OpenAI key
+Audience:      Practitioners who want a Mantle voice agent without an OpenAI key
 Time:          30–45 minutes
 ```
 
-The [Atlas voice travel agent](../../examples/maestro-voice-agent) reconfigured
+The [Atlas voice travel agent](../../examples/mantle-voice-agent) reconfigured
 to run on **Google Gemini** for routing and conversation, and on **local
 sentence-transformers embeddings** for the knowledge base — so the whole agent
 runs without an OpenAI account of any kind.
@@ -110,7 +110,7 @@ rather than checking whichever key happens to be exported.
                                     │
                                     ▼
                          ┌─────────────────────┐
-                         │    Rasa Maestro     │
+                         │    Rasa Mantle     │
                          │ skill selection     │
                          │ memory + control    │
                          └──────────┬──────────┘
@@ -185,7 +185,7 @@ ordered collection, confirmation, and verbatim success text.
 | `data/source/` | JSON seed data for Maya’s trips |
 | `scripts/verify_setup.py` | Pre-flight diagnostics |
 
-This is a **Skills / Maestro** project. Do **not** add CALM v1 files
+This is a **Skills / Mantle** project. Do **not** add CALM v1 files
 (`config.yml`, `domain.yml`, flow YAMLs under `data/`).
 
 ---
