@@ -170,8 +170,8 @@ Per-resource day-to-day commands (`make install`, `make verify`, `make train`,
 
 ## What “in sync” means
 
-`make status` expects, for every discovered project under `examples/` and
-`tutorials/`:
+`make status` expects, for every discovered project in the **maintained
+catalog** — `examples/`, `tutorials/`, `patterns/`, `community/`:
 
 | Location | Must match `RASA_PRO_VERSION` |
 |---|---|
@@ -220,11 +220,29 @@ agent files in that project, then re-run `make check-all`.
 train is best-effort when credentials exist.
 
 **Nested `tutorial/snippets/**/pyproject.toml`**  
-Ignored on purpose. Discovery only considers `examples/<name>/` and
-`tutorials/<name>/`.
+Ignored on purpose. Discovery fixes a depth per root, so only
+`examples/<name>/`, `tutorials/<name>/` and `patterns/<name>/` count as
+catalog resources.
+
+**`heroes/` wave projects are never migrated**  
+Frozen by design. `make migrate` skips them and prints how many it left alone;
+targeting one explicitly with `--project` is refused with exit code 2. A cohort
+pinned the version it verified, and rewriting that turns a checkable claim into
+an untested one.
+
+`community/` **is** migrated along with the rest of the catalog. After the bump,
+set `Assessed by:` to whoever ran it, and check for provenance notes the
+rewriter may have caught — see [`SNAPSHOTS.md`](SNAPSHOTS.md).
+
+**A resource skipped `rasa train`**  
+It declares a provider key in `[tool.rasa-catalog] required-secrets` that this
+runner does not have. The skip is loud and names the key. Set it, or accept that
+the resource is verified only as far as install and `validate_project`.
+`make test-all REQUIRE_SECRETS=1` turns the skip into a hard failure.
 
 ## Related docs
 
+- The frozen-snapshot contract: [`SNAPSHOTS.md`](SNAPSHOTS.md)
 - Resource metadata template: [`RESOURCE_TEMPLATE.md`](RESOURCE_TEMPLATE.md)
 - Contribution rules: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 - Maintainer review bar: [`../MAINTAINERS.md`](../MAINTAINERS.md)

@@ -25,6 +25,14 @@ make validate-full   # run this before announcing a version bump
 to run on every save, and it is why it can run on a clean clone with no
 credentials and no network.
 
+### Two tiers
+
+Checks apply to one tier, the other, or both. The **maintained catalog**
+(`examples/`, `tutorials/`, `patterns/`, `community/`) is held to the shared pin
+in `RASA_PRO_VERSION`. **Frozen snapshots** — only `heroes/` wave projects — are
+held to their own pins instead; see [`SNAPSHOTS.md`](SNAPSHOTS.md) for why. The
+table below says which is which.
+
 ### Useful flags
 
 ```bash
@@ -39,28 +47,37 @@ python scripts/lint_repo.py --list            # check names
 python scripts/lint_repo.py --check skill-prose --check lock-sync
 ```
 
+```bash
+make snapshots                    # what is frozen, and at which pin
+make check-snapshots              # install each frozen resource at its own pin
+python scripts/lint_repo.py --check snapshot-pin --check snapshot-index
+```
+
 Exit codes: `0` clean, `1` findings, `2` bad invocation. `--json` emits
-`{expected, projects, checks, errors, warnings, findings[]}` where each finding
-carries `check`, `path`, `line`, `message`, and `severity`.
+`{expected, projects, snapshots, checks, errors, warnings, findings[]}` where
+each finding carries `check`, `path`, `line`, `message`, and `severity`.
 
 ## What `make validate` enforces
 
 Every check below exists because the failure it describes actually happened here.
 
-| Check | Enforces | Typical fix |
-|---|---|---|
-| `version-consistency` | Every `rasa-pro==…` / `Verified with:` string in committed prose matches `RASA_PRO_VERSION` | `make migrate` |
-| `version-line` | The pin stays on the release line that carries the Maestro engine | Pin from `RASA_PRO_VERSION_LINE`; see [MIGRATING](MIGRATING.md) |
-| `lock-sync` | Each `pyproject.toml` pin and `uv.lock` resolve to the pinned version | `make migrate` |
-| `prerelease-consistency` | `[tool.uv] prerelease` and every documented `uv sync` command match whether the pin is a prerelease | `make migrate` |
-| `lock-prereleases` | A **stable** pin carries no leftover prerelease dependencies (warning) | `python scripts/migrate_rasa_pro.py --upgrade` |
-| `skill-prose` | No raw `session.<ns>.<entry>` and no partial `@memory` token in instruction prose | Use `@memory.<ns>.<entry>`, or a top-level `if:` |
-| `nested-if` | No indented `if:` — it is only a condition at the top level of a skill body | Move the branch to the top level, or phrase it in natural language |
-| `resource-metadata` | Each resource README carries `Author` / `Assessed on` / `Assessed by` / `Verified with`, with a sane date | Fill in the metadata block |
-| `secret-hygiene` | No tracked `.env`, no committed API keys or licence JWTs | Remove the secret, rotate it, keep it in `.env` |
-| `workflow-pins` | Every GitHub Action pinned to a full 40-character commit SHA | See below |
-| `agent-config-keys` | `rules` / `references` / `name` / `description` / `prompts` / `conversation` / `before_end` sit at the top level of `agent.yml`, not inside `agent:` | Move the key out of the `agent:` block |
-| `env-example` | Each resource ships `.env.example` so `make env` works on a clean clone | Add the file |
+| Check | Tier | Enforces | Typical fix |
+|---|---|---|---|
+| `version-consistency` | catalog | Every `rasa-pro==…` / `Verified with:` string in committed prose matches `RASA_PRO_VERSION` | `make migrate` |
+| `version-line` | catalog | The pin stays on the release line that carries the Maestro engine | Pin from `RASA_PRO_VERSION_LINE`; see [MIGRATING](MIGRATING.md) |
+| `lock-sync` | catalog | Each `pyproject.toml` pin and `uv.lock` resolve to the pinned version | `make migrate` |
+| `prerelease-consistency` | catalog | `[tool.uv] prerelease` and every documented `uv sync` command match whether the pin is a prerelease | `make migrate` |
+| `lock-prereleases` | catalog | A **stable** pin carries no leftover prerelease dependencies (warning) | `python scripts/migrate_rasa_pro.py --upgrade` |
+| `skill-prose` | both | No raw `session.<ns>.<entry>` and no partial `@memory` token in instruction prose | Use `@memory.<ns>.<entry>`, or a top-level `if:` |
+| `nested-if` | both | No indented `if:` — it is only a condition at the top level of a skill body | Move the branch to the top level, or phrase it in natural language |
+| `resource-metadata` | both | Each resource README carries `Author` / `Assessed on` / `Assessed by` / `Verified with`, with a sane date — plus `Kind:` under `community/` and `Wave:` under `heroes/` | Fill in the metadata block |
+| `secret-hygiene` | both | No tracked `.env`, no committed API keys or licence JWTs | Remove the secret, rotate it, keep it in `.env` |
+| `workflow-pins` | repo | Every GitHub Action pinned to a full 40-character commit SHA | See below |
+| `agent-config-keys` | both | `rules` / `references` / `name` / `description` / `prompts` / `conversation` / `before_end` sit at the top level of `agent.yml`, not inside `agent:` | Move the key out of the `agent:` block |
+| `env-example` | both | Each resource ships `.env.example`, and it names every key the resource declares in `[tool.rasa-catalog] required-secrets` | Add the file or the missing key |
+| `snapshot-pin` | frozen | A wave project's `pyproject.toml`, `uv.lock`, and README `Verified with:` all name the same version — and a lock exists at all | `uv lock` in the resource, then make the three agree |
+| `index-rows` | both | The resource is listed in `community/README.md` or in its wave charter | Add the catalog row |
+| `heroes-layout` | frozen | Wave slugs are `wave-NN-<theme>`; every project sits at `<wave>/projects/<project>/`; every wave is listed in `heroes/README.md` | Rename or move; add the wave row |
 
 ### Pinning GitHub Actions
 
@@ -176,15 +193,49 @@ markdown body, and `:::block` YAML regions — so `complete_when: >` continuatio
 lines and `parameters:` bindings are correctly treated as structured rather than
 prose.
 
+### Why wave projects are exempt from `version-consistency`
+
+Not leniency, and deliberately narrow. Holding a past cohort's project to the
+shared pin has two outcomes and both are worse than exempting it: either
+`make migrate` rewrites the author's `Verified with:` line into a claim nobody
+tested, or the build goes red for every past wave on every bump until someone
+deletes their work. `snapshot-pin` is the replacement obligation — it asserts
+the resource is *internally* honest and reproducible, which is the part that can
+actually be verified.
+
+`community/` is **not** exempt. It is maintained material: migrated with the
+catalog, re-verified, and re-stamped by whoever does the bump. See
+[`SNAPSHOTS.md`](SNAPSHOTS.md).
+
+### Resources that need a provider key
+
+A resource on a non-default provider declares the key it needs:
+
+```toml
+[tool.rasa-catalog]
+required-secrets = ["GEMINI_API_KEY"]
+```
+
+`make ci` and CI then **skip** its `rasa train` with a warning when the key is
+absent, instead of dying on an unexpanded `${GEMINI_API_KEY}` that reads as a
+broken project. `make test-all REQUIRE_SECRETS=1` turns that skip back into a
+failure. The trade is explicit: such a resource is CI-verified as far as install
+and `validate_project` and no further, until the secret is added to the
+repository — and its README is expected to say so.
+
 ## What `make ci` adds
 
-For every discovered project, `scripts/check_project.py`:
+For every project in the maintained catalog, `scripts/check_project.py`:
 
 1. `uv sync` with the prerelease flag implied by the pin
 2. asserts the installed `rasa-pro` equals `RASA_PRO_VERSION`
 3. asserts `rasa.calm_v2` is importable — the guard that catches pinning a
    release without the Maestro engine
 4. runs `validate_project`
+
+`make ci` then runs `make check-snapshots`, which does the same four steps for
+every frozen wave project with `--use-project-pin`: step 2 asserts the version
+that resource pins, not the catalog's.
 
 ## What `make validate-full` adds
 
@@ -212,9 +263,13 @@ push, pull request, and weekly.
 
 - `validate` — the offline gate, with `STRICT=1`; uploads `lint-report.json`
 - `upstream` — `make outdated`: the only job that queries PyPI
-- `discover` — enumerates projects into a matrix
-- `check` — one runner per project, `fail-fast: false`, so one broken resource
-  does not mask the others; trains only where a `RASA_LICENSE` secret exists
+- `discover` — enumerates both tiers into matrices
+- `check` — one runner per catalog project, `fail-fast: false`, so one broken
+  resource does not mask the others; trains only where a `RASA_LICENSE` secret exists
+- `snapshots` — one runner per frozen wave project, asserted against its own pin
+  and never trained. A pull request checks only the snapshots it touched;
+  scheduled and push runs check them all, which is where a yanked release or a
+  rotted lock surfaces
 
 The weekly run matters, and `upstream` is the job that earns it. Everything
 else resolves against the committed `uv.lock`, so a new rasa-pro release is
@@ -231,12 +286,15 @@ in `CHECKS`, and add a regression test to `scripts/test_tooling.py`.
 
 Write the test so it *fails against the bug*, not just passes against the fixed
 tree — a check that cannot fail is worse than no check, because it reads as
-coverage. The unit tests feed the extractor the exact broken skill text this
+coverage. For the same reason the runner asserts it collected tests at all: a
+suite that silently runs zero tests exits 0 and reads as a pass, which has
+happened here. The unit tests feed the extractor the exact broken skill text this
 repository shipped, so each case is a regression that actually occurred rather
 than a hypothetical.
 
 ## Related docs
 
+- The frozen-snapshot contract: [`SNAPSHOTS.md`](SNAPSHOTS.md)
 - Version bumps and release lines: [`MIGRATING.md`](MIGRATING.md)
 - Resource metadata template: [`RESOURCE_TEMPLATE.md`](RESOURCE_TEMPLATE.md)
 - Contribution rules: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)

@@ -27,17 +27,27 @@ STRICT ?= 0
 # REQUIRE_LICENSE=1 makes a missing RASA_LICENSE a failure instead of a skip.
 # Without it, test-all silently passes while training nothing.
 REQUIRE_LICENSE ?= 0
+# REQUIRE_SECRETS=1 does the same for the provider keys a resource declares in
+# [tool.rasa-catalog] required-secrets. Off by default because CI legitimately
+# lacks them; on when you want "trained everything" to mean it.
+REQUIRE_SECRETS ?= 0
 
 VERSION_ARGS := $(if $(VERSION),--version $(VERSION),)
 STRICT_ARGS  := $(if $(filter 1,$(STRICT)),--strict,)
 LICENSE_ARGS := $(if $(filter 1,$(REQUIRE_LICENSE)),--require-license,)
+SECRET_ARGS  := $(if $(filter 1,$(REQUIRE_SECRETS)),--require-secrets,)
 LIST         := $(PYTHON) $(SCRIPTS)/list_projects.py
 MIGRATE      := $(PYTHON) $(SCRIPTS)/migrate_rasa_pro.py
 CHECK        := $(PYTHON) $(SCRIPTS)/check_project.py
 LINT         := $(PYTHON) $(SCRIPTS)/lint_repo.py
 UNITTESTS    := $(PYTHON) $(SCRIPTS)/test_tooling.py
 
+# The maintained catalog: examples/, tutorials/, patterns/. These move together
+# under `make migrate` and must stay green.
 PROJECTS := $(shell $(LIST) --paths-only 2>/dev/null)
+# Frozen snapshots: community/, heroes/. Pinned by their authors, never
+# migrated, checked against their own pins. See docs/SNAPSHOTS.md.
+SNAPSHOTS := $(shell $(LIST) --scope snapshots --paths-only 2>/dev/null)
 # Empty for a stable pin; --prerelease=allow only when RASA_PRO_VERSION is a
 # dev/rc build. Derived so the flag can never drift from the pin.
 PRE      := $(shell $(LIST) --uv-prerelease-args 2>/dev/null)
@@ -47,6 +57,7 @@ PRE      := $(shell $(LIST) --uv-prerelease-args 2>/dev/null)
 .PHONY: help check-uv list status outdated update migrate migrate-dry latest \
         lint test-scripts validate ci validate-full \
         lock-all install-all check-all test-all verify-all clean-all \
+        snapshots check-snapshots \
         _require-projects
 
 help: ## Show this help message
@@ -55,7 +66,7 @@ help: ## Show this help message
 	@echo ""
 	@echo "  Pinned to:    $(GREEN)$$(cat $(ROOT)/RASA_PRO_VERSION)$(RESET)   $(DIM)(RASA_PRO_VERSION)$(RESET)"
 	@echo "  Release line: $(GREEN)$$(if [ -f $(ROOT)/RASA_PRO_VERSION_LINE ]; then grep -v '^#' $(ROOT)/RASA_PRO_VERSION_LINE | grep -v '^$$' | head -1; else echo 'none — any release allowed'; fi)$(RESET)   $(DIM)(RASA_PRO_VERSION_LINE)$(RESET)"
-	@echo "  Projects:     $(GREEN)$(words $(PROJECTS))$(RESET)"
+	@echo "  Projects:     $(GREEN)$(words $(PROJECTS))$(RESET) maintained   $(DIM)+ $(words $(SNAPSHOTS)) frozen snapshot(s) in community/ and heroes/$(RESET)"
 	@echo ''
 	@echo '$(BLUE)══ Read this first ═══════════════════════════════════════════════$(RESET)'
 	@echo ''
@@ -107,6 +118,12 @@ help: ## Show this help message
 	@echo '  $(GREEN)make lint$(RESET)              Static checks only ($(GREEN)--json$(RESET) via scripts/lint_repo.py)'
 	@echo '  $(GREEN)make test-scripts$(RESET)      Unit-test the tooling'
 	@echo ''
+	@echo '$(YELLOW)▸ Two tiers (docs/SNAPSHOTS.md)$(RESET)'
+	@echo '  $(DIM)Maintained:$(RESET) examples/ tutorials/ patterns/ — one shared pin, migrated together'
+	@echo '  $(DIM)Frozen:$(RESET)     community/ heroes/     — author-pinned, never migrated'
+	@echo '  $(GREEN)make snapshots$(RESET)         List frozen resources and the pin each one carries'
+	@echo '  $(GREEN)make check-snapshots$(RESET)   Install each frozen resource against its own pin'
+	@echo ''
 	@echo '$(YELLOW)▸ Install & run$(RESET)'
 	@echo '  $(GREEN)make lock-all$(RESET)          uv lock in every project'
 	@echo '  $(GREEN)make install-all$(RESET)       uv sync in every project'
@@ -119,6 +136,7 @@ help: ## Show this help message
 	@echo '  $(GREEN)KEEP_GOING=1$(RESET)           Continue after a project fails, report them all'
 	@echo '  $(GREEN)STRICT=1$(RESET)               Promote lint warnings to failures (CI uses this)'
 	@echo '  $(GREEN)REQUIRE_LICENSE=1$(RESET)      Fail rather than skip when RASA_LICENSE is absent'
+	@echo '  $(GREEN)REQUIRE_SECRETS=1$(RESET)      Same for declared provider keys (Gemini, etc.)'
 	@echo ''
 	@echo '$(YELLOW)▸ When something fails$(RESET)'
 	@echo '  $(GREEN)make validate$(RESET) names the check and the fix for every finding.'
@@ -138,7 +156,7 @@ check-uv:
 
 _require-projects:
 	@if [ -z "$(PROJECTS)" ]; then \
-		echo "$(RED)✗ No projects discovered under examples/ or tutorials/.$(RESET)"; \
+		echo "$(RED)✗ No projects discovered under examples/, tutorials/ or patterns/.$(RESET)"; \
 		exit 1; \
 	fi
 
@@ -193,7 +211,11 @@ test-scripts: ## Unit-test the migration/lint tooling
 
 validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
 	@echo "$(MAGENTA)▸ tooling unit tests$(RESET)"
-	@out=$$($(UNITTESTS) 2>&1) || { echo "$$out"; exit 1; }; echo "$$out" | tail -3
+	@out=$$($(UNITTESTS) 2>&1) || { echo "$$out"; exit 1; }; \
+		case "$$out" in *"OK"*) ;; *) echo "$$out"; \
+			echo "$(RED)✗ unit tests produced no OK line — suite did not run.$(RESET)"; \
+			exit 1;; esac; \
+		echo "$$out" | tail -3
 	@echo ''
 	@echo "$(MAGENTA)▸ repository lint$(RESET)"
 	@$(LINT) $(STRICT_ARGS) $(VERSION_ARGS)
@@ -204,7 +226,7 @@ validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
 	@echo "$(GREEN)✓ validate passed — repository is internally consistent.$(RESET)"
 	@echo "$(YELLOW)  Note: this does not install anything. Run 'make ci' for that.$(RESET)"
 
-ci: validate check-all ## validate + install every project and run validate_project
+ci: validate check-all check-snapshots ## validate + install every resource, both tiers
 	@echo "$(GREEN)✓ ci passed — every resource installs and validates.$(RESET)"
 
 validate-full: validate ## Everything, including rasa train (needs RASA_LICENSE)
@@ -253,10 +275,31 @@ check-all: check-uv _require-projects ## Sync + version assert + validate_projec
 	if [ $$fail -eq 0 ]; then echo "$(GREEN)All projects passed check-all.$(RESET)"; fi; \
 	exit $$fail
 
+snapshots: ## List frozen snapshots (community/, heroes/) and their own pins
+	@$(LIST) --scope snapshots
+
+check-snapshots: check-uv ## Install every frozen snapshot and run validate_project
+	@if [ -z "$(SNAPSHOTS)" ]; then \
+		echo "$(DIM)No frozen snapshots checked in yet.$(RESET)"; \
+		exit 0; \
+	fi; \
+	fail=0; \
+	for p in $(SNAPSHOTS); do \
+		if $(CHECK) $$p --use-project-pin; then \
+			echo "$(GREEN)✓ check $$p$(RESET)"; \
+		else \
+			echo "$(RED)✗ check $$p$(RESET)"; \
+			fail=1; \
+			if [ "$(KEEP_GOING)" != "1" ]; then exit 1; fi; \
+		fi; \
+	done; \
+	if [ $$fail -eq 0 ]; then echo "$(GREEN)All frozen snapshots still install and validate.$(RESET)"; fi; \
+	exit $$fail
+
 test-all: check-uv _require-projects ## check-all + train when RASA_LICENSE is available
 	@fail=0; \
 	for p in $(PROJECTS); do \
-		if $(CHECK) $$p --train $(LICENSE_ARGS) $(VERSION_ARGS); then \
+		if $(CHECK) $$p --train $(LICENSE_ARGS) $(SECRET_ARGS) $(VERSION_ARGS); then \
 			echo "$(GREEN)✓ test $$p$(RESET)"; \
 		else \
 			echo "$(RED)✗ test $$p$(RESET)"; \

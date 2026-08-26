@@ -30,18 +30,26 @@ if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
 from rasa_projects import (  # noqa: E402
+    COMMUNITY_ROOT,
+    HEROES_ROOT,
     NOTES_HEADING_RE,
     PROSE_EQ_RE,
     PROSE_SPACE_RE,
     REPO_ROOT,
     VERIFIED_WITH_RE,
     VERSION_LINE_FILE,
+    WAVE_DIR,
+    WAVE_SLUG_RE,
     Project,
     discover_projects,
+    discover_waves,
     is_prerelease,
+    is_snapshot_path,
     read_expected_version,
     read_lock_version,
     read_pyproject_pin,
+    read_readme_verified,
+    read_required_secrets,
     read_uv_prerelease_setting,
     read_version_line,
 )
@@ -105,6 +113,13 @@ def check_version_consistency(expected: str) -> list[Finding]:
     targets = _tracked_files("*.md", "*.toml", "Makefile", "*/Makefile", "**/Makefile")
     for path in targets:
         if path.name == "uv.lock":
+            continue
+        # Frozen snapshots record the version they were verified against, which
+        # is deliberately not the catalog pin. Holding them to it would either
+        # rewrite a contributor's verified claim into a lie, or fail the build
+        # for every past cohort on every bump. Their own internal consistency
+        # is checked by `snapshot-pin` instead.
+        if is_snapshot_path(_rel(path)):
             continue
         for lineno, line in _numbered(_read(path)):
             for pattern in patterns:
@@ -243,6 +258,10 @@ def check_lock_prereleases(expected: str) -> list[Finding]:
     findings: list[Finding] = []
     package_re = re.compile(r'(?ms)^name = "(?P<name>[^"]+)"\nversion = "(?P<version>[^"]+)"')
     for lock in _tracked_files("*/uv.lock", "**/uv.lock"):
+        # A frozen lock is a record of what the author installed, not something
+        # `make migrate ARGS=--upgrade` is ever going to be run against.
+        if is_snapshot_path(_rel(lock)):
+            continue
         for match in package_re.finditer(_read(lock)):
             name, version = match.group("name"), match.group("version")
             if name in PRERELEASE_DEP_ALLOWLIST or name == "rasa-pro":
@@ -384,6 +403,12 @@ def check_nested_if() -> list[Finding]:
 # --- repository hygiene -------------------------------------------------------
 
 METADATA_KEYS = ("Author:", "Assessed on:", "Assessed by:", "Verified with:")
+# `community/` is flat on purpose, so the resource states in metadata which
+# category folder it would otherwise have lived in.
+COMMUNITY_METADATA_KEYS = METADATA_KEYS + ("Kind:",)
+# A wave project is a cohort deliverable, so it also records which cohort. That
+# keeps it self-describing if it is ever moved, archived, or linked from outside.
+HEROES_METADATA_KEYS = METADATA_KEYS + ("Wave:",)
 ASSESSED_ON_RE = re.compile(r"Assessed on:\s*(\d{4}-\d{2}-\d{2})")
 
 
@@ -400,7 +425,15 @@ def check_resource_metadata(projects: list[Project]) -> list[Finding]:
             continue
         text = _read(readme)
         head = "\n".join(text.splitlines()[:40])
-        for key in METADATA_KEYS:
+        # _rel rather than project.rel: this runs against synthetic Projects in
+        # the unit tests, whose paths are not under REPO_ROOT.
+        rel = _rel(project.path)
+        keys = METADATA_KEYS
+        if rel.startswith(f"{HEROES_ROOT}/"):
+            keys = HEROES_METADATA_KEYS
+        elif rel.startswith(f"{COMMUNITY_ROOT}/"):
+            keys = COMMUNITY_METADATA_KEYS
+        for key in keys:
             if key not in head:
                 findings.append(
                     Finding(
@@ -582,34 +615,265 @@ def check_agent_config_keys() -> list[Finding]:
 
 
 def check_env_examples(projects: list[Project]) -> list[Finding]:
-    """Every resource ships a .env.example so `make env` works on a clean clone."""
-    return [
-        Finding(
-            "env-example",
-            _rel(project.path),
-            None,
-            "missing .env.example (make env cannot bootstrap credentials)",
-        )
-        for project in projects
-        if not (project.path / ".env.example").is_file()
-    ]
+    """Every resource ships a .env.example that names the keys it actually needs."""
+    findings: list[Finding] = []
+    for project in projects:
+        example = project.path / ".env.example"
+        if not example.is_file():
+            findings.append(
+                Finding(
+                    "env-example",
+                    _rel(project.path),
+                    None,
+                    "missing .env.example (make env cannot bootstrap credentials)",
+                )
+            )
+            continue
+        # A declared provider key that the template never mentions is one a
+        # reader has no way to discover: `make env` writes them a .env that is
+        # silently incomplete, and the failure surfaces later as a broken train.
+        body = _read(example)
+        for secret in read_required_secrets(project):
+            if secret not in body:
+                findings.append(
+                    Finding(
+                        "env-example",
+                        _rel(example),
+                        None,
+                        f"does not mention {secret}, which this resource declares "
+                        f"in [tool.rasa-catalog] required-secrets",
+                    )
+                )
+    return findings
+
+
+# --- frozen snapshots ---------------------------------------------------------
+
+
+def check_snapshot_pins(snapshots: list[Project]) -> list[Finding]:
+    """A frozen resource is internally consistent and actually reproducible.
+
+    Nothing here compares a snapshot to RASA_PRO_VERSION — being exempt from
+    that is the whole point of freezing it. What is checked is that the three
+    places a project records its version agree with each other, and that a lock
+    exists. A frozen project without a lock is not frozen; it is just a project
+    with a date written on it, and `uv sync` will resolve it to something the
+    author never ran.
+    """
+    findings: list[Finding] = []
+    for project in snapshots:
+        pin = read_pyproject_pin(project)
+        if not pin:
+            findings.append(
+                Finding(
+                    "snapshot-pin",
+                    _rel(project.pyproject),
+                    None,
+                    "declares no rasa-pro==<version> pin; a frozen resource must "
+                    "state the exact version it was verified against",
+                )
+            )
+            continue
+
+        if not project.lockfile.is_file():
+            findings.append(
+                Finding(
+                    "snapshot-pin",
+                    _rel(project.path),
+                    None,
+                    f"missing uv.lock; pinning rasa-pro=={pin} without one does "
+                    f"not reproduce what was verified (run: uv lock"
+                    f"{' --prerelease=allow' if is_prerelease(pin) else ''})",
+                )
+            )
+        else:
+            locked = read_lock_version(project)
+            if locked != pin:
+                findings.append(
+                    Finding(
+                        "snapshot-pin",
+                        _rel(project.lockfile),
+                        None,
+                        f"resolved rasa-pro=={locked} but pyproject pins {pin}",
+                    )
+                )
+
+        verified = read_readme_verified(project)
+        if verified is None:
+            findings.append(
+                Finding(
+                    "snapshot-pin",
+                    _rel(project.path / "README.md"),
+                    None,
+                    "no 'Verified with: rasa-pro <version>' line; a frozen "
+                    "resource is only as good as the claim it carries",
+                )
+            )
+        elif verified != pin:
+            findings.append(
+                Finding(
+                    "snapshot-pin",
+                    _rel(project.path / "README.md"),
+                    None,
+                    f"claims it was verified with rasa-pro {verified} but pins "
+                    f"{pin}; one of the two is wrong",
+                )
+            )
+
+        setting = read_uv_prerelease_setting(project)
+        if is_prerelease(pin) and setting != "allow":
+            findings.append(
+                Finding(
+                    "snapshot-pin",
+                    _rel(project.pyproject),
+                    None,
+                    f'pin {pin} is a prerelease but [tool.uv] prerelease is '
+                    f"{setting!r}; resolution will fail on a clean clone",
+                )
+            )
+    return findings
+
+
+def _index_for(project: Project) -> Path:
+    """The README that is supposed to list `project`.
+
+    Community resources are indexed once, at the root of their tier. Wave
+    projects are indexed by their own cohort, because a wave charter is the
+    thing a reader arrives at — not a repo-wide list of every project ever.
+    """
+    parts = project.rel.split("/")
+    if parts[0] == HEROES_ROOT:
+        return REPO_ROOT / HEROES_ROOT / parts[1] / "README.md"
+    return REPO_ROOT / parts[0] / "README.md"
+
+
+def check_index_rows(projects: list[Project]) -> list[Finding]:
+    """Every contributed resource is reachable from its index.
+
+    An unlisted directory is invisible: nobody browsing the repository finds it,
+    and the author gets no credit for work they did. The typed category folders
+    keep their inventory by review convention, because a reader can at least
+    guess where to look. `community/` is flat and `heroes/` is keyed by cohort,
+    so there is nothing to guess from — enforced there.
+    """
+    findings: list[Finding] = []
+    for project in projects:
+        root = _rel(project.path).split("/", 1)[0]
+        if root not in (COMMUNITY_ROOT, HEROES_ROOT):
+            continue
+        index = _index_for(project)
+        if not index.is_file():
+            findings.append(
+                Finding(
+                    "index-rows",
+                    _rel(index),
+                    None,
+                    f"missing index README; {project.rel} has nowhere to be listed",
+                )
+            )
+            continue
+        if project.path.name not in _read(index):
+            findings.append(
+                Finding(
+                    "index-rows",
+                    _rel(index),
+                    None,
+                    f"does not mention {project.path.name!r}; add its catalog row "
+                    f"in the same pull request that adds the directory",
+                )
+            )
+    return findings
+
+
+def check_heroes_layout() -> list[Finding]:
+    """Rasa Heroes cohorts follow one shape, so a wave is never half-filed."""
+    findings: list[Finding] = []
+    programme = REPO_ROOT / HEROES_ROOT / "README.md"
+    waves = discover_waves()
+    if waves and not programme.is_file():
+        return [
+            Finding(
+                "heroes-layout",
+                f"{HEROES_ROOT}/README.md",
+                None,
+                "missing programme README; it is the index every wave links from",
+            )
+        ]
+
+    programme_text = _read(programme) if programme.is_file() else ""
+    for wave in waves:
+        rel = _rel(wave)
+        if not WAVE_SLUG_RE.match(wave.name):
+            findings.append(
+                Finding(
+                    "heroes-layout",
+                    rel,
+                    None,
+                    f"{wave.name!r} is not a wave slug; use wave-NN-<theme>, "
+                    f"zero-padded so directory order is cohort order "
+                    f"(e.g. wave-01-voice)",
+                )
+            )
+        if not (wave / "README.md").is_file():
+            findings.append(
+                Finding(
+                    "heroes-layout",
+                    f"{rel}/README.md",
+                    None,
+                    "missing wave charter (dates, theme, stewards, participants)",
+                )
+            )
+        elif wave.name not in programme_text:
+            findings.append(
+                Finding(
+                    "heroes-layout",
+                    f"{HEROES_ROOT}/README.md",
+                    None,
+                    f"does not list the {wave.name!r} wave",
+                )
+            )
+
+        # Projects belong under `projects/`. A pyproject anywhere else in the
+        # wave is invisible to discovery, so it would silently skip every check.
+        for pyproject in sorted(wave.rglob("pyproject.toml")):
+            parts = pyproject.relative_to(wave).parts
+            if parts[0] != WAVE_DIR or len(parts) != 3:
+                findings.append(
+                    Finding(
+                        "heroes-layout",
+                        _rel(pyproject),
+                        None,
+                        f"project is not at {rel}/{WAVE_DIR}/<project>/ and is "
+                        f"therefore skipped by every check",
+                    )
+                )
+    return findings
 
 
 # ------------------------------------------------------------------------------
 
+# Every check takes (catalog, snapshots, expected) so the registry states, for
+# each one, which tier it actually governs. `p` is the maintained catalog; `s`
+# is the frozen tier. Checks that read the tree directly ignore both.
 CHECKS = {
-    "version-consistency": lambda p, e: check_version_consistency(e),
-    "version-line": lambda p, e: check_version_line(e),
-    "lock-sync": check_lock_sync,
-    "prerelease-consistency": check_prerelease_consistency,
-    "lock-prereleases": lambda p, e: check_lock_prereleases(e),
-    "skill-prose": lambda p, e: check_skill_prose(),
-    "nested-if": lambda p, e: check_nested_if(),
-    "resource-metadata": lambda p, e: check_resource_metadata(p),
-    "secret-hygiene": lambda p, e: check_secret_hygiene(),
-    "workflow-pins": lambda p, e: check_workflow_pins(),
-    "agent-config-keys": lambda p, e: check_agent_config_keys(),
-    "env-example": lambda p, e: check_env_examples(p),
+    "version-consistency": lambda p, s, e: check_version_consistency(e),
+    "version-line": lambda p, s, e: check_version_line(e),
+    "lock-sync": lambda p, s, e: check_lock_sync(p, e),
+    "prerelease-consistency": lambda p, s, e: check_prerelease_consistency(p, e),
+    "lock-prereleases": lambda p, s, e: check_lock_prereleases(e),
+    "skill-prose": lambda p, s, e: check_skill_prose(),
+    "nested-if": lambda p, s, e: check_nested_if(),
+    # Both tiers: a frozen resource still has to say who verified it and when.
+    "resource-metadata": lambda p, s, e: check_resource_metadata(p + s),
+    "secret-hygiene": lambda p, s, e: check_secret_hygiene(),
+    "workflow-pins": lambda p, s, e: check_workflow_pins(),
+    "agent-config-keys": lambda p, s, e: check_agent_config_keys(),
+    "env-example": lambda p, s, e: check_env_examples(p + s),
+    "snapshot-pin": lambda p, s, e: check_snapshot_pins(s),
+    # Both tiers: `community/` is maintained, `heroes/` is frozen, and a
+    # resource in either is unreachable if its index does not list it.
+    "index-rows": lambda p, s, e: check_index_rows(p + s),
+    "heroes-layout": lambda p, s, e: check_heroes_layout(),
 }
 
 
@@ -649,10 +913,11 @@ def main() -> int:
 
     expected = read_expected_version(args.version)
     projects = discover_projects()
+    snapshots = discover_projects("snapshots")
 
     findings: list[Finding] = []
     for name in selected:
-        findings.extend(CHECKS[name](projects, expected))
+        findings.extend(CHECKS[name](projects, snapshots, expected))
 
     errors = [f for f in findings if f.severity == SEVERITY_ERROR]
     warnings = [f for f in findings if f.severity == SEVERITY_WARNING]
@@ -661,6 +926,7 @@ def main() -> int:
         print(json.dumps({
             "expected": expected,
             "projects": len(projects),
+            "snapshots": len(snapshots),
             "checks": selected,
             "errors": len(errors),
             "warnings": len(warnings),
@@ -668,7 +934,10 @@ def main() -> int:
         }, indent=2))
         return 1 if errors or (args.strict and warnings) else 0
 
-    print(f"Linting {len(projects)} project(s) against rasa-pro=={expected}")
+    print(f"Linting {len(projects)} catalog project(s) against rasa-pro=={expected}")
+    if snapshots:
+        print(f"{DIM}Plus {len(snapshots)} frozen snapshot(s), held to their own "
+              f"pins (see docs/SNAPSHOTS.md){RESET}")
     print(f"{DIM}Checks: {', '.join(selected)}{RESET}\n")
 
     if not findings:

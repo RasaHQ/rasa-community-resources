@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """List Rasa Pro projects and report pin drift against RASA_PRO_VERSION.
 
+Lists the maintained catalog by default. Frozen snapshots (`community/`,
+`heroes/`) are a separate tier held to their own pins, so they have to be asked
+for with `--scope`; see docs/SNAPSHOTS.md.
+
 Usage:
     python scripts/list_projects.py
     python scripts/list_projects.py --status
     python scripts/list_projects.py --paths-only
+    python scripts/list_projects.py --scope snapshots --paths-only
     python scripts/list_projects.py --check-latest
     python scripts/list_projects.py --json
 """
@@ -22,6 +27,7 @@ if str(_SCRIPTS) not in sys.path:
 
 from rasa_projects import (  # noqa: E402
     REQUIRED_ENGINE_MODULE,
+    SCOPES,
     IndexUnavailable,
     discover_projects,
     is_prerelease,
@@ -113,6 +119,12 @@ def main() -> int:
         action="store_true",
         help="With --check-latest, consider dev/rc releases too",
     )
+    parser.add_argument(
+        "--scope",
+        choices=sorted(SCOPES),
+        default="catalog",
+        help="Which tier to list: catalog (default), snapshots, or all",
+    )
     parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     parser.add_argument(
         "--uv-prerelease-args",
@@ -132,7 +144,18 @@ def main() -> int:
         print(" ".join(uv_prerelease_args(expected)))
         return 0
 
-    projects = discover_projects()
+    # Drift is measured against RASA_PRO_VERSION, and a frozen snapshot is
+    # exempt from that pin by design — reporting it as drifted would be a
+    # category error, and reporting it as clean would be a lie. So refuse the
+    # combination rather than pick one. `make lint` (snapshot-pin) is what
+    # holds the frozen tier to its own pins.
+    if args.status and args.scope != "catalog":
+        parser.error(
+            "--status applies to the maintained catalog only; frozen snapshots "
+            "are checked by `make lint` (snapshot-pin). See docs/SNAPSHOTS.md."
+        )
+
+    projects = discover_projects(args.scope)
 
     if args.paths_only:
         for project in projects:
@@ -147,6 +170,7 @@ def main() -> int:
             json.dumps(
                 {
                     "expected": expected,
+                    "scope": args.scope,
                     "prerelease": is_prerelease(expected),
                     "projects": [
                         {
@@ -170,11 +194,16 @@ def main() -> int:
 
     kind = "prerelease" if is_prerelease(expected) else "stable"
     print(f"Expected rasa-pro: {expected} ({kind})")
-    print(f"Projects: {len(projects)}")
+    print(f"Projects: {len(projects)}  {DIM}(scope: {args.scope}){RESET}")
     print()
 
     for drift in drifts:
-        if drift.ok:
+        if drift.project.snapshot:
+            print(
+                f"{DIM}[frozen]{RESET} {drift.project.rel}  "
+                f"{DIM}pinned at {drift.pyproject} by its author{RESET}"
+            )
+        elif drift.ok:
             detail = f"pyproject={drift.pyproject} lock={drift.lock}"
             if drift.readme is not None:
                 detail += f" readme={drift.readme}"

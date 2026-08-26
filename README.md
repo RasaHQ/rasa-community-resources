@@ -54,6 +54,12 @@ Full catalogs (including empty areas accepting contributions) live in each categ
 
 ## Repository map
 
+The repository holds two kinds of material under two different promises.
+
+**Maintained catalog** — one shared Rasa Pro pin, migrated together, expected to
+stay green for as long as it is checked in. Contributed work lives here too:
+an example pinned to a release the catalog has moved off is one nobody clones.
+
 | Path | What it holds | Catalog |
 |---|---|---|
 | [`tutorials/`](tutorials/) | Step-by-step walkthroughs with runnable code | [tutorials/README.md](tutorials/README.md) |
@@ -61,6 +67,17 @@ Full catalogs (including empty areas accepting contributions) live in each categ
 | [`patterns/`](patterns/) | Small reference implementations of recurring problems | [patterns/README.md](patterns/README.md) — accepting contributions |
 | [`workshops/`](workshops/) | Slides, exercises, and solutions from sessions | [workshops/README.md](workshops/README.md) — accepting contributions |
 | [`snippets/`](snippets/) | Short pieces too small to be a pattern | [snippets/README.md](snippets/README.md) — accepting contributions |
+| [`community/`](community/) | Resources written by practitioners, credited to their authors | [community/README.md](community/README.md) — accepting contributions |
+
+**Frozen snapshots** — dated cohort records, pinned to the version their authors
+verified and not migrated forward. Still required to be reproducible: a real
+`uv.lock`, a name, and a date.
+
+| Path | What it holds | Index |
+|---|---|---|
+| [`heroes/`](heroes/) | Rasa Heroes cohort projects, one directory per wave | [heroes/README.md](heroes/README.md) — accepting waves |
+
+Why the split, and what each tier guarantees: [`docs/SNAPSHOTS.md`](docs/SNAPSHOTS.md).
 
 As the repository grows, **category READMEs are the live inventory**. This root page stays a map and a starting point — not a list of every subdirectory.
 
@@ -110,18 +127,22 @@ make ci              # + install every resource and run validate_project
 make validate-full   # + rasa train everywhere (needs RASA_LICENSE)
 ```
 
-`make validate` unit-tests the tooling, then lints the whole catalog: version and
-lockfile consistency, skill authoring rules, resource metadata, and committed
-secrets. The same target runs in CI on every pull request and weekly. What each
-check enforces — and how to fix a failure — is in
+`make validate` unit-tests the tooling, then lints both tiers: version and
+lockfile consistency, skill authoring rules, resource metadata, committed
+secrets, and — for frozen snapshots — that each one's pin, lock, and
+`Verified with:` line agree. The same target runs in CI on every pull request
+and weekly. What each check enforces — and how to fix a failure — is in
 [`docs/VALIDATION.md`](docs/VALIDATION.md).
 
 ---
 
 ## Keeping resources on the latest Rasa Pro
 
-Every runnable resource pins the same Rasa Pro version, recorded in
-[`RASA_PRO_VERSION`](RASA_PRO_VERSION). From the repository root:
+Every resource in the **maintained catalog** — including everything under
+`community/` — pins the same Rasa Pro version, recorded in
+[`RASA_PRO_VERSION`](RASA_PRO_VERSION). Only frozen wave projects under
+`heroes/` are left out, and [`docs/SNAPSHOTS.md`](docs/SNAPSHOTS.md) explains
+why. From the repository root:
 
 ```bash
 make status        # detect pin / lock / README drift
@@ -136,6 +157,10 @@ Override the target with `make migrate VERSION=3.19.0.dev7`, preview it first wi
 `make latest`. Full maintainer and local-user notes:
 [`docs/MIGRATING.md`](docs/MIGRATING.md).
 
+Frozen material has its own two commands — `make snapshots` to see what is
+frozen and at which pin, `make check-snapshots` to install each one against the
+pin it carries.
+
 ---
 
 ## Contributing
@@ -148,6 +173,13 @@ The three things that matter most:
 2. **It has to run** — with versions and an assessment date in the README
 3. **Write for peers** — including what breaks
 
+If your resource is not the canonical answer to its problem — a provider swap, a
+deployment shape, a specific integration — contribute it to
+[`community/`](community/). It is maintained on the catalog pin like everything
+else, so it does not go stale; migration is the maintainers' job, and whoever
+bumps it re-runs it and puts their own name on `Assessed by`. `Author` stays
+yours permanently.
+
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for folder choice, the resource template, and the PR checklist. Review ownership and response times are in [MAINTAINERS.md](MAINTAINERS.md). Everyone participates under the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
@@ -156,6 +188,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) for folder choice, the resource template
 
 - **[Rasa University](https://rasa.com/university/)** — structured courses and Developer Certification
 - **[rasa.community](https://rasa.community/)** — community hub, heroes programme, and educational library
+- **[`heroes/`](heroes/)** — what each Rasa Heroes cohort actually built, wave by wave
 - **[rasa.com/docs](https://rasa.com/docs/)** — product documentation
 
 ---
