@@ -8,9 +8,9 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 
 ## Start here
 
-**New to Rasa Skills / Maestro voice agents.** Request a free [Developer Edition licence key](https://rasa.com/rasa-pro-developer-edition-license-key-request/), then clone and run the flagship Atlas travel agent:
+**New to Rasa Skills / Mantle voice agents.** Request a free [Developer Edition licence key](https://rasa.com/rasa-pro-developer-edition-license-key-request/), then clone and run the flagship Atlas travel agent:
 
-1. [`examples/maestro-voice-agent`](examples/maestro-voice-agent) — finished agent you can run with `make install` → `make inspect`
+1. [`examples/mantle-voice-agent`](examples/mantle-voice-agent) — finished agent you can run with `make install` → `make inspect`
 2. Hosted walkthrough: [Build a Voice AI Agent with Rasa Skills](https://rasa.community/library/tutorials/voice-ai-agent/)
 
 **Building something specific.** Browse [Featured resources](#featured-resources) or open the category catalog that matches your goal ([examples](examples/README.md), [tutorials](tutorials/README.md), [patterns](patterns/README.md)).
@@ -40,12 +40,12 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 
 | Resource | Persona | Domain | Path |
 |---|---|---|---|
-| Atlas voice travel agent | Atlas | Horizon Travel | [`examples/maestro-voice-agent`](examples/maestro-voice-agent) |
-| Rasano voice banking | Rasano | Retail banking | [`examples/maestro-voice-banking-skills`](examples/maestro-voice-banking-skills) |
-| Telano voice telecom care | Telano | Telecom | [`examples/maestro-voice-telco-skills`](examples/maestro-voice-telco-skills) |
-| Poly voice insurance | Poly | Insurance | [`examples/maestro-voice-insurance-skills`](examples/maestro-voice-insurance-skills) |
-| Schedora voice appointments | Schedora | Clinic booking | [`examples/maestro-voice-appointment-skills`](examples/maestro-voice-appointment-skills) |
-| Autono voice car purchase | Autono | Auto retail | [`examples/maestro-voice-car-purchase-skills`](examples/maestro-voice-car-purchase-skills) |
+| Atlas voice travel agent | Atlas | Horizon Travel | [`examples/mantle-voice-agent`](examples/mantle-voice-agent) |
+| Rasano voice banking | Rasano | Retail banking | [`examples/mantle-voice-banking-skills`](examples/mantle-voice-banking-skills) |
+| Telano voice telecom care | Telano | Telecom | [`examples/mantle-voice-telco-skills`](examples/mantle-voice-telco-skills) |
+| Poly voice insurance | Poly | Insurance | [`examples/mantle-voice-insurance-skills`](examples/mantle-voice-insurance-skills) |
+| Schedora voice appointments | Schedora | Clinic booking | [`examples/mantle-voice-appointment-skills`](examples/mantle-voice-appointment-skills) |
+| Autono voice car purchase | Autono | Auto retail | [`examples/mantle-voice-car-purchase-skills`](examples/mantle-voice-car-purchase-skills) |
 | Atlas voice tutorial tree | Atlas | Horizon Travel | [`tutorials/rasa-voice-agent-tutorial`](tutorials/rasa-voice-agent-tutorial) |
 
 Full catalogs (including empty areas accepting contributions) live in each category README below.

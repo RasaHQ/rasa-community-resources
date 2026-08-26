@@ -4,7 +4,7 @@
     Assessed on:   2026-08-26
     Assessed by:   Rod Rivera
     Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
-    Audience:      Practitioners building Maestro agents who want every conversation personalized
+    Audience:      Practitioners building Mantle agents who want every conversation personalized
     Time:          15–20 minutes
 
 Personalize **every** conversation — greet the customer by name and reuse their

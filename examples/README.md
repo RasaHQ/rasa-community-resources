@@ -26,14 +26,14 @@ Complete, clone-and-run Rasa agents. Prefer an example when you want a finished 
 Prefer:
 
 ```text
-maestro-voice-<domain>-skills
+mantle-voice-<domain>-skills
 ```
 
-Examples: `maestro-voice-banking-skills`, `maestro-voice-telco-skills`.
+Examples: `mantle-voice-banking-skills`, `mantle-voice-telco-skills`.
 
-The flagship travel agent uses `maestro-voice-agent` for historical continuity with the hosted community tutorial. New examples should follow the domain-skills pattern unless there is a strong reason not to.
+The flagship travel agent is `mantle-voice-agent`, without a domain suffix. New examples should follow the domain-skills pattern unless there is a strong reason not to.
 
-Each example is one directory with its own `README.md`, `pyproject.toml`, and (for Maestro voice agents) the usual Skills layout documented in that project’s `AGENTS.md`.
+Each example is one directory with its own `README.md`, `pyproject.toml`, and (for Mantle voice agents) the usual Skills layout documented in that project’s `AGENTS.md`.
 
 ---
 
@@ -41,12 +41,12 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 
 | Name | Persona | Domain | Path | Assessed on |
 |---|---|---|---|---|
-| Atlas voice travel | Atlas | Horizon Travel | [`maestro-voice-agent`](maestro-voice-agent) | 2026-08-13 |
-| Rasano voice banking | Rasano | Retail banking | [`maestro-voice-banking-skills`](maestro-voice-banking-skills) | 2026-08-13 |
-| Telano voice telecom | Telano | Telecom care | [`maestro-voice-telco-skills`](maestro-voice-telco-skills) | 2026-08-13 |
-| Poly voice insurance | Poly | Insurance | [`maestro-voice-insurance-skills`](maestro-voice-insurance-skills) | 2026-08-13 |
-| Schedora voice appointments | Schedora | Clinic booking | [`maestro-voice-appointment-skills`](maestro-voice-appointment-skills) | 2026-08-13 |
-| Autono voice car purchase | Autono | Auto retail | [`maestro-voice-car-purchase-skills`](maestro-voice-car-purchase-skills) | 2026-08-13 |
+| Atlas voice travel | Atlas | Horizon Travel | [`mantle-voice-agent`](mantle-voice-agent) | 2026-08-13 |
+| Rasano voice banking | Rasano | Retail banking | [`mantle-voice-banking-skills`](mantle-voice-banking-skills) | 2026-08-13 |
+| Telano voice telecom | Telano | Telecom care | [`mantle-voice-telco-skills`](mantle-voice-telco-skills) | 2026-08-13 |
+| Poly voice insurance | Poly | Insurance | [`mantle-voice-insurance-skills`](mantle-voice-insurance-skills) | 2026-08-13 |
+| Schedora voice appointments | Schedora | Clinic booking | [`mantle-voice-appointment-skills`](mantle-voice-appointment-skills) | 2026-08-13 |
+| Autono voice car purchase | Autono | Auto retail | [`mantle-voice-car-purchase-skills`](mantle-voice-car-purchase-skills) | 2026-08-13 |
 
 When you add an example, append a row here in the same PR.
 

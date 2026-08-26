@@ -64,7 +64,7 @@ Every check below exists because the failure it describes actually happened here
 | Check | Tier | Enforces | Typical fix |
 |---|---|---|---|
 | `version-consistency` | catalog | Every `rasa-pro==…` / `Verified with:` string in committed prose matches `RASA_PRO_VERSION` | `make migrate` |
-| `version-line` | catalog | The pin stays on the release line that carries the Maestro engine | Pin from `RASA_PRO_VERSION_LINE`; see [MIGRATING](MIGRATING.md) |
+| `version-line` | catalog | The pin stays on the release line that carries the Mantle engine | Pin from `RASA_PRO_VERSION_LINE`; see [MIGRATING](MIGRATING.md) |
 | `lock-sync` | catalog | Each `pyproject.toml` pin and `uv.lock` resolve to the pinned version | `make migrate` |
 | `prerelease-consistency` | catalog | `[tool.uv] prerelease` and every documented `uv sync` command match whether the pin is a prerelease | `make migrate` |
 | `lock-prereleases` | catalog | A **stable** pin carries no leftover prerelease dependencies (warning) | `python scripts/migrate_rasa_pro.py --upgrade` |
@@ -230,7 +230,7 @@ For every project in the maintained catalog, `scripts/check_project.py`:
 1. `uv sync` with the prerelease flag implied by the pin
 2. asserts the installed `rasa-pro` equals `RASA_PRO_VERSION`
 3. asserts `rasa.calm_v2` is importable — the guard that catches pinning a
-   release without the Maestro engine
+   release without the Mantle engine
 4. runs `validate_project`
 
 `make ci` then runs `make check-snapshots`, which does the same four steps for
@@ -274,7 +274,7 @@ push, pull request, and weekly.
 The weekly run matters, and `upstream` is the job that earns it. Everything
 else resolves against the committed `uv.lock`, so a new rasa-pro release is
 invisible to them — the pinned version installs exactly as it did last week.
-`upstream` reports the newest release *overall*, inspects it for the Maestro
+`upstream` reports the newest release *overall*, inspects it for the Mantle
 engine module, and writes the verdict to the run summary, which is how a
 release line stops being permanent by accident. It never fails the build: a new
 upstream release is news, not a broken repository.

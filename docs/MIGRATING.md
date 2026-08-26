@@ -8,7 +8,7 @@ keeps those files and the README metadata in sync.
 ## Which release line to target
 
 > **Do not bump this catalog to the newest stable `rasa-pro` just because it is
-> newest.** Every resource here is built on the Maestro / Skills engine, which
+> newest.** Every resource here is built on the Mantle / Skills engine, which
 > is imported as `rasa.calm_v2`:
 >
 > ```python
@@ -25,7 +25,7 @@ keeps those files and the README metadata in sync.
 >
 > [`RASA_PRO_VERSION_LINE`](../RASA_PRO_VERSION_LINE) encodes this: it holds the
 > prefix `3.19.0.dev`, and `make latest` / `make outdated` only consider releases
-> on that line. Delete or widen that file once Maestro reaches the stable line.
+> on that line. Delete or widen that file once Mantle reaches the stable line.
 > To search the whole index anyway:
 >
 > ```bash

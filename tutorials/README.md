@@ -31,7 +31,7 @@ rasa-<topic>-tutorial
 
 Example: `rasa-voice-agent-tutorial`.
 
-If a tutorial is the companion to an example in `examples/`, say so in both READMEs so readers know which tree to start from. For Atlas travel, the recommended start is [`examples/maestro-voice-agent`](../examples/maestro-voice-agent) plus the [hosted voice tutorial](https://rasa.community/library/tutorials/voice-ai-agent/); the tree below remains available as a tutorial-oriented checkout.
+If a tutorial is the companion to an example in `examples/`, say so in both READMEs so readers know which tree to start from. For Atlas travel, the recommended start is [`examples/mantle-voice-agent`](../examples/mantle-voice-agent) plus the [hosted voice tutorial](https://rasa.community/library/tutorials/voice-ai-agent/); the tree below remains available as a tutorial-oriented checkout.
 
 ---
 

@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-08-25
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
-Audience:      Practitioners following the hosted voice agent tutorial
+Audience:      Practitioners building voice agents with Rasa Skills
 Time:          60–90 minutes
 ```
 
@@ -146,18 +146,25 @@ ordered collection, confirmation, and verbatim success text.
 | Path | Purpose |
 | --- | --- |
 | `agent.yml` | Identity, persona (Atlas), voice flags, rules |
-| `integrations.yml` | OpenAI LLM + Inspector Deepgram ASR/TTS |
+| `integrations.yml` | OpenAI `gpt-5.2` + Inspector Deepgram ASR/TTS |
+| `endpoints.yml` | Response rephraser and optional platform services |
 | `memory.yml` | Project-wide session memory |
 | `responses.yml` | Project-wide verbatim responses |
-| `skills/` | One folder per skill |
-| `tools/travel.py` | Shared `@tool` functions |
+| `skills/` | One folder per skill (`skill.md`, optional local `tools.py`) |
+| `tools/travel.py` | Shared tools only (`load_customer_profile`, `list_bookings`) |
 | `lib/database.py` | SQLite demo backend |
 | `data/source/` | JSON seed data for Maya’s trips |
 | `scripts/verify_setup.py` | Pre-flight diagnostics |
 | `tutorial/snippets/` | Paste-ready chapter checkpoints |
 
+Pin: `rasa-pro==3.19.0.dev7`. New empty projects: `rasa init --engine mantle`.
+
 This is a **Skills / Mantle** project. Do **not** add CALM v1 files
 (`config.yml`, `domain.yml`, flow YAMLs under `data/`).
+
+**Tool placement:** skill-owned tools live in `skills/<name>/tools.py` and are
+auto-discovered. Only helpers used by multiple skills belong under `tools/`
+and must be listed in `import_tools`.
 
 ---
 

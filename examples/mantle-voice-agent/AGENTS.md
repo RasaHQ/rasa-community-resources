@@ -3,6 +3,9 @@
 This directory is a **Rasa Skills / Mantle** agent that teaches building a
 **voice** travel assistant with **Deepgram** ASR + TTS.
 
+Pin: `rasa-pro==3.19.0.dev7`. LLM: `gpt-5.2`. Scaffold command for new
+projects: `rasa init --engine mantle` (not `--template voice`).
+
 ## Layout
 
 - `agent.yml` — identity, persona (Atlas), voice flags, rules
@@ -10,13 +13,27 @@ This directory is a **Rasa Skills / Mantle** agent that teaches building a
 - `endpoints.yml` — optional platform services (response rephraser, tracing)
 - `memory.yml` — project-wide memory
 - `responses.yml` — project-wide verbatim responses
-- `skills/<name>/` — one skill per folder (`skill.md`, optional `tools/`,
+- `skills/<name>/` — one skill per folder (`skill.md`, optional `tools.py`,
   `memory.yml`, `responses.yml`, `references/`)
-- `tools/` — shared `@tool` functions (imported via `import_tools`)
+- `tools/` — **shared** `@tool` functions only (`import_tools` required)
 - `lib/` — shared Python helpers (SQLite demo travel DB)
 - `data/source/` — JSON seed data for the demo traveler
-- `scripts/` — `verify_setup.py` and `show_demo_data.py`
+- `scripts/` — `verify_setup.py`, `validate_project.py`, `show_demo_data.py`
 - `tutorial/` — paste-ready snippets for the hosted community tutorial
+
+## Tool placement
+
+- Default: put tools in `skills/<name>/tools.py` (auto-discovered; no
+  `import_tools` entry).
+- Shared (`tools/` at the agent root) only when **two or more skills** need
+  the same function. This project shares `load_customer_profile` and
+  `list_bookings`; everything else is skill-local.
+- Imports:
+
+```python
+from rasa.calm_v2.tools.decorator import ToolContext, tool
+from rasa.calm_v2.tools.result import ToolResult
+```
 
 ## Build loop
 
@@ -32,9 +49,7 @@ make inspect
 ## Ground rules
 
 - Skills live under `skills/<name>/` as `skill.md` files with optional
-  `tools/`, `references/`, `memory.yml`, and `responses.yml`
-- Tools use `from rasa_sdk import tool, ToolContext, ToolResult` (with a
-  calm_v2 fallback import in this repo for older builds)
+  `tools.py`, `references/`, `memory.yml`, and `responses.yml`
 - Progressive control levers: `tool_constraints`, `requires`,
   `requires_confirmation`, `if:` markers, `utter:`, `:::ordered_block`,
   `@skill.<name>`
