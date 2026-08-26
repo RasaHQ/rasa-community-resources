@@ -1,0 +1,41 @@
+# External integrations for the Vela voice banking agent, Speechmatics build.
+#
+# The point of this resource is the LISTENING half, and specifically what to do
+# when your provider is not one Rasa ships. Rasa has built-in ASR engines for
+# Deepgram and Azure; Speechmatics is neither, so `asr.name` is a dotted path
+# to a class in this project instead of a built-in name.
+#
+# Rasa resolves an unrecognised name with `class_from_module_path` and calls
+# `from_config_dict` on it. That is a documented extension point, marked beta
+# on load. See engines/speechmatics.py.
+#
+# The speaking half is deliberately a built-in (Deepgram Aura), so this resource
+# has exactly one moving part. For the Rime TTS case see the companion resource,
+# ../mantle-voice-rime-skills.
+
+llm:
+  provider: openai
+  model: gpt-5.2
+  api_key_env: OPENAI_API_KEY
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    asr:
+      name: engines.speechmatics.SpeechmaticsASR
+      language_map:
+        en:
+          language: en
+      # Tuning that matters for a banking line:
+      #   enhanced  — a misheard account number costs more than a few tens of ms
+      #   max_delay — seconds Speechmatics may buffer before finalising a turn
+      operating_point: enhanced
+      max_delay: 1.0
+      enable_partials: true
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en
