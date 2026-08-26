@@ -2,9 +2,9 @@
 
 ```text
 Author:        Rod Rivera
-Assessed on:   2026-08-25
+Assessed on:   2026-08-26
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
 Audience:      Practitioners following the hosted voice agent tutorial
 Time:          60–90 minutes
 ```

@@ -91,7 +91,7 @@ Every resource directory opens its `README.md` with a block like this:
 Author:        Rod Rivera
 Assessed on:   2026-08-13
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
 Audience:      Practitioners building voice agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -152,8 +152,8 @@ make check-all     # sync + assert version + validate_project
 make test-all      # also rasa train when RASA_LICENSE is available
 ```
 
-Override the target with `make migrate VERSION=3.19.0.dev7`, preview it first with
-`make migrate-dry VERSION=3.19.0.dev7`, or jump to the newest stable release with
+Override the target with `make migrate VERSION=3.20.0.dev1`, preview it first with
+`make migrate-dry VERSION=3.20.0.dev1`, or jump to the newest stable release with
 `make latest`. Full maintainer and local-user notes:
 [`docs/MIGRATING.md`](docs/MIGRATING.md).
 

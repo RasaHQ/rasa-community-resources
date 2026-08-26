@@ -298,7 +298,7 @@ def check_dependencies(report: Report) -> None:
     section("Python dependencies")
     for module, label in (
         ("rasa", "rasa-pro"),
-        ("rasa.calm_v2", "rasa.calm_v2  (Skills engine)"),
+        ("rasa.mantle", "rasa.mantle  (Skills engine)"),
         ("dotenv", "python-dotenv"),
         ("aiohttp", "aiohttp"),
         ("websockets", "websockets  (Deepgram streaming)"),
@@ -489,9 +489,9 @@ def check_agent_structure(report: Report) -> None:
 def check_project_validation(report: Report) -> None:
     section("Project validation")
     try:
-        from rasa.calm_v2.validation import validate_project
+        from rasa.mantle.validation import validate_project
     except ImportError:
-        report.error("Cannot import rasa.calm_v2.validation", "make install")
+        report.error("Cannot import rasa.mantle.validation", "make install")
         return
 
     # Rasa logs a wall of structlog output during validation; the diagnostic is

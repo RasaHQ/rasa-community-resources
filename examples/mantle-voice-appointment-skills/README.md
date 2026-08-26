@@ -2,9 +2,9 @@
 
 ```text
 Author:        Rod Rivera
-Assessed on:   2026-08-25
+Assessed on:   2026-08-26
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
 Audience:      Practitioners building voice appointment agents with Rasa Skills
 Time:          60–75 minutes
 ```
@@ -604,12 +604,12 @@ make train
 This repository currently targets:
 
 ```text
-rasa-pro==3.19.0.dev7
+rasa-pro==3.20.0.dev1
 ```
 
 on `gpt-5.2`, configured in `integrations.yml` and `endpoints.yml`.
 
-This is a **pre-release** version — the Mantle / Skills engine (`rasa.calm_v2`)
+This is a **pre-release** version — the Mantle / Skills engine (`rasa.mantle`)
 ships only on the `3.19.0.devN` line — so installation uses:
 
 ```bash
@@ -618,7 +618,7 @@ uv sync --prerelease=allow
 
 A few implementation details are specific to the Mantle architecture used by this release:
 
-* tools import from `rasa.calm_v2.tools`
+* tools import from `rasa.mantle.tools`
 * tools use Rasa's `@tool` interface rather than classic `rasa_sdk` Action classes
 * tools are auto-discovered from `skills/<name>/tools.py` and, when shared, declared with `import_tools` from `tools/`
 * skills call tools in prose; `@skill.` and `@block.` are the only reference forms

@@ -1,19 +1,15 @@
 # Release line that `make latest` / `--latest` must stay within.
 #
-# Every resource in this catalog imports the Mantle / Skills engine as
-# `rasa.calm_v2`, which ships ONLY on the 3.19.0.devN pre-release line.
+# Every resource in this catalog imports the Mantle engine. Rasa renamed that
+# package from `rasa.calm_v2` to `rasa.mantle` in 3.20.0.dev1, and the old path
+# is gone rather than aliased — so the import name and the pin move together.
 #
-# Verified against PyPI on 2026-08-25 by inspecting the published wheels:
-#   3.19.0.dev7  contains rasa/calm_v2/   (2180 files)
-#   3.19.1       does NOT                 (1932 files)
-#   3.19.0       does NOT
-# `calm_v2` is the only package that differs between the two; stable adds no
-# renamed replacement, exposes no `calm` extra, and no separate rasa-calm
-# distribution exists. So "newest on PyPI" (3.19.1) is a release that cannot
-# import a single resource here.
+# Verified against PyPI on 2026-08-26 by inspecting the published wheels:
+#   3.20.0.dev1  ships rasa/mantle/       <- current line
+#   3.19.0.dev7  ships rasa/calm_v2/      <- previous line
+#   3.19.1       ships NEITHER            <- stable still has no engine
 #
-# This is no longer enforced by comment alone: `make outdated` probes the
-# newest release for the module and `make migrate VERSION=...` refuses a target
-# that lacks it. When Mantle reaches the stable line, `make outdated` will say
-# so — at that point delete this file and run `make migrate VERSION=<stable>`.
-3.19.0.dev
+# The line exists because the newest *stable* release still does not carry the
+# engine at all. Delete this file once a stable release ships `rasa.mantle`;
+# `make outdated` will tell you when that happens.
+3.20.0.dev

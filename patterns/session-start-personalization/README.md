@@ -3,7 +3,7 @@
     Author:        Daksh Varshneya
     Assessed on:   2026-08-26
     Assessed by:   Rod Rivera
-    Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
+    Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
     Audience:      Practitioners building Mantle agents who want every conversation personalized
     Time:          15–20 minutes
 
@@ -16,6 +16,12 @@ The mechanism is small and channel-agnostic. This directory is a minimal,
 runnable agent that does nothing *but* demonstrate it: a session-start profile
 lookup, a personalized greeting, and one downstream skill (`view_transactions`)
 that reuses the identity without any lookup of its own.
+
+## Guided walkthrough
+
+Rebuilding this from scratch, one change at a time, is in
+[`tutorial/TUTORIAL.md`](tutorial/TUTORIAL.md) — including why each control lever
+is there and how to upgrade the imports for 3.20.
 
 ## How it works
 
@@ -98,11 +104,14 @@ Names only; never commit values. See `.env.example`.
 ## Notes on this contribution
 
 Contributed by [Daksh Varshneya](https://github.com/dakshvar22) against the
-previous catalog pin, `3.19.0.dev5`. Brought onto the current pin during review:
-the tool imports moved from `rasa.mantle.tools.*` to `rasa.calm_v2.tools.*`,
-which is the module the engine actually ships — the Mantle documentation uses
-the other name, and it does not resolve. Re-verified at dev7 (install,
-`validate_project`, `rasa train`) by the maintainer named above.
+previous catalog pin, `3.19.0.dev5`, with imports written as `rasa.mantle.*` to
+match the documentation. Review moved them to `rasa.calm_v2.*`, because that was
+the only package the engine shipped at the time.
+
+As of `3.20.0.dev1` the rename has landed and the imports are `rasa.mantle.*`
+again — the original was right, the package had not caught up yet. Re-verified
+on the current pin (install, `validate_project`, `rasa train`, and a live
+conversation).
 
 ## Licence
 

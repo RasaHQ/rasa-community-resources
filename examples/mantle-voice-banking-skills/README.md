@@ -2,9 +2,9 @@
 
 ```text
 Author:        Rod Rivera
-Assessed on:   2026-08-25
+Assessed on:   2026-08-26
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
 Audience:      Practitioners building voice banking agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -114,14 +114,14 @@ Run `make` with no arguments for the full grouped help screen.
 | `make clean` | Remove models / caches / local db |
 | `make clean-all` | Also remove `.venv` (full reset) |
 
-## Notes for Rasa 3.19.0.dev7
+## Notes for Rasa 3.20.0.dev1
 
-- Package: `rasa-pro==3.19.0.dev7` (pre-release; `uv` prereleases enabled)
+- Package: `rasa-pro==3.20.0.dev1` (pre-release; `uv` prereleases enabled)
 - Scaffold a fresh Mantle project with `rasa init --engine mantle`
   (there is no `--template voice`)
 - LLM is `gpt-5.2`; do not set `temperature` (GPT-5 reasoning models only
   accept the default)
-- Tools import from `rasa.calm_v2.tools` (not classic `rasa_sdk` Action classes)
+- Tools import from `rasa.mantle.tools` (not classic `rasa_sdk` Action classes)
 - **Local-first tools:** a single-skill tool lives in `skills/<name>/tools.py`
   and is auto-discovered; only tools shared by 2+ skills go in `tools/*.py` and
   are pulled in with `import_tools`

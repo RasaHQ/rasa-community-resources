@@ -7,8 +7,8 @@ import re
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from rasa.calm_v2.tools.decorator import ToolContext, tool
-from rasa.calm_v2.tools.result import ToolResult
+from rasa.mantle.tools.decorator import ToolContext, tool
+from rasa.mantle.tools.result import ToolResult
 
 from lib import cars as inventory
 from lib.database import Database, get_user_id, resolve_username

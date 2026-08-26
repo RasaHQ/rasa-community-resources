@@ -146,7 +146,7 @@ scaffolds, and zero applied. It was found independently by
 `agent-config-keys` exists so the next person does not have to find it again.
 
 A companion unit test compares the check's key list against the installed
-`rasa.calm_v2` source, so if a future release moves a key the test fails and
+`rasa.mantle` source, so if a future release moves a key the test fails and
 names the list to update — rather than the check silently enforcing an old
 schema.
 
@@ -229,7 +229,7 @@ For every project in the maintained catalog, `scripts/check_project.py`:
 
 1. `uv sync` with the prerelease flag implied by the pin
 2. asserts the installed `rasa-pro` equals `RASA_PRO_VERSION`
-3. asserts `rasa.calm_v2` is importable — the guard that catches pinning a
+3. asserts `rasa.mantle` is importable — the guard that catches pinning a
    release without the Mantle engine
 4. runs `validate_project`
 

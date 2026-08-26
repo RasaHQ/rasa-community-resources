@@ -6,8 +6,8 @@ from datetime import datetime
 
 from lib.database import Database, get_user_id, username_from_context
 from lib.tool_helpers import set_memory
-from rasa.calm_v2.tools.decorator import ToolContext, tool
-from rasa.calm_v2.tools.result import ToolResult
+from rasa.mantle.tools.decorator import ToolContext, tool
+from rasa.mantle.tools.result import ToolResult
 
 
 @tool(description="Create a handoff ticket so a member of the clinic team can call back.")

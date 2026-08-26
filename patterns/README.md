@@ -2,7 +2,11 @@
 
 Small, focused reference implementations of problems that recur when building and operating Rasa agents — tool design, evaluation harnesses, deployment shapes, observability, human handover, and similar.
 
-This folder is **accepting contributions**. There are no patterns checked in yet.
+This folder is **accepting contributions**.
+
+| Pattern | Problem it solves |
+|---|---|
+| [`session-start-personalization`](session-start-personalization/) | The default greeting is anonymous. Load what you know about the customer before the first word, then spend it later in the conversation. [Guided walkthrough](session-start-personalization/tutorial/TUTORIAL.md). |
 
 ---
 

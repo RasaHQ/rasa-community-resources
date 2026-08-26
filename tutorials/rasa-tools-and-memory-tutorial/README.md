@@ -4,7 +4,7 @@
 Author:        Rod Rivera
 Assessed on:   2026-08-26
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
 Audience:      Practitioners deciding where a tool or a memory field belongs
 Time:          30–45 minutes
 ```
@@ -161,7 +161,7 @@ One customer, so the walkthrough is predictable:
 
 ## A note on the import path
 
-Tools here import from `rasa.calm_v2`. The Mantle documentation shows
+Tools here import from `rasa.mantle`. The Mantle documentation shows
 `rasa.mantle`, which is the module name after an upcoming rename — it does not
 exist in any release published so far, including 3.19.0.dev7 and 3.19.1. When a
 release ships `rasa.mantle`, change the import line and nothing else.
