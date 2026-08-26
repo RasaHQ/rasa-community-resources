@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import re
 import subprocess
 import sys
 import tomllib
@@ -527,6 +528,123 @@ class TestAssessedOnDate(unittest.TestCase):
         found = self._findings("2026-13-45")
         self.assertEqual(len(found), 1)
         self.assertIn("not a valid date", found[0].message)
+
+
+class TestAgentConfigKeys(unittest.TestCase):
+    """Prompt-tuning keys belong beside `agent:`, never inside it.
+
+    The regression this locks in: every agent.yml in the catalog nested
+    `rules:` under `agent:`. 39 rules were declared and the engine applied
+    none — `AgentSpec` is `extra="ignore"` and `_agent_spec_payload` reads
+    those keys from the root mapping, so the misplacement is silent at parse,
+    train, and load time. Reported independently by Samrudha Kelkar and
+    Daksh Varshneya.
+    """
+
+    def _findings(self, body: str):
+        with mock.patch.object(lint_repo, "_tracked_files", return_value=[Path("agent.yml")]), \
+             mock.patch.object(lint_repo, "_read", return_value=body):
+            return lint_repo.check_agent_config_keys()
+
+    NESTED = (
+        "agent:\n"
+        "  id: demo\n"
+        "  persona: |\n"
+        "    Be helpful.\n"
+        "  rules:\n"
+        '    - "Be polite."\n'
+    )
+    HOISTED = (
+        "agent:\n"
+        "  id: demo\n"
+        "  persona: |\n"
+        "    Be helpful.\n"
+        "\n"
+        "rules:\n"
+        '  - "Be polite."\n'
+    )
+
+    def test_nested_rules_are_caught(self):
+        found = self._findings(self.NESTED)
+        self.assertEqual(len(found), 1)
+        self.assertIn("'rules'", found[0].message)
+        self.assertEqual(found[0].line, 5)
+
+    def test_hoisted_rules_are_clean(self):
+        self.assertEqual(self._findings(self.HOISTED), [])
+
+    def test_every_top_level_key_is_covered(self):
+        for key in lint_repo.TOP_LEVEL_AGENT_KEYS:
+            body = f"agent:\n  id: demo\n  {key}: something\n"
+            self.assertEqual(len(self._findings(body)), 1, key)
+
+    def test_identity_keys_are_left_alone(self):
+        # id/language/persona/voice genuinely live inside `agent:`; flagging
+        # them would send an author to move the one thing that is correct.
+        body = (
+            "agent:\n"
+            "  id: demo\n"
+            "  language: en\n"
+            "  persona: text\n"
+            "  voice:\n"
+            "    enabled: true\n"
+            "    asr: deepgram\n"
+        )
+        self.assertEqual(self._findings(body), [])
+
+    def test_four_space_indentation_is_still_checked(self):
+        # The check derives the block indent instead of assuming two spaces,
+        # so a differently formatted file cannot slip past it.
+        body = "agent:\n    id: demo\n    rules:\n" '        - "Be polite."\n'
+        self.assertEqual(len(self._findings(body)), 1)
+
+    def test_nested_block_children_are_not_mistaken_for_top_level_keys(self):
+        # `description:` inside a `voice:` sub-block is at a deeper indent and
+        # is not the agent-level key this check is about.
+        body = (
+            "agent:\n"
+            "  id: demo\n"
+            "  voice:\n"
+            "    description: inner\n"
+            "    enabled: true\n"
+        )
+        self.assertEqual(self._findings(body), [])
+
+    def test_the_real_catalog_is_clean(self):
+        self.assertEqual(
+            [f.location() for f in lint_repo.check_agent_config_keys()], []
+        )
+
+
+class TestAgentSpecContract(unittest.TestCase):
+    """The check has to keep matching the engine it is protecting.
+
+    If a future rasa-pro moves a key into the `agent:` block, or adds a new
+    top-level one, this fails and points at the list to update — rather than
+    the check quietly enforcing last year's schema.
+    """
+
+    def test_key_list_matches_the_installed_engine(self):
+        spec = None
+        for venv in Path(".").glob("*/*/.venv/lib/*/site-packages"):
+            candidate = venv / "rasa" / "calm_v2" / "config" / "agent_spec.py"
+            if candidate.is_file():
+                spec = candidate
+                break
+        if spec is None:
+            self.skipTest("no installed rasa-pro to compare against")
+
+        source = spec.read_text()
+        body = source.split("def _agent_spec_payload", 1)[1].split("\ndef ", 1)[0]
+        # The keys the payload builder copies straight off the root mapping.
+        found = set(re.findall(r'^\s+"(\w+)",$', body, re.M))
+        found |= {"conversation", "before_end"}  # copied via _CONVERSATION_KEY/_BEFORE_END_KEY
+        self.assertEqual(
+            found,
+            set(lint_repo.TOP_LEVEL_AGENT_KEYS),
+            "rasa-pro's top-level agent.yml keys changed; update "
+            "lint_repo.TOP_LEVEL_AGENT_KEYS to match",
+        )
 
 
 if __name__ == "__main__":

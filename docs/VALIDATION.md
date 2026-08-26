@@ -59,6 +59,7 @@ Every check below exists because the failure it describes actually happened here
 | `resource-metadata` | Each resource README carries `Author` / `Assessed on` / `Assessed by` / `Verified with`, with a sane date | Fill in the metadata block |
 | `secret-hygiene` | No tracked `.env`, no committed API keys or licence JWTs | Remove the secret, rotate it, keep it in `.env` |
 | `workflow-pins` | Every GitHub Action pinned to a full 40-character commit SHA | See below |
+| `agent-config-keys` | `rules` / `references` / `name` / `description` / `prompts` / `conversation` / `before_end` sit at the top level of `agent.yml`, not inside `agent:` | Move the key out of the `agent:` block |
 | `env-example` | Each resource ships `.env.example` so `make env` works on a clean clone | Add the file |
 
 ### Pinning GitHub Actions
@@ -97,6 +98,40 @@ Dependabot reads when it proposes an update:
 
 Beyond satisfying the policy, this is the correct supply-chain posture: a
 mutable tag like `@v4` can be repointed at arbitrary code after review.
+
+### Why `agent.yml` keys must not be nested
+
+`agent.yml` looks like one mapping but is read as two. `agent:` carries the
+identity — `id`, `language`, `persona`, `voice`. Everything else the engine
+uses for prompt tuning is read from the **top level**, as a sibling of
+`agent:`:
+
+```yaml
+agent:
+  id: atlas-voice-travel
+  persona: |
+    You are Atlas…
+
+rules:                      # <- top level, NOT indented under agent:
+  - "Confirm irreversible changes before calling tools that change state."
+```
+
+Nest `rules:` inside `agent:` and nothing complains. `AgentSpec` is declared
+`extra="ignore"`, and `_agent_spec_payload` only copies those keys off the root
+mapping — so the block parses, is discarded, and the agent runs without the
+guardrails you wrote. No warning at train time, no error at load.
+
+This was not hypothetical. Every resource in this catalog had it: 39 rules
+declared across 15 `agent.yml` files, including the paste-ready tutorial
+scaffolds, and zero applied. It was found independently by
+[Samrudha Kelkar](https://github.com/samrudh) and
+[Daksh Varshneya](https://github.com/dakshvar22) while contributing, and
+`agent-config-keys` exists so the next person does not have to find it again.
+
+A companion unit test compares the check's key list against the installed
+`rasa.calm_v2` source, so if a future release moves a key the test fails and
+names the list to update — rather than the check silently enforcing an old
+schema.
 
 ### The two skill authoring rules, in detail
 

@@ -505,6 +505,82 @@ def check_workflow_pins() -> list[Finding]:
     return findings
 
 
+# Keys `agent.yml` carries at the TOP level, as siblings of `agent:`.
+# `rasa.calm_v2.config.agent_spec._agent_spec_payload` reads them from the root
+# mapping, and `AgentSpec` is declared `extra="ignore"` — so nesting one inside
+# `agent:` parses without error, is discarded, and nothing ever says so.
+TOP_LEVEL_AGENT_KEYS = (
+    "name",
+    "description",
+    "rules",
+    "prompts",
+    "conversation",
+    "references",
+    "before_end",
+)
+
+
+def check_agent_config_keys() -> list[Finding]:
+    """Prompt-tuning keys must sit beside `agent:`, never inside it.
+
+    Regression, and the most expensive kind: silent. Every resource in this
+    catalog nested `rules:` under `agent:`, and most nested `references:` too.
+    39 rules were declared across the catalog and the engine applied none of
+    them — no warning at train time, no error at load, just an agent quietly
+    running without its guardrails.
+
+    Found independently by Samrudha Kelkar (#1) and Daksh Varshneya (#2).
+    """
+    findings: list[Finding] = []
+    seen: set[Path] = set()
+    for path in _tracked_files("agent.yml", "*/agent.yml", "**/agent.yml"):
+        if path in seen:
+            continue
+        seen.add(path)
+        lines = _read(path).splitlines()
+        try:
+            start = next(i for i, l in enumerate(lines) if l.rstrip() == "agent:")
+        except StopIteration:
+            continue
+
+        # Derive the block's own indent rather than assuming two spaces, so a
+        # four-space file cannot slip past the check that exists for it.
+        child_indent = None
+        for i in range(start + 1, len(lines)):
+            line = lines[i]
+            if not line.strip():
+                continue
+            indent = len(line) - len(line.lstrip())
+            if indent == 0:
+                break
+            child_indent = indent
+            break
+        if child_indent is None:
+            continue
+
+        for i in range(start + 1, len(lines)):
+            line = lines[i]
+            if line.strip() and not line[0].isspace():
+                break  # a column-0 key ends the agent block
+            if ":" not in line:
+                continue
+            if len(line) - len(line.lstrip()) != child_indent:
+                continue
+            key = line.strip().split(":", 1)[0]
+            if key in TOP_LEVEL_AGENT_KEYS:
+                findings.append(
+                    Finding(
+                        "agent-config-keys",
+                        _rel(path),
+                        i + 1,
+                        f"{key!r} is nested inside 'agent:', where the engine "
+                        f"parses it and then discards it. Move it to the top "
+                        f"level of agent.yml, as a sibling of 'agent:'.",
+                    )
+                )
+    return findings
+
+
 def check_env_examples(projects: list[Project]) -> list[Finding]:
     """Every resource ships a .env.example so `make env` works on a clean clone."""
     return [
@@ -532,6 +608,7 @@ CHECKS = {
     "resource-metadata": lambda p, e: check_resource_metadata(p),
     "secret-hygiene": lambda p, e: check_secret_hygiene(),
     "workflow-pins": lambda p, e: check_workflow_pins(),
+    "agent-config-keys": lambda p, e: check_agent_config_keys(),
     "env-example": lambda p, e: check_env_examples(p),
 }
 
