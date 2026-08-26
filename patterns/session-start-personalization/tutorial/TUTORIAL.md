@@ -4,7 +4,7 @@
 Author:        Rod Rivera, from a live session by Daksh Varshneya
 Assessed on:   2026-08-26
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.19.0.dev7, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
 Audience:      Anyone who has run `rasa init --engine mantle` once
 Time:          30–40 minutes
 ```
