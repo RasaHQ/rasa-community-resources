@@ -2,7 +2,7 @@
 
 This directory is a **Rasa Mantle** agent (Skills / calm_v2) that teaches
 building a **voice** appointment-booking assistant for the Clinic of Rasa with
-**Deepgram** ASR + TTS. It targets `rasa-pro==3.19.0.dev7` on `gpt-5.2`.
+**Deepgram** ASR + TTS. It targets `rasa-pro==3.20.0.dev1` on `gpt-5.2`.
 
 ## Layout
 

@@ -296,7 +296,7 @@ class TestEngineProbe(unittest.TestCase):
     """The capability probe that decides whether a release can run this catalog.
 
     3.19.1 shipped as the newest rasa-pro while every resource here imports
-    `rasa.calm_v2`, which that release does not contain. These cases lock in
+    `rasa.mantle`, which that release does not contain. These cases lock in
     that the probe reads the wheel rather than trusting a hand-written note.
     """
 

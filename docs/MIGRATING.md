@@ -8,45 +8,74 @@ keeps those files and the README metadata in sync.
 ## Which release line to target
 
 > **Do not bump this catalog to the newest stable `rasa-pro` just because it is
-> newest.** Every resource here is built on the Mantle / Skills engine, which
-> is imported as `rasa.calm_v2`:
+> newest.** Every resource here is built on the Mantle / Skills engine:
 >
 > ```python
-> from rasa.calm_v2.tools.decorator import tool, ToolContext
-> from rasa.calm_v2.tools.result import ToolResult
-> from rasa.calm_v2.validation import validate_project
+> from rasa.mantle.tools.decorator import tool, ToolContext
+> from rasa.mantle.tools.result import ToolResult
+> from rasa.mantle.validation import validate_project
 > ```
 >
-> That package ships **only on the `3.19.0.devN` pre-release line**. The stable
-> `3.19.x` line (`3.19.0`, `3.19.1`, …) does **not** contain `rasa.calm_v2` at
-> all, and the two lines are published in parallel — `3.19.0.dev7` and `3.19.1`
-> both landed on 2026-08-25, so "latest on PyPI" resolves to a release that
-> cannot run any resource in this repository.
+> That package ships **only on pre-release lines**. As of 2026-08-26 the newest
+> stable release, `3.19.1`, contains no engine package at all — neither
+> `rasa.mantle` nor its predecessor — so "latest on PyPI" resolves to something
+> that cannot run a single resource here.
 >
 > [`RASA_PRO_VERSION_LINE`](../RASA_PRO_VERSION_LINE) encodes this: it holds the
-> prefix `3.19.0.dev`, and `make latest` / `make outdated` only consider releases
-> on that line. Delete or widen that file once Mantle reaches the stable line.
-> To search the whole index anyway:
+> prefix `3.20.0.dev`, and `make latest` / `make outdated` only consider releases
+> on that line. Delete that file once the engine reaches a stable release. To
+> search the whole index anyway:
 >
 > ```bash
 > python scripts/migrate_rasa_pro.py --latest --match ''
 > ```
 >
-> Three guards enforce this, so nothing depends on someone reading this note:
+> ### The rename
+>
+> The engine package was called `rasa.calm_v2` through `3.19.x`. **From
+> `3.20.0.dev1` it is `rasa.mantle`, and the old path is gone rather than
+> aliased** — a breaking change for every custom tool.
+>
+> The guards below accept **either** package, so they keep working across the
+> rename and stay honest about older pins, which really do need the old name.
 >
 > | Guard | When it fires |
 > | --- | --- |
-> | `make outdated` | Reports the newest release **overall**, not just the newest on the line, and inspects its published wheel for `rasa.calm_v2`. It says whether the release is held back on purpose — or that the line can finally be lifted. |
-> | `make migrate VERSION=…` | Refuses **before writing anything** if the target is off-line and its wheel lacks `rasa.calm_v2`. Override with `--allow-missing-engine` only if you mean it. |
-> | `make check-all` | Probes `rasa.calm_v2` inside each project venv after a bump and fails loudly if the pinned release does not provide it. |
+> | `make outdated` | Reports the newest release **overall**, not just the newest on the line, inspects its published wheel, and names which engine package it found. It says whether a release is held back on purpose — or that the line can finally be lifted. |
+> | `make migrate VERSION=…` | Refuses **before writing anything** if the target is off-line and its wheel carries no engine package at all. Override with `--allow-missing-engine` only if you mean it. |
+> | `make check-all` | Probes the engine inside each project venv after a bump and fails loudly if the pinned release does not provide it. |
 >
 > The first two read the module list straight out of the wheel on PyPI (a ranged
 > request for the zip index — a few MB, not the ~100MB wheel), so they track
 > what Rasa actually publishes rather than what this file claims.
 >
-> When `make outdated` reports the module present on a stable release, the
+> When `make outdated` reports the engine present on a stable release, the
 > migration is: delete `RASA_PRO_VERSION_LINE`, run
 > `make migrate VERSION=<release>`, then `make ci`.
+
+## Upgrading a project from 3.19 to 3.20
+
+Two mechanical changes, plus one that is easy to miss.
+
+```bash
+# 1. the pin (make migrate does this for you)
+rasa-pro==3.19.0.dev7  →  rasa-pro==3.20.0.dev1   # rasa-version-ignore: upgrade path
+
+# 2. every import of the engine, in tools.py and scripts
+rasa.calm_v2  →  rasa.mantle
+```
+
+**3. Raise the Python floor.** `3.20.0.dev1` requires `>=3.11`; `3.19.0.dev7`
+allowed `>=3.10`. A project whose `pyproject.toml` still says
+`requires-python = ">=3.10,…"` fails `uv lock` with a resolver error that does
+not mention Python at all:
+
+```text
+versions that are not supported by your dependencies
+(e.g., rasa-pro==3.20.0.dev1 only supports >=3.11, <3.15)
+```
+
+Three resources in this catalog hit exactly that during the 3.20 migration.
 
 ## Prerequisites
 
@@ -82,14 +111,14 @@ make test-all      # check-all, then rasa train when a license is present
 Override the target version for a one-shot bump (also rewrites `RASA_PRO_VERSION`):
 
 ```bash
-make migrate VERSION=3.19.0.dev7
+make migrate VERSION=3.20.0.dev1
 ```
 
 Preview any bump before it touches the working tree — nothing is written and
 `uv lock` never runs:
 
 ```bash
-make migrate-dry VERSION=3.19.0.dev7
+make migrate-dry VERSION=3.20.0.dev1
 ```
 
 Jump to the newest release on the supported line (see the box at the top —
@@ -129,7 +158,7 @@ should not need to hand-edit those flags.
    ```
 2. Preview the bump:
    ```bash
-   make migrate-dry VERSION=3.19.0.dev7
+   make migrate-dry VERSION=3.20.0.dev1
    ```
 3. Run the migrator. It verifies the version exists on the index *before*
    rewriting anything, then updates every `pyproject.toml` pin and prerelease
@@ -137,7 +166,7 @@ should not need to hand-edit those flags.
    resolved, rewrites `Verified with:` / `rasa-pro==…` prose in README/AGENTS
    and the project Makefiles, and finally writes `RASA_PRO_VERSION`:
    ```bash
-   make migrate VERSION=3.19.0.dev7
+   make migrate VERSION=3.20.0.dev1
    # or, for the newest release on the supported line:
    make latest
    ```

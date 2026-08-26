@@ -3,7 +3,7 @@
 This directory is a **Rasa Skills / Mantle** agent that teaches building a
 **voice** travel assistant with **Deepgram** ASR + TTS.
 
-Pin: `rasa-pro==3.19.0.dev7`. LLM: `gpt-5.2`. Scaffold command for new
+Pin: `rasa-pro==3.20.0.dev1`. LLM: `gpt-5.2`. Scaffold command for new
 projects: `rasa init --engine mantle` (not `--template voice`).
 
 ## Layout
@@ -31,8 +31,8 @@ projects: `rasa init --engine mantle` (not `--template voice`).
 - Imports:
 
 ```python
-from rasa.calm_v2.tools.decorator import ToolContext, tool
-from rasa.calm_v2.tools.result import ToolResult
+from rasa.mantle.tools.decorator import ToolContext, tool
+from rasa.mantle.tools.result import ToolResult
 ```
 
 ## Build loop

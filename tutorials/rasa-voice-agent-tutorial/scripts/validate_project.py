@@ -27,7 +27,7 @@ RESET = "\033[0m" if _TTY else ""
 
 def main() -> int:
     try:
-        from rasa.calm_v2.validation import validate_project
+        from rasa.mantle.validation import validate_project
         from rasa.exceptions import ValidationError
     except ImportError as exc:
         print(f"{RED}Could not import the Rasa validator: {exc}{RESET}")

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from rasa.calm_v2.tools.decorator import ToolContext
+from rasa.mantle.tools.decorator import ToolContext
 
 
 def memory_value(context: Optional[ToolContext], key: str) -> Any:

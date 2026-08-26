@@ -17,8 +17,8 @@ from __future__ import annotations
 
 from lib.database import Database, username_from_context
 from lib.tool_helpers import set_memory
-from rasa.calm_v2.tools.decorator import ToolContext, tool
-from rasa.calm_v2.tools.result import ToolResult
+from rasa.mantle.tools.decorator import ToolContext, tool
+from rasa.mantle.tools.result import ToolResult
 
 
 @tool(description="Load the demo patient profile into project memory.")

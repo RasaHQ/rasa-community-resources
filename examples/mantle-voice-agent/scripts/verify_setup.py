@@ -271,10 +271,10 @@ def check_dependencies(report: Report) -> None:
         else:
             report.error(f"{label} not importable", "make install")
 
-    if importlib.util.find_spec("rasa.calm_v2") is not None:
-        ok("rasa.calm_v2  (Mantle Skills engine)")
+    if importlib.util.find_spec("rasa.mantle") is not None:
+        ok("rasa.mantle  (Mantle Skills engine)")
     else:
-        report.error("rasa.calm_v2 is not importable", "make install")
+        report.error("rasa.mantle is not importable", "make install")
 
 
 def check_agent_structure(report: Report) -> None:
@@ -341,7 +341,7 @@ def check_project_validation(report: Report) -> None:
     section("Project validation")
     validate = None
     try:
-        from rasa.calm_v2.validation import validate_project as validate
+        from rasa.mantle.validation import validate_project as validate
     except ImportError:
         try:
             from rasa.skills.validation import validate_project as validate  # type: ignore

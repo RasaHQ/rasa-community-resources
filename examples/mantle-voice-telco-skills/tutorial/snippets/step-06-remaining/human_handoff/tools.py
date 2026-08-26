@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from rasa.calm_v2.tools.decorator import ToolContext, tool
-from rasa.calm_v2.tools.result import ToolResult
+from rasa.mantle.tools.decorator import ToolContext, tool
+from rasa.mantle.tools.result import ToolResult
 
 from lib.database import DEMO_CUSTOMER_ID, customer_id_from_context
 

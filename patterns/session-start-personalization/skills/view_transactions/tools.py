@@ -7,8 +7,8 @@ by name and offer the usual account first, without any lookup of its own.
 
 from __future__ import annotations
 
-from rasa.calm_v2.tools.decorator import ToolContext, tool
-from rasa.calm_v2.tools.result import ToolResult
+from rasa.mantle.tools.decorator import ToolContext, tool
+from rasa.mantle.tools.result import ToolResult
 
 # Two fictional demo accounts for the select-account flow. acc_checking matches
 # the default_account_id seeded by the session-start profile lookup.

@@ -27,6 +27,7 @@ if str(_SCRIPTS) not in sys.path:
 
 from rasa_projects import (  # noqa: E402
     REQUIRED_ENGINE_MODULE,
+    engine_module_in,
     SCOPES,
     IndexUnavailable,
     discover_projects,
@@ -74,7 +75,10 @@ def _report_line_gap(newest_on_line: str, allow_prerelease: bool) -> None:
     print(f"{DIM}Newest rasa-pro on PyPI overall: {overall}{RESET}")
     module = REQUIRED_ENGINE_MODULE.rstrip("/").replace("/", ".")
     try:
-        carries = release_carries_engine(overall)
+        found = engine_module_in(overall)
+        carries = found is not None
+        if found:
+            module = found
     except IndexUnavailable as exc:
         print(f"{YELLOW}  Could not inspect {overall} for {module}: {exc}{RESET}")
         print(f"{DIM}  Holding at {newest_on_line} until it can be verified.{RESET}")

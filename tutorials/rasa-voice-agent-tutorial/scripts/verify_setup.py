@@ -273,10 +273,10 @@ def check_dependencies(report: Report) -> None:
 
     if importlib.util.find_spec("rasa_sdk") is not None:
         ok("rasa_sdk  (Skills tools)")
-    elif importlib.util.find_spec("rasa.calm_v2") is not None:
-        ok("rasa.calm_v2  (Skills engine fallback)")
+    elif importlib.util.find_spec("rasa.mantle") is not None:
+        ok("rasa.mantle  (Skills engine fallback)")
     else:
-        report.error("Neither rasa_sdk nor rasa.calm_v2 is importable", "make install")
+        report.error("Neither rasa_sdk nor rasa.mantle is importable", "make install")
 
 
 def check_agent_structure(report: Report) -> None:
@@ -328,7 +328,7 @@ def check_project_validation(report: Report) -> None:
     section("Project validation")
     validate = None
     try:
-        from rasa.calm_v2.validation import validate_project as validate
+        from rasa.mantle.validation import validate_project as validate
     except ImportError:
         try:
             from rasa.skills.validation import validate_project as validate  # type: ignore

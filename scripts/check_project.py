@@ -158,8 +158,8 @@ actual = importlib.metadata.version("rasa-pro")
 if actual != expected:
     print(f"rasa-pro {{actual}} != expected {{expected}}", file=sys.stderr)
     sys.exit(2)
-if importlib.util.find_spec("rasa.calm_v2") is None:
-    print("rasa.calm_v2 is not importable", file=sys.stderr)
+if importlib.util.find_spec("rasa.mantle") is None:
+    print("rasa.mantle is not importable", file=sys.stderr)
     sys.exit(3)
 print(actual)
 """
@@ -182,7 +182,7 @@ print(actual)
 import logging
 logging.disable(logging.WARNING)
 from pathlib import Path
-from rasa.calm_v2.validation import validate_project
+from rasa.mantle.validation import validate_project
 validate_project(Path("."))
 print("validate_project: ok")
 """

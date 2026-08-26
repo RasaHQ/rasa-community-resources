@@ -29,7 +29,8 @@ _SCRIPTS = Path(__file__).resolve().parent
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
-from rasa_projects import (  # noqa: E402
+from rasa_projects import (
+    REQUIRED_ENGINE_MODULE,
     COMMUNITY_ROOT,
     HEROES_ROOT,
     NOTES_HEADING_RE,
@@ -53,6 +54,13 @@ from rasa_projects import (  # noqa: E402
     read_uv_prerelease_setting,
     read_version_line,
 )
+
+# The engine package name to show in messages. Follows the rename in
+# rasa_projects rather than restating it here.
+ENGINE_NAME = REQUIRED_ENGINE_MODULE.rstrip("/").replace("/", ".")
+
+# Opt out of the version-consistency check for one line. See its use below.
+VERSION_IGNORE_MARKER = "rasa-version-ignore"
 
 # Packages whose *entire* release history is pre-release-numbered, so a
 # prerelease pin in a lock is normal rather than a leftover.
@@ -122,6 +130,13 @@ def check_version_consistency(expected: str) -> list[Finding]:
         if is_snapshot_path(_rel(path)):
             continue
         for lineno, line in _numbered(_read(path)):
+            # A migration doc legitimately shows the version you are coming
+            # *from*, which is not the pin and must not be rewritten to it.
+            # Marking those lines explicitly keeps the check strict everywhere
+            # else — the alternative is authors phrasing around the gate, which
+            # is how a gate quietly stops working.
+            if VERSION_IGNORE_MARKER in line:
+                continue
             for pattern in patterns:
                 for match in pattern.finditer(line):
                     found = match.group("version")
@@ -149,7 +164,7 @@ def check_version_line(expected: str) -> list[Finding]:
                 _rel(VERSION_LINE_FILE),
                 None,
                 f"RASA_PRO_VERSION is {expected}, which is not on the required "
-                f"line {prefix!r}. The Mantle engine (rasa.calm_v2) ships only "
+                f"line {prefix!r}. The Mantle engine ({ENGINE_NAME}) ships only "
                 f"on that line; widen or remove this file if that has changed.",
             )
         ]
@@ -539,7 +554,7 @@ def check_workflow_pins() -> list[Finding]:
 
 
 # Keys `agent.yml` carries at the TOP level, as siblings of `agent:`.
-# `rasa.calm_v2.config.agent_spec._agent_spec_payload` reads them from the root
+# `rasa.mantle.config.agent_spec._agent_spec_payload` reads them from the root
 # mapping, and `AgentSpec` is declared `extra="ignore"` — so nesting one inside
 # `agent:` parses without error, is discarded, and nothing ever says so.
 TOP_LEVEL_AGENT_KEYS = (

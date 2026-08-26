@@ -19,7 +19,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 VERSION_FILE = REPO_ROOT / "RASA_PRO_VERSION"
 # Optional guard rail: a version prefix that `--latest` must stay within.
-# This catalog runs on the Mantle / Skills engine (`rasa.calm_v2`), which
+# This catalog runs on the Mantle / Skills engine (`rasa.mantle`), which
 # ships only on the 3.19.0.devN line — "newest on PyPI" is a stable release
 # that does not contain it at all. See docs/MIGRATING.md.
 VERSION_LINE_FILE = REPO_ROOT / "RASA_PRO_VERSION_LINE"
@@ -27,7 +27,15 @@ VERSION_LINE_FILE = REPO_ROOT / "RASA_PRO_VERSION_LINE"
 # probes candidate releases for it instead of trusting the comment in
 # RASA_PRO_VERSION_LINE, so the day it lands on a stable release the tooling
 # says so on its own rather than waiting for someone to notice.
-REQUIRED_ENGINE_MODULE = "rasa/calm_v2/"
+#
+# Rasa renamed this package from `rasa.mantle` to `rasa.mantle` in 3.20.0.dev1,
+# and the old path is gone rather than aliased. A release carrying EITHER counts
+# as usable: that keeps the probe working across the rename, and keeps it honest
+# about older pins, which really do need the old name.
+REQUIRED_ENGINE_MODULES = ("rasa/mantle/", "rasa/calm_v2/")
+
+# Kept as the name to show a human. The current package is the first entry.
+REQUIRED_ENGINE_MODULE = REQUIRED_ENGINE_MODULES[0]
 
 # ------------------------------------------------------------------------------
 # Where resources live, and what each root promises
@@ -337,18 +345,33 @@ def wheel_contents(
         ) from exc
 
 
+def engine_module_in(
+    version: str,
+    *,
+    modules: tuple[str, ...] = REQUIRED_ENGINE_MODULES,
+    package: str = PACKAGE,
+    timeout: float = 60.0,
+) -> str | None:
+    """Which engine package `version` ships, or None if it ships neither."""
+    names = wheel_contents(version, package, timeout=timeout)
+    for module in modules:
+        prefix = module if module.endswith("/") else f"{module}/"
+        if any(name.startswith(prefix) for name in names):
+            return prefix.rstrip("/").replace("/", ".")
+    return None
+
+
 def release_carries_engine(
     version: str,
     *,
-    module: str = REQUIRED_ENGINE_MODULE,
+    modules: tuple[str, ...] = REQUIRED_ENGINE_MODULES,
     package: str = PACKAGE,
     timeout: float = 60.0,
 ) -> bool:
-    """Whether `version` actually ships the engine this catalog imports."""
-    prefix = module if module.endswith("/") else f"{module}/"
-    return any(
-        name.startswith(prefix)
-        for name in wheel_contents(version, package, timeout=timeout)
+    """Whether `version` ships an engine package this catalog can import."""
+    return (
+        engine_module_in(version, modules=modules, package=package, timeout=timeout)
+        is not None
     )
 
 
