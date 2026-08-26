@@ -1,0 +1,11 @@
+schema:
+  public:
+    note_summary:
+      type: text
+      description: One-line summary of the call, written to the CRM timeline.
+      llm_settable: true
+  private:
+    # A write that succeeded. Private: no other skill has any business reading
+    # CRM object ids this skill happened to create.
+    last_note_id:
+      type: text
