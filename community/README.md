@@ -73,9 +73,7 @@ Each resource is one directory with its own `README.md`, `pyproject.toml`,
 
 | Name | Kind | Summary | Author | Assessed on |
 |---|---|---|---|---|
-| — | — | — | — | — |
-
-_No community resources yet. Your PR can be the first row._
+| [`samrudh-gemini-voice-agent`](samrudh-gemini-voice-agent) | example | Atlas voice travel agent on Google Gemini, with local sentence-transformers embeddings — no OpenAI key anywhere | Samrudha Kelkar | 2026-08-26 |
 
 ---
 

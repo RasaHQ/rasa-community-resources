@@ -1,0 +1,56 @@
+# External integrations for the Atlas voice travel agent, configured for
+# Google Gemini instead of OpenAI.
+#
+# This is the live path in this resource. The catalog's own copy of Atlas
+# (examples/maestro-voice-agent) keeps OpenAI as its default; the point of this
+# one is to show the whole configuration for the other provider in place,
+# rather than as commented-out fragments a reader has to reassemble.
+
+llm:
+  provider: gemini
+  model: gemini-2.5-flash
+  api_key_env: GEMINI_API_KEY
+  temperature: 0.0
+
+# To run this on OpenAI instead, swap the block above for:
+#
+# llm:
+#   provider: openai
+#   model: gpt-4.1-mini
+#   api_key_env: OPENAI_API_KEY
+#   temperature: 0.0
+#
+# ...and switch `nlg.llm.model_group` in endpoints.yml to `openai-llm`.
+
+# Knowledge-base embeddings run locally through sentence-transformers, so the
+# reference index needs no embedding provider key at all. This is what lets the
+# agent run with a Gemini key and nothing else: at the time this was verified,
+# the reference index otherwise reached for OpenAI embeddings.
+#
+# Cost: the first `rasa train` downloads the model (~90 MB) and pulls in torch
+# via the sentence-transformers dependency. That is a deliberate trade here and
+# the reason it is not the catalog default.
+model_groups:
+  - id: local-embeddings
+    models:
+      - provider: huggingface_local
+        model: sentence-transformers/all-MiniLM-L6-v2
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    # Deepgram end-to-end: speech-to-text (ASR) and text-to-speech (TTS)
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en
