@@ -21,9 +21,13 @@ from __future__ import annotations
 
 import contextlib
 import io
+import re
+import subprocess
 import sys
+import tempfile
 import tomllib
 import unittest
+from datetime import date, timedelta
 from unittest import mock
 from pathlib import Path
 
@@ -276,11 +280,12 @@ class TestLintChecksAgainstRepo(unittest.TestCase):
 
         expected = read_expected_version()
         projects = discover_projects()
+        snapshots = discover_projects("snapshots")
         self.assertTrue(projects, "no projects discovered")
         errors = [
             f
             for name, fn in lint_repo.CHECKS.items()
-            for f in fn(projects, expected)
+            for f in fn(projects, snapshots, expected)
             if f.severity == lint_repo.SEVERITY_ERROR
         ]
         self.assertEqual(errors, [], "\n".join(f"{f.location()}: {f.message}" for f in errors))
@@ -419,5 +424,606 @@ class TestMigrationEngineGuard(unittest.TestCase):
             migrate_rasa_pro.verify_engine_support("3.19.1", skip=True)
 
 
+class TestWorkflowPins(unittest.TestCase):
+    """Org policy rejects any action not pinned to a full commit SHA."""
+
+    SHA = "11d5960a326750d5838078e36cf38b85af677262"
+
+    def _findings(self, body: str):
+        with mock.patch.object(lint_repo, "_tracked_files", return_value=[Path("wf.yml")]), \
+             mock.patch.object(lint_repo, "_read", return_value=body):
+            return lint_repo.check_workflow_pins()
+
+    def test_tag_ref_is_rejected(self):
+        found = self._findings("      - uses: actions/checkout@v4\n")
+        self.assertEqual(len(found), 1)
+        self.assertIn("not pinned", found[0].message)
+
+    def test_branch_and_short_sha_are_rejected(self):
+        for ref in ("actions/checkout@main", f"actions/checkout@{self.SHA[:7]}"):
+            self.assertEqual(len(self._findings(f"      - uses: {ref}\n")), 1, ref)
+
+    def test_full_sha_is_accepted_with_or_without_comment(self):
+        for line in (
+            f"      - uses: actions/checkout@{self.SHA}\n",
+            f"      - uses: actions/checkout@{self.SHA} # v4.4.0\n",
+        ):
+            self.assertEqual(self._findings(line), [], line)
+
+    def test_local_and_docker_refs_are_exempt(self):
+        for ref in ("./.github/actions/setup", "docker://alpine:3.20"):
+            self.assertEqual(self._findings(f"      - uses: {ref}\n"), [], ref)
+
+    def test_real_workflows_are_pinned(self):
+        self.assertEqual(
+            [f.message for f in lint_repo.check_workflow_pins()], []
+        )
+
+
+class TestCliExitCodes(unittest.TestCase):
+    """0 = clean, 1 = well-formed request that failed, 2 = bad invocation.
+
+    Only offline paths are asserted here: each of these is rejected during
+    argument resolution, before the migrator touches the network.
+    """
+
+    def _run(self, *args: str) -> int:
+        return subprocess.run(
+            [sys.executable, str(_SCRIPTS / "migrate_rasa_pro.py"), *args],
+            capture_output=True,
+            text=True,
+        ).returncode
+
+    def test_malformed_version_is_a_usage_error(self):
+        self.assertEqual(self._run("--version", "not-a-version", "--dry-run"), 2)
+
+    def test_mutually_exclusive_selectors(self):
+        self.assertEqual(self._run("--latest", "--version", "3.19.1", "--dry-run"), 2)
+
+    def test_argparse_rejects_unknown_flags(self):
+        self.assertEqual(self._run("--nope"), 2)
+
+    def test_lint_rejects_unknown_check_name(self):
+        rc = subprocess.run(
+            [sys.executable, str(_SCRIPTS / "lint_repo.py"), "--check", "nope"],
+            capture_output=True, text=True,
+        ).returncode
+        self.assertEqual(rc, 2)
+
+
+class TestAssessedOnDate(unittest.TestCase):
+    """`Assessed on` is timezone-less, so today differs by locale.
+
+    Regression: a README stamped with the author's local date failed CI on a
+    UTC runner that had not reached that date yet.
+    """
+
+    def _findings(self, assessed: str):
+        readme = (
+            "```text\n"
+            "Author:        A\n"
+            f"Assessed on:   {assessed}\n"
+            "Assessed by:   A\n"
+            "Verified with: rasa-pro 1.0.0, Python 3.11+, uv\n"
+            "```\n"
+        )
+        project = rasa_projects.Project(Path("examples/demo"))
+        with mock.patch("pathlib.Path.is_file", return_value=True), \
+             mock.patch.object(lint_repo, "_read", return_value=readme):
+            return lint_repo.check_resource_metadata([project])
+
+    def test_tomorrow_is_tolerated_as_timezone_skew(self):
+        tomorrow = date.today() + timedelta(days=1)
+        self.assertEqual(self._findings(tomorrow.isoformat()), [])
+
+    def test_today_and_past_are_fine(self):
+        for when in (date.today(), date.today() - timedelta(days=400)):
+            self.assertEqual(self._findings(when.isoformat()), [], when)
+
+    def test_genuinely_future_date_is_still_caught(self):
+        soon = date.today() + timedelta(days=3)
+        found = self._findings(soon.isoformat())
+        self.assertEqual(len(found), 1)
+        self.assertIn("in the future", found[0].message)
+
+    def test_malformed_date_is_reported(self):
+        found = self._findings("2026-13-45")
+        self.assertEqual(len(found), 1)
+        self.assertIn("not a valid date", found[0].message)
+
+
+class TestAgentConfigKeys(unittest.TestCase):
+    """Prompt-tuning keys belong beside `agent:`, never inside it.
+
+    The regression this locks in: every agent.yml in the catalog nested
+    `rules:` under `agent:`. 39 rules were declared and the engine applied
+    none — `AgentSpec` is `extra="ignore"` and `_agent_spec_payload` reads
+    those keys from the root mapping, so the misplacement is silent at parse,
+    train, and load time. Reported independently by Samrudha Kelkar and
+    Daksh Varshneya.
+    """
+
+    def _findings(self, body: str):
+        with mock.patch.object(lint_repo, "_tracked_files", return_value=[Path("agent.yml")]), \
+             mock.patch.object(lint_repo, "_read", return_value=body):
+            return lint_repo.check_agent_config_keys()
+
+    NESTED = (
+        "agent:\n"
+        "  id: demo\n"
+        "  persona: |\n"
+        "    Be helpful.\n"
+        "  rules:\n"
+        '    - "Be polite."\n'
+    )
+    HOISTED = (
+        "agent:\n"
+        "  id: demo\n"
+        "  persona: |\n"
+        "    Be helpful.\n"
+        "\n"
+        "rules:\n"
+        '  - "Be polite."\n'
+    )
+
+    def test_nested_rules_are_caught(self):
+        found = self._findings(self.NESTED)
+        self.assertEqual(len(found), 1)
+        self.assertIn("'rules'", found[0].message)
+        self.assertEqual(found[0].line, 5)
+
+    def test_hoisted_rules_are_clean(self):
+        self.assertEqual(self._findings(self.HOISTED), [])
+
+    def test_every_top_level_key_is_covered(self):
+        for key in lint_repo.TOP_LEVEL_AGENT_KEYS:
+            body = f"agent:\n  id: demo\n  {key}: something\n"
+            self.assertEqual(len(self._findings(body)), 1, key)
+
+    def test_identity_keys_are_left_alone(self):
+        # id/language/persona/voice genuinely live inside `agent:`; flagging
+        # them would send an author to move the one thing that is correct.
+        body = (
+            "agent:\n"
+            "  id: demo\n"
+            "  language: en\n"
+            "  persona: text\n"
+            "  voice:\n"
+            "    enabled: true\n"
+            "    asr: deepgram\n"
+        )
+        self.assertEqual(self._findings(body), [])
+
+    def test_four_space_indentation_is_still_checked(self):
+        # The check derives the block indent instead of assuming two spaces,
+        # so a differently formatted file cannot slip past it.
+        body = "agent:\n    id: demo\n    rules:\n" '        - "Be polite."\n'
+        self.assertEqual(len(self._findings(body)), 1)
+
+    def test_nested_block_children_are_not_mistaken_for_top_level_keys(self):
+        # `description:` inside a `voice:` sub-block is at a deeper indent and
+        # is not the agent-level key this check is about.
+        body = (
+            "agent:\n"
+            "  id: demo\n"
+            "  voice:\n"
+            "    description: inner\n"
+            "    enabled: true\n"
+        )
+        self.assertEqual(self._findings(body), [])
+
+    def test_the_real_catalog_is_clean(self):
+        self.assertEqual(
+            [f.location() for f in lint_repo.check_agent_config_keys()], []
+        )
+
+
+class TestAgentSpecContract(unittest.TestCase):
+    """The check has to keep matching the engine it is protecting.
+
+    If a future rasa-pro moves a key into the `agent:` block, or adds a new
+    top-level one, this fails and points at the list to update — rather than
+    the check quietly enforcing last year's schema.
+    """
+
+    def test_key_list_matches_the_installed_engine(self):
+        spec = None
+        for venv in Path(".").glob("*/*/.venv/lib/*/site-packages"):
+            candidate = venv / "rasa" / "calm_v2" / "config" / "agent_spec.py"
+            if candidate.is_file():
+                spec = candidate
+                break
+        if spec is None:
+            self.skipTest("no installed rasa-pro to compare against")
+
+        source = spec.read_text()
+        body = source.split("def _agent_spec_payload", 1)[1].split("\ndef ", 1)[0]
+        # The keys the payload builder copies straight off the root mapping.
+        found = set(re.findall(r'^\s+"(\w+)",$', body, re.M))
+        found |= {"conversation", "before_end"}  # copied via _CONVERSATION_KEY/_BEFORE_END_KEY
+        self.assertEqual(
+            found,
+            set(lint_repo.TOP_LEVEL_AGENT_KEYS),
+            "rasa-pro's top-level agent.yml keys changed; update "
+            "lint_repo.TOP_LEVEL_AGENT_KEYS to match",
+        )
+
+# ------------------------------------------------------------------------------
+# Two tiers: maintained catalog vs frozen snapshots
+# ------------------------------------------------------------------------------
+
+
+class FakeRepo(contextlib.ContextDecorator):
+    """A throwaway repository tree with both REPO_ROOTs pointed at it.
+
+    `lint_repo` imports REPO_ROOT by value, so patching only `rasa_projects`
+    would leave `_rel` resolving against the real checkout and silently produce
+    absolute paths in findings.
+    """
+
+    def __enter__(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        self._patches = [
+            mock.patch.object(rasa_projects, "REPO_ROOT", self.root),
+            mock.patch.object(lint_repo, "REPO_ROOT", self.root),
+        ]
+        for patch in self._patches:
+            patch.start()
+        return self
+
+    def __exit__(self, *exc):
+        for patch in reversed(self._patches):
+            patch.stop()
+        self._tmp.cleanup()
+        return False
+
+    def project(
+        self,
+        rel,
+        *,
+        pin="3.19.0.dev5",
+        lock=...,
+        verified=...,
+        prerelease="allow",
+        extra_metadata="",
+        env_example=True,
+    ):
+        """Write a minimal resource at `rel`. `...` means "same as pin"."""
+        path = self.root / rel
+        path.mkdir(parents=True, exist_ok=True)
+        table = f'\n[tool.uv]\nprerelease = "{prerelease}"\n' if prerelease else ""
+        (path / "pyproject.toml").write_text(
+            f'[project]\nname = "demo"\nversion = "0.1.0"\n'
+            f'dependencies = [\n    "rasa-pro=={pin}",\n]\n{table}'
+        )
+        if lock is not None:
+            locked = pin if lock is ... else lock
+            (path / "uv.lock").write_text(
+                f'version = 1\n\n[[package]]\nname = "rasa-pro"\nversion = "{locked}"\n'
+            )
+        if verified is not None:
+            claim = pin if verified is ... else verified
+            (path / "README.md").write_text(
+                "# Demo\n\n```text\n"
+                "Author:        A Contributor\n"
+                f"{extra_metadata}"
+                f"Assessed on:   {date.today().isoformat()}\n"
+                "Assessed by:   A Contributor\n"
+                f"Verified with: rasa-pro {claim}, Python 3.11+, uv\n"
+                "```\n"
+            )
+        if env_example:
+            (path / ".env.example").write_text("RASA_LICENSE=\n")
+        return path
+
+    def index(self, rel, body):
+        path = self.root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(body)
+        return path
+
+
+class TestTierDiscovery(unittest.TestCase):
+    """Which roots are the maintained catalog, and which are frozen."""
+
+    def test_patterns_is_part_of_the_catalog(self):
+        # Regression: `patterns/` was absent from SCAN_ROOTS, so the first
+        # pattern contributed would have shipped with no lock-sync, no
+        # env-example check, and no install job in the CI matrix.
+        self.assertIn("patterns", rasa_projects.SCAN_ROOTS)
+
+    def test_community_is_maintained_not_frozen(self):
+        # Contributed examples move with the catalog. One pinned to a release
+        # the rest of the repository has left behind is one nobody clones.
+        self.assertIn("community", rasa_projects.SCAN_ROOTS)
+        self.assertNotIn("community", rasa_projects.SNAPSHOT_ROOT_NAMES)
+
+    def test_only_heroes_is_frozen(self):
+        self.assertEqual(rasa_projects.SNAPSHOT_ROOT_NAMES, ("heroes",))
+
+    def test_catalog_scope_excludes_frozen_roots(self):
+        with FakeRepo() as repo:
+            repo.project("examples/agent")
+            repo.project("patterns/handoff")
+            repo.project("community/handle-thing")
+            repo.project("heroes/wave-01-voice/projects/handle-thing")
+            catalog = {p.rel for p in rasa_projects.discover_projects()}
+            frozen = {p.rel for p in rasa_projects.discover_projects("snapshots")}
+
+        self.assertEqual(
+            catalog, {"examples/agent", "patterns/handoff", "community/handle-thing"}
+        )
+        self.assertEqual(frozen, {"heroes/wave-01-voice/projects/handle-thing"})
+
+    def test_discovered_snapshots_are_flagged_as_such(self):
+        with FakeRepo() as repo:
+            repo.project("heroes/wave-01-voice/projects/a-thing")
+            repo.project("community/handle-thing")
+            by_rel = {
+                p.rel: p.snapshot for p in rasa_projects.discover_projects("all")
+            }
+        self.assertEqual(
+            by_rel,
+            {
+                "community/handle-thing": False,
+                "heroes/wave-01-voice/projects/a-thing": True,
+            },
+        )
+
+    def test_wave_depth_is_exact(self):
+        # A project filed directly under the wave, rather than under
+        # `projects/`, must not be discovered — heroes-layout is what reports
+        # it, and it can only do so if discovery has not quietly accepted it.
+        with FakeRepo() as repo:
+            repo.project("heroes/wave-01-voice/misfiled")
+            self.assertEqual(rasa_projects.discover_projects("snapshots"), [])
+
+    def test_unknown_scope_is_rejected(self):
+        with self.assertRaises(ValueError):
+            rasa_projects.discover_projects("everything")
+
+
+class TestVersionConsistencyTiers(unittest.TestCase):
+    """The shared pin governs everything maintained, and stops at `heroes/`."""
+
+    def _findings(self, tracked):
+        with mock.patch.object(lint_repo, "_tracked_files", return_value=tracked):
+            return lint_repo.check_version_consistency("3.19.0.dev7")
+
+    def test_catalog_prose_is_held_to_the_pin(self):
+        with FakeRepo() as repo:
+            readme = repo.project("patterns/handoff", pin="3.19.0.dev5") / "README.md"
+            found = self._findings([readme])
+        # One `Verified with:` line matches two prose patterns, so the count is
+        # not the interesting part — that every finding names the stale version
+        # and the catalog file is.
+        self.assertTrue(found)
+        self.assertTrue(all("3.19.0.dev5" in f.message for f in found), found)
+        self.assertEqual({f.path for f in found}, {"patterns/handoff/README.md"})
+
+    def test_community_is_held_to_the_pin_too(self):
+        # The point of moving `community/` into the catalog: a contributed
+        # resource left on an old pin is a finding, not an accepted state.
+        with FakeRepo() as repo:
+            project = repo.project("community/a-thing", pin="3.19.0.dev5")
+            found = self._findings([project / "README.md", project / "pyproject.toml"])
+        self.assertTrue(found)
+        self.assertTrue(all("3.19.0.dev5" in f.message for f in found), found)
+
+    def test_wave_prose_is_left_alone(self):
+        with FakeRepo() as repo:
+            wave = repo.project("heroes/wave-01-voice/projects/a-thing", pin="3.18.0")
+            found = self._findings([wave / "README.md", wave / "pyproject.toml"])
+        self.assertEqual(found, [])
+
+
+class TestSnapshotPin(unittest.TestCase):
+    """A frozen wave project must be internally honest and reproducible."""
+
+    WAVE = "heroes/wave-01-voice/projects/a-thing"
+
+    def _findings(self):
+        return lint_repo.check_snapshot_pins(
+            rasa_projects.discover_projects("snapshots")
+        )
+
+    def test_consistent_snapshot_is_clean(self):
+        with FakeRepo() as repo:
+            repo.project(self.WAVE, pin="3.19.0.dev5")
+            self.assertEqual(self._findings(), [])
+
+    def test_stable_pin_needs_no_prerelease_allowance(self):
+        with FakeRepo() as repo:
+            repo.project(self.WAVE, pin="3.18.0", prerelease=None)
+            self.assertEqual(self._findings(), [])
+
+    def test_missing_lock_is_an_error(self):
+        with FakeRepo() as repo:
+            repo.project(self.WAVE, lock=None)
+            found = self._findings()
+        self.assertEqual(len(found), 1)
+        self.assertIn("missing uv.lock", found[0].message)
+        # The fix it suggests must match the pin it saw.
+        self.assertIn("--prerelease=allow", found[0].message)
+
+    def test_lock_disagreeing_with_the_pin_is_an_error(self):
+        with FakeRepo() as repo:
+            repo.project(self.WAVE, pin="3.19.0.dev5", lock="3.19.0.dev7")
+            found = self._findings()
+        self.assertEqual(len(found), 1)
+        self.assertIn("resolved rasa-pro==3.19.0.dev7", found[0].message)
+
+    def test_readme_claiming_another_version_is_an_error(self):
+        with FakeRepo() as repo:
+            repo.project(self.WAVE, pin="3.19.0.dev5", verified="3.18.0")
+            found = self._findings()
+        self.assertEqual(len(found), 1)
+        self.assertIn("one of the two is wrong", found[0].message)
+
+    def test_prerelease_pin_without_the_allowance_is_an_error(self):
+        with FakeRepo() as repo:
+            repo.project(self.WAVE, pin="3.19.0.dev5", prerelease="disallow")
+            found = self._findings()
+        self.assertEqual(len(found), 1)
+        self.assertIn("resolution will fail", found[0].message)
+
+
+class TestIndexRows(unittest.TestCase):
+    """Contributed work no index mentions is work nobody can find.
+
+    Tier-independent on purpose: `community/` is maintained and `heroes/` is
+    frozen, but both are flat or cohort-keyed, so a reader browsing the tree
+    has nothing to guess from.
+    """
+
+    def _findings(self):
+        return lint_repo.check_index_rows(rasa_projects.discover_projects("all"))
+
+    def test_listed_resources_are_clean(self):
+        with FakeRepo() as repo:
+            repo.project("community/handle-thing")
+            repo.index("community/README.md", "| [`handle-thing`](handle-thing) |\n")
+            repo.project("heroes/wave-01-voice/projects/handle-agent")
+            repo.index(
+                "heroes/wave-01-voice/README.md",
+                "| [`handle-agent`](projects/handle-agent) |\n",
+            )
+            self.assertEqual(self._findings(), [])
+
+    def test_unlisted_community_resource_is_reported(self):
+        with FakeRepo() as repo:
+            repo.project("community/handle-thing")
+            repo.index("community/README.md", "no rows yet\n")
+            found = self._findings()
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].path, "community/README.md")
+
+    def test_wave_project_is_indexed_by_its_wave_not_the_programme(self):
+        with FakeRepo() as repo:
+            repo.project("heroes/wave-01-voice/projects/handle-agent")
+            repo.index("heroes/README.md", "handle-agent\n")   # wrong index
+            repo.index("heroes/wave-01-voice/README.md", "no rows yet\n")
+            found = self._findings()
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].path, "heroes/wave-01-voice/README.md")
+
+    def test_typed_category_folders_are_not_policed(self):
+        # examples/ and patterns/ keep their inventory by review convention; a
+        # reader can guess where to look, so this check stays out of them.
+        with FakeRepo() as repo:
+            repo.project("examples/agent")
+            repo.project("patterns/handoff")
+            self.assertEqual(self._findings(), [])
+
+
+class TestHeroesLayout(unittest.TestCase):
+    """One shape per wave, so no cohort is half-filed."""
+
+    def _wave(self, repo, slug, *, charter=True, listed=True):
+        (repo.root / "heroes" / slug / "projects").mkdir(parents=True, exist_ok=True)
+        if charter:
+            repo.index(f"heroes/{slug}/README.md", "# Wave\n")
+        repo.index("heroes/README.md", f"| {slug} |\n" if listed else "no waves\n")
+
+    def test_well_formed_wave_is_clean(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            repo.project("heroes/wave-01-voice/projects/handle-agent")
+            self.assertEqual(lint_repo.check_heroes_layout(), [])
+
+    def test_unpadded_slug_is_rejected(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-1-voice")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertIn("wave-NN-<theme>", found[0].message)
+
+    def test_missing_charter_is_reported(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice", charter=False)
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertIn("missing wave charter", found[0].message)
+
+    def test_wave_absent_from_the_programme_index_is_reported(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice", listed=False)
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertIn("does not list", found[0].message)
+
+    def test_project_outside_projects_dir_is_reported(self):
+        # This is the failure that matters most: discovery skips it by depth,
+        # so without this check it would ship with zero coverage and look fine.
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            repo.project("heroes/wave-01-voice/misfiled")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertIn("skipped by every check", found[0].message)
+
+
+class TestMigrationLeavesSnapshotsAlone(unittest.TestCase):
+    """`make migrate` sweeps the catalog and stops at the frozen tier."""
+
+    def _run_migrate(self, *extra):
+        """Call the migrator in-process, offline, with the network gates off."""
+        argv = [
+            "migrate_rasa_pro.py",
+            "--dry-run",
+            "--no-index-check",
+            "--allow-missing-engine",
+            "--version",
+            "3.19.0.dev7",
+            *extra,
+        ]
+        err = io.StringIO()
+        with mock.patch.object(sys, "argv", argv), contextlib.redirect_stderr(err), \
+             contextlib.redirect_stdout(io.StringIO()):
+            code = migrate_rasa_pro.main()
+        return code, err.getvalue()
+
+    def test_targeting_a_wave_project_is_refused_not_silently_ignored(self):
+        frozen = rasa_projects.Project(
+            rasa_projects.REPO_ROOT / "heroes" / "wave-01-voice" / "projects" / "a",
+            snapshot=True,
+        )
+
+        def fake_discover(scope="catalog"):
+            return [] if scope == "catalog" else [frozen]
+
+        with mock.patch.object(migrate_rasa_pro, "discover_projects", fake_discover):
+            code, err = self._run_migrate(
+                "--project", "heroes/wave-01-voice/projects/a"
+            )
+
+        # Exit 2 is the "bad invocation" slot, and the message has to say why —
+        # "unknown project" would send the contributor off renaming things.
+        self.assertEqual(code, 2)
+        self.assertIn("Refusing to migrate frozen snapshot", err)
+
+    def test_community_is_in_the_migration_scope(self):
+        with FakeRepo() as repo:
+            repo.project("community/a-thing")
+            self.assertEqual(
+                [p.rel for p in rasa_projects.discover_projects()],
+                ["community/a-thing"],
+            )
+
+    def test_wave_projects_are_not_in_the_migration_scope(self):
+        with FakeRepo() as repo:
+            repo.project("heroes/wave-01-voice/projects/a-thing")
+            self.assertEqual(rasa_projects.discover_projects(), [])
+
+
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    # A suite that collects nothing exits 0 and prints nothing, which every
+    # caller reads as a pass. That is not hypothetical: an edit once removed
+    # this block, and `make validate` reported success while running no tests
+    # at all. Assert the suite actually ran.
+    _result = unittest.main(verbosity=2, exit=False).result
+    if _result.testsRun == 0:
+        print("no tests ran — the suite is not wired up", file=sys.stderr)
+        raise SystemExit(1)
+    raise SystemExit(0 if _result.wasSuccessful() else 1)

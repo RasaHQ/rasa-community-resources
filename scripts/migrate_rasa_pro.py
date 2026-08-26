@@ -343,11 +343,22 @@ def migrate_project(
 # ------------------------------------------------------------------------------
 
 
+def _usage_error(message: str) -> "SystemExit":
+    """Exit 2 for a bad invocation, matching argparse.
+
+    Exit 1 is reserved for a well-formed request that failed — the release does
+    not exist, the index is unreachable, a project would not migrate. Keeping
+    those apart lets a caller tell "you typed it wrong" from "it did not work".
+    """
+    print(f"error: {message}", file=sys.stderr)
+    return SystemExit(2)
+
+
 def resolve_target(args: argparse.Namespace) -> tuple[str, bool]:
     """Return (version, came_from_cli) or raise SystemExit with a clear message."""
     if args.latest:
         if args.version:
-            raise SystemExit("error: pass --latest or --version, not both")
+            raise _usage_error("pass --latest or --version, not both")
         prefix = args.match if args.match is not None else read_version_line()
         try:
             version = latest_version(
@@ -365,7 +376,7 @@ def resolve_target(args: argparse.Namespace) -> tuple[str, bool]:
     if args.version:
         version = args.version.strip()
         if not is_valid_version(version):
-            raise SystemExit(f"error: {version!r} is not a valid version string")
+            raise _usage_error(f"{version!r} is not a valid version string")
         return version, True
 
     return read_expected_version(), False
@@ -499,9 +510,24 @@ def main() -> int:
     verify_on_index(new_version, skip=args.no_index_check)
     verify_engine_support(new_version, skip=args.allow_missing_engine)
 
+    # Catalog only. Frozen snapshots under community/ and heroes/ record the
+    # version their author actually verified; rewriting that pin would turn a
+    # dated, checkable claim into an unverified assertion that the maintainers
+    # made on the contributor's behalf. See docs/SNAPSHOTS.md.
     projects = discover_projects()
+    snapshots = discover_projects("snapshots")
     if args.project:
         wanted = {p.strip().rstrip("/") for p in args.project}
+        frozen = wanted & {p.rel for p in snapshots}
+        if frozen:
+            print(
+                f"Refusing to migrate frozen snapshot(s): {', '.join(sorted(frozen))}\n"
+                f"They are pinned to the version they were verified against. To "
+                f"move one forward, re-verify it and update its README in the "
+                f"same commit. See docs/SNAPSHOTS.md.",
+                file=sys.stderr,
+            )
+            return 2
         missing = wanted - {p.rel for p in projects}
         if missing:
             print(f"Unknown project(s): {', '.join(sorted(missing))}", file=sys.stderr)
@@ -511,6 +537,11 @@ def main() -> int:
     mode = f" {YELLOW}[dry run]{RESET}" if args.dry_run else ""
     print(f"Migrating {len(projects)} project(s) → rasa-pro=={new_version}{mode}")
     print(f"{DIM}Repo: {REPO_ROOT}{RESET}")
+    if snapshots:
+        print(
+            f"{DIM}Leaving {len(snapshots)} frozen snapshot(s) untouched "
+            f"(community/, heroes/).{RESET}"
+        )
     if not is_prerelease(new_version):
         print(f"{DIM}Stable target: uv prerelease allowance will be removed.{RESET}")
     print()

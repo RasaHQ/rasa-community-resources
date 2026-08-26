@@ -21,7 +21,10 @@ if str(_SCRIPTS) not in sys.path:
 
 from rasa_projects import (  # noqa: E402
     REPO_ROOT,
+    Project,
     read_expected_version,
+    read_pyproject_pin,
+    read_required_secrets,
     uv_prerelease_args,
 )
 
@@ -102,6 +105,7 @@ def check_project(
     train: bool,
     skip_sync: bool,
     require_license: bool = False,
+    require_secrets: bool = False,
 ) -> int:
     rel = project.relative_to(REPO_ROOT).as_posix() if project.is_relative_to(REPO_ROOT) else str(project)
     print(f"\n{BLUE}═══ {rel} ═══{RESET}")
@@ -213,6 +217,31 @@ print("validate_project: ok")
             # be mistaken for a passing one.
             warn("RASA_LICENSE missing or placeholder — SKIPPING rasa train (not verified)")
             return 0
+
+        # Provider keys this resource declares beyond the catalog defaults.
+        # Without them `rasa train` dies expanding an environment variable in
+        # endpoints.yml, which reads as a broken resource when it is really an
+        # unconfigured runner. Naming the missing key is the whole point.
+        missing = [
+            name for name in read_required_secrets(Project(project))
+            if not os.environ.get(name, "").strip()
+        ]
+        if missing:
+            names = ", ".join(missing)
+            if require_secrets:
+                fail(
+                    f"{names} missing — this resource declares it in "
+                    f"[tool.rasa-catalog] required-secrets and cannot train "
+                    f"without it."
+                )
+                return 1
+            warn(
+                f"{names} not set — SKIPPING rasa train (not verified). This "
+                f"resource runs on a provider the default key set does not "
+                f"cover; see [tool.rasa-catalog] required-secrets."
+            )
+            return 0
+
         info("rasa train")
         try:
             _run([uv, "run", "rasa", "train"], cwd=project)
@@ -250,14 +279,45 @@ def main() -> int:
         action="store_true",
         help="Skip uv sync (assume install-all already ran)",
     )
+    parser.add_argument(
+        "--require-secrets",
+        action="store_true",
+        help=(
+            "Fail instead of skipping when a secret named in "
+            "[tool.rasa-catalog] required-secrets is missing"
+        ),
+    )
+    parser.add_argument(
+        "--use-project-pin",
+        action="store_true",
+        help=(
+            "Assert the version the project itself pins, not RASA_PRO_VERSION. "
+            "This is how frozen snapshots under community/ and heroes/ are "
+            "checked (see docs/SNAPSHOTS.md)"
+        ),
+    )
     args = parser.parse_args()
 
-    expected = read_expected_version(args.version)
+    if args.use_project_pin and args.version:
+        parser.error("--use-project-pin and --version select different targets")
+
     project = Path(args.project)
     if not project.is_absolute():
         project = (REPO_ROOT / project).resolve()
     else:
         project = project.resolve()
+
+    if args.use_project_pin:
+        expected = read_pyproject_pin(Project(project))
+        if not expected:
+            print(
+                f"{args.project} declares no rasa-pro==<version> pin, so there "
+                f"is nothing to assert against",
+                file=sys.stderr,
+            )
+            return 2
+    else:
+        expected = read_expected_version(args.version)
 
     return check_project(
         project,
@@ -265,6 +325,7 @@ def main() -> int:
         train=args.train,
         skip_sync=args.skip_sync,
         require_license=args.require_license,
+        require_secrets=args.require_secrets,
     )
 
 

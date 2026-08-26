@@ -1,0 +1,13 @@
+schema:
+  # Public: other skills may read how (and whether) this session was verified.
+  # No `description` here — Mantle only surfaces descriptions on set_fields, so
+  # declaring one on a tool-written field fails validation.
+  public:
+    verification_method:
+      type: text
+  # Private: never leaves this skill. Other skills cannot read these at all —
+  # Mantle enforces it at runtime, the model cannot talk its way past it.
+  private:
+    passphrase_attempts:
+      type: int
+      initial_value: 0

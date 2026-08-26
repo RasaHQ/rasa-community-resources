@@ -1,0 +1,16 @@
+# Project memory — the facts that outlive a single skill.
+#
+# Anything here is readable and writable by EVERY skill, and is what lets a
+# later skill skip work an earlier skill already did. Keep it to facts about
+# the end user and the session, not to one skill's working state.
+authenticated:
+  type: bool
+  description: Whether the caller has proven their identity this session.
+  initial_value: false
+customer_id:
+  type: text
+  description: Meridian customer id, set once identity is proven.
+preferred_language:
+  type: text
+  description: Language the customer asked to be served in.
+  initial_value: en

@@ -21,8 +21,8 @@ jobs:
     name: offline gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       # No dependencies to install: the tooling is stdlib-only by design.
@@ -33,7 +33,7 @@ jobs:
       - name: lint report
         if: always()
         run: python scripts/lint_repo.py --json > lint-report.json || true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: lint-report
@@ -43,8 +43,8 @@ jobs:
     name: upstream release check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
 
@@ -71,17 +71,48 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       projects: ${{ steps.list.outputs.projects }}
+      snapshots: ${{ steps.list.outputs.snapshots }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      # Full history: selecting which frozen snapshots a pull request touched
+      # needs a real merge base to diff against.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - id: list
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
+          set -euo pipefail
+          to_json() {
+            python -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'
+          }
+
+          # The maintained catalog: always checked in full.
           printf 'projects=' >> "$GITHUB_OUTPUT"
-          python scripts/list_projects.py --paths-only \
-            | python -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))' \
-            >> "$GITHUB_OUTPUT"
+          python scripts/list_projects.py --paths-only | to_json >> "$GITHUB_OUTPUT"
+
+          # Frozen snapshots resolve against a committed lock, so they stay
+          # reproducible whatever upstream does. Running every past cohort's
+          # project on every pull request would still be pure cost, so a PR
+          # checks only what it touched; scheduled and push runs check them all,
+          # which is where a yanked release or a rotted lock actually surfaces.
+          ALL=$(python scripts/list_projects.py --scope snapshots --paths-only)
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            CHANGED=$(git diff --name-only "origin/${BASE_REF}...HEAD")
+            SELECTED=""
+            for path in ${ALL}; do
+              if printf '%s\n' "${CHANGED}" | grep -q "^${path}/"; then
+                SELECTED="${SELECTED}${path}"$'\n'
+              fi
+            done
+          else
+            SELECTED="${ALL}"
+          fi
+          printf 'snapshots=' >> "$GITHUB_OUTPUT"
+          printf '%s\n' "${SELECTED}" | to_json >> "$GITHUB_OUTPUT"
 
   check:
     name: ${{ matrix.project }}
@@ -97,12 +128,17 @@ jobs:
       RASA_LICENSE: ${{ secrets.RASA_LICENSE }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       DEEPGRAM_API_KEY: ${{ secrets.DEEPGRAM_API_KEY }}
+      # Resources built on another provider declare the key they need in
+      # [tool.rasa-catalog] required-secrets. When the secret is absent the
+      # train step skips and says so rather than failing on an unexpanded
+      # variable; add the secret and those resources start training too.
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           enable-cache: true
           cache-dependency-glob: "${{ matrix.project }}/uv.lock"
@@ -120,3 +156,33 @@ jobs:
         run: |
           python scripts/check_project.py "${{ matrix.project }}" \
             --train --require-license --skip-sync
+
+  snapshots:
+    # A frozen resource is only worth keeping if the claim on its README is
+    # true, and the claim is "this installs and validates at the version I
+    # pinned". So it is asserted against its own pin — never RASA_PRO_VERSION,
+    # which it is exempt from by design. See docs/SNAPSHOTS.md.
+    #
+    # No training step: a past cohort's project should not need live secrets,
+    # and a train failure two years on is an archive decision, not a red build
+    # on somebody else's pull request.
+    name: snapshot ${{ matrix.project }}
+    needs: [validate, discover]
+    if: needs.discover.outputs.snapshots != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJSON(needs.discover.outputs.snapshots) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+          cache-dependency-glob: "${{ matrix.project }}/uv.lock"
+
+      - name: check ${{ matrix.project }}
+        run: python scripts/check_project.py "${{ matrix.project }}" --use-project-pin

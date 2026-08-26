@@ -28,7 +28,75 @@ VERSION_LINE_FILE = REPO_ROOT / "RASA_PRO_VERSION_LINE"
 # RASA_PRO_VERSION_LINE, so the day it lands on a stable release the tooling
 # says so on its own rather than waiting for someone to notice.
 REQUIRED_ENGINE_MODULE = "rasa/calm_v2/"
-SCAN_ROOTS = ("examples", "tutorials")
+
+# ------------------------------------------------------------------------------
+# Where resources live, and what each root promises
+# ------------------------------------------------------------------------------
+# Two tiers. The difference is a maintenance promise, not a topic:
+#
+#   catalog   Maintained material. Every project pins RASA_PRO_VERSION, moves in
+#             lockstep under `make migrate`, and is expected to stay green for
+#             as long as it is checked in.
+#
+#   snapshot  Contributed material, frozen at the version its author verified.
+#             `make migrate` does not rewrite it and the repo-wide version check
+#             skips it, because nobody has undertaken to re-verify a past
+#             cohort's project against every future release. It is still held to
+#             internal consistency, metadata, secret hygiene, and a real lock.
+#
+# Freezing is a property of the root, so a contributor never has to remember a
+# flag: putting a project under `community/` or `heroes/` *is* the declaration.
+#
+# `depth` is how many path parts separate the root from `pyproject.toml`. It is
+# what stops a nested `tutorial/snippets/pyproject.toml` inside an example from
+# being discovered as a resource in its own right.
+
+
+@dataclass(frozen=True)
+class Root:
+    name: str
+    depth: int
+    snapshot: bool
+
+
+CATALOG_ROOTS = (
+    Root("examples", 2, snapshot=False),
+    Root("tutorials", 2, snapshot=False),
+    Root("patterns", 2, snapshot=False),
+    # Contributed work is maintained too. An example pinned to a release the
+    # catalog has moved off is one nobody clones — being current is most of
+    # what makes it worth checking in. The contributor is not signed up for
+    # that; `make migrate` is, and the maintainer who runs it re-stamps
+    # `Assessed by`. What a contributor keeps is authorship, permanently.
+    Root("community", 2, snapshot=False),    # community/<resource>/
+)
+SNAPSHOT_ROOTS = (
+    # Wave projects are the exception, and deliberately so: a cohort finishes,
+    # its participants move on, and the work is a dated record of what that
+    # cohort built rather than something anyone undertakes to keep running.
+    Root("heroes", 4, snapshot=True),        # heroes/<wave>/projects/<project>/
+)
+ROOTS = CATALOG_ROOTS + SNAPSHOT_ROOTS
+
+SCOPES = {
+    "catalog": CATALOG_ROOTS,
+    "snapshots": SNAPSHOT_ROOTS,
+    "all": ROOTS,
+}
+
+# Names only, for the many callers that just need "is this path frozen?".
+SCAN_ROOTS = tuple(root.name for root in CATALOG_ROOTS)
+SNAPSHOT_ROOT_NAMES = tuple(root.name for root in SNAPSHOT_ROOTS)
+
+# Contributed resources, flat and author-prefixed: `community/<handle>-<slug>/`.
+COMMUNITY_ROOT = "community"
+
+# Rasa Heroes cohorts. `heroes/<wave>/` holds the wave charter and its projects.
+HEROES_ROOT = "heroes"
+WAVE_DIR = "projects"
+# wave-01-voice, wave-12-observability — zero-padded so the directory listing
+# and the chronological order are the same thing.
+WAVE_SLUG_RE = re.compile(r"^wave-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 PACKAGE = "rasa-pro"
 PYPI_JSON_URL = "https://pypi.org/pypi/{package}/json"
@@ -292,6 +360,9 @@ def release_carries_engine(
 @dataclass(frozen=True)
 class Project:
     path: Path
+    # Frozen at the version its author verified; excluded from migration and
+    # from the repo-wide pin assertion. See the root table above.
+    snapshot: bool = False
 
     @property
     def rel(self) -> str:
@@ -338,20 +409,51 @@ def _declares_rasa_pro(pyproject: Path) -> bool:
     return any(isinstance(dep, str) and dep.startswith("rasa-pro") for dep in deps)
 
 
-def discover_projects() -> list[Project]:
+def discover_projects(scope: str = "catalog") -> list[Project]:
+    """Rasa Pro resources under the roots selected by `scope`.
+
+    The default is the maintained catalog, deliberately: every caller that
+    migrates pins or asserts RASA_PRO_VERSION means that tier and only that
+    tier. Frozen snapshots have to be asked for by name, so no future caller
+    picks them up by accident and starts rewriting a past cohort's work.
+    """
+    try:
+        roots = SCOPES[scope]
+    except KeyError:
+        raise ValueError(
+            f"unknown scope {scope!r}; expected one of {', '.join(SCOPES)}"
+        ) from None
+
     projects: list[Project] = []
-    for root_name in SCAN_ROOTS:
-        root = REPO_ROOT / root_name
-        if not root.is_dir():
+    for root in roots:
+        base = REPO_ROOT / root.name
+        if not base.is_dir():
             continue
-        for pyproject in sorted(root.rglob("pyproject.toml")):
-            # Only top-level resources: examples/<name>/pyproject.toml or
-            # tutorials/<name>/pyproject.toml (skip nested tutorial/snippets copies).
-            if len(pyproject.relative_to(root).parts) != 2:
+        for pyproject in sorted(base.rglob("pyproject.toml")):
+            # Depth pins the resource level for this root, which is what skips
+            # nested copies such as an example's own tutorial/snippets tree.
+            if len(pyproject.relative_to(base).parts) != root.depth:
                 continue
             if _declares_rasa_pro(pyproject):
-                projects.append(Project(pyproject.parent))
+                projects.append(Project(pyproject.parent, snapshot=root.snapshot))
     return projects
+
+
+def is_snapshot_path(rel_path: str) -> bool:
+    """True for a repo-relative path inside a frozen-snapshot root."""
+    return rel_path.split("/", 1)[0] in SNAPSHOT_ROOT_NAMES
+
+
+def discover_waves() -> list[Path]:
+    """Every `heroes/<wave>/` directory, in cohort order."""
+    base = REPO_ROOT / HEROES_ROOT
+    if not base.is_dir():
+        return []
+    return sorted(
+        path
+        for path in base.iterdir()
+        if path.is_dir() and not path.name.startswith(".")
+    )
 
 
 def read_pyproject_pin(project: Project) -> str | None:
@@ -374,6 +476,24 @@ def read_uv_prerelease_setting(project: Project) -> str | None:
         return None
     value = data.get("tool", {}).get("uv", {}).get("prerelease")
     return value if isinstance(value, str) else None
+
+
+def read_required_secrets(project: Project) -> list[str]:
+    """Provider keys this resource needs before `rasa train` can run.
+
+    Declared as `[tool.rasa-catalog] required-secrets` in the project's
+    pyproject. Most resources need nothing here: RASA_LICENSE, OPENAI_API_KEY
+    and DEEPGRAM_API_KEY are the catalog defaults and CI carries all three. A
+    resource built on a different provider does not, and without a declaration
+    its train step fails on a missing environment variable and reads as a
+    broken resource rather than an unconfigured runner.
+    """
+    try:
+        data = tomllib.loads(project.pyproject.read_text(encoding="utf-8"))
+    except (tomllib.TOMLDecodeError, OSError):
+        return []
+    declared = data.get("tool", {}).get("rasa-catalog", {}).get("required-secrets", [])
+    return [item for item in declared if isinstance(item, str)]
 
 
 def read_readme_verified(project: Project) -> str | None:

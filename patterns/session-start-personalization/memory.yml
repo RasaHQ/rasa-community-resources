@@ -1,0 +1,26 @@
+# Project-wide memory shared across every skill (resolves to session.project.*).
+# All fields are populated by the session-start profile lookup and are never
+# LLM-settable, so the agent cannot invent personal details.
+customer_name:
+  type: text
+  description: >
+    The name to address the customer by (their preferred name, which may differ
+    from their legal name). Set at session start.
+customer_tier:
+  type: text
+  description: The customer's membership tier, e.g. Premier. Set at session start.
+member_since:
+  type: text
+  description: The year the customer joined, for a warm welcome-back. Set at session start.
+time_of_day:
+  type: categorical
+  enum_values: [morning, afternoon, evening]
+  description: Part of day, computed at session start for the greeting.
+default_account_id:
+  type: text
+  description: >
+    Account id of the customer's usual account (e.g. acc_checking). Skills should
+    offer this first before listing all accounts. Set at session start.
+default_account_label:
+  type: text
+  description: Human-readable label of the usual account, e.g. Everyday Checking.
