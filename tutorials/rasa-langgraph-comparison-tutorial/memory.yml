@@ -1,0 +1,17 @@
+# Project memory — the trip, shared by every skill.
+#
+# In the CALM v1 original the destination lived in a slot marked
+# `reset_after_flow_ends: false`, so it would survive into the next flow, with a
+# paragraph of slot description telling the model when it was allowed to reuse
+# it. Here it is simply project scope: every skill reads it, nobody copies it.
+trip_destination:
+  type: text
+  description: >
+    City the traveller is arranging things in, e.g. Basel. Usually the arrival
+    city of their next flight.
+  llm_settable: true
+trip_destination_code:
+  type: text
+  description: >
+    Airport code the traveller is flying into, e.g. BSL. Written by
+    list_flight_bookings, never by the model.

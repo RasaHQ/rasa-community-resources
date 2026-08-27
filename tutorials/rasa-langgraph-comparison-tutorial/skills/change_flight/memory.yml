@@ -1,0 +1,28 @@
+schema:
+  public:
+    current_flight_id:
+      type: int
+      description: >
+        Which booked flight the traveller wants to change, by flight_id. If they
+        hold only one, use that one.
+      llm_settable: true
+    search_start_date:
+      type: text
+      description: >
+        Earliest departure date to search, ISO YYYY-MM-DD. Only set this if the
+        traveller named a date or a week.
+      llm_settable: true
+    search_end_date:
+      type: text
+      description: Latest departure date to search, ISO YYYY-MM-DD.
+      llm_settable: true
+    selected_flight_id:
+      type: int
+      description: >
+        The flight id they chose from the search results. Only ever a value that
+        appeared in those results.
+      llm_settable: true
+  private:
+    # Written by the search tool, never by the model.
+    ticket_no:
+      type: text
