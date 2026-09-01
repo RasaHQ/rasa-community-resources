@@ -46,6 +46,8 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 | Poly voice insurance | Poly | Insurance | [`examples/mantle-voice-insurance-skills`](examples/mantle-voice-insurance-skills) |
 | Schedora voice appointments | Schedora | Clinic booking | [`examples/mantle-voice-appointment-skills`](examples/mantle-voice-appointment-skills) |
 | Autono voice car purchase | Autono | Auto retail | [`examples/mantle-voice-car-purchase-skills`](examples/mantle-voice-car-purchase-skills) |
+| Vela voice banking (Rime TTS) | Vela | Retail banking | [`examples/mantle-voice-rime-skills`](examples/mantle-voice-rime-skills) |
+| Vela voice banking (Speechmatics ASR) | Vela | Retail banking | [`examples/mantle-voice-speechmatics-skills`](examples/mantle-voice-speechmatics-skills) |
 | Atlas voice tutorial tree | Atlas | Horizon Travel | [`tutorials/rasa-voice-agent-tutorial`](tutorials/rasa-voice-agent-tutorial) |
 
 Full catalogs (including empty areas accepting contributions) live in each category README below.

@@ -33,6 +33,8 @@ Examples: `mantle-voice-banking-skills`, `mantle-voice-telco-skills`.
 
 The flagship travel agent is `mantle-voice-agent`, without a domain suffix. New examples should follow the domain-skills pattern unless there is a strong reason not to.
 
+Two examples name a **voice provider** rather than a domain — `mantle-voice-rime-skills` and `mantle-voice-speechmatics-skills`. They share one banking agent on purpose, so the voice stack is the only thing that differs between them; naming them by domain would have made them look like duplicates of each other and of `mantle-voice-banking-skills`.
+
 Each example is one directory with its own `README.md`, `pyproject.toml`, and (for Mantle voice agents) the usual Skills layout documented in that project’s `AGENTS.md`.
 
 ---
@@ -47,6 +49,8 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Poly voice insurance | Poly | Insurance | [`mantle-voice-insurance-skills`](mantle-voice-insurance-skills) | 2026-08-13 |
 | Schedora voice appointments | Schedora | Clinic booking | [`mantle-voice-appointment-skills`](mantle-voice-appointment-skills) | 2026-08-13 |
 | Autono voice car purchase | Autono | Auto retail | [`mantle-voice-car-purchase-skills`](mantle-voice-car-purchase-skills) | 2026-08-13 |
+| Vela voice banking on Rime | Vela | Retail banking / Rime TTS | [`mantle-voice-rime-skills`](mantle-voice-rime-skills) | 2026-08-26 |
+| Vela voice banking on Speechmatics | Vela | Retail banking / custom ASR | [`mantle-voice-speechmatics-skills`](mantle-voice-speechmatics-skills) | 2026-08-26 |
 
 When you add an example, append a row here in the same PR.
 

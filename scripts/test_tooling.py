@@ -629,12 +629,19 @@ class TestAgentSpecContract(unittest.TestCase):
     def test_key_list_matches_the_installed_engine(self):
         spec = None
         for venv in Path(".").glob("*/*/.venv/lib/*/site-packages"):
-            candidate = venv / "rasa" / "calm_v2" / "config" / "agent_spec.py"
-            if candidate.is_file():
-                spec = candidate
+            # The engine package was renamed calm_v2 -> mantle in 3.20. Look
+            # for both: pinning one name is how this test silently started
+            # skipping after the rename, which is worse than failing.
+            for package in ("mantle", "calm_v2"):
+                candidate = venv / "rasa" / package / "config" / "agent_spec.py"
+                if candidate.is_file():
+                    spec = candidate
+                    break
+            if spec is not None:
                 break
         if spec is None:
             self.skipTest("no installed rasa-pro to compare against")
+        self.assertTrue(spec.is_file(), spec)
 
         source = spec.read_text()
         body = source.split("def _agent_spec_payload", 1)[1].split("\ndef ", 1)[0]

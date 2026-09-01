@@ -1,0 +1,43 @@
+# External integrations for the Vela voice banking agent.
+#
+# The point of this resource is the TTS half. Rime is a first-class engine in
+# Rasa — `tts.name: rime` is all it takes, and RIME_API_KEY is read from the
+# environment by the engine itself. The companion resource
+# (../mantle-voice-speechmatics-skills) swaps the ASR half for a provider Rasa
+# does not ship, and has to write an engine to do it.
+
+llm:
+  provider: openai
+  model: gpt-5.2
+  api_key_env: OPENAI_API_KEY
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    # Deepgram Flux listens…
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    # …and Rime Mist v2 speaks.
+    #
+    # Both keys in the language map are required, and the second one is easy to
+    # miss. `voice` is Rime's `speaker` — Rasa renames it. `language` is Rime's
+    # own ISO-639-3 code (`eng`), NOT the Rasa language key above it (`en`).
+    #
+    # Omitting `language` does not fail validation. It builds a websocket URL
+    # containing `lang=None`, and Rime rejects the connection with a bare
+    # HTTP 400 the first time the agent tries to speak. Verified both ways
+    # against the live API — see "What breaks" in the README.
+    tts:
+      name: rime
+      language_map:
+        en:
+          voice: cove       # Rime speaker; catalogue has many others
+          language: eng     # ISO-639-3, not "en"
+      model_id: mistv2
