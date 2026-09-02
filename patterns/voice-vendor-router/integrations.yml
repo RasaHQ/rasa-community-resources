@@ -1,0 +1,60 @@
+# The point of this resource. Both halves of the voice stack are routed.
+#
+# Every entry under `providers:` is an ordinary Rasa engine config. The router
+# hands each one to Rasa's own `asr_engine_from_config` / `tts_engine_from_config`,
+# so anything Rasa can resolve works here — the built-ins, anything Rasa adds
+# later, and any custom engine by dotted path.
+#
+# Providers whose credentials are absent are skipped with a log line rather than
+# failing the call, so this file can name more vendors than any one deployment
+# has keys for. Run `make probe` to see which ones your environment can reach.
+
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+
+    asr:
+      name: voicerouter.RoutedASR
+      policy:
+        cooldown_seconds: 30
+      providers:
+        # Built-in.
+        - name: deepgram
+          language_map:
+            en: { model: flux-general-en }
+        # Not a vendor Rasa ships — reached by dotted path, same as any other.
+        - name: engines.speechmatics.SpeechmaticsASR
+          label: speechmatics
+          language_map:
+            en: { language: en }
+        # Built-in, listed without a key on most machines: it demonstrates the
+        # skip rather than being a real third choice here.
+        - name: azure
+          label: azure
+          language_map:
+            en: { language: en-US }
+
+    tts:
+      name: voicerouter.RoutedTTS
+      policy:
+        cooldown_seconds: 30
+      providers:
+        - name: rime
+          language_map:
+            en: { voice: cove, language: eng }
+          model_id: mistv2
+        - name: deepgram
+          language_map:
+            en: { model: aura-2-andromeda-en }
