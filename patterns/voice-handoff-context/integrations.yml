@@ -1,0 +1,25 @@
+# LLM provider and channels.
+#
+# The pattern is channel-agnostic on purpose: a handoff carries the same state
+# whether the caller is on a phone line or a web widget, and nothing here needs
+# a voice vendor to demonstrate it. If you run this over voice, the context
+# package is unchanged — see patterns/voice-vendor-router for the voice side.
+#
+# The orchestrator LLM is a model-group reference. Provider, model and
+# credentials live on the named group, never inline under `llm:` — the inline
+# form was removed in rasa-pro 3.20.0.dev6.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
