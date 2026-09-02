@@ -536,6 +536,29 @@ make inspect
 Only `RASA_LICENSE` and `OPENAI_API_KEY` are needed to train — every voice key is
 optional, and the router runs on whichever you have.
 
+The agent here is deliberately tiny — one persona, two skills — because its job
+is to exercise the router, not to be a product.
+
+## In a real agent
+
+[`examples/mantle-voice-routed-skills`](../../examples/mantle-voice-routed-skills)
+is the worked example: a full banking agent whose ASR and TTS are both routed.
+It is the same Vela as
+[`mantle-voice-rime-skills`](../../examples/mantle-voice-rime-skills) (one
+vendor Rasa ships) and
+[`mantle-voice-speechmatics-skills`](../../examples/mantle-voice-speechmatics-skills)
+(one it does not), so the three can be read side by side with the voice stack as
+the only variable.
+
+It also carries two things this pattern does not:
+
+- **`make drill`** — replays a banking call with a vendor failing on a schedule
+  and prints who speaks each line and why, so the failover rule can be seen
+  without running a vendor out of credits.
+- **`stacks/`** — four complete alternative configurations of the same agent
+  (resilient, cost-tiered, hyperscaler, offline) with the trade-off each one
+  makes written down, switchable with `make stack STACK=<name>`.
+
 ## Verified
 
 - `validate_project` and `rasa train` pass on the catalog pin

@@ -1,0 +1,84 @@
+# Vela, routed for spend rather than for continuity.
+#
+# The default stack (resilient.yml) keeps one voice and changes it only when a
+# vendor fails. This one deliberately does not. It classifies each utterance and
+# sends the cheap ones somewhere cheap.
+#
+# An agent says two different kinds of thing. "One moment." is said thousands of
+# times a day and nobody listens closely. "Transferring four hundred pounds to
+# Sam Rivera — shall I go ahead?" is said once and is the line the caller
+# replays in their head. Paying premium rates for both is a decision, usually an
+# unexamined one.
+#
+# The cost: Vela audibly changes voice *inside* a call, on a healthy stack. Some
+# callers do not notice. Some find it unsettling. Listen to it before shipping
+# it — `make drill STACK=cost-tiered` prints which provider each line lands on.
+#
+# Classification is length and regex, not an LLM. Asking a model how to say a
+# three-word acknowledgement would cost more than the synthesis it is saving.
+
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+
+    asr:
+      name: voicerouter.RoutedASR
+      policy:
+        cooldown_seconds: 60
+      providers:
+        - name: deepgram
+          language_map:
+            en: { model: flux-general-en }
+        - name: voicerouter.providers.whisper.FasterWhisperASR
+          label: whisper-local
+          model_id: tiny.en
+          device: cpu
+          compute_type: int8
+
+    tts:
+      name: voicerouter.RoutedTTS
+      policy:
+        cooldown_seconds: 60
+        # Declaration order is priority order — the first class that matches
+        # wins, so put the narrow one above the broad one. A class needs
+        # `max_chars` or `patterns`; one with neither is rejected rather than
+        # silently matching everything.
+        utterance_classes:
+          filler:
+            max_chars: 32
+            patterns:
+              - "^(ok|okay|got it|sure|one moment|just a second|let me check)\\b"
+            prefer: [deepgram-cheap]
+          disclosure:
+            patterns:
+              - "\\b(transfer|transferring|confirm|are you sure|shall i go ahead)\\b"
+              - "\\b(pounds|dollars|euros)\\b"
+              - "\\b(blocked|cancelled|card ending)\\b"
+            prefer: [rime-premium]
+      providers:
+        - name: rime
+          label: rime-premium
+          language_map:
+            en: { voice: cove, language: eng }
+          model_id: mistv2
+        - name: deepgram
+          label: deepgram-cheap
+          language_map:
+            en: { model: aura-2-andromeda-en }
+        - name: voicerouter.providers.openai.OpenAITTS
+          label: openai
+          language_map:
+            en: { voice: alloy }
+          model_id: gpt-4o-mini-tts
