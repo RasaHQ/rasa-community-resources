@@ -117,11 +117,36 @@ class RoutedASR:
         return self._providers[self._active_index]
 
     def _candidates(self) -> list[int]:
-        healthy, unhealthy = [], []
+        """Healthy providers first, then ones merely cooling down.
+
+        Cooling-down providers stay on the list on purpose: a vendor that was
+        rate-limited ten seconds ago is still a better bet than a deaf agent.
+
+        Providers *disabled* by a permanent failure are excluded outright. A
+        rejected key fails identically every time, so trying one does not buy a
+        chance of hearing the caller — it only delays the provider that might.
+        """
+        healthy, cooling = [], []
         for i, provider in enumerate(self._providers):
-            target = healthy if self._health.get(provider.spec.label).is_available() else unhealthy
-            target.append(i)
-        return healthy + unhealthy
+            health = self._health.get(provider.spec.label)
+            if health.disabled:
+                continue
+            (healthy if health.is_available() else cooling).append(i)
+        return healthy + cooling
+
+    def _exhausted_message(self, what: str) -> str:
+        """Say which providers are out and why, not just that none are left."""
+        parts = []
+        for provider in self._providers:
+            h = self._health.get(provider.spec.label)
+            kind = h.last_verdict.kind.value if h.last_verdict else "unused"
+            if h.disabled:
+                parts.append(f"{provider.spec.label}: disabled ({kind})")
+            elif h.opened_at is not None:
+                parts.append(f"{provider.spec.label}: {kind}, retry in {h.reopens_in:.0f}s")
+            else:
+                parts.append(f"{provider.spec.label}: {kind}")
+        return f"voicerouter: no {what} provider available — " + "; ".join(parts)
 
     # ---- lifecycle ----------------------------------------------------------
 
@@ -132,11 +157,12 @@ class RoutedASR:
             try:
                 await provider.engine.connect()
             except Exception as exc:  # noqa: BLE001
-                self._health.get(provider.spec.label).record_failure(exc)
+                verdict = self._health.get(provider.spec.label).record_failure(exc)
                 logger.warning(
                     "voicerouter.asr.connect_failed",
                     provider=provider.spec.label,
                     error=str(exc),
+                    verdict=str(verdict),
                 )
                 last_error = exc
                 continue
@@ -146,7 +172,7 @@ class RoutedASR:
             logger.info("voicerouter.asr.connected", provider=provider.spec.label)
             return
         raise ConnectionError(
-            f"voicerouter: no ASR provider could connect. Last error: {last_error}"
+            f"{self._exhausted_message('ASR')}. Last error: {last_error}"
         )
 
     async def close_connection(self) -> None:
@@ -202,12 +228,13 @@ class RoutedASR:
                     yield event
                 return  # clean end of stream: the call is over
             except Exception as exc:  # noqa: BLE001
-                health.record_failure(exc)
+                verdict = health.record_failure(exc)
                 self._connected.discard(self._active_index)
                 logger.warning(
                     "voicerouter.asr.stream_failed",
                     provider=provider.spec.label,
                     error=str(exc),
+                    verdict=str(verdict),
                 )
 
             remaining = [i for i in self._candidates() if i != self._active_index]

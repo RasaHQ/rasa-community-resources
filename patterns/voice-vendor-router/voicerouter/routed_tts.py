@@ -140,17 +140,38 @@ class RoutedTTS:
         return self._providers[self._active_index]
 
     def _candidates(self) -> list[int]:
-        """Healthy providers first, in configured order, then the rest.
+        """Healthy providers first, then ones merely cooling down.
 
-        The unhealthy ones stay on the list deliberately: a provider in cooldown
-        is still better than silence, so if every circuit is open the router
-        tries anyway rather than giving up.
+        Cooling-down providers stay on the list on purpose: a vendor that was
+        rate-limited ten seconds ago is still a better bet than silence, so if
+        every circuit is open the router tries anyway rather than giving up.
+
+        Providers *disabled* by a permanent failure are excluded outright. A
+        rejected key or a malformed request fails identically every time, so
+        trying one does not buy a chance of audio — it only spends the caller's
+        patience before the next provider gets its turn.
         """
-        healthy, unhealthy = [], []
+        healthy, cooling = [], []
         for i, provider in enumerate(self._providers):
-            target = healthy if self._health.get(provider.spec.label).is_available() else unhealthy
-            target.append(i)
-        return healthy + unhealthy
+            health = self._health.get(provider.spec.label)
+            if health.disabled:
+                continue
+            (healthy if health.is_available() else cooling).append(i)
+        return healthy + cooling
+
+    def _exhausted_message(self, what: str) -> str:
+        """Say which providers are out and why, not just that none are left."""
+        parts = []
+        for provider in self._providers:
+            h = self._health.get(provider.spec.label)
+            kind = h.last_verdict.kind.value if h.last_verdict else "unused"
+            if h.disabled:
+                parts.append(f"{provider.spec.label}: disabled ({kind})")
+            elif h.opened_at is not None:
+                parts.append(f"{provider.spec.label}: {kind}, retry in {h.reopens_in:.0f}s")
+            else:
+                parts.append(f"{provider.spec.label}: {kind}")
+        return f"voicerouter: no {what} provider available — " + "; ".join(parts)
 
     async def _ensure_connected(self, index: int) -> None:
         if index in self._connected:
@@ -173,11 +194,12 @@ class RoutedTTS:
             try:
                 await self._ensure_connected(index)
             except Exception as exc:  # noqa: BLE001 - vendor clients vary
-                self._health.get(provider.spec.label).record_failure(exc)
+                verdict = self._health.get(provider.spec.label).record_failure(exc)
                 logger.warning(
                     "voicerouter.tts.connect_failed",
                     provider=provider.spec.label,
                     error=str(exc),
+                    verdict=str(verdict),
                 )
                 last_error = exc
                 continue
@@ -185,9 +207,7 @@ class RoutedTTS:
             self._health.get(provider.spec.label).record_success()
             logger.info("voicerouter.tts.connected", provider=provider.spec.label)
             return
-        raise TTSError(
-            f"voicerouter: no TTS provider could connect. Last error: {last_error}"
-        )
+        raise TTSError(f"{self._exhausted_message('TTS')}. Last error: {last_error}")
 
     async def close_connection(self) -> None:
         for index in list(self._connected):
@@ -232,7 +252,7 @@ class RoutedTTS:
                         health.record_success()
                     yield chunk
             except Exception as exc:  # noqa: BLE001 - any vendor failure is a failover
-                health.record_failure(exc)
+                verdict = health.record_failure(exc)
                 self._connected.discard(index)
                 last_error = exc
                 if emitted:
@@ -240,21 +260,22 @@ class RoutedTTS:
                         "voicerouter.tts.failed_mid_stream",
                         provider=provider.spec.label,
                         error=str(exc),
+                        verdict=str(verdict),
                         note="sentence truncated; provider marked unhealthy",
                     )
                     return
                 logger.warning(
                     "voicerouter.tts.failing_over",
                     from_provider=provider.spec.label,
-                    error=str(exc),
+                    verdict=str(verdict),
                     attempt=attempts,
                 )
                 continue
             return
 
         raise TTSError(
-            f"voicerouter: every TTS provider failed for this utterance "
-            f"({attempts} attempted). Last error: {last_error}"
+            f"{self._exhausted_message('TTS')} — {attempts} attempted for this "
+            f"utterance. Last error: {last_error}"
         )
 
     async def start_response(self, *args: Any, **kwargs: Any) -> Any:

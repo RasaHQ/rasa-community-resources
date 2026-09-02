@@ -317,6 +317,48 @@ it has:
 
 `make probe` reports this before a call rather than during one.
 
+**It routes on what the failure meant, not just that one happened.** This is
+the difference between a router and a wrapper. Every failure is classified, and
+the class decides how long — if ever — that provider is skipped:
+
+| Failure | Class | Consequence |
+|---|---|---|
+| `401` / `403`, rejected key | `auth` | **disabled** — no amount of waiting fixes a wrong key |
+| `400` / `422`, malformed request | `config` | **disabled** — the config is wrong, not the vendor |
+| `402`, "insufficient credit", quota text | `quota` | parked ~15 min; the account has to be topped up |
+| `429` | `rate_limit` | reopens after the vendor's own `Retry-After`, else ~20 s |
+| `5xx`, timeout, connection reset | `transient` / `unavailable` | ~15–30 s |
+
+The signals come from real exception types — `aiohttp`, `websockets`,
+`botocore`, `google-api-core` — plus the message text, because a wrapped
+exception loses the attributes but usually keeps the number. AWS gets special
+handling: it sends `ThrottlingException` with a **400**, which a status-only
+reading would file as permanently broken.
+
+Seen end to end, with the genuine Rime misconfiguration as the primary:
+
+```text
+[warning] voicerouter.tts.connect_failed provider=rime(misconfigured)
+          verdict='config (HTTP 400) — skipping permanently'
+TURN 1: served_by='deepgram'
+TURN 2: served_by='deepgram'          # rime is not retried at all
+HEALTH  rime(misconfigured)  disabled  kind=config
+```
+
+Turn 2 is the point. A wrapper would spend an attempt on Rime every sentence for
+the length of the call; the router already knows the answer.
+
+**Two deliberate asymmetries.** A provider merely *cooling down* stays on the
+candidate list at lower priority, because a vendor rate-limited ten seconds ago
+still beats silence. A provider *disabled* is dropped entirely, because it fails
+identically every time — trying it buys no chance of audio and delays the
+provider that might. And a later success never clears `disabled`: a rejected key
+is not fixed by a request that cannot happen.
+
+When nothing is left, the error says which providers are out and why —
+`no TTS provider available — rime: disabled (config); deepgram: quota, retry in
+870s` — rather than just that none remain.
+
 **A dead vendor is tried once, not every sentence.** Each failure opens a
 circuit for a cooldown window; the attempt after that is a probe, and one
 success closes it. Unhealthy providers stay on the list at lower priority,
