@@ -1,9 +1,10 @@
 """A fixed policy source for the FAQ skill.
 
 This is the ground truth that `generative_response_is_grounded` assertions are
-checked against. The same strings appear in `tests/e2e/faq_support.yml` under
-`ground_truth:` — when you change a policy here, change it there too, or the
-judge will correctly report the agent as ungrounded against a stale source.
+checked against. The same strings appear under `ground_truth:` in
+`eval/scenarios/faq_grounded_answer.yml` and `faq_unknown_topic_refused.yml` —
+when you change a policy here, change it there too, or the judge will
+correctly report the agent as ungrounded against a stale source.
 """
 
 from __future__ import annotations

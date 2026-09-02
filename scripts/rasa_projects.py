@@ -20,7 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 VERSION_FILE = REPO_ROOT / "RASA_PRO_VERSION"
 # Optional guard rail: a version prefix that `--latest` must stay within.
 # This catalog runs on the Mantle / Skills engine (`rasa.mantle`), which
-# ships only on the 3.19.0.devN line — "newest on PyPI" is a stable release
+# ships only on the 3.20.0.devN line — "newest on PyPI" is a stable release
 # that does not contain it at all. See docs/MIGRATING.md.
 VERSION_LINE_FILE = REPO_ROOT / "RASA_PRO_VERSION_LINE"
 # The engine module every resource in this catalog imports. `--check-latest`
@@ -28,7 +28,7 @@ VERSION_LINE_FILE = REPO_ROOT / "RASA_PRO_VERSION_LINE"
 # RASA_PRO_VERSION_LINE, so the day it lands on a stable release the tooling
 # says so on its own rather than waiting for someone to notice.
 #
-# Rasa renamed this package from `rasa.mantle` to `rasa.mantle` in 3.20.0.dev1,
+# Rasa renamed this package from `rasa.calm_v2` to `rasa.mantle` in 3.20.0.dev1,
 # and the old path is gone rather than aliased. A release carrying EITHER counts
 # as usable: that keeps the probe working across the rename, and keeps it honest
 # about older pins, which really do need the old name.
@@ -562,6 +562,8 @@ def stale_doc_versions(project: Project, expected: str) -> dict[str, list[str]]:
 
     Catches the drift `read_readme_verified` misses: a header bumped but a
     `rasa-pro==…` left behind further down, or a stale pin in AGENTS.md.
+    Lines carrying `rasa-version-ignore` are exempt, so an upgrade
+    illustration can name the version it upgrades FROM.
     """
     stale: dict[str, list[str]] = {}
     patterns = (PROSE_EQ_RE, PROSE_SPACE_RE, VERIFIED_WITH_RE, NOTES_HEADING_RE)

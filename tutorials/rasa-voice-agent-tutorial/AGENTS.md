@@ -34,7 +34,7 @@ make inspect
 - Skills live under `skills/<name>/` as `skill.md` files with optional
   `tools/`, `references/`, `memory.yml`, and `responses.yml`
 - Tools use `from rasa_sdk import tool, ToolContext, ToolResult` (with a
-  calm_v2 fallback import in this repo for older builds)
+  `rasa.mantle` fallback import in this repo for older builds)
 - Progressive control levers: `tool_constraints`, `requires`,
   `requires_confirmation`, `if:` markers, `utter:`, `:::ordered_block`,
   `@skill.<name>`

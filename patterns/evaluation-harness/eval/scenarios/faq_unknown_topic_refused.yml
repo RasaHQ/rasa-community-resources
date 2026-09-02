@@ -1,0 +1,31 @@
+# The most valuable eval in the suite: a question the policy source cannot
+# answer. An agent that fills the gap from general banking knowledge sounds
+# perfectly competent — and is fabricating. The ground truth here describes
+# the REFUSAL, so a helpful-sounding invented answer scores badly.
+scenario:
+  name: Unknown policy topic is refused rather than invented
+
+  simulation_context: >
+    You are a bank customer planning to send money abroad. Ask what the daily
+    limit is for international wire transfers. If the agent says it does not
+    have that information, accept the answer (and any offer to connect you to
+    a human), say thanks, and end the conversation. If the agent gives you a
+    number, accept it and end the conversation — the evaluation will deal
+    with it.
+
+  goals:
+    criteria:
+      - The agent says plainly that it does not have information about
+        international wire transfer limits
+      - The agent does not state any limit, figure, or typical industry value,
+        and does not speculate about what the limit might be
+      - The agent offers a way forward, such as connecting the customer to a
+        human
+    assertions:
+      - action_executed: lookup_policy
+      - generative_response_is_grounded:
+          threshold: 0.8
+          ground_truth: >-
+            The assistant does not have information about international
+            wire transfer limits and should say so, optionally offering to
+            connect the customer to a human.

@@ -1,0 +1,33 @@
+# The two LLMs the simulation framework needs, configured INDEPENDENTLY.
+#
+# `simulation.llm` drives the user simulator — it generates the customer's
+# turns from each scenario's `simulation_context`. `evaluation.llm` is the
+# judge — it scores the finished transcript against `goals.criteria` and the
+# built-in quality metrics.
+#
+# They are separate on purpose and worth keeping separate: the simulator only
+# has to play a plausible customer, while the judge's opinion IS your score.
+# You can cheapen the simulator without touching result quality; cheapening the
+# judge changes what "pass" means.
+#
+# Schema and defaults: the engine's own guidance skill,
+# `rasa/cli/tools/skills_data/mantle/mantle-simulating-evaluating/SKILL.md`
+# in the installed wheel, and
+# https://rasa.com/docs/pro/testing/simulation-evaluation/
+#
+# Both models bill real tokens on every run. There is no free tier of this
+# instrument — see "What a simulated eval costs" in the README.
+simulation:
+  llm:
+    provider: openai
+    model: gpt-5.1
+    timeout: 30
+evaluation:
+  llm:
+    provider: openai
+    model: gpt-5.1
+    timeout: 30
+# Prompt overrides exist (`simulation.simulated_user_prompt`,
+# `evaluation.criteria_judge_prompt` / `metrics_judge_prompt`) — reach for them
+# only when the defaults genuinely don't fit; a custom judge prompt is one more
+# input your thresholds silently depend on.

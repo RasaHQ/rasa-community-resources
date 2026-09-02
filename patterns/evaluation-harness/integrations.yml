@@ -6,19 +6,16 @@
 llm:
   model_group: orchestrator
 
-# The judge in `conftest.yml` names `judge` from this same list, which is why the
-# group lives here rather than being inlined at either use site: one declaration,
-# two consumers, and swapping the judge model is a one-line edit.
+# This group configures the AGENT UNDER TEST only. The evaluation side — the
+# user simulator and the judge — is configured separately in `eval/conftest.yml`
+# with inline provider/model pairs, which is the shape the simulation framework
+# documents. Keeping them apart is the point: changing the agent's model is an
+# experiment; changing the judge's model changes what "pass" means.
 model_groups:
   - id: orchestrator
     models:
       - provider: openai
         model: gpt-5.2
-        api_key: ${OPENAI_API_KEY}
-  - id: judge
-    models:
-      - provider: openai
-        model: gpt-4.1-mini-2025-04-14
         api_key: ${OPENAI_API_KEY}
 
 channels:

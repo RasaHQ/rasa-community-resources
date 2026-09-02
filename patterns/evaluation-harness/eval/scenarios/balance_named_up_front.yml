@@ -1,0 +1,37 @@
+# Happy path + out-of-order input in one scenario: the customer volunteers the
+# account before being asked. The agent must absorb it and skip the
+# disambiguation question — re-asking for information it was already given is
+# the failure this scenario exists to expose.
+#
+# Assertions are DETERMINISTIC checks against tracker events — they are the
+# ground truth here (same machinery as the classic e2e assertions:
+# `rasa/builder/copilot/mcp_server/tools/assertion_engine.py` imports
+# `rasa.e2e_test.assertions`). Criteria are judged from the transcript.
+scenario:
+  name: Customer names the account up front and gets its balance in one pass
+
+  simulation_context: >
+    You are a calm, logged-in customer of a retail bank. Open by asking for the
+    balance of your Everyday Checking account, naming it exactly like that in
+    your first message. Answer any follow-up briefly and do not bring up
+    anything unrelated. Once you have been told a balance, say thanks and end
+    the conversation.
+
+  goals:
+    criteria:
+      - The agent does not ask which account the customer means, because the
+        first message already named it unambiguously
+      - The agent states the balance with the account name, in one or two
+        sentences, and does not invent any figure beyond what its tools return
+    assertions:
+      - flow_started: check_balance
+      # Skill-scoped memory key: `<skill_id>.<entry>` (the fixture's skill.md
+      # declares `selected_account_id` under skill `check_balance`).
+      - slot_was_set:
+          - name: check_balance.selected_account_id
+            value: acc_checking
+      - action_executed: get_balance
+      # The fact, not the phrasing: the checking balance the fixture tool
+      # returns is $1,284.53. Pin the number, let the model word the sentence.
+      - bot_uttered:
+          text_matches: "1,284"

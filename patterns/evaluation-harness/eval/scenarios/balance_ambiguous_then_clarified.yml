@@ -1,0 +1,35 @@
+# The disambiguation path. "How much money do I have" is genuinely ambiguous
+# between two accounts, and the correct behaviour is to ask — not to guess.
+#
+# The old dialogue-understanding test asserted the ABSENCE of an early
+# slot-set. In a scenario, whole-conversation `slot_was_not_set` cannot coexist
+# with the slot being set correctly later, so the no-guessing requirement
+# lives in `criteria` (judged from the transcript) while the assertions pin
+# the facts that must hold by the end: the right account, the tool actually
+# ran, the right number was spoken.
+scenario:
+  name: Ambiguous balance request is clarified before any balance is given
+
+  simulation_context: >
+    You are a slightly hurried but polite bank customer. Open with exactly the
+    feeling of "how much money do I have?" — do not name an account in your
+    first message. If the agent asks which account you mean, answer "the
+    savings one". If the agent instead gives you a balance without asking,
+    accept it and end the conversation (the evaluation will catch the guess).
+    Once you have a balance, say thanks and end the conversation.
+
+  goals:
+    criteria:
+      - The agent asks exactly one clarifying question to establish which
+        account is meant, before stating any balance
+      - The agent does not state or estimate any balance before the customer
+        has chosen an account
+    assertions:
+      - flow_started: check_balance
+      - slot_was_set:
+          - name: check_balance.selected_account_id
+            value: acc_savings
+      - action_executed: get_balance
+      # The savings balance the fixture returns is $9,140.00.
+      - bot_uttered:
+          text_matches: "9,140"

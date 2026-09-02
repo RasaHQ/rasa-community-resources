@@ -1,4 +1,4 @@
-"""Shared travel tools — new Skills API (`rasa_sdk`) with calm_v2 fallback."""
+"""Shared travel tools — new Skills API (`rasa_sdk`) with `rasa.mantle` fallback."""
 
 from __future__ import annotations
 

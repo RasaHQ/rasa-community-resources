@@ -301,7 +301,7 @@ Configures external integrations including:
 Optional platform services still loaded by Rasa (NLG rephraser, `model_groups`,
 tracker/event broker stubs). LLM conversation routing and voice stay in
 `integrations.yml`. Do not add classic `action_endpoint` here — tools use
-calm_v2 `@tool` under `tools/`.
+Mantle `@tool` under `tools/`.
 
 ### `skills/`
 
@@ -364,7 +364,7 @@ make verify
 | `make install` | Install deps with uv |
 | `make env` | Create `.env` from `.env.example` |
 | `make verify` | Full pre-flight diagnostics |
-| `make validate` | Fast calm_v2 validation |
+| `make validate` | Fast Mantle validation |
 | `make train` | Package the agent model |
 | `make inspect` | Voice + text Inspector |
 | `make run` | API server on port 5005 |
@@ -406,7 +406,7 @@ Install with:
 make install
 ```
 
-This project uses **Rasa Mantle / Skills (`calm_v2`)** — not CALM v1 flows.
+This project uses **Rasa Mantle / Skills (`rasa.mantle`)** — not CALM v1 flows.
 
 ---
 

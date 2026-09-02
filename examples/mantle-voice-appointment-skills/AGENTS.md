@@ -1,6 +1,6 @@
 # Rasa Mantle project — Schedora voice appointment booking
 
-This directory is a **Rasa Mantle** agent (Skills / calm_v2) that teaches
+This directory is a **Rasa Mantle** agent (Skills / `rasa.mantle`) that teaches
 building a **voice** appointment-booking assistant for the Clinic of Rasa with
 **Deepgram** ASR + TTS. It targets `rasa-pro==3.20.0.dev6` on `gpt-5.2`.
 

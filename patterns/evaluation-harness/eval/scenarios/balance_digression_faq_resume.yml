@@ -1,0 +1,33 @@
+# Digression and resume: the customer interrupts the balance task with a
+# policy question, then expects the original task to pick up where it left
+# off. This is the scenario a scripted test file under-tests most, because the
+# interesting behaviour is exactly the part you cannot script — where the
+# interruption lands and how the agent finds its way back.
+scenario:
+  name: Policy question mid-task, then the balance task resumes and completes
+
+  simulation_context: >
+    You are a curious bank customer. Start by asking for an account balance
+    without naming an account. When the agent asks which account, do NOT
+    answer; instead ask "wait, first — how much is the overdraft fee?". After
+    you get the fee answer, say "ok, the checking one" to return to the
+    balance question. Accept the balance, thank the agent, and end the
+    conversation.
+
+  goals:
+    criteria:
+      - The agent answers the overdraft question using the bank's policy
+        (the fee is $28 per transaction, at most three times per day) rather
+        than general knowledge
+      - After the digression, the agent returns to the balance task without
+        making the customer start over or repeat information
+    assertions:
+      - flow_started: check_balance
+      - flow_started: faq_support
+      - action_executed: lookup_policy
+      - slot_was_set:
+          - name: check_balance.selected_account_id
+            value: acc_checking
+      - action_executed: get_balance
+      - bot_uttered:
+          text_matches: "1,284"

@@ -1,0 +1,39 @@
+# The judged half of the harness, on the skill built to exercise it. The
+# faq_support skill answers only from `lookup_policy`'s fixed text, so a
+# fluent answer that drifts from the source is the failure mode to catch.
+#
+# `generative_response_is_grounded` and `..._is_relevant` are the same judge
+# machinery the classic e2e assertions used (`rasa.e2e_test.assertions`, reused
+# by the scenario assertion engine). Two different metrics, two blind spots:
+# groundedness = supported statements / total statements, against the
+# `ground_truth` below; relevance embeds questions the answer WOULD address
+# and never sees the ground truth at all — a confidently wrong answer to the
+# right question scores HIGH on relevance. Assert both; neither is sufficient.
+scenario:
+  name: Card replacement answer is grounded in policy and on topic
+
+  simulation_context: >
+    You are a bank customer with one simple question. Ask what it costs to
+    replace your debit card. If the answer covers cost, accept it, say thanks,
+    and end the conversation. Do not ask about anything else.
+
+  goals:
+    criteria:
+      - The agent's answer sticks to the bank's card-replacement policy and
+        does not volunteer invented details such as expedited-shipping fees or
+        courier options the policy does not mention
+    assertions:
+      - flow_started: faq_support
+      - action_executed: lookup_policy
+      - generative_response_is_relevant:
+          threshold: 0.7
+      # `ground_truth` is copied from skills/faq_support/tools.py — keep the
+      # two in sync, or the judge will faithfully score the agent against a
+      # stale policy (see "Ground truth drift is silent" in the README).
+      # 0.8 tolerates one unsupported statement out of five, not one of two.
+      - generative_response_is_grounded:
+          threshold: 0.8
+          ground_truth: >-
+            A replacement debit card is issued free of charge once per
+            calendar year. Additional replacements cost $12 each. Standard
+            delivery takes five to seven business days.

@@ -1,6 +1,6 @@
 # Rasa Mantle project — Telano voice telecom care
 
-This directory is a **Rasa Mantle** agent (Skills / calm_v2) that teaches
+This directory is a **Rasa Mantle** agent (Skills / `rasa.mantle`) that teaches
 building a **voice** telecom care assistant with **Deepgram** ASR + TTS.
 
 ## Layout

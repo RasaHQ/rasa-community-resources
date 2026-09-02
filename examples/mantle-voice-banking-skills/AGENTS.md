@@ -1,6 +1,6 @@
 # Rasa Mantle project — Rasano voice banking
 
-This directory is a **Rasa Mantle** agent (Skills / calm_v2) that teaches
+This directory is a **Rasa Mantle** agent (Skills / `rasa.mantle`) that teaches
 building a **voice** retail banking assistant with **Deepgram** ASR + TTS.
 
 ## Layout

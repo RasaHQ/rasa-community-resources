@@ -1,0 +1,22 @@
+# The negative scenario. The cheapest way for an agent to look competent is to
+# start a task for everything; this one asserts the router stays quiet. Because
+# nothing should be set at ANY point, whole-conversation `slot_was_not_set` is
+# exactly right here — this is the absence check the suite must not lose.
+scenario:
+  name: Greetings and small talk activate no task skill
+
+  simulation_context: >
+    You are a cheerful customer who dialled in by mistake and has no banking
+    request. Greet the agent, make one line of small talk about your day, then
+    say thanks and goodbye. Do not ask about accounts, balances, fees, cards,
+    or policies, even if the agent offers.
+
+  goals:
+    criteria:
+      - The agent responds politely and briefly without pretending the
+        customer asked for something
+      - The agent does not push the customer into a banking task they did not
+        ask for
+    assertions:
+      - slot_was_not_set:
+          - name: check_balance.selected_account_id
