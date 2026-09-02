@@ -1,0 +1,72 @@
+# Vela on the hyperscalers: AWS throughout, Google behind it.
+#
+# For teams whose constraint is procurement rather than latency — the speech
+# vendors are already inside an existing cloud agreement, with the data
+# processing terms already signed.
+#
+# Be honest about the trade. Neither Amazon nor Google leads on conversational
+# speech; Polly Neural is a good read-aloud voice and a mediocre conversational
+# one, and Transcribe is not Flux. What you get instead is one invoice, one
+# support channel, and one legal review.
+#
+# Both are skipped with a log line until credentials resolve — a region and
+# either an instance role or the usual environment variables for AWS, and
+# GOOGLE_APPLICATION_CREDENTIALS for Google. `find_spec` finding the SDK is not
+# the same as being able to call it, and the router checks the latter.
+#
+# Needs the extras:  uv sync --prerelease=allow --extra aws --extra google
+
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+
+    asr:
+      name: voicerouter.RoutedASR
+      policy:
+        cooldown_seconds: 60
+      providers:
+        - name: voicerouter.providers.aws.TranscribeASR
+          label: aws-transcribe
+          language_map:
+            en: { language: en-US }
+          region: us-east-1
+        - name: voicerouter.providers.google.GoogleSTT
+          label: google-stt
+          language_map:
+            en: { language: en-US }
+          # project_id: my-gcp-project
+        # A region outage takes both of the above with it if they are in the
+        # same one. This is the line that is nobody else's region.
+        - name: voicerouter.providers.whisper.FasterWhisperASR
+          label: whisper-local
+          model_id: tiny.en
+          device: cpu
+          compute_type: int8
+
+    tts:
+      name: voicerouter.RoutedTTS
+      policy:
+        cooldown_seconds: 60
+      providers:
+        - name: voicerouter.providers.aws.PollyTTS
+          label: aws-polly
+          language_map:
+            en: { voice: Joanna }
+          engine: neural
+          region: us-east-1
+        - name: voicerouter.providers.google.GoogleTTS
+          label: google-tts
+          language_map:
+            en: { voice: en-US-Neural2-F, language: en-US }

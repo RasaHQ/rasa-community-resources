@@ -1,0 +1,69 @@
+# Vela with nobody else on the call.
+#
+# For deployments where the constraint is not cost or uptime but disclosure:
+# health, defence, or a bank whose regulator has an opinion about whose servers
+# customer audio crosses. Both halves are local models. No key, no network, no
+# processor agreement.
+#
+# The orchestrator LLM below is still OpenAI, and that is the honest gap in this
+# stack: the *audio* never leaves, the transcript does. Closing it means a local
+# model group as well — a self-hosted endpoint under `model_groups:` — which is
+# a separate decision from the voice stack and is why it is not done here.
+#
+# What it costs: Vosk small is well behind Flux on accented and noisy speech,
+# and NeuTTS is slower and flatter than any hosted voice. For an agent that
+# mostly reads balances back, that is often fine. Listen first.
+#
+# Setup, both of which are more than an install:
+#   ASR   uv sync --prerelease=allow --extra local-asr, then download a Vosk
+#         model and point `model_path` at it.
+#   TTS   NeuTTS cannot be installed alongside rasa-pro in one environment —
+#         rasa-pro pins numpy <2.2 and neutts needs >=2.2.6. Run it out of a
+#         second venv or a container; the pattern README has both recipes.
+#         Until then it is skipped with that reason and this stack has no voice,
+#         which is a real outcome you should see before you plan around it.
+
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+
+    asr:
+      name: voicerouter.RoutedASR
+      policy:
+        cooldown_seconds: 60
+        # Nothing here can run out of credits, so there is nothing to fail over
+        # to. A local model that is broken is broken; hiding that behind a
+        # retry only delays the log line that tells you so.
+        failure_threshold: 1
+      providers:
+        - name: voicerouter.providers.vosk.VoskASR
+          label: vosk-local
+          # model_path: /path/to/vosk-model-small-en-us-0.15
+        - name: voicerouter.providers.whisper.FasterWhisperASR
+          label: whisper-local
+          model_id: base.en
+          device: cpu
+          compute_type: int8
+
+    tts:
+      name: voicerouter.RoutedTTS
+      policy:
+        cooldown_seconds: 60
+      providers:
+        - name: voicerouter.providers.neuphonic.NeuTTSLocal
+          label: neutts-local
+          backbone_repo: neuphonic/neutts-air
+          # ref_audio: /path/to/reference.wav
+          # ref_text:  /path/to/reference.txt

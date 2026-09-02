@@ -17,6 +17,11 @@ That is the whole point. Rasa has built-in ASR engines for Deepgram and Azure.
 When your provider is neither, you are not stuck bolting an orchestrator on
 outside Rasa — you write an engine and give Rasa its dotted path.
 
+A dotted path resolves to exactly one engine, though, and a channel holds
+exactly one. For the same agent with a *chain* in each half — this engine among
+them, plus a local model that cannot be somebody else's outage — see
+[`mantle-voice-routed-skills`](../mantle-voice-routed-skills).
+
 ## How a custom engine is wired
 
 ```yaml

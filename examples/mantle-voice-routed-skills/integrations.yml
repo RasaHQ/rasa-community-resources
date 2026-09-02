@@ -1,0 +1,90 @@
+# External integrations for Vela — the routed voice stack.
+#
+# The two sibling resources wire one vendor into each half of the stack:
+#   ../mantle-voice-rime-skills          Rime TTS, a first-class Rasa engine
+#   ../mantle-voice-speechmatics-skills  Speechmatics ASR, a custom engine
+#
+# Same agent here. The difference is what happens when that one vendor is
+# down. A channel in Rasa holds exactly one ASR engine and one TTS engine, so
+# in both siblings a Rime outage is a silent agent. Below, each half names a
+# chain, and ../../patterns/voice-vendor-router walks it.
+#
+# Providers whose credentials are absent are skipped with a log line instead of
+# failing the call, so this file can name more vendors than you hold keys for.
+# With only OPENAI_API_KEY and DEEPGRAM_API_KEY set it still runs — on Deepgram
+# for both halves. Add RIME_API_KEY and Vela gets her own voice back.
+
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+
+    asr:
+      name: voicerouter.RoutedASR
+      policy:
+        # A caller who has already hit a dead vendor should not hit it again
+        # later in the same call. Sixty seconds outlasts most banking calls.
+        cooldown_seconds: 60
+        # Health is remembered across calls, not thrown away at hangup. Caller
+        # number two does not have to rediscover an outage caller number one
+        # already paid for.
+        health_scope: process
+      providers:
+        # Primary. Flux is the low-latency listener.
+        - name: deepgram
+          language_map:
+            en: { model: flux-general-en }
+        # Second opinion from a different company on different infrastructure.
+        # A fallback inside the same vendor is not a fallback.
+        - name: voicerouter.providers.speechmatics.SpeechmaticsASR
+          label: speechmatics
+          language_map:
+            en: { language: en }
+        # Last resort, and the reason this chain has no silent end: local, no
+        # network, no key, nobody's outage. Needs the `local-asr` extra and a
+        # downloaded model — see "Running the local last resort" in the README.
+        - name: voicerouter.providers.whisper.FasterWhisperASR
+          label: whisper-local
+          model_id: tiny.en
+          device: cpu
+          compute_type: int8
+
+    tts:
+      name: voicerouter.RoutedTTS
+      policy:
+        cooldown_seconds: 60
+        health_scope: process
+        # Rate limits and 5xx retry the *same* provider first. Only running out
+        # of credits, losing authorisation, or an unreachable API moves Vela to
+        # a different voice. That rule lives in voicerouter/failures.py; these
+        # two knobs are how hard it tries before giving up on the current one.
+        same_provider_retries: 1
+        retry_backoff_ms: 250
+      providers:
+        # Vela's voice. Everything below this line is a worse-sounding but
+        # still-answering version of her.
+        - name: rime
+          language_map:
+            en:
+              voice: cove       # Rime speaker
+              language: eng     # ISO-639-3, not "en" — omitting it yields HTTP 400
+          model_id: mistv2
+        - name: deepgram
+          language_map:
+            en: { model: aura-2-andromeda-en }
+        - name: voicerouter.providers.openai.OpenAITTS
+          label: openai
+          language_map:
+            en: { voice: alloy }
+          model_id: gpt-4o-mini-tts

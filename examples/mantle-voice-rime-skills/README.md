@@ -18,6 +18,12 @@ configuration — no plugin, no adapter. The companion resource
 the other case: a provider Rasa does **not** ship, which has to be written as a
 custom engine. Same agent in both, so the voice stack is the only variable.
 
+Both wire in exactly one vendor, which is Rasa's design: a channel holds one TTS
+engine. If that vendor runs out of credits mid-call, Vela stops speaking.
+[`mantle-voice-routed-skills`](../mantle-voice-routed-skills) is the same agent
+again with a chain instead of a vendor, and is where to go once "what happens
+when Rime is down" is a question you have to answer.
+
 ## The configuration, in full
 
 ```yaml
