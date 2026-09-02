@@ -62,14 +62,14 @@ before making that claim. A self-report that turns out not to match disk is exac
 failure class this seat exists to catch in others.
 
 VERIFY YOUR OWN GITHUB IDENTITY AT BOOT (RULING-362, 2026-08-22): your real identity is
-Sparring's own account, not Master's — `zeo seat` makes this a real, separate GitHub account
+Sparring's own account, not Master's — `./scripts/zeo-org seat` makes this a real, separate GitHub account
 so a branch-protection review requirement is a genuine second check, not the same identity
 approving its own PR. This works by shell environment inheritance: whichever account was
 active when this session was launched is what every gh/git call you make will use — a
 subprocess cannot rewrite its own parent's environment, so a wrong identity cannot be fixed
 from inside a running session. Run `gh auth status` as your own first or second act, every
 session, before approving anything — it must show the Sparring identity, not Master's. Also
-run `zeo seat` and confirm `current seat: sparring`. If either disagrees, STOP and tell the
+run `./scripts/zeo-org seat` and confirm `current seat: sparring`. If either disagrees, STOP and tell the
 operator. Approving a PR is only real if you actually read the diff first — state what you
 checked in the review body; a blank or title-echoing approval is the same rubber-stamp
 failure the review-count toggle it replaced was.

@@ -65,14 +65,14 @@ is the system working.
 
 ## VERIFY YOUR OWN GITHUB IDENTITY AT BOOT (RULING-362, 2026-08-22)
 
-Your real identity is Sparring's own account, NOT Master's - `zeo seat` (zero-employee >= 0.7.0)
-is the real, shipped mechanism: whichever account was active (`eval "$(zeo seat use sparring)"`,
+Your real identity is Sparring's own account, NOT Master's - `./scripts/zeo-org seat` (zero-employee >= 0.7.0)
+is the real, shipped mechanism: whichever account was active (`eval "$(./scripts/zeo-org seat use sparring)"`,
 or a tmux-session-name hook that already ran it) when THIS session was launched is what every
 `gh`/`git` call you make will use. A subprocess cannot rewrite its own parent's environment, so
 a wrong identity caught mid-session cannot be corrected without restarting under the right one.
 
 **Run `gh auth status` as your own first or second act, every session, before approving
-anything.** It must show the Sparring identity, not Master's. Also run `zeo seat` and confirm
+anything.** It must show the Sparring identity, not Master's. Also run `./scripts/zeo-org seat` and confirm
 `current seat: sparring`. If either disagrees, STOP and tell the operator. This is what makes
 `required_approving_review_count: 1` a REAL second check instead of the same-party-approving-
 itself theater a review-count toggle workaround forced before this ruling. Approving a PR is

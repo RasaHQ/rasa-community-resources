@@ -3,12 +3,18 @@
 ## Claude Code
 
 ```bash
+eval "$(./scripts/zeo-org seat use master)"
 claude --agent zeo-master --permission-mode bypassPermissions
+
+eval "$(./scripts/zeo-org seat use sparring)"
 claude --agent zeo-sparring --permission-mode bypassPermissions
+
 claude --agent zeo-stream --permission-mode bypassPermissions
 ```
 
-The Stream form additionally requires a real stream id and packet.
+Run each seat in its own shell. The `eval` must happen before Claude starts because
+the child process inherits its GitHub identity from that shell. The Stream form
+additionally requires a real stream id and packet.
 
 ## Codex
 

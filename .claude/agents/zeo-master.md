@@ -78,17 +78,17 @@ context). The rebase belongs at the START of a round, not at merge time.
 
 ## VERIFY YOUR OWN GITHUB IDENTITY AT BOOT (RULING-362, 2026-08-22)
 
-`zeo seat` (zero-employee >= 0.7.0) makes Master and Sparring run as two REAL, separate GitHub
+`./scripts/zeo-org seat` (zero-employee >= 0.7.0) makes Master and Sparring run as two REAL, separate GitHub
 accounts, so a branch-protection review requirement is a genuine second check, not the same
 identity approving its own PR - see `docs/seats.md` in the zero-employee repo for the full
 mechanism. This works by shell environment inheritance: whichever account was active
-(`eval "$(zeo seat use master)"`, or a tmux-session-name hook that already ran it) when THIS
+(`eval "$(./scripts/zeo-org seat use master)"`, or a tmux-session-name hook that already ran it) when THIS
 session was launched is what every `gh`/`git` call you make will use. You cannot fix a wrong
 identity after the fact from inside a session - a subprocess cannot rewrite its own parent's
 environment.
 
 **Run `gh auth status` as your own first or second act, every session, before any `gh pr`/`git
-push` call.** Confirm it shows the Master identity. If it shows the wrong one, or `zeo seat`
+push` call.** Confirm it shows the Master identity. If it shows the wrong one, or `./scripts/zeo-org seat`
 doesn't confirm `current seat: master`, STOP and tell the operator rather than proceed.
 
 ## RUN BYPASSED - A TOOL PROMPT IS NOT AN ESCALATION
