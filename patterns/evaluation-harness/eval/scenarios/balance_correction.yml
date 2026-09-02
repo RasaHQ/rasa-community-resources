@@ -1,0 +1,31 @@
+# Correction: the customer picks one account, then changes their mind. Memory
+# must update, and the balance finally given must be the corrected account's.
+#
+# `sequencing` is the assertion built for exactly this: each child must occur,
+# in this order. The same slot set twice IS the correction, expressed as a
+# deterministic fact rather than a judged impression.
+scenario:
+  name: Customer corrects the chosen account and gets the corrected balance
+
+  simulation_context: >
+    You are an indecisive but friendly bank customer. Ask for an account
+    balance without naming an account. When asked which account, first say
+    "checking". Then, before or just after the agent answers, change your mind:
+    say "actually, the savings one please". Accept the savings balance, thank
+    the agent, and end the conversation.
+
+  goals:
+    criteria:
+      - The agent handles the change of mind without restarting the
+        conversation or re-asking for information it already has
+      - The last balance the agent states is for the savings account, not the
+        checking account
+    assertions:
+      - sequencing:
+          - slot_was_set: check_balance.selected_account_id # set once...
+          - slot_was_set: check_balance.selected_account_id # ...then re-set
+      - slot_was_set:
+          - name: check_balance.selected_account_id
+            value: acc_savings
+      - bot_uttered:
+          text_matches: "9,140"
