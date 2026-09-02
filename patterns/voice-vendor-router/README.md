@@ -528,11 +528,15 @@ runner, not a failure.
 
 ### The corpus, and why WER is sometimes absent
 
-`tests/fixtures/audio/` holds six short banking utterances, about half a
-megabyte in total. They are synthesised by `scripts/make_fixtures.py` from the
-host's own TTS: no third-party audio to license, and — more importantly — no
-recorded caller audio, which is exactly what a public repository must never
-contain.
+`tests/fixtures/audio/` holds six short banking utterances, well under a
+megabyte in total. They are synthesised by `scripts/make_fixtures.py` using
+`espeak-ng`: GPLv3 claims no rights over a program's output unless that output
+is itself a covered work, and synthesised speech of our own sentences is not,
+so the clips ship under this repository's Apache 2.0. No third-party audio, no
+host operating-system voices — whose licences generally forbid redistribution —
+and no recorded caller audio, which is exactly what a public repository must
+never contain. The output is harsher than a neural voice on purpose: easy audio
+flatters every vendor.
 
 Because the generator knows the text it synthesised, each clip ships with a
 genuine reference transcript, so a word error rate is legitimate here:
