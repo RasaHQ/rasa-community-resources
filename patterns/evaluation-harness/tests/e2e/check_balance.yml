@@ -1,0 +1,53 @@
+# Assertion-based end-to-end tests for the check_balance skill.
+#
+# Every assertion here is a DETERMINISTIC check against the conversation
+# tracker: which flow ran, which slot holds which value, which response
+# template was uttered. No LLM scores anything in this file, so a failure is
+# always a real behavioural change, never judge noise.
+#
+# Schema reference: rasa/e2e_test/schema/e2e_test_schema.yml:119-181
+# Assertion reference: rasa/e2e_test/schema/assertions_schema.yml
+
+test_cases:
+  - test_case: user names the account up front
+    steps:
+      # The account is unambiguous in the first turn, so the agent should skip
+      # the disambiguation question entirely and go straight to the balance.
+      - user: what's the balance on my everyday checking
+        assertions:
+          - flow_started: check_balance
+          - slot_was_set:
+              - name: selected_account_id
+                value: acc_checking
+          - action_executed: get_balance
+
+  - test_case: user must be asked which account
+    steps:
+      # "my account" is genuinely ambiguous. The agent must ask rather than
+      # guess — asserted by the balance tool NOT having run yet.
+      - user: how much money do I have
+        assertions:
+          - flow_started: check_balance
+          - slot_was_not_set:
+              - name: selected_account_id
+
+      - user: the savings one
+        assertions:
+          - slot_was_set:
+              - name: selected_account_id
+                value: acc_savings
+          - action_executed: get_balance
+          # `bot_uttered.text_matches` takes a regular expression, so this
+          # pins the number the tool returned without pinning the wording
+          # the model wrapped around it.
+          - bot_uttered:
+              text_matches: "9,140"
+
+  - test_case: small talk must not activate a task skill
+    steps:
+      # A negative test. The cheapest way for an agent to look competent is to
+      # start a flow for everything; this asserts the router stays quiet.
+      - user: thanks, that's all for now
+        assertions:
+          - slot_was_not_set:
+              - name: selected_account_id

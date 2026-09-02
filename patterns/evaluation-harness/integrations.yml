@@ -1,0 +1,28 @@
+# LLM provider and channels for the fixture agent under test.
+#
+# `llm:` is a model_group REFERENCE. Provider, model and credentials live on the
+# named group, never inline under `llm:` — since rasa-pro 3.20.0.dev6 the
+# integration LLM config forbids extra keys and requires `model_group`.
+llm:
+  model_group: orchestrator
+
+# The judge in `conftest.yml` names `judge` from this same list, which is why the
+# group lives here rather than being inlined at either use site: one declaration,
+# two consumers, and swapping the judge model is a one-line edit.
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+  - id: judge
+    models:
+      - provider: openai
+        model: gpt-4.1-mini-2025-04-14
+        api_key: ${OPENAI_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
