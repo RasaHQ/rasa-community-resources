@@ -51,19 +51,70 @@ handed to Rasa's own `tts_engine_from_config` / `asr_engine_from_config`. So
 "Swap any vendor" is therefore not a list of adapters this package has to
 maintain. It is a property of delegating resolution back to Rasa.
 
+## Vendors
+
+Rasa ships ASR for `azure` and `deepgram`, and TTS for `azure`, `cartesia`,
+`deepgram` and `rime`. Those work through the router already, because it
+delegates to Rasa's own factories. `voicerouter/providers/` adds the rest.
+
+| Vendor | Role | Dotted path | Key | Status |
+|---|---|---|---|---|
+| Deepgram | ASR + TTS | `deepgram` *(built-in)* | `DEEPGRAM_API_KEY` | **live-verified** |
+| Rime | TTS | `rime` *(built-in)* | `RIME_API_KEY` | **live-verified** |
+| OpenAI | TTS | `voicerouter.providers.openai.OpenAITTS` | `OPENAI_API_KEY` | **live-verified** |
+| Speechmatics | TTS | `voicerouter.providers.speechmatics.SpeechmaticsTTS` | `SPEECHMATICS_API_KEY` | **live-verified** |
+| Speechmatics | ASR | `voicerouter.providers.speechmatics.SpeechmaticsASR` | `SPEECHMATICS_API_KEY` | **live-verified** |
+| ElevenLabs | TTS | `voicerouter.providers.elevenlabs.ElevenLabsTTS` | `ELEVENLABS_API_KEY` | config-only — see below |
+| AssemblyAI | ASR | `voicerouter.providers.assemblyai.AssemblyAIASR` | `ASSEMBLYAI_API_KEY` | config-only — see below |
+| Azure | ASR + TTS | `azure` *(built-in)* | `AZURE_SPEECH_API_KEY` | not exercised — no key |
+| Cartesia | TTS | `cartesia` *(built-in)* | `CARTESIA_API_KEY` | not exercised — no key |
+
+**"Live-verified"** means audio was actually synthesised or transcribed through
+that adapter, in this repository, against the vendor's real API.
+
+**"Config-only"** means the adapter is written against the vendor's documented
+protocol and its request shape, URL and event mapping are exercised by tests —
+but nobody has run it against the live service, because no key was available.
+Two things are stated rather than implied: those two adapters are the ones most
+likely to have a protocol detail wrong, and the first person with a key finds
+out. Give me a key and the row changes.
+
+A copy-pasteable block per vendor lives in [`examples/`](examples).
+
+## Format conversion
+
+Vendors return what they like: OpenAI raw 24 kHz PCM, Speechmatics a 16 kHz WAV,
+ElevenLabs raw PCM at whatever `output_format` asked for. Rasa wants 24 kHz or
+48 kHz linear, or 8 kHz mu-law for telephony. `voicerouter/audio.py` is the one
+place that converts, and it is streaming-aware for two reasons that only show up
+on a real call:
+
+- **HTTP chunks split PCM frames.** A chunk ending mid-sample makes `audioop`
+  refuse outright — this is a crash, and it was found by running telephony
+  format against a live vendor rather than by reading.
+- **The resampler carries state.** `audioop.ratecv` returns a state that must be
+  fed back in. Dropping it does not raise; it adds a click at every chunk
+  boundary, several times a second.
+
+Verified deterministically: 1.000 s in, 1.000 s out at all three target formats,
+fed in 1023-byte chunks so frames split on nearly every boundary.
+
 ## What it gives you
 
 **Silence stops being a failure mode.** When a provider fails before its first
-byte, the next one speaks the sentence. Verified against live vendors, using the
-real Rime misconfiguration that returns HTTP 400:
+byte, the next one speaks the sentence — across vendors, including ones Rasa does
+not ship. Two genuinely broken built-ins, then two third-party adapters:
 
 ```text
-[warning] voicerouter.tts.connect_failed  provider=rime-misconfigured  error=…status 400
-[info]    voicerouter.tts.connected       provider=deepgram
-          served by 'deepgram', 117120 bytes
-          rime-misconfigured   open     fail=1 ok=0
-          deepgram             closed   fail=0 ok=2
+RESULT served_by='openai' bytes=156000
+HEALTH rime(broken)       open     fail=1 ok=0
+HEALTH deepgram(broken)   open     fail=1 ok=0
+HEALTH openai             closed   fail=0 ok=2
+HEALTH speechmatics       closed   fail=0 ok=0
 ```
+
+The first failure is the real Rime `lang=None` misconfiguration (HTTP 400), the
+second a Deepgram model that does not exist. The caller hears OpenAI.
 
 **Configure more vendors than you have keys for.** A provider whose credentials
 are absent is skipped with a log line, not an exception — so one
@@ -94,9 +145,14 @@ Stated plainly, because these are the cases where a router could mislead you.
   audio sent during the failure is gone — speech is not replayable, and buffering
   every call's raw audio to pretend otherwise is a worse trade. The router
   reconnects and resumes, and logs that a gap occurred.
-- **It does not normalise vendor dialects.** `rime` still wants `voice` plus an
-  ISO-639-3 `language`; `deepgram` wants `model`. Each provider entry is that
-  vendor's own config. A shared vocabulary is a later stage.
+- **It does not normalise vendor dialects.** `rime` wants `voice` plus an
+  ISO-639-3 `language`; `deepgram` wants `model`; ElevenLabs wants a voice *id*;
+  OpenAI needs `model_id` rather than `model`, because `TTSEngineConfig` keeps a
+  deprecated top-level `model` and rejects a config carrying both. Each provider
+  entry is that vendor's own config. A shared vocabulary is a later stage.
+- **`audioop` is deprecated and gone in Python 3.13.** Rasa's own audio handling
+  uses it too, so this is a shared constraint rather than one this package adds
+  — but the conversion layer will need replacing before 3.13.
 - **It does not route by cost, latency or content** yet. Order is the policy:
   first healthy provider wins.
 
@@ -109,7 +165,9 @@ Stated plainly, because these are the cases where a router could mislead you.
 | `voicerouter/base.py` | provider specs, policy, and building engines through Rasa's factories |
 | `voicerouter/health.py` | per-provider circuit breaker |
 | `voicerouter/contract.py` | asserts the router still covers what Rasa calls |
-| `engines/speechmatics.py` | a vendor Rasa does not ship, included to prove the point |
+| `voicerouter/providers/` | adapters for OpenAI, ElevenLabs, Speechmatics, AssemblyAI |
+| `voicerouter/audio.py` | streaming format conversion shared by every HTTP adapter |
+| `examples/` | one copy-pasteable config block per vendor |
 | `scripts/probe_providers.py` | which vendors this machine can reach |
 
 ## The contract check

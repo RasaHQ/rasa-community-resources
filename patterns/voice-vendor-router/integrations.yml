@@ -35,12 +35,17 @@ channels:
           language_map:
             en: { model: flux-general-en }
         # Not a vendor Rasa ships — reached by dotted path, same as any other.
-        - name: engines.speechmatics.SpeechmaticsASR
+        - name: voicerouter.providers.speechmatics.SpeechmaticsASR
           label: speechmatics
           language_map:
             en: { language: en }
-        # Built-in, listed without a key on most machines: it demonstrates the
-        # skip rather than being a real third choice here.
+        # Also not shipped by Rasa. No key here, so it is skipped and logged —
+        # which is the behaviour worth seeing, not a mistake.
+        - name: voicerouter.providers.assemblyai.AssemblyAIASR
+          label: assemblyai
+          language_map:
+            en: { language: en }
+        # Built-in, usually keyless here: another demonstration of the skip.
         - name: azure
           label: azure
           language_map:
@@ -58,3 +63,17 @@ channels:
         - name: deepgram
           language_map:
             en: { model: aura-2-andromeda-en }
+        # Vendors Rasa does not ship, in preference order after the built-ins.
+        - name: voicerouter.providers.openai.OpenAITTS
+          label: openai
+          language_map:
+            en: { voice: alloy }
+          model_id: gpt-4o-mini-tts
+        - name: voicerouter.providers.speechmatics.SpeechmaticsTTS
+          label: speechmatics
+          language_map:
+            en: { voice: theo }
+        - name: voicerouter.providers.elevenlabs.ElevenLabsTTS
+          label: elevenlabs
+          language_map:
+            en: { voice: 21m00Tcm4TlvDq8ikWAM }

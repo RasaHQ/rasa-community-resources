@@ -1,0 +1,14 @@
+# Speechmatics — TTS
+#
+# Verified against the live API.
+# Requires: SPEECHMATICS_API_KEY
+#
+# Drop this block into `channels.inspector` in integrations.yml, either on its
+# own or as one entry in a router `providers:` list. Inside a router the `name`
+# and its settings are exactly the same; only the indentation changes.
+
+    tts:
+      name: voicerouter.providers.speechmatics.SpeechmaticsTTS
+      language_map:
+        en: { voice: theo }           # theo, megan, sarah
+      output_format: wav_16000        # returns a WAV; the header is stripped locally

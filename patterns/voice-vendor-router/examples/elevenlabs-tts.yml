@@ -1,0 +1,16 @@
+# ElevenLabs — TTS
+#
+# **Not verified** — written from vendor documentation; no key was available.
+# Requires: ELEVENLABS_API_KEY
+#
+# Drop this block into `channels.inspector` in integrations.yml, either on its
+# own or as one entry in a router `providers:` list. Inside a router the `name`
+# and its settings are exactly the same; only the indentation changes.
+
+    tts:
+      name: voicerouter.providers.elevenlabs.ElevenLabsTTS
+      language_map:
+        en: { voice: 21m00Tcm4TlvDq8ikWAM }   # a voice ID, not a display name
+      model_id: eleven_turbo_v2_5
+      output_format: pcm_24000                # the adapter reads the rate from this
+      # optimize_streaming_latency: 3
