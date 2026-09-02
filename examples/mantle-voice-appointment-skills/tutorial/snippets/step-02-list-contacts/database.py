@@ -17,7 +17,7 @@ def find_project_root() -> Path:
     """Resolve the live agent project root (not a model-snapshot unpack path).
 
     Tools are loaded from the trained model archive, so ``Path(__file__)`` can
-    point inside a temporary ``calm_v2_snapshot/`` that has ``lib/`` but no
+    point inside a temporary ``mantle_snapshot/`` that has ``lib/`` but no
     ``data/source/``. Prefer a directory that contains both ``agent.yml`` and
     seeded JSON so the SQLite demo backend stays populated under ``rasa run``.
     """

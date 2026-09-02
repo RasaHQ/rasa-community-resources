@@ -47,7 +47,7 @@ install: check-uv ## Install dependencies
 
 validate: check-uv guard-env ## Validate the project without training
 	@$(UV) run rasa validate-project 2>/dev/null || $(UV) run python -c "\
-from rasa.calm_v2.validation import validate_project; validate_project('.'); print('ok')"
+from rasa.mantle.validation import validate_project; validate_project('.'); print('ok')"
 
 train: check-uv guard-env ## Validate and train
 	@$(UV) run rasa train

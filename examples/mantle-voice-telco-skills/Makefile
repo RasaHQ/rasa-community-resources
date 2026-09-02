@@ -110,11 +110,11 @@ verify: check-uv ## Run full pre-flight diagnostics
 
 validate: check-uv guard-env ## Validate skills, memory, and tools (fast)
 	@echo "$(BLUE)Validating agent project...$(RESET)"
-	@$(PYTHON) -c "from pathlib import Path; from rasa.calm_v2.validation import validate_project; validate_project(Path('.')); print('OK')" \
+	@$(PYTHON) -c "from pathlib import Path; from rasa.mantle.validation import validate_project; validate_project(Path('.')); print('OK')" \
 		>/dev/null 2>&1 \
 		&& echo "$(GREEN)✓ Project is valid.$(RESET)" \
 		|| ( echo "$(RED)✗ Project validation failed. Details:$(RESET)"; \
-		     $(PYTHON) -c "from pathlib import Path; from rasa.calm_v2.validation import validate_project; validate_project(Path('.'))" 2>&1 | grep -v '^20' | tail -40; \
+		     $(PYTHON) -c "from pathlib import Path; from rasa.mantle.validation import validate_project; validate_project(Path('.'))" 2>&1 | grep -v '^20' | tail -40; \
 		     exit 1 )
 
 # ==============================================================================

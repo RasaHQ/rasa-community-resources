@@ -301,7 +301,7 @@ an import rename:
 
 ```bash
 # 1. the pin
-rasa-pro==3.20.0.dev6  →  rasa-pro==3.20.0.dev6   # rasa-version-ignore: upgrade path
+rasa-pro==3.19.0.dev5  →  rasa-pro==3.20.0.dev6   # rasa-version-ignore: upgrade path
 
 # 2. the imports, in every tools.py
 from rasa.calm_v2.tools.decorator import ToolContext, tool

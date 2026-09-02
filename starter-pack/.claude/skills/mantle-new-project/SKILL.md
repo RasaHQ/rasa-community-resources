@@ -59,19 +59,16 @@ required-secrets = ["GEMINI_API_KEY"]
 ```python
 """Engine imports, resolved in one place.
 
-Rasa renamed the engine package rasa.calm_v2 -> rasa.mantle in 3.20.0.dev1,
-with no alias. Every tool imports from here, never from rasa.* directly.
+Rasa renamed the engine package to rasa.mantle in 3.20.0.dev1, with no alias
+for the old name. Every tool imports from here, never from rasa.* directly,
+so the next rename is a one-file change.
 """
 from __future__ import annotations
 
-try:  # 3.20.0.dev1 and later
-    from rasa.mantle.tools.decorator import ToolContext, tool
-    from rasa.mantle.tools.result import ToolResult
-    ENGINE_PACKAGE = "rasa.mantle"
-except ImportError:  # 3.19.x and earlier
-    from rasa.calm_v2.tools.decorator import ToolContext, tool
-    from rasa.calm_v2.tools.result import ToolResult
-    ENGINE_PACKAGE = "rasa.calm_v2"
+from rasa.mantle.tools.decorator import ToolContext, tool
+from rasa.mantle.tools.result import ToolResult
+
+ENGINE_PACKAGE = "rasa.mantle"
 
 __all__ = ["ENGINE_PACKAGE", "ToolContext", "ToolResult", "tool"]
 ```

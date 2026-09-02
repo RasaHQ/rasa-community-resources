@@ -12,9 +12,9 @@ misleadingly reported by the engine, verified against rasa-pro `3.20.0.dev6`.
   `[tool.uv] prerelease = "allow"`.
 - `requires-python = ">=3.11,<3.13"`. A lower floor fails `uv lock` with a
   resolver error that never mentions Python.
-- Engine imports live in `lib/engine.py` and nowhere else. The package was
-  renamed `rasa.calm_v2` → `rasa.mantle` in 3.20.0.dev1 with no alias; the
-  shim is the one place that knows this.
+- Engine imports live in `lib/engine.py` and nowhere else. The engine package
+  is `rasa.mantle` (renamed in 3.20.0.dev1 with no alias for the old name);
+  routing every import through the shim makes the next rename a one-file change.
 
 ## Layout
 

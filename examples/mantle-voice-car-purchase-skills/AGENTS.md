@@ -1,6 +1,6 @@
 # Rasa Mantle project — Autono voice car purchasing
 
-This directory is a **Rasa Mantle** agent (Skills / calm_v2) that teaches
+This directory is a **Rasa Mantle** agent (Skills / `rasa.mantle`) that teaches
 building a **voice** car-purchase assistant for Rasa Motors with **Deepgram**
 ASR + TTS.
 

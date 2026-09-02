@@ -9,7 +9,7 @@ Audience:      Practitioners building voice insurance agents with Rasa Skills
 Time:          75–90 minutes
 ```
 
-A production-style **voice insurance agent** built with Rasa **Skills / Mantle** (`calm_v2`) and **Deepgram** for speech-to-text (Flux) and text-to-speech (Aura).
+A production-style **voice insurance agent** built with Rasa **Skills / Mantle** (`rasa.mantle`) and **Deepgram** for speech-to-text (Flux) and text-to-speech (Aura).
 
 Poly can file auto and homeowners claims, check claim status, view policies, answer insurance questions, schedule inspections, and hand conversations off to a human — through voice or text.
 
@@ -104,7 +104,7 @@ The **file claim** skill is the showcase that combines those levers.
 | `scripts/verify_setup.py` | Pre-flight diagnostics |
 | `tutorial/` | Live-session guide + paste-ready snippets |
 
-This is a **Mantle / Skills (`calm_v2`)** project. Do **not** add CALM v1 files
+This is a **Mantle / Skills (`rasa.mantle`)** project. Do **not** add CALM v1 files
 (`config.yml`, `domain.yml`, flow YAMLs, `credentials.yml`).
 
 ---

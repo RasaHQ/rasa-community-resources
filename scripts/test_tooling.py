@@ -161,6 +161,46 @@ class TestProseRewrite(unittest.TestCase):
         self.assertFalse(changed)
 
 
+class TestStaleDocVersionsIgnoreMarker(unittest.TestCase):
+    """A doc line carrying `rasa-version-ignore` may name an old version.
+
+    Without the exemption, the only way an upgrade illustration could pass
+    the stale-version scan was to rewrite its FROM side to the current pin,
+    which produces degenerate `X → X` prose that teaches nothing — the same
+    defect shape RULING-004/F-A caught in a tutorial's landed bytes.
+    """
+
+    def _project_with_readme(self, text: str) -> "rasa_projects.Project":
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "README.md").write_text(text, encoding="utf-8")
+        return rasa_projects.Project(path=root)
+
+    def test_an_unmarked_stale_mention_is_reported(self):
+        project = self._project_with_readme(
+            "Upgrade from rasa-pro==3.19.0.dev5 before following along.\n"
+        )
+        stale = rasa_projects.stale_doc_versions(project, "3.20.0.dev6")
+        self.assertEqual(stale, {"README.md": ["3.19.0.dev5"]})
+
+    def test_the_marker_exempts_exactly_its_own_line(self):
+        project = self._project_with_readme(
+            "rasa-pro==3.19.0.dev5  ->  rasa-pro==3.20.0.dev6"
+            "   # rasa-version-ignore: upgrade path\n"
+            "This line is still checked: rasa-pro==3.18.0\n"
+        )
+        stale = rasa_projects.stale_doc_versions(project, "3.20.0.dev6")
+        self.assertEqual(stale, {"README.md": ["3.18.0"]})
+
+    def test_a_fully_marked_doc_reports_nothing(self):
+        project = self._project_with_readme(
+            "was rasa-pro==3.19.0.dev5 <!-- rasa-version-ignore: changelog -->\n"
+        )
+        stale = rasa_projects.stale_doc_versions(project, "3.20.0.dev6")
+        self.assertEqual(stale, {})
+
+
 class TestPrereleaseFlagRewrite(unittest.TestCase):
     CASES = (
         "\t$(UV) sync --prerelease=allow\n",

@@ -73,7 +73,7 @@ help: ## Show this help message
 	@if [ -f $(ROOT)/RASA_PRO_VERSION_LINE ]; then \
 		echo '  $(RED)The newest rasa-pro on PyPI is usually NOT the one to pin.$(RESET)'; \
 		echo ''; \
-		echo '  Every resource here imports $(YELLOW)rasa.calm_v2$(RESET) (the Mantle engine),'; \
+		echo '  Every resource here imports $(YELLOW)rasa.mantle$(RESET) (the Mantle engine),'; \
 		echo '  which ships only on the release line above. The newest stable'; \
 		echo '  release does not contain it, so pinning "latest" would break all'; \
 		echo '  $(words $(PROJECTS)) projects at import time.'; \
@@ -141,7 +141,7 @@ help: ## Show this help message
 	@echo '$(YELLOW)▸ When something fails$(RESET)'
 	@echo '  $(GREEN)make validate$(RESET) names the check and the fix for every finding.'
 	@echo '  Version/lock drift  → $(GREEN)make migrate$(RESET)'
-	@echo '  "does not ship rasa.calm_v2" → you targeted a release off the line;'
+	@echo '  "does not ship rasa.mantle" → you targeted a release off the line;'
 	@echo '                        run $(GREEN)make outdated$(RESET) and read what it says.'
 	@echo '  Docs: $(GREEN)docs/VALIDATION.md$(RESET) (what each check means)'
 	@echo '        $(GREEN)docs/MIGRATING.md$(RESET) (version bumps and release lines)'
