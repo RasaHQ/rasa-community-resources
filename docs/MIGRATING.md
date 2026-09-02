@@ -59,7 +59,7 @@ Two mechanical changes, plus one that is easy to miss.
 
 ```bash
 # 1. the pin (make migrate does this for you)
-rasa-pro==3.19.1  →  rasa-pro==3.20.0.dev6   # rasa-version-ignore: upgrade path
+rasa-pro==3.19.0.dev7  →  rasa-pro==3.20.0.dev6   # rasa-version-ignore: upgrade path
 
 # 2. every import of the engine, in tools.py and scripts
 rasa.calm_v2  →  rasa.mantle
