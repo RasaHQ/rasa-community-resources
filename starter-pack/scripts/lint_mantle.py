@@ -79,22 +79,42 @@ def _rel(path: Path) -> str:
         return str(path)
 
 
+# Directories whose contents are teaching material, not the project's own config.
+# A tutorial deliberately shows the OLD shape at step 0 and fixes it by step 3;
+# linting those snippets reports the lesson as a defect. The catalog's own
+# lint_repo.py never hits this because it reads exactly `<project>/integrations.yml`
+# rather than globbing, so this is the price of the recursive glob and has to be
+# paid explicitly.
+TEACHING_DIRS = {"snippets", "steps", "solutions", "before", "broken"}
+
+
+def _is_teaching(path: Path) -> bool:
+    return bool(set(path.parts) & TEACHING_DIRS)
+
+
 def _files(*globs: str) -> list[Path]:
-    """Tracked files when git is available; a pruned filesystem walk otherwise."""
+    """Tracked files when git is available; a pruned filesystem walk otherwise.
+
+    Teaching snippets are excluded from both paths — see TEACHING_DIRS.
+    """
     try:
         out = subprocess.run(
             ["git", "-C", str(ROOT), "ls-files", "-z", "--cached", "--others",
              "--exclude-standard", *globs],
             capture_output=True, text=True, check=True,
         ).stdout
-        return [ROOT / p for p in out.split("\0") if p and (ROOT / p).is_file()]
+        return [
+            ROOT / p
+            for p in out.split("\0")
+            if p and (ROOT / p).is_file() and not _is_teaching(Path(p))
+        ]
     except (subprocess.CalledProcessError, FileNotFoundError):
         skip = {".git", ".venv", "node_modules", "models", "__pycache__", ".rasa"}
         found: list[Path] = []
         for glob in globs or ("**/*",):
             pattern = glob if "**" in glob or "/" in glob else f"**/{glob}"
             for p in ROOT.glob(pattern):
-                if p.is_file() and not (set(p.parts) & skip):
+                if p.is_file() and not (set(p.parts) & skip) and not _is_teaching(p):
                     found.append(p)
         return sorted(set(found))
 
