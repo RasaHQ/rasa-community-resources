@@ -43,6 +43,7 @@ Examples: `human-handoff-ticket`, `tool-constraints-progressive`, `eval-conversa
 
 | Name | Problem | Path | Assessed on |
 |---|---|---|---|
+| voice-vendor-router | Swap and fail over between ASR/TTS vendors so one provider outage cannot mute or deafen a live call | [`voice-vendor-router`](voice-vendor-router) | 2026-09-02 |
 | session-start-personalization | Personalize every conversation by resolving identity once, at session start, into shared project memory | [`session-start-personalization`](session-start-personalization) | 2026-08-25 |
 
 ---
