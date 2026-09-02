@@ -1,0 +1,31 @@
+# Project memory — the document's identity and the conversation's own choices.
+#
+# NOTE WHAT IS NOT HERE. There is no field holding document text, no field
+# holding a section body, and no field holding a figure. The document's FIELD
+# VALUES live in docpkg state, written only by the tools in tools/document.py,
+# because a value in memory is a value the conversation can drift away from and
+# a suitability record cannot afford two copies of a number.
+#
+# Project memory cannot be llm_settable at all in 3.20.0.dev6, and it should not
+# be: a model that can write the document id can address a client's record to
+# someone else.
+document_id:
+  type: text
+  description: Identifier of the suitability record being assembled on this call.
+client_id:
+  type: text
+  description: Client the record concerns. Resolved from the custodian extract, never asserted by the caller.
+addressed_to:
+  type: categorical
+  enum_values: [client, adviser, client_and_adviser]
+  description: >
+    Who the finished record is addressed to. One of the two NEGOTIATED fields —
+    a selection from a closed set, made in conversation, never free text.
+last_rendered_path:
+  type: text
+  description: Where the last derived document was written. Set by render_document, read back to the caller.
+unsourced_count:
+  type: text
+  description: >
+    How many declared fields had no source at the last render. Read aloud so the
+    caller learns about a gap from the agent rather than from the document.

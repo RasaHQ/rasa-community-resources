@@ -41,6 +41,7 @@ If a tutorial is the companion to an example in `examples/`, say so in both READ
 |---|---|---|---|---|
 | Atlas voice agent tutorial | Atlas | Horizon Travel | [`rasa-voice-agent-tutorial`](rasa-voice-agent-tutorial) | 2026-08-13 |
 | Guarding an irreversible action | Wren | Northgate Bank | [`rasa-card-reissue-tutorial`](rasa-card-reissue-tutorial) | 2026-09-02 |
+| The document is derived, never written | Ledger | Thornbury Wealth | [`rasa-document-artifact-tutorial`](rasa-document-artifact-tutorial) | 2026-09-02 |
 
 When you add a tutorial, append a row here in the same PR.
 

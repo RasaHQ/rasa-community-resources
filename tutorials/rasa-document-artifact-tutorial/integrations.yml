@@ -1,0 +1,11 @@
+# The agent's LLM. `llm:` must reference a model group — inline provider/model
+# pairs are rejected by the config schema.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
