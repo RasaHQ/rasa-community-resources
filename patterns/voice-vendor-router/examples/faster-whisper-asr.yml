@@ -1,0 +1,23 @@
+# faster-whisper — ASR, open source, local
+#
+# Verified live: transcribed synthesised speech correctly, 0.12 s to decode a
+# 4-second utterance on CPU with tiny.en (model load 0.3 s once cached).
+#
+# MIT runtime, MIT weights, and the model repositories are NOT gated — this runs
+# on a fresh machine with nothing but an install.
+#
+# Whisper is a *batch* model: it takes a finished utterance, not a stream. The
+# streaming shape around it — buffering, endpointing, off-loop execution — comes
+# from voicerouter/providers/_local_asr.py, so switching to any other offline
+# transcriber is a `transcribe()` method rather than a rewrite.
+#
+# Setup:  uv sync --prerelease=allow --extra local-asr      (the model downloads on first use)
+
+    asr:
+      name: voicerouter.providers.whisper.FasterWhisperASR
+      model_id: tiny.en          # tiny(.en) base(.en) small(.en) medium large-v3
+      device: cpu                # or cuda
+      compute_type: int8         # int8 is ~4x faster than float32 on CPU
+      # force_language: en       # skip detection; it is unreliable on short turns
+      # endpoint_silence_ms: 700 # silence that ends a turn
+      # min_speech_ms: 250       # shorter than this is treated as noise

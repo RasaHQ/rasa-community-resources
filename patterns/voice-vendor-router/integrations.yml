@@ -45,6 +45,18 @@ channels:
           label: assemblyai
           language_map:
             en: { language: en }
+        # Open source and local, so no key and no network. Last in the chain
+        # for the same reason NeuTTS is last on the TTS side: this is the one
+        # that cannot fail because someone else's service did.
+        # Needs `uv sync --extra local-asr` and a downloaded model.
+        - name: voicerouter.providers.vosk.VoskASR
+          label: vosk-local
+          # model_path: /path/to/vosk-model-small-en-us-0.15
+        - name: voicerouter.providers.whisper.FasterWhisperASR
+          label: whisper-local
+          model_id: tiny.en
+          device: cpu
+          compute_type: int8
         # Built-in, usually keyless here: another demonstration of the skip.
         - name: azure
           label: azure

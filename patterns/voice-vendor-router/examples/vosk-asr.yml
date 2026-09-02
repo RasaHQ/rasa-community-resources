@@ -1,0 +1,23 @@
+# Vosk — ASR, open source, local, natively streaming
+#
+# Verified live: transcribed synthesised speech verbatim and emitted 31
+# UserIsSpeaking partials on a 4-second utterance.
+#
+# Apache 2.0. No API key. ~68 MB for the small English model, no torch, no
+# download gate. Vosk decides turn boundaries itself, so unlike the Whisper
+# family it needs no VAD bolted on — which is why it produces real partials.
+#
+# Setup:
+#   uv sync --prerelease=allow --extra local-asr
+#   curl -LO https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
+#   unzip vosk-model-small-en-us-0.15.zip
+#
+# Models are not bundled: https://alphacephei.com/vosk/models
+
+    asr:
+      name: voicerouter.providers.vosk.VoskASR
+      model_path: /path/to/vosk-model-small-en-us-0.15
+      # sample_rate: 16000     # audio is resampled to this before recognition
+
+# NOTE for Apple Silicon: vosk 0.3.45 publishes no macOS arm64 wheel. The extra
+# pins 0.3.44, which does. A float here breaks the install outright on a Mac.

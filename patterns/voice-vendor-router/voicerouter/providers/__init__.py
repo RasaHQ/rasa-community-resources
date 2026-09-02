@@ -11,6 +11,8 @@ factories. This package is for everything else.
 
     ASR   voicerouter.providers.speechmatics.SpeechmaticsASR
           voicerouter.providers.assemblyai.AssemblyAIASR
+          voicerouter.providers.vosk.VoskASR                (local, open source)
+          voicerouter.providers.whisper.FasterWhisperASR    (local, open source)
 
 Each is a normal Rasa engine: usable on its own, with or without the router.
 `CATALOGUE` exists so `make probe` and the docs can enumerate them without
@@ -44,6 +46,12 @@ CATALOGUE: tuple[VendorEntry, ...] = (
     VendorEntry("tts", "voicerouter.providers.neuphonic.NeuTTSLocal",
                 "(none — local)", False,
                 "on-device; needs the optional neutts package and a reference voice"),
+    VendorEntry("asr", "voicerouter.providers.vosk.VoskASR",
+                "(none — local)", True,
+                "Apache 2.0, ~68MB, natively streaming: emits real partials"),
+    VendorEntry("asr", "voicerouter.providers.whisper.FasterWhisperASR",
+                "(none — local)", True,
+                "MIT, batch model made streaming by LocalBufferedASR endpointing"),
 )
 
 __all__ = ["CATALOGUE", "VendorEntry"]

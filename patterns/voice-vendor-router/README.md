@@ -66,6 +66,8 @@ delegates to Rasa's own factories. `voicerouter/providers/` adds the rest.
 | Speechmatics | ASR | `voicerouter.providers.speechmatics.SpeechmaticsASR` | `SPEECHMATICS_API_KEY` | **live-verified** |
 | ElevenLabs | TTS | `voicerouter.providers.elevenlabs.ElevenLabsTTS` | `ELEVENLABS_API_KEY` | config-only — see below |
 | AssemblyAI | ASR | `voicerouter.providers.assemblyai.AssemblyAIASR` | `ASSEMBLYAI_API_KEY` | config-only — see below |
+| **Vosk** | ASR | `voicerouter.providers.vosk.VoskASR` | **none — local** | **live-verified** |
+| **faster-whisper** | ASR | `voicerouter.providers.whisper.FasterWhisperASR` | **none — local** | **live-verified** |
 | Neuphonic NeuTTS | TTS | `voicerouter.providers.neuphonic.NeuTTSLocal` | **none — local** | model not run — see below |
 | Azure | ASR + TTS | `azure` *(built-in)* | `AZURE_SPEECH_API_KEY` | not exercised — no key |
 | Cartesia | TTS | `cartesia` *(built-in)* | `CARTESIA_API_KEY` | not exercised — no key |
@@ -82,7 +84,65 @@ out. Give me a key and the row changes.
 
 A copy-pasteable block per vendor lives in [`examples/`](examples).
 
-### The local one
+### Open-source ASR
+
+Every ASR above except these two is a commercial cloud service. These are not:
+both are open source, run entirely on the machine, need no API key and no
+network, and are **verified live** — unlike NeuTTS, neither is gated and neither
+fights Rasa's dependency pins.
+
+| | Vosk | faster-whisper |
+|---|---|---|
+| Licence | Apache 2.0 | MIT (runtime and weights) |
+| Size | ~68 MB (small English) | ~75 MB (`tiny.en`), downloads on first use |
+| Streaming | **natively** | batch, made streaming here |
+| Partials | yes — 31 on a 4 s utterance | none: a batch model has nothing to emit early |
+| Measured | verbatim transcript, 0.4 s load | correct transcript, **0.12 s** to decode 4 s |
+
+```text
+said : 'I would like to transfer fifty dollars to my savings account.'
+vosk : 'i would like to transfer fifty dollars to my savings account'   (31 partials)
+whisper: 'I would like to transfer $50 to my savings account.'
+```
+
+Both are true, and the difference is instructive: Vosk transcribes what was
+said, Whisper normalises it. If a downstream tool parses amounts, `$50` is
+easier; if you are matching a spoken account name, verbatim is safer.
+
+**Vosk is the odd one out, and it matters.** Whisper and its descendants are
+batch: they take a finished utterance. Vosk's recogniser is incremental — feed
+it audio and it answers either "still going, here is the partial" or "that turn
+is finished". That maps straight onto `UserIsSpeaking` / `NewTranscript` with no
+VAD and no guessing, which is what a cloud ASR does too. Combined with 68 MB, no
+torch and no download gate, it is the most realistic last resort in a chain.
+
+**Batch models get their streaming shape from
+[`_local_asr.py`](voicerouter/providers/_local_asr.py).** It buffers audio,
+decides where the caller stopped, and transcribes off the event loop:
+
+```text
+audio in ──▶ ring buffer ──▶ endpointing ──▶ transcribe(pcm) ──▶ NewTranscript
+```
+
+Endpointing is short-time energy against an **adaptive** noise floor rather than
+a constant — a fixed threshold that works in an office fails on a car
+speakerphone. Deliberately not a neural VAD: that is another model to download
+and another thing to be wrong, and the failure mode here is a slightly late turn
+rather than a wrong transcript. Adding another offline transcriber is a
+`transcribe()` method, not a rewrite.
+
+Both install through one extra, which — unlike NeuTTS — resolves cleanly against
+Rasa's numpy pin:
+
+```bash
+uv sync --prerelease=allow --extra local-asr
+```
+
+One packaging trap, found the hard way: **`vosk 0.3.45` publishes no macOS arm64
+wheel**, only manylinux and win_amd64. The extra pins `0.3.44`, which does. A
+float breaks the install outright on Apple Silicon.
+
+### The local TTS one
 
 [NeuTTS](https://github.com/neuphonic/neutts) runs on the machine. That makes it
 the end of the failover chain that cannot go down because someone else's region
