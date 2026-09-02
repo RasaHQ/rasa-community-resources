@@ -294,14 +294,14 @@ not in the template, it is not in the reply.
 
 ## If you are coming from 3.19
 
-This pattern is pinned to `3.20.0.dev1`, where the engine package is
+This pattern is pinned to `3.20.0.dev6`, where the engine package is
 `rasa.mantle`. On `3.19.x` it was `rasa.calm_v2`, and the old path is now gone
 rather than aliased — so an agent written against 3.19 needs both a pin bump and
 an import rename:
 
 ```bash
 # 1. the pin
-rasa-pro==3.20.0.dev6  →  rasa-pro==3.20.0.dev6   # rasa-version-ignore: upgrade path
+rasa-pro==3.19.1  →  rasa-pro==3.20.0.dev6   # rasa-version-ignore: upgrade path
 
 # 2. the imports, in every tools.py
 from rasa.calm_v2.tools.decorator import ToolContext, tool
