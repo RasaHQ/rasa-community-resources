@@ -1,0 +1,35 @@
+# LLM provider, voice, and channels.
+#
+# The orchestrator LLM is a model-group reference. Provider, model and
+# credentials live on the named group, never inline under `llm:` — the inline
+# form was removed in rasa-pro 3.20.0.dev6.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+# Voice is on because the pattern's sharpest limitations are voice-specific:
+# a passphrase said aloud is a credential in the transcript, and an ASR
+# mis-transcription is a false rejection the caller cannot diagnose. Both are
+# discussed in the README.
+speech_to_text:
+  deepgram:
+    api_key: ${DEEPGRAM_API_KEY}
+
+text_to_speech:
+  deepgram:
+    api_key: ${DEEPGRAM_API_KEY}
+
+channels:
+  browser_audio:
+    server_url: localhost
+    enabled: true
+  rest:
+    enabled: true
+  inspector:
+    enabled: true

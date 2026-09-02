@@ -1,0 +1,42 @@
+# Project-wide memory shared across every skill (resolves to session.project.*).
+#
+# The auth state lives at PROJECT scope, not inside the step-up skill, and that
+# placement is the design. A tier earned while checking a balance has to be
+# visible to the tool that reissues a card, or "step up once, keep it for the
+# call" is not expressible. Skill-scoped memory would reset the caller's
+# strength every time the conversation moved, which reads as secure and is
+# actually just annoying — and annoyance is what drives teams to disable checks.
+#
+# None of these are llm_settable. The model can neither award itself a tier nor
+# talk a caller's tier upward; only authpolicy.guard.grant writes them, and it
+# only writes after a factor was actually satisfied.
+auth_tier:
+  type: text
+  description: >
+    Strongest authentication tier satisfied so far in this call: none, low,
+    medium or high. Written only by the verification tools.
+  initial_value: none
+auth_method:
+  type: text
+  description: How the current tier was reached (passphrase, otp, or revoked).
+  initial_value: none
+passphrase_attempts:
+  type: float
+  description: Failed passphrase attempts used in this call.
+  initial_value: 0
+otp_attempts:
+  type: float
+  description: Failed one-time-code attempts used in this call.
+  initial_value: 0
+locked_out:
+  type: bool
+  description: Whether the caller exhausted a retry budget and must reach a human.
+  initial_value: false
+# Set by a sensitive tool when it refuses, so the step-up skill knows which
+# factor to ask for and which action to resume. Written by tools, never by the LLM.
+pending_action:
+  type: text
+  description: Action that was refused and is waiting on a successful step-up.
+pending_tier:
+  type: text
+  description: Tier that the pending action requires (medium or high).
