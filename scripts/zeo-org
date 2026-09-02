@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+rasa_corpus="${ZEO_RASA_CORPUS:-$repo_root/../../rodriveracom/org-rasahq}"
+
+if [ ! -f "$rasa_corpus/claude-md/CLAUDE.md" ]; then
+  echo "REFUSING: Rasa ZEO corpus not found at $rasa_corpus" >&2
+  echo "Set ZEO_RASA_CORPUS to the org-rasahq checkout." >&2
+  exit 2
+fi
+
+ZEO_SOWS_ROOT="$rasa_corpus" exec zeo "$@"
