@@ -1,0 +1,17 @@
+# Rime (built-in) — TTS
+#
+# Verified against the live API.
+# Requires: RIME_API_KEY
+#
+# Drop this block into `channels.inspector` in integrations.yml, either on its
+# own or as one entry in a router `providers:` list. Inside a router the `name`
+# and its settings are exactly the same; only the indentation changes.
+
+    tts:
+      name: rime
+      language_map:
+        en:
+          voice: cove                 # Rime calls this `speaker`
+          language: eng               # ISO-639-3, NOT the `en` key above.
+                                      # Omit it and you get lang=None -> HTTP 400
+      model_id: mistv2

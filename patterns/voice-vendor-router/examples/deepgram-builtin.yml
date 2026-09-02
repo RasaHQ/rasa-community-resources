@@ -1,0 +1,17 @@
+# Deepgram (built-in) — both
+#
+# Verified against the live API.
+# Requires: DEEPGRAM_API_KEY
+#
+# Drop this block into `channels.inspector` in integrations.yml, either on its
+# own or as one entry in a router `providers:` list. Inside a router the `name`
+# and its settings are exactly the same; only the indentation changes.
+
+    asr:
+      name: deepgram                  # no adapter needed — Rasa ships this one
+      language_map:
+        en: { model: flux-general-en }
+    tts:
+      name: deepgram
+      language_map:
+        en: { model: aura-2-andromeda-en }

@@ -1,0 +1,20 @@
+agent:
+  id: voice-vendor-router-demo
+  language: en
+  persona: |
+    You are Ori, a brief voice assistant demonstrating vendor routing.
+    Keep every reply to one or two short spoken sentences.
+    If asked which voice vendor is being used, say you do not know from inside
+    the conversation — the router decides that, and it is visible in the logs.
+  voice:
+    enabled: true
+    asr: voicerouter.RoutedASR
+    tts: voicerouter.RoutedTTS
+
+# TOP-LEVEL keys, siblings of `agent:`. Nested inside they are silently dropped.
+name: Ori
+description: Minimal agent for exercising vendor failover in the voice stack
+
+rules:
+  - "Keep replies short — they are read aloud."
+  - "Do not claim to know which vendor is speaking; the router picks it."

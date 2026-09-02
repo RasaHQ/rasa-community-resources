@@ -7,6 +7,7 @@ This folder is **accepting contributions**.
 | Pattern | Problem it solves |
 |---|---|
 | [`session-start-personalization`](session-start-personalization/) | The default greeting is anonymous. Load what you know about the customer before the first word, then spend it later in the conversation. [Guided walkthrough](session-start-personalization/tutorial/TUTORIAL.md). |
+| [`voice-vendor-router`](voice-vendor-router/) | One vendor's outage should not mute or deafen a live call. Give ASR and TTS a chain of providers instead of one, and fail over on what the error meant — keeping the caller's voice unless credits, credentials or reachability actually went. |
 | [`evaluation-harness`](evaluation-harness/) | You changed a prompt and do not know whether the agent got better. Measure it three ways — deterministic tracker assertions, dialogue understanding tests, and LLM-as-a-judge scoring — and know which one answers which question. |
 
 ---
@@ -44,6 +45,7 @@ Examples: `human-handoff-ticket`, `tool-constraints-progressive`, `eval-conversa
 
 | Name | Problem | Path | Assessed on |
 |---|---|---|---|
+| voice-vendor-router | Swap and fail over between ASR/TTS vendors so one provider outage cannot mute or deafen a live call | [`voice-vendor-router`](voice-vendor-router) | 2026-09-02 |
 | session-start-personalization | Personalize every conversation by resolving identity once, at session start, into shared project memory | [`session-start-personalization`](session-start-personalization) | 2026-08-25 |
 | evaluation-harness | Measure whether a change to an agent helped, using assertions, dialogue understanding tests, and LLM-as-a-judge scoring | [`evaluation-harness`](evaluation-harness) | 2026-09-02 |
 

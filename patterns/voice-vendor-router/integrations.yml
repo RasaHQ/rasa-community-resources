@@ -1,0 +1,122 @@
+# The point of this resource. Both halves of the voice stack are routed.
+#
+# Every entry under `providers:` is an ordinary Rasa engine config. The router
+# hands each one to Rasa's own `asr_engine_from_config` / `tts_engine_from_config`,
+# so anything Rasa can resolve works here — the built-ins, anything Rasa adds
+# later, and any custom engine by dotted path.
+#
+# Providers whose credentials are absent are skipped with a log line rather than
+# failing the call, so this file can name more vendors than any one deployment
+# has keys for. Run `make probe` to see which ones your environment can reach.
+
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+
+    asr:
+      name: voicerouter.RoutedASR
+      policy:
+        cooldown_seconds: 30
+      providers:
+        # Built-in.
+        - name: deepgram
+          language_map:
+            en: { model: flux-general-en }
+        # Not a vendor Rasa ships — reached by dotted path, same as any other.
+        - name: voicerouter.providers.speechmatics.SpeechmaticsASR
+          label: speechmatics
+          language_map:
+            en: { language: en }
+        # Also not shipped by Rasa. No key here, so it is skipped and logged —
+        # which is the behaviour worth seeing, not a mistake.
+        - name: voicerouter.providers.assemblyai.AssemblyAIASR
+          label: assemblyai
+          language_map:
+            en: { language: en }
+        # Open source and local, so no key and no network. Last in the chain
+        # for the same reason NeuTTS is last on the TTS side: this is the one
+        # that cannot fail because someone else's service did.
+        # Needs `uv sync --extra local-asr` and a downloaded model.
+        - name: voicerouter.providers.vosk.VoskASR
+          label: vosk-local
+          # model_path: /path/to/vosk-model-small-en-us-0.15
+        - name: voicerouter.providers.whisper.FasterWhisperASR
+          label: whisper-local
+          model_id: tiny.en
+          device: cpu
+          compute_type: int8
+        # Hyperscalers. Skipped here for want of credentials, which is what the
+        # skip machinery is for — one config, many deployments.
+        - name: voicerouter.providers.aws.TranscribeASR
+          label: aws-transcribe
+          language_map:
+            en: { language: en-US }
+          region: us-east-1
+        - name: voicerouter.providers.google.GoogleSTT
+          label: google-stt
+          language_map:
+            en: { language: en-US }
+          # project_id: my-gcp-project
+        # Built-in, usually keyless here: another demonstration of the skip.
+        - name: azure
+          label: azure
+          language_map:
+            en: { language: en-US }
+
+    tts:
+      name: voicerouter.RoutedTTS
+      policy:
+        cooldown_seconds: 30
+      providers:
+        - name: rime
+          language_map:
+            en: { voice: cove, language: eng }
+          model_id: mistv2
+        - name: deepgram
+          language_map:
+            en: { model: aura-2-andromeda-en }
+        # Vendors Rasa does not ship, in preference order after the built-ins.
+        - name: voicerouter.providers.openai.OpenAITTS
+          label: openai
+          language_map:
+            en: { voice: alloy }
+          model_id: gpt-4o-mini-tts
+        - name: voicerouter.providers.speechmatics.SpeechmaticsTTS
+          label: speechmatics
+          language_map:
+            en: { voice: theo }
+        - name: voicerouter.providers.elevenlabs.ElevenLabsTTS
+          label: elevenlabs
+          language_map:
+            en: { voice: 21m00Tcm4TlvDq8ikWAM }
+        # Last on purpose. A local model is the end of the chain that cannot go
+        # down because someone else's region did — with this present, the agent
+        # has no path to silence. Skipped until the optional `neutts` package is
+        # installed and a reference voice is configured; see examples/.
+        - name: voicerouter.providers.aws.PollyTTS
+          label: aws-polly
+          language_map:
+            en: { voice: Joanna }
+          engine: neural
+          region: us-east-1
+        - name: voicerouter.providers.google.GoogleTTS
+          label: google-tts
+          language_map:
+            en: { voice: en-US-Neural2-F, language: en-US }
+        - name: voicerouter.providers.neuphonic.NeuTTSLocal
+          label: neutts-local
+          backbone_repo: neuphonic/neutts-air
+          # ref_audio: /path/to/reference.wav
+          # ref_text:  /path/to/reference.txt

@@ -1,0 +1,32 @@
+# Neuphonic NeuTTS — TTS, running on this machine
+#
+# **Not verified end to end.** The adapter is exercised against a stand-in model
+# — both backbones, both audio formats, the threading bridge and every error
+# path — but the real weights were never downloaded: every NeuTTS repository on
+# HuggingFace is gated, and no HF token was available. See the README.
+#
+# Requires: no API key. Instead:
+#   1. uv pip install 'neutts>=1.4.1' 'torchao==0.14.0'
+#   2. a HuggingFace token with access accepted for the model and codec repos
+#   3. a reference voice — ~3s of audio plus its exact transcript
+#
+# LICENCE: NeuTTS-Air and neucodec are Apache 2.0. NeuTTS-Nano and NeuTTS-2E are
+# under the NeuTTS Open License 1.0, which is a different document. Pick
+# deliberately; this example defaults to the Apache-licensed pair.
+
+    tts:
+      name: voicerouter.providers.neuphonic.NeuTTSLocal
+      backbone_repo: neuphonic/neutts-air        # Apache 2.0
+      codec_repo: neuphonic/neucodec             # Apache 2.0
+      backbone_device: cpu                       # or cuda / mps
+      ref_audio: /path/to/reference.wav          # ~3 seconds of the target voice
+      ref_text:  /path/to/reference.txt          # its exact transcript
+      # temperature: 1.0
+      # top_k: 50
+
+# For streaming — audio as it generates, rather than a whole utterance at once —
+# use a GGUF backbone and install llama-cpp-python:
+#
+#     backbone_repo: neuphonic/neutts-air-q4-gguf
+#
+# The adapter reports which one it got via `supports_streaming`.

@@ -1,0 +1,20 @@
+# Amazon Transcribe — ASR, streaming
+#
+# **Not verified end to end.** Shape checked against the installed
+# amazon-transcribe SDK; no AWS credentials were available.
+#
+# Setup:  uv sync --prerelease=allow --extra aws
+
+    asr:
+      name: voicerouter.providers.aws.TranscribeASR
+      language_map:
+        en: { language: en-US }
+      region: us-east-1
+      # vocabulary_name: my-custom-vocabulary
+      # vocabulary_filter_name: my-filter
+
+# NOTE: Transcribe streaming is NOT JSON over a websocket. It is an AWS
+# event-stream — binary framing with its own headers and CRCs over a SigV4
+# presigned socket — so this adapter uses the vendor SDK rather than
+# hand-rolling the protocol. That SDK is asyncio-native, so unlike the local
+# engines it needs no thread bridge.

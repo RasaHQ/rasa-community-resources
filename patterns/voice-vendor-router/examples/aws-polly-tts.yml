@@ -1,0 +1,23 @@
+# Amazon Polly — TTS
+#
+# **Not verified end to end.** Config and request shape are checked against the
+# installed boto3 service model — every parameter name below is confirmed real —
+# but no AWS credentials were available, so nothing was synthesised.
+#
+# Credentials: the normal AWS chain (env, shared config, instance role). There
+# is no API-key setting; boto3 resolves it.
+# Setup:  uv sync --prerelease=allow --extra aws
+
+    tts:
+      name: voicerouter.providers.aws.PollyTTS
+      language_map:
+        en: { voice: Joanna }        # Joanna, Matthew, Amy, Brian, ...
+      engine: neural                 # standard | neural | long-form | generative
+      region: us-east-1
+      # sample_rate: 16000           # Polly PCM accepts ONLY 8000 or 16000
+      # text_type: ssml
+
+# NOTE: Polly's raw PCM tops out at 16 kHz, so a 24 kHz channel is upsampled
+# locally. Fine for telephony (8 kHz anyway); audible against a native 24 kHz
+# vendor on a wideband channel. The adapter refuses any other rate outright
+# rather than quietly producing wrong-pitch audio.

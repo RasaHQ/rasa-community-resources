@@ -1,0 +1,20 @@
+# Google Cloud Speech-to-Text v2 — ASR, streaming
+#
+# **Not verified end to end.** Shape checked against the installed
+# google-cloud-speech v2 types; no GCP credentials were available.
+#
+# Setup:  uv sync --prerelease=allow --extra google
+
+    asr:
+      name: voicerouter.providers.google.GoogleSTT
+      project_id: my-gcp-project     # required: v2 addresses recognizers by project
+      language_map:
+        en: { language: en-US }
+      # location: global
+      # recognizer: _                # "_" is an inline ad-hoc recognizer
+      # model_name: long
+      # enable_interim_results: true
+
+# NOTE: v2 streaming is gRPC, not a websocket. The stream is an iterator of
+# requests where the FIRST message carries the config and audio follows — the
+# same shape as Speechmatics' StartRecognition, arrived at independently.

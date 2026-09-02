@@ -1,0 +1,73 @@
+"""Engine adapters for vendors Rasa does not ship.
+
+Rasa ships ASR for azure and deepgram, and TTS for azure, cartesia, deepgram and
+rime. Those work through the router already — it delegates to Rasa's own
+factories. This package is for everything else.
+
+    TTS   voicerouter.providers.openai.OpenAITTS
+          voicerouter.providers.elevenlabs.ElevenLabsTTS
+          voicerouter.providers.speechmatics.SpeechmaticsTTS
+          voicerouter.providers.neuphonic.NeuTTSLocal      (local, no API key)
+          voicerouter.providers.aws.PollyTTS
+          voicerouter.providers.google.GoogleTTS
+
+    ASR   voicerouter.providers.speechmatics.SpeechmaticsASR
+          voicerouter.providers.assemblyai.AssemblyAIASR
+          voicerouter.providers.vosk.VoskASR                (local, open source)
+          voicerouter.providers.whisper.FasterWhisperASR    (local, open source)
+          voicerouter.providers.aws.TranscribeASR
+          voicerouter.providers.google.GoogleSTT
+
+Each is a normal Rasa engine: usable on its own, with or without the router.
+`CATALOGUE` exists so `make probe` and the docs can enumerate them without
+importing every vendor (and its credential check) up front.
+"""
+
+from __future__ import annotations
+
+from typing import NamedTuple
+
+
+class VendorEntry(NamedTuple):
+    kind: str
+    dotted_path: str
+    env_var: str
+    verified_live: bool
+    note: str
+
+
+CATALOGUE: tuple[VendorEntry, ...] = (
+    VendorEntry("tts", "voicerouter.providers.openai.OpenAITTS",
+                "OPENAI_API_KEY", True, "24 kHz PCM, no resampling on the common path"),
+    VendorEntry("tts", "voicerouter.providers.speechmatics.SpeechmaticsTTS",
+                "SPEECHMATICS_API_KEY", True, "returns 16 kHz WAV; header stripped locally"),
+    VendorEntry("tts", "voicerouter.providers.elevenlabs.ElevenLabsTTS",
+                "ELEVENLABS_API_KEY", False, "voice is an ElevenLabs voice id, not a name"),
+    VendorEntry("asr", "voicerouter.providers.speechmatics.SpeechmaticsASR",
+                "SPEECHMATICS_API_KEY", True, "config is a StartRecognition message, not a query string"),
+    VendorEntry("asr", "voicerouter.providers.assemblyai.AssemblyAIASR",
+                "ASSEMBLYAI_API_KEY", False, "bare Authorization header; turns carry end_of_turn"),
+    VendorEntry("tts", "voicerouter.providers.neuphonic.NeuTTSLocal",
+                "(none — local)", False,
+                "on-device; needs the optional neutts package and a reference voice"),
+    VendorEntry("asr", "voicerouter.providers.vosk.VoskASR",
+                "(none — local)", True,
+                "Apache 2.0, ~68MB, natively streaming: emits real partials"),
+    VendorEntry("asr", "voicerouter.providers.whisper.FasterWhisperASR",
+                "(none — local)", True,
+                "MIT, batch model made streaming by LocalBufferedASR endpointing"),
+    VendorEntry("tts", "voicerouter.providers.aws.PollyTTS",
+                "(AWS credential chain)", False,
+                "PCM tops out at 16 kHz; 24 kHz callers are upsampled locally"),
+    VendorEntry("asr", "voicerouter.providers.aws.TranscribeASR",
+                "(AWS credential chain)", False,
+                "AWS event-stream, not a websocket; SDK is asyncio-native"),
+    VendorEntry("tts", "voicerouter.providers.google.GoogleTTS",
+                "(Application Default Credentials)", False,
+                "LINEAR16 comes back as a WAV; header stripped locally"),
+    VendorEntry("asr", "voicerouter.providers.google.GoogleSTT",
+                "(Application Default Credentials)", False,
+                "v2 streams over gRPC; config is the first request on the stream"),
+)
+
+__all__ = ["CATALOGUE", "VendorEntry"]

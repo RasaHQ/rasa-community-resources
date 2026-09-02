@@ -1,0 +1,16 @@
+# Speechmatics — ASR
+#
+# Verified against the live API.
+# Requires: SPEECHMATICS_API_KEY
+#
+# Drop this block into `channels.inspector` in integrations.yml, either on its
+# own or as one entry in a router `providers:` list. Inside a router the `name`
+# and its settings are exactly the same; only the indentation changes.
+
+    asr:
+      name: voicerouter.providers.speechmatics.SpeechmaticsASR
+      language_map:
+        en: { language: en }
+      operating_point: enhanced       # or `standard` for lower cost and latency
+      max_delay: 1.0                  # seconds before a turn is finalised
+      enable_partials: true
