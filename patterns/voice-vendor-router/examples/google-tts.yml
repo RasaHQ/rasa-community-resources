@@ -1,0 +1,24 @@
+# Google Cloud Text-to-Speech
+#
+# **Not verified end to end.** Config and enum names checked against the
+# installed google-cloud-texttospeech; no GCP credentials were available.
+#
+# Credentials: Application Default Credentials.
+#   gcloud auth application-default login
+# Setup:  uv sync --prerelease=allow --extra google
+
+    tts:
+      name: voicerouter.providers.google.GoogleTTS
+      language_map:
+        en:
+          voice: en-US-Neural2-F     # a Google voice NAME
+          language: en-US            # BCP-47, not the `en` key above
+      # sample_rate: 24000
+      # speaking_rate: 1.0
+      # pitch: 0.0
+      # ssml_gender: FEMALE          # used only when no explicit voice name
+
+# NOTE: Google returns LINEAR16 with a RIFF header — it is a WAV file, not raw
+# PCM. The adapter strips it and trusts the rate declared in the header over the
+# rate requested, so a vendor silently returning a different rate cannot become
+# a pitch bug.

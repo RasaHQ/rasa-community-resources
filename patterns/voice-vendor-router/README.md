@@ -69,6 +69,10 @@ delegates to Rasa's own factories. `voicerouter/providers/` adds the rest.
 | **Vosk** | ASR | `voicerouter.providers.vosk.VoskASR` | **none — local** | **live-verified** |
 | **faster-whisper** | ASR | `voicerouter.providers.whisper.FasterWhisperASR` | **none — local** | **live-verified** |
 | Neuphonic NeuTTS | TTS | `voicerouter.providers.neuphonic.NeuTTSLocal` | **none — local** | model not run — see below |
+| **AWS Polly** | TTS | `voicerouter.providers.aws.PollyTTS` | AWS credential chain | shape-verified — no creds |
+| **AWS Transcribe** | ASR | `voicerouter.providers.aws.TranscribeASR` | AWS credential chain | shape-verified — no creds |
+| **Google Cloud TTS** | TTS | `voicerouter.providers.google.GoogleTTS` | Application Default Credentials | shape-verified — no creds |
+| **Google Cloud STT** | ASR | `voicerouter.providers.google.GoogleSTT` | Application Default Credentials | shape-verified — no creds |
 | Azure | ASR + TTS | `azure` *(built-in)* | `AZURE_SPEECH_API_KEY` | not exercised — no key |
 | Cartesia | TTS | `cartesia` *(built-in)* | `CARTESIA_API_KEY` | not exercised — no key |
 
@@ -83,6 +87,54 @@ likely to have a protocol detail wrong, and the first person with a key finds
 out. Give me a key and the row changes.
 
 A copy-pasteable block per vendor lives in [`examples/`](examples).
+
+### The hyperscalers
+
+All three are covered, and each needed a different transport:
+
+| | ASR | TTS | Transport |
+|---|---|---|---|
+| **Azure** | built-in | built-in | Rasa ships both — nothing to write |
+| **AWS** | Transcribe | Polly | event-stream (ASR), sync SDK (TTS) |
+| **Google** | STT v2 | Cloud TTS | gRPC (ASR), sync SDK (TTS) |
+
+None of the three speaks plain JSON-over-websocket, which is what Rasa's
+built-in engines assume:
+
+- **AWS Transcribe streaming is an AWS event-stream** — binary framing with its
+  own headers and CRCs over a SigV4 presigned socket. Hand-rolling that to avoid
+  a dependency would be a poor trade, so this uses the `amazon-transcribe` SDK,
+  which is asyncio-native and needs no thread bridge.
+- **Google STT v2 is gRPC.** The stream is an *iterator of requests* where the
+  first message carries the config and audio follows — the same shape as
+  Speechmatics' `StartRecognition`, arrived at independently. Audio from Rasa is
+  pushed onto a queue feeding that iterator, so a slow network cannot block
+  `send_audio_chunks`.
+- **Both TTS sides are synchronous SDKs**, so they share
+  [`_sdk_tts.py`](voicerouter/providers/_sdk_tts.py), which runs them in a worker
+  thread for the same reason NeuTTS needs one: a synchronous call inside an
+  async voice loop freezes every other call on the process.
+
+Credentials are deliberately **not** configuration. boto3 resolves the AWS chain
+(env, shared config, instance role) and google-cloud-* resolves Application
+Default Credentials. Reimplementing SigV4 or the ADC chain to expose an
+`api_key` field would be worse in every way.
+
+Two vendor traps encoded rather than documented-and-forgotten:
+
+- **Polly's raw PCM tops out at 16 kHz.** A 24 kHz channel is upsampled
+  locally. The adapter *refuses* any other rate outright rather than quietly
+  producing wrong-pitch audio.
+- **Google's LINEAR16 comes back with a RIFF header** — a WAV file, not raw
+  PCM. It is stripped, and the rate declared in the header wins over the rate
+  requested, so a vendor silently returning something else cannot become a
+  pitch bug.
+
+**Status: shape-verified, not run.** Every SDK parameter these adapters use was
+checked against the installed libraries — Polly's `SynthesizeSpeech` members,
+Transcribe's `start_stream_transcription` signature, Google's enums and v2
+types all confirmed present. No AWS or GCP credentials were available, so
+nothing was synthesised or transcribed. Give me either and the rows change.
 
 ### Open-source ASR
 
@@ -135,8 +187,14 @@ Both install through one extra, which — unlike NeuTTS — resolves cleanly aga
 Rasa's numpy pin:
 
 ```bash
-uv sync --prerelease=allow --extra local-asr
+uv sync --prerelease=allow --extra local-asr   # vosk + faster-whisper
+uv sync --prerelease=allow --extra aws         # boto3 + amazon-transcribe
+uv sync --prerelease=allow --extra google      # google-cloud-{texttospeech,speech}
 ```
+
+Each extra was checked with `uv pip compile` against Python 3.12 *before* being
+written, and all resolve on `numpy 2.1.3` — which satisfies Rasa's pin.
+Syncing without an extra installs none of them.
 
 One packaging trap, found the hard way: **`vosk 0.3.45` publishes no macOS arm64
 wheel**, only manylinux and win_amd64. The extra pins `0.3.44`, which does. A

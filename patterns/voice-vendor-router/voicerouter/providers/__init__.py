@@ -8,11 +8,15 @@ factories. This package is for everything else.
           voicerouter.providers.elevenlabs.ElevenLabsTTS
           voicerouter.providers.speechmatics.SpeechmaticsTTS
           voicerouter.providers.neuphonic.NeuTTSLocal      (local, no API key)
+          voicerouter.providers.aws.PollyTTS
+          voicerouter.providers.google.GoogleTTS
 
     ASR   voicerouter.providers.speechmatics.SpeechmaticsASR
           voicerouter.providers.assemblyai.AssemblyAIASR
           voicerouter.providers.vosk.VoskASR                (local, open source)
           voicerouter.providers.whisper.FasterWhisperASR    (local, open source)
+          voicerouter.providers.aws.TranscribeASR
+          voicerouter.providers.google.GoogleSTT
 
 Each is a normal Rasa engine: usable on its own, with or without the router.
 `CATALOGUE` exists so `make probe` and the docs can enumerate them without
@@ -52,6 +56,18 @@ CATALOGUE: tuple[VendorEntry, ...] = (
     VendorEntry("asr", "voicerouter.providers.whisper.FasterWhisperASR",
                 "(none — local)", True,
                 "MIT, batch model made streaming by LocalBufferedASR endpointing"),
+    VendorEntry("tts", "voicerouter.providers.aws.PollyTTS",
+                "(AWS credential chain)", False,
+                "PCM tops out at 16 kHz; 24 kHz callers are upsampled locally"),
+    VendorEntry("asr", "voicerouter.providers.aws.TranscribeASR",
+                "(AWS credential chain)", False,
+                "AWS event-stream, not a websocket; SDK is asyncio-native"),
+    VendorEntry("tts", "voicerouter.providers.google.GoogleTTS",
+                "(Application Default Credentials)", False,
+                "LINEAR16 comes back as a WAV; header stripped locally"),
+    VendorEntry("asr", "voicerouter.providers.google.GoogleSTT",
+                "(Application Default Credentials)", False,
+                "v2 streams over gRPC; config is the first request on the stream"),
 )
 
 __all__ = ["CATALOGUE", "VendorEntry"]
