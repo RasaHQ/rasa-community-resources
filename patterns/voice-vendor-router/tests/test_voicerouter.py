@@ -331,5 +331,90 @@ class TestEngineContract(unittest.TestCase):
         self.assertEqual(contract.check(verbose=False), [])
 
 
+class TestVendorCatalogue(unittest.TestCase):
+    """CATALOGUE is data nothing imports at runtime — that is its point, and
+    also its risk. A typo'd dotted path or a renamed engine class would only
+    surface when a user configures that vendor, which is the worst time.
+    These tests keep the catalogue true in both directions, offline.
+    """
+
+    @staticmethod
+    def _bases():
+        from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine
+        from rasa.core.channels.voice_stream.tts.tts_engine import TTSEngine
+
+        return {"asr": ASREngine, "tts": TTSEngine}
+
+    def test_every_catalogue_path_imports_and_matches_its_kind(self):
+        import importlib
+
+        from voicerouter.providers import CATALOGUE
+
+        bases = self._bases()
+        for entry in CATALOGUE:
+            with self.subTest(path=entry.dotted_path):
+                module_name, class_name = entry.dotted_path.rsplit(".", 1)
+                module = importlib.import_module(module_name)
+                cls = getattr(module, class_name)
+                self.assertTrue(
+                    issubclass(cls, bases[entry.kind]),
+                    f"{entry.dotted_path} is catalogued as {entry.kind!r} but "
+                    f"does not subclass {bases[entry.kind].__name__}",
+                )
+
+    def test_every_shipped_engine_is_catalogued(self):
+        """The other direction: an adapter added to providers/ without a
+        catalogue row is invisible to `make probe` and the docs."""
+        import importlib
+        import inspect
+        import pkgutil
+
+        import voicerouter.providers as pkg
+        from voicerouter.providers import CATALOGUE
+
+        bases = tuple(self._bases().values())
+        catalogued = {e.dotted_path for e in CATALOGUE}
+        missing = []
+        for info in pkgutil.iter_modules(pkg.__path__):
+            if info.name.startswith("_"):
+                continue  # shared machinery, not vendor surface
+            module = importlib.import_module(f"{pkg.__name__}.{info.name}")
+            for name, cls in inspect.getmembers(module, inspect.isclass):
+                if (
+                    cls.__module__ == module.__name__
+                    and issubclass(cls, bases)
+                    and cls not in bases
+                    and not name.startswith("_")
+                ):
+                    dotted = f"{module.__name__}.{name}"
+                    if dotted not in catalogued:
+                        missing.append(dotted)
+        self.assertEqual(
+            missing, [],
+            "shipped engine(s) absent from CATALOGUE - add a VendorEntry "
+            "so `make probe` and the docs can see them",
+        )
+
+    def test_every_catalogued_env_var_is_discoverable(self):
+        """An env var the catalogue names but .env.example never mentions is a
+        credential a reader has no way to discover."""
+        import re
+
+        from voicerouter.providers import CATALOGUE
+
+        example = (Path(__file__).resolve().parent.parent / ".env.example").read_text(
+            encoding="utf-8"
+        )
+        for entry in CATALOGUE:
+            if not re.fullmatch(r"[A-Z][A-Z0-9_]*", entry.env_var):
+                continue  # "(none — local)" and credential-chain notes
+            with self.subTest(env=entry.env_var):
+                self.assertIn(
+                    entry.env_var, example,
+                    f"{entry.env_var} (used by {entry.dotted_path}) is missing "
+                    f"from .env.example",
+                )
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
