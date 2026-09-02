@@ -9,6 +9,9 @@ heroes/wave-01-mantle/projects/<your-handle>-<project-slug>/
   pyproject.toml     pins the rasa-pro version you verified against
   uv.lock            committed, and matching that pin
   .env.example       no secrets, only the key names your project needs
+  data/…             FICTIONAL identities only — invented people and invented
+                     businesses, emails on example.com; the `fictional-data`
+                     lint rejects real institutions and unreserved domains
   …
 ```
 

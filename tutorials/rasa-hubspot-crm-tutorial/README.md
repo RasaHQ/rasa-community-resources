@@ -65,7 +65,7 @@ each menu lives and what to do when a scope is missing. The short version:
 2. Scopes: `crm.objects.contacts.read`, `tickets`, `crm.objects.notes.write`
 3. Copy the token from the app's **Auth** tab into `HUBSPOT_ACCESS_TOKEN`
 4. Comment out `HUBSPOT_BASE_URL` so it falls back to `https://api.hubapi.com`
-5. `make crm-check EMAIL=you@yourcompany.com` before running the agent
+5. `make crm-check EMAIL=you@example.com` before running the agent
 
 Nothing else changes. That is the point of keeping the base URL configurable.
 

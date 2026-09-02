@@ -134,7 +134,7 @@ Commenting out `HUBSPOT_BASE_URL` is what makes the agent talk to
 ## Step 4 — Prove the token works
 
 ```bash
-make crm-check EMAIL=you@yourcompany.com
+make crm-check EMAIL=you@example.com
 ```
 
 Use a real email that exists in your HubSpot as a contact — your own is

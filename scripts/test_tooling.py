@@ -312,6 +312,76 @@ class TestSkillProseRules(unittest.TestCase):
         self.assertEqual([t.count(".") for t in partial], [1])
 
 
+class TestFictionalDataPolicy(unittest.TestCase):
+    """The fictional-data rules, each with the mutation that turns it red.
+
+    Operator directive 2026-09-02: every person, company and institution in
+    catalog content must be invented. These tests hold the mechanical third
+    of that policy; the doctrine lives in docs/TUTORIAL-TEMPLATE.md §5.
+    """
+
+    def test_a_real_institution_name_is_flagged(self):
+        line = "Our client BNP Paribas asked for a document workflow."
+        self.assertTrue(lint_repo.REAL_ENTITY_RE.search(line))
+
+    def test_vendor_products_are_not_flagged(self):
+        for line in (
+            "Point HUBSPOT_BASE_URL at the real HubSpot API.",
+            "Deepgram Flux for ASR, OpenAI for the judge.",
+        ):
+            self.assertIsNone(lint_repo.REAL_ENTITY_RE.search(line))
+
+    def test_reserved_and_declared_email_domains_pass(self):
+        for addr in ("dana.okafor@example.com", "bel.riose@asimovbranch.com"):
+            domain = lint_repo._EMAIL_RE.search(addr).group(1).lower()
+            ok = bool(
+                lint_repo._RESERVED_EMAIL_RE.search("@" + domain)
+            ) or domain in lint_repo.FICTIONAL_EMAIL_DOMAINS
+            self.assertTrue(ok, addr)
+
+    def test_an_unreserved_email_domain_is_flagged(self):
+        domain = lint_repo._EMAIL_RE.search("ceo@barclays-wealth.co.uk").group(1)
+        self.assertFalse(lint_repo._RESERVED_EMAIL_RE.search("@" + domain))
+        self.assertNotIn(domain.lower(), lint_repo.FICTIONAL_EMAIL_DOMAINS)
+
+    def test_fixture_readme_must_carry_a_fiction_token(self):
+        self.assertTrue(
+            lint_repo.FICTION_TOKEN_RE.search("All records here are invented.")
+        )
+        self.assertIsNone(
+            lint_repo.FICTION_TOKEN_RE.search(
+                "Records for the pilot deployment."  # the red mutation: a
+                # README that exists but never says the data is fictional
+            )
+        )
+
+    def test_the_full_check_is_clean_on_the_real_repo_and_bites_on_a_probe(self):
+        """End to end: clean now; a planted real-entity file turns it red."""
+        clean = [
+            f for f in lint_repo.check_fictional_data()
+            if f.severity == lint_repo.SEVERITY_ERROR
+        ]
+        self.assertEqual(clean, [], "\n".join(f.message for f in clean))
+        probe = lint_repo.REPO_ROOT / "examples" / "_fiction_probe.md"
+        probe.write_text("A case study with JPMorgan private bank.\n")
+        try:
+            subprocess.run(
+                ["git", "-C", str(lint_repo.REPO_ROOT), "add", str(probe)],
+                check=True, capture_output=True,
+            )
+            hits = [
+                f for f in lint_repo.check_fictional_data()
+                if "JPMorgan" in f.message
+            ]
+            self.assertTrue(hits, "planted real institution was not flagged")
+        finally:
+            subprocess.run(
+                ["git", "-C", str(lint_repo.REPO_ROOT), "rm", "-fq", "--cached", str(probe)],
+                check=True, capture_output=True,
+            )
+            probe.unlink(missing_ok=True)
+
+
 class TestLintChecksAgainstRepo(unittest.TestCase):
     """Sanity: the real repository must satisfy every check."""
 
