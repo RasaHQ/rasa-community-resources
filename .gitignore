@@ -168,3 +168,12 @@ temp/
 *.bak
 *.orig
 *.rej
+
+# ------------------------------------------------------------------------------
+# Local agent tooling
+# ------------------------------------------------------------------------------
+# Seat identities map a seat name to a real GitHub account and are per-machine.
+# They were protected only by a local .git/info/exclude, which does not travel:
+# a fresh clone of this public repository had nothing stopping `git add -A` from
+# committing someone's account names. It has already happened once here.
+.zeo/
