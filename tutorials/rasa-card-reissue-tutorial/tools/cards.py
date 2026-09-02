@@ -7,6 +7,20 @@ Every function that changes the world in this module has the same shape:
 The guard call is never optional, never conditional on a flag, and never
 preceded by the side effect. If you are reading this file to copy the pattern,
 that ordering is the pattern.
+
+Two layers, on purpose:
+
+* ``place_reissue`` is the PURE function: every input explicit, including
+  ``auth_tier``. It is what ``scripts/prove_guard.py`` exercises, because a
+  guard whose inputs are ambient is a guard nobody can reason about — or prove.
+* ``reissue_card`` is the thin ``@tool`` wrapper the AGENT calls. It reads
+  ``auth_tier`` from project memory, which only the verification tools write
+  (``memory.yml`` marks it ``llm_settable: false``), and the engine's tool
+  schema exposes only the address arguments. The tier is deliberately NOT a
+  tool parameter: the schema generator publishes every non-``context``
+  parameter to the model, and a model-fillable ``auth_tier`` would let the
+  agent talk itself past the guard — the exact hole this tutorial teaches you
+  to close.
 """
 
 from __future__ import annotations
@@ -16,6 +30,26 @@ import uuid
 from datetime import date
 from pathlib import Path
 from typing import Any
+
+try:
+    from rasa.mantle.tools.decorator import ToolContext, tool
+    from rasa.mantle.tools.result import ToolResult
+except ModuleNotFoundError:  # pragma: no cover — the bare-python proof path
+    # `make policy` runs under bare python3, with no venv and no engine, and
+    # exercises only `place_reissue`. These shims exist solely so this module
+    # imports there; the agent runtime always has the real engine, and the
+    # loader only ever sees these tools through it.
+    ToolContext = None  # type: ignore[assignment,misc]
+
+    def tool(*, description):  # type: ignore[no-redef]
+        def _wrap(func):
+            func._tool_description = description
+            return func
+        return _wrap
+
+    class ToolResult:  # type: ignore[no-redef]
+        def __init__(self, llm_response=None):
+            self.llm_response = llm_response
 
 from cardpolicy import (
     ReissueRefused,
@@ -50,7 +84,8 @@ def _customer(data: dict[str, Any]) -> dict[str, Any]:
     raise LookupError(f"fixture is missing {DEMO_CUSTOMER_ID}")
 
 
-async def list_cards() -> dict[str, Any]:
+@tool(description="List the caller's cards by product and last four digits.")
+async def list_cards(context: ToolContext = None) -> ToolResult:
     """The caller's cards, by last four digits.
 
     Never returns a full card number. The agent has no use for one and a
@@ -62,10 +97,16 @@ async def list_cards() -> dict[str, Any]:
         for c in data["cards"]
         if c["customer_id"] == DEMO_CUSTOMER_ID
     ]
-    return {"ok": True, "cards": cards}
+    return ToolResult(llm_response={"ok": True, "cards": cards})
 
 
-async def list_addresses_on_file() -> dict[str, Any]:
+@tool(
+    description=(
+        "List the addresses the bank already holds for this customer. Offer "
+        "these before ever asking the caller for an address."
+    )
+)
+async def list_addresses_on_file(context: ToolContext = None) -> ToolResult:
     """Addresses the bank held BEFORE this call started.
 
     Offered to the caller first, deliberately. The cheapest safe path is the
@@ -74,20 +115,22 @@ async def list_addresses_on_file() -> dict[str, Any]:
     pushed every caller onto the expensive path for no reason.
     """
     customer = _customer(_load())
-    return {
-        "ok": True,
-        "addresses": [
-            {
-                "address_id": a["address_id"],
-                "label": a["label"],
-                "spoken": f"{a['line1']}, {a['city']}, {a['postcode']}",
-            }
-            for a in customer["addresses_on_file"]
-        ],
-    }
+    return ToolResult(
+        llm_response={
+            "ok": True,
+            "addresses": [
+                {
+                    "address_id": a["address_id"],
+                    "label": a["label"],
+                    "spoken": f"{a['line1']}, {a['city']}, {a['postcode']}",
+                }
+                for a in customer["addresses_on_file"]
+            ],
+        }
+    )
 
 
-async def reissue_card(
+async def place_reissue(
     card_id: str,
     line1: str,
     city: str,
@@ -96,9 +139,9 @@ async def reissue_card(
 ) -> dict[str, Any]:
     """Order a replacement card. Irreversible once it returns ok.
 
-    `auth_tier` is passed in rather than read from a global so that the guard's
-    input is visible at the call site and in every test. A guard whose inputs
-    are ambient is a guard nobody can reason about.
+    `auth_tier` is passed in rather than read from anything ambient so that
+    the guard's input is visible at the call site and in every proof case.
+    This is the function `scripts/prove_guard.py` drives.
     """
     data = _load()
     customer = _customer(data)
@@ -135,6 +178,36 @@ async def reissue_card(
     reference = f"RC-{uuid.uuid4().hex[:8].upper()}"
     _PLACED[fingerprint] = reference
     return _as_dict(succeeded(reference))
+
+
+@tool(
+    description=(
+        "Order a replacement card to the given address. Refuses with "
+        "step_up_required when the caller's verification is not strong enough "
+        "for where the card is going."
+    )
+)
+async def reissue_card(
+    card_id: str,
+    line1: str,
+    city: str,
+    postcode: str,
+    context: ToolContext = None,
+) -> ToolResult:
+    """The agent-facing wrapper: same guard, tier read from memory.
+
+    The tier comes from ``session.project.auth_tier``, written only by the
+    verification flow — never from a tool argument the model could fill. See
+    the module docstring for why that distinction is the whole point.
+    """
+    held_tier = "none"
+    if context is not None:
+        held_tier = str(context.memory.get("auth_tier") or "none")
+    return ToolResult(
+        llm_response=await place_reissue(
+            card_id, line1, city, postcode, auth_tier=held_tier
+        )
+    )
 
 
 def _as_dict(outcome: Outcome) -> dict[str, Any]:

@@ -370,18 +370,36 @@ discover them by failing CI.
   **not** do and where the caller goes instead. "Offer a human" is a
   behaviour; write it down as one.
 
-### Not yet: eval suites
+### The eval fence: DU tests are banned; e2e tests are observations, never proofs
 
-**Do not ship `rasa test e2e` or dialogue-understanding tests with a tutorial
+**Do not ship dialogue-understanding (`rasa test du`) tests with a tutorial
 cell.** Verified against installed `3.20.0.dev6`: `mantle/processor.py:104-107`
 hardcodes `is_calm_assistant = True`, so the `ensure_calm_only_bot` gate in
 `cli/dialogue_understanding_test.py:185-199` passes — while
 `grep -c dialogue_understanding mantle/orchestration/orchestrator.py` returns
 **0**. DU tests execute, pass, and measure a component that never runs on
-Mantle. A green suite here is not evidence.
+Mantle. A green suite here is not evidence. This half is a permanent ban unless
+the engine changes.
 
-This section is a hold, not a permanent ban. It lifts when the harness is
-retargeted onto the engine's own simulation doctrine.
+`rasa test e2e` files MAY ship — as **observations, never as the proof of a
+guarantee** (RULING-010; `patterns/voice-auth-stepup/tests/e2e/tiering.yml` is
+the model, and its header comment is the required shape: the file itself says
+what it can and cannot establish). An e2e pass says the model chose well on one
+sampled run; it catches a guard that is correct but unreachable, which a direct
+proof cannot see. The guarantee itself is only citable from the proof script
+below.
+
+**And run the engine's own project validation before opening the PR** — it is
+free, offline, and needs no credentials:
+
+    uv run python -c "from pathlib import Path; \
+        from rasa.mantle.validation import validate_project; validate_project(Path('.'))"
+
+The first tutorial built against this template shipped with 12 validation
+findings (undecorated tools, an invalid response-variant key) that no repo-level
+gate could see, because the repo's offline gate never imports the engine. This
+one-liner is the difference between "the files exist" and "the engine accepts
+them".
 
 ### Instead: ship a proof of the thing you actually claimed
 
@@ -420,10 +438,12 @@ Runnable half:
 
 - [ ] `python3 scripts/lint_repo.py` passes
 - [ ] `make validate` passes
+- [ ] the engine accepts the project: the `validate_project` one-liner from
+      section 5 runs clean (free, offline — no excuse to skip it)
 - [ ] `README.md` carries the RESOURCE_TEMPLATE metadata block
 - [ ] `tutorials/README.md` has a row for the new directory
 - [ ] `.env.example` names every key
-- [ ] no `rasa test e2e` / DU suite
+- [ ] no DU suite; any e2e file opens with the observation-not-proof header
 
 Prose half:
 

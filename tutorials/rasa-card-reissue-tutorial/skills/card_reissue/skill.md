@@ -29,7 +29,7 @@ Read the destination back in full and get an explicit yes before calling
 `reissue_card`. Getting the address wrong is not recoverable once the card is
 posted.
 
-if: @memory.project.locked_out
+if: session.project.locked_out
 Do not order a card. Say you cannot complete card requests on this call and
 offer @skill.human_handoff.
 

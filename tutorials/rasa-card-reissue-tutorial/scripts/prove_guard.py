@@ -24,7 +24,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from tools.cards import reissue_card  # noqa: E402
+from tools.cards import place_reissue  # noqa: E402
 
 ON_FILE = ("14 Wexley Row", "Bristol", "BS1 4TR")
 STATED = ("9 Elsewhere Lane", "Leeds", "LS1 9ZZ")
@@ -48,23 +48,23 @@ async def main() -> int:
     print("\nAn address the bank already held:")
     check(
         "unverified caller cannot order a card at all",
-        await reissue_card("CARD-9931", *ON_FILE, auth_tier="none"),
+        await place_reissue("CARD-9931", *ON_FILE, auth_tier="none"),
         ordered=False,
         result="step_up_required",
     )
-    first = await reissue_card("CARD-9931", *ON_FILE, auth_tier="medium")
+    first = await place_reissue("CARD-9931", *ON_FILE, auth_tier="medium")
     check("verified caller can, at medium", first, ordered=True, result="ok")
 
     print("\nAn address supplied during the call:")
     check(
         "medium is NOT enough — this is the account-takeover path",
-        await reissue_card("CARD-2204", *STATED, auth_tier="medium"),
+        await place_reissue("CARD-2204", *STATED, auth_tier="medium"),
         ordered=False,
         result="step_up_required",
     )
     check(
         "high is enough — the path is priced, not banned",
-        await reissue_card("CARD-2204", *STATED, auth_tier="high"),
+        await place_reissue("CARD-2204", *STATED, auth_tier="high"),
         ordered=True,
         result="ok",
     )
@@ -73,7 +73,7 @@ async def main() -> int:
     for junk in ("admin", "", "TRUE", "high ish", "none", "3"):
         check(
             f"auth_tier={junk!r} is refused, not interpreted",
-            await reissue_card("CARD-9931", *STATED, auth_tier=junk),
+            await place_reissue("CARD-9931", *STATED, auth_tier=junk),
             ordered=False,
             result="step_up_required",
         )
@@ -81,13 +81,13 @@ async def main() -> int:
     print("\nCasing is normalised, because ASR casing is not a security signal:")
     check(
         "auth_tier='HIGH' is the same tier as 'high'",
-        await reissue_card("CARD-2204", *STATED, auth_tier="HIGH"),
+        await place_reissue("CARD-2204", *STATED, auth_tier="HIGH"),
         ordered=True,
         result="duplicate",
     )
 
     print("\nThe same request twice posts one card:")
-    again = await reissue_card("CARD-9931", *ON_FILE, auth_tier="medium")
+    again = await place_reissue("CARD-9931", *ON_FILE, auth_tier="medium")
     check("second attempt reports duplicate", again, ordered=True, result="duplicate")
     same = again.get("reference") == first.get("reference")
     mark = f"{GREEN}✓{RESET}" if same else f"{RED}✗{RESET}"
@@ -96,7 +96,7 @@ async def main() -> int:
         failures += 1
 
     print("\nA refusal never carries a reference:")
-    denied = await reissue_card("CARD-2204", *STATED, auth_tier="low")
+    denied = await place_reissue("CARD-2204", *STATED, auth_tier="low")
     has_ref = "reference" in denied
     mark = f"{GREEN}✓{RESET}" if not has_ref else f"{RED}✗{RESET}"
     print(f"  {mark} refused payload has no reference key")

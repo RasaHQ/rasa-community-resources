@@ -53,7 +53,7 @@ policy: ## Exercise the guard directly — no licence, no model, no network
 	@$(PYTHON) scripts/prove_guard.py
 
 validate: check-uv guard-env ## Validate the project without training
-	@$(UV) run rasa validate-project \
+	@$(UV) run python -c "from pathlib import Path; from rasa.mantle.validation import validate_project; validate_project(Path('.'))" \
 		&& echo "$(GREEN)✓ Project is valid.$(RESET)"
 
 train: check-uv guard-env ## Train the agent
