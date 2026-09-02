@@ -1,0 +1,14 @@
+# Project memory — every skill can read these.
+#
+# `auth_tier` is the only field the guard consults, and it is deliberately NOT
+# llm_settable. A model that can write its own authorisation level is not
+# authorised; it is self-certifying.
+schema:
+  auth_tier:
+    type: text
+    description: Strongest verification satisfied on this call — none, medium, or high.
+    llm_settable: false
+  locked_out:
+    type: bool
+    description: True once verification has failed too many times on this call.
+    llm_settable: false
