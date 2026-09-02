@@ -126,6 +126,15 @@ PROJECT_DOCS = ("README.md", "AGENTS.md")
 # reach as far as the linter does, or every bump ends with a manual patch.
 DOC_SWEEP_EXCLUDES = {".venv", ".git", "node_modules", "models", ".rasa", "__pycache__"}
 
+# Opt out of the version checks for one line. A migration or upgrade doc
+# legitimately names the version you are coming *from*, which is not the pin
+# and must not be rewritten to it. Defined here rather than in lint_repo so
+# that both version checkers — `lint_repo.check_version_consistency` and
+# `stale_doc_versions` below — honour the same token; when only one of them
+# did, the two gates disagreed and the only text that satisfied both was a
+# degenerate upgrade path naming one version twice.
+VERSION_IGNORE_MARKER = "rasa-version-ignore"
+
 # ------------------------------------------------------------------------------
 # Version tokens
 # ------------------------------------------------------------------------------
@@ -555,13 +564,20 @@ def stale_doc_versions(project: Project, expected: str) -> dict[str, list[str]]:
     `rasa-pro==…` left behind further down, or a stale pin in AGENTS.md.
     """
     stale: dict[str, list[str]] = {}
+    patterns = (PROSE_EQ_RE, PROSE_SPACE_RE, VERIFIED_WITH_RE, NOTES_HEADING_RE)
     for doc in project.docs():
         text = doc.read_text(encoding="utf-8")
-        found = {
-            m.group("version")
-            for pattern in (PROSE_EQ_RE, PROSE_SPACE_RE, VERIFIED_WITH_RE, NOTES_HEADING_RE)
-            for m in pattern.finditer(text)
-        }
+        found: set[str] = set()
+        # Line by line, and skipping marked lines, so this agrees with
+        # `lint_repo.check_version_consistency`. Scanning the file as one
+        # string cannot see the marker at all, which made this gate reject
+        # every honest two-version upgrade path while the lint accepted it.
+        for line in text.splitlines():
+            if VERSION_IGNORE_MARKER in line:
+                continue
+            found.update(
+                m.group("version") for pattern in patterns for m in pattern.finditer(line)
+            )
         wrong = sorted(v for v in found if v != expected)
         if wrong:
             stale[doc.name] = wrong
