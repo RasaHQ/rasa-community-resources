@@ -8,6 +8,7 @@ This folder is **accepting contributions**.
 |---|---|
 | [`session-start-personalization`](session-start-personalization/) | The default greeting is anonymous. Load what you know about the customer before the first word, then spend it later in the conversation. [Guided walkthrough](session-start-personalization/tutorial/TUTORIAL.md). |
 | [`voice-vendor-router`](voice-vendor-router/) | One vendor's outage should not mute or deafen a live call. Give ASR and TTS a chain of providers instead of one, and fail over on what the error meant — keeping the caller's voice unless credits, credentials or reachability actually went. |
+| [`voice-auth-stepup`](voice-auth-stepup/) | One verification at the top of the call cannot tell a balance check apart from a card reissue. Make auth strength a function of the action being attempted, resolved at the point of attempt, with an eval suite that proves a high-risk action cannot complete on weaker auth. [Guided walkthrough](voice-auth-stepup/tutorial/TUTORIAL.md). |
 | [`voice-handoff-context`](voice-handoff-context/) | Your agent hands the caller to a human and the caller starts over. Transfer the state instead of the phone call — verified identity and its tier, structured intent, what already failed, and what must not be asked again — behind an allowlist that keeps PINs and one-time codes on the agent's side of the boundary. [Guided walkthrough](voice-handoff-context/tutorial/TUTORIAL.md). |
 | [`evaluation-harness`](evaluation-harness/) | You changed a prompt and do not know whether the agent got better. Measure it three ways — deterministic tracker assertions, dialogue understanding tests, and LLM-as-a-judge scoring — and know which one answers which question. |
 
@@ -47,6 +48,7 @@ Examples: `human-handoff-ticket`, `tool-constraints-progressive`, `eval-conversa
 | Name | Problem | Path | Assessed on |
 |---|---|---|---|
 | voice-vendor-router | Swap and fail over between ASR/TTS vendors so one provider outage cannot mute or deafen a live call | [`voice-vendor-router`](voice-vendor-router) | 2026-09-02 |
+| voice-auth-stepup | Risk-tiered authentication step-up: low/medium/high driven by the action attempted, not by the caller | [`voice-auth-stepup`](voice-auth-stepup) | 2026-09-02 |
 | voice-handoff-context | Hand a caller to a human as a state transfer: a structured context package with a derived summary, an allowlist governing what crosses, and a fixture agent desk that reconstructs the caller | [`voice-handoff-context`](voice-handoff-context) | 2026-09-02 |
 | session-start-personalization | Personalize every conversation by resolving identity once, at session start, into shared project memory | [`session-start-personalization`](session-start-personalization) | 2026-08-25 |
 | evaluation-harness | Measure whether a change to an agent helped, using assertions, dialogue understanding tests, and LLM-as-a-judge scoring | [`evaluation-harness`](evaluation-harness) | 2026-09-02 |
