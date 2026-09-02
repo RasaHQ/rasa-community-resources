@@ -1,9 +1,9 @@
 # Session-start personalization
 
     Author:        Daksh Varshneya
-    Assessed on:   2026-08-26
+    Assessed on:   2026-09-02
     Assessed by:   Rod Rivera
-    Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
+    Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
     Audience:      Practitioners building Mantle agents who want every conversation personalized
     Time:          15–20 minutes
 

@@ -1,9 +1,16 @@
 # External integrations for the Rasano voice banking agent.
 
+# The orchestrator LLM is a model-group reference. Provider, model and
+# credentials live on the named group, never inline under `llm:`.
 llm:
-  provider: openai
-  model: gpt-5.2
-  api_key_env: OPENAI_API_KEY
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
 
 channels:
   rest:

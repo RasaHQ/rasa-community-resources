@@ -1071,6 +1071,104 @@ class TestBrandTerms(unittest.TestCase):
         self.assertEqual([f.location() for f in lint_repo.check_brand_terms()], [])
 
 
+class TestLlmModelGroup(unittest.TestCase):
+    """The orchestrator LLM is a model-group reference, not inline settings.
+
+    Regression: 3.20.0.dev6 made `IntegrationLlmConfig` extra="forbid" with a
+    required `model_group`. Every project in the catalog failed
+    `validate_project` at once, each with
+    `'provider': Extra inputs are not permitted`.
+    """
+
+    def _findings(self, body):
+        project = rasa_projects.Project(Path("examples/demo"))
+        with mock.patch("pathlib.Path.is_file", return_value=True), \
+             mock.patch.object(lint_repo, "_read", return_value=body):
+            return lint_repo.check_llm_model_group([project])
+
+    GOOD = (
+        "llm:\n"
+        "  model_group: orchestrator\n"
+        "\n"
+        "model_groups:\n"
+        "  - id: orchestrator\n"
+        "    models:\n"
+        "      - provider: openai\n"
+        "        model: gpt-5.2\n"
+    )
+
+    def test_model_group_reference_is_clean(self):
+        self.assertEqual(self._findings(self.GOOD), [])
+
+    def test_inline_provider_is_caught(self):
+        body = "llm:\n  provider: openai\n  model: gpt-5.2\n  api_key_env: OPENAI_API_KEY\n"
+        found = self._findings(body)
+        # Three inline keys, plus the missing model_group itself.
+        self.assertEqual(len(found), 4)
+        self.assertTrue(any("model_group': Field required" in f.message for f in found))
+
+    def test_missing_model_group_alone_is_caught(self):
+        found = self._findings("llm:\n  max_prompt_tokens: 4000\n")
+        self.assertEqual(len(found), 1)
+        self.assertIn("does not name a model_group", found[0].message)
+
+    def test_provider_inside_model_groups_is_not_flagged(self):
+        # `provider:` is correct *under a group* — only inline under `llm:` is wrong.
+        self.assertEqual(self._findings(self.GOOD), [])
+
+    def test_commented_inline_form_is_ignored(self):
+        body = (
+            "llm:\n"
+            "  model_group: orchestrator\n"
+            "  # provider: openai   <- how it used to look\n"
+        )
+        self.assertEqual(self._findings(body), [])
+
+    def test_the_real_catalog_uses_model_groups(self):
+        projects = rasa_projects.discover_projects("all")
+        self.assertEqual(
+            [f.location() for f in lint_repo.check_llm_model_group(projects)], []
+        )
+
+
+class TestProjectMemoryWrites(unittest.TestCase):
+    """Root memory.yml is tool-written; `llm_settable` belongs to skills.
+
+    Regression: 3.20.0.dev6 started rejecting the flag on project fields, and
+    two tutorials carried it inertly until validate_project refused them.
+    """
+
+    def _findings(self, body):
+        project = rasa_projects.Project(Path("tutorials/demo"))
+        with mock.patch("pathlib.Path.is_file", return_value=True), \
+             mock.patch.object(lint_repo, "_read", return_value=body):
+            return lint_repo.check_project_memory_writes([project])
+
+    def test_llm_settable_project_field_is_caught(self):
+        found = self._findings("contact_email:\n  type: text\n  llm_settable: true\n")
+        self.assertEqual(len(found), 1)
+        self.assertIn("cannot be llm_settable", found[0].message)
+
+    def test_tool_written_project_field_is_clean(self):
+        self.assertEqual(self._findings("contact_id:\n  type: text\n"), [])
+
+    def test_llm_settable_false_is_clean(self):
+        self.assertEqual(
+            self._findings("x:\n  type: text\n  llm_settable: false\n"), []
+        )
+
+    def test_commented_flag_is_ignored(self):
+        self.assertEqual(
+            self._findings("x:\n  type: text\n  # llm_settable: true\n"), []
+        )
+
+    def test_the_real_catalog_is_clean(self):
+        projects = rasa_projects.discover_projects("all")
+        self.assertEqual(
+            [f.location() for f in lint_repo.check_project_memory_writes(projects)], []
+        )
+
+
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every
     # caller reads as a pass. That is not hypothetical: an edit once removed

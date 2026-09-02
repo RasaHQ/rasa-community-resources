@@ -565,6 +565,9 @@ TOP_LEVEL_AGENT_KEYS = (
     "conversation",
     "references",
     "before_end",
+    # Added in 3.20.0.dev6. Caught by the agent_spec contract test rather than
+    # by anyone reading release notes, which is what that test is for.
+    "tool_timeout",
 )
 
 
@@ -680,6 +683,102 @@ def check_brand_terms() -> list[Finding]:
                         None,
                         f"path contains the retired name {retired!r}; "
                         f"rename it to use {replacement.lower()!r}",
+                    )
+                )
+    return findings
+
+
+# Keys that used to live inline under `llm:` in integrations.yml and were
+# removed in rasa-pro 3.20.0.dev6, when the orchestrator LLM became a
+# model-group reference.
+INLINE_LLM_KEYS = ("provider", "model", "api_key_env", "api_key")
+
+
+def check_llm_model_group(projects: list[Project]) -> list[Finding]:
+    """`llm:` names a model group; provider settings live on the group.
+
+    Regression: 3.20.0.dev6 made `IntegrationLlmConfig` `extra="forbid"` with a
+    required `model_group`, so every project in this catalog failed
+    validate_project at once with `'provider': Extra inputs are not permitted`.
+    The inline form is easy to reintroduce by copying an older example, and the
+    failure only surfaces at validate/train time.
+    """
+    findings: list[Finding] = []
+    for project in projects:
+        path = project.path / "integrations.yml"
+        if not path.is_file():
+            continue
+        lines = _read(path).splitlines()
+        try:
+            start = next(i for i, l in enumerate(lines) if l.rstrip() == "llm:")
+        except StopIteration:
+            continue
+
+        saw_model_group = False
+        for i in range(start + 1, len(lines)):
+            line = lines[i]
+            if line.strip() and not line[0].isspace():
+                break
+            stripped = line.strip()
+            if stripped.startswith("#") or ":" not in stripped:
+                continue
+            key = stripped.split(":", 1)[0]
+            if key == "model_group":
+                saw_model_group = True
+            elif key in INLINE_LLM_KEYS:
+                findings.append(
+                    Finding(
+                        "llm-model-group",
+                        _rel(path),
+                        i + 1,
+                        f"{key!r} is set inline under 'llm:'. Since 3.20.0.dev6 the "
+                        f"orchestrator LLM is a model-group reference: use "
+                        f"'llm: {{model_group: <id>}}' and declare the provider "
+                        f"under a matching 'model_groups' entry.",
+                    )
+                )
+        if not saw_model_group:
+            findings.append(
+                Finding(
+                    "llm-model-group",
+                    _rel(path),
+                    start + 1,
+                    "'llm:' does not name a model_group; validate_project will "
+                    "reject it with \"'model_group': Field required\"",
+                )
+            )
+    return findings
+
+
+def check_project_memory_writes(projects: list[Project]) -> list[Finding]:
+    """Project-level memory is tool-written; the LLM may not set it.
+
+    Regression: 3.20.0.dev6 began rejecting `llm_settable: true` on a root
+    `memory.yml` field outright. Two tutorials carried the flag, where it had
+    been inert — the fields were already written by tools — so nothing was
+    lost, but validate_project failed until it was removed.
+
+    Only the root `memory.yml` is checked. Skill-scoped memory
+    (`skills/<id>/memory.yml`) is where `llm_settable` belongs.
+    """
+    findings: list[Finding] = []
+    for project in projects:
+        path = project.path / "memory.yml"
+        if not path.is_file():
+            continue
+        for lineno, line in _numbered(_read(path)):
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                continue
+            if re.match(r"^llm_settable:\s*true\b", stripped):
+                findings.append(
+                    Finding(
+                        "project-memory-writes",
+                        _rel(path),
+                        lineno,
+                        "project memory cannot be llm_settable — the engine "
+                        "rejects it. Have a tool write the field, or move the "
+                        "field into skills/<id>/memory.yml.",
                     )
                 )
     return findings
@@ -940,6 +1039,8 @@ CHECKS = {
     "workflow-pins": lambda p, s, e: check_workflow_pins(),
     "agent-config-keys": lambda p, s, e: check_agent_config_keys(),
     "brand-terms": lambda p, s, e: check_brand_terms(),
+    "llm-model-group": lambda p, s, e: check_llm_model_group(p + s),
+    "project-memory-writes": lambda p, s, e: check_project_memory_writes(p + s),
     "env-example": lambda p, s, e: check_env_examples(p + s),
     "snapshot-pin": lambda p, s, e: check_snapshot_pins(s),
     # Both tiers: `community/` is maintained, `heroes/` is frozen, and a

@@ -2,9 +2,9 @@
 
 ```text
 Author:        Rod Rivera
-Assessed on:   2026-08-26
+Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
 Audience:      Practitioners building voice auto-retail agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -620,7 +620,7 @@ make train
 This repository currently targets:
 
 ```text
-rasa-pro==3.20.0.dev1
+rasa-pro==3.20.0.dev6
 ```
 
 This is a **pre-release** version — the Mantle / Skills engine (`rasa.mantle`)

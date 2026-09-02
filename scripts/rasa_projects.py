@@ -119,6 +119,12 @@ REPO_DOCS = (
 )
 # Per-project docs rewritten during a migration.
 PROJECT_DOCS = ("README.md", "AGENTS.md")
+# Directories inside a project that are never authored docs. Everything else
+# ending in .md is swept during a migration: a version string in a chapter
+# walkthrough drifts exactly as easily as one in a README, and the repo-wide
+# `version-consistency` lint fails on it either way — so the migrator has to
+# reach as far as the linter does, or every bump ends with a manual patch.
+DOC_SWEEP_EXCLUDES = {".venv", ".git", "node_modules", "models", ".rasa", "__pycache__"}
 
 # ------------------------------------------------------------------------------
 # Version tokens
@@ -400,7 +406,22 @@ class Project:
         return self.path / "uv.lock"
 
     def docs(self) -> list[Path]:
-        return [self.path / name for name in PROJECT_DOCS if (self.path / name).is_file()]
+        """Every authored markdown file in this project, README first.
+
+        Not just README/AGENTS: chapter walkthroughs under `tutorial/` carry
+        `rasa-pro <version>` strings too, and used to survive a migration only
+        to fail the lint immediately afterwards.
+        """
+        found: list[Path] = [
+            self.path / name for name in PROJECT_DOCS if (self.path / name).is_file()
+        ]
+        for md in sorted(self.path.rglob("*.md")):
+            if md in found:
+                continue
+            if DOC_SWEEP_EXCLUDES & set(md.relative_to(self.path).parts):
+                continue
+            found.append(md)
+        return found
 
 
 def read_expected_version(override: str | None = None) -> str:
