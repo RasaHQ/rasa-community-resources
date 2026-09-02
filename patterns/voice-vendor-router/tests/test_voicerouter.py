@@ -170,6 +170,22 @@ class TestHealth(unittest.TestCase):
         self.assertTrue(h.is_available())
         self.assertEqual(h.state, "half-open")
 
+    def test_configured_cooldown_reaches_the_kinds_it_is_meant_to(self):
+        # It was once configurable and inert: every kind had a hard-coded entry,
+        # so the number an operator set was read and then never used.
+        reg = HealthRegistry(cooldown_seconds=120.0)
+        reg.get("gone").record_failure(ConnectionRefusedError("refused"))
+        self.assertEqual(reg.get("gone").current_cooldown, 120.0)
+        reg.get("odd").record_failure(RuntimeError("something nobody has seen"))
+        self.assertEqual(reg.get("odd").current_cooldown, 120.0)
+
+    def test_vendor_semantics_still_win_over_the_configured_default(self):
+        # A billing window is not a matter of taste, so the knob must not
+        # shorten it.
+        reg = HealthRegistry(cooldown_seconds=5.0)
+        reg.get("broke").record_failure(http_error(402, "Payment Required"))
+        self.assertEqual(reg.get("broke").current_cooldown, 900.0)
+
     def test_quota_parks_far_longer_than_a_transient_error(self):
         reg = HealthRegistry()
         reg.get("a").record_failure(http_error(402, "Payment Required"))

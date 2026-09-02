@@ -57,14 +57,22 @@ class Verdict:
 # Default cooldowns per class, in seconds. A quota failure is parked for long
 # enough that the router stops asking, but not so long that a topped-up account
 # stays shut out for the rest of the process's life.
+# Only the kinds whose right answer comes from the vendor's own semantics, not
+# from the operator's taste. A quota window is a billing period; a rate limit is
+# a short apology; a 5xx is usually over in seconds. Nobody tuning a deployment
+# knows better than that.
+#
+# UNAVAILABLE and UNKNOWN are deliberately absent, and that absence is the
+# feature: "how long do I skip a vendor that went dark" is exactly the question
+# `policy.cooldown_seconds` exists to answer, and it can only answer it for
+# kinds that are not already spoken for here. Adding an entry for them would
+# make the knob configurable and inert, which is worse than not having it.
 DEFAULT_COOLDOWNS: dict[FailureKind, float] = {
     FailureKind.AUTH: 0.0,         # permanent; cooldown unused
     FailureKind.CONFIG: 0.0,       # permanent; cooldown unused
     FailureKind.QUOTA: 900.0,      # 15 minutes
     FailureKind.RATE_LIMIT: 20.0,  # overridden by Retry-After when present
     FailureKind.TRANSIENT: 15.0,
-    FailureKind.UNAVAILABLE: 30.0,
-    FailureKind.UNKNOWN: 30.0,
 }
 
 _PERMANENT = {FailureKind.AUTH, FailureKind.CONFIG}
