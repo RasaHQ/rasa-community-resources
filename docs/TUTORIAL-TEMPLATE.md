@@ -352,8 +352,16 @@ These are not new. They are enforced by `scripts/lint_repo.py` and
 `make validate`, and they are listed here so a tutorial author does not have to
 discover them by failing CI.
 
-- **Fixture data only.** Seeded demo identities under `data/source/`. No real
-  customer data, ever, including in transcripts pasted into chapters.
+- **Fixture data only — and fictional NAMES for everything.** Seeded demo
+  identities under `data/source/`. No real customer data, ever, including in
+  transcripts pasted into chapters — and no real people, companies or
+  institutions either, however inspired the use case is by a real
+  conversation: one real name presented as data reads as a confidential
+  disclosure whatever the intent. Invent the business. Emails use
+  `example.com/org/net`. Every `data/source/` and `references/` directory
+  carries a README declaring its contents fictional. Enforced by the
+  `fictional-data` check in `scripts/lint_repo.py`, which also rejects a
+  maintained list of real institutions by name.
 - **`.env.example` completeness.** Every key the project reads is named there,
   and every key declared in `[tool.rasa-catalog] required-secrets` appears in
   it. Enforced by `check_env_examples`.
@@ -443,6 +451,8 @@ Runnable half:
 - [ ] `README.md` carries the RESOURCE_TEMPLATE metadata block
 - [ ] `tutorials/README.md` has a row for the new directory
 - [ ] `.env.example` names every key
+- [ ] every identity is fictional; fixture dirs carry their fictional-data
+      README (`fictional-data` lint passes)
 - [ ] no DU suite; any e2e file opens with the observation-not-proof header
 
 Prose half:

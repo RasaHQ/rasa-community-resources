@@ -491,6 +491,123 @@ SECRET_PATTERNS = (
 )
 
 
+# ------------------------------------------------------------------------------
+# Fictional-data policy (operator directive, 2026-09-02)
+# ------------------------------------------------------------------------------
+# Every person, company and institution in this catalog's content and fixtures
+# must be INVENTED. This exists because the catalog's use cases are routinely
+# inspired by real field conversations about real institutions, and one leaked
+# name presented as data reads as a confidential disclosure whatever the intent.
+# The policy is doctrine; these three rules are the part a machine can hold.
+
+#: Real institutions that must never appear in catalog content. This list is
+#: the risk class that has actually come up in field discussions, not an
+#: attempt to enumerate the world — extend it when a new real name nearly
+#: ships. Vendors this catalog INTEGRATES (Rasa, OpenAI, Deepgram, HubSpot,
+#: Twilio, …) are deliberately absent: naming the product you integrate is not
+#: naming a client.
+REAL_ENTITY_RE = re.compile(
+    r"\b(BNP\s+Paribas|\bBNP\b|JPMorgan|JP\s+Morgan|JPMC|Goldman\s+Sachs"
+    r"|Morgan\s+Stanley|Bank\s+of\s+America|Merrill\s+Lynch|Wells\s+Fargo"
+    r"|Citigroup|Citibank|HSBC|Barclays|Deutsche\s+Bank|Credit\s+Suisse"
+    r"|Santander|Vanguard|BlackRock|Fidelity\s+Investments)\b",
+    re.IGNORECASE,
+)
+
+#: Email domains that are safe by construction (RFC 2606 reserved) …
+_RESERVED_EMAIL_RE = re.compile(
+    r"@(?:[\w.-]*example\.(?:com|org|net)|[\w.-]+\.(?:example|test|invalid|localhost))$",
+    re.IGNORECASE,
+)
+#: … plus domains this catalog has DECLARED fictional. Asimov-character
+#: addresses predate this rule; they are unmistakably invented but their
+#: domains are registrable, so new content should prefer example.* — these
+#: stay allowlisted rather than churning shipped fixtures.
+FICTIONAL_EMAIL_DOMAINS = frozenset(
+    {"asimovbranch.com", "trantorbranch.com", "terminusbranch.com"}
+)
+_EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]{2,})\b")
+
+#: A fixture directory must SAY it is fictional where a reader will look.
+FICTION_TOKEN_RE = re.compile(
+    r"fixture|invented|fictional|synthetic|fake|mock", re.IGNORECASE
+)
+
+
+def check_fictional_data() -> list[Finding]:
+    """Real entities never appear; fixture identities are declared invented.
+
+    Three mechanical rules:
+      1. No real-institution name anywhere in tracked catalog content.
+      2. Every email address in tracked content uses an RFC 2606 reserved
+         domain or one this file explicitly declares fictional.
+      3. Every `data/source/` and `references/` directory (outside snippet
+         mirrors) carries a README.md whose opening declares the contents
+         fictional — because 42 of the catalog's 43 fixture JSONs are arrays
+         and cannot carry a `_comment` of their own.
+    """
+    findings: list[Finding] = []
+
+    content = _tracked_files("*.md", "*.py", "*.json", "*.yml", "*.toml")
+    fixture_dirs: set[Path] = set()
+    for path in content:
+        rel = _rel(path)
+        if rel.startswith(("docs/", "scripts/", ".github/")):
+            continue  # repo tooling and policy docs may NAME the rule's targets
+        text = _read(path)
+        for lineno, line in _numbered(text):
+            m = REAL_ENTITY_RE.search(line)
+            if m:
+                findings.append(
+                    Finding(
+                        "fictional-data",
+                        rel,
+                        lineno,
+                        f"real institution {m.group(0)!r} in catalog content — "
+                        "invent a business instead (fictional-data policy)",
+                    )
+                )
+            for em in _EMAIL_RE.finditer(line):
+                domain = em.group(1).lower()
+                if _RESERVED_EMAIL_RE.search("@" + domain):
+                    continue
+                if domain in FICTIONAL_EMAIL_DOMAINS:
+                    continue
+                if domain.endswith(("github.com", "rasa.com", "astral.sh")):
+                    continue  # real project/vendor contact points, not data
+                findings.append(
+                    Finding(
+                        "fictional-data",
+                        rel,
+                        lineno,
+                        f"email on unreserved domain {domain!r} — use "
+                        "example.com/org/net or add the domain to "
+                        "FICTIONAL_EMAIL_DOMAINS with a reason",
+                    )
+                )
+        parent = path.parent
+        rel_parent = _rel(parent)
+        if "/snippets/" not in f"/{rel_parent}/" and (
+            rel_parent.endswith("data/source") or rel_parent.endswith("references")
+        ):
+            fixture_dirs.add(parent)
+
+    for directory in sorted(fixture_dirs):
+        readme = directory / "README.md"
+        head = _read(readme)[:600] if readme.is_file() else ""
+        if not FICTION_TOKEN_RE.search(head):
+            findings.append(
+                Finding(
+                    "fictional-data",
+                    _rel(directory),
+                    None,
+                    "fixture directory lacks a README.md declaring its "
+                    "contents fictional (fictional-data policy)",
+                )
+            )
+    return findings
+
+
 def check_secret_hygiene() -> list[Finding]:
     """No credentials committed, and no .env tracked."""
     findings: list[Finding] = []
@@ -1034,6 +1151,9 @@ CHECKS = {
     # Both tiers: a frozen resource still has to say who verified it and when.
     "resource-metadata": lambda p, s, e: check_resource_metadata(p + s),
     "secret-hygiene": lambda p, s, e: check_secret_hygiene(),
+    # Both tiers: a frozen resource can leak a real name as easily as a
+    # maintained one, and the reader cannot tell intent from bytes.
+    "fictional-data": lambda p, s, e: check_fictional_data(),
     "workflow-pins": lambda p, s, e: check_workflow_pins(),
     "agent-config-keys": lambda p, s, e: check_agent_config_keys(),
     "brand-terms": lambda p, s, e: check_brand_terms(),

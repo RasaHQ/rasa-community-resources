@@ -5,7 +5,7 @@ Run this before the agent. It answers the two questions that otherwise cost an
 hour: is the token working, and does it have the right scopes?
 
     make crm-check                      # against whatever .env points at
-    make crm-check EMAIL=someone@x.com  # look up a specific contact
+    make crm-check EMAIL=someone@example.com  # look up a specific contact
 
 Each capability is probed independently, so a missing scope shows up as one
 failed row naming the scope to add, rather than as a generic 403.
@@ -106,7 +106,7 @@ async def main() -> int:
     if contact is None:
         print()
         print(f"{YELLOW}  No contact to test tickets or notes against.{RESET}")
-        print(f"{DIM}  Re-run with a real address: make crm-check EMAIL=you@yourcompany.com{RESET}")
+        print(f"{DIM}  Re-run with a real address: make crm-check EMAIL=you@example.com{RESET}")
         print()
         return 1 if failures else 0
 
