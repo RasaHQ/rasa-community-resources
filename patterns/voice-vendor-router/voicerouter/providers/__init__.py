@@ -7,6 +7,7 @@ factories. This package is for everything else.
     TTS   voicerouter.providers.openai.OpenAITTS
           voicerouter.providers.elevenlabs.ElevenLabsTTS
           voicerouter.providers.speechmatics.SpeechmaticsTTS
+          voicerouter.providers.neuphonic.NeuTTSLocal      (local, no API key)
 
     ASR   voicerouter.providers.speechmatics.SpeechmaticsASR
           voicerouter.providers.assemblyai.AssemblyAIASR
@@ -40,6 +41,9 @@ CATALOGUE: tuple[VendorEntry, ...] = (
                 "SPEECHMATICS_API_KEY", True, "config is a StartRecognition message, not a query string"),
     VendorEntry("asr", "voicerouter.providers.assemblyai.AssemblyAIASR",
                 "ASSEMBLYAI_API_KEY", False, "bare Authorization header; turns carry end_of_turn"),
+    VendorEntry("tts", "voicerouter.providers.neuphonic.NeuTTSLocal",
+                "(none — local)", False,
+                "on-device; needs the optional neutts package and a reference voice"),
 )
 
 __all__ = ["CATALOGUE", "VendorEntry"]

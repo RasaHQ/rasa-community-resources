@@ -58,7 +58,12 @@ def main() -> int:
                 factory({"name": spec.name, **spec.config}, L16_24KHZ, "en", None)
             except Exception as exc:  # noqa: BLE001
                 if _looks_like_missing_credentials(exc):
-                    print(f"  {YELLOW}skip{RESET}  {spec.label:<16} no credentials — router will pass over it")
+                    # Report the vendor's own words. "No credentials" is wrong
+                    # for a local provider, which has none to be missing.
+                    reason = str(exc).split("\n")[0]
+                    if "environment variable" in reason.lower():
+                        reason = f"no {reason.rsplit(':', 1)[-1].strip()} — not configured here"
+                    print(f"  {YELLOW}skip{RESET}  {spec.label:<16} {reason[:82]}")
                 else:
                     print(f"  {RED}error{RESET} {spec.label:<16} {type(exc).__name__}: {str(exc)[:70]}")
                 continue

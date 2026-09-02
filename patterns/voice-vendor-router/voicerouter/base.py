@@ -159,16 +159,26 @@ def _looks_like_missing_credentials(exc: BaseException) -> bool:
     """Distinguish "no key" from "broken config".
 
     Rasa raises ProviderClientValidationError for a missing required env var,
-    and engines that read os.environ directly raise KeyError. Both mean the same
-    thing to an operator: this vendor is not configured here.
+    and engines that read os.environ directly raise KeyError. A local provider
+    raises ModuleNotFoundError when its optional package is absent, and
+    ValueError when its required files are not configured. All four mean the
+    same thing to an operator: this vendor is not usable here.
     """
     if isinstance(exc, KeyError):
+        return True
+    if isinstance(exc, ModuleNotFoundError):
+        # A provider whose optional package is not installed is unavailable in
+        # exactly the way a provider without a key is: configured, not usable
+        # here, and not a reason to fail the call.
         return True
     name = type(exc).__name__
     if name == "ProviderClientValidationError":
         return True
     text = str(exc).lower()
-    return "environment variable" in text and "missing" in text
+    if "environment variable" in text and "missing" in text:
+        return True
+    # Local providers report their own unconfigured state this way.
+    return "not configured here" in text
 
 
 def env_present(*names: str) -> bool:

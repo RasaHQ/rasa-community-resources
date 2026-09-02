@@ -66,6 +66,7 @@ delegates to Rasa's own factories. `voicerouter/providers/` adds the rest.
 | Speechmatics | ASR | `voicerouter.providers.speechmatics.SpeechmaticsASR` | `SPEECHMATICS_API_KEY` | **live-verified** |
 | ElevenLabs | TTS | `voicerouter.providers.elevenlabs.ElevenLabsTTS` | `ELEVENLABS_API_KEY` | config-only — see below |
 | AssemblyAI | ASR | `voicerouter.providers.assemblyai.AssemblyAIASR` | `ASSEMBLYAI_API_KEY` | config-only — see below |
+| Neuphonic NeuTTS | TTS | `voicerouter.providers.neuphonic.NeuTTSLocal` | **none — local** | model not run — see below |
 | Azure | ASR + TTS | `azure` *(built-in)* | `AZURE_SPEECH_API_KEY` | not exercised — no key |
 | Cartesia | TTS | `cartesia` *(built-in)* | `CARTESIA_API_KEY` | not exercised — no key |
 
@@ -80,6 +81,76 @@ likely to have a protocol detail wrong, and the first person with a key finds
 out. Give me a key and the row changes.
 
 A copy-pasteable block per vendor lives in [`examples/`](examples).
+
+### The local one
+
+[NeuTTS](https://github.com/neuphonic/neutts) runs on the machine. That makes it
+the end of the failover chain that cannot go down because someone else's region
+did — put it last in `providers:` and the agent has no path to silence at all.
+It is the only provider here that the router never skips for want of a key,
+because it has none.
+
+Four things are worth knowing before you reach for it, and none of them are
+obvious from "it runs locally":
+
+- **The weights are gated.** Every NeuTTS repository on HuggingFace is
+  `gated: auto` — including the Apache-2.0 ones. Local at *inference* time,
+  authenticated at *download* time: you need an HF token with access accepted.
+- **The licences differ by model.** NeuTTS-Air and `neucodec` are Apache 2.0.
+  NeuTTS-Nano and NeuTTS-2E are under the *NeuTTS Open License 1.0*, a different
+  document. The examples default to the Apache-licensed pair deliberately, and
+  no model or reference audio is vendored into this Apache-2.0 catalogue.
+- **It cannot share an environment with Rasa.** `rasa-pro` pins
+  `numpy>=2.1.3,<2.2.0`; `neutts` requires `numpy>=2.2.6`. No resolution
+  satisfies both, so NeuTTS is deliberately *not* declared as an optional
+  dependency — doing so makes dependency resolution fail for everyone,
+  including CI, whether or not they want local TTS. Two ways round it, below.
+- **`torchao` must be pinned to `0.14.0`.** `neucodec` requires `torchtune`,
+  and `torchtune 0.6.1` imports `torchao.dtypes.nf4tensor`, which `torchao 0.18`
+  removed. Without the pin `import neutts` fails outright. Also upstream, also
+  not something this package introduces.
+- **It has no built-in voice.** NeuTTS clones from ~3 s of reference audio plus
+  its exact transcript, so `ref_audio` and `ref_text` are required
+  configuration. A NeuTTS provider without them is skipped at build with that
+  reason, rather than failing the first time the agent speaks.
+
+**What was and was not verified.** The adapter is exercised against a stand-in
+model covering both backbones (PyTorch non-streaming and GGUF streaming), both
+audio formats, every error path, and — the part most likely to be wrong — that a
+synchronous, CPU-bound forward pass does not block the event loop:
+
+```text
+RESULT torch backbone -> 24kHz              48000B = 1.000s  streaming=False
+RESULT gguf backbone -> streaming           48000B = 1.000s  streaming=True
+RESULT gguf streaming -> 8kHz mulaw          8000B = 1.000s  streaming=True
+RESULT event loop stayed responsive       7 ticks during a 0.4s blocking infer
+```
+
+Without the worker thread that tick count would be zero and every other call on
+the process would stall for the length of the utterance.
+
+**The real weights were never downloaded** — the repositories are gated and no
+HF token was available here. So the plumbing is verified and the model is not.
+
+### Running it despite the numpy conflict
+
+Two honest options, neither of which is "add it to `pyproject.toml`":
+
+**A separate virtualenv, accepting the pin break.** `uv pip install` does not
+re-resolve the project, so it will install `neutts` and upgrade numpy past
+Rasa's ceiling. Rasa continued to import and run in that state here, but it is
+an unsupported combination and nothing guarantees the next release tolerates it:
+
+```bash
+uv pip install 'neutts>=1.4.1' 'torchao==0.14.0'   # breaks the numpy pin
+```
+
+**A sidecar, which is the version worth building.** Run NeuTTS in its own
+process with its own dependency tree and talk to it over localhost. The
+dependency conflict then never has to be resolved at all, the model stays warm
+across restarts of the agent, and a crash in a research-grade stack cannot take
+the call with it. That is a small HTTP service plus a thin adapter, and it is
+the shape this should take before anyone runs it in production.
 
 ## Format conversion
 
@@ -150,6 +221,10 @@ Stated plainly, because these are the cases where a router could mislead you.
   OpenAI needs `model_id` rather than `model`, because `TTSEngineConfig` keeps a
   deprecated top-level `model` and rejects a config carrying both. Each provider
   entry is that vendor's own config. A shared vocabulary is a later stage.
+- **NeuTTS is an optional install, on purpose.** It pulls torch, torchaudio and
+  transformers — multiple gigabytes that everyone else using the router should
+  not pay for. `uv pip install 'neutts>=1.4.1' 'torchao==0.14.0'` opts in, and
+  the provider is skipped with a clear reason until you do.
 - **`audioop` is deprecated and gone in Python 3.13.** Rasa's own audio handling
   uses it too, so this is a shared constraint rather than one this package adds
   — but the conversion layer will need replacing before 3.13.

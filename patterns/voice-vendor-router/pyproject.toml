@@ -8,6 +8,15 @@ dependencies = [
     "rasa-pro==3.20.0.dev6",
 ]
 
+# NeuTTS is deliberately NOT declared as an optional dependency here.
+#
+# rasa-pro pins numpy>=2.1.3,<2.2.0; neutts requires numpy>=2.2.6. There is no
+# resolution that satisfies both, so declaring the extra makes `uv sync` fail
+# for everyone — including CI — whether or not they want local TTS.
+#
+# The adapter still ships and is skipped with a clear reason until neutts is
+# importable. See the README for the two ways to actually run it.
+
 [tool.uv]
 prerelease = "allow"
 
