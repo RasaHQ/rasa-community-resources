@@ -1,0 +1,47 @@
+# Dialogue understanding tests: do we UNDERSTAND the user, separately from
+# whether the conversation ends well?
+#
+# Each user step is annotated with the commands the command generator should
+# have produced. The runner replays those annotated commands to advance the
+# tracker, so every step is scored against the same conversational state even
+# when an earlier step failed (rasa/dialogue_understanding_test/README.md:29-33,
+# and TestCaseTrackerSimulator's docstring at
+# rasa/dialogue_understanding_test/test_case_simulation/test_case_tracker_simulator.py:36-43).
+#
+# Schema: rasa/dialogue_understanding_test/du_test_schema.yml:119-161
+# Requires RASA_PRO_BETA_DIALOGUE_UNDERSTANDING_TEST=true.
+#
+# COMMAND SYNTAX: the `StartFlow(x)` / `SetSlot(k, v)` form below is syntax
+# version v1, which is the engine default
+# (rasa/dialogue_understanding/commands/command_syntax_manager.py:48-51).
+# The same commands serialize as `start flow x` / `set slot k v` under v2 and
+# v3 (start_flow_command.py:225-228, set_slot_command.py:184-187). If you
+# configure a non-default syntax version, these files must be rewritten to
+# match — the annotations are compared as parsed commands, but they are parsed
+# with the generator's active syntax.
+
+test_cases:
+  - test_case: unambiguous account is understood in one turn
+    steps:
+      - user: what's the balance on my everyday checking
+        commands:
+          - StartFlow(check_balance)
+          - SetSlot(selected_account_id, acc_checking)
+
+  - test_case: ambiguous request starts the flow without filling the slot
+    steps:
+      # The interesting assertion is the ABSENCE of a set-slot command. If the
+      # generator guesses an account here, this test fails while the e2e test
+      # above might still pass — that gap is exactly what DU tests are for.
+      - user: how much money do I have
+        commands:
+          - StartFlow(check_balance)
+
+      - user: the savings one
+        commands:
+          - SetSlot(selected_account_id, acc_savings)
+
+  - test_case: gratitude produces no commands at all
+    steps:
+      - user: thanks, that's all for now
+        commands: []

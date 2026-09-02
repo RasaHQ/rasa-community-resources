@@ -1,0 +1,20 @@
+# Configuration for the LLM judge used by `generative_response_is_*` assertions.
+#
+# Schema: rasa/e2e_test/schema/e2e_config_schema.yml:18-46 — `llm_judge` accepts
+# `llm:` and `embeddings:`, each of which may name a `model_group` instead of an
+# inline provider/model pair.
+#
+# If you omit this file entirely the judge still runs, defaulting to OpenAI
+# gpt-4.1-mini-2025-04-14 (rasa/e2e_test/constants.py:69). Naming it explicitly
+# is worth the four lines: the judge model is an input to your scores, so an
+# unpinned default silently rewrites your results when the default moves.
+llm_judge:
+  llm:
+    model_group: judge
+
+  # Only `generative_response_is_relevant` uses embeddings — it scores by cosine
+  # similarity, not by reading text. `generative_response_is_grounded` never
+  # calls this. Left to default (OpenAI text-embedding-3-small per
+  # rasa/e2e_test/utils/generative_assertions.py:28-31) because pinning the
+  # embedding model matters less than pinning the judge, and changing it
+  # invalidates every relevance threshold you have tuned.
