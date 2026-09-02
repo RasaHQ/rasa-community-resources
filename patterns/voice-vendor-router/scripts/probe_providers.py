@@ -79,7 +79,32 @@ def main() -> int:
             print(f"{YELLOW}Only one {kind.upper()} provider is configured — "
                   f"there is nothing to fail over to.{RESET}")
     print(f"{GREEN}Routing is live: {available['asr']} ASR, {available['tts']} TTS.{RESET}\n")
+
+    _print_shelf(inspector)
     return 0
+
+
+def _print_shelf(inspector: dict) -> None:
+    """Enumerate catalogued adapters this config does not use — the CATALOGUE's
+    stated purpose. Data only: nothing here imports a vendor or its SDK."""
+    from voicerouter.providers import CATALOGUE
+
+    configured = {
+        str(raw.get("name", ""))
+        for kind in ("asr", "tts")
+        for raw in ((inspector.get(kind) or {}).get("providers") or [])
+        if isinstance(raw, dict)
+    }
+    shelf = [e for e in CATALOGUE if e.dotted_path not in configured]
+    if not shelf:
+        return
+    print(f"{DIM}Also on the shelf — catalogued adapters this config does not use.")
+    print(f"Add one as a provider entry in integrations.yml to route through it:{RESET}")
+    for e in shelf:
+        live = "verified live" if e.verified_live else "unverified   "
+        print(f"  {e.kind}  {e.dotted_path:<48} {DIM}{e.env_var:<24} "
+              f"{live}  {e.note}{RESET}")
+    print()
 
 
 if __name__ == "__main__":
