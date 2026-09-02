@@ -1,0 +1,67 @@
+{
+  "model": "sonnet",
+  "alwaysThinkingEnabled": false,
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Edit",
+      "Write",
+      "Bash(zeo:*)",
+      "Bash(make:*)",
+      "Bash(npm run:*)",
+      "Bash(npx:*)",
+      "Bash(uv:*)",
+      "Bash(python3:*)",
+      "Bash(pytest:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git worktree:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git ls-files:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(sed:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": [
+      "Bash(git reset --hard:*)",
+      "Bash(rm -rf:*)",
+      "Read(./.env)",
+      "Read(./**/.env)",
+      "Bash(npm publish:*)",
+      "Bash(uv publish:*)",
+      "Bash(vercel:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command // empty' | { read -r c; if echo \"$c\" | grep -qE '(^|[;&|]|\\s)git\\s+stash(\\s|$)'; then echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"git stash is blocked in this repo: refs/stash is shared across git worktrees sharing one .git dir, and hand-copied configs elsewhere have hit stash-collision risk. Use git worktree add <scratch-path> <sha> for before/after comparisons instead.\"}}'; fi; }"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/check-trunk-guard.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "_upstreamSha": "UPSTREAM-SHA: 3799cdd6b12a6a0050ba7cc4ccdeb99f8c9b7cc6a55e410aea979decf704d22b"
+}
