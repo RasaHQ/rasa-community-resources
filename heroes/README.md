@@ -3,7 +3,9 @@
 Projects built by participants of the **Rasa Heroes** programme, organised by
 the cohort — the *wave* — that built them.
 
-This folder is **accepting waves**. No cohort has landed yet.
+This folder is **accepting waves**. The open cohort is
+[**wave-01-mantle**](wave-01-mantle/README.md) — the first cohort on the Mantle
+engine — and it is accepting projects now.
 
 A wave is a fixed group of people working over a fixed period on a shared theme.
 The point of keeping their work here rather than scattered across forks is that
@@ -18,7 +20,7 @@ version, all credited by name.
 heroes/
   README.md                      this page — the index of every wave
   WAVE_TEMPLATE.md               copy this into a new wave's README.md
-  wave-01-<theme>/
+  wave-01-mantle/                the open cohort
     README.md                    the wave charter: dates, theme, stewards, projects
     projects/
       <participant-handle>-<project-slug>/
@@ -30,8 +32,8 @@ heroes/
 ```
 
 Wave slugs are `wave-NN-<theme>`, zero-padded, so the directory listing and the
-chronological order are the same thing: `wave-01-voice`, `wave-02-tools`,
-`wave-10-observability`. `make validate` enforces the shape — a project filed
+chronological order are the same thing: `wave-01-mantle`, `wave-02-<theme>`,
+`wave-10-<theme>`. `make validate` enforces the shape — a project filed
 anywhere other than `<wave>/projects/<project>/` is invisible to every check,
 which is exactly the failure worth catching at review time rather than a year later.
 
@@ -58,9 +60,10 @@ no secrets in it. Full contract: [`docs/SNAPSHOTS.md`](../docs/SNAPSHOTS.md).
 
 | Wave | Theme | Period | Participants | Charter |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| `wave-01-mantle` | First cohort on the Mantle engine | TBD | TBD | [charter](wave-01-mantle/README.md) |
 
-_No waves yet._
+_One wave, open. `wave-01-mantle` has its period, stewards and roster marked TBD
+until the programme announces them — they are not estimated here._
 
 ---
 
