@@ -449,10 +449,116 @@ through whatever exporter the deployment already configures in `endpoints.yml`.
 When tracing is not set up the instruments are no-ops, so nothing has to branch
 and telemetry can never break a call.
 
+## Which vendor is best on your audio?
+
+The question every voice team has, and the one a vendor's own benchmark page
+cannot answer, because it was not measured on your callers.
+
+```bash
+make bench
+```
+
+It replays a committed fixture corpus through every ASR adapter this machine can
+actually reach, and reports what it measured:
+
+```
+Latency per utterance (ms)
+  adapter              n      min   median      p95      max
+  vosk-local           6       48      120      212      212
+  whisper-local        6      102      108      112      112
+
+Inter-vendor agreement (1.00 = identical after normalisation)
+                     vosk-local whisper-lo
+  vosk-local               1.00       0.79
+  whisper-local            0.79       1.00
+
+Disagreement hotspots (worst first — the audio worth listening to)
+  digits              0.40  ████████
+  transfer            0.62  ████████████
+  reference           0.71  ██████████████
+  balance             1.00  ████████████████████
+```
+
+**Agreement is the signal, because the engine gives you nothing else.** Rasa's
+`NewTranscript` carries exactly one field, `text` — there is no confidence score
+to read, by design. So the only quality evidence obtainable without forking
+rasa-pro is whether independent vendors heard the same thing. Where they
+diverge is where a caller is about to be misunderstood, which is why the
+hotspot list names fixtures rather than scores: it tells you which audio to go
+and listen to. Above, the digit string is the worst — which is exactly where
+real ASR vendors disagree, and why account numbers are worth a confirmation
+step.
+
+### It never costs anything by default
+
+The default run needs no credentials, contacts no paid vendor, and does not
+fail when one is unconfigured. Every unreachable adapter is skipped **and
+reported as skipped**, with the vendor's own reason:
+
+```
+  skip  deepgram         no DEEPGRAM_API_KEY — not configured here
+  skip  speechmatics     no SPEECHMATICS_API_KEY — not configured here
+  run   vosk-local       ......
+  run   whisper-local    ......
+  skip  azure            no AZURE_SPEECH_API_KEY — not configured here
+```
+
+A configured cloud vendor is skipped too — reachable is not the same as free.
+Benchmarking one is opt-in and says so:
+
+```bash
+make bench BENCH_ARGS=--include-cloud    # makes billable calls
+```
+
+Reachability is not decided twice: `make bench` calls the same `probe()` that
+backs `make probe`, so the benchmark and the diagnostic cannot disagree about
+what this machine can reach.
+
+To get a credential-free comparison you need two local adapters:
+
+```bash
+uv sync --prerelease=allow --extra local-asr   # vosk + faster-whisper
+# Vosk also needs a model; unpack one from https://alphacephei.com/vosk/models
+# into models/ and bench will find it.
+```
+
+With neither installed every adapter skips, the run still exits clean, and it
+says there was nothing to compare — which is the honest outcome on a bare CI
+runner, not a failure.
+
+### The corpus, and why WER is sometimes absent
+
+`tests/fixtures/audio/` holds six short banking utterances, well under a
+megabyte in total. They are synthesised by `scripts/make_fixtures.py` using
+`espeak-ng`: GPLv3 claims no rights over a program's output unless that output
+is itself a covered work, and synthesised speech of our own sentences is not,
+so the clips ship under this repository's Apache 2.0. No third-party audio, no
+host operating-system voices — whose licences generally forbid redistribution —
+and no recorded caller audio, which is exactly what a public repository must
+never contain. The output is harsher than a neural voice on purpose: easy audio
+flatters every vendor.
+
+Because the generator knows the text it synthesised, each clip ships with a
+genuine reference transcript, so a word error rate is legitimate here:
+
+```
+Word error rate (against the corpus reference transcripts)
+  vosk-local          5.45%
+  whisper-local      23.46%
+```
+
+Point the corpus at your own recordings and you will usually have no reference.
+Then **the WER column is omitted entirely** — not zeroed, not left blank, not
+filled with a plausible number. Agreement needs no ground truth, so an
+unlabelled corpus of real caller audio still produces the signal you came for.
+
+Those two percentages are a fact about six synthetic sentences and this
+machine. They are not a claim about either vendor.
+
 ## Tests
 
 ```bash
-make test      # 31 tests, no network, no credentials, no models
+make test      # 73 tests, no network, no credentials, no models
 ```
 
 They cover the decisions rather than the vendors: how each failure is
@@ -460,6 +566,10 @@ classified, whether a voice may change, who is tried next, and that audio
 conversion preserves duration across split frames. Those are what has to keep
 working when someone else edits this, and they are exactly what live vendor
 testing cannot pin down.
+
+`tests/test_bench.py` covers the benchmark's arithmetic on the same terms —
+agreement, latency, and the rule that a word error rate is never reported
+without a reference transcript to measure against.
 
 ## What it does not do
 
@@ -487,6 +597,9 @@ Stated plainly, because these are the cases where a router could mislead you.
   — but the conversion layer will need replacing before 3.13.
 - **It does not route by cost, latency or content** yet. Order is the policy:
   first healthy provider wins.
+- **The benchmark does not rank vendors.** `make bench` measures agreement and
+  latency *on the corpus you give it*. Six synthetic utterances cannot tell you
+  which vendor is best on your callers; point it at your own audio for that.
 
 ## Layout
 
@@ -500,7 +613,11 @@ Stated plainly, because these are the cases where a router could mislead you.
 | `voicerouter/providers/` | adapters for OpenAI, ElevenLabs, Speechmatics, AssemblyAI |
 | `voicerouter/audio.py` | streaming format conversion shared by every HTTP adapter |
 | `examples/` | one copy-pasteable config block per vendor |
+| `voicerouter/bench.py` | agreement, latency and WER arithmetic for the benchmark |
 | `scripts/probe_providers.py` | which vendors this machine can reach |
+| `scripts/bench_asr.py` | replays the fixture corpus through every reachable ASR |
+| `scripts/make_fixtures.py` | regenerates the synthetic corpus (macOS, rarely needed) |
+| `tests/fixtures/audio/` | six synthetic utterances with reference transcripts |
 
 ## The contract check
 
@@ -567,6 +684,9 @@ It also carries two things this pattern does not:
 - ASR routing exercised against **live** Deepgram and Speechmatics, including a
   provider skipped for missing credentials
 - The contract check passes against the installed `rasa-pro`
+- `make bench` exercised end to end with **two local ASR adapters** (Vosk
+  0.3.44 and faster-whisper `tiny.en`) transcribing all six fixtures, and with
+  every adapter skipped on a machine with no credentials and no local models
 
 Not verified: telephony channels end to end (browser Inspector only), and no
 vendor beyond the four above — `azure` and `cartesia` are configured but were

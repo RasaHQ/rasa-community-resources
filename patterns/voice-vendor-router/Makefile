@@ -29,7 +29,7 @@ RASA   := $(RUN) rasa
 .DEFAULT_GOAL := help
 
 .PHONY: help check-uv env install verify validate train inspect run \
-        guard-env probe contract test clean clean-all
+        guard-env probe contract test bench fixtures clean clean-all
 
 # ==============================================================================
 # 📖 Help
@@ -56,6 +56,7 @@ help: ## Show this help message
 	@echo '$(YELLOW)Demo data:$(RESET)'
 	@echo '  $(GREEN)make probe$(RESET)            Which vendors can this machine reach?'
 	@echo '  $(GREEN)make test$(RESET)             Unit-test the routing decisions'
+	@echo '  $(GREEN)make bench$(RESET)            Replay fixture audio: agreement + latency'
 	@echo ''
 	@echo '$(YELLOW)Tutorial:$(RESET)'
 	@echo ''
@@ -114,6 +115,17 @@ contract: check-uv ## Assert the router covers the surface Rasa calls
 
 test: check-uv ## Unit-test the routing decisions (no network, no credentials)
 	@$(PYTHON) -m unittest discover -s tests -v
+
+# Joins the vocabulary above deliberately: like `test`, the default run needs no
+# network and no credentials. Cloud vendors are reachable but not called unless
+# asked for, because reaching them costs money:
+#     make bench BENCH_ARGS=--include-cloud
+BENCH_ARGS ?=
+bench: check-uv ## Replay fixture audio through every reachable ASR adapter
+	@$(PYTHON) scripts/bench_asr.py $(BENCH_ARGS)
+
+fixtures: check-uv ## Regenerate the synthetic fixture corpus (macOS; rarely needed)
+	@$(PYTHON) scripts/make_fixtures.py
 
 validate: check-uv guard-env ## Validate skills, memory, and tools (fast)
 	@echo "$(BLUE)Validating agent project...$(RESET)"
