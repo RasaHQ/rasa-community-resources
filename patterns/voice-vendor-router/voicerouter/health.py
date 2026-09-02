@@ -137,3 +137,51 @@ class HealthRegistry:
             }
             for h in self._by_name.values()
         ]
+
+
+# ------------------------------------------------------------------------------
+# Health that outlives a call
+# ------------------------------------------------------------------------------
+# Rasa builds ASR and TTS engines *per call* — `_get_asr_and_tts_engines` runs
+# inside "run streaming tasks and teardown for one call". A registry owned by
+# the engine therefore dies at hangup, and the next caller rediscovers the same
+# dead vendor from scratch. At any real call volume that means paying the
+# failover cost on the first utterance of every conversation, forever.
+#
+# So the default registry is process-scoped: what one call learns, the next one
+# starts with. Circuits opened by a rejected key stay open; a quota window
+# parked for fifteen minutes stays parked across the calls that arrive during
+# it.
+#
+# Deliberately in-process only. A shared store (Redis) would extend this across
+# workers and is the obvious next step, but it introduces a dependency and a
+# failure mode of its own, and process scope already removes the large majority
+# of the waste.
+
+_SHARED: dict[str, "HealthRegistry"] = {}
+
+
+def shared_registry(
+    kind: str, cooldown_seconds: float = 30.0, failure_threshold: int = 1
+) -> "HealthRegistry":
+    """The process-wide registry for `kind` ("tts" / "asr").
+
+    The first caller's cooldown and threshold win; later callers reuse the
+    existing registry rather than replacing it, because replacing it would
+    discard exactly the history this exists to keep.
+    """
+    if kind not in _SHARED:
+        _SHARED[kind] = HealthRegistry(
+            cooldown_seconds=cooldown_seconds, failure_threshold=failure_threshold
+        )
+    return _SHARED[kind]
+
+
+def reset_shared_registries() -> None:
+    """Forget everything. For tests, and for an operator escape hatch.
+
+    A provider disabled by a rejected key stays disabled for the life of the
+    process, which is right until someone fixes the key — at which point there
+    has to be a way to say so without a restart.
+    """
+    _SHARED.clear()

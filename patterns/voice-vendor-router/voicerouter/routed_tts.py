@@ -27,6 +27,8 @@ first half twice, in two voices, which is worse than the sentence being cut.
 
 from __future__ import annotations
 
+import asyncio
+import random
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
@@ -39,7 +41,15 @@ from voicerouter.base import (
     RouterPolicy,
     build_providers,
 )
-from voicerouter.health import HealthRegistry
+from voicerouter.failures import should_retry_same_provider
+from voicerouter.health import HealthRegistry, shared_registry
+from voicerouter.metrics import Stopwatch, shared_metrics
+from voicerouter.utterance import UtterancePolicy
+
+#: Longest we will make a caller wait in silence to keep the same voice. Beyond
+#: this, a different voice sooner beats the right voice late — a vendor that
+#: says "come back in seven seconds" is telling you to route around it.
+MAX_SAME_PROVIDER_WAIT_S = 1.0
 
 logger = structlog.get_logger(__name__)
 
@@ -63,13 +73,23 @@ class RoutedTTS:
         providers: List[BuiltProvider],
         policy: RouterPolicy,
         skipped_labels: Optional[List[str]] = None,
+        utterance_policy: Optional[UtterancePolicy] = None,
     ) -> None:
+        self._utterance = utterance_policy or UtterancePolicy()
         self._providers = providers
         self._policy = policy
-        self._health = HealthRegistry(
-            cooldown_seconds=policy.cooldown_seconds,
-            failure_threshold=policy.failure_threshold,
+        # Process-scoped by default: Rasa builds engines per call, so a
+        # registry owned by this object would forget everything at hangup and
+        # make the next caller pay for the same discovery.
+        self._health = (
+            shared_registry("tts", policy.cooldown_seconds, policy.failure_threshold)
+            if policy.health_scope == "process"
+            else HealthRegistry(
+                cooldown_seconds=policy.cooldown_seconds,
+                failure_threshold=policy.failure_threshold,
+            )
         )
+        self._metrics = shared_metrics("tts")
         self._active_index = 0
         self._connected: set[int] = set()
         logger.info(
@@ -98,7 +118,11 @@ class RoutedTTS:
                 "an ordinary Rasa TTS config — a built-in name such as "
                 "'deepgram' or 'rime', or a dotted path to a custom engine."
             )
-        policy = RouterPolicy.from_dict(config.pop("policy", None))
+        raw_policy = config.pop("policy", None) or {}
+        utterance_policy = UtterancePolicy.from_dict(
+            raw_policy.pop("utterance_classes", None)
+        )
+        policy = RouterPolicy.from_dict(raw_policy)
         if config:
             raise ValueError(
                 f"unexpected key(s) for RoutedTTS: {', '.join(sorted(config))}. "
@@ -113,7 +137,11 @@ class RoutedTTS:
             policy,
             kind="tts",
         )
-        return cls(result.built, policy, [s.spec.label for s in result.skipped])
+        return cls(
+            result.built, policy,
+            [s.spec.label for s in result.skipped],
+            utterance_policy=utterance_policy,
+        )
 
     @classmethod
     def name(cls) -> str:
@@ -133,11 +161,35 @@ class RoutedTTS:
     def health_snapshot(self) -> list[dict]:
         return self._health.snapshot()
 
+    def metrics_snapshot(self) -> list[dict]:
+        """Per-provider attempts, successes, failures by class and p95 latency."""
+        return self._metrics.snapshot()
+
     # ---- provider selection -------------------------------------------------
 
     @property
     def _active(self) -> BuiltProvider:
         return self._providers[self._active_index]
+
+    def _candidates_for(self, text: str) -> list[int]:
+        """Candidates, with this utterance's preferred providers moved to front.
+
+        Preference is a reordering, never a restriction: if the cheap voice for
+        filler is down, the caller still hears the filler in the expensive one
+        rather than hearing nothing.
+        """
+        order = self._candidates()
+        prefer = self._utterance.preferred(text)
+        if not prefer:
+            return order
+        rank = {label: i for i, label in enumerate(prefer)}
+        return sorted(
+            order,
+            key=lambda i: (
+                rank.get(self._providers[i].spec.label, len(rank)),
+                order.index(i),
+            ),
+        )
 
     def _candidates(self) -> list[int]:
         """Healthy providers first, then ones merely cooling down.
@@ -157,6 +209,30 @@ class RoutedTTS:
             if health.disabled:
                 continue
             (healthy if health.is_available() else cooling).append(i)
+
+        if self._policy.selection == "latency":
+            # Order by measured time-to-first-audio, which is the number that
+            # decides whether the agent feels alive. Providers without enough
+            # samples keep their configured position rather than being ranked
+            # on one lucky or unlucky call.
+            def key(i: int) -> tuple:
+                p95 = self._metrics.stats(self._providers[i].spec.label).p95_first_audio_ms
+                return (0, p95) if p95 is not None else (1, float(i))
+
+            healthy.sort(key=key)
+
+            # Occasionally try the runner-up, so its measurement does not go
+            # stale and the router can notice it becoming the better choice.
+            if (
+                self._policy.explore_rate > 0
+                and len(healthy) > 1
+                and random.random() < self._policy.explore_rate
+            ):
+                healthy[0], healthy[1] = healthy[1], healthy[0]
+                logger.debug(
+                    "voicerouter.tts.exploring",
+                    provider=self._providers[healthy[0]].spec.label,
+                )
         return healthy + cooling
 
     def _exhausted_message(self, what: str) -> str:
@@ -234,44 +310,81 @@ class RoutedTTS:
         """
         attempts = 0
         last_error: Optional[BaseException] = None
+        previous_label: Optional[str] = None
 
-        for index in self._candidates():
+        for index in self._candidates_for(text):
             provider = self._providers[index]
             health = self._health.get(provider.spec.label)
-            attempts += 1
-            emitted = False
-            try:
-                await self._ensure_connected(index)
-                stream = provider.engine.synthesize(text)
-                async for chunk in stream:
-                    if not emitted:
-                        # First byte is the moment the provider has proven
-                        # itself; only now is it safe to call this a success.
-                        emitted = True
-                        self._active_index = index
-                        health.record_success()
-                    yield chunk
-            except Exception as exc:  # noqa: BLE001 - any vendor failure is a failover
-                verdict = health.record_failure(exc)
-                self._connected.discard(index)
-                last_error = exc
-                if emitted:
-                    logger.error(
-                        "voicerouter.tts.failed_mid_stream",
-                        provider=provider.spec.label,
-                        error=str(exc),
-                        verdict=str(verdict),
-                        note="sentence truncated; provider marked unhealthy",
+            label = provider.spec.label
+            tries_here = 0
+
+            while True:
+                attempts += 1
+                tries_here += 1
+                emitted = False
+                self._metrics.record_attempt(label)
+                watch = Stopwatch()
+                try:
+                    await self._ensure_connected(index)
+                    async for chunk in provider.engine.synthesize(text):
+                        if not emitted:
+                            # First byte is the moment the provider has proven
+                            # itself, and the latency worth recording.
+                            emitted = True
+                            self._active_index = index
+                            health.record_success()
+                            self._metrics.record_success(label, watch.ms)
+                            if previous_label and previous_label != label:
+                                self._metrics.record_failover(
+                                    previous_label, label, "served after failover"
+                                )
+                        yield chunk
+                except Exception as exc:  # noqa: BLE001 - any vendor failure routes
+                    verdict = health.record_failure(exc)
+                    self._metrics.record_failure(label, verdict.kind.value)
+                    self._connected.discard(index)
+                    last_error = exc
+
+                    if emitted:
+                        logger.error(
+                            "voicerouter.tts.failed_mid_stream",
+                            provider=label, error=str(exc), verdict=str(verdict),
+                            note="sentence truncated; provider marked unhealthy",
+                        )
+                        return
+
+                    # Keeping the caller's voice is worth a retry when the
+                    # failure says "not right now" rather than "not ever" — and
+                    # only while the wait stays shorter than the silence a
+                    # voice change would cost.
+                    wait = (
+                        verdict.retry_after
+                        if verdict.retry_after is not None
+                        else self._policy.retry_backoff_ms / 1000.0
                     )
+                    if (
+                        should_retry_same_provider(verdict)
+                        and tries_here <= self._policy.same_provider_retries
+                        and wait <= MAX_SAME_PROVIDER_WAIT_S
+                    ):
+                        logger.info(
+                            "voicerouter.tts.retrying_same_provider",
+                            provider=label, verdict=str(verdict),
+                            wait_s=round(wait, 3),
+                            note="keeping the caller's voice",
+                        )
+                        await asyncio.sleep(wait)
+                        continue
+
+                    logger.warning(
+                        "voicerouter.tts.failing_over",
+                        from_provider=label, verdict=str(verdict), attempt=attempts,
+                        voice_changes=True,
+                    )
+                    previous_label = label
+                    break
+                else:
                     return
-                logger.warning(
-                    "voicerouter.tts.failing_over",
-                    from_provider=provider.spec.label,
-                    verdict=str(verdict),
-                    attempt=attempts,
-                )
-                continue
-            return
 
         raise TTSError(
             f"{self._exhausted_message('TTS')} — {attempts} attempted for this "

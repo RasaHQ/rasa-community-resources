@@ -69,6 +69,36 @@ DEFAULT_COOLDOWNS: dict[FailureKind, float] = {
 
 _PERMANENT = {FailureKind.AUTH, FailureKind.CONFIG}
 
+# Failures that justify handing the caller to a different voice.
+#
+# Switching provider mid-call means the person on the phone hears someone else
+# start speaking. That is worth doing when the current provider genuinely
+# cannot serve — the credits are gone, the key is rejected, the API is
+# unreachable — and not worth doing because a vendor asked us to slow down for
+# two seconds. The rest are retried on the same provider first, so the voice
+# stays put whenever staying put is possible.
+_JUSTIFIES_VOICE_CHANGE = {
+    FailureKind.AUTH,
+    FailureKind.CONFIG,
+    FailureKind.QUOTA,
+    FailureKind.UNAVAILABLE,
+}
+
+
+def justifies_voice_change(verdict: "Verdict") -> bool:
+    """True when this failure is worth a different voice."""
+    return verdict.kind in _JUSTIFIES_VOICE_CHANGE
+
+
+def should_retry_same_provider(verdict: "Verdict") -> bool:
+    """True when the same provider deserves another go before we switch.
+
+    A rate limit or a 503 is a "not right now", not a "not ever". Retrying the
+    provider that already owns the call's voice is nearly always better for the
+    listener than swapping mid-sentence.
+    """
+    return not justifies_voice_change(verdict)
+
 # Text signals, for vendors that return a generic status with the real reason in
 # the body. Checked only after status codes, which are more reliable.
 _QUOTA_RE = re.compile(

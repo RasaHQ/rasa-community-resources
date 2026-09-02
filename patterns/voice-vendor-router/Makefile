@@ -29,7 +29,7 @@ RASA   := $(RUN) rasa
 .DEFAULT_GOAL := help
 
 .PHONY: help check-uv env install verify validate train inspect run \
-        guard-env probe contract clean clean-all
+        guard-env probe contract test clean clean-all
 
 # ==============================================================================
 # 📖 Help
@@ -55,6 +55,7 @@ help: ## Show this help message
 	@echo ''
 	@echo '$(YELLOW)Demo data:$(RESET)'
 	@echo '  $(GREEN)make probe$(RESET)            Which vendors can this machine reach?'
+	@echo '  $(GREEN)make test$(RESET)             Unit-test the routing decisions'
 	@echo ''
 	@echo '$(YELLOW)Tutorial:$(RESET)'
 	@echo ''
@@ -103,12 +104,16 @@ guard-env:
 # ==============================================================================
 # 🔍 Diagnostics
 # ==============================================================================
-verify: check-uv ## Pre-flight: contract, vendors, project
+verify: check-uv ## Pre-flight: contract, tests, vendors
 	@$(PYTHON) -m voicerouter.contract
+	@$(PYTHON) -m unittest discover -s tests -q
 	@$(PYTHON) scripts/probe_providers.py
 
 contract: check-uv ## Assert the router covers the surface Rasa calls
 	@$(PYTHON) -m voicerouter.contract
+
+test: check-uv ## Unit-test the routing decisions (no network, no credentials)
+	@$(PYTHON) -m unittest discover -s tests -v
 
 validate: check-uv guard-env ## Validate skills, memory, and tools (fast)
 	@echo "$(BLUE)Validating agent project...$(RESET)"

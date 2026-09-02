@@ -34,7 +34,8 @@ from voicerouter.base import (
     RouterPolicy,
     build_providers,
 )
-from voicerouter.health import HealthRegistry
+from voicerouter.health import HealthRegistry, shared_registry
+from voicerouter.metrics import shared_metrics
 
 logger = structlog.get_logger(__name__)
 
@@ -50,10 +51,17 @@ class RoutedASR:
     ) -> None:
         self._providers = providers
         self._policy = policy
-        self._health = HealthRegistry(
-            cooldown_seconds=policy.cooldown_seconds,
-            failure_threshold=policy.failure_threshold,
+        # Process-scoped for the same reason as the TTS side: Rasa builds
+        # engines per call, so call-scoped health is forgotten at every hangup.
+        self._health = (
+            shared_registry("asr", policy.cooldown_seconds, policy.failure_threshold)
+            if policy.health_scope == "process"
+            else HealthRegistry(
+                cooldown_seconds=policy.cooldown_seconds,
+                failure_threshold=policy.failure_threshold,
+            )
         )
+        self._metrics = shared_metrics("asr")
         self._active_index = 0
         self._connected: set[int] = set()
         logger.info(
@@ -112,6 +120,9 @@ class RoutedASR:
     def health_snapshot(self) -> list[dict]:
         return self._health.snapshot()
 
+    def metrics_snapshot(self) -> list[dict]:
+        return self._metrics.snapshot()
+
     @property
     def _active(self) -> BuiltProvider:
         return self._providers[self._active_index]
@@ -158,6 +169,7 @@ class RoutedASR:
                 await provider.engine.connect()
             except Exception as exc:  # noqa: BLE001
                 verdict = self._health.get(provider.spec.label).record_failure(exc)
+                self._metrics.record_failure(provider.spec.label, verdict.kind.value)
                 logger.warning(
                     "voicerouter.asr.connect_failed",
                     provider=provider.spec.label,
@@ -166,9 +178,18 @@ class RoutedASR:
                 )
                 last_error = exc
                 continue
+            previous = (
+                self._providers[self._active_index].spec.label
+                if self._active_index != index else None
+            )
             self._active_index = index
             self._connected.add(index)
             self._health.get(provider.spec.label).record_success()
+            self._metrics.record_success(provider.spec.label)
+            if previous and previous != provider.spec.label:
+                self._metrics.record_failover(
+                    previous, provider.spec.label, "connected after failover"
+                )
             logger.info("voicerouter.asr.connected", provider=provider.spec.label)
             return
         raise ConnectionError(
@@ -229,6 +250,7 @@ class RoutedASR:
                 return  # clean end of stream: the call is over
             except Exception as exc:  # noqa: BLE001
                 verdict = health.record_failure(exc)
+                self._metrics.record_failure(provider.spec.label, verdict.kind.value)
                 self._connected.discard(self._active_index)
                 logger.warning(
                     "voicerouter.asr.stream_failed",

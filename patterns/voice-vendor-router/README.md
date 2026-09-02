@@ -348,6 +348,39 @@ HEALTH  rime(misconfigured)  disabled  kind=config
 Turn 2 is the point. A wrapper would spend an attempt on Rime every sentence for
 the length of the call; the router already knows the answer.
 
+**The voice only changes when it has to.** Switching provider means the caller
+hears a different person start speaking, so that is reserved for failures where
+the current provider genuinely cannot serve — credits gone, key rejected, API
+unreachable, config broken. A rate limit or a 503 is a *not right now*, so the
+router retries the same provider first and the voice stays put:
+
+```text
+[info] voicerouter.tts.retrying_same_provider provider=rime
+       verdict='rate_limit (HTTP 429) — skipping for 2s'
+       note='keeping the caller's voice'
+```
+
+With one exception, because the rule has a limit: if the vendor's own
+`Retry-After` is longer than a second, a different voice *sooner* beats the
+right voice late. A vendor saying "come back in seven seconds" is telling you to
+route around it, not to leave the caller in silence.
+
+**Health outlives the call.** Rasa builds ASR and TTS engines per call —
+`_get_asr_and_tts_engines` runs inside *"run streaming tasks and teardown for
+one call"* — so a registry owned by the engine is discarded at every hangup and
+the next caller rediscovers the same dead vendor. At any real call volume that
+is the failover cost paid on the first utterance of every conversation, forever.
+The registry is process-scoped by default:
+
+```text
+call 1: served_by='deepgram'   rime=disabled     # discovered here
+call 2: served_by='deepgram'   rime=disabled     # not retried
+call 3: served_by='deepgram'   rime=disabled     # not retried
+```
+
+Set `policy.health_scope: call` to opt out. A shared store across workers is the
+obvious next step and is not built.
+
 **Two deliberate asymmetries.** A provider merely *cooling down* stays on the
 candidate list at lower priority, because a vendor rate-limited ten seconds ago
 still beats silence. A provider *disabled* is dropped entirely, because it fails
@@ -363,6 +396,70 @@ When nothing is left, the error says which providers are out and why —
 circuit for a cooldown window; the attempt after that is a probe, and one
 success closes it. Unhealthy providers stay on the list at lower priority,
 because a provider in cooldown is still better than silence.
+
+## Routing on evidence, and per utterance
+
+Configured order is a configuration decision, not a routing one. Two policies
+turn it into a measured one.
+
+**`selection: latency`** orders healthy providers by rolling p95
+time-to-first-audio — the number that decides whether an agent feels alive, and
+one Rasa already instruments. A provider needs at least three samples before it
+is trusted, so one lucky call cannot reorder the chain.
+
+There is a real limit worth stating: the router only measures providers it
+actually uses, so with everything healthy it never learns that provider #2 was
+faster. `policy.explore_rate` (default **0**) occasionally tries the runner-up
+to keep its measurement fresh. It is off by default because exploring spends a
+real caller's turn on a possibly-worse voice — turn it up if you would rather
+pay a little quality to find out.
+
+**`policy.utterance_classes`** routes on what is being said. An agent's
+"one moment" and its "transferring four hundred pounds to Sam Rivera, shall I go
+ahead?" are not worth the same voice, and nothing in Rasa can express that — a
+channel has one TTS engine.
+
+```yaml
+policy:
+  utterance_classes:
+    filler:
+      max_chars: 32
+      patterns: ["^(ok|okay|got it|one moment|sure)\\b"]
+      prefer: [neutts-local, deepgram]
+```
+
+```text
+"One moment."                                        -> deepgram-cheap
+"Transferring four hundred pounds to Sam Rivera…"    -> rime-premium
+```
+
+Preference is a **reordering, never a restriction**: if the cheap voice is down
+the caller still hears the filler in the expensive one rather than hearing
+nothing. Classification is deliberately dumb — length and optional patterns —
+because an LLM call to decide how to say a three-word acknowledgement would cost
+more than the synthesis it is economising on.
+
+## Observability
+
+`health_snapshot()` and `metrics_snapshot()` expose per-provider state,
+attempts, failures by class and p95 latency. The same data emits as
+OpenTelemetry counters and histograms — `voicerouter.tts.success`,
+`.failure` (tagged with the failure class), `.failover`, `.first_audio` —
+through whatever exporter the deployment already configures in `endpoints.yml`.
+When tracing is not set up the instruments are no-ops, so nothing has to branch
+and telemetry can never break a call.
+
+## Tests
+
+```bash
+make test      # 31 tests, no network, no credentials, no models
+```
+
+They cover the decisions rather than the vendors: how each failure is
+classified, whether a voice may change, who is tried next, and that audio
+conversion preserves duration across split frames. Those are what has to keep
+working when someone else edits this, and they are exactly what live vendor
+testing cannot pin down.
 
 ## What it does not do
 
