@@ -7,6 +7,7 @@ This folder is **accepting contributions**.
 | Pattern | Problem it solves |
 |---|---|
 | [`session-start-personalization`](session-start-personalization/) | The default greeting is anonymous. Load what you know about the customer before the first word, then spend it later in the conversation. [Guided walkthrough](session-start-personalization/tutorial/TUTORIAL.md). |
+| [`voice-vendor-router`](voice-vendor-router/) | One vendor's outage should not mute or deafen a live call. Give ASR and TTS a chain of providers instead of one, and fail over on what the error meant — keeping the caller's voice unless credits, credentials or reachability actually went. |
 | [`evaluation-harness`](evaluation-harness/) | You changed a prompt and do not know whether the agent got better. Measure it three ways — deterministic tracker assertions, dialogue understanding tests, and LLM-as-a-judge scoring — and know which one answers which question. |
 
 ---
