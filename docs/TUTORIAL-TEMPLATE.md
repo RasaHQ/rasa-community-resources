@@ -25,6 +25,36 @@ halves must land before the tutorial exists.
 | Runnable project | `RasaHQ/rasa-community-resources` | `tutorials/<project-name>/` |
 | Chapter prose | `RasaHQ/rasa-community` | `src/content/tutorials/<slug>/` |
 
+### The halves have a merge ORDER, and it is not negotiable
+
+**Merge the runnable half first. Then the prose half.**
+
+This is not a preference. The site repo's pre-push hook runs `make check-links`,
+which resolves every link into a RasaHQ repository and fails on a 404. Your
+`companionRepo` and every in-chapter link point at
+`.../tree/main/tutorials/<project>` — a path that does not exist until the
+resources PR is merged. So a prose branch pushed first is rejected:
+
+    404  https://github.com/RasaHQ/rasa-community-resources/tree/main/tutorials/<project>
+    ✗ 2 dead link(s)
+
+The hook is correct and should not be worked around by pointing
+`companionRepo` at your feature branch — that URL dies when the branch is
+deleted, leaving a permanently broken link in published prose.
+
+Two lawful sequences:
+
+1. **Preferred.** Merge the runnable half. Then push and merge the prose half,
+   which now finds its links.
+2. **When both must be prepared in parallel** (a stream that cannot wait for a
+   merge), push the prose branch with `git push --no-verify`, which the hook
+   documents as its bypass, and say plainly in the PR that the link check will
+   pass once the companion PR merges. Do **not** merge the prose half until it
+   does.
+
+Plan for this at charter time. A cell chartered as one unit of work is two
+units of merge, and the second one blocks on the first.
+
 Neither half is optional. Two of the four tutorials that predate this document
 ship a runnable project with **no published prose at all** — they are
 unfindable by a reader who has not already been told the directory name. A
