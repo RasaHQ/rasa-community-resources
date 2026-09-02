@@ -1,0 +1,20 @@
+# The agent's LLM. `llm:` must reference a model group — inline provider/model
+# pairs are rejected by the config schema.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+
+# Voice in and out through Deepgram. Swap the provider blocks to change vendor;
+# nothing else in this project depends on which one is used.
+asr:
+  deepgram:
+    api_key: ${DEEPGRAM_API_KEY}
+tts:
+  deepgram:
+    api_key: ${DEEPGRAM_API_KEY}

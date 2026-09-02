@@ -40,6 +40,7 @@ If a tutorial is the companion to an example in `examples/`, say so in both READ
 | Name | Persona | Domain | Path | Assessed on |
 |---|---|---|---|---|
 | Atlas voice agent tutorial | Atlas | Horizon Travel | [`rasa-voice-agent-tutorial`](rasa-voice-agent-tutorial) | 2026-08-13 |
+| Guarding an irreversible action | Wren | Northgate Bank | [`rasa-card-reissue-tutorial`](rasa-card-reissue-tutorial) | 2026-09-02 |
 
 When you add a tutorial, append a row here in the same PR.
 
@@ -48,6 +49,9 @@ When you add a tutorial, append a row here in the same PR.
 ## How to add a tutorial
 
 1. Follow [CONTRIBUTING.md](../CONTRIBUTING.md).
-2. Start from [docs/RESOURCE_TEMPLATE.md](../docs/RESOURCE_TEMPLATE.md).
+2. Start from [docs/TUTORIAL-TEMPLATE.md](../docs/TUTORIAL-TEMPLATE.md) — it
+   defines the two-repo contract, the opening requirement, and the declared
+   step list, and points at
+   [docs/RESOURCE_TEMPLATE.md](../docs/RESOURCE_TEMPLATE.md) for the README.
 3. Add the catalog row above.
 4. Area review: [MAINTAINERS.md](../MAINTAINERS.md).
