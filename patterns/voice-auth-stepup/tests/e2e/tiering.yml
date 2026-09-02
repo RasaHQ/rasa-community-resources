@@ -1,0 +1,109 @@
+# Conversation-level tests for the tiering behaviour.
+#
+# READ THIS BEFORE TRUSTING THESE FILES.
+#
+# These are the WEAKER half of the eval suite, and it is important to be honest
+# about why. Each case asserts that the agent behaved correctly on one sampled
+# run. A pass means the model chose well this time; it does not mean the model
+# cannot choose otherwise, because the command generator is non-deterministic
+# and a rerun samples again.
+#
+# The proof that a high-tier action cannot complete on insufficient auth is in
+# `tests/test_guard.py`, which calls the tools directly and does not involve a
+# model at all. These e2e cases test something different and also worth testing:
+# whether the conversation around the guard is coherent — whether the caller is
+# asked for the right factor, told the truth about what happened, and not
+# challenged for public information.
+#
+# Assertion reference: rasa/e2e_test/schema/assertions_schema.yml
+
+test_cases:
+  - test_case: low-tier information needs no verification at all
+    steps:
+      # The commonest way to get tiering wrong is to gate the whole call. An
+      # agent that asks an anonymous caller for a passphrase before telling them
+      # when the branch opens has done exactly that.
+      - user: what time does the Northgate Central branch open
+        assertions:
+          - flow_started: public_info
+          - action_executed: get_store_hours
+          - slot_was_not_set:
+              - name: auth_tier
+                value: medium
+
+  - test_case: a medium action prompts for the passphrase, not a code
+    steps:
+      - user: what's my balance
+        assertions:
+          - flow_started: account_info
+          # The tool runs and REFUSES. Asserting it executed matters: the
+          # refusal is supposed to come from the tool, not from the model
+          # deciding on its own not to try.
+          - action_executed: get_balance
+
+      - user: my passphrase is blue harbor
+        assertions:
+          - slot_was_set:
+              - name: auth_tier
+                value: medium
+
+  - test_case: a medium caller attempting a high action is stepped up
+    steps:
+      # The charter's central case. Same caller, same call, already verified —
+      # and still challenged, because the ACTION changed.
+      - user: what's my balance
+      - user: my passphrase is blue harbor
+        assertions:
+          - slot_was_set:
+              - name: auth_tier
+                value: medium
+
+      - user: I also need a replacement card sent to 12 Elsewhere Street
+        assertions:
+          # The step-up skill takes over rather than the card going out.
+          - slot_was_set:
+              - name: pending_action
+                value: reissue_card
+          - slot_was_set:
+              - name: pending_tier
+                value: high
+          # `text_matches` is a regex. This pins the FACT that a code is being
+          # requested, without pinning the sentence the model wraps around it.
+          - bot_uttered:
+              text_matches: "(?i)code"
+
+      - user: the code is one nine three seven
+        assertions:
+          - slot_was_set:
+              - name: auth_tier
+                value: high
+          - action_executed: reissue_card
+
+  - test_case: a failed step-up ends at a human, never at the action
+    steps:
+      - user: send a new card to 40 Somewhere Lane
+      - user: my passphrase is blue harbor
+      - user: the code is zero zero zero zero
+        assertions:
+          - slot_was_not_set:
+              - name: auth_tier
+                value: high
+
+      - user: it's four four four four
+        assertions:
+          # Budget exhausted. The only correct destination is a person.
+          - slot_was_set:
+              - name: locked_out
+                value: true
+          - flow_started: human_handoff
+          # The load-bearing negative assertion at this layer: whatever the
+          # model says, the card tool must not have succeeded.
+          - bot_did_not_utter:
+              utter_name: utter_confirm_reissue
+
+  - test_case: small talk does not activate a task skill or a challenge
+    steps:
+      - user: thanks, that's everything
+        assertions:
+          - slot_was_not_set:
+              - name: pending_action

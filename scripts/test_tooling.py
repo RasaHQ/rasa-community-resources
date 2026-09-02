@@ -1209,6 +1209,63 @@ class TestProjectMemoryWrites(unittest.TestCase):
         )
 
 
+class TestStaleDocVersionsHonoursIgnoreMarker(unittest.TestCase):
+    """`stale_doc_versions` must agree with the lint about marked lines.
+
+    Regression for the gate that was green *because* of a bug: the function
+    read each doc as one string, so it never saw `VERSION_IGNORE_MARKER` and
+    rejected every honest two-version upgrade path. The only text that
+    satisfied it was a degenerate path naming one version twice — the very
+    defect the marker exists to avoid. Both directions are asserted: skipping
+    marked lines must not turn the check off for unmarked ones.
+    """
+
+    EXPECTED = "3.20.0.dev6"
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.project = rasa_projects.Project(Path(self._tmp.name))
+
+    def _stale(self, body: str) -> dict[str, list[str]]:
+        (Path(self._tmp.name) / "README.md").write_text(body, encoding="utf-8")
+        return rasa_projects.stale_doc_versions(self.project, self.EXPECTED)
+
+    def test_marked_two_version_upgrade_path_passes(self):
+        body = (
+            "# Demo\n\nPinned to `rasa-pro==3.20.0.dev6`.\n\n"
+            "```bash\n"
+            "rasa-pro==3.19.1  →  rasa-pro==3.20.0.dev6"
+            "   # rasa-version-ignore: upgrade path\n"
+            "```\n"
+        )
+        self.assertEqual(self._stale(body), {})
+
+    def test_unmarked_stale_version_still_fails(self):
+        # The half that matters. Without it, deleting the check outright would
+        # leave this suite green.
+        body = "# Demo\n\nPinned to `rasa-pro==3.19.1`.\n"
+        self.assertEqual(self._stale(body), {"README.md": ["3.19.1"]})
+
+    def test_marker_only_exempts_its_own_line(self):
+        # A marked line must not licence a stale version elsewhere in the file.
+        body = (
+            "rasa-pro==3.19.1  →  rasa-pro==3.20.0.dev6"
+            "   # rasa-version-ignore: upgrade path\n"
+            "\nElsewhere this doc still claims `rasa-pro==3.18.0`.\n"
+        )
+        self.assertEqual(self._stale(body), {"README.md": ["3.18.0"]})
+
+    def test_the_two_gates_agree_on_the_marker_constant(self):
+        # lint_repo re-exports the constant rather than keeping its own copy;
+        # two spellings drifting apart is how this bug happened in the first
+        # place.
+        self.assertIs(
+            lint_repo.VERSION_IGNORE_MARKER, rasa_projects.VERSION_IGNORE_MARKER
+        )
+
+
+
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every
     # caller reads as a pass. That is not hypothetical: an edit once removed

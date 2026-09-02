@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import os
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Iterator
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -33,9 +35,60 @@ def _load_env() -> None:
                 os.environ.setdefault(k.strip(), v.strip())
 
 
-def main() -> int:
-    _load_env()
+# ---------------------------------------------------------------------------
+# Reachability, as a library.
+#
+# `make probe` prints this; `make bench` replays audio through it. Both need
+# the same question answered — "which of these will actually build here?" — and
+# it is answered in exactly one place, through Rasa's own factory, so the two
+# can never disagree about what is reachable.
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class Reachability:
+    """One provider entry, and what happened when it was built."""
+
+    label: str
+    name: str
+    #: The constructed engine, or None when it could not be built.
+    engine: Any
+    #: Why it could not be built. Empty when it was.
+    reason: str = ""
+    #: True when the failure is "not usable here" rather than "misconfigured".
+    #: A skip is expected and reported; an error is a defect worth seeing.
+    skipped: bool = False
+
+    @property
+    def reachable(self) -> bool:
+        return self.engine is not None
+
+
+def load_inspector(kind: str) -> dict:
+    """The `providers:` section for one kind, straight from integrations.yml."""
     import yaml
+
+    inspector = (yaml.safe_load((ROOT / "integrations.yml").read_text())
+                 .get("channels", {}).get("inspector", {}))
+    return inspector.get(kind) or {}
+
+
+def probe(
+    kind: str,
+    audio_format: Any = None,
+    overrides: dict[str, dict] | None = None,
+) -> Iterator[Reachability]:
+    """Build every configured provider of `kind` through Rasa's own factory.
+
+    Nothing is cached and nothing is guessed from environment variables: a
+    provider is reachable exactly when its constructor returns, which is the
+    same test the router itself applies at call time.
+
+    `overrides` maps a provider's dotted name to extra config merged over its
+    `integrations.yml` entry. It exists so a caller can supply a path it
+    discovered at runtime — a downloaded local model, say — without editing the
+    committed configuration or rebuilding provider construction elsewhere.
+    """
     from rasa.core.channels.voice_stream.audio_bytes import L16_24KHZ
     from rasa.core.channels.voice_stream.voice_channel import (
         asr_engine_from_config,
@@ -43,33 +96,54 @@ def main() -> int:
     )
     from voicerouter.base import ProviderSpec, _looks_like_missing_credentials
 
-    inspector = (yaml.safe_load((ROOT / "integrations.yml").read_text())
-                 .get("channels", {}).get("inspector", {}))
+    factory = {"asr": asr_engine_from_config, "tts": tts_engine_from_config}[kind]
+    fmt = audio_format or L16_24KHZ
+
+    for i, raw in enumerate(load_inspector(kind).get("providers") or []):
+        spec = ProviderSpec.from_dict(raw, i)
+        extra = (overrides or {}).get(spec.name, {})
+        try:
+            engine = factory({"name": spec.name, **spec.config, **extra}, fmt, "en", None)
+        except Exception as exc:  # noqa: BLE001 - vendor constructors vary widely
+            if _looks_like_missing_credentials(exc):
+                reason = str(exc).split("\n")[0]
+                if "environment variable" in reason.lower():
+                    reason = f"no {reason.rsplit(':', 1)[-1].strip()} — not configured here"
+                yield Reachability(spec.label, spec.name, None, reason, skipped=True)
+            else:
+                yield Reachability(
+                    spec.label, spec.name, None,
+                    f"{type(exc).__name__}: {exc}", skipped=False,
+                )
+            continue
+        yield Reachability(spec.label, spec.name, engine)
+
+
+def main() -> int:
+    _load_env()
 
     print(f"\n{DIM}Which vendors can this machine reach?{RESET}\n")
     available = {"asr": 0, "tts": 0}
 
-    for kind, factory in (("asr", asr_engine_from_config), ("tts", tts_engine_from_config)):
-        section = inspector.get(kind) or {}
+    for kind in ("asr", "tts"):
+        section = load_inspector(kind)
         print(f"{kind.upper()}  {DIM}(router: {section.get('name', '—')}){RESET}")
-        for i, raw in enumerate(section.get("providers") or []):
-            spec = ProviderSpec.from_dict(raw, i)
-            try:
-                factory({"name": spec.name, **spec.config}, L16_24KHZ, "en", None)
-            except Exception as exc:  # noqa: BLE001
-                if _looks_like_missing_credentials(exc):
-                    # Report the vendor's own words. "No credentials" is wrong
-                    # for a local provider, which has none to be missing.
-                    reason = str(exc).split("\n")[0]
-                    if "environment variable" in reason.lower():
-                        reason = f"no {reason.rsplit(':', 1)[-1].strip()} — not configured here"
-                    print(f"  {YELLOW}skip{RESET}  {spec.label:<16} {reason[:82]}")
-                else:
-                    print(f"  {RED}error{RESET} {spec.label:<16} {type(exc).__name__}: {str(exc)[:70]}")
-                continue
-            available[kind] += 1
-            print(f"  {GREEN}ok{RESET}    {spec.label:<16} configured")
+        for result in probe(kind):
+            if result.reachable:
+                available[kind] += 1
+                print(f"  {GREEN}ok{RESET}    {result.label:<16} configured")
+            elif result.skipped:
+                # Report the vendor's own words. "No credentials" is wrong
+                # for a local provider, which has none to be missing.
+                print(f"  {YELLOW}skip{RESET}  {result.label:<16} {result.reason[:82]}")
+            else:
+                print(f"  {RED}error{RESET} {result.label:<16} {result.reason[:76]}")
         print()
+
+    import yaml
+
+    inspector = (yaml.safe_load((ROOT / "integrations.yml").read_text())
+                 .get("channels", {}).get("inspector", {}))
 
     for kind in ("asr", "tts"):
         if available[kind] == 0:

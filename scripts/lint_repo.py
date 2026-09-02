@@ -38,6 +38,7 @@ from rasa_projects import (
     PROSE_SPACE_RE,
     REPO_ROOT,
     VERIFIED_WITH_RE,
+    VERSION_IGNORE_MARKER,
     VERSION_LINE_FILE,
     WAVE_DIR,
     WAVE_SLUG_RE,
@@ -58,9 +59,6 @@ from rasa_projects import (
 # The engine package name to show in messages. Follows the rename in
 # rasa_projects rather than restating it here.
 ENGINE_NAME = REQUIRED_ENGINE_MODULE.rstrip("/").replace("/", ".")
-
-# Opt out of the version-consistency check for one line. See its use below.
-VERSION_IGNORE_MARKER = "rasa-version-ignore"
 
 # Packages whose *entire* release history is pre-release-numbered, so a
 # prerelease pin in a lock is normal rather than a leftover.

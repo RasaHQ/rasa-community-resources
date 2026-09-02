@@ -1,0 +1,99 @@
+# Project-wide memory: the state a handoff has to carry.
+#
+# This file IS the context package's source, and its shape is the argument the
+# pattern is making. Compare it to what the catalog's existing human_handoff
+# skills carry across the boundary today: one free-text `handoff_reason`.
+#
+# Every field here is tool-written and never llm_settable — project memory
+# cannot be llm_settable at all in 3.20.0.dev6, and it should not be: a caller
+# who can talk the model into raising their own verification tier has defeated
+# the point of recording one.
+
+# --- identity, and the strength it was established at -------------------------
+customer_id:
+  type: text
+  description: Stable customer identifier. Set when the caller is resolved.
+display_name:
+  type: text
+  description: Name to show a human agent. Meaningless without verified_tier beside it.
+verified_tier:
+  type: categorical
+  enum_values: [unverified, low, medium, high]
+  description: >
+    How strongly the caller's identity was established. INTEROPERATES WITH
+    patterns/voice-auth-stepup, which owns the low/medium/high scheme and
+    decides the tier from the action being attempted. This pattern never
+    decides a tier — it only records the one that was reached, so the human
+    desk can see it. `unverified` is not a fourth auth tier: it is the value
+    before any check has happened, kept distinct from `low` because "we never
+    checked" and "we checked weakly" must not read alike on a desk.
+verified_factors:
+  type: text
+  description: >
+    Comma-separated NAMES of factors that succeeded, e.g.
+    "knowledge_passphrase,otp_sms". Names only — a factor's VALUE never enters
+    project memory and never crosses to a human.
+channel:
+  type: text
+  description: How the caller reached us, e.g. voice or web.
+
+# --- intent, structured ------------------------------------------------------
+goal:
+  type: text
+  description: Machine identifier of what the caller wants, e.g. dispute_transaction.
+goal_label:
+  type: text
+  description: Human label for the goal, for the desk header.
+goal_stage:
+  type: categorical
+  enum_values: [stated, in_progress, blocked, abandoned]
+  description: How far the caller got. Coarse on purpose — a desk needs progress, not a cursor.
+
+# The goal's parameters. These become `intent.details` in the package, and they
+# are what retire "which account is this about?" on the human desk. Each is an
+# allowlisted LEAF rather than a `details` container: allowlisting a container
+# would allowlist everything anyone ever puts inside it.
+account_id:
+  type: text
+  description: Account the request concerns, e.g. acc_checking.
+account_label:
+  type: text
+  description: Human-readable account name, e.g. Everyday Checking.
+card_last_four:
+  type: text
+  description: >
+    LAST FOUR DIGITS ONLY. Enough for a human to identify the card, not enough
+    to transact. The full number is never written to memory and is not
+    allowlisted.
+dispute_amount:
+  type: text
+  description: Amount in dispute, e.g. $248.00.
+dispute_merchant:
+  type: text
+  description: Merchant on the disputed charge.
+dispute_date:
+  type: text
+  description: Date of the disputed charge.
+
+# --- what was attempted ------------------------------------------------------
+attempts_log:
+  type: text
+  description: >
+    Newline-separated "action|outcome|code|detail" records of what was already
+    tried. Read by the handoff tool so the human does not retry a failed path.
+
+# --- what must not be repeated ----------------------------------------------
+questions_answered:
+  type: text
+  description: Newline-separated questions the caller has already answered.
+confirmed_facts:
+  type: text
+  description: Newline-separated facts already established, e.g. consent to record.
+
+# --- the handoff itself ------------------------------------------------------
+handoff_reason:
+  type: text
+  description: Why a human is needed. One line; the rest of the context is structured above.
+handoff_id:
+  type: text
+  description: Identifier of the delivered handoff, returned to the caller.
