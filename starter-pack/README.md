@@ -83,6 +83,16 @@ What did you just copy?
 - `.claude/` — six "skills" (step-by-step playbooks for building Mantle
   pieces) and two "roles" (a builder and a reviewer). Claude Code finds
   these on its own; you don't need to do anything with them.
+
+> ⚠️ **If you also ran `rasa init`, you have twelve skills, not six.** Rasa
+> installs six Mantle skills of its own, with names that rhyme with these
+> (`mantle-building-skills` vs our `mantle-skill-authoring`, and so on).
+> They are not duplicates, but they are not interchangeable either:
+> **Rasa's teach the engine contract; ours teach the failure modes of one
+> pinned version and hook each to a checker.** Read
+> [`.claude/skills/OVERLAP.md`](.claude/skills/OVERLAP.md) — it states, per
+> skill, exactly what ours adds over the Rasa one covering the same ground,
+> and names four things Rasa's skills cover that this pack does not.
 - `scripts/` — the checker program (more on it in a second).
 - `hooks/` — the automatic guard (more on it in Step 4).
 
@@ -141,6 +151,22 @@ the message says, then commit again. That's the whole workflow.
 
 > 💡 You only run `install-hooks.sh` once per project. The guard stays on.
 
+**One habit worth forming now: commit the skills too.** The files in
+`.claude/skills/` are yours once they're in your folder, and you *should*
+edit them when one is wrong — a key that moved, a version that changed, a
+trap that bit you. When you do, save it like any other work:
+
+```bash
+git add .claude/skills/
+git commit -m "skills: note that tool_timeout is top-level as of dev6"
+```
+
+Why bother? **Your collaborator inherits your fixes.** Claude Code reads
+these files automatically, so a correction you commit doesn't just help the
+next human who clones your project — it quietly corrects *their* assistant
+too. Left uncommitted, that fix helps exactly one person, and disappears the
+next time Rasa updates its own copies of these files.
+
 ### Step 5 — Let Claude Code build your agent
 
 Open Claude Code inside your project folder and say something like:
@@ -175,6 +201,8 @@ make chat       # talk to your agent! 🎉
 | Change the AI model / provider | Ask for the "mantle-llm-and-integrations skill" |
 | Something's broken and weird | Ask for the "mantle-upgrade-and-debug skill" — it has a table mapping error messages to real causes |
 | Get your work reviewed | Ask Claude Code to "review this as mantle-reviewer" |
+| Know which skill governs (you have 12) | Read `.claude/skills/OVERLAP.md` |
+| Keep a fix you made to a skill | `git add .claude/skills/ && git commit` — see below |
 
 ---
 
