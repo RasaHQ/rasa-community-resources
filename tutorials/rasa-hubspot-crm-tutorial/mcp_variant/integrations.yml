@@ -1,0 +1,47 @@
+# The MCP variant of integrations.yml.
+#
+# Identical to the project's integrations.yml except for the `mcp_servers:`
+# block at the bottom. `make mcp-swap` copies this over the REST one; `make
+# mcp-restore` puts the REST one back.
+#
+# Text-first: the subject is the CRM boundary, not speech.
+# The orchestrator LLM is a model-group reference. Provider, model and
+# credentials live on the named group, never inline under `llm:` — the
+# inline form was removed in rasa-pro 3.20.0.dev6.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-4.1-mini
+        api_key: ${OPENAI_API_KEY}
+        temperature: 0.0
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+
+# ------------------------------------------------------------------------------
+# The transport swap lives here.
+# ------------------------------------------------------------------------------
+# `name:` is the server id the skills name in `import_tools: mcp/<name>:<tool>`.
+# It must match byte for byte — a typo is caught at model load by MCPRuntime,
+# not at train time, because remote tool existence needs a live `list_tools`.
+#
+# `url:` must be http or https. Mantle has no stdio transport: MCPServerSpec
+# rejects any other scheme and MCPServerConnection only ever builds a
+# streamablehttp_client. As shipped this points at the bundled MCP server on
+# loopback, so no account and no network are needed.
+#
+# Against HubSpot's own MCP server this becomes their URL plus a token:
+#     url: https://mcp.hubspot.com/anthropic
+#     token: ${HUBSPOT_ACCESS_TOKEN}
+# The skills do not change for that either — only these two lines.
+mcp_servers:
+  - name: hubspot_crm
+    url: http://127.0.0.1:8931/mcp
+    tool_timeout: 15

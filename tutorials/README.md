@@ -41,6 +41,7 @@ If a tutorial is the companion to an example in `examples/`, say so in both READ
 |---|---|---|---|---|
 | Atlas voice agent tutorial | Atlas | Horizon Travel | [`rasa-voice-agent-tutorial`](rasa-voice-agent-tutorial) | 2026-08-13 |
 | Guarding an irreversible action | Wren | Northgate Bank | [`rasa-card-reissue-tutorial`](rasa-card-reissue-tutorial) | 2026-09-02 |
+| Ora on HubSpot CRM, and the same agent over MCP | Ora | Meridian | [`rasa-hubspot-crm-tutorial`](rasa-hubspot-crm-tutorial) | 2026-09-02 |
 
 When you add a tutorial, append a row here in the same PR.
 
