@@ -2,9 +2,9 @@
 
 ```text
 Author:        Rod Rivera
-Assessed on:   2026-08-26
+Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
 Audience:      Practitioners building voice insurance agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -63,7 +63,7 @@ Run `make` alone for the full grouped help screen.
 
 ## Stack
 
-- `rasa-pro==3.20.0.dev1` via `uv`, Python 3.10–3.13
+- `rasa-pro==3.20.0.dev6` via `uv`, Python 3.10–3.13
 - LLM: OpenAI `gpt-5.2` in `integrations.yml` and `endpoints.yml` — **no temperature**
 - Voice: Deepgram Flux ASR + Aura TTS under `channels.inspector`
 - Tools: local-first (`skills/<id>/tools.py`) + shared (`tools/insurance.py`)

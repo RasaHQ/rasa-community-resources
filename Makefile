@@ -18,7 +18,7 @@ UV      := $(shell command -v uv 2>/dev/null)
 ROOT    := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 SCRIPTS := $(ROOT)/scripts
 
-# Optional override: make migrate VERSION=3.20.0.dev1
+# Optional override: make migrate VERSION=3.20.0.dev6
 VERSION ?=
 # KEEP_GOING=1 continues after a project failure (check-all / test-all / lock-all / …)
 KEEP_GOING ?= 0

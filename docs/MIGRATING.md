@@ -59,7 +59,7 @@ Two mechanical changes, plus one that is easy to miss.
 
 ```bash
 # 1. the pin (make migrate does this for you)
-rasa-pro==3.19.0.dev7  →  rasa-pro==3.20.0.dev1   # rasa-version-ignore: upgrade path
+rasa-pro==3.20.0.dev6  →  rasa-pro==3.20.0.dev6   # rasa-version-ignore: upgrade path
 
 # 2. every import of the engine, in tools.py and scripts
 rasa.calm_v2  →  rasa.mantle
@@ -72,7 +72,7 @@ not mention Python at all:
 
 ```text
 versions that are not supported by your dependencies
-(e.g., rasa-pro==3.20.0.dev1 only supports >=3.11, <3.15)
+(e.g., rasa-pro==3.20.0.dev6 only supports >=3.11, <3.15)
 ```
 
 Three resources in this catalog hit exactly that during the 3.20 migration.
@@ -111,14 +111,14 @@ make test-all      # check-all, then rasa train when a license is present
 Override the target version for a one-shot bump (also rewrites `RASA_PRO_VERSION`):
 
 ```bash
-make migrate VERSION=3.20.0.dev1
+make migrate VERSION=3.20.0.dev6
 ```
 
 Preview any bump before it touches the working tree — nothing is written and
 `uv lock` never runs:
 
 ```bash
-make migrate-dry VERSION=3.20.0.dev1
+make migrate-dry VERSION=3.20.0.dev6
 ```
 
 Jump to the newest release on the supported line (see the box at the top —
@@ -158,7 +158,7 @@ should not need to hand-edit those flags.
    ```
 2. Preview the bump:
    ```bash
-   make migrate-dry VERSION=3.20.0.dev1
+   make migrate-dry VERSION=3.20.0.dev6
    ```
 3. Run the migrator. It verifies the version exists on the index *before*
    rewriting anything, then updates every `pyproject.toml` pin and prerelease
@@ -166,7 +166,7 @@ should not need to hand-edit those flags.
    resolved, rewrites `Verified with:` / `rasa-pro==…` prose in README/AGENTS
    and the project Makefiles, and finally writes `RASA_PRO_VERSION`:
    ```bash
-   make migrate VERSION=3.20.0.dev1
+   make migrate VERSION=3.20.0.dev6
    # or, for the newest release on the supported line:
    make latest
    ```
@@ -216,6 +216,55 @@ Drift examples this tooling fixes:
 - README header bumped but body `rasa-pro==…` left behind
 - Lockfile not regenerated after a pin edit
 - `prerelease = "allow"` left behind after moving to a stable release
+
+## Breaking changes seen on this line
+
+A pin bump is usually just numbers. Twice it has not been, and both times every
+project failed at once. Recorded here because the error text names a field, not
+a cause.
+
+**3.20.0.dev6 — the orchestrator LLM became a model-group reference.**
+
+```text
+[mantle.validation.config.invalid_llm] The 'llm:' section of 'integrations.yml'
+is invalid: 'model_group': Field required; 'provider': Extra inputs are not
+permitted; ...
+```
+
+`IntegrationLlmConfig` is now `extra="forbid"`. Provider, model and credentials
+move onto a named group:
+
+```yaml
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+```
+
+Enforced from here on by the `llm-model-group` lint check.
+
+**3.20.0.dev6 — project memory can no longer be `llm_settable`.**
+
+```text
+[mantle.validation.memory.project_llm_settable] Project memory field
+'contact_email' declares llm_settable: true. Project fields cannot be written
+by the LLM.
+```
+
+Root `memory.yml` fields are tool-written. Either have a tool call
+`context.memory.set(...)`, or move the field into `skills/<id>/memory.yml`
+where `llm_settable` is still correct. In this catalog the flag was inert in
+both places it appeared — the tools already wrote the fields — so removing it
+changed no behaviour. Enforced by `project-memory-writes`.
+
+**3.20.0.dev6 also added `tool_timeout`** to the top-level `agent.yml` keys.
+Nothing here used it, but `TOP_LEVEL_AGENT_KEYS` needed to learn about it; the
+`agent_spec` contract test is what caught that, which is what it exists for.
 
 ## Troubleshooting
 

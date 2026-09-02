@@ -3,9 +3,9 @@
 ```text
 Author:        Samrudha Kelkar
 Kind:          example
-Assessed on:   2026-08-26
+Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
 Audience:      Practitioners who want a Mantle voice agent without an OpenAI key
 Time:          30–45 minutes
 ```

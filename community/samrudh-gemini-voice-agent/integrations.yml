@@ -6,21 +6,22 @@
 # one is to show the whole configuration for the other provider in place,
 # rather than as commented-out fragments a reader has to reassemble.
 
+# The orchestrator LLM is a model-group reference. Provider, model and
+# credentials live on the named group, never inline under `llm:` — the
+# inline form was removed in rasa-pro 3.20.0.dev6.
 llm:
-  provider: gemini
-  model: gemini-2.5-flash
-  api_key_env: GEMINI_API_KEY
-  temperature: 0.0
-
-# To run this on OpenAI instead, swap the block above for:
+  model_group: orchestrator
+# To run this on OpenAI instead, point `llm.model_group` at a group whose
+# models block is:
 #
-# llm:
-#   provider: openai
-#   model: gpt-4.1-mini
-#   api_key_env: OPENAI_API_KEY
-#   temperature: 0.0
+#   - id: openai-llm
+#     models:
+#       - provider: openai
+#         model: gpt-4.1-mini
+#         api_key: ${OPENAI_API_KEY}
+#         temperature: 0.0
 #
-# ...and switch `nlg.llm.model_group` in endpoints.yml to `openai-llm`.
+# ...and switch `nlg.llm.model_group` in endpoints.yml to match.
 
 # Knowledge-base embeddings run locally through sentence-transformers, so the
 # reference index needs no embedding provider key at all. This is what lets the
@@ -35,6 +36,13 @@ model_groups:
     models:
       - provider: huggingface_local
         model: sentence-transformers/all-MiniLM-L6-v2
+
+  - id: orchestrator
+    models:
+      - provider: gemini
+        model: gemini-2.5-flash
+        api_key: ${GEMINI_API_KEY}
+        temperature: 0.0
 
 channels:
   rest:

@@ -1,10 +1,18 @@
 # External integrations for the Atlas voice travel agent.
 
+# The orchestrator LLM is a model-group reference. Provider, model and
+# credentials live on the named group, never inline under `llm:` — the
+# inline form was removed in rasa-pro 3.20.0.dev6.
 llm:
-  provider: openai
-  model: gpt-5.2
-  api_key_env: OPENAI_API_KEY
-  temperature: 0.0
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+        temperature: 0.0
 
 channels:
   rest:

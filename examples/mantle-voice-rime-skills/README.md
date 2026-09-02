@@ -2,9 +2,9 @@
 
 ```text
 Author:        Rod Rivera
-Assessed on:   2026-08-26
+Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.20.0.dev1, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
 Audience:      Practitioners choosing a TTS provider for a Rasa voice agent
 Time:          30–45 minutes
 ```
