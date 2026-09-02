@@ -1,0 +1,17 @@
+# Confirmation prompts for the two irreversible actions.
+#
+# Both are confirmations of INTENT ("did you mean to do this?"), not of identity
+# ("are you who you say?"). They run through tool_constraints.requires_confirmation
+# and are entirely separate from the tier guard — a caller can confirm
+# enthusiastically and still be refused, because confirming is not verifying.
+responses:
+  utter_confirm_reissue:
+    - text: >-
+        Just to confirm — you want a replacement card posted out. Once it is
+        sent it cannot be recalled. Shall I go ahead?
+  utter_confirm_transfer:
+    - text: >-
+        Just to confirm — you want to send that amount out of your account.
+        Transfers cannot be reversed. Shall I go ahead?
+  utter_action_cancelled:
+    - text: No problem, I have not done anything. Is there something else I can help with?
