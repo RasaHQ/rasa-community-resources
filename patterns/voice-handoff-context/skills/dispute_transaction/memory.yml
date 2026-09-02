@@ -1,0 +1,32 @@
+schema:
+  public:
+    disputed_txn_id:
+      type: text
+      description: Id of the transaction being disputed (from list_recent_charges).
+      llm_settable: true
+    # Tool-set only, so these carry no description — the engine rejects
+    # descriptions on fields the LLM cannot set.
+    disputed_txn_label:
+      type: text
+
+  # ---------------------------------------------------------------------------
+  # DELIBERATELY SENSITIVE, AND DELIBERATELY DECLARED.
+  # ---------------------------------------------------------------------------
+  # These are what a real authentication step leaves behind in session state.
+  # They are `private` because nothing outside this skill has any business
+  # reading them, and they are written by tools (never llm_settable) because a
+  # caller who can talk the model into setting their own PIN field has already
+  # won.
+  #
+  # They exist here so the redaction contract is exercised against fields that
+  # ACTUALLY EXIST in a running agent rather than against hypothetical ones. A
+  # guard only ever tested against fields nobody writes is not tested.
+  #
+  # Neither is in handoffpkg.redaction.SESSION_ALLOWLIST, so neither crosses to
+  # a human. tests/test_handoff_context.py is what proves that, and the README
+  # records what happened when the guard was removed.
+  private:
+    pin_attempt:
+      type: text
+    otp_code:
+      type: text
