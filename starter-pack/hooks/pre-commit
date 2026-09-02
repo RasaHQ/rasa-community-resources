@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Pre-commit gate for a Rasa Mantle project: offline, stdlib-only, fast.
+# Installed by hooks/install-hooks.sh. Bypass deliberately (and say why in
+# the commit message) with: git commit --no-verify
+set -uo pipefail
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "COMMIT BLOCKED: python3 not found; the lint gate cannot run." >&2
+  exit 1
+fi
+
+if [ ! -f scripts/lint_mantle.py ]; then
+  echo "COMMIT BLOCKED: scripts/lint_mantle.py is missing. Restore it from the" >&2
+  echo "starter pack — this hook exists because these failures are silent." >&2
+  exit 1
+fi
+
+python3 scripts/lint_mantle.py
+status=$?
+if [ $status -ne 0 ]; then
+  echo "" >&2
+  echo "COMMIT BLOCKED by lint_mantle.py (exit $status)." >&2
+  echo "Each finding above names its fix. The checks encode real, silent" >&2
+  echo "failures — fixing them now is cheaper than debugging them at train time." >&2
+fi
+exit $status
