@@ -72,21 +72,33 @@ because a tutorial without a code link or a date is worse than one with.
 
 ### 1c. The prose half's gates
 
-`npm run build` is **not sufficient**. Three checks run in the site repo and
-they fail independently:
+`npm run build` is **not sufficient**, and the site repo's pre-commit hook is
+the real gate. It runs a copy gate, an asset gate, a pin check, a
+tutorial-card check, Prettier, ESLint, and `astro check`. Two of those catch
+tutorial authors specifically.
 
-    npm run build          Zod frontmatter validation + Astro build
-    npm run format:check   Prettier — fails on hand-wrapped Markdown
-    npm run lint           ESLint (does not cover .md, but CI runs it)
+**1. The library card is a separate, required file.** Chapters that build are
+not chapters that are reachable:
 
-Prettier is the one that catches people. Markdown wrapped by hand to 80
-columns builds perfectly and fails `format:check`, which is a separate CI job.
-Write the prose however you like, then run
+    ✗ series 'guarding-irreversible-actions' has no library card — its pages
+      build, but nothing links to them.
 
-    npx prettier --write 'src/content/tutorials/<slug>/*.md'
+Add a `LibraryEntry` to `src/data/content.ts` with
+`url: '/library/tutorials/<slug>/'` and `hosted: true`. The check is
+bidirectional — every series needs a card and every card needs a series — so
+this cannot be done ahead of the prose or left behind after it.
 
-before committing, and re-run `npm run build` afterwards — reflowing changes
-the files.
+**2. Prettier is a separate job from the build.** Markdown wrapped by hand to
+80 columns builds perfectly and fails `format:check`. Write the prose however
+you like, then run
+
+    npx prettier --write 'src/content/tutorials/<slug>/*.md' src/data/content.ts
+
+and re-run the build afterwards, because reflowing changes the files.
+
+There is also a **copy gate** that rejects hype vocabulary and exclamation
+marks anywhere in content. It is not a style preference you can argue with in
+review; it fails the commit.
 
 ---
 
@@ -390,9 +402,11 @@ Prose half:
 - [ ] `tutorial` is byte-identical across every file in the series
 - [ ] `index.md` has `order: 0`, `date`, `companionRepo`, and an `author` id
       that exists in `src/data/authors.ts`
+- [ ] a `LibraryEntry` for the series exists in `src/data/content.ts`
 - [ ] `npm run build` passes
-- [ ] `npx prettier --write 'src/content/tutorials/<slug>/*.md'` has been run
-- [ ] `npm run format:check` passes
+- [ ] `npx prettier --write` has been run over the chapters AND `content.ts`
+- [ ] `npm run format:check`, `npm run lint`, and `astro check` pass
+- [ ] no hype vocabulary or exclamation marks (the copy gate rejects them)
 - [ ] every declared step appears in some chapter
 
 Both:
