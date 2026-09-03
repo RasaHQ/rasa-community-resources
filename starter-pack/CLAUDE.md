@@ -39,7 +39,10 @@ lib/engine.py        # the only file that imports rasa.mantle directly
 2. **`llm:` in integrations.yml is a model-group reference**
    (`llm: {model_group: <id>}`). Inline `provider`/`model`/`api_key` there is
    rejected since 3.20.0.dev6. Providers/credentials live on the
-   `model_groups:` entry, with `api_key: ${SOME_ENV_VAR}`.
+   `model_groups:` entry, with `api_key_env: SOME_ENV_VAR` — the *name* of the
+   variable, unquoted, no `${...}`. `api_key_env: VAR` does not expand: `api_key`
+   is on the engine's `SENSITIVE_DATA` list, so `read_yaml` returns it raw and
+   the provider receives the literal characters `${VAR}` as its key.
 3. **Root `memory.yml` may not contain `llm_settable: true`.** Project memory
    is written by tools. LLM-settable fields go in `skills/<id>/memory.yml`
    under `schema: public:`.

@@ -56,6 +56,15 @@ RETIRED_TERMS = {"ma" + "estro": "Mantle"}
 SESSION_REF_RE = re.compile(r"(?<![\w.])session\.([\w-]+)\.([\w-]+)")
 MEMORY_TOKEN_RE = re.compile(r"@memory(?:\.[\w-]+)*")
 ENV_VAR_RE = re.compile(r"\$\{([A-Z][A-Z0-9_]*)\}")
+# Credentials name their variable rather than interpolating it: `api_key`
+# is a SENSITIVE_DATA key the engine's loader returns raw, so `${VAR}` there
+# never expands. .env.example discovery has to look for both spellings or it
+# goes blind to every credential the project actually reads.
+API_KEY_ENV_RE = re.compile(r"^\s*(?:-\s+)?api_key_env\s*:\s*([A-Z][A-Z0-9_]*)", re.M)
+
+# `api_key: ${VAR}` hands the provider the literal characters. Anchored so
+# prose quoting the broken form to teach against it is not flagged.
+API_KEY_PLACEHOLDER_RE = re.compile(r"""^\s*(?:-\s+)?api_key\s*:\s*["\']?\$""", re.M)
 PRERELEASE_RE = re.compile(r"(a|b|rc|\.dev)\d*$")
 
 TEXT_GLOBS = ("*.md", "*.toml", "*.yml", "*.yaml", "*.py", "*.example", "Makefile")
@@ -403,7 +412,10 @@ def check_env_example() -> list[Finding]:
     body = _read(example)
     used: dict[str, str] = {}
     for path in _files("*.yml", "**/*.yml", "*.yaml", "**/*.yaml"):
-        for match in ENV_VAR_RE.finditer(_read(path)):
+        text = _read(path)
+        for match in ENV_VAR_RE.finditer(text):
+            used.setdefault(match.group(1), _rel(path))
+        for match in API_KEY_ENV_RE.finditer(text):
             used.setdefault(match.group(1), _rel(path))
     pyproject = ROOT / "pyproject.toml"
     if pyproject.is_file():
@@ -420,6 +432,32 @@ def check_env_example() -> list[Finding]:
                 f".env.example .env` produces a silently incomplete file and "
                 f"the failure surfaces later as an unexpanded ${{{var}}}",
             ))
+    return findings
+
+
+def check_api_key_env() -> list[Finding]:
+    """Credentials use `api_key_env: NAME`; `api_key: ${VAR}` never expands.
+
+    `api_key` is on the engine's SENSITIVE_DATA list, so `read_yaml` returns it
+    raw by design — a secret-leak guard. The provider is then handed the literal
+    characters `${VAR}` as its key. There is no rescue path: the resolver only
+    substitutes when `api_key_env` is present. The symptom is a provider auth
+    error, which reads like a bad key rather than a bad config shape, so this is
+    exactly the kind of break an offline gate has to catch.
+    """
+    findings: list[Finding] = []
+    for path in _files("*.yml", "**/*.yml", "*.yaml", "**/*.yaml"):
+        for lineno, line in _numbered(_read(path)):
+            if line.lstrip().startswith("#"):
+                continue
+            if API_KEY_PLACEHOLDER_RE.match(line):
+                findings.append(Finding(
+                    "api-key-env", _rel(path), lineno,
+                    "'api_key' with a ${VAR} placeholder never expands: 'api_key' "
+                    "is on the engine's SENSITIVE_DATA list, so the loader returns "
+                    "it raw and the provider receives the literal '${VAR}' as its "
+                    "key. Use 'api_key_env: VAR' — the variable NAME, unquoted.",
+                ))
     return findings
 
 
@@ -459,6 +497,7 @@ CHECKS = {
     "engine-version-pin": check_engine_version_pin,
     "secret-hygiene": check_secret_hygiene,
     "env-example": check_env_example,
+    "api-key-env": check_api_key_env,
     "retired-brand": check_retired_brand,
 }
 

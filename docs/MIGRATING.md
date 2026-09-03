@@ -243,10 +243,24 @@ model_groups:
     models:
       - provider: openai
         model: gpt-5.2
-        api_key: ${OPENAI_API_KEY}
+        api_key_env: OPENAI_API_KEY
 ```
 
 Enforced from here on by the `llm-model-group` lint check.
+
+**Credentials use `api_key_env: NAME`, not `api_key: ${NAME}`.** This was never
+a version change — the `${VAR}` form has never worked. `api_key` is on the
+engine's `SENSITIVE_DATA` list (`rasa/shared/constants.py`), so `read_yaml`
+returns it raw on purpose as a secret-leak guard, and the provider receives the
+literal seven characters `${VAR}` as its key. There is no rescue path:
+`_resolve_api_key_env` only substitutes when `api_key_env` is present. The
+symptom is a provider auth error, which reads like a bad key rather than a bad
+config shape. Enforced from here on by the `api-key-env` lint check.
+
+ASR/TTS blocks take **no** credential key at all — the voice engines read a
+fixed environment variable (`DEEPGRAM_API_KEY`, `RIME_API_KEY`, …) directly.
+`api_key` there is rejected by the ASR schema and ignored with a warning by
+TTS; select the vendor by `name:` and export the variable.
 
 **3.20.0.dev6 — project memory can no longer be `llm_settable`.**
 

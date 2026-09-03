@@ -865,6 +865,111 @@ def check_llm_model_group(projects: list[Project]) -> list[Finding]:
     return findings
 
 
+# `api_key` is on the engine's SENSITIVE_DATA list (rasa/shared/constants.py),
+# so `read_yaml` (rasa/shared/utils/yaml.py) returns it RAW on purpose — a
+# secret-leak guard. `api_key: ${VAR}` therefore never expands; the provider is
+# handed the literal characters `${VAR}` as its key. `api_key_env: VAR` is the
+# sanctioned channel: `_resolve_api_key_env` (rasa/mantle/llm/client.py) reads
+# the environment and substitutes the real value. Non-sensitive fields such as
+# `model:` DO expand `${VAR}` — the suppression is credential-specific.
+# Anchored at start-of-line (after indent, and after a YAML `- ` item dash) so
+# it matches a real mapping entry, not prose that quotes the broken form inside
+# backticks while teaching against it. Covers `${VAR}`, bare `$VAR`, quoted
+# forms, and `${VAR:-default}` — every spelling is equally unexpanded.
+API_KEY_PLACEHOLDER_RE = re.compile(r"""^\s*(?:-\s+)?api_key\s*:\s*["']?\$""")
+
+# Documentation must be able to QUOTE the broken form in order to teach against
+# it. Same rationale as VERSION_IGNORE_MARKER: mark those lines explicitly so
+# the check stays strict everywhere else. The alternative is authors phrasing
+# around the gate, which is how a gate quietly stops working.
+API_KEY_IGNORE_MARKER = "api-key-env-ignore"
+
+# Keys the voice engines never read from config. Deepgram ASR/TTS both take
+# os.environ["DEEPGRAM_API_KEY"] directly (voice_stream/asr/deepgram/engine.py,
+# voice_stream/tts/deepgram.py); Rime, Cartesia and Azure do the same with
+# their own fixed variable names. ASR configs are extra="forbid" and reject
+# both spellings; TTS configs are extra="allow" and warn "Unknown TTS config
+# field(s) 'api_key' will be ignored". Either way the credential is dead config.
+VOICE_BLOCK_KEYS = ("asr", "tts", "speech_to_text", "text_to_speech")
+VOICE_BLOCK_RE = re.compile(
+    r"^\s*(?:-\s*)?(" + "|".join(VOICE_BLOCK_KEYS) + r")\s*:\s*(?:#.*)?$"
+)
+ANY_API_KEY_RE = re.compile(r"^\s*(?:-\s*)?api_key(_env)?\s*:")
+
+
+def check_api_key_env() -> list[Finding]:
+    """Credentials use `api_key_env: NAME`; `api_key: ${VAR}` never expands.
+
+    The whole catalog documented and shipped `api_key: ${OPENAI_API_KEY}` — 67
+    occurrences across 46 files. None of them ever worked. `api_key` is a
+    SENSITIVE_DATA key, so the loader returns it unexpanded by design and every
+    affected project handed its provider the seven literal characters
+    `${VAR}`. Nothing caught it: `make validate` is offline and never builds a
+    client, so the only symptom was a provider auth error at runtime — which
+    reads like a bad key rather than a bad config shape.
+
+    Also rejects any credential key inside an `asr:`/`tts:` block, where
+    neither spelling works: the voice engines read a fixed environment variable
+    and never consult the config.
+    """
+    findings: list[Finding] = []
+    for path in _tracked_files("*.yml", "*.yaml", "*.md"):
+        text = _read(path)
+        # Cheap reject: most files mention no credential at all.
+        if "api_key" not in text:
+            continue
+        rel = _rel(path)
+        voice_indent: int | None = None
+        for lineno, line in _numbered(text):
+            stripped = line.strip()
+            if API_KEY_IGNORE_MARKER in line:
+                continue
+
+            # Track whether we are inside an asr:/tts: mapping. The block ends
+            # at the first line indented no deeper than the block key itself.
+            block = VOICE_BLOCK_RE.match(line)
+            if block:
+                voice_indent = len(line) - len(line.lstrip())
+            elif voice_indent is not None and stripped and not stripped.startswith("#"):
+                if len(line) - len(line.lstrip()) <= voice_indent:
+                    voice_indent = None
+
+            if stripped.startswith("#"):
+                continue
+
+            if API_KEY_PLACEHOLDER_RE.match(line):
+                findings.append(
+                    Finding(
+                        "api-key-env",
+                        rel,
+                        lineno,
+                        "'api_key' with a ${VAR} placeholder never expands: "
+                        "'api_key' is on the engine's SENSITIVE_DATA list, so "
+                        "read_yaml returns it raw and the provider receives the "
+                        "literal '${VAR}' as its key. Use 'api_key_env: VAR' "
+                        "(the variable NAME, unquoted) instead.",
+                    )
+                )
+                continue
+
+            if voice_indent is not None and ANY_API_KEY_RE.match(line):
+                key = stripped.split(":", 1)[0].lstrip("- ")
+                findings.append(
+                    Finding(
+                        "api-key-env",
+                        rel,
+                        lineno,
+                        f"{key!r} inside an asr:/tts: block is not read by the "
+                        f"engine — voice providers take their credential from a "
+                        f"fixed environment variable (DEEPGRAM_API_KEY, "
+                        f"RIME_API_KEY, ...). ASR configs are extra='forbid' and "
+                        f"reject it outright; TTS ignores it with a warning. "
+                        f"Remove it and select the vendor with 'name:'.",
+                    )
+                )
+    return findings
+
+
 def check_project_memory_writes(projects: list[Project]) -> list[Finding]:
     """Project-level memory is tool-written; the LLM may not set it.
 
@@ -1158,6 +1263,9 @@ CHECKS = {
     "agent-config-keys": lambda p, s, e: check_agent_config_keys(),
     "brand-terms": lambda p, s, e: check_brand_terms(),
     "llm-model-group": lambda p, s, e: check_llm_model_group(p + s),
+    # Both tiers: a frozen resource whose credentials never resolved is a
+    # broken example regardless of which pin it is frozen at.
+    "api-key-env": lambda p, s, e: check_api_key_env(),
     "project-memory-writes": lambda p, s, e: check_project_memory_writes(p + s),
     "env-example": lambda p, s, e: check_env_examples(p + s),
     "snapshot-pin": lambda p, s, e: check_snapshot_pins(s),
