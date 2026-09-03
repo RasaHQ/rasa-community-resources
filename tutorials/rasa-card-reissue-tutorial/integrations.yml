@@ -8,13 +8,28 @@ model_groups:
     models:
       - provider: openai
         model: gpt-5.2
-        api_key: ${OPENAI_API_KEY}
+        api_key_env: OPENAI_API_KEY
 
-# Voice in and out through Deepgram. Swap the provider blocks to change vendor;
-# nothing else in this project depends on which one is used.
-asr:
-  deepgram:
-    api_key: ${DEEPGRAM_API_KEY}
-tts:
-  deepgram:
-    api_key: ${DEEPGRAM_API_KEY}
+# Voice in and out through Deepgram. ASR/TTS are selected under the channel
+# that carries audio, by vendor NAME — swap `name:` to change vendor; nothing
+# else in this project depends on which one is used.
+#
+# Deepgram credentials are NOT config: both engines read the environment
+# variable DEEPGRAM_API_KEY directly (voice_stream/asr/deepgram/engine.py,
+# voice_stream/tts/deepgram.py). An `api_key`/`api_key_env` key here is
+# rejected by the ASR schema (extra="forbid") and warned-and-ignored by TTS.
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en

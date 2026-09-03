@@ -570,6 +570,81 @@ class TestWorkflowPins(unittest.TestCase):
         )
 
 
+class TestApiKeyEnv(unittest.TestCase):
+    """`api_key: ${VAR}` never expanded; the gate has to be able to say so.
+
+    The catalog shipped 67 of these across 46 files and every check stayed
+    green, because `make validate` is offline and never builds a provider
+    client. These tests exist so the check is known to FAIL on the broken form,
+    not merely known to pass on the fixed one.
+    """
+
+    def _findings(self, body: str, name: str = "integrations.yml"):
+        with mock.patch.object(
+            lint_repo, "_tracked_files", return_value=[Path(name)]
+        ), mock.patch.object(lint_repo, "_read", return_value=body):
+            return lint_repo.check_api_key_env()
+
+    def test_braced_placeholder_is_rejected(self):
+        found = self._findings("        api_key: ${OPENAI_API_KEY}\n")
+        self.assertEqual(len(found), 1)
+        self.assertIn("never expands", found[0].message)
+
+    def test_every_placeholder_spelling_is_rejected(self):
+        for value in (
+            "${OPENAI_API_KEY}",
+            "$OPENAI_API_KEY",
+            '"$OPENAI_API_KEY"',
+            "'${OPENAI_API_KEY}'",
+            "${OPENAI_API_KEY:-none}",
+        ):
+            self.assertEqual(
+                len(self._findings(f"        api_key: {value}\n")), 1, value
+            )
+
+    def test_api_key_env_is_accepted(self):
+        self.assertEqual(self._findings("        api_key_env: OPENAI_API_KEY\n"), [])
+
+    def test_non_sensitive_placeholder_is_left_alone(self):
+        # `model:` is not on SENSITIVE_DATA, so ${VAR} there really does expand.
+        self.assertEqual(self._findings("        model: ${OPENAI_MODEL}\n"), [])
+
+    def test_commented_out_line_is_left_alone(self):
+        self.assertEqual(self._findings("      # api_key: ${OPENAI_API_KEY}\n"), [])
+
+    def test_prose_quoting_the_broken_form_is_left_alone(self):
+        # Documentation must be able to name the defect in order to teach
+        # against it; only a real mapping entry is a finding.
+        body = "Never write `api_key: ${VAR}` — it does not expand.\n"
+        self.assertEqual(self._findings(body, "MIGRATING.md"), [])
+
+    def test_credential_inside_voice_block_is_rejected(self):
+        # ASR configs are extra="forbid" and TTS warns-and-ignores; either way
+        # the engine reads DEEPGRAM_API_KEY from the environment, not config.
+        for key in ("api_key_env: DEEPGRAM_API_KEY", "api_key: DEEPGRAM_API_KEY"):
+            body = f"asr:\n  deepgram:\n    {key}\n"
+            found = self._findings(body)
+            self.assertEqual(len(found), 1, key)
+            self.assertIn("not read by the engine", found[0].message)
+
+    def test_voice_block_ends_at_dedent(self):
+        # A model-group `api_key_env` after a tts: block is correct, not a
+        # voice-block finding — the block must not swallow the rest of the file.
+        body = (
+            "channels:\n"
+            "  inspector:\n"
+            "    tts:\n"
+            "      name: deepgram\n"
+            "model_groups:\n"
+            "  - models:\n"
+            "      - api_key_env: OPENAI_API_KEY\n"
+        )
+        self.assertEqual(self._findings(body), [])
+
+    def test_catalog_is_clean(self):
+        self.assertEqual([f.location() for f in lint_repo.check_api_key_env()], [])
+
+
 class TestCliExitCodes(unittest.TestCase):
     """0 = clean, 1 = well-formed request that failed, 2 = bad invocation.
 

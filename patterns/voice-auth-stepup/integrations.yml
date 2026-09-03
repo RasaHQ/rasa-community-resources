@@ -11,20 +11,18 @@ model_groups:
     models:
       - provider: openai
         model: gpt-5.2
-        api_key: ${OPENAI_API_KEY}
+        api_key_env: OPENAI_API_KEY
 
 # Voice is on because the pattern's sharpest limitations are voice-specific:
 # a passphrase said aloud is a credential in the transcript, and an ASR
 # mis-transcription is a false rejection the caller cannot diagnose. Both are
 # discussed in the README.
-speech_to_text:
-  deepgram:
-    api_key: ${DEEPGRAM_API_KEY}
-
-text_to_speech:
-  deepgram:
-    api_key: ${DEEPGRAM_API_KEY}
-
+#
+# ASR/TTS are selected under the channel that carries audio, by vendor NAME.
+# Deepgram credentials are NOT config: both engines read the environment
+# variable DEEPGRAM_API_KEY directly (voice_stream/asr/deepgram/engine.py,
+# voice_stream/tts/deepgram.py). An `api_key`/`api_key_env` key here is
+# rejected by the ASR schema (extra="forbid") and warned-and-ignored by TTS.
 channels:
   browser_audio:
     server_url: localhost
@@ -33,3 +31,13 @@ channels:
     enabled: true
   inspector:
     enabled: true
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en
