@@ -1,0 +1,179 @@
+{
+  "slug": "telco-retention",
+  "title": "Retention that respects the exit",
+  "organisation": "Juniper Mobile",
+  "action": "record a permitted retention offer or cancellation route",
+  "failure": "The caller asked to stop the conversation, but the retention agent continued cycling through discounts.",
+  "lesson": "Make ending contact and continuing cancellation valid outcomes; a retention metric must not reward blocking the customer\u2019s exit.",
+  "receipt": "An independent cancellation-request reference or a permitted offer outcome; the cancellation intake is not completed account closure.",
+  "evidence": "Inspect whether refusal immediately stops offers and whether cancellation reaches the correct service rather than another sales loop.",
+  "recovery": "Pause the campaign if withdrawal does not propagate to dispatch. Reconcile permission records before any new contact.",
+  "owner": "retention operations owner",
+  "metric": "offer prompts after a clear refusal, divided by sessions containing refusal",
+  "question": "You can review this authorized option or continue to cancellation. Which would you prefer?",
+  "correction": "The customer chooses cancellation; stop presenting alternatives and preserve the cancellation request.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "contact_permission_current",
+      "good": true,
+      "bad": false,
+      "reason": "contact_withdrawn",
+      "phase": "request"
+    },
+    {
+      "field": "exit_path_available",
+      "good": true,
+      "bad": false,
+      "reason": "cancellation_exit_blocked",
+      "phase": "request"
+    },
+    {
+      "field": "offer_terms_authorized",
+      "good": true,
+      "bad": false,
+      "reason": "invented_retention_terms",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "contact_permission_current": true,
+    "exit_path_available": true,
+    "offer_terms_authorized": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "contact_permission_current": true,
+        "exit_path_available": true,
+        "offer_terms_authorized": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "contact_permission_current-false",
+      "facts": {
+        "contact_permission_current": false,
+        "exit_path_available": true,
+        "offer_terms_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "contact_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "contact_permission_current-missing",
+      "facts": {
+        "exit_path_available": true,
+        "offer_terms_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "contact_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "contact_permission_current-string",
+      "facts": {
+        "contact_permission_current": "true",
+        "exit_path_available": true,
+        "offer_terms_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "contact_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "exit_path_available-false",
+      "facts": {
+        "contact_permission_current": true,
+        "exit_path_available": false,
+        "offer_terms_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cancellation_exit_blocked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "exit_path_available-missing",
+      "facts": {
+        "contact_permission_current": true,
+        "offer_terms_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cancellation_exit_blocked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "exit_path_available-string",
+      "facts": {
+        "contact_permission_current": true,
+        "exit_path_available": "true",
+        "offer_terms_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cancellation_exit_blocked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_terms_authorized-false",
+      "facts": {
+        "contact_permission_current": true,
+        "exit_path_available": true,
+        "offer_terms_authorized": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "invented_retention_terms",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_terms_authorized-missing",
+      "facts": {
+        "contact_permission_current": true,
+        "exit_path_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "invented_retention_terms",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_terms_authorized-string",
+      "facts": {
+        "contact_permission_current": true,
+        "exit_path_available": true,
+        "offer_terms_authorized": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "invented_retention_terms",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.2",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  },
+  "intakeKind": "cancellation-request"
+}

@@ -1,0 +1,179 @@
+{
+  "slug": "logistics-driver-check-in",
+  "title": "Driver check-in with site authorization",
+  "organisation": "Parcel Grove",
+  "action": "record an arrival independently and evaluate a separate clearance request",
+  "failure": "The agent marked a driver cleared for loading because it recognized the carrier name, despite a different vehicle and slot.",
+  "lesson": "Separate arrival logging from site clearance; match carrier, vehicle and appointment evidence before describing authorization.",
+  "receipt": "An independent arrival reference and a separate clearance outcome; a recorded arrival is never loading authorization.",
+  "evidence": "Compare vehicle and appointment identifiers against the site system, then check whether clearance exists independently of arrival.",
+  "recovery": "Route mismatches to the site desk and leave loading uncleared. Preserve the arrival observation without granting access.",
+  "owner": "yard operations owner",
+  "metric": "check-ins described as loading clearance without site approval, divided by arrivals",
+  "question": "I can record your arrival for this slot. Loading clearance is shown separately by the site team.",
+  "correction": "The driver reports a substituted vehicle; update the observation and route the mismatch for site approval.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "vehicle_slot_matched",
+      "good": true,
+      "bad": false,
+      "reason": "vehicle_slot_mismatch",
+      "phase": "request"
+    },
+    {
+      "field": "site_clearance_verified",
+      "good": true,
+      "bad": false,
+      "reason": "clearance_missing",
+      "phase": "request"
+    },
+    {
+      "field": "arrival_receipt_recorded",
+      "good": true,
+      "bad": false,
+      "reason": "arrival_not_logged",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "vehicle_slot_matched": true,
+    "site_clearance_verified": true,
+    "arrival_receipt_recorded": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "vehicle_slot_matched": true,
+        "site_clearance_verified": true,
+        "arrival_receipt_recorded": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "vehicle_slot_matched-false",
+      "facts": {
+        "vehicle_slot_matched": false,
+        "site_clearance_verified": true,
+        "arrival_receipt_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "vehicle_slot_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "vehicle_slot_matched-missing",
+      "facts": {
+        "site_clearance_verified": true,
+        "arrival_receipt_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "vehicle_slot_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "vehicle_slot_matched-string",
+      "facts": {
+        "vehicle_slot_matched": "true",
+        "site_clearance_verified": true,
+        "arrival_receipt_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "vehicle_slot_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "site_clearance_verified-false",
+      "facts": {
+        "vehicle_slot_matched": true,
+        "site_clearance_verified": false,
+        "arrival_receipt_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "clearance_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "site_clearance_verified-missing",
+      "facts": {
+        "vehicle_slot_matched": true,
+        "arrival_receipt_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "clearance_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "site_clearance_verified-string",
+      "facts": {
+        "vehicle_slot_matched": true,
+        "site_clearance_verified": "true",
+        "arrival_receipt_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "clearance_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "arrival_receipt_recorded-false",
+      "facts": {
+        "vehicle_slot_matched": true,
+        "site_clearance_verified": true,
+        "arrival_receipt_recorded": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "arrival_not_logged",
+        "effects": 1
+      }
+    },
+    {
+      "name": "arrival_receipt_recorded-missing",
+      "facts": {
+        "vehicle_slot_matched": true,
+        "site_clearance_verified": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "arrival_not_logged",
+        "effects": 1
+      }
+    },
+    {
+      "name": "arrival_receipt_recorded-string",
+      "facts": {
+        "vehicle_slot_matched": true,
+        "site_clearance_verified": true,
+        "arrival_receipt_recorded": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "arrival_not_logged",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.2",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  },
+  "intakeKind": "arrival-observation"
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "retail-order-status",
+  "title": "Order status with a carrier timestamp",
+  "organisation": "Willow Shop",
+  "action": "answer an order-status enquiry",
+  "failure": "The agent called an order delivered because a warehouse label existed, although the carrier had not collected it.",
+  "lesson": "Separate fulfilment milestones and carrier observations; expose the timestamp and distinguish an estimate from an event.",
+  "receipt": "An order-status response naming the milestone source and observation time.",
+  "evidence": "Compare warehouse label creation, carrier possession and delivery events; the display must preserve their distinct meanings.",
+  "recovery": "When the carrier is unavailable, report the last observed event with its age and offer a support route instead of predicting arrival.",
+  "owner": "fulfilment visibility owner",
+  "metric": "status responses promoting a label into a delivery claim, divided by order-status responses",
+  "question": "The latest carrier event is this milestone at this time. Would you like help with a delay?",
+  "correction": "The customer asks about a second parcel; switch shipment identity before reusing any tracking result.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "order_subject_resolved",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_order",
+      "phase": "request"
+    },
+    {
+      "field": "carrier_event_current",
+      "good": true,
+      "bad": false,
+      "reason": "stale_carrier_event",
+      "phase": "request"
+    },
+    {
+      "field": "milestone_type_explicit",
+      "good": true,
+      "bad": false,
+      "reason": "label_as_delivery",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "order_subject_resolved": true,
+    "carrier_event_current": true,
+    "milestone_type_explicit": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "order_subject_resolved": true,
+        "carrier_event_current": true,
+        "milestone_type_explicit": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "order_subject_resolved-false",
+      "facts": {
+        "order_subject_resolved": false,
+        "carrier_event_current": true,
+        "milestone_type_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_order",
+        "effects": 0
+      }
+    },
+    {
+      "name": "order_subject_resolved-missing",
+      "facts": {
+        "carrier_event_current": true,
+        "milestone_type_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_order",
+        "effects": 0
+      }
+    },
+    {
+      "name": "order_subject_resolved-string",
+      "facts": {
+        "order_subject_resolved": "true",
+        "carrier_event_current": true,
+        "milestone_type_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_order",
+        "effects": 0
+      }
+    },
+    {
+      "name": "carrier_event_current-false",
+      "facts": {
+        "order_subject_resolved": true,
+        "carrier_event_current": false,
+        "milestone_type_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_carrier_event",
+        "effects": 0
+      }
+    },
+    {
+      "name": "carrier_event_current-missing",
+      "facts": {
+        "order_subject_resolved": true,
+        "milestone_type_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_carrier_event",
+        "effects": 0
+      }
+    },
+    {
+      "name": "carrier_event_current-string",
+      "facts": {
+        "order_subject_resolved": true,
+        "carrier_event_current": "true",
+        "milestone_type_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_carrier_event",
+        "effects": 0
+      }
+    },
+    {
+      "name": "milestone_type_explicit-false",
+      "facts": {
+        "order_subject_resolved": true,
+        "carrier_event_current": true,
+        "milestone_type_explicit": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "label_as_delivery",
+        "effects": 0
+      }
+    },
+    {
+      "name": "milestone_type_explicit-missing",
+      "facts": {
+        "order_subject_resolved": true,
+        "carrier_event_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "label_as_delivery",
+        "effects": 0
+      }
+    },
+    {
+      "name": "milestone_type_explicit-string",
+      "facts": {
+        "order_subject_resolved": true,
+        "carrier_event_current": true,
+        "milestone_type_explicit": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "label_as_delivery",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

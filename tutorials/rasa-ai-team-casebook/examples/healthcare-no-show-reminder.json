@@ -1,0 +1,178 @@
+{
+  "slug": "healthcare-no-show-reminder",
+  "title": "Reminder responses without inferred attendance",
+  "organisation": "Cedar Clinic",
+  "action": "record an appointment reminder response",
+  "failure": "A voicemail delivery was counted as patient confirmation, and the clinic assumed the appointment would be attended.",
+  "lesson": "Separate sent, delivered, reached and confirmed states; reminders should offer correction without disclosing visit details to an unknown recipient.",
+  "receipt": "A reminder outcome with confirmation recorded only from the verified patient\u2019s response.",
+  "evidence": "Compare telephony delivery events with actual conversation responses and current appointment revisions.",
+  "recovery": "For unknown recipients, stop visit-detail disclosure and use the approved callback message. Do not count that event as confirmation.",
+  "owner": "clinic outreach owner",
+  "metric": "delivery events counted as patient confirmation, divided by delivered reminders",
+  "question": "Would you like to confirm this appointment or contact the clinic to change it?",
+  "correction": "The patient says the appointment was already moved; resolve the current revision before asking for confirmation.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "recipient_identity_checked",
+      "good": true,
+      "bad": false,
+      "reason": "unknown_recipient",
+      "phase": "request"
+    },
+    {
+      "field": "appointment_revision_current",
+      "good": true,
+      "bad": false,
+      "reason": "old_appointment_revision",
+      "phase": "request"
+    },
+    {
+      "field": "response_state_explicit",
+      "good": true,
+      "bad": false,
+      "reason": "delivery_as_confirmation",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "recipient_identity_checked": true,
+    "appointment_revision_current": true,
+    "response_state_explicit": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "recipient_identity_checked": true,
+        "appointment_revision_current": true,
+        "response_state_explicit": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "recipient_identity_checked-false",
+      "facts": {
+        "recipient_identity_checked": false,
+        "appointment_revision_current": true,
+        "response_state_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unknown_recipient",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recipient_identity_checked-missing",
+      "facts": {
+        "appointment_revision_current": true,
+        "response_state_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unknown_recipient",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recipient_identity_checked-string",
+      "facts": {
+        "recipient_identity_checked": "true",
+        "appointment_revision_current": true,
+        "response_state_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unknown_recipient",
+        "effects": 0
+      }
+    },
+    {
+      "name": "appointment_revision_current-false",
+      "facts": {
+        "recipient_identity_checked": true,
+        "appointment_revision_current": false,
+        "response_state_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "old_appointment_revision",
+        "effects": 0
+      }
+    },
+    {
+      "name": "appointment_revision_current-missing",
+      "facts": {
+        "recipient_identity_checked": true,
+        "response_state_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "old_appointment_revision",
+        "effects": 0
+      }
+    },
+    {
+      "name": "appointment_revision_current-string",
+      "facts": {
+        "recipient_identity_checked": true,
+        "appointment_revision_current": "true",
+        "response_state_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "old_appointment_revision",
+        "effects": 0
+      }
+    },
+    {
+      "name": "response_state_explicit-false",
+      "facts": {
+        "recipient_identity_checked": true,
+        "appointment_revision_current": true,
+        "response_state_explicit": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "delivery_as_confirmation",
+        "effects": 0
+      }
+    },
+    {
+      "name": "response_state_explicit-missing",
+      "facts": {
+        "recipient_identity_checked": true,
+        "appointment_revision_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "delivery_as_confirmation",
+        "effects": 0
+      }
+    },
+    {
+      "name": "response_state_explicit-string",
+      "facts": {
+        "recipient_identity_checked": true,
+        "appointment_revision_current": true,
+        "response_state_explicit": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "delivery_as_confirmation",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

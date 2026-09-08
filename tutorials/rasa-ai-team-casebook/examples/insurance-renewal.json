@@ -1,0 +1,178 @@
+{
+  "slug": "insurance-renewal",
+  "title": "Renewal offers with clear effective dates",
+  "organisation": "HarborCover",
+  "action": "record a renewal selection",
+  "failure": "The customer selected a cheaper renewal, but the agent omitted the changed deductible and effective date.",
+  "lesson": "Compare old and offered terms explicitly; consent to a price is not consent to every material policy change.",
+  "receipt": "A renewal reference tied to the disclosed term differences and effective date.",
+  "evidence": "Compare the spoken change summary with the offer delta, then verify the accepted revision on the policy service.",
+  "recovery": "If offer details cannot be reconciled, pause selection and send a versioned summary to the renewal team instead of improvising terms.",
+  "owner": "renewal product owner",
+  "metric": "renewals accepted without a material-change summary, divided by renewal selections",
+  "question": "The price and these terms change on this date. Would you like to review them or discuss another option?",
+  "correction": "The caller rejects the deductible change; leave the renewal unaccepted and route the question.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "terms_delta_disclosed",
+      "good": true,
+      "bad": false,
+      "reason": "material_change_hidden",
+      "phase": "request"
+    },
+    {
+      "field": "effective_date_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "renewal_date_ambiguous",
+      "phase": "request"
+    },
+    {
+      "field": "renewal_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "renewal_not_recorded",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "terms_delta_disclosed": true,
+    "effective_date_confirmed": true,
+    "renewal_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "terms_delta_disclosed": true,
+        "effective_date_confirmed": true,
+        "renewal_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "terms_delta_disclosed-false",
+      "facts": {
+        "terms_delta_disclosed": false,
+        "effective_date_confirmed": true,
+        "renewal_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "material_change_hidden",
+        "effects": 0
+      }
+    },
+    {
+      "name": "terms_delta_disclosed-missing",
+      "facts": {
+        "effective_date_confirmed": true,
+        "renewal_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "material_change_hidden",
+        "effects": 0
+      }
+    },
+    {
+      "name": "terms_delta_disclosed-string",
+      "facts": {
+        "terms_delta_disclosed": "true",
+        "effective_date_confirmed": true,
+        "renewal_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "material_change_hidden",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_date_confirmed-false",
+      "facts": {
+        "terms_delta_disclosed": true,
+        "effective_date_confirmed": false,
+        "renewal_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "renewal_date_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_date_confirmed-missing",
+      "facts": {
+        "terms_delta_disclosed": true,
+        "renewal_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "renewal_date_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_date_confirmed-string",
+      "facts": {
+        "terms_delta_disclosed": true,
+        "effective_date_confirmed": "true",
+        "renewal_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "renewal_date_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "renewal_receipt_verified-false",
+      "facts": {
+        "terms_delta_disclosed": true,
+        "effective_date_confirmed": true,
+        "renewal_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "renewal_not_recorded",
+        "effects": 1
+      }
+    },
+    {
+      "name": "renewal_receipt_verified-missing",
+      "facts": {
+        "terms_delta_disclosed": true,
+        "effective_date_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "renewal_not_recorded",
+        "effects": 1
+      }
+    },
+    {
+      "name": "renewal_receipt_verified-string",
+      "facts": {
+        "terms_delta_disclosed": true,
+        "effective_date_confirmed": true,
+        "renewal_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "renewal_not_recorded",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

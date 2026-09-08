@@ -1,0 +1,178 @@
+{
+  "slug": "logistics-reschedule",
+  "title": "Delivery changes with a dispatch cutoff",
+  "organisation": "Parcel Grove",
+  "action": "request a delivery reschedule",
+  "failure": "The agent confirmed a new delivery window after the vehicle had already left on a route that could not be changed.",
+  "lesson": "Evaluate dispatch cutoff and carrier acceptance; a requested window is not a route update until the carrier confirms.",
+  "receipt": "A carrier-accepted window or an explicit pending/change-unavailable result.",
+  "evidence": "Join shipment, route revision and carrier acknowledgment; do not infer a changed route from a local request timestamp.",
+  "recovery": "When the route is locked, keep the delivery state intact and offer only carrier-supported alternatives or contact.",
+  "owner": "carrier integration owner",
+  "metric": "new windows promised after the carrier rejected the change, divided by reschedule attempts",
+  "question": "I can ask the carrier for this window. It remains a request until they confirm the route change.",
+  "correction": "The recipient requests a different date after dispatch locks; explain the constraint rather than repeatedly retrying.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "shipment_identity_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_shipment",
+      "phase": "request"
+    },
+    {
+      "field": "dispatch_cutoff_allows_change",
+      "good": true,
+      "bad": false,
+      "reason": "route_locked",
+      "phase": "request"
+    },
+    {
+      "field": "carrier_change_acknowledged",
+      "good": true,
+      "bad": false,
+      "reason": "carrier_change_unknown",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "shipment_identity_confirmed": true,
+    "dispatch_cutoff_allows_change": true,
+    "carrier_change_acknowledged": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "shipment_identity_confirmed": true,
+        "dispatch_cutoff_allows_change": true,
+        "carrier_change_acknowledged": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "shipment_identity_confirmed-false",
+      "facts": {
+        "shipment_identity_confirmed": false,
+        "dispatch_cutoff_allows_change": true,
+        "carrier_change_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_shipment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "shipment_identity_confirmed-missing",
+      "facts": {
+        "dispatch_cutoff_allows_change": true,
+        "carrier_change_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_shipment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "shipment_identity_confirmed-string",
+      "facts": {
+        "shipment_identity_confirmed": "true",
+        "dispatch_cutoff_allows_change": true,
+        "carrier_change_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_shipment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dispatch_cutoff_allows_change-false",
+      "facts": {
+        "shipment_identity_confirmed": true,
+        "dispatch_cutoff_allows_change": false,
+        "carrier_change_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "route_locked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dispatch_cutoff_allows_change-missing",
+      "facts": {
+        "shipment_identity_confirmed": true,
+        "carrier_change_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "route_locked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dispatch_cutoff_allows_change-string",
+      "facts": {
+        "shipment_identity_confirmed": true,
+        "dispatch_cutoff_allows_change": "true",
+        "carrier_change_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "route_locked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "carrier_change_acknowledged-false",
+      "facts": {
+        "shipment_identity_confirmed": true,
+        "dispatch_cutoff_allows_change": true,
+        "carrier_change_acknowledged": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "carrier_change_unknown",
+        "effects": 1
+      }
+    },
+    {
+      "name": "carrier_change_acknowledged-missing",
+      "facts": {
+        "shipment_identity_confirmed": true,
+        "dispatch_cutoff_allows_change": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "carrier_change_unknown",
+        "effects": 1
+      }
+    },
+    {
+      "name": "carrier_change_acknowledged-string",
+      "facts": {
+        "shipment_identity_confirmed": true,
+        "dispatch_cutoff_allows_change": true,
+        "carrier_change_acknowledged": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "carrier_change_unknown",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

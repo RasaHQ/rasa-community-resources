@@ -1,0 +1,178 @@
+{
+  "slug": "healthcare-intake",
+  "title": "Pre-visit intake with uncertain eligibility",
+  "organisation": "Cedar Clinic",
+  "action": "record pre-visit administrative information",
+  "failure": "An insurance lookup returned an uncertain result, but the agent told the patient the visit would definitely be paid for.",
+  "lesson": "Separate intake completeness, payer response and coverage or payment assurance; unknown results need explicit follow-up.",
+  "receipt": "An intake reference with the payer response status and an assigned unresolved-question owner.",
+  "evidence": "Compare the exact eligibility response code with the spoken explanation; an administrative check is not a guarantee of payment.",
+  "recovery": "Keep the visit request intact when eligibility is unknown. Route the missing information to the access team without making a coverage promise.",
+  "owner": "patient access owner",
+  "metric": "uncertain payer results described as guaranteed payment, divided by uncertain results",
+  "question": "I can record these details. The payer response has this status, and the access team can resolve the remaining question.",
+  "correction": "The patient corrects the policy identifier; invalidate the previous lookup and request a new administrative check.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "intake_fields_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "unconfirmed_intake",
+      "phase": "request"
+    },
+    {
+      "field": "payer_response_labeled",
+      "good": true,
+      "bad": false,
+      "reason": "eligibility_as_guarantee",
+      "phase": "request"
+    },
+    {
+      "field": "followup_owner_assigned",
+      "good": true,
+      "bad": false,
+      "reason": "unowned_eligibility_question",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "intake_fields_confirmed": true,
+    "payer_response_labeled": true,
+    "followup_owner_assigned": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "intake_fields_confirmed": true,
+        "payer_response_labeled": true,
+        "followup_owner_assigned": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "intake_fields_confirmed-false",
+      "facts": {
+        "intake_fields_confirmed": false,
+        "payer_response_labeled": true,
+        "followup_owner_assigned": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_intake",
+        "effects": 0
+      }
+    },
+    {
+      "name": "intake_fields_confirmed-missing",
+      "facts": {
+        "payer_response_labeled": true,
+        "followup_owner_assigned": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_intake",
+        "effects": 0
+      }
+    },
+    {
+      "name": "intake_fields_confirmed-string",
+      "facts": {
+        "intake_fields_confirmed": "true",
+        "payer_response_labeled": true,
+        "followup_owner_assigned": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_intake",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payer_response_labeled-false",
+      "facts": {
+        "intake_fields_confirmed": true,
+        "payer_response_labeled": false,
+        "followup_owner_assigned": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "eligibility_as_guarantee",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payer_response_labeled-missing",
+      "facts": {
+        "intake_fields_confirmed": true,
+        "followup_owner_assigned": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "eligibility_as_guarantee",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payer_response_labeled-string",
+      "facts": {
+        "intake_fields_confirmed": true,
+        "payer_response_labeled": "true",
+        "followup_owner_assigned": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "eligibility_as_guarantee",
+        "effects": 0
+      }
+    },
+    {
+      "name": "followup_owner_assigned-false",
+      "facts": {
+        "intake_fields_confirmed": true,
+        "payer_response_labeled": true,
+        "followup_owner_assigned": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unowned_eligibility_question",
+        "effects": 0
+      }
+    },
+    {
+      "name": "followup_owner_assigned-missing",
+      "facts": {
+        "intake_fields_confirmed": true,
+        "payer_response_labeled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unowned_eligibility_question",
+        "effects": 0
+      }
+    },
+    {
+      "name": "followup_owner_assigned-string",
+      "facts": {
+        "intake_fields_confirmed": true,
+        "payer_response_labeled": true,
+        "followup_owner_assigned": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unowned_eligibility_question",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

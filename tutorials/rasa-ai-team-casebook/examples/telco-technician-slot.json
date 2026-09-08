@@ -1,0 +1,178 @@
+{
+  "slug": "telco-technician-slot",
+  "title": "Technician visits without lost bookings",
+  "organisation": "Juniper Mobile",
+  "action": "reschedule a technician visit",
+  "failure": "The old appointment was cancelled before the replacement slot was secured, leaving the customer with no visit.",
+  "lesson": "Hold the replacement first, confirm access needs and release the original only after the reschedule is accepted.",
+  "receipt": "A new booking reference linked to the superseded appointment, or the still-valid old booking.",
+  "evidence": "Compare old and new appointment states across a failed commit; the customer must retain one valid path to service.",
+  "recovery": "If replacement commit is unknown, query the reschedule key and keep the old booking until the service confirms the transition.",
+  "owner": "field appointment owner",
+  "metric": "reschedules leaving neither old nor new appointment valid, divided by reschedule attempts",
+  "question": "I can hold this replacement while keeping the existing visit until the change is confirmed. Shall I do that?",
+  "correction": "The customer rejects the new slot; release the hold and preserve the original booking.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "replacement_slot_held",
+      "good": true,
+      "bad": false,
+      "reason": "replacement_not_held",
+      "phase": "request"
+    },
+    {
+      "field": "access_requirements_matched",
+      "good": true,
+      "bad": false,
+      "reason": "access_requirements_missing",
+      "phase": "request"
+    },
+    {
+      "field": "reschedule_committed",
+      "good": true,
+      "bad": false,
+      "reason": "reschedule_not_committed",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "replacement_slot_held": true,
+    "access_requirements_matched": true,
+    "reschedule_committed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "replacement_slot_held": true,
+        "access_requirements_matched": true,
+        "reschedule_committed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "replacement_slot_held-false",
+      "facts": {
+        "replacement_slot_held": false,
+        "access_requirements_matched": true,
+        "reschedule_committed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "replacement_not_held",
+        "effects": 0
+      }
+    },
+    {
+      "name": "replacement_slot_held-missing",
+      "facts": {
+        "access_requirements_matched": true,
+        "reschedule_committed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "replacement_not_held",
+        "effects": 0
+      }
+    },
+    {
+      "name": "replacement_slot_held-string",
+      "facts": {
+        "replacement_slot_held": "true",
+        "access_requirements_matched": true,
+        "reschedule_committed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "replacement_not_held",
+        "effects": 0
+      }
+    },
+    {
+      "name": "access_requirements_matched-false",
+      "facts": {
+        "replacement_slot_held": true,
+        "access_requirements_matched": false,
+        "reschedule_committed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "access_requirements_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "access_requirements_matched-missing",
+      "facts": {
+        "replacement_slot_held": true,
+        "reschedule_committed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "access_requirements_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "access_requirements_matched-string",
+      "facts": {
+        "replacement_slot_held": true,
+        "access_requirements_matched": "true",
+        "reschedule_committed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "access_requirements_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reschedule_committed-false",
+      "facts": {
+        "replacement_slot_held": true,
+        "access_requirements_matched": true,
+        "reschedule_committed": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "reschedule_not_committed",
+        "effects": 1
+      }
+    },
+    {
+      "name": "reschedule_committed-missing",
+      "facts": {
+        "replacement_slot_held": true,
+        "access_requirements_matched": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "reschedule_not_committed",
+        "effects": 1
+      }
+    },
+    {
+      "name": "reschedule_committed-string",
+      "facts": {
+        "replacement_slot_held": true,
+        "access_requirements_matched": true,
+        "reschedule_committed": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "reschedule_not_committed",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "telco-plan-change",
+  "title": "Plan changes with an explicit price delta",
+  "organisation": "Juniper Mobile",
+  "action": "apply a selected service-plan change",
+  "failure": "The agent quoted the monthly price but omitted that the roaming add-on began after the customer\u2019s trip.",
+  "lesson": "Evaluate eligibility, effective time and the complete offer delta before recording a plan choice.",
+  "receipt": "An order reference specifying the accepted offer version and activation time.",
+  "evidence": "Match customer travel dates or service need against the returned activation window and the complete price summary.",
+  "recovery": "If activation is delayed, keep the order pending and offer the product team\u2019s supported alternatives without inventing coverage.",
+  "owner": "plan catalogue owner",
+  "metric": "accepted changes that activate after the stated customer need, divided by plan-change requests",
+  "question": "This option starts at this time and changes these charges. Does that meet your need?",
+  "correction": "The trip starts sooner than the activation date; do not apply the unsuitable add-on.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "effective_time_suitable",
+      "good": true,
+      "bad": false,
+      "reason": "activation_too_late",
+      "phase": "request"
+    },
+    {
+      "field": "price_delta_disclosed",
+      "good": true,
+      "bad": false,
+      "reason": "incomplete_price_delta",
+      "phase": "request"
+    },
+    {
+      "field": "offer_revision_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "offer_revision_changed",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "effective_time_suitable": true,
+    "price_delta_disclosed": true,
+    "offer_revision_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "effective_time_suitable": true,
+        "price_delta_disclosed": true,
+        "offer_revision_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "effective_time_suitable-false",
+      "facts": {
+        "effective_time_suitable": false,
+        "price_delta_disclosed": true,
+        "offer_revision_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "activation_too_late",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_time_suitable-missing",
+      "facts": {
+        "price_delta_disclosed": true,
+        "offer_revision_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "activation_too_late",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_time_suitable-string",
+      "facts": {
+        "effective_time_suitable": "true",
+        "price_delta_disclosed": true,
+        "offer_revision_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "activation_too_late",
+        "effects": 0
+      }
+    },
+    {
+      "name": "price_delta_disclosed-false",
+      "facts": {
+        "effective_time_suitable": true,
+        "price_delta_disclosed": false,
+        "offer_revision_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "incomplete_price_delta",
+        "effects": 0
+      }
+    },
+    {
+      "name": "price_delta_disclosed-missing",
+      "facts": {
+        "effective_time_suitable": true,
+        "offer_revision_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "incomplete_price_delta",
+        "effects": 0
+      }
+    },
+    {
+      "name": "price_delta_disclosed-string",
+      "facts": {
+        "effective_time_suitable": true,
+        "price_delta_disclosed": "true",
+        "offer_revision_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "incomplete_price_delta",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_revision_confirmed-false",
+      "facts": {
+        "effective_time_suitable": true,
+        "price_delta_disclosed": true,
+        "offer_revision_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "offer_revision_changed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_revision_confirmed-missing",
+      "facts": {
+        "effective_time_suitable": true,
+        "price_delta_disclosed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "offer_revision_changed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_revision_confirmed-string",
+      "facts": {
+        "effective_time_suitable": true,
+        "price_delta_disclosed": true,
+        "offer_revision_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "offer_revision_changed",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

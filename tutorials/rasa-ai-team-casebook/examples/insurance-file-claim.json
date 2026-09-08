@@ -1,0 +1,178 @@
+{
+  "slug": "insurance-file-claim",
+  "title": "Claim intake with a submission receipt",
+  "organisation": "HarborCover",
+  "action": "submit an initial claim report",
+  "failure": "The customer supplied the story, but a failed upload left the claim unrecorded while the agent said it was filed.",
+  "lesson": "Separate a locally complete draft from a submitted claim and expose missing attachments without fabricating a receipt.",
+  "receipt": "A claim-intake reference listing received material and any follow-up still required.",
+  "evidence": "Reconcile draft ID, attachment receipts and claim acknowledgment; the conversation transcript alone is not a filing.",
+  "recovery": "Query the original draft ID after a timeout. If the service cannot confirm filing, retain a pending draft and route assistance.",
+  "owner": "claims intake owner",
+  "metric": "drafts described as filed without acknowledgment, divided by filing attempts",
+  "question": "Here is the report I will submit and the material received. Is that accurate?",
+  "correction": "The customer corrects the date of loss; update the draft and reconfirm before submission.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "report_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "unconfirmed_report",
+      "phase": "request"
+    },
+    {
+      "field": "required_attachment_state_known",
+      "good": true,
+      "bad": false,
+      "reason": "attachment_state_unknown",
+      "phase": "request"
+    },
+    {
+      "field": "submission_acknowledged",
+      "good": true,
+      "bad": false,
+      "reason": "submission_not_acknowledged",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "report_confirmed": true,
+    "required_attachment_state_known": true,
+    "submission_acknowledged": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "report_confirmed": true,
+        "required_attachment_state_known": true,
+        "submission_acknowledged": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "report_confirmed-false",
+      "facts": {
+        "report_confirmed": false,
+        "required_attachment_state_known": true,
+        "submission_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_report",
+        "effects": 0
+      }
+    },
+    {
+      "name": "report_confirmed-missing",
+      "facts": {
+        "required_attachment_state_known": true,
+        "submission_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_report",
+        "effects": 0
+      }
+    },
+    {
+      "name": "report_confirmed-string",
+      "facts": {
+        "report_confirmed": "true",
+        "required_attachment_state_known": true,
+        "submission_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_report",
+        "effects": 0
+      }
+    },
+    {
+      "name": "required_attachment_state_known-false",
+      "facts": {
+        "report_confirmed": true,
+        "required_attachment_state_known": false,
+        "submission_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "attachment_state_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "required_attachment_state_known-missing",
+      "facts": {
+        "report_confirmed": true,
+        "submission_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "attachment_state_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "required_attachment_state_known-string",
+      "facts": {
+        "report_confirmed": true,
+        "required_attachment_state_known": "true",
+        "submission_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "attachment_state_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "submission_acknowledged-false",
+      "facts": {
+        "report_confirmed": true,
+        "required_attachment_state_known": true,
+        "submission_acknowledged": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "submission_not_acknowledged",
+        "effects": 1
+      }
+    },
+    {
+      "name": "submission_acknowledged-missing",
+      "facts": {
+        "report_confirmed": true,
+        "required_attachment_state_known": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "submission_not_acknowledged",
+        "effects": 1
+      }
+    },
+    {
+      "name": "submission_acknowledged-string",
+      "facts": {
+        "report_confirmed": true,
+        "required_attachment_state_known": true,
+        "submission_acknowledged": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "submission_not_acknowledged",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

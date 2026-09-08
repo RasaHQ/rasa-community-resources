@@ -1,0 +1,178 @@
+{
+  "slug": "telco-outage-notification",
+  "title": "Outage messages with a current incident",
+  "organisation": "Juniper Mobile",
+  "action": "send an outage update",
+  "failure": "The notification said service was restored even though the customer\u2019s access segment remained affected.",
+  "lesson": "Match incident scope to the service location and distinguish estimated restoration from verified recovery.",
+  "receipt": "A notification reference tied to the relevant incident revision and service segment.",
+  "evidence": "Compare segment ID, incident revision and dispatch permission; preserve the source timestamp for any restoration estimate.",
+  "recovery": "Suppress updates from superseded incidents. If recovery conflicts across systems, communicate the unresolved state and route network operations.",
+  "owner": "network incident owner",
+  "metric": "restoration claims sent to still-affected segments, divided by restoration notifications",
+  "question": "The incident affecting your service has this update as of the stated time. Would you like further updates?",
+  "correction": "The customer reports continued failure after a restoration message; reopen diagnosis without insisting the incident is resolved.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "incident_scope_matches",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_outage_segment",
+      "phase": "request"
+    },
+    {
+      "field": "incident_revision_fresh",
+      "good": true,
+      "bad": false,
+      "reason": "obsolete_outage_update",
+      "phase": "request"
+    },
+    {
+      "field": "notification_permission_current",
+      "good": true,
+      "bad": false,
+      "reason": "contact_permission_missing",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "incident_scope_matches": true,
+    "incident_revision_fresh": true,
+    "notification_permission_current": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "incident_scope_matches": true,
+        "incident_revision_fresh": true,
+        "notification_permission_current": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "incident_scope_matches-false",
+      "facts": {
+        "incident_scope_matches": false,
+        "incident_revision_fresh": true,
+        "notification_permission_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_outage_segment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_scope_matches-missing",
+      "facts": {
+        "incident_revision_fresh": true,
+        "notification_permission_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_outage_segment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_scope_matches-string",
+      "facts": {
+        "incident_scope_matches": "true",
+        "incident_revision_fresh": true,
+        "notification_permission_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_outage_segment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_revision_fresh-false",
+      "facts": {
+        "incident_scope_matches": true,
+        "incident_revision_fresh": false,
+        "notification_permission_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_outage_update",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_revision_fresh-missing",
+      "facts": {
+        "incident_scope_matches": true,
+        "notification_permission_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_outage_update",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_revision_fresh-string",
+      "facts": {
+        "incident_scope_matches": true,
+        "incident_revision_fresh": "true",
+        "notification_permission_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_outage_update",
+        "effects": 0
+      }
+    },
+    {
+      "name": "notification_permission_current-false",
+      "facts": {
+        "incident_scope_matches": true,
+        "incident_revision_fresh": true,
+        "notification_permission_current": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "contact_permission_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "notification_permission_current-missing",
+      "facts": {
+        "incident_scope_matches": true,
+        "incident_revision_fresh": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "contact_permission_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "notification_permission_current-string",
+      "facts": {
+        "incident_scope_matches": true,
+        "incident_revision_fresh": true,
+        "notification_permission_current": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "contact_permission_missing",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

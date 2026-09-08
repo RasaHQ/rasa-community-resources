@@ -1,0 +1,178 @@
+{
+  "slug": "banking-block-card",
+  "title": "Blocking the intended card",
+  "organisation": "Northgate Bank",
+  "action": "block a selected card",
+  "failure": "The caller reported one lost card, but the agent blocked every card associated with the account.",
+  "lesson": "Scope an urgent containment action to a confirmed card identifier and separate blocking from replacement ordering.",
+  "receipt": "The selected card reference with a verified blocked state; other cards unchanged.",
+  "evidence": "Compare all card states before and after the attempt, not merely the selected card response.",
+  "recovery": "If block status is unknown, read the same card from the authoritative service and route urgent support. Do not automatically order a replacement.",
+  "owner": "card service owner",
+  "metric": "unselected cards changed by a block request, divided by block attempts",
+  "question": "Do you mean the card ending 17? Blocking that card will not replace it or change your other cards.",
+  "correction": "The caller identifies a different card; repeat selection before making the block request.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "selected_card_owned",
+      "good": true,
+      "bad": false,
+      "reason": "card_not_owned",
+      "phase": "request"
+    },
+    {
+      "field": "single_card_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "ambiguous_card_selection",
+      "phase": "request"
+    },
+    {
+      "field": "block_state_read_back",
+      "good": true,
+      "bad": false,
+      "reason": "block_not_verified",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "selected_card_owned": true,
+    "single_card_confirmed": true,
+    "block_state_read_back": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "selected_card_owned": true,
+        "single_card_confirmed": true,
+        "block_state_read_back": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "selected_card_owned-false",
+      "facts": {
+        "selected_card_owned": false,
+        "single_card_confirmed": true,
+        "block_state_read_back": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "card_not_owned",
+        "effects": 0
+      }
+    },
+    {
+      "name": "selected_card_owned-missing",
+      "facts": {
+        "single_card_confirmed": true,
+        "block_state_read_back": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "card_not_owned",
+        "effects": 0
+      }
+    },
+    {
+      "name": "selected_card_owned-string",
+      "facts": {
+        "selected_card_owned": "true",
+        "single_card_confirmed": true,
+        "block_state_read_back": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "card_not_owned",
+        "effects": 0
+      }
+    },
+    {
+      "name": "single_card_confirmed-false",
+      "facts": {
+        "selected_card_owned": true,
+        "single_card_confirmed": false,
+        "block_state_read_back": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_card_selection",
+        "effects": 0
+      }
+    },
+    {
+      "name": "single_card_confirmed-missing",
+      "facts": {
+        "selected_card_owned": true,
+        "block_state_read_back": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_card_selection",
+        "effects": 0
+      }
+    },
+    {
+      "name": "single_card_confirmed-string",
+      "facts": {
+        "selected_card_owned": true,
+        "single_card_confirmed": "true",
+        "block_state_read_back": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_card_selection",
+        "effects": 0
+      }
+    },
+    {
+      "name": "block_state_read_back-false",
+      "facts": {
+        "selected_card_owned": true,
+        "single_card_confirmed": true,
+        "block_state_read_back": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "block_not_verified",
+        "effects": 1
+      }
+    },
+    {
+      "name": "block_state_read_back-missing",
+      "facts": {
+        "selected_card_owned": true,
+        "single_card_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "block_not_verified",
+        "effects": 1
+      }
+    },
+    {
+      "name": "block_state_read_back-string",
+      "facts": {
+        "selected_card_owned": true,
+        "single_card_confirmed": true,
+        "block_state_read_back": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "block_not_verified",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "insurance-billing",
+  "title": "Payment status before lapse messaging",
+  "organisation": "HarborCover",
+  "action": "explain premium payment and policy status",
+  "failure": "A bank transfer was pending, but the agent treated an unpaid invoice label as proof that cover had lapsed.",
+  "lesson": "Keep payment settlement, invoice status and policy effectiveness separate; only the policy service supplies current status.",
+  "receipt": "Separate dated payment and policy states with the next authorized action.",
+  "evidence": "Join payment reference and policy-status revision; a late-payment flag alone must not generate a coverage claim.",
+  "recovery": "When settlement is uncertain, reconcile the existing payment and route billing support before inviting another payment.",
+  "owner": "premium billing owner",
+  "metric": "policy-status claims inferred only from invoice labels, divided by billing conversations",
+  "question": "The payment is at this stage; the policy service separately reports this status. Would you like help checking the payment?",
+  "correction": "The customer supplies an existing payment reference; investigate that payment rather than starting another.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "payment_state_resolved",
+      "good": true,
+      "bad": false,
+      "reason": "payment_pending_unknown",
+      "phase": "request"
+    },
+    {
+      "field": "policy_state_authoritative",
+      "good": true,
+      "bad": false,
+      "reason": "invoice_as_policy_state",
+      "phase": "request"
+    },
+    {
+      "field": "next_action_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "unconfirmed_payment_action",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "payment_state_resolved": true,
+    "policy_state_authoritative": true,
+    "next_action_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "payment_state_resolved": true,
+        "policy_state_authoritative": true,
+        "next_action_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "payment_state_resolved-false",
+      "facts": {
+        "payment_state_resolved": false,
+        "policy_state_authoritative": true,
+        "next_action_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "payment_pending_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payment_state_resolved-missing",
+      "facts": {
+        "policy_state_authoritative": true,
+        "next_action_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "payment_pending_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payment_state_resolved-string",
+      "facts": {
+        "payment_state_resolved": "true",
+        "policy_state_authoritative": true,
+        "next_action_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "payment_pending_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "policy_state_authoritative-false",
+      "facts": {
+        "payment_state_resolved": true,
+        "policy_state_authoritative": false,
+        "next_action_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "invoice_as_policy_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "policy_state_authoritative-missing",
+      "facts": {
+        "payment_state_resolved": true,
+        "next_action_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "invoice_as_policy_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "policy_state_authoritative-string",
+      "facts": {
+        "payment_state_resolved": true,
+        "policy_state_authoritative": "true",
+        "next_action_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "invoice_as_policy_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "next_action_confirmed-false",
+      "facts": {
+        "payment_state_resolved": true,
+        "policy_state_authoritative": true,
+        "next_action_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_payment_action",
+        "effects": 0
+      }
+    },
+    {
+      "name": "next_action_confirmed-missing",
+      "facts": {
+        "payment_state_resolved": true,
+        "policy_state_authoritative": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_payment_action",
+        "effects": 0
+      }
+    },
+    {
+      "name": "next_action_confirmed-string",
+      "facts": {
+        "payment_state_resolved": true,
+        "policy_state_authoritative": true,
+        "next_action_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_payment_action",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "utilities-budget-plan",
+  "title": "Budget plans with a hardship boundary",
+  "organisation": "Amber Grid",
+  "action": "explain or request a billing support option",
+  "failure": "The agent treated an estimated budget instalment as a waiver of the customer\u2019s outstanding balance.",
+  "lesson": "Separate consumption estimates, payment schedules and debt adjustments; hardship decisions belong to the responsible support team.",
+  "receipt": "An authorized plan request or hardship referral with balance and schedule shown separately.",
+  "evidence": "Compare the quote basis and outstanding balance with the chosen option; a lower monthly amount does not imply debt forgiveness.",
+  "recovery": "When the estimate changes, withdraw the old schedule and request confirmation of the new authorized option; route hardship without improvising terms.",
+  "owner": "customer billing support owner",
+  "metric": "budget estimates described as debt adjustments, divided by support-option conversations",
+  "question": "This option changes the payment schedule, not the stated balance. Would you like to review it or speak to support?",
+  "correction": "The customer cannot use the proposed schedule; preserve the support request and route the hardship team.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "billing_basis_explained",
+      "good": true,
+      "bad": false,
+      "reason": "estimate_as_waiver",
+      "phase": "request"
+    },
+    {
+      "field": "support_option_authorized",
+      "good": true,
+      "bad": false,
+      "reason": "unapproved_relief",
+      "phase": "request"
+    },
+    {
+      "field": "choice_or_referral_recorded",
+      "good": true,
+      "bad": false,
+      "reason": "unrecorded_support_choice",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "billing_basis_explained": true,
+    "support_option_authorized": true,
+    "choice_or_referral_recorded": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "billing_basis_explained": true,
+        "support_option_authorized": true,
+        "choice_or_referral_recorded": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "billing_basis_explained-false",
+      "facts": {
+        "billing_basis_explained": false,
+        "support_option_authorized": true,
+        "choice_or_referral_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "estimate_as_waiver",
+        "effects": 0
+      }
+    },
+    {
+      "name": "billing_basis_explained-missing",
+      "facts": {
+        "support_option_authorized": true,
+        "choice_or_referral_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "estimate_as_waiver",
+        "effects": 0
+      }
+    },
+    {
+      "name": "billing_basis_explained-string",
+      "facts": {
+        "billing_basis_explained": "true",
+        "support_option_authorized": true,
+        "choice_or_referral_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "estimate_as_waiver",
+        "effects": 0
+      }
+    },
+    {
+      "name": "support_option_authorized-false",
+      "facts": {
+        "billing_basis_explained": true,
+        "support_option_authorized": false,
+        "choice_or_referral_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_relief",
+        "effects": 0
+      }
+    },
+    {
+      "name": "support_option_authorized-missing",
+      "facts": {
+        "billing_basis_explained": true,
+        "choice_or_referral_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_relief",
+        "effects": 0
+      }
+    },
+    {
+      "name": "support_option_authorized-string",
+      "facts": {
+        "billing_basis_explained": true,
+        "support_option_authorized": "true",
+        "choice_or_referral_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_relief",
+        "effects": 0
+      }
+    },
+    {
+      "name": "choice_or_referral_recorded-false",
+      "facts": {
+        "billing_basis_explained": true,
+        "support_option_authorized": true,
+        "choice_or_referral_recorded": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unrecorded_support_choice",
+        "effects": 1
+      }
+    },
+    {
+      "name": "choice_or_referral_recorded-missing",
+      "facts": {
+        "billing_basis_explained": true,
+        "support_option_authorized": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unrecorded_support_choice",
+        "effects": 1
+      }
+    },
+    {
+      "name": "choice_or_referral_recorded-string",
+      "facts": {
+        "billing_basis_explained": true,
+        "support_option_authorized": true,
+        "choice_or_referral_recorded": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unrecorded_support_choice",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

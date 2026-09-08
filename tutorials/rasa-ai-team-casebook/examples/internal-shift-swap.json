@@ -1,0 +1,179 @@
+{
+  "slug": "internal-shift-swap",
+  "title": "Shift changes that preserve qualified coverage",
+  "organisation": "Orchard Works",
+  "action": "request a shift swap or report an absence",
+  "failure": "The agent approved a swap between two available people without checking whether the replacement held the required qualification.",
+  "lesson": "Treat availability, qualification, coverage and approval as distinct conditions; absence reporting must remain possible even if no swap is eligible.",
+  "receipt": "An independent absence report and a separate roster-approved swap reference, never approval inferred from availability.",
+  "evidence": "Compare replacement qualifications and resulting coverage with the roster decision; ensure denied swaps do not suppress absence reports.",
+  "recovery": "Route an uncovered shift to the duty manager and retain the absence report. Do not silently assign an unqualified substitute.",
+  "owner": "workforce scheduling owner",
+  "metric": "swaps that remove required qualified coverage, divided by swap requests",
+  "question": "I can report the absence now. A swap needs the roster team to confirm qualifications and coverage.",
+  "correction": "The employee cannot find a replacement; keep the absence report and route staffing support.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "replacement_qualified",
+      "good": true,
+      "bad": false,
+      "reason": "qualification_mismatch",
+      "phase": "request"
+    },
+    {
+      "field": "coverage_requirement_met",
+      "good": true,
+      "bad": false,
+      "reason": "coverage_gap",
+      "phase": "request"
+    },
+    {
+      "field": "roster_approval_recorded",
+      "good": true,
+      "bad": false,
+      "reason": "swap_not_approved",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "replacement_qualified": true,
+    "coverage_requirement_met": true,
+    "roster_approval_recorded": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "replacement_qualified": true,
+        "coverage_requirement_met": true,
+        "roster_approval_recorded": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "replacement_qualified-false",
+      "facts": {
+        "replacement_qualified": false,
+        "coverage_requirement_met": true,
+        "roster_approval_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "qualification_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "replacement_qualified-missing",
+      "facts": {
+        "coverage_requirement_met": true,
+        "roster_approval_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "qualification_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "replacement_qualified-string",
+      "facts": {
+        "replacement_qualified": "true",
+        "coverage_requirement_met": true,
+        "roster_approval_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "qualification_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "coverage_requirement_met-false",
+      "facts": {
+        "replacement_qualified": true,
+        "coverage_requirement_met": false,
+        "roster_approval_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "coverage_gap",
+        "effects": 0
+      }
+    },
+    {
+      "name": "coverage_requirement_met-missing",
+      "facts": {
+        "replacement_qualified": true,
+        "roster_approval_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "coverage_gap",
+        "effects": 0
+      }
+    },
+    {
+      "name": "coverage_requirement_met-string",
+      "facts": {
+        "replacement_qualified": true,
+        "coverage_requirement_met": "true",
+        "roster_approval_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "coverage_gap",
+        "effects": 0
+      }
+    },
+    {
+      "name": "roster_approval_recorded-false",
+      "facts": {
+        "replacement_qualified": true,
+        "coverage_requirement_met": true,
+        "roster_approval_recorded": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "swap_not_approved",
+        "effects": 1
+      }
+    },
+    {
+      "name": "roster_approval_recorded-missing",
+      "facts": {
+        "replacement_qualified": true,
+        "coverage_requirement_met": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "swap_not_approved",
+        "effects": 1
+      }
+    },
+    {
+      "name": "roster_approval_recorded-string",
+      "facts": {
+        "replacement_qualified": true,
+        "coverage_requirement_met": true,
+        "roster_approval_recorded": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "swap_not_approved",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.2",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  },
+  "intakeKind": "absence-report"
+}

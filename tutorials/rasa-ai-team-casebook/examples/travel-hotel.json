@@ -1,0 +1,178 @@
+{
+  "slug": "travel-hotel",
+  "title": "Hotel extras without changing the booking",
+  "organisation": "Horizon Travel",
+  "action": "add a hotel service to a reservation",
+  "failure": "The agent promised late checkout because it appeared in a brochure, although the property had no availability that day.",
+  "lesson": "Bind an extra to the correct reservation and date; an advertised service is not a confirmed entitlement.",
+  "receipt": "A property-confirmed add-on reference with date, price and any remaining request status.",
+  "evidence": "Compare reservation date and property inventory with the returned add-on confirmation rather than the marketing description.",
+  "recovery": "If the property cannot confirm, leave the base booking unchanged and state that the extra remains a request.",
+  "owner": "hotel ancillary owner",
+  "metric": "extras described as confirmed without a property receipt, divided by extra requests",
+  "question": "This extra is available for this reservation at the stated price. Would you like me to request confirmation?",
+  "correction": "The guest changes the stay date; recheck dated availability before carrying the extra forward.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "reservation_identity_verified",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_reservation",
+      "phase": "request"
+    },
+    {
+      "field": "dated_extra_available",
+      "good": true,
+      "bad": false,
+      "reason": "extra_unavailable",
+      "phase": "request"
+    },
+    {
+      "field": "property_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "property_not_confirmed",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "reservation_identity_verified": true,
+    "dated_extra_available": true,
+    "property_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "reservation_identity_verified": true,
+        "dated_extra_available": true,
+        "property_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "reservation_identity_verified-false",
+      "facts": {
+        "reservation_identity_verified": false,
+        "dated_extra_available": true,
+        "property_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_reservation",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reservation_identity_verified-missing",
+      "facts": {
+        "dated_extra_available": true,
+        "property_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_reservation",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reservation_identity_verified-string",
+      "facts": {
+        "reservation_identity_verified": "true",
+        "dated_extra_available": true,
+        "property_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_reservation",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dated_extra_available-false",
+      "facts": {
+        "reservation_identity_verified": true,
+        "dated_extra_available": false,
+        "property_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "extra_unavailable",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dated_extra_available-missing",
+      "facts": {
+        "reservation_identity_verified": true,
+        "property_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "extra_unavailable",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dated_extra_available-string",
+      "facts": {
+        "reservation_identity_verified": true,
+        "dated_extra_available": "true",
+        "property_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "extra_unavailable",
+        "effects": 0
+      }
+    },
+    {
+      "name": "property_receipt_verified-false",
+      "facts": {
+        "reservation_identity_verified": true,
+        "dated_extra_available": true,
+        "property_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "property_not_confirmed",
+        "effects": 1
+      }
+    },
+    {
+      "name": "property_receipt_verified-missing",
+      "facts": {
+        "reservation_identity_verified": true,
+        "dated_extra_available": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "property_not_confirmed",
+        "effects": 1
+      }
+    },
+    {
+      "name": "property_receipt_verified-string",
+      "facts": {
+        "reservation_identity_verified": true,
+        "dated_extra_available": true,
+        "property_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "property_not_confirmed",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

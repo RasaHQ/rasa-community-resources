@@ -1,0 +1,178 @@
+{
+  "slug": "banking-recurring-payments",
+  "title": "Stopping the right recurring instruction",
+  "organisation": "Northgate Bank",
+  "action": "cancel a recurring payment instruction",
+  "failure": "The agent cancelled a standing order when the caller meant to stop a merchant subscription.",
+  "lesson": "Distinguish a bank payment instruction from a merchant contract, and state which future execution the bank can actually stop.",
+  "receipt": "A cancellation receipt with effective date and explicit limits on merchant obligations.",
+  "evidence": "Inspect the instruction identifier, processing cutoff and next scheduled run; cancellation does not undo a settled payment.",
+  "recovery": "When the cutoff has passed, route the already-processing payment separately and prevent the agent from claiming it was stopped.",
+  "owner": "recurring payments owner",
+  "metric": "merchant-contract promises made during bank-instruction changes, divided by such requests",
+  "question": "I can change the bank instruction shown here. This does not cancel your agreement with the merchant. Continue?",
+  "correction": "The caller wants a refund instead; keep the instruction unchanged and route the separate request.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "instruction_type_resolved",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_instruction_type",
+      "phase": "request"
+    },
+    {
+      "field": "effective_date_known",
+      "good": true,
+      "bad": false,
+      "reason": "cutoff_unknown",
+      "phase": "request"
+    },
+    {
+      "field": "selected_instruction_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "instruction_unconfirmed",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "instruction_type_resolved": true,
+    "effective_date_known": true,
+    "selected_instruction_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "instruction_type_resolved": true,
+        "effective_date_known": true,
+        "selected_instruction_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "instruction_type_resolved-false",
+      "facts": {
+        "instruction_type_resolved": false,
+        "effective_date_known": true,
+        "selected_instruction_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_instruction_type",
+        "effects": 0
+      }
+    },
+    {
+      "name": "instruction_type_resolved-missing",
+      "facts": {
+        "effective_date_known": true,
+        "selected_instruction_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_instruction_type",
+        "effects": 0
+      }
+    },
+    {
+      "name": "instruction_type_resolved-string",
+      "facts": {
+        "instruction_type_resolved": "true",
+        "effective_date_known": true,
+        "selected_instruction_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_instruction_type",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_date_known-false",
+      "facts": {
+        "instruction_type_resolved": true,
+        "effective_date_known": false,
+        "selected_instruction_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cutoff_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_date_known-missing",
+      "facts": {
+        "instruction_type_resolved": true,
+        "selected_instruction_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cutoff_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_date_known-string",
+      "facts": {
+        "instruction_type_resolved": true,
+        "effective_date_known": "true",
+        "selected_instruction_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cutoff_unknown",
+        "effects": 0
+      }
+    },
+    {
+      "name": "selected_instruction_confirmed-false",
+      "facts": {
+        "instruction_type_resolved": true,
+        "effective_date_known": true,
+        "selected_instruction_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "instruction_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "selected_instruction_confirmed-missing",
+      "facts": {
+        "instruction_type_resolved": true,
+        "effective_date_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "instruction_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "selected_instruction_confirmed-string",
+      "facts": {
+        "instruction_type_resolved": true,
+        "effective_date_known": true,
+        "selected_instruction_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "instruction_unconfirmed",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

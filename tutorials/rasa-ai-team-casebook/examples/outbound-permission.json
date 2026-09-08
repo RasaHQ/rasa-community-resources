@@ -1,0 +1,178 @@
+{
+  "slug": "outbound-permission",
+  "title": "Outbound contact permission",
+  "organisation": "Willow Shop",
+  "action": "place a requested follow-up call",
+  "failure": "A shopper withdrew permission after a list was exported, but the dialer still called from the old campaign file.",
+  "lesson": "Evaluate permission and local contact constraints at dispatch time; a campaign snapshot is not current authority.",
+  "receipt": "A dispatch record with the permission revision and answering-party state; an unverified answer permits no account-specific disclosure.",
+  "evidence": "Check current permission and contact window before dispatch, then verify the answering party after connection before discussing account details.",
+  "recovery": "Pause the affected campaign on permission-version mismatch. Rebuild eligibility from the source; do not replay the stale export.",
+  "owner": "outbound operations owner",
+  "metric": "calls dispatched after permission withdrawal, divided by dispatch attempts",
+  "question": "This is Willow Shop following up on a request. Before discussing details, may we verify who is speaking?",
+  "correction": "The recipient says not to call again; record withdrawal and end the follow-up without another offer.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "permission_current",
+      "good": true,
+      "bad": false,
+      "reason": "permission_withdrawn",
+      "phase": "request"
+    },
+    {
+      "field": "contact_window_open",
+      "good": true,
+      "bad": false,
+      "reason": "outside_contact_window",
+      "phase": "request"
+    },
+    {
+      "field": "answering_party_verified",
+      "good": true,
+      "bad": false,
+      "reason": "unverified_answering_party",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "permission_current": true,
+    "contact_window_open": true,
+    "answering_party_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "permission_current": true,
+        "contact_window_open": true,
+        "answering_party_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "permission_current-false",
+      "facts": {
+        "permission_current": false,
+        "contact_window_open": true,
+        "answering_party_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "permission_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "permission_current-missing",
+      "facts": {
+        "contact_window_open": true,
+        "answering_party_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "permission_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "permission_current-string",
+      "facts": {
+        "permission_current": "true",
+        "contact_window_open": true,
+        "answering_party_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "permission_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "contact_window_open-false",
+      "facts": {
+        "permission_current": true,
+        "contact_window_open": false,
+        "answering_party_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "outside_contact_window",
+        "effects": 0
+      }
+    },
+    {
+      "name": "contact_window_open-missing",
+      "facts": {
+        "permission_current": true,
+        "answering_party_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "outside_contact_window",
+        "effects": 0
+      }
+    },
+    {
+      "name": "contact_window_open-string",
+      "facts": {
+        "permission_current": true,
+        "contact_window_open": "true",
+        "answering_party_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "outside_contact_window",
+        "effects": 0
+      }
+    },
+    {
+      "name": "answering_party_verified-false",
+      "facts": {
+        "permission_current": true,
+        "contact_window_open": true,
+        "answering_party_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unverified_answering_party",
+        "effects": 1
+      }
+    },
+    {
+      "name": "answering_party_verified-missing",
+      "facts": {
+        "permission_current": true,
+        "contact_window_open": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unverified_answering_party",
+        "effects": 1
+      }
+    },
+    {
+      "name": "answering_party_verified-string",
+      "facts": {
+        "permission_current": true,
+        "contact_window_open": true,
+        "answering_party_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unverified_answering_party",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.2",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

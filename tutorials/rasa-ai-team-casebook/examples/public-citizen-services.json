@@ -1,0 +1,178 @@
+{
+  "slug": "public-citizen-services",
+  "title": "Citizen requests with the correct jurisdiction",
+  "organisation": "Civic Grove",
+  "action": "route or record a citizen service request",
+  "failure": "The agent gave a permit answer from a neighbouring authority and presented it as binding for the caller\u2019s address.",
+  "lesson": "Resolve jurisdiction and service version before routing; information navigation is not a permit decision or legal determination.",
+  "receipt": "A service-request or referral reference naming the responsible authority and source version.",
+  "evidence": "Compare location-to-authority mapping and the service publication date, including language and accessibility routes.",
+  "recovery": "If jurisdiction is uncertain, keep the question open and offer a staff route; do not choose an authority merely because its FAQ ranks first.",
+  "owner": "citizen service owner",
+  "metric": "answers attributed to the wrong authority, divided by jurisdiction-dependent enquiries",
+  "question": "This address is served by this authority. Would you like the service information or help reaching its team?",
+  "correction": "The resident needs another language or accessible channel; retain the request and route an equivalent supported service.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "jurisdiction_resolved",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_authority",
+      "phase": "request"
+    },
+    {
+      "field": "service_source_current",
+      "good": true,
+      "bad": false,
+      "reason": "obsolete_service_rule",
+      "phase": "request"
+    },
+    {
+      "field": "accessible_route_available",
+      "good": true,
+      "bad": false,
+      "reason": "inaccessible_route",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "jurisdiction_resolved": true,
+    "service_source_current": true,
+    "accessible_route_available": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "jurisdiction_resolved": true,
+        "service_source_current": true,
+        "accessible_route_available": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "jurisdiction_resolved-false",
+      "facts": {
+        "jurisdiction_resolved": false,
+        "service_source_current": true,
+        "accessible_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_authority",
+        "effects": 0
+      }
+    },
+    {
+      "name": "jurisdiction_resolved-missing",
+      "facts": {
+        "service_source_current": true,
+        "accessible_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_authority",
+        "effects": 0
+      }
+    },
+    {
+      "name": "jurisdiction_resolved-string",
+      "facts": {
+        "jurisdiction_resolved": "true",
+        "service_source_current": true,
+        "accessible_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_authority",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_source_current-false",
+      "facts": {
+        "jurisdiction_resolved": true,
+        "service_source_current": false,
+        "accessible_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_service_rule",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_source_current-missing",
+      "facts": {
+        "jurisdiction_resolved": true,
+        "accessible_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_service_rule",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_source_current-string",
+      "facts": {
+        "jurisdiction_resolved": true,
+        "service_source_current": "true",
+        "accessible_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_service_rule",
+        "effects": 0
+      }
+    },
+    {
+      "name": "accessible_route_available-false",
+      "facts": {
+        "jurisdiction_resolved": true,
+        "service_source_current": true,
+        "accessible_route_available": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "inaccessible_route",
+        "effects": 0
+      }
+    },
+    {
+      "name": "accessible_route_available-missing",
+      "facts": {
+        "jurisdiction_resolved": true,
+        "service_source_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "inaccessible_route",
+        "effects": 0
+      }
+    },
+    {
+      "name": "accessible_route_available-string",
+      "facts": {
+        "jurisdiction_resolved": true,
+        "service_source_current": true,
+        "accessible_route_available": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "inaccessible_route",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

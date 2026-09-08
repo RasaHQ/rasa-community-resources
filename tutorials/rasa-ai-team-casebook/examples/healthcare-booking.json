@@ -1,0 +1,178 @@
+{
+  "slug": "healthcare-booking",
+  "title": "Clinic bookings that match the service",
+  "organisation": "Cedar Clinic",
+  "action": "reserve a clinic appointment",
+  "failure": "The scheduler offered the first free slot even though that appointment type could not provide the requested service.",
+  "lesson": "Separate administrative scheduling from clinical judgment; match service type and accessibility requirements before confirming a hold.",
+  "receipt": "A clinic booking reference with service type, time and access details.",
+  "evidence": "Inspect the service code and held slot against the confirmed administrative request; diagnosis is outside this scheduling example.",
+  "recovery": "If suitability cannot be determined administratively, preserve the request and route clinic staff rather than selecting a clinical service by inference.",
+  "owner": "clinic scheduling owner",
+  "metric": "bookings that mismatch the requested administrative service, divided by booking attempts",
+  "question": "This appointment is for the service you selected at this time. Shall I reserve it?",
+  "correction": "The patient needs a different access arrangement; release the unsuitable hold and route or search again.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "service_type_matched",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_clinic_service",
+      "phase": "request"
+    },
+    {
+      "field": "slot_currently_held",
+      "good": true,
+      "bad": false,
+      "reason": "slot_no_longer_available",
+      "phase": "request"
+    },
+    {
+      "field": "patient_choice_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "appointment_choice_unconfirmed",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "service_type_matched": true,
+    "slot_currently_held": true,
+    "patient_choice_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "service_type_matched": true,
+        "slot_currently_held": true,
+        "patient_choice_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "service_type_matched-false",
+      "facts": {
+        "service_type_matched": false,
+        "slot_currently_held": true,
+        "patient_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_clinic_service",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_type_matched-missing",
+      "facts": {
+        "slot_currently_held": true,
+        "patient_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_clinic_service",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_type_matched-string",
+      "facts": {
+        "service_type_matched": "true",
+        "slot_currently_held": true,
+        "patient_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_clinic_service",
+        "effects": 0
+      }
+    },
+    {
+      "name": "slot_currently_held-false",
+      "facts": {
+        "service_type_matched": true,
+        "slot_currently_held": false,
+        "patient_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "slot_no_longer_available",
+        "effects": 0
+      }
+    },
+    {
+      "name": "slot_currently_held-missing",
+      "facts": {
+        "service_type_matched": true,
+        "patient_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "slot_no_longer_available",
+        "effects": 0
+      }
+    },
+    {
+      "name": "slot_currently_held-string",
+      "facts": {
+        "service_type_matched": true,
+        "slot_currently_held": "true",
+        "patient_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "slot_no_longer_available",
+        "effects": 0
+      }
+    },
+    {
+      "name": "patient_choice_confirmed-false",
+      "facts": {
+        "service_type_matched": true,
+        "slot_currently_held": true,
+        "patient_choice_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "appointment_choice_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "patient_choice_confirmed-missing",
+      "facts": {
+        "service_type_matched": true,
+        "slot_currently_held": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "appointment_choice_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "patient_choice_confirmed-string",
+      "facts": {
+        "service_type_matched": true,
+        "slot_currently_held": true,
+        "patient_choice_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "appointment_choice_unconfirmed",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

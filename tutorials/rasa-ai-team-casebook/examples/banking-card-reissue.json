@@ -1,0 +1,178 @@
+{
+  "slug": "banking-card-reissue",
+  "title": "Card replacement with address provenance",
+  "organisation": "Northgate Bank",
+  "action": "request a replacement card",
+  "failure": "A caller supplied a new delivery address, and the agent treated it as if the bank had already verified it.",
+  "lesson": "Make on-file address provenance and changed-address review explicit before an irreversible fulfilment request.",
+  "receipt": "One fulfilment reference tied to the approved destination and delivery option.",
+  "evidence": "Capture address-record provenance and the chosen option; a typed address matching a familiar city is not verification.",
+  "recovery": "Hold changed-address orders for the verified address workflow. If fulfilment state is unknown, reconcile by order key before placing another order.",
+  "owner": "card fulfilment owner",
+  "metric": "replacement orders sent to unverified destinations, divided by replacement attempts",
+  "question": "Use the verified address on file and this delivery option, or update the address through the verification process?",
+  "correction": "The caller changes the destination; pause fulfilment and require the changed-address path.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "card_selected",
+      "good": true,
+      "bad": false,
+      "reason": "card_not_selected",
+      "phase": "request"
+    },
+    {
+      "field": "address_provenance_verified",
+      "good": true,
+      "bad": false,
+      "reason": "new_address_unverified",
+      "phase": "request"
+    },
+    {
+      "field": "delivery_terms_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "delivery_terms_unconfirmed",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "card_selected": true,
+    "address_provenance_verified": true,
+    "delivery_terms_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "card_selected": true,
+        "address_provenance_verified": true,
+        "delivery_terms_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "card_selected-false",
+      "facts": {
+        "card_selected": false,
+        "address_provenance_verified": true,
+        "delivery_terms_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "card_not_selected",
+        "effects": 0
+      }
+    },
+    {
+      "name": "card_selected-missing",
+      "facts": {
+        "address_provenance_verified": true,
+        "delivery_terms_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "card_not_selected",
+        "effects": 0
+      }
+    },
+    {
+      "name": "card_selected-string",
+      "facts": {
+        "card_selected": "true",
+        "address_provenance_verified": true,
+        "delivery_terms_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "card_not_selected",
+        "effects": 0
+      }
+    },
+    {
+      "name": "address_provenance_verified-false",
+      "facts": {
+        "card_selected": true,
+        "address_provenance_verified": false,
+        "delivery_terms_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "new_address_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "address_provenance_verified-missing",
+      "facts": {
+        "card_selected": true,
+        "delivery_terms_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "new_address_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "address_provenance_verified-string",
+      "facts": {
+        "card_selected": true,
+        "address_provenance_verified": "true",
+        "delivery_terms_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "new_address_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "delivery_terms_confirmed-false",
+      "facts": {
+        "card_selected": true,
+        "address_provenance_verified": true,
+        "delivery_terms_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "delivery_terms_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "delivery_terms_confirmed-missing",
+      "facts": {
+        "card_selected": true,
+        "address_provenance_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "delivery_terms_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "delivery_terms_confirmed-string",
+      "facts": {
+        "card_selected": true,
+        "address_provenance_verified": true,
+        "delivery_terms_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "delivery_terms_unconfirmed",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}
