@@ -1,0 +1,178 @@
+{
+  "slug": "internal-field-dispatch",
+  "title": "Field assignments with capability and safety state",
+  "organisation": "Orchard Works",
+  "action": "assign or update a field-service job",
+  "failure": "A dispatcher agent sent the nearest technician even though the job required equipment that technician did not carry.",
+  "lesson": "Match capability and current job constraints before distance; a status update must not authorize work outside the assignment.",
+  "receipt": "An acknowledged assignment with its scope and current constraints, or an unassigned escalation.",
+  "evidence": "Compare job requirements to technician capability and equipment, then verify acceptance by the assigned worker.",
+  "recovery": "On changed job conditions, suspend the unsuitable assignment and notify dispatch. Preserve status history instead of rerouting silently.",
+  "owner": "field dispatch owner",
+  "metric": "assignments outside verified technician capability, divided by dispatch attempts",
+  "question": "This job requires the listed capability and equipment. Can you accept that specific assignment?",
+  "correction": "The technician reports missing equipment; withdraw the unsuitable assignment and route dispatch for another plan.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "technician_capability_matched",
+      "good": true,
+      "bad": false,
+      "reason": "capability_mismatch",
+      "phase": "request"
+    },
+    {
+      "field": "job_constraints_current",
+      "good": true,
+      "bad": false,
+      "reason": "job_conditions_changed",
+      "phase": "request"
+    },
+    {
+      "field": "assignment_acknowledged",
+      "good": true,
+      "bad": false,
+      "reason": "assignment_not_accepted",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "technician_capability_matched": true,
+    "job_constraints_current": true,
+    "assignment_acknowledged": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "technician_capability_matched": true,
+        "job_constraints_current": true,
+        "assignment_acknowledged": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "technician_capability_matched-false",
+      "facts": {
+        "technician_capability_matched": false,
+        "job_constraints_current": true,
+        "assignment_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "capability_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "technician_capability_matched-missing",
+      "facts": {
+        "job_constraints_current": true,
+        "assignment_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "capability_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "technician_capability_matched-string",
+      "facts": {
+        "technician_capability_matched": "true",
+        "job_constraints_current": true,
+        "assignment_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "capability_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "job_constraints_current-false",
+      "facts": {
+        "technician_capability_matched": true,
+        "job_constraints_current": false,
+        "assignment_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "job_conditions_changed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "job_constraints_current-missing",
+      "facts": {
+        "technician_capability_matched": true,
+        "assignment_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "job_conditions_changed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "job_constraints_current-string",
+      "facts": {
+        "technician_capability_matched": true,
+        "job_constraints_current": "true",
+        "assignment_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "job_conditions_changed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "assignment_acknowledged-false",
+      "facts": {
+        "technician_capability_matched": true,
+        "job_constraints_current": true,
+        "assignment_acknowledged": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "assignment_not_accepted",
+        "effects": 1
+      }
+    },
+    {
+      "name": "assignment_acknowledged-missing",
+      "facts": {
+        "technician_capability_matched": true,
+        "job_constraints_current": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "assignment_not_accepted",
+        "effects": 1
+      }
+    },
+    {
+      "name": "assignment_acknowledged-string",
+      "facts": {
+        "technician_capability_matched": true,
+        "job_constraints_current": true,
+        "assignment_acknowledged": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "assignment_not_accepted",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

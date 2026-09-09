@@ -1,0 +1,179 @@
+{
+  "slug": "utilities-outage",
+  "title": "Outage reports without repair estimates",
+  "organisation": "Amber Grid",
+  "action": "record an unmatched outage report independently or attach a sourced incident status",
+  "failure": "The agent invented a repair time from an old incident even though the new report affected a different service area.",
+  "lesson": "Match service location to incident identity and distinguish a customer report from a field-verified cause or restoration estimate.",
+  "receipt": "An independent unverified outage-report reference and a separate sourced status, with unknown estimates labeled.",
+  "evidence": "Trace the location-to-incident mapping and source timestamp; customer observations must not become verified engineering conclusions.",
+  "recovery": "If incident matching fails, record a distinct report for dispatch review and avoid attaching an unrelated restoration promise.",
+  "owner": "outage coordination owner",
+  "metric": "unsourced restoration estimates given to callers, divided by outage responses",
+  "question": "I can record the loss of service here. The current incident record does not yet provide a confirmed restoration time.",
+  "correction": "The caller reports a different location; resolve that service area rather than copying the first incident status.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "service_location_resolved",
+      "good": true,
+      "bad": false,
+      "reason": "service_area_ambiguous",
+      "phase": "request"
+    },
+    {
+      "field": "incident_source_current",
+      "good": true,
+      "bad": false,
+      "reason": "stale_incident_source",
+      "phase": "request"
+    },
+    {
+      "field": "report_receipt_known",
+      "good": true,
+      "bad": false,
+      "reason": "report_not_recorded",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "service_location_resolved": true,
+    "incident_source_current": true,
+    "report_receipt_known": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "service_location_resolved": true,
+        "incident_source_current": true,
+        "report_receipt_known": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "service_location_resolved-false",
+      "facts": {
+        "service_location_resolved": false,
+        "incident_source_current": true,
+        "report_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "service_area_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_location_resolved-missing",
+      "facts": {
+        "incident_source_current": true,
+        "report_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "service_area_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_location_resolved-string",
+      "facts": {
+        "service_location_resolved": "true",
+        "incident_source_current": true,
+        "report_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "service_area_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_source_current-false",
+      "facts": {
+        "service_location_resolved": true,
+        "incident_source_current": false,
+        "report_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_incident_source",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_source_current-missing",
+      "facts": {
+        "service_location_resolved": true,
+        "report_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_incident_source",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_source_current-string",
+      "facts": {
+        "service_location_resolved": true,
+        "incident_source_current": "true",
+        "report_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_incident_source",
+        "effects": 0
+      }
+    },
+    {
+      "name": "report_receipt_known-false",
+      "facts": {
+        "service_location_resolved": true,
+        "incident_source_current": true,
+        "report_receipt_known": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "report_not_recorded",
+        "effects": 1
+      }
+    },
+    {
+      "name": "report_receipt_known-missing",
+      "facts": {
+        "service_location_resolved": true,
+        "incident_source_current": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "report_not_recorded",
+        "effects": 1
+      }
+    },
+    {
+      "name": "report_receipt_known-string",
+      "facts": {
+        "service_location_resolved": true,
+        "incident_source_current": true,
+        "report_receipt_known": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "report_not_recorded",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.2",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  },
+  "intakeKind": "unmatched-outage-report"
+}

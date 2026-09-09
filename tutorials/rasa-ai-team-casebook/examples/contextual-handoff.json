@@ -1,0 +1,178 @@
+{
+  "slug": "contextual-handoff",
+  "title": "Handoff with usable context",
+  "organisation": "Horizon Travel",
+  "action": "transfer a case to a human desk",
+  "failure": "The agent announced a transfer, but no desk had accepted the case; the customer repeated the whole story in a new queue.",
+  "lesson": "Separate preparing a context envelope from receiving a desk acknowledgment, and make acknowledgment observable before promising a handoff.",
+  "receipt": "A desk-acknowledged case reference and queue state, with the last unresolved question.",
+  "evidence": "Match envelope ID, redaction result and desk receipt; a sent webhook alone is not a completed transfer.",
+  "recovery": "After one missing acknowledgment, query the same envelope ID. If its state remains unknown, offer the support channel and do not create another case.",
+  "owner": "support integration owner",
+  "metric": "transfers with an acknowledged usable envelope, divided by attempted transfers",
+  "question": "I can send the booking reference and this summary to the travel desk. May I include those details?",
+  "correction": "The customer removes a personal detail; regenerate the summary and obtain permission again before sending.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "redacted_summary",
+      "good": true,
+      "bad": false,
+      "reason": "summary_contains_secrets",
+      "phase": "request"
+    },
+    {
+      "field": "desk_acknowledged",
+      "good": true,
+      "bad": false,
+      "reason": "no_desk_ack",
+      "phase": "receipt"
+    },
+    {
+      "field": "reference_visible",
+      "good": true,
+      "bad": false,
+      "reason": "missing_customer_reference",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "redacted_summary": true,
+    "desk_acknowledged": true,
+    "reference_visible": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "redacted_summary": true,
+        "desk_acknowledged": true,
+        "reference_visible": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "redacted_summary-false",
+      "facts": {
+        "redacted_summary": false,
+        "desk_acknowledged": true,
+        "reference_visible": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "summary_contains_secrets",
+        "effects": 0
+      }
+    },
+    {
+      "name": "redacted_summary-missing",
+      "facts": {
+        "desk_acknowledged": true,
+        "reference_visible": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "summary_contains_secrets",
+        "effects": 0
+      }
+    },
+    {
+      "name": "redacted_summary-string",
+      "facts": {
+        "redacted_summary": "true",
+        "desk_acknowledged": true,
+        "reference_visible": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "summary_contains_secrets",
+        "effects": 0
+      }
+    },
+    {
+      "name": "desk_acknowledged-false",
+      "facts": {
+        "redacted_summary": true,
+        "desk_acknowledged": false,
+        "reference_visible": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "no_desk_ack",
+        "effects": 1
+      }
+    },
+    {
+      "name": "desk_acknowledged-missing",
+      "facts": {
+        "redacted_summary": true,
+        "reference_visible": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "no_desk_ack",
+        "effects": 1
+      }
+    },
+    {
+      "name": "desk_acknowledged-string",
+      "facts": {
+        "redacted_summary": true,
+        "desk_acknowledged": "true",
+        "reference_visible": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "no_desk_ack",
+        "effects": 1
+      }
+    },
+    {
+      "name": "reference_visible-false",
+      "facts": {
+        "redacted_summary": true,
+        "desk_acknowledged": true,
+        "reference_visible": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "missing_customer_reference",
+        "effects": 1
+      }
+    },
+    {
+      "name": "reference_visible-missing",
+      "facts": {
+        "redacted_summary": true,
+        "desk_acknowledged": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "missing_customer_reference",
+        "effects": 1
+      }
+    },
+    {
+      "name": "reference_visible-string",
+      "facts": {
+        "redacted_summary": true,
+        "desk_acknowledged": true,
+        "reference_visible": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "missing_customer_reference",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

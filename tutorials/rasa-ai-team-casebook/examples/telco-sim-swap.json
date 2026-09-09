@@ -1,0 +1,178 @@
+{
+  "slug": "telco-sim-swap",
+  "title": "SIM changes with an independent challenge",
+  "organisation": "Juniper Mobile",
+  "action": "request a SIM replacement activation",
+  "failure": "The agent accepted a verification code sent only to the phone number whose SIM was being replaced.",
+  "lesson": "Bind replacement authority to an independent trusted verification path and stop the old authorization when the target SIM changes.",
+  "receipt": "A replacement reference and explicit activation state, never a claim inferred from a queued request.",
+  "evidence": "Trace the verification channel independently from the replaced destination and match the final SIM identifier to the confirmation.",
+  "recovery": "If independent verification is unavailable, stop remote activation and route the approved identity process without a weaker fallback.",
+  "owner": "subscriber identity owner",
+  "metric": "SIM changes approved through the replaced channel alone, divided by replacement attempts",
+  "question": "This replacement needs a separate verification method. Would you like that process or help from the identity team?",
+  "correction": "The caller changes which line is being replaced; discard the prior target confirmation before proceeding.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "independent_verification_complete",
+      "good": true,
+      "bad": false,
+      "reason": "circular_verification",
+      "phase": "request"
+    },
+    {
+      "field": "target_sim_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_sim_target",
+      "phase": "request"
+    },
+    {
+      "field": "activation_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "activation_unknown",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "independent_verification_complete": true,
+    "target_sim_confirmed": true,
+    "activation_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "independent_verification_complete": true,
+        "target_sim_confirmed": true,
+        "activation_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "independent_verification_complete-false",
+      "facts": {
+        "independent_verification_complete": false,
+        "target_sim_confirmed": true,
+        "activation_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "circular_verification",
+        "effects": 0
+      }
+    },
+    {
+      "name": "independent_verification_complete-missing",
+      "facts": {
+        "target_sim_confirmed": true,
+        "activation_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "circular_verification",
+        "effects": 0
+      }
+    },
+    {
+      "name": "independent_verification_complete-string",
+      "facts": {
+        "independent_verification_complete": "true",
+        "target_sim_confirmed": true,
+        "activation_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "circular_verification",
+        "effects": 0
+      }
+    },
+    {
+      "name": "target_sim_confirmed-false",
+      "facts": {
+        "independent_verification_complete": true,
+        "target_sim_confirmed": false,
+        "activation_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_sim_target",
+        "effects": 0
+      }
+    },
+    {
+      "name": "target_sim_confirmed-missing",
+      "facts": {
+        "independent_verification_complete": true,
+        "activation_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_sim_target",
+        "effects": 0
+      }
+    },
+    {
+      "name": "target_sim_confirmed-string",
+      "facts": {
+        "independent_verification_complete": true,
+        "target_sim_confirmed": "true",
+        "activation_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_sim_target",
+        "effects": 0
+      }
+    },
+    {
+      "name": "activation_receipt_verified-false",
+      "facts": {
+        "independent_verification_complete": true,
+        "target_sim_confirmed": true,
+        "activation_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "activation_unknown",
+        "effects": 1
+      }
+    },
+    {
+      "name": "activation_receipt_verified-missing",
+      "facts": {
+        "independent_verification_complete": true,
+        "target_sim_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "activation_unknown",
+        "effects": 1
+      }
+    },
+    {
+      "name": "activation_receipt_verified-string",
+      "facts": {
+        "independent_verification_complete": true,
+        "target_sim_confirmed": true,
+        "activation_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "activation_unknown",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

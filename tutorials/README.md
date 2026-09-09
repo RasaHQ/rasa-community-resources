@@ -44,6 +44,8 @@ If a tutorial is the companion to an example in `examples/`, say so in both READ
 | The document is derived, never written | Ledger | Thornbury Wealth | [`rasa-document-artifact-tutorial`](rasa-document-artifact-tutorial) | 2026-09-02 |
 | Ora on HubSpot CRM, and the same agent over MCP | Ora | Meridian | [`rasa-hubspot-crm-tutorial`](rasa-hubspot-crm-tutorial) | 2026-09-02 |
 
+| AI team casebook | Six AI team roles | 62 fictional scenarios | [`rasa-ai-team-casebook`](rasa-ai-team-casebook) | 2026-09-08 |
+
 When you add a tutorial, append a row here in the same PR.
 
 ---

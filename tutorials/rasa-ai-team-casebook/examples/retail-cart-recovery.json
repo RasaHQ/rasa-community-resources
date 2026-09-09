@@ -1,0 +1,178 @@
+{
+  "slug": "retail-cart-recovery",
+  "title": "Cart follow-ups with current terms",
+  "organisation": "Willow Shop",
+  "action": "offer a requested cart follow-up",
+  "failure": "An abandoned-cart call promised an expired discount and continued after the shopper withdrew contact permission.",
+  "lesson": "Recheck permission, cart contents and promotion validity at contact time; an old cart snapshot cannot authorize a current offer.",
+  "receipt": "A current offer reference or a suppressed-contact outcome, with no fabricated promotion.",
+  "evidence": "Join consent revision, current cart and offer validity; test a cart edit between campaign preparation and contact.",
+  "recovery": "Suppress stale campaigns and rebuild from current permission and cart state. End the call on refusal without another sales step.",
+  "owner": "commerce outreach owner",
+  "metric": "follow-ups quoting expired or changed-cart offers, divided by cart contacts",
+  "question": "You requested help with this cart. Would you still like to review the current items and offer?",
+  "correction": "The shopper no longer wants contact; record the change and end the campaign path.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "followup_permission_current",
+      "good": true,
+      "bad": false,
+      "reason": "followup_withdrawn",
+      "phase": "request"
+    },
+    {
+      "field": "cart_revision_current",
+      "good": true,
+      "bad": false,
+      "reason": "cart_changed",
+      "phase": "request"
+    },
+    {
+      "field": "promotion_authorized",
+      "good": true,
+      "bad": false,
+      "reason": "promotion_expired",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "followup_permission_current": true,
+    "cart_revision_current": true,
+    "promotion_authorized": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "followup_permission_current": true,
+        "cart_revision_current": true,
+        "promotion_authorized": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "followup_permission_current-false",
+      "facts": {
+        "followup_permission_current": false,
+        "cart_revision_current": true,
+        "promotion_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "followup_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "followup_permission_current-missing",
+      "facts": {
+        "cart_revision_current": true,
+        "promotion_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "followup_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "followup_permission_current-string",
+      "facts": {
+        "followup_permission_current": "true",
+        "cart_revision_current": true,
+        "promotion_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "followup_withdrawn",
+        "effects": 0
+      }
+    },
+    {
+      "name": "cart_revision_current-false",
+      "facts": {
+        "followup_permission_current": true,
+        "cart_revision_current": false,
+        "promotion_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cart_changed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "cart_revision_current-missing",
+      "facts": {
+        "followup_permission_current": true,
+        "promotion_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cart_changed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "cart_revision_current-string",
+      "facts": {
+        "followup_permission_current": true,
+        "cart_revision_current": "true",
+        "promotion_authorized": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "cart_changed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "promotion_authorized-false",
+      "facts": {
+        "followup_permission_current": true,
+        "cart_revision_current": true,
+        "promotion_authorized": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "promotion_expired",
+        "effects": 0
+      }
+    },
+    {
+      "name": "promotion_authorized-missing",
+      "facts": {
+        "followup_permission_current": true,
+        "cart_revision_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "promotion_expired",
+        "effects": 0
+      }
+    },
+    {
+      "name": "promotion_authorized-string",
+      "facts": {
+        "followup_permission_current": true,
+        "cart_revision_current": true,
+        "promotion_authorized": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "promotion_expired",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

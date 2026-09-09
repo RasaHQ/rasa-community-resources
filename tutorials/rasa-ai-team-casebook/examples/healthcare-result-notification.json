@@ -1,0 +1,178 @@
+{
+  "slug": "healthcare-result-notification",
+  "title": "Results notifications with a verified recipient",
+  "organisation": "Cedar Clinic",
+  "action": "notify a patient that a result is available",
+  "failure": "The agent read a result to a family member who answered the phone and knew the patient\u2019s name.",
+  "lesson": "Separate availability notification from result disclosure and clinical interpretation; route details through the approved verified channel.",
+  "receipt": "A notification reference or secure-channel handoff, without result details in an unverified call.",
+  "evidence": "Inspect exactly which fields leave the result service before recipient verification, including prompts and logs.",
+  "recovery": "If recipient verification fails, stop disclosure and offer the approved clinic callback route without confirming sensitive result details.",
+  "owner": "clinical communications owner",
+  "metric": "result details disclosed before recipient verification, divided by notification attempts",
+  "question": "The clinic has information for you through its verified channel. Would you like help accessing that route?",
+  "correction": "Another person answers; stop patient-specific details and use only the approved general callback wording.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "recipient_verified",
+      "good": true,
+      "bad": false,
+      "reason": "recipient_unverified",
+      "phase": "request"
+    },
+    {
+      "field": "disclosure_channel_approved",
+      "good": true,
+      "bad": false,
+      "reason": "unapproved_disclosure_channel",
+      "phase": "request"
+    },
+    {
+      "field": "notification_scope_limited",
+      "good": true,
+      "bad": false,
+      "reason": "clinical_interpretation_added",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "recipient_verified": true,
+    "disclosure_channel_approved": true,
+    "notification_scope_limited": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "recipient_verified": true,
+        "disclosure_channel_approved": true,
+        "notification_scope_limited": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "recipient_verified-false",
+      "facts": {
+        "recipient_verified": false,
+        "disclosure_channel_approved": true,
+        "notification_scope_limited": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "recipient_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recipient_verified-missing",
+      "facts": {
+        "disclosure_channel_approved": true,
+        "notification_scope_limited": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "recipient_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recipient_verified-string",
+      "facts": {
+        "recipient_verified": "true",
+        "disclosure_channel_approved": true,
+        "notification_scope_limited": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "recipient_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "disclosure_channel_approved-false",
+      "facts": {
+        "recipient_verified": true,
+        "disclosure_channel_approved": false,
+        "notification_scope_limited": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_disclosure_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "disclosure_channel_approved-missing",
+      "facts": {
+        "recipient_verified": true,
+        "notification_scope_limited": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_disclosure_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "disclosure_channel_approved-string",
+      "facts": {
+        "recipient_verified": true,
+        "disclosure_channel_approved": "true",
+        "notification_scope_limited": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_disclosure_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "notification_scope_limited-false",
+      "facts": {
+        "recipient_verified": true,
+        "disclosure_channel_approved": true,
+        "notification_scope_limited": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "clinical_interpretation_added",
+        "effects": 0
+      }
+    },
+    {
+      "name": "notification_scope_limited-missing",
+      "facts": {
+        "recipient_verified": true,
+        "disclosure_channel_approved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "clinical_interpretation_added",
+        "effects": 0
+      }
+    },
+    {
+      "name": "notification_scope_limited-string",
+      "facts": {
+        "recipient_verified": true,
+        "disclosure_channel_approved": true,
+        "notification_scope_limited": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "clinical_interpretation_added",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

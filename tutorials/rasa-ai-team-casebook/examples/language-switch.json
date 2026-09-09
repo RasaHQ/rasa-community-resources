@@ -1,0 +1,178 @@
+{
+  "slug": "language-switch",
+  "title": "Language switches that preserve intent",
+  "organisation": "Civic Grove",
+  "action": "switch the service conversation language",
+  "failure": "The agent switched language midway through a permit request and lost the caller\u2019s earlier correction to the address.",
+  "lesson": "Switch presentation language while retaining confirmed task state and checking that translated choices still identify the same action.",
+  "receipt": "The same request reference and confirmed fields, with an updated language preference.",
+  "evidence": "Use paired utterances around a language switch and compare canonical request IDs and corrected fields.",
+  "recovery": "If a translated action is ambiguous, stop before submission and offer an interpreter or supported language. Retain the existing confirmed draft.",
+  "owner": "conversation localization owner",
+  "metric": "state changes caused only by a language switch, divided by switch trials",
+  "question": "I can continue in your preferred language and keep the details you confirmed. Shall I switch?",
+  "correction": "The translated address is wrong; correct the canonical address and read it back before continuing.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "language_supported",
+      "good": true,
+      "bad": false,
+      "reason": "unsupported_language",
+      "phase": "request"
+    },
+    {
+      "field": "confirmed_state_preserved",
+      "good": true,
+      "bad": false,
+      "reason": "lost_confirmed_state",
+      "phase": "request"
+    },
+    {
+      "field": "translated_choice_verified",
+      "good": true,
+      "bad": false,
+      "reason": "ambiguous_translation",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "language_supported": true,
+    "confirmed_state_preserved": true,
+    "translated_choice_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "language_supported": true,
+        "confirmed_state_preserved": true,
+        "translated_choice_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "language_supported-false",
+      "facts": {
+        "language_supported": false,
+        "confirmed_state_preserved": true,
+        "translated_choice_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsupported_language",
+        "effects": 0
+      }
+    },
+    {
+      "name": "language_supported-missing",
+      "facts": {
+        "confirmed_state_preserved": true,
+        "translated_choice_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsupported_language",
+        "effects": 0
+      }
+    },
+    {
+      "name": "language_supported-string",
+      "facts": {
+        "language_supported": "true",
+        "confirmed_state_preserved": true,
+        "translated_choice_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsupported_language",
+        "effects": 0
+      }
+    },
+    {
+      "name": "confirmed_state_preserved-false",
+      "facts": {
+        "language_supported": true,
+        "confirmed_state_preserved": false,
+        "translated_choice_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "lost_confirmed_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "confirmed_state_preserved-missing",
+      "facts": {
+        "language_supported": true,
+        "translated_choice_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "lost_confirmed_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "confirmed_state_preserved-string",
+      "facts": {
+        "language_supported": true,
+        "confirmed_state_preserved": "true",
+        "translated_choice_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "lost_confirmed_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "translated_choice_verified-false",
+      "facts": {
+        "language_supported": true,
+        "confirmed_state_preserved": true,
+        "translated_choice_verified": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_translation",
+        "effects": 0
+      }
+    },
+    {
+      "name": "translated_choice_verified-missing",
+      "facts": {
+        "language_supported": true,
+        "confirmed_state_preserved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_translation",
+        "effects": 0
+      }
+    },
+    {
+      "name": "translated_choice_verified-string",
+      "facts": {
+        "language_supported": true,
+        "confirmed_state_preserved": true,
+        "translated_choice_verified": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_translation",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

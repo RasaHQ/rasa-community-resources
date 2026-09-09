@@ -1,0 +1,178 @@
+{
+  "slug": "retail-loyalty",
+  "title": "Subscriptions without hidden entitlement loss",
+  "organisation": "Willow Shop",
+  "action": "change a loyalty or subscription setting",
+  "failure": "The agent cancelled a subscription immediately when the member meant to stop its next renewal.",
+  "lesson": "Distinguish stopping renewal, pausing service and immediate cancellation; disclose the resulting entitlement dates.",
+  "receipt": "A subscription-change reference with effective time and remaining entitlements.",
+  "evidence": "Compare the selected change type with the actual service command and the returned entitlement dates.",
+  "recovery": "If the change result is unknown, query the original subscription revision and request key; do not issue an additional cancellation.",
+  "owner": "subscription product owner",
+  "metric": "renewal-stop requests executed as immediate cancellations, divided by subscription changes",
+  "question": "Stopping renewal keeps access until this date; immediate cancellation has a different effect. Which do you want?",
+  "correction": "The member chooses to pause instead; recalculate and explain that option before confirming a different command.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "change_type_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_subscription_change",
+      "phase": "request"
+    },
+    {
+      "field": "entitlement_delta_disclosed",
+      "good": true,
+      "bad": false,
+      "reason": "benefit_loss_hidden",
+      "phase": "request"
+    },
+    {
+      "field": "change_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "change_not_recorded",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "change_type_confirmed": true,
+    "entitlement_delta_disclosed": true,
+    "change_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "change_type_confirmed": true,
+        "entitlement_delta_disclosed": true,
+        "change_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "change_type_confirmed-false",
+      "facts": {
+        "change_type_confirmed": false,
+        "entitlement_delta_disclosed": true,
+        "change_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_subscription_change",
+        "effects": 0
+      }
+    },
+    {
+      "name": "change_type_confirmed-missing",
+      "facts": {
+        "entitlement_delta_disclosed": true,
+        "change_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_subscription_change",
+        "effects": 0
+      }
+    },
+    {
+      "name": "change_type_confirmed-string",
+      "facts": {
+        "change_type_confirmed": "true",
+        "entitlement_delta_disclosed": true,
+        "change_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_subscription_change",
+        "effects": 0
+      }
+    },
+    {
+      "name": "entitlement_delta_disclosed-false",
+      "facts": {
+        "change_type_confirmed": true,
+        "entitlement_delta_disclosed": false,
+        "change_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "benefit_loss_hidden",
+        "effects": 0
+      }
+    },
+    {
+      "name": "entitlement_delta_disclosed-missing",
+      "facts": {
+        "change_type_confirmed": true,
+        "change_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "benefit_loss_hidden",
+        "effects": 0
+      }
+    },
+    {
+      "name": "entitlement_delta_disclosed-string",
+      "facts": {
+        "change_type_confirmed": true,
+        "entitlement_delta_disclosed": "true",
+        "change_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "benefit_loss_hidden",
+        "effects": 0
+      }
+    },
+    {
+      "name": "change_receipt_verified-false",
+      "facts": {
+        "change_type_confirmed": true,
+        "entitlement_delta_disclosed": true,
+        "change_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "change_not_recorded",
+        "effects": 1
+      }
+    },
+    {
+      "name": "change_receipt_verified-missing",
+      "facts": {
+        "change_type_confirmed": true,
+        "entitlement_delta_disclosed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "change_not_recorded",
+        "effects": 1
+      }
+    },
+    {
+      "name": "change_receipt_verified-string",
+      "facts": {
+        "change_type_confirmed": true,
+        "entitlement_delta_disclosed": true,
+        "change_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "change_not_recorded",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

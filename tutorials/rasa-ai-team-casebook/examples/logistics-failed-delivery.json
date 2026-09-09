@@ -1,0 +1,178 @@
+{
+  "slug": "logistics-failed-delivery",
+  "title": "Failed-delivery follow-up without address leakage",
+  "organisation": "Parcel Grove",
+  "action": "arrange a permitted redelivery action",
+  "failure": "An outbound agent read the full delivery address to an unverified person who answered a shared phone.",
+  "lesson": "Verify the answering party before sensitive detail, then bind the redelivery choice to the correct failed attempt.",
+  "receipt": "A redelivery request reference with address details confined to the approved verified interaction.",
+  "evidence": "Inspect what is spoken before verification and compare the selected failed-attempt reference with the request.",
+  "recovery": "If the answering party is unknown, end detail disclosure and provide the approved callback path; do not try another address aloud.",
+  "owner": "delivery outreach owner",
+  "metric": "address disclosures to unverified recipients, divided by outbound redelivery attempts",
+  "question": "I need to verify this delivery request before discussing the details. Would you like to use the callback option?",
+  "correction": "The recipient says the parcel is not theirs; stop the request and flag identity resolution instead of revealing more details.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "answering_party_verified",
+      "good": true,
+      "bad": false,
+      "reason": "unknown_answering_party",
+      "phase": "request"
+    },
+    {
+      "field": "failed_attempt_resolved",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_delivery_attempt",
+      "phase": "request"
+    },
+    {
+      "field": "redelivery_choice_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "choice_unconfirmed",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "answering_party_verified": true,
+    "failed_attempt_resolved": true,
+    "redelivery_choice_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "answering_party_verified": true,
+        "failed_attempt_resolved": true,
+        "redelivery_choice_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "answering_party_verified-false",
+      "facts": {
+        "answering_party_verified": false,
+        "failed_attempt_resolved": true,
+        "redelivery_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unknown_answering_party",
+        "effects": 0
+      }
+    },
+    {
+      "name": "answering_party_verified-missing",
+      "facts": {
+        "failed_attempt_resolved": true,
+        "redelivery_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unknown_answering_party",
+        "effects": 0
+      }
+    },
+    {
+      "name": "answering_party_verified-string",
+      "facts": {
+        "answering_party_verified": "true",
+        "failed_attempt_resolved": true,
+        "redelivery_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unknown_answering_party",
+        "effects": 0
+      }
+    },
+    {
+      "name": "failed_attempt_resolved-false",
+      "facts": {
+        "answering_party_verified": true,
+        "failed_attempt_resolved": false,
+        "redelivery_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_delivery_attempt",
+        "effects": 0
+      }
+    },
+    {
+      "name": "failed_attempt_resolved-missing",
+      "facts": {
+        "answering_party_verified": true,
+        "redelivery_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_delivery_attempt",
+        "effects": 0
+      }
+    },
+    {
+      "name": "failed_attempt_resolved-string",
+      "facts": {
+        "answering_party_verified": true,
+        "failed_attempt_resolved": "true",
+        "redelivery_choice_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_delivery_attempt",
+        "effects": 0
+      }
+    },
+    {
+      "name": "redelivery_choice_confirmed-false",
+      "facts": {
+        "answering_party_verified": true,
+        "failed_attempt_resolved": true,
+        "redelivery_choice_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "choice_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "redelivery_choice_confirmed-missing",
+      "facts": {
+        "answering_party_verified": true,
+        "failed_attempt_resolved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "choice_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "redelivery_choice_confirmed-string",
+      "facts": {
+        "answering_party_verified": true,
+        "failed_attempt_resolved": true,
+        "redelivery_choice_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "choice_unconfirmed",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

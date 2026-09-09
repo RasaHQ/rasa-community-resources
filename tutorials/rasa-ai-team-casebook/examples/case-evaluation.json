@@ -1,0 +1,178 @@
+{
+  "slug": "case-evaluation",
+  "title": "Evaluation that checks the actual case",
+  "organisation": "Orchard Works",
+  "action": "approve a scenario evaluation result",
+  "failure": "The dashboard reported a perfect score because every test used the same happy-path fixture.",
+  "lesson": "Version the corpus, distinguish deterministic policy assertions from sampled conversations, and require disallowed and ambiguous cases.",
+  "receipt": "A versioned result with failures, denominators and separate offline-proof and sampled-observation sections.",
+  "evidence": "Mutate a known guard and require the evaluator to fail; passing tests that never exercise the component are not evidence.",
+  "recovery": "Invalidate the release decision when corpus provenance or assertion relevance is missing. Repair the evidence, then rerun against the same revision.",
+  "owner": "evaluation lead",
+  "metric": "incorrectly accepted mutated cases, divided by mutation trials",
+  "question": "The check passed these fixtures; it has not measured every real conversation. Which remaining case should we inspect?",
+  "correction": "A teammate supplies a counterexample; add it under a new corpus revision and retain the earlier result as history.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "negative_cases_present",
+      "good": true,
+      "bad": false,
+      "reason": "missing_negative_cases",
+      "phase": "request"
+    },
+    {
+      "field": "source_version_pinned",
+      "good": true,
+      "bad": false,
+      "reason": "unbound_fixture_version",
+      "phase": "request"
+    },
+    {
+      "field": "assertion_target_relevant",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_component_measured",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "negative_cases_present": true,
+    "source_version_pinned": true,
+    "assertion_target_relevant": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "negative_cases_present": true,
+        "source_version_pinned": true,
+        "assertion_target_relevant": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "negative_cases_present-false",
+      "facts": {
+        "negative_cases_present": false,
+        "source_version_pinned": true,
+        "assertion_target_relevant": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "missing_negative_cases",
+        "effects": 0
+      }
+    },
+    {
+      "name": "negative_cases_present-missing",
+      "facts": {
+        "source_version_pinned": true,
+        "assertion_target_relevant": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "missing_negative_cases",
+        "effects": 0
+      }
+    },
+    {
+      "name": "negative_cases_present-string",
+      "facts": {
+        "negative_cases_present": "true",
+        "source_version_pinned": true,
+        "assertion_target_relevant": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "missing_negative_cases",
+        "effects": 0
+      }
+    },
+    {
+      "name": "source_version_pinned-false",
+      "facts": {
+        "negative_cases_present": true,
+        "source_version_pinned": false,
+        "assertion_target_relevant": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unbound_fixture_version",
+        "effects": 0
+      }
+    },
+    {
+      "name": "source_version_pinned-missing",
+      "facts": {
+        "negative_cases_present": true,
+        "assertion_target_relevant": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unbound_fixture_version",
+        "effects": 0
+      }
+    },
+    {
+      "name": "source_version_pinned-string",
+      "facts": {
+        "negative_cases_present": true,
+        "source_version_pinned": "true",
+        "assertion_target_relevant": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unbound_fixture_version",
+        "effects": 0
+      }
+    },
+    {
+      "name": "assertion_target_relevant-false",
+      "facts": {
+        "negative_cases_present": true,
+        "source_version_pinned": true,
+        "assertion_target_relevant": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_component_measured",
+        "effects": 0
+      }
+    },
+    {
+      "name": "assertion_target_relevant-missing",
+      "facts": {
+        "negative_cases_present": true,
+        "source_version_pinned": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_component_measured",
+        "effects": 0
+      }
+    },
+    {
+      "name": "assertion_target_relevant-string",
+      "facts": {
+        "negative_cases_present": true,
+        "source_version_pinned": true,
+        "assertion_target_relevant": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_component_measured",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

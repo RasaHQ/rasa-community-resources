@@ -1,0 +1,178 @@
+{
+  "slug": "insurance-fnol",
+  "title": "First loss reports with an urgent exit",
+  "organisation": "HarborCover",
+  "action": "record a first notice of loss",
+  "failure": "The intake assistant kept requesting photographs while the caller was describing an unsafe roadside situation.",
+  "lesson": "Give urgent human routing precedence over evidence collection; record observations without making injury or liability judgments.",
+  "receipt": "A first-notice reference or an urgent handoff acknowledgment, with unfinished evidence clearly marked.",
+  "evidence": "Replay an urgent interruption during the photo step and inspect whether collection stops before more prompts are issued.",
+  "recovery": "If the urgent desk cannot acknowledge, surface the configured emergency/support route and stop optional evidence collection.",
+  "owner": "first-notice operations owner",
+  "metric": "urgent cases kept in optional evidence collection, divided by urgent intake cases",
+  "question": "We can pause the report and connect you to the appropriate help. Would you like to stop collecting details now?",
+  "correction": "The caller withdraws photo permission; remove that request and retain only the confirmed report information.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "urgent_routing_checked",
+      "good": true,
+      "bad": false,
+      "reason": "urgent_exit_not_checked",
+      "phase": "request"
+    },
+    {
+      "field": "evidence_consent_recorded",
+      "good": true,
+      "bad": false,
+      "reason": "evidence_permission_missing",
+      "phase": "request"
+    },
+    {
+      "field": "report_summary_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "unconfirmed_loss_summary",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "urgent_routing_checked": true,
+    "evidence_consent_recorded": true,
+    "report_summary_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "urgent_routing_checked": true,
+        "evidence_consent_recorded": true,
+        "report_summary_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "urgent_routing_checked-false",
+      "facts": {
+        "urgent_routing_checked": false,
+        "evidence_consent_recorded": true,
+        "report_summary_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "urgent_exit_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "urgent_routing_checked-missing",
+      "facts": {
+        "evidence_consent_recorded": true,
+        "report_summary_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "urgent_exit_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "urgent_routing_checked-string",
+      "facts": {
+        "urgent_routing_checked": "true",
+        "evidence_consent_recorded": true,
+        "report_summary_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "urgent_exit_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "evidence_consent_recorded-false",
+      "facts": {
+        "urgent_routing_checked": true,
+        "evidence_consent_recorded": false,
+        "report_summary_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "evidence_permission_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "evidence_consent_recorded-missing",
+      "facts": {
+        "urgent_routing_checked": true,
+        "report_summary_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "evidence_permission_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "evidence_consent_recorded-string",
+      "facts": {
+        "urgent_routing_checked": true,
+        "evidence_consent_recorded": "true",
+        "report_summary_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "evidence_permission_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "report_summary_confirmed-false",
+      "facts": {
+        "urgent_routing_checked": true,
+        "evidence_consent_recorded": true,
+        "report_summary_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_loss_summary",
+        "effects": 0
+      }
+    },
+    {
+      "name": "report_summary_confirmed-missing",
+      "facts": {
+        "urgent_routing_checked": true,
+        "evidence_consent_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_loss_summary",
+        "effects": 0
+      }
+    },
+    {
+      "name": "report_summary_confirmed-string",
+      "facts": {
+        "urgent_routing_checked": true,
+        "evidence_consent_recorded": true,
+        "report_summary_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_loss_summary",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

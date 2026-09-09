@@ -1,0 +1,178 @@
+{
+  "slug": "insurance-quote-bind",
+  "title": "Quotes that do not silently bind",
+  "organisation": "HarborCover",
+  "action": "confirm an authorized insurance offer",
+  "failure": "The agent described an indicative estimate as active cover before the underwriting service had returned a binding receipt.",
+  "lesson": "Represent indicative quote, underwritten offer and bound policy as separate states with separate customer confirmations.",
+  "receipt": "A policy reference only after the binding service confirms; otherwise an explicitly unbound offer.",
+  "evidence": "Match offer version and confirmed answers to the bind response; never infer coverage from payment intent or a quote screen.",
+  "recovery": "Withdraw an invalidated offer when an answer changes. Request new underwriting before accepting a binding choice.",
+  "owner": "underwriting integration owner",
+  "metric": "estimates presented as active policies, divided by quote sessions",
+  "question": "This is the current offer, not active cover yet. Shall we review the answers before asking to bind it?",
+  "correction": "The customer changes a material answer; invalidate the old offer and ask the underwriting service for another.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "underwritten_offer_current",
+      "good": true,
+      "bad": false,
+      "reason": "estimate_only",
+      "phase": "request"
+    },
+    {
+      "field": "material_answers_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "answers_not_confirmed",
+      "phase": "request"
+    },
+    {
+      "field": "bind_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "policy_not_bound",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "underwritten_offer_current": true,
+    "material_answers_confirmed": true,
+    "bind_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "underwritten_offer_current": true,
+        "material_answers_confirmed": true,
+        "bind_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "underwritten_offer_current-false",
+      "facts": {
+        "underwritten_offer_current": false,
+        "material_answers_confirmed": true,
+        "bind_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "estimate_only",
+        "effects": 0
+      }
+    },
+    {
+      "name": "underwritten_offer_current-missing",
+      "facts": {
+        "material_answers_confirmed": true,
+        "bind_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "estimate_only",
+        "effects": 0
+      }
+    },
+    {
+      "name": "underwritten_offer_current-string",
+      "facts": {
+        "underwritten_offer_current": "true",
+        "material_answers_confirmed": true,
+        "bind_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "estimate_only",
+        "effects": 0
+      }
+    },
+    {
+      "name": "material_answers_confirmed-false",
+      "facts": {
+        "underwritten_offer_current": true,
+        "material_answers_confirmed": false,
+        "bind_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "answers_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "material_answers_confirmed-missing",
+      "facts": {
+        "underwritten_offer_current": true,
+        "bind_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "answers_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "material_answers_confirmed-string",
+      "facts": {
+        "underwritten_offer_current": true,
+        "material_answers_confirmed": "true",
+        "bind_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "answers_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "bind_receipt_verified-false",
+      "facts": {
+        "underwritten_offer_current": true,
+        "material_answers_confirmed": true,
+        "bind_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "policy_not_bound",
+        "effects": 1
+      }
+    },
+    {
+      "name": "bind_receipt_verified-missing",
+      "facts": {
+        "underwritten_offer_current": true,
+        "material_answers_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "policy_not_bound",
+        "effects": 1
+      }
+    },
+    {
+      "name": "bind_receipt_verified-string",
+      "facts": {
+        "underwritten_offer_current": true,
+        "material_answers_confirmed": true,
+        "bind_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "policy_not_bound",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

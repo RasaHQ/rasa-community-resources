@@ -1,0 +1,178 @@
+{
+  "slug": "internal-hr",
+  "title": "HR requests without inferred entitlement",
+  "organisation": "Orchard Works",
+  "action": "record a leave or benefits support request",
+  "failure": "The agent showed a leave balance and described the requested dates as approved time off.",
+  "lesson": "Separate entitlement records, employee requests and manager decisions; benefits and payroll questions may require restricted specialist handling.",
+  "receipt": "A leave/support request reference with balance, request and approval states separately labeled.",
+  "evidence": "Compare the balance source and policy revision with the approval record; preserve the minimum payroll detail necessary for a referral.",
+  "recovery": "When policy or balance cannot be reconciled, route HR review while retaining the request; do not promise eligibility from a generic FAQ.",
+  "owner": "HR service owner",
+  "metric": "submitted leave requests described as approved, divided by leave submissions",
+  "question": "The recorded balance is this amount. Submitting these dates asks for approval; it does not approve them. Continue?",
+  "correction": "The employee changes the dates; recalculate the request and reconfirm without carrying over an old approval.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "employee_record_matched",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_employee_record",
+      "phase": "request"
+    },
+    {
+      "field": "policy_revision_current",
+      "good": true,
+      "bad": false,
+      "reason": "obsolete_hr_policy",
+      "phase": "request"
+    },
+    {
+      "field": "request_stage_explicit",
+      "good": true,
+      "bad": false,
+      "reason": "request_as_approval",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "employee_record_matched": true,
+    "policy_revision_current": true,
+    "request_stage_explicit": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "employee_record_matched": true,
+        "policy_revision_current": true,
+        "request_stage_explicit": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "employee_record_matched-false",
+      "facts": {
+        "employee_record_matched": false,
+        "policy_revision_current": true,
+        "request_stage_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_employee_record",
+        "effects": 0
+      }
+    },
+    {
+      "name": "employee_record_matched-missing",
+      "facts": {
+        "policy_revision_current": true,
+        "request_stage_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_employee_record",
+        "effects": 0
+      }
+    },
+    {
+      "name": "employee_record_matched-string",
+      "facts": {
+        "employee_record_matched": "true",
+        "policy_revision_current": true,
+        "request_stage_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_employee_record",
+        "effects": 0
+      }
+    },
+    {
+      "name": "policy_revision_current-false",
+      "facts": {
+        "employee_record_matched": true,
+        "policy_revision_current": false,
+        "request_stage_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_hr_policy",
+        "effects": 0
+      }
+    },
+    {
+      "name": "policy_revision_current-missing",
+      "facts": {
+        "employee_record_matched": true,
+        "request_stage_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_hr_policy",
+        "effects": 0
+      }
+    },
+    {
+      "name": "policy_revision_current-string",
+      "facts": {
+        "employee_record_matched": true,
+        "policy_revision_current": "true",
+        "request_stage_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_hr_policy",
+        "effects": 0
+      }
+    },
+    {
+      "name": "request_stage_explicit-false",
+      "facts": {
+        "employee_record_matched": true,
+        "policy_revision_current": true,
+        "request_stage_explicit": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "request_as_approval",
+        "effects": 0
+      }
+    },
+    {
+      "name": "request_stage_explicit-missing",
+      "facts": {
+        "employee_record_matched": true,
+        "policy_revision_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "request_as_approval",
+        "effects": 0
+      }
+    },
+    {
+      "name": "request_stage_explicit-string",
+      "facts": {
+        "employee_record_matched": true,
+        "policy_revision_current": true,
+        "request_stage_explicit": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "request_as_approval",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "internal-sales-notes",
+  "title": "Hands-free CRM notes with a review boundary",
+  "organisation": "Orchard Works",
+  "action": "save a salesperson\u2019s confirmed call note",
+  "failure": "A dictated customer comment was stored as an agreed contract term on the wrong opportunity.",
+  "lesson": "Separate observation, inferred intent and committed deal state; confirm record identity and note text before writing.",
+  "receipt": "A CRM note reference on the confirmed opportunity, without changing commercial stage or terms.",
+  "evidence": "Compare the dictated draft with the confirmed text and inspect which CRM fields changed; note capture must not update contract state.",
+  "recovery": "After a write timeout, look up the same note key before repeating it. Route uncertain identity or text back to the salesperson.",
+  "owner": "sales systems owner",
+  "metric": "note requests that change deal terms or the wrong record, divided by note submissions",
+  "question": "Save this note to the opportunity you selected? I will not change its stage or commercial terms.",
+  "correction": "The salesperson corrects a quoted amount; update and reconfirm the note before writing it.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "opportunity_identity_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_opportunity",
+      "phase": "request"
+    },
+    {
+      "field": "note_text_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "dictation_unconfirmed",
+      "phase": "request"
+    },
+    {
+      "field": "note_write_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "note_write_unknown",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "opportunity_identity_confirmed": true,
+    "note_text_confirmed": true,
+    "note_write_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "opportunity_identity_confirmed": true,
+        "note_text_confirmed": true,
+        "note_write_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "opportunity_identity_confirmed-false",
+      "facts": {
+        "opportunity_identity_confirmed": false,
+        "note_text_confirmed": true,
+        "note_write_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_opportunity",
+        "effects": 0
+      }
+    },
+    {
+      "name": "opportunity_identity_confirmed-missing",
+      "facts": {
+        "note_text_confirmed": true,
+        "note_write_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_opportunity",
+        "effects": 0
+      }
+    },
+    {
+      "name": "opportunity_identity_confirmed-string",
+      "facts": {
+        "opportunity_identity_confirmed": "true",
+        "note_text_confirmed": true,
+        "note_write_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_opportunity",
+        "effects": 0
+      }
+    },
+    {
+      "name": "note_text_confirmed-false",
+      "facts": {
+        "opportunity_identity_confirmed": true,
+        "note_text_confirmed": false,
+        "note_write_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "dictation_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "note_text_confirmed-missing",
+      "facts": {
+        "opportunity_identity_confirmed": true,
+        "note_write_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "dictation_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "note_text_confirmed-string",
+      "facts": {
+        "opportunity_identity_confirmed": true,
+        "note_text_confirmed": "true",
+        "note_write_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "dictation_unconfirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "note_write_receipt_verified-false",
+      "facts": {
+        "opportunity_identity_confirmed": true,
+        "note_text_confirmed": true,
+        "note_write_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "note_write_unknown",
+        "effects": 1
+      }
+    },
+    {
+      "name": "note_write_receipt_verified-missing",
+      "facts": {
+        "opportunity_identity_confirmed": true,
+        "note_text_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "note_write_unknown",
+        "effects": 1
+      }
+    },
+    {
+      "name": "note_write_receipt_verified-string",
+      "facts": {
+        "opportunity_identity_confirmed": true,
+        "note_text_confirmed": true,
+        "note_write_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "note_write_unknown",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "banking-transfer",
+  "title": "Transfers with authoritative balances",
+  "organisation": "Northgate Bank",
+  "action": "submit an account transfer",
+  "failure": "The agent reused a balance read before another debit and promised a transfer the ledger could not fund.",
+  "lesson": "Use an execution-time ledger decision, keep payee identity separate from a spoken name, and expose pending versus posted state.",
+  "receipt": "A ledger transfer reference and explicit pending or posted status.",
+  "evidence": "Join balance revision, payee identifier and funds reservation to one transfer attempt; do not infer posting from a request receipt.",
+  "recovery": "Query the transfer reference before any retry. An unknown result stays pending; escalate reconciliation rather than issuing a second transfer.",
+  "owner": "payments ledger owner",
+  "metric": "transfers promised as posted without a posted ledger entry, divided by transfer requests",
+  "question": "Transfer the stated amount to the saved payee ending 42? I will confirm the result from the ledger.",
+  "correction": "The caller changes the payee after confirming; discard the earlier confirmation and show the new destination.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "ledger_revision_current",
+      "good": true,
+      "bad": false,
+      "reason": "stale_balance",
+      "phase": "request"
+    },
+    {
+      "field": "payee_identity_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "unconfirmed_payee",
+      "phase": "request"
+    },
+    {
+      "field": "funds_reserved",
+      "good": true,
+      "bad": false,
+      "reason": "funds_not_reserved",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "ledger_revision_current": true,
+    "payee_identity_confirmed": true,
+    "funds_reserved": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "ledger_revision_current": true,
+        "payee_identity_confirmed": true,
+        "funds_reserved": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "ledger_revision_current-false",
+      "facts": {
+        "ledger_revision_current": false,
+        "payee_identity_confirmed": true,
+        "funds_reserved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_balance",
+        "effects": 0
+      }
+    },
+    {
+      "name": "ledger_revision_current-missing",
+      "facts": {
+        "payee_identity_confirmed": true,
+        "funds_reserved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_balance",
+        "effects": 0
+      }
+    },
+    {
+      "name": "ledger_revision_current-string",
+      "facts": {
+        "ledger_revision_current": "true",
+        "payee_identity_confirmed": true,
+        "funds_reserved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_balance",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payee_identity_confirmed-false",
+      "facts": {
+        "ledger_revision_current": true,
+        "payee_identity_confirmed": false,
+        "funds_reserved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_payee",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payee_identity_confirmed-missing",
+      "facts": {
+        "ledger_revision_current": true,
+        "funds_reserved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_payee",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payee_identity_confirmed-string",
+      "facts": {
+        "ledger_revision_current": true,
+        "payee_identity_confirmed": "true",
+        "funds_reserved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_payee",
+        "effects": 0
+      }
+    },
+    {
+      "name": "funds_reserved-false",
+      "facts": {
+        "ledger_revision_current": true,
+        "payee_identity_confirmed": true,
+        "funds_reserved": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "funds_not_reserved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "funds_reserved-missing",
+      "facts": {
+        "ledger_revision_current": true,
+        "payee_identity_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "funds_not_reserved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "funds_reserved-string",
+      "facts": {
+        "ledger_revision_current": true,
+        "payee_identity_confirmed": true,
+        "funds_reserved": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "funds_not_reserved",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

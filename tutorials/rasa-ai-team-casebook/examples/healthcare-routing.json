@@ -1,0 +1,178 @@
+{
+  "slug": "healthcare-routing",
+  "title": "Clinical questions routed without diagnosis",
+  "organisation": "Cedar Clinic",
+  "action": "route a caller\u2019s clinical question to staff",
+  "failure": "The routing agent turned a short symptom description into a reassuring diagnosis and delayed the human route.",
+  "lesson": "Use an approved routing protocol without inventing clinical interpretation; administrative navigation cannot determine medical safety.",
+  "receipt": "A routing or handoff reference with no diagnosis, urgency downgrade or treatment instruction from the agent.",
+  "evidence": "Review conversations for unsupported clinical conclusions and verify that the configured route is actually reachable.",
+  "recovery": "When the route is unavailable, surface the organization\u2019s approved urgent/support instructions and stop exploratory symptom questioning.",
+  "owner": "clinical routing owner",
+  "metric": "routing conversations containing an unsupported clinical conclusion, divided by clinical-routing conversations",
+  "question": "I can connect you with the appropriate clinical team; I cannot assess the symptoms myself.",
+  "correction": "The caller challenges the route; offer the approved human path without arguing from a guessed diagnosis.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "approved_route_available",
+      "good": true,
+      "bad": false,
+      "reason": "no_approved_route",
+      "phase": "request"
+    },
+    {
+      "field": "clinical_interpretation_absent",
+      "good": true,
+      "bad": false,
+      "reason": "diagnosis_invented",
+      "phase": "request"
+    },
+    {
+      "field": "human_receipt_known",
+      "good": true,
+      "bad": false,
+      "reason": "handoff_unacknowledged",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "approved_route_available": true,
+    "clinical_interpretation_absent": true,
+    "human_receipt_known": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "approved_route_available": true,
+        "clinical_interpretation_absent": true,
+        "human_receipt_known": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "approved_route_available-false",
+      "facts": {
+        "approved_route_available": false,
+        "clinical_interpretation_absent": true,
+        "human_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_approved_route",
+        "effects": 0
+      }
+    },
+    {
+      "name": "approved_route_available-missing",
+      "facts": {
+        "clinical_interpretation_absent": true,
+        "human_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_approved_route",
+        "effects": 0
+      }
+    },
+    {
+      "name": "approved_route_available-string",
+      "facts": {
+        "approved_route_available": "true",
+        "clinical_interpretation_absent": true,
+        "human_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_approved_route",
+        "effects": 0
+      }
+    },
+    {
+      "name": "clinical_interpretation_absent-false",
+      "facts": {
+        "approved_route_available": true,
+        "clinical_interpretation_absent": false,
+        "human_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "diagnosis_invented",
+        "effects": 0
+      }
+    },
+    {
+      "name": "clinical_interpretation_absent-missing",
+      "facts": {
+        "approved_route_available": true,
+        "human_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "diagnosis_invented",
+        "effects": 0
+      }
+    },
+    {
+      "name": "clinical_interpretation_absent-string",
+      "facts": {
+        "approved_route_available": true,
+        "clinical_interpretation_absent": "true",
+        "human_receipt_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "diagnosis_invented",
+        "effects": 0
+      }
+    },
+    {
+      "name": "human_receipt_known-false",
+      "facts": {
+        "approved_route_available": true,
+        "clinical_interpretation_absent": true,
+        "human_receipt_known": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "handoff_unacknowledged",
+        "effects": 1
+      }
+    },
+    {
+      "name": "human_receipt_known-missing",
+      "facts": {
+        "approved_route_available": true,
+        "clinical_interpretation_absent": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "handoff_unacknowledged",
+        "effects": 1
+      }
+    },
+    {
+      "name": "human_receipt_known-string",
+      "facts": {
+        "approved_route_available": true,
+        "clinical_interpretation_absent": true,
+        "human_receipt_known": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "handoff_unacknowledged",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

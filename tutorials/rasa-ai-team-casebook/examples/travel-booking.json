@@ -1,0 +1,178 @@
+{
+  "slug": "travel-booking",
+  "title": "Journey changes with linked services",
+  "organisation": "Horizon Travel",
+  "action": "change a selected travel booking",
+  "failure": "The agent changed one flight segment and left a connecting service pointing at the old arrival time.",
+  "lesson": "Treat the requested segment and dependent services as a journey, while preserving separate booking, flight-status and baggage facts.",
+  "receipt": "A booking-change receipt with the state of each affected linked service.",
+  "evidence": "Compare segment and connection identifiers before and after the change; a successful single-segment response is not complete journey recovery.",
+  "recovery": "On partial success, freeze further changes and reconcile the affected references with the travel desk rather than repeating the whole request.",
+  "owner": "journey servicing owner",
+  "metric": "segment changes leaving unresolved dependent services unreported, divided by linked-journey changes",
+  "question": "This change affects the selected segment and these connected services. Shall I check all of them before proceeding?",
+  "correction": "The passenger meant the return leg; discard the outbound draft and resolve the requested segment again.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "segment_identity_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_segment",
+      "phase": "request"
+    },
+    {
+      "field": "dependent_services_checked",
+      "good": true,
+      "bad": false,
+      "reason": "connection_not_checked",
+      "phase": "request"
+    },
+    {
+      "field": "change_receipt_reconciled",
+      "good": true,
+      "bad": false,
+      "reason": "partial_journey_change",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "segment_identity_confirmed": true,
+    "dependent_services_checked": true,
+    "change_receipt_reconciled": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "segment_identity_confirmed": true,
+        "dependent_services_checked": true,
+        "change_receipt_reconciled": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "segment_identity_confirmed-false",
+      "facts": {
+        "segment_identity_confirmed": false,
+        "dependent_services_checked": true,
+        "change_receipt_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_segment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "segment_identity_confirmed-missing",
+      "facts": {
+        "dependent_services_checked": true,
+        "change_receipt_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_segment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "segment_identity_confirmed-string",
+      "facts": {
+        "segment_identity_confirmed": "true",
+        "dependent_services_checked": true,
+        "change_receipt_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_segment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dependent_services_checked-false",
+      "facts": {
+        "segment_identity_confirmed": true,
+        "dependent_services_checked": false,
+        "change_receipt_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "connection_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dependent_services_checked-missing",
+      "facts": {
+        "segment_identity_confirmed": true,
+        "change_receipt_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "connection_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "dependent_services_checked-string",
+      "facts": {
+        "segment_identity_confirmed": true,
+        "dependent_services_checked": "true",
+        "change_receipt_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "connection_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "change_receipt_reconciled-false",
+      "facts": {
+        "segment_identity_confirmed": true,
+        "dependent_services_checked": true,
+        "change_receipt_reconciled": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "partial_journey_change",
+        "effects": 1
+      }
+    },
+    {
+      "name": "change_receipt_reconciled-missing",
+      "facts": {
+        "segment_identity_confirmed": true,
+        "dependent_services_checked": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "partial_journey_change",
+        "effects": 1
+      }
+    },
+    {
+      "name": "change_receipt_reconciled-string",
+      "facts": {
+        "segment_identity_confirmed": true,
+        "dependent_services_checked": true,
+        "change_receipt_reconciled": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "partial_journey_change",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

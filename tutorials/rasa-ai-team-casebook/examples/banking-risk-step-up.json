@@ -1,0 +1,178 @@
+{
+  "slug": "banking-risk-step-up",
+  "title": "Risk-triggered verification changes",
+  "organisation": "Northgate Bank",
+  "action": "raise the verification requirement for a request",
+  "failure": "A session verified for a balance enquiry later attempted a changed-address transfer without another check.",
+  "lesson": "Re-evaluate authority when the requested action or destination changes; session authentication is not an unlimited capability.",
+  "receipt": "An action-bound decision reference recording the required verification level.",
+  "evidence": "Compare action, destination and verification issue time; a later risk change must invalidate earlier permission.",
+  "recovery": "Suspend the sensitive action when risk cannot be resolved. Keep low-risk information access separately scoped, rather than widening authority.",
+  "owner": "identity risk owner",
+  "metric": "sensitive actions using authorization from a different task, divided by sensitive attempts",
+  "question": "This change needs an additional verification step. Would you like to continue or speak with the team?",
+  "correction": "The caller changes the destination again; invalidate the earlier action confirmation and re-evaluate the new request.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "risk_evaluated_for_action",
+      "good": true,
+      "bad": false,
+      "reason": "old_risk_assessment",
+      "phase": "request"
+    },
+    {
+      "field": "verification_matches_risk",
+      "good": true,
+      "bad": false,
+      "reason": "insufficient_verification",
+      "phase": "request"
+    },
+    {
+      "field": "authority_not_expired",
+      "good": true,
+      "bad": false,
+      "reason": "expired_authority",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "risk_evaluated_for_action": true,
+    "verification_matches_risk": true,
+    "authority_not_expired": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "risk_evaluated_for_action": true,
+        "verification_matches_risk": true,
+        "authority_not_expired": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "risk_evaluated_for_action-false",
+      "facts": {
+        "risk_evaluated_for_action": false,
+        "verification_matches_risk": true,
+        "authority_not_expired": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "old_risk_assessment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "risk_evaluated_for_action-missing",
+      "facts": {
+        "verification_matches_risk": true,
+        "authority_not_expired": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "old_risk_assessment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "risk_evaluated_for_action-string",
+      "facts": {
+        "risk_evaluated_for_action": "true",
+        "verification_matches_risk": true,
+        "authority_not_expired": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "old_risk_assessment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "verification_matches_risk-false",
+      "facts": {
+        "risk_evaluated_for_action": true,
+        "verification_matches_risk": false,
+        "authority_not_expired": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "insufficient_verification",
+        "effects": 0
+      }
+    },
+    {
+      "name": "verification_matches_risk-missing",
+      "facts": {
+        "risk_evaluated_for_action": true,
+        "authority_not_expired": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "insufficient_verification",
+        "effects": 0
+      }
+    },
+    {
+      "name": "verification_matches_risk-string",
+      "facts": {
+        "risk_evaluated_for_action": true,
+        "verification_matches_risk": "true",
+        "authority_not_expired": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "insufficient_verification",
+        "effects": 0
+      }
+    },
+    {
+      "name": "authority_not_expired-false",
+      "facts": {
+        "risk_evaluated_for_action": true,
+        "verification_matches_risk": true,
+        "authority_not_expired": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "expired_authority",
+        "effects": 0
+      }
+    },
+    {
+      "name": "authority_not_expired-missing",
+      "facts": {
+        "risk_evaluated_for_action": true,
+        "verification_matches_risk": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "expired_authority",
+        "effects": 0
+      }
+    },
+    {
+      "name": "authority_not_expired-string",
+      "facts": {
+        "risk_evaluated_for_action": true,
+        "verification_matches_risk": true,
+        "authority_not_expired": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "expired_authority",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "utilities-meter-reading",
+  "title": "Meter readings with provenance and units",
+  "organisation": "Amber Grid",
+  "action": "submit a customer meter reading",
+  "failure": "The system accepted a reading for the wrong meter and interpreted a decimal value as whole units.",
+  "lesson": "Bind the reading to the meter, unit and observation date; distinguish a submitted customer reading from a validated bill input.",
+  "receipt": "A reading-submission reference with meter, units and date; validation remains separately visible.",
+  "evidence": "Compare meter label, numeric representation and units before and after submission, including implausible-change handling.",
+  "recovery": "When the service flags an implausible change, retain the original observation and route review; do not silently alter the number to fit expectations.",
+  "owner": "meter data owner",
+  "metric": "readings submitted with wrong meter or units, divided by reading submissions",
+  "question": "Please confirm the meter label, the displayed reading and its units before I send it.",
+  "correction": "The customer corrects a decimal position; show the corrected reading and request confirmation again.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "meter_identity_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_meter",
+      "phase": "request"
+    },
+    {
+      "field": "reading_units_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "unit_mismatch",
+      "phase": "request"
+    },
+    {
+      "field": "reading_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "reading_not_received",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "meter_identity_confirmed": true,
+    "reading_units_confirmed": true,
+    "reading_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "meter_identity_confirmed": true,
+        "reading_units_confirmed": true,
+        "reading_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "meter_identity_confirmed-false",
+      "facts": {
+        "meter_identity_confirmed": false,
+        "reading_units_confirmed": true,
+        "reading_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_meter",
+        "effects": 0
+      }
+    },
+    {
+      "name": "meter_identity_confirmed-missing",
+      "facts": {
+        "reading_units_confirmed": true,
+        "reading_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_meter",
+        "effects": 0
+      }
+    },
+    {
+      "name": "meter_identity_confirmed-string",
+      "facts": {
+        "meter_identity_confirmed": "true",
+        "reading_units_confirmed": true,
+        "reading_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_meter",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reading_units_confirmed-false",
+      "facts": {
+        "meter_identity_confirmed": true,
+        "reading_units_confirmed": false,
+        "reading_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unit_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reading_units_confirmed-missing",
+      "facts": {
+        "meter_identity_confirmed": true,
+        "reading_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unit_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reading_units_confirmed-string",
+      "facts": {
+        "meter_identity_confirmed": true,
+        "reading_units_confirmed": "true",
+        "reading_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unit_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reading_receipt_verified-false",
+      "facts": {
+        "meter_identity_confirmed": true,
+        "reading_units_confirmed": true,
+        "reading_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "reading_not_received",
+        "effects": 1
+      }
+    },
+    {
+      "name": "reading_receipt_verified-missing",
+      "facts": {
+        "meter_identity_confirmed": true,
+        "reading_units_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "reading_not_received",
+        "effects": 1
+      }
+    },
+    {
+      "name": "reading_receipt_verified-string",
+      "facts": {
+        "meter_identity_confirmed": true,
+        "reading_units_confirmed": true,
+        "reading_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "reading_not_received",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

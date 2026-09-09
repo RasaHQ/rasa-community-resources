@@ -1,0 +1,178 @@
+{
+  "slug": "internal-invoice-status",
+  "title": "Invoice status without payment authority",
+  "organisation": "Orchard Works",
+  "action": "answer an invoice or purchase-order enquiry",
+  "failure": "The assistant interpreted a matched purchase order as permission to release payment to newly supplied bank details.",
+  "lesson": "Separate document matching, approval, payment scheduling and supplier-detail changes; status access does not confer payment authority.",
+  "receipt": "A dated invoice/PO status or finance referral, without a new payment or supplier-bank change.",
+  "evidence": "Compare document linkage and finance-stage codes with the response; verify that the status tool cannot alter payment destinations.",
+  "recovery": "Route supplier-detail changes through the controlled finance process. If payment status is unknown, reconcile the existing reference without initiating another payment.",
+  "owner": "finance operations owner",
+  "metric": "status conversations that initiate unauthorized payment changes, divided by invoice enquiries",
+  "question": "I can report the recorded invoice stage. Changes to payment or supplier details use the finance team\u2019s separate process.",
+  "correction": "The caller provides a new bank account; do not record it in the status flow or repeat it into general conversation logs.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "invoice_po_link_verified",
+      "good": true,
+      "bad": false,
+      "reason": "document_link_mismatch",
+      "phase": "request"
+    },
+    {
+      "field": "payment_stage_explicit",
+      "good": true,
+      "bad": false,
+      "reason": "approval_as_payment",
+      "phase": "request"
+    },
+    {
+      "field": "supplier_change_route_separate",
+      "good": true,
+      "bad": false,
+      "reason": "bank_detail_change_inline",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "invoice_po_link_verified": true,
+    "payment_stage_explicit": true,
+    "supplier_change_route_separate": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "invoice_po_link_verified": true,
+        "payment_stage_explicit": true,
+        "supplier_change_route_separate": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "invoice_po_link_verified-false",
+      "facts": {
+        "invoice_po_link_verified": false,
+        "payment_stage_explicit": true,
+        "supplier_change_route_separate": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "document_link_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "invoice_po_link_verified-missing",
+      "facts": {
+        "payment_stage_explicit": true,
+        "supplier_change_route_separate": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "document_link_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "invoice_po_link_verified-string",
+      "facts": {
+        "invoice_po_link_verified": "true",
+        "payment_stage_explicit": true,
+        "supplier_change_route_separate": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "document_link_mismatch",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payment_stage_explicit-false",
+      "facts": {
+        "invoice_po_link_verified": true,
+        "payment_stage_explicit": false,
+        "supplier_change_route_separate": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "approval_as_payment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payment_stage_explicit-missing",
+      "facts": {
+        "invoice_po_link_verified": true,
+        "supplier_change_route_separate": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "approval_as_payment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "payment_stage_explicit-string",
+      "facts": {
+        "invoice_po_link_verified": true,
+        "payment_stage_explicit": "true",
+        "supplier_change_route_separate": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "approval_as_payment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "supplier_change_route_separate-false",
+      "facts": {
+        "invoice_po_link_verified": true,
+        "payment_stage_explicit": true,
+        "supplier_change_route_separate": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "bank_detail_change_inline",
+        "effects": 0
+      }
+    },
+    {
+      "name": "supplier_change_route_separate-missing",
+      "facts": {
+        "invoice_po_link_verified": true,
+        "payment_stage_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "bank_detail_change_inline",
+        "effects": 0
+      }
+    },
+    {
+      "name": "supplier_change_route_separate-string",
+      "facts": {
+        "invoice_po_link_verified": true,
+        "payment_stage_explicit": true,
+        "supplier_change_route_separate": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "bank_detail_change_inline",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}
