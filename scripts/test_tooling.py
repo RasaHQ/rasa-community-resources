@@ -147,6 +147,13 @@ class TestProseRewrite(unittest.TestCase):
         self.assertNotIn("3.19.0.dev5", out)
         self.assertEqual(out.count("3.19.1"), 5)
 
+    def test_historical_assessment_is_preserved_while_installation_advances(self):
+        text = "Verified with: rasa-pro 3.20.0.dev6 # rasa-version-ignore: historical assessment\nInstallation: rasa-pro 3.20.0.dev6\n"
+        out, changed = rewrite_version_text(text, "3.20.0.dev6", "3.20.0.dev9")
+        self.assertTrue(changed)
+        self.assertIn("Verified with: rasa-pro 3.20.0.dev6", out)
+        self.assertIn("Installation: rasa-pro 3.20.0.dev9", out)
+
     def test_never_spans_a_newline(self):
         """A trailing 'rasa-pro' must not absorb a version from the next line."""
         text = "install rasa-pro\n3.19.0.dev5 is the old pin\n"

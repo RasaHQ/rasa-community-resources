@@ -178,12 +178,16 @@ def rewrite_version_text(
             changed = True
         return f"{match.group(1)}{new_version}{match.group(3)}"
 
-    text = VERIFIED_WITH_RE.sub(bump, text)
-    text = NOTES_HEADING_RE.sub(bump_notes, text)
-    text = PROSE_EQ_RE.sub(bump, text)
-    text = PROSE_SPACE_RE.sub(bump, text)
-    text = MAKE_VERSION_RE.sub(bump, text)
-    text = ECHO_PIN_RE.sub(bump_echo, text)
+    # Marked historical observations must remain verbatim across migrations.
+    lines = []
+    for line in text.splitlines(keepends=True):
+        if "rasa-version-ignore" not in line:
+            for pattern, replace in [(VERIFIED_WITH_RE, bump), (NOTES_HEADING_RE, bump_notes),
+                                     (PROSE_EQ_RE, bump), (PROSE_SPACE_RE, bump),
+                                     (MAKE_VERSION_RE, bump), (ECHO_PIN_RE, bump_echo)]:
+                line = pattern.sub(replace, line)
+        lines.append(line)
+    text = "".join(lines)
 
     if touch_assessed_on:
         today = date.today().isoformat()
@@ -547,16 +551,33 @@ def main() -> int:
     print()
 
     failed = changed = 0
+    # Rewrite every manifest before resolving any lock. Some examples depend on
+    # another catalog project by path; resolving in directory order otherwise
+    # combines the new consumer pin with the old provider pin and falsely fails.
+    prepared = []
     for project in projects:
         before = read_pyproject_pin(project)
         result = migrate_project(
             project,
             new_version,
-            skip_lock=args.skip_lock,
+            skip_lock=True,
             touch_assessed_on=not args.no_touch_assessed_on,
             dry_run=args.dry_run,
             upgrade=args.upgrade,
         )
+        prepared.append((project, before, result))
+    for project, before, result in prepared:
+        if not result["error"] and not args.skip_lock and not args.dry_run:
+            try:
+                upgrade = args.upgrade or (result["prerelease"] or "").startswith("removed")
+                _run_uv_lock(project.path, new_version, upgrade=upgrade)
+                result["locked"] = True
+                result["upgraded"] = upgrade
+                result["lock_version"] = read_lock_version(project)
+                if result["lock_version"] != new_version:
+                    raise RuntimeError("lock did not resolve the requested Rasa version")
+            except Exception as exc:
+                result["error"] = str(exc)
         if result["error"]:
             failed += 1
             print(f"{RED}[FAIL]{RESET} {result['path']}: {result['error']}")
@@ -582,7 +603,11 @@ def main() -> int:
             print(f"{DIM}[SKIP] {result['path']}: already on {new_version}{detail}{RESET}")
 
     # Repo-level docs that quote the pin (root README, MIGRATING, Makefile help).
-    for rel in REPO_DOCS:
+    # Include nested starter-pack instructions and scaffolding skills; these were
+    # previously invisible because they are not runnable pyproject roots.
+    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=REPO_ROOT).decode().split("\0")
+    extra_docs = [rel for rel in tracked if rel.startswith("starter-pack/") and (rel.endswith(".md") or rel.endswith("/Makefile"))]
+    for rel in sorted(set(REPO_DOCS) | set(extra_docs)):
         if _rewrite_doc(
             REPO_ROOT / rel, None, new_version, touch_assessed_on=False, dry_run=args.dry_run
         ):

@@ -4,7 +4,7 @@
 Author:        Rod Rivera, from a live session by Daksh Varshneya
 Assessed on:   2026-08-26
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0.dev9, Python 3.11+, uv
 Audience:      Anyone who has run `rasa init --engine mantle` once
 Time:          30–40 minutes
 ```
@@ -301,7 +301,7 @@ an import rename:
 
 ```bash
 # 1. the pin
-rasa-pro==3.19.0.dev7  →  rasa-pro==3.20.0.dev6   # rasa-version-ignore: upgrade path
+rasa-pro==3.20.0.dev9  →  rasa-pro==3.20.0.dev9   # rasa-version-ignore: upgrade path
 
 # 2. the imports, in every tools.py
 from rasa.calm_v2.tools.decorator import ToolContext, tool

@@ -17,7 +17,7 @@ of ~10 projects once carried **39 rules the engine never applied** — no
 warning at train time, no error at load, found only by reading the built
 prompt. Two independent users discovered it separately.
 
-**Top-level keys (siblings of `agent:`), as of 3.20.0.dev6:**
+**Top-level keys (siblings of `agent:`), checked against the catalog pin; see COMPATIBILITY.json:**
 `name`, `description`, `rules`, `conversation`, `references`, `before_end`,
 `tool_timeout`.
 

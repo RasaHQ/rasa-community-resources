@@ -24,7 +24,7 @@ from rasa_projects import (  # noqa: E402
     Project,
     read_expected_version,
     read_pyproject_pin,
-    read_required_secrets,
+    read_training_secrets,
     uv_prerelease_args,
 )
 
@@ -129,7 +129,7 @@ def check_project(
     if not skip_sync:
         # Only allow prereleases when the pin itself is one; a stable pin should
         # not license every other dependency to resolve to a prerelease.
-        sync_cmd = [uv, "sync", *uv_prerelease_args(expected), "--quiet"]
+        sync_cmd = [uv, "sync", "--locked", *uv_prerelease_args(expected), "--quiet"]
         info(" ".join(["uv", "sync", *uv_prerelease_args(expected)]))
         try:
             subprocess.run(
@@ -165,7 +165,7 @@ print(actual)
 """
     try:
         proc = subprocess.run(
-            [uv, "run", "python", "-c", version_probe],
+            [uv, "run", "--locked", "python", "-c", version_probe],
             cwd=project,
             check=True,
             capture_output=True,
@@ -189,7 +189,7 @@ print("validate_project: ok")
     try:
         info("validate_project")
         subprocess.run(
-            [uv, "run", "python", "-c", validate_probe],
+            [uv, "run", "--locked", "python", "-c", validate_probe],
             cwd=project,
             check=True,
             capture_output=True,
@@ -223,7 +223,7 @@ print("validate_project: ok")
         # endpoints.yml, which reads as a broken resource when it is really an
         # unconfigured runner. Naming the missing key is the whole point.
         missing = [
-            name for name in read_required_secrets(Project(project))
+            name for name in read_training_secrets(Project(project))
             if not os.environ.get(name, "").strip()
         ]
         if missing:
@@ -231,20 +231,20 @@ print("validate_project: ok")
             if require_secrets:
                 fail(
                     f"{names} missing — this resource declares it in "
-                    f"[tool.rasa-catalog] required-secrets and cannot train "
+                    f"[tool.rasa-catalog] training/required-secrets and cannot train "
                     f"without it."
                 )
                 return 1
             warn(
                 f"{names} not set — SKIPPING rasa train (not verified). This "
                 f"resource runs on a provider the default key set does not "
-                f"cover; see [tool.rasa-catalog] required-secrets."
+                f"cover; see [tool.rasa-catalog] training/required-secrets."
             )
             return 0
 
         info("rasa train")
         try:
-            _run([uv, "run", "rasa", "train"], cwd=project)
+            _run([uv, "run", "--locked", "rasa", "train"], cwd=project)
             ok("rasa train passed")
         except subprocess.CalledProcessError:
             fail("rasa train failed")
@@ -284,7 +284,7 @@ def main() -> int:
         action="store_true",
         help=(
             "Fail instead of skipping when a secret named in "
-            "[tool.rasa-catalog] required-secrets is missing"
+            "[tool.rasa-catalog] training/required-secrets is missing"
         ),
     )
     parser.add_argument(

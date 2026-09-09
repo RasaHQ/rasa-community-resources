@@ -57,7 +57,7 @@ channels:
 (`rasa/shared/utils/yaml.py`) deliberately returns it *raw* — a secret-leak
 guard. The provider is handed the literal characters `${VAR}` as its key and
 fails with an auth error, which reads like a bad key rather than a bad config
-shape. Verified against `rasa-pro==3.20.0.dev6`:
+shape. Verified against `rasa-pro==3.20.0.dev9`:
 
 ```
 read_yaml("api_key: ${MY_KEY}")                 -> {'api_key': '${MY_KEY}'}
