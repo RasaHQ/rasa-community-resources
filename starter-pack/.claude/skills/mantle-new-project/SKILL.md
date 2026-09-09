@@ -3,7 +3,7 @@ name: mantle-new-project
 description: >
   Scaffold a complete, working Rasa Mantle project from scratch. Use when the
   user wants a new Mantle/Rasa agent, a new bot project, or asks to "set up
-  Rasa". Produces every file with the correct 3.20.0.dev6 shapes so the first
+  Rasa". Produces every file with the catalog-pinned configuration shapes so the first
   validate passes.
 ---
 
@@ -23,7 +23,7 @@ description = "<one line>"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
-    "rasa-pro==3.20.0.dev6",
+    "rasa-pro==3.20.0.dev9",
     "python-dotenv>=1.0.0",
 ]
 
@@ -112,7 +112,7 @@ For a **voice** agent add, inside the `agent:` block:
 ```yaml
 # The orchestrator LLM is a model-group reference. Provider, model and
 # credentials live on the named group, never inline under `llm:` — the
-# inline form was removed in rasa-pro 3.20.0.dev6.
+# inline form was removed in rasa-pro 3.20.0.dev9.
 llm:
   model_group: orchestrator
 

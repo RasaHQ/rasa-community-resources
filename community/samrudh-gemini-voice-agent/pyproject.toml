@@ -5,18 +5,17 @@ description = "Atlas voice travel agent running on Google Gemini with local embe
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
-    "rasa-pro==3.20.0.dev6",
+    "rasa-pro==3.20.0.dev9",
     "python-dateutil>=2.9.0",
     "python-dotenv>=1.0.0",
     "sentence-transformers>=5.7.0",
 ]
 
-# This resource runs on Google Gemini, which the catalog's default key set
-# (RASA_LICENSE / OPENAI_API_KEY / DEEPGRAM_API_KEY) does not cover. Declaring
-# it means a runner without the key skips `rasa train` and says so, instead of
-# failing on an unexpanded ${GEMINI_API_KEY} that looks like a broken project.
+# Gemini authenticates runtime conversations. Training builds local embeddings
+# and needs an issued Rasa licence, but does not call Gemini (verified on dev9).
 [tool.rasa-catalog]
 required-secrets = ["GEMINI_API_KEY"]
+training-secrets = []
 
 [tool.uv]
 prerelease = "allow"

@@ -549,11 +549,28 @@ def read_required_secrets(project: Project) -> list[str]:
     return [item for item in declared if isinstance(item, str)]
 
 
+def read_training_secrets(project: Project) -> list[str]:
+    """Training requirements may differ from runtime provider authentication."""
+    data = tomllib.loads(project.pyproject.read_text(encoding="utf-8"))
+    config = data.get("tool", {}).get("rasa-catalog", {})
+    if "training-secrets" not in config:
+        return read_required_secrets(project)
+    declared = config["training-secrets"]
+    if not isinstance(declared, list) or any(not isinstance(item, str) or not item for item in declared):
+        raise ValueError(f"{project.rel}: training-secrets must be a list of names")
+    return declared
+
+
 def read_readme_verified(project: Project) -> str | None:
     readme = project.path / "README.md"
     if not readme.is_file():
         return None
-    match = VERIFIED_WITH_RE.search(readme.read_text(encoding="utf-8"))
+    text = readme.read_text(encoding="utf-8")
+    # Current installation targets are separate from preserved human assessment
+    # history. Old snapshots without the new field keep their original contract.
+    match = re.search(rf"Installation:\s*rasa-pro[ \t]+(?P<version>{VERSION_TOKEN})", text)
+    if match is None:
+        match = VERIFIED_WITH_RE.search(text)
     return match.group("version") if match else None
 
 
