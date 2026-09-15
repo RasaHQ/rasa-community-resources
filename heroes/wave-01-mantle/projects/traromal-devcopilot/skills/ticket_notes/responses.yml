@@ -1,0 +1,31 @@
+responses:
+  utter_confirm_ticket:
+    - text: >
+        Here is your ticket: {session.ticket_notes.summary}, rated
+        {session.ticket_notes.severity}, on {session.ticket_notes.system}.
+        Shall I file it?
+  utter_ticket_cancelled:
+    - text: No problem, nothing was filed. Tell me what to change.
+  utter_ticket_filed:
+    - text: >
+        Ticket {session.ticket_notes.ticket_ref} is filed and the on-call
+        engineer has been notified.
+  utter_confirm_status_update:
+    - text: >
+        I will update ticket {session.ticket_notes.selected_ticket_id} to
+        {session.ticket_notes.new_status}. Shall I go ahead?
+  utter_status_update_cancelled:
+    - text: No problem, I have not changed anything. What status would you like instead?
+  utter_status_updated:
+    - text: >
+        Ticket {session.ticket_notes.ticket_ref} is now
+        {session.ticket_notes.new_status}.
+  utter_confirm_comment:
+    - text: >
+        I will add this note to ticket {session.ticket_notes.selected_ticket_id}:
+        {session.ticket_notes.comment_text}. Shall I save it?
+  utter_comment_cancelled:
+    - text: No problem, nothing was saved. Tell me what to change.
+  utter_comment_added:
+    - text: >
+        Done. Your note is on ticket {session.ticket_notes.selected_ticket_id}.
