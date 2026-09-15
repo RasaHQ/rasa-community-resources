@@ -41,7 +41,7 @@ pull request that adds their project.
 
 | Participant | GitHub | Project |
 |---|---|---|
-| _TBD — roster not yet announced_ | — | — |
+| Elarbi B | [@ElarbiB](https://github.com/ElarbiB) | [Terra Energy](projects/ElarbiB-terra-energy/) |
 
 ## Projects
 
@@ -49,7 +49,7 @@ No projects have landed yet. This wave is open.
 
 | Project | What it does | Author | Verified with | Assessed on |
 |---|---|---|---|---|
-| _none yet_ | — | — | — | — |
+| [ElarbiB-terra-energy](projects/ElarbiB-terra-energy/) | Solar & wind site potential assessment via NASA POWER data — site analysis, site comparison and data-source health, in a voice + text agent with a FastAPI backend. | Elarbi B | rasa-pro 3.19.0.dev6 | 2026-09-15 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a
