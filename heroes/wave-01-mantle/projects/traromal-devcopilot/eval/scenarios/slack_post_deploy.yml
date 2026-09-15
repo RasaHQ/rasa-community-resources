@@ -1,0 +1,18 @@
+scenario:
+  name: Post update to Slack
+  simulation_context: >
+    You are Alex Chen, a software developer at DevSoft. You are talking to
+    DevPilot, your voice assistant. You speak briefly and naturally, the way
+    you would talk to a speech assistant. You want DevPilot to post a short
+    update to Slack that the auth-service deploy is done.
+  goals:
+    assertions:
+      - flow_started: slack_post
+    criteria:
+      - "The bot posts the developer's update to Slack and confirms to the developer which channel it was posted to."
+    expected_tools:
+      - tool_called:
+          tool_name: post_message
+          arguments:
+            channel: all-devcopilot
+        gate: true

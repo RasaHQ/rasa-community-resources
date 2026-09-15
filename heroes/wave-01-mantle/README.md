@@ -41,15 +41,13 @@ pull request that adds their project.
 
 | Participant | GitHub | Project |
 |---|---|---|
-| _TBD — roster not yet announced_ | — | — |
+| Aromal TR | [traromal](https://github.com/traromal) | [traromal-devcopilot](projects/traromal-devcopilot/) |
 
 ## Projects
 
-No projects have landed yet. This wave is open.
-
 | Project | What it does | Author | Verified with | Assessed on |
 |---|---|---|---|---|
-| _none yet_ | — | — | — | — |
+| [DevPilot](projects/traromal-devcopilot/) | Voice/text assistant for developer ops — task queue, tickets, deploy gating, hardware orders, two-way Slack, on-call handoffs, and web-search doc lookup | Aromal TR | `3.20.0.dev6` | 2026-09-15 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a
