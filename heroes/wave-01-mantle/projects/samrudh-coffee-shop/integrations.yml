@@ -1,0 +1,45 @@
+# External integrations for Artisan Roast Coffee Shop AI Agent
+
+# LLM Orchestrator & Reasoning (Google Gemini via Model Group)
+llm:
+  model_group: gemini-flash
+
+# OpenTelemetry & Observability Tracing (Langfuse Cloud Free Tier)
+tracing:
+  type: langfuse
+  public_key: ${LANGFUSE_PUBLIC_KEY}
+  secret_key: ${LANGFUSE_SECRET_KEY}
+  private_key: ${LANGFUSE_SECRET_KEY}
+  host: "https://us.cloud.langfuse.com"
+
+# Model groups for LLM reasoning and semantic knowledge retrieval
+model_groups:
+  - id: gemini-flash
+    models:
+      - provider: gemini
+        model: gemini-2.5-flash
+        api_key_env: GEMINI_API_KEY
+        temperature: 0.0
+
+  - id: local-embeddings
+    models:
+      - provider: huggingface_local
+        model: sentence-transformers/all-MiniLM-L6-v2
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-luna-en
