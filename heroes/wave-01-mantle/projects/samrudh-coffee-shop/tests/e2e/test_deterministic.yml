@@ -1,0 +1,80 @@
+# Deterministic E2E Tracker Assertion Tests for Artisan Roast AI Agent
+# Evaluates flow triggers across customer, operator, and CEO skills, plus smalltalk restraint.
+
+test_cases:
+  - test_case: Customer menu items and pricing inquiry
+    steps:
+      - user: /session_start
+      - user: What drinks and coffees are on your menu?
+        assertions:
+          - flow_started: browse_coffee_menu
+
+  - test_case: Coffee bean origin and tasting notes knowledge inquiry
+    steps:
+      - user: /session_start
+      - user: Where do your Ethiopian beans come from and what are their tasting notes?
+        assertions:
+          - flow_started: coffee_faq
+
+  - test_case: Customer drink ordering flow
+    steps:
+      - user: /session_start
+      - user: I would like to order a regular Ethiopia coffee for pickup.
+        assertions:
+          - flow_started: place_customer_order
+
+  - test_case: Multi-turn customer coffee ordering with slot collection and confirmation
+    steps:
+      - user: /session_start
+      - user: I would like to place a coffee order for pickup.
+        assertions:
+          - flow_started: place_customer_order
+      - user: I want an Ethiopia Yirgacheffe Organic, regular size with oat milk.
+      - user: Pickup at Lower Manhattan #5, please place my order now.
+        assertions:
+          - flow_completed:
+              flow_id: place_customer_order
+
+  - test_case: Customer loyalty points balance check
+    steps:
+      - user: /session_start
+      - user: Check my loyalty rewards and points balance for account CUST-1001.
+        assertions:
+          - flow_started: check_loyalty_rewards
+
+  - test_case: Operator store order queue lookup
+    steps:
+      - user: /session_start
+      - user: Show me the incoming barista order queue for Lower Manhattan store.
+        assertions:
+          - flow_started: process_store_orders
+
+  - test_case: Operator inventory check for low stock
+    steps:
+      - user: /session_start
+      - user: Check our store stock levels and show any low inventory items.
+        assertions:
+          - flow_started: manage_store_inventory
+
+  - test_case: CEO financial revenue analytics inquiry
+    steps:
+      - user: /session_start
+      - user: What was our total sales revenue and gross profit margin?
+        assertions:
+          - flow_started: query_executive_analytics
+
+  - test_case: Coffee Sommelier mood recommendation inquiry
+    steps:
+      - user: /session_start
+      - user: I'm feeling a little sleepy today and need something interesting to wake me up.
+        assertions:
+          - flow_started: recommend_coffee_sommelier
+
+  - test_case: Restraint test - Smalltalk greeting must not trigger ordering or analytics
+    steps:
+      - user: /session_start
+      - user: Good morning, hello!
+        assertions:
+          - slot_was_not_set:
+              - name: project.active_order_id
+              - name: place_customer_order.selected_item
