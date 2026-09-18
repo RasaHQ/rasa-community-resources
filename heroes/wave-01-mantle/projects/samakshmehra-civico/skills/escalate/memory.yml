@@ -1,0 +1,15 @@
+# The same three fields check_status holds, because both skills call the same
+# shared `look_up_complaint`, and a shared tool writing a field the active
+# skill has not declared is a memory write error at runtime.
+schema:
+  public:
+    complaint_id:
+      type: text
+      description: The complaint reference the caller wants escalated.
+      llm_settable: true
+    is_overdue:
+      type: bool
+    escalation_level:
+      type: text
+    escalated:
+      type: bool
