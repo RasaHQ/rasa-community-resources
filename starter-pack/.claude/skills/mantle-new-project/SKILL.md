@@ -23,7 +23,7 @@ description = "<one line>"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
-    "rasa-pro==3.20.0.dev20260916190743",
+    "rasa-pro==3.20.0rc1",
     "python-dotenv>=1.0.0",
 ]
 
@@ -112,7 +112,7 @@ For a **voice** agent add, inside the `agent:` block:
 ```yaml
 # The orchestrator LLM is a model-group reference. Provider, model and
 # credentials live on the named group, never inline under `llm:` — the
-# inline form was removed in rasa-pro 3.20.0.dev20260916190743.
+# inline form was removed in rasa-pro 3.20.0rc1.
 llm:
   model_group: orchestrator
 

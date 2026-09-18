@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0.dev20260916190743 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice appointment agents with Rasa Skills
 Time:          60–75 minutes
 ```
@@ -605,7 +605,7 @@ make train
 This repository currently targets:
 
 ```text
-rasa-pro==3.20.0.dev20260916190743
+rasa-pro==3.20.0rc1
 ```
 
 on `gpt-5.2`, configured in `integrations.yml` and `endpoints.yml`.

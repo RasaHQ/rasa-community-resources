@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0.dev20260916190743 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice banking agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -115,9 +115,9 @@ Run `make` with no arguments for the full grouped help screen.
 | `make clean` | Remove models / caches / local db |
 | `make clean-all` | Also remove `.venv` (full reset) |
 
-## Notes for Rasa 3.20.0.dev20260916190743
+## Notes for Rasa 3.20.0rc1
 
-- Package: `rasa-pro==3.20.0.dev20260916190743` (pre-release; `uv` prereleases enabled)
+- Package: `rasa-pro==3.20.0rc1` (pre-release; `uv` prereleases enabled)
 - Scaffold a fresh Mantle project with `rasa init --engine mantle`
   (there is no `--template voice`)
 - LLM is `gpt-5.2`; do not set `temperature` (GPT-5 reasoning models only
