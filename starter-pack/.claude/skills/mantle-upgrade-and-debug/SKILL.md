@@ -16,9 +16,9 @@ up here BEFORE debugging from first principles.
 
 | You see | Actual cause | Fix |
 | --- | --- | --- |
-| `ModuleNotFoundError: rasa.mantle` (or nothing importable) after pinning "latest stable" | The engine ships **only on `3.20.0.dev*`**; stable releases contain no engine package | Pin `rasa-pro==3.20.0.dev9`, `[tool.uv] prerelease = "allow"` |
+| `ModuleNotFoundError: rasa.mantle` (or nothing importable) after pinning "latest stable" | The engine ships **only on `3.20.0.dev*`**; stable releases contain no engine package | Pin `rasa-pro==3.20.0.dev20260916190743`, `[tool.uv] prerelease = "allow"` |
 | `ModuleNotFoundError: rasa.calm_v2` after an upgrade | Package renamed `rasa.calm_v2` → `rasa.mantle` at 3.20.0.dev1, no alias | Update every engine import to `rasa.mantle` (route them through `lib/engine.py` so the next rename is a one-file change; see `docs/MIGRATING.md`) |
-| `uv lock`: "versions that are not supported by your dependencies (e.g., rasa-pro==3.20.0.dev9 only supports >=3.11, <3.15)" | `requires-python` floor below 3.11 — the error never says "Python" | Set `requires-python = ">=3.11,<3.13"` |
+| `uv lock`: "versions that are not supported by your dependencies (e.g., rasa-pro==3.20.0.dev20260916190743 only supports >=3.11, <3.15)" | `requires-python` floor below 3.11 — the error never says "Python" | Set `requires-python = ">=3.11,<3.13"` |
 | validate: `'provider': Extra inputs are not permitted` | Inline LLM config under `llm:` — removed in dev6 (`extra="forbid"`) | `llm: {model_group: <id>}` + a `model_groups:` entry |
 | validate: `'model_group': Field required` | `llm:` block exists but names no group | Same as above |
 | validate rejects root `memory.yml` | `llm_settable: true` on project-level memory | Move the field to `skills/<id>/memory.yml`, or have a tool write it |

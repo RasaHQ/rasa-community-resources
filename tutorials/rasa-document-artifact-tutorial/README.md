@@ -4,7 +4,7 @@
     Assessed on:   2026-09-02
     Assessed by:   Rod Rivera
     Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-    Installation: rasa-pro 3.20.0.dev9 (automated check scope in COMPATIBILITY.json)
+    Installation: rasa-pro 3.20.0.dev20260916190743 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners building agents whose deliverable is a FILE — a suitability record, a claim summary, a mandate — and who cannot afford a plausible number in it
     Time:          45–60 minutes
 
