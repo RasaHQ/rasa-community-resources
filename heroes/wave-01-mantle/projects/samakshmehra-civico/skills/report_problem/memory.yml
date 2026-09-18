@@ -1,0 +1,57 @@
+# Mutable intake state lives in this skill. Tools own routing/results and
+# corrections, including the initial landmark/description. The model
+# records only the caller's duplicate decision. Rasa handles submission consent.
+schema:
+  public:
+    category:
+      type: categorical
+      enum_values: [pothole, garbage, water_supply, streetlight, drainage, stray_animals]
+    category_spoken:
+      type: text
+    department:
+      type: text
+    sla_days:
+      type: text
+
+    ward_candidates:
+      type: text
+    area_text:
+      type: text
+    ward_attempts:
+      type: text
+    ward_id:
+      type: text
+    ward_label:
+      type: text
+    ward_officer:
+      type: text
+    ward_officer_contact:
+      type: text
+    ward_confirmed:
+      type: bool
+
+    # Tool-owned so initial capture and later corrections use the same
+    # validation/invalidation path, without native collect-step rewinding.
+    exact_spot:
+      type: text
+    description:
+      type: text
+    callback_number:
+      type: text
+
+    similar_id:
+      type: text
+    duplicate_decision:
+      type: categorical
+      enum_values: [attach, new]
+      description: >
+        Whether the caller says this is the same incident as the open
+        complaint already in this ward (attach) or a different one (new).
+      llm_settable: true
+
+    # Tool-owned read-back readiness, NOT user consent. The write's Rasa
+    # requires_confirmation collects consent. Corrections clear this flag.
+    details_verified:
+      type: bool
+    complaint_id:
+      type: text

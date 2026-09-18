@@ -1,0 +1,23 @@
+# Platform endpoints. LLM routing and Deepgram ASR/TTS live in integrations.yml.
+
+nlg:
+  type: rephrase
+  llm:
+    model_group: openai-llm
+
+model_groups:
+  - id: openai-llm
+    models:
+      - provider: openai
+        # The rephraser only rewords one already-written line, so the cheapest
+        # tier is the right fit.
+        model: gpt-5-nano
+        api_key_env: OPENAI_API_KEY
+  - id: openai-embeddings
+    models:
+      - provider: openai
+        model: text-embedding-3-large
+        api_key_env: OPENAI_API_KEY
+
+# No `action_endpoint` / `actions_module`. Side effects are Mantle @tool
+# functions under tools/ and skills/*/tools.py, not rasa-sdk actions.

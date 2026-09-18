@@ -1,0 +1,24 @@
+scenario:
+  name: A landmark correction is saved only after a fresh confirmation
+  simulation_context: >
+    Report uncollected garbage in Indirapuram. First give
+    the exact spot as outside the school gate, and say bags have been there
+    for three days. Give callback number 9000000000. When the agent reads the
+    summary, correct the exact spot to the park gate opposite the school.
+    Approve filing only after hearing the corrected summary. If offered
+    an existing complaint, explain this is a different incident. Stop only
+    after the reference is spoken.
+  goals:
+    criteria:
+      - The caller can correct the landmark without restarting the full intake
+      - The corrected park gate location is read back before filing
+      - Filing happens only after the caller approves the corrected report
+    expected_tools:
+      - tool_called: revise_report
+      - tool_called: file_complaint
+    assertions:
+      - slot_was_set:
+          - name: report_problem.details_verified
+            value: null
+      - bot_uttered:
+          text_matches: "C I V one"

@@ -1,0 +1,26 @@
+# The two LLMs the simulation framework needs, configured independently.
+#
+# `simulation.llm` plays the caller, improvising their side from each
+# scenario's `simulation_context`. `evaluation.llm` is the judge, scoring the
+# finished transcript against `goals.criteria`.
+#
+# Keeping them separate matters. The simulator only has to sound like somebody
+# ringing a municipal complaint line — irritated, imprecise, prone to saying
+# "near my house". The judge's opinion IS the score. The simulator can be made
+# cheaper without changing what passing means; the judge cannot.
+#
+# Both bill real tokens on every run, on top of the agent's own model. That is
+# the reason this suite is eight scenarios and not thirty: the deterministic
+# suite (`make test`, 150 tests, no network) covers the tools exhaustively and
+# costs nothing, so these are reserved for the things only a conversation can
+# show.
+simulation:
+  llm:
+    provider: openai
+    model: gpt-5.4-mini
+    timeout: 30
+evaluation:
+  llm:
+    provider: openai
+    model: gpt-5.4-mini
+    timeout: 30
