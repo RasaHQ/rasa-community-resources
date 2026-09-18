@@ -249,7 +249,7 @@ it's wrong, bypass and say why in your commit message.
 **The checker says my Rasa version is wrong, but I picked the newest one!**
 That's the trap. The Mantle engine currently ships **only in pre-release
 ("dev") versions**. The newest stable release literally does not contain the
-engine. Pin `rasa-pro==3.20.0.dev9` — the skills do this for you.
+engine. Pin `rasa-pro==3.20.0.dev20260916190743` — the skills do this for you.
 
 **`make install` fails with a confusing message about versions.**
 Nine times out of ten this is the Python floor: Mantle needs Python 3.11+,
