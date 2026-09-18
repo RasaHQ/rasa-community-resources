@@ -7,6 +7,9 @@ maintained project pins, locks and installation references, preserving
 historical assessed-on records, then runs the catalog gates and licensed
 training for every maintained project.
 
+A changed catalog source hash also refreshes its compatibility receipt when
+the Rasa version is unchanged. Timestamp changes alone do not create a PR.
+
 Passing routine updates open a tested PR and attempt a normal merge of its
 exact head. GitHub's required checks and reviews still apply. No administrator
 bypass is used. Set repository variable `RASA_RELEASE_AUTO_MERGE=false` to

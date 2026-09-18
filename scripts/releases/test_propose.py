@@ -9,7 +9,7 @@ import propose
 
 
 class ProposalTests(unittest.TestCase):
-    def exercise(self, merge_fails=False, paths='RASA_RELEASE.json\0RASA_PRO_VERSION\0', identity_change=True, base_changed=False):
+    def exercise(self, merge_fails=False, paths='RASA_RELEASE.json\0RASA_PRO_VERSION\0', identity_change=True, base_changed=False, manual_branch=False):
         previous = {'selected': {'version': '3.20.0.dev9'}, 'companionRevision': 'a' * 40}
         current = {'selected': {'version': '3.20.0rc1'}, 'companionRevision': 'b' * 40} if identity_change else previous
         calls = []
@@ -17,6 +17,8 @@ class ProposalTests(unittest.TestCase):
             calls.append(command)
             if command[:3] == ['git', 'show', 'HEAD:RASA_RELEASE.json']:
                 return json.dumps(previous)
+            if command[:3] == ['git', 'show', '-s']:
+                return 'maintainer@example.com\0maintainer@example.com'
             if command[:3] == ['git', 'diff', '--name-only']:
                 return paths.encode()
             if command[:3] == ['git', 'diff', '--binary']:
@@ -26,7 +28,7 @@ class ProposalTests(unittest.TestCase):
             if command[:2] == ['git', 'ls-remote']:
                 if command[-1] == 'refs/heads/main':
                     return ('e' if base_changed else 'c') * 40 + '\trefs/heads/main'
-                return ''
+                return 'f' * 40 + '\trefs/heads/automation/candidate' if manual_branch else ''
             if command[:3] == ['gh', 'pr', 'list']:
                 return '[]'
             if command[:3] == ['gh', 'pr', 'create']:
@@ -46,7 +48,10 @@ class ProposalTests(unittest.TestCase):
             try:
                 os.chdir(root)
                 with patch.dict(os.environ, {'GITHUB_ACTIONS': 'true', 'GITHUB_REF': 'refs/heads/main', 'GITHUB_REPOSITORY': 'Example/site', 'GITHUB_RUN_ID': '123'}), patch('sys.argv', ['propose.py', '--state', str(root / 'proposal.json'), '--merge']), patch.object(propose.subprocess, 'check_output', side_effect=output), patch.object(propose.subprocess, 'run', side_effect=run):
-                    if base_changed:
+                    if manual_branch:
+                        with self.assertRaisesRegex(SystemExit, 'manual edits'):
+                            propose.main()
+                    elif base_changed:
                         with self.assertRaisesRegex(SystemExit, 'Main changed'):
                             propose.main()
                     elif merge_fails:
@@ -87,6 +92,24 @@ class ProposalTests(unittest.TestCase):
 
     def test_advanced_main_requires_fresh_validation(self):
         calls, state = self.exercise(base_changed=True)
+        self.assertFalse(any(c[:2] == ['git', 'push'] for c in calls))
+        self.assertFalse(any(c[0] == 'gh' for c in calls))
+
+    def test_catalog_refreshes_source_evidence_without_timestamp_only_prs(self):
+        previous = {'sourceHash': 'a' * 64, 'testedAt': 'earlier'}
+        for fingerprint, expected in [('a' * 64, False), ('b' * 64, True)]:
+            current = {'sourceHash': fingerprint, 'testedAt': 'later'}
+            with patch.object(propose.Path, 'read_text', return_value=json.dumps(current)), patch.object(propose, 'git', return_value=json.dumps(previous)):
+                self.assertEqual(propose.catalog_receipt_changed({'selected': {'version': '3.20.0rc1'}}), expected)
+        self.assertFalse(propose.catalog_receipt_changed({'companionRevision': 'a' * 40}))
+
+    def test_missing_catalog_hash_cannot_be_treated_as_unchanged(self):
+        with patch.object(propose.Path, 'read_text', return_value='{}'), patch.object(propose, 'git', return_value='{}'):
+            with self.assertRaisesRegex(SystemExit, 'Missing catalog source hash'):
+                propose.catalog_receipt_changed({'selected': {'version': '3.20.0rc1'}})
+
+    def test_manual_repair_on_candidate_branch_is_not_overwritten(self):
+        calls, state = self.exercise(manual_branch=True)
         self.assertFalse(any(c[:2] == ['git', 'push'] for c in calls))
         self.assertFalse(any(c[0] == 'gh' for c in calls))
 

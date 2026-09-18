@@ -17,6 +17,17 @@ def changed_identity(current, previous):
     return (current['selected']['version'], current.get('companionRevision')) != (previous['selected']['version'], previous.get('companionRevision'))
 
 
+def catalog_receipt_changed(current):
+    if 'companionRevision' in current:
+        return False
+    receipt = json.loads(Path('COMPATIBILITY.json').read_text())
+    previous = json.loads(git('show', 'HEAD:COMPATIBILITY.json'))
+    for value in (receipt.get('sourceHash'), previous.get('sourceHash')):
+        if not isinstance(value, str) or not re.fullmatch(r'[a-f0-9]{64}', value):
+            raise SystemExit('Missing catalog source hash; cannot decide receipt freshness.')
+    return receipt['sourceHash'] != previous['sourceHash']
+
+
 def allowed_path(path, site):
     if path in ('RASA_PRO_VERSION', 'RASA_RELEASE.json', 'COMPATIBILITY.json'):
         return True
@@ -43,7 +54,9 @@ def main():
     def save():
         args.state.write_text(json.dumps(state, indent=2) + '\n')
     save()
-    if not changed_identity(current, previous):
+    refresh = catalog_receipt_changed(current)
+    state['catalogReceiptRefreshed'] = refresh
+    if not changed_identity(current, previous) and not refresh:
         print('Adopted release passes; daily evidence is retained without a timestamp-only PR.')
         return
     base = git('rev-parse', 'HEAD')
@@ -73,6 +86,12 @@ def main():
     save()
     remote = git('ls-remote', '--heads', 'origin', 'refs/heads/' + branch)
     old_head = remote.split()[0] if remote else ''
+    if old_head:
+        subprocess.run(['git', 'fetch', 'origin', old_head], check=True)
+        identity = git('show', '-s', '--format=%ae%x00%ce', old_head).split('\0')
+        bot_email = '41898282+github-actions[bot]@users.noreply.github.com'
+        if identity != [bot_email, bot_email]:
+            raise SystemExit('Candidate branch contains manual edits; leave it untouched and review that repair before retrying.')
     subprocess.run(['git', 'push', f'--force-with-lease=refs/heads/{branch}:{old_head}', 'origin', f'HEAD:refs/heads/{branch}'], check=True)
     repo = os.environ['GITHUB_REPOSITORY']
     run_url = f"https://github.com/{repo}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
