@@ -1,0 +1,42 @@
+# The failure that started the rebuild: a caller who cannot name anything the
+# map knows. There is no acceptable ending in which they are turned away, and
+# no acceptable ending in which they are asked a third time.
+scenario:
+  name: A caller who cannot name their locality is still able to file
+
+  simulation_context: >
+    You are reporting a street light that has been out for a week. You do not
+    know your locality name and you are not going to produce one — every time
+    the agent asks where it is, answer only with vague, unmappable things:
+    "just outside our lane", "near the pole", "I don't know the name, there's
+    nothing nearby". Never say a real place name and never give a PIN code.
+    If the agent goes on to ask you anything else, answer it normally: the
+    spot is "right outside the third house on the left, by the big neem tree",
+    the lane is pitch dark at night, and it should call you back on the number
+    you are ringing from. Approve filing after the summary. Stop
+    once you have a reference number.
+
+  goals:
+    criteria:
+      - The agent asks about the location at most twice before moving on
+      - The agent tells the caller plainly that it could not place the
+        locality, rather than pretending it did
+      - The complaint is still filed and the caller is given a reference
+        number — being unable to name a locality never ends the call
+      - The agent does not invent a real locality, ward number or named
+        officer. Routing the complaint to the general grievance cell is the
+        correct outcome here and is not an invention
+    expected_tools:
+      - tool_called: capture_report
+      - tool_called: prepare_report_summary
+      - tool_called: file_complaint
+    assertions:
+      - slot_was_set:
+          - name: report_problem.ward_id
+            value: GEN
+          - name: report_problem.ward_confirmed
+            value: true
+      - bot_uttered:
+          text_matches: "grievance cell"
+      - bot_uttered:
+          text_matches: "C I V one"

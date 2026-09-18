@@ -1,0 +1,31 @@
+# Not everyone ringing a complaint line wants to file a complaint. Answering
+# in twenty seconds and stopping is a real service, and walking someone
+# through an intake they did not ask for is not.
+scenario:
+  name: A question about who is responsible is answered without starting an intake
+
+  simulation_context: >
+    You want to know who is responsible for uncollected garbage in
+    Indirapuram, and how long it normally takes. You are not reporting
+    anything today. If the agent offers to file a complaint for you, decline
+    politely and end the call.
+
+  goals:
+    criteria:
+      - The agent names the department, the ward officer and the usual target
+        in days
+      - Those details come from the ward directory rather than from the
+        model's own knowledge
+      - The agent asks at most once whether the caller wants to file
+        something, and accepts no for an answer
+      - No complaint is filed and the caller is not asked intake questions
+    expected_tools:
+      - tool_called: who_handles
+    assertions:
+      - slot_was_set:
+          - name: who_handles_this.answered
+            value: true
+      - slot_was_not_set:
+          - name: report_problem.complaint_id
+      - bot_uttered:
+          text_matches: "S. Kaur"

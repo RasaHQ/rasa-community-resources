@@ -1,0 +1,54 @@
+# The happy path, with the speech that broke the previous version of this
+# project three times on a live call. "Vishalig Azabad" is Vaishali,
+# Ghaziabad, and the PIN the caller reads out belongs to the next locality
+# over — both of which the agent has to handle without asking again.
+scenario:
+  name: A mangled locality and a mismatched PIN still produce a filed complaint
+
+  simulation_context: >
+    You are reporting a large pothole and you are a little impatient. When the
+    agent asks where it is, say "near in front of super tech state, Vishalig
+    Azabad, PIN code two zero one zero one two" — say it exactly that badly.
+    If it offers you a ward, accept it. When asked where exactly, say "right
+    in front of the Juniper Heights main gate, near the water tank". Describe
+    the problem as a two-foot hole that fills with water when it rains. When
+    asked for a callback number, say to use the number you are calling from.
+    Approve once after hearing the summary and submission question. Stop
+    once you have been given a reference number.
+
+  goals:
+    criteria:
+      - The agent identifies the locality as Vaishali despite the caller
+        mispronouncing it, without asking them to repeat themselves
+      - The agent points out that the PIN code the caller gave does not match
+        the one the directory holds for that locality, and lets the caller
+        decide rather than silently choosing one
+      - The agent reads the reference number back character by character, and
+        names the ward officer and the date to expect an update by
+      - The department, ward and officer the agent names are the ones the
+        tools returned, not invented or substituted
+      - Dates are spoken the way a person says them, such as "the twelfth of
+        September", and never read out as digits and dashes
+    expected_tools:
+      - tool_called: capture_report
+      - tool_called: confirm_ward
+      - tool_called: prepare_report_summary
+      - tool_called: find_similar_open
+      - tool_called: file_complaint
+    assertions:
+      - slot_was_set:
+          - name: report_problem.category
+            value: pothole
+          - name: report_problem.ward_id
+            value: W12
+          - name: report_problem.ward_confirmed
+            value: true
+      - slot_was_set:
+          - name: report_problem.details_verified
+            value: true
+      - bot_uttered:
+          text_matches: "C I V one"
+      - bot_uttered:
+          text_matches: "A. Sharma"
+      - bot_did_not_utter:
+          text_matches: "[0-9]{4}-[0-9]{2}-[0-9]{2}"

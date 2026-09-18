@@ -1,0 +1,15 @@
+# Project-wide memory (session.project.*).
+#
+# Four fields, all caller identity, all written exactly once by `load_caller`
+# at session start. That is not a stylistic choice: project memory in
+# rasa-pro 3.20 is WRITE-ONCE, so a project field that needs updating during a
+# call silently keeps its first value forever. Anything that changes lives in
+# skill memory instead.
+caller_phone:
+  type: text
+caller_name:
+  type: text
+caller_id:
+  type: text
+known_caller:
+  type: bool
