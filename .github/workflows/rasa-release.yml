@@ -1,7 +1,7 @@
-name: Daily Rasa release assurance
+name: Rasa release maintenance
 on:
   schedule:
-    - cron: '23 3 * * *'
+    - cron: '23 3,9,15,21 * * *'
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      actions: write
     env:
       RASA_LICENSE: ${{ secrets.RASA_LICENSE }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -31,29 +32,23 @@ jobs:
         with:
           python-version: '3.12'
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
-      - name: Verify release selection logic
-        run: uv run --with packaging==26.3 python -m unittest discover -s scripts/releases
-      - name: Discover and prepare candidate
-        run: uv run --with packaging==26.3 python scripts/releases/update.py
-      - name: Execute compatibility and build gates
-        run: |
-          make ci KEEP_GOING=1
-          python scripts/compatibility.py --train --logs /tmp/rasa-catalog-compatibility
-      - name: Propose tested update
+      - name: Run release maintenance
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/releases/propose.py
-      - name: Preserve candidate diff
+          AUTO_MERGE: ${{ vars.RASA_RELEASE_AUTO_MERGE != 'false' }}
+        run: |
+          merge_flag=()
+          if [ "$AUTO_MERGE" = "true" ]; then merge_flag=(--merge); fi
+          uv run --with packaging==26.3 python scripts/releases/maintenance.py --kind catalog "${merge_flag[@]}"
+      - name: Write repair handoff even after setup failure
         if: always()
-        run: git diff --binary > /tmp/rasa-candidate.patch
+        env:
+          MAINTENANCE_JOB_STATUS: ${{ job.status }}
+        run: python scripts/releases/maintenance.py --kind catalog --report-only --job-status "$MAINTENANCE_JOB_STATUS"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
-          name: rasa-release-assurance-${{ github.run_id }}
-          path: |
-            RASA_RELEASE.json
-            COMPATIBILITY.json
-            /tmp/rasa-candidate.patch
-            /tmp/rasa-catalog-compatibility/
-            /tmp/rasa-compatibility-live/
-          retention-days: 30
+          name: rasa-release-maintenance
+          path: /tmp/rasa-release-maintenance/
+          if-no-files-found: error
+          retention-days: 90
