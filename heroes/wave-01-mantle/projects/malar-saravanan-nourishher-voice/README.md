@@ -20,7 +20,7 @@ natural conversation — with **optional** condition-aware support
 context is never required. Evolved in place from the earlier condition-only
 "Sage" build.
 
-**No mocking — production-grade.** Nutrient numbers come from the live USDA
+** production-grade.** Nutrient numbers come from the live USDA
 FoodData Central API; profile, meal logs, and saved plans persist in a real
 file-backed per-user store (`lib/store.py`, under `data/`). Nothing is
 seeded or fabricated. A deterministic test suite (`make test`) covers the
