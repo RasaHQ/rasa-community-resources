@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>NourishHer — Nutrition Companion</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #171d26;
+    --panel-2: #1e2632;
+    --line: #2a3441;
+    --text: #e8edf2;
+    --muted: #93a1b1;
+    --accent: #e28f9b;      /* warm rose — companion, not clinical */
+    --accent-2: #7fb4a6;    /* calm green */
+    --user: #2b3a4d;
+    --bot: #1e2632;
+    --danger: #e6a15c;
+    --radius: 16px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: var(--font);
+    background: radial-gradient(1200px 600px at 50% -10%, #1a2230, var(--bg));
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+  }
+  .app {
+    width: 100%;
+    max-width: 720px;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+  }
+  header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--panel-2);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 12px; flex: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: grid; place-items: center; font-weight: 700; color: #10151b;
+  }
+  .title { display: flex; flex-direction: column; line-height: 1.2; }
+  .title b { font-size: 16px; }
+  .title span { font-size: 12px; color: var(--muted); }
+  .spacer { flex: 1; }
+  .iconbtn {
+    background: var(--panel); color: var(--muted); border: 1px solid var(--line);
+    border-radius: 10px; padding: 8px 10px; cursor: pointer; font-size: 12px;
+  }
+  .iconbtn:hover { color: var(--text); border-color: var(--accent); }
+  .iconbtn.active { color: #10151b; background: var(--accent-2); border-color: var(--accent-2); }
+
+  .messages {
+    flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .row { display: flex; gap: 10px; max-width: 90%; }
+  .row.user { align-self: flex-end; flex-direction: row-reverse; }
+  .bubble {
+    padding: 10px 14px; border-radius: var(--radius); font-size: 15px; line-height: 1.5;
+    white-space: pre-wrap; word-wrap: break-word;
+  }
+  .row.bot .bubble { background: var(--bot); border: 1px solid var(--line); border-top-left-radius: 4px; }
+  .row.user .bubble { background: var(--user); border-top-right-radius: 4px; }
+  /* Rendered-markdown bubbles: let block elements control spacing (no pre-wrap). */
+  .bubble.md { white-space: normal; }
+  .bubble.md p { margin: 0 0 8px; }
+  .bubble.md p:last-child { margin-bottom: 0; }
+  .bubble.md ul, .bubble.md ol { margin: 4px 0 8px; padding-left: 20px; }
+  .bubble.md table { border-collapse: collapse; margin: 6px 0; font-size: 14px; }
+  .bubble.md th, .bubble.md td { border: 1px solid var(--line); padding: 5px 9px; text-align: left; }
+  .bubble.md th { background: var(--panel-2); }
+  .bubble.md code { background: var(--panel-2); padding: 1px 5px; border-radius: 5px; font-size: 13px; }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 9px; flex: none; display: grid; place-items: center;
+    font-size: 13px; font-weight: 700; color: #10151b;
+    user-select: none; -webkit-user-select: none;   /* never copied with transcript text */
+  }
+  /* Letter rendered via CSS so it is not part of the copyable DOM text. */
+  .row.bot .avatar::after { content: "N"; }
+  .row.user .avatar::after { content: "Y"; }
+  .row.bot .avatar { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+  .row.user .avatar { background: #3a4b60; color: var(--text); }
+  .buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .qbtn {
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 999px; padding: 7px 12px; font-size: 13px; cursor: pointer;
+  }
+  .qbtn:hover { border-color: var(--accent); }
+  .status { font-size: 12px; color: var(--muted); text-align: center; padding: 2px; }
+  .typing span {
+    display: inline-block; width: 6px; height: 6px; margin: 0 1px; border-radius: 50%;
+    background: var(--muted); animation: blink 1.2s infinite both;
+  }
+  .typing span:nth-child(2){ animation-delay:.2s } .typing span:nth-child(3){ animation-delay:.4s }
+  @keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+  footer { padding: 12px; border-top: 1px solid var(--line); background: var(--panel-2); }
+  .composer { display: flex; gap: 8px; align-items: flex-end; }
+  textarea {
+    flex: 1; resize: none; max-height: 120px; min-height: 44px; padding: 11px 14px;
+    background: var(--panel); color: var(--text); border: 1px solid var(--line);
+    border-radius: 12px; font-family: var(--font); font-size: 15px;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .send, .mic {
+    flex: none; width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--panel); color: var(--text); cursor: pointer; font-size: 18px;
+  }
+  .send { background: var(--accent); color: #10151b; border-color: var(--accent); }
+  .send:disabled { opacity: .5; cursor: default; }
+  .mic.recording { background: var(--accent-2); color: #10151b; border-color: var(--accent-2); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(127,180,166,.5)} 50%{box-shadow:0 0 0 6px rgba(127,180,166,0)} }
+  .disclaimer { font-size: 11px; color: var(--muted); text-align: center; margin-top: 8px; }
+  a { color: var(--accent); }
+</style>
+<!-- Markdown rendering for bot replies (tables, bold, lists). Sanitized with
+     DOMPurify. If these fail to load (offline), we fall back to plain text. -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">N</div>
+    <div class="title">
+      <b>NourishHer</b>
+      <span>Voice nutrition companion · not a doctor</span>
+    </div>
+    <div class="spacer"></div>
+    <button id="speakBtn" class="iconbtn" title="Read replies aloud">🔊 Speak</button>
+    <button id="resetBtn" class="iconbtn" title="Start a fresh session">↺ Reset</button>
+  </header>
+
+  <div id="messages" class="messages" aria-live="polite"></div>
+  <div id="status" class="status"></div>
+
+  <footer>
+    <div class="composer">
+      <button id="micBtn" class="mic" title="Speak">🎙️</button>
+      <textarea id="input" rows="1" placeholder="Tell me what you ate, or ask for a meal idea…"></textarea>
+      <button id="sendBtn" class="send" title="Send">➤</button>
+    </div>
+    <div class="disclaimer">
+      General nutrition support only. Not medical advice — for diagnosis, medication, or urgent symptoms, contact a clinician.
+    </div>
+  </footer>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Config. API base can be overridden with ?api=http://host:port
+// ---------------------------------------------------------------------------
+const params = new URLSearchParams(location.search);
+const API_BASE = (params.get("api") || "http://localhost:5011").replace(/\/$/, "");
+const WEBHOOK = API_BASE + "/webhooks/rest/webhook";
+
+// Stable per-user id so the profile, meal log, and plans persist across
+// sessions (matches how the backend keys its file store by sender id).
+function getSender() {
+  let s = localStorage.getItem("nourishher_sender");
+  if (!s) {
+    s = "web_" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem("nourishher_sender", s);
+  }
+  return s;
+}
+let SENDER = getSender();
+
+// ---------------------------------------------------------------------------
+// DOM
+// ---------------------------------------------------------------------------
+const messagesEl = document.getElementById("messages");
+const statusEl = document.getElementById("status");
+const inputEl = document.getElementById("input");
+const sendBtn = document.getElementById("sendBtn");
+const micBtn = document.getElementById("micBtn");
+const speakBtn = document.getElementById("speakBtn");
+const resetBtn = document.getElementById("resetBtn");
+
+let speakOn = localStorage.getItem("nourishher_speak") === "1";
+updateSpeakBtn();
+
+function updateSpeakBtn() {
+  speakBtn.classList.toggle("active", speakOn);
+}
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+function addMessage(sender, text, buttons) {
+  const row = document.createElement("div");
+  row.className = "row " + sender;
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.setAttribute("aria-hidden", "true");   // letter comes from CSS ::after
+  const bubbleWrap = document.createElement("div");
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  // Render bot replies as sanitized markdown (tables, bold, lists); user text
+  // stays plain. Fall back to plain text if the markdown libs didn't load.
+  if (sender === "bot" && window.marked && window.DOMPurify) {
+    bubble.classList.add("md");
+    bubble.innerHTML = DOMPurify.sanitize(marked.parse(text));
+  } else {
+    bubble.textContent = text;
+  }
+  bubbleWrap.appendChild(bubble);
+  if (buttons && buttons.length) {
+    const bwrap = document.createElement("div");
+    bwrap.className = "buttons";
+    buttons.forEach(b => {
+      const btn = document.createElement("button");
+      btn.className = "qbtn";
+      btn.textContent = b.title;
+      btn.onclick = () => send(b.payload || b.title, b.title);
+      bwrap.appendChild(btn);
+    });
+    bubbleWrap.appendChild(bwrap);
+  }
+  row.appendChild(avatar);
+  row.appendChild(bubbleWrap);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+let typingEl = null;
+function showTyping() {
+  hideTyping();
+  typingEl = document.createElement("div");
+  typingEl.className = "row bot";
+  typingEl.innerHTML = '<div class="avatar" aria-hidden="true"></div><div class="bubble typing"><span></span><span></span><span></span></div>';
+  messagesEl.appendChild(typingEl);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
+
+function setStatus(t) { statusEl.textContent = t || ""; }
+
+// ---------------------------------------------------------------------------
+// Networking — talks to Rasa REST channel. Empty [] means the LLM backend
+// was rate-limited (Groq free tier); we retry a few times automatically.
+// ---------------------------------------------------------------------------
+async function postMessage(text) {
+  const res = await fetch(WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sender: SENDER, message: text }),
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res.json();
+}
+
+let busy = false;
+async function send(text, displayText) {
+  text = (text || "").trim();
+  if (!text || busy) return;
+  busy = true;
+  sendBtn.disabled = true;
+  addMessage("user", displayText || text);
+  inputEl.value = "";
+  autoGrow();
+  showTyping();
+
+  // The free LLM tier is rate-limited, so a turn can come back empty. We
+  // wait out the token-per-minute window and retry rather than giving up —
+  // enough attempts/backoff to ride through a full ~60s reset.
+  const MAX_TRIES = 7;
+  const WAIT_MS = 12000;
+  let replies = [];
+  let ackSpoken = false;  // speak the "one moment" filler at most once per turn
+  for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
+    try {
+      replies = await postMessage(text);
+    } catch (e) {
+      hideTyping();
+      addMessage("bot", "I couldn't reach the assistant. Make sure the server is running (make api) and reachable at " + API_BASE + ".");
+      busy = false; sendBtn.disabled = false;
+      return;
+    }
+    if (replies && replies.length) break;
+    if (attempt < MAX_TRIES) {
+      // Voice users shouldn't sit in silence while we wait out the rate
+      // limit — say a short filler once, so it's clear we're still working.
+      if (speakOn && !ackSpoken) { speak("One moment, I'm still working on that."); ackSpoken = true; }
+      let remaining = Math.round(WAIT_MS / 1000);
+      setStatus("The assistant is busy (rate limit) — waiting to retry (" + attempt + "/" + (MAX_TRIES - 1) + ")… " + remaining + "s");
+      // Live countdown so the wait doesn't look frozen.
+      for (; remaining > 0; remaining--) {
+        await new Promise(r => setTimeout(r, 1000));
+        setStatus("The assistant is busy (rate limit) — waiting to retry (" + attempt + "/" + (MAX_TRIES - 1) + ")… " + (remaining - 1) + "s");
+      }
+    }
+  }
+
+  hideTyping();
+  setStatus("");
+  if (!replies || !replies.length) {
+    addMessage("bot", "I'm still catching up after a busy stretch — please send that once more in a few seconds and I'll pick it right up.");
+  } else {
+    for (const r of replies) {
+      if (r.text) addMessage("bot", r.text, r.buttons);
+      if (r.image) {
+        const img = document.createElement("img");
+        img.src = r.image; img.style.maxWidth = "100%"; img.style.borderRadius = "12px";
+        messagesEl.appendChild(img);
+      }
+    }
+    const spoken = replies.filter(r => r.text).map(r => r.text).join(" ");
+    if (speakOn && spoken) speak(spoken);
+  }
+  busy = false;
+  sendBtn.disabled = false;
+  inputEl.focus();
+}
+
+// ---------------------------------------------------------------------------
+// Voice — browser-native Web Speech API (no extra keys). ASR for input,
+// speech synthesis for replies. The backend Deepgram voice path is separate
+// (used by the Inspector); this keeps the embedded UI self-contained.
+// ---------------------------------------------------------------------------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null, recording = false;
+if (SR) {
+  recognition = new SR();
+  recognition.lang = "en-US";
+  recognition.interimResults = true;
+  recognition.continuous = false;
+  let finalText = "";
+  recognition.onresult = (e) => {
+    let interim = "";
+    finalText = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalText += t; else interim += t;
+    }
+    inputEl.value = (finalText || interim);
+    autoGrow();
+  };
+  recognition.onerror = () => stopRecording();
+  recognition.onend = () => {
+    stopRecording();
+    if (inputEl.value.trim()) send(inputEl.value);
+  };
+} else {
+  micBtn.style.display = "none";
+}
+
+function startRecording() {
+  if (!recognition || recording) return;
+  try { recognition.start(); recording = true; micBtn.classList.add("recording"); setStatus("Listening…"); }
+  catch (_) {}
+}
+function stopRecording() {
+  recording = false; micBtn.classList.remove("recording"); setStatus("");
+  try { recognition && recognition.stop(); } catch (_) {}
+}
+micBtn.onclick = () => recording ? stopRecording() : startRecording();
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = 1.0; u.pitch = 1.0;
+  window.speechSynthesis.speak(u);
+}
+
+// ---------------------------------------------------------------------------
+// UI wiring
+// ---------------------------------------------------------------------------
+function autoGrow() {
+  inputEl.style.height = "auto";
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+}
+inputEl.addEventListener("input", autoGrow);
+inputEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(inputEl.value); }
+});
+sendBtn.onclick = () => send(inputEl.value);
+speakBtn.onclick = () => {
+  speakOn = !speakOn;
+  localStorage.setItem("nourishher_speak", speakOn ? "1" : "0");
+  updateSpeakBtn();
+  if (!speakOn && window.speechSynthesis) window.speechSynthesis.cancel();
+};
+resetBtn.onclick = () => {
+  if (!confirm("Start a fresh session? This creates a new user id; your saved profile stays on the server under the old id.")) return;
+  localStorage.removeItem("nourishher_sender");
+  SENDER = getSender();
+  messagesEl.innerHTML = "";
+  greet();
+};
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
+function greet() {
+  addMessage("bot",
+    "Hi, I'm NourishHer, your nutrition companion. I can help you set up a profile, plan meals, log what you eat, look back at your week, or answer a nutrition question.",
+    [
+      { title: "Set up my profile", payload: "I'm new here, help me set up my nutrition profile" },
+      { title: "Plan a meal", payload: "What should I have for my next meal?" },
+      { title: "Log a meal", payload: "I want to log what I ate" },
+    ]
+  );
+}
+greet();
+</script>
+</body>
+</html>

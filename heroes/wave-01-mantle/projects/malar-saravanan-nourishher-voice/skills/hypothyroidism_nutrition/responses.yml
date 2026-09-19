@@ -1,0 +1,16 @@
+responses:
+  # NOT currently wired to a skill.md `utter:` trigger — that mechanism did
+  # not fire in live testing (Bug 7, see README.md "Known open issues"). The
+  # active source of this text is now LEVOTHYROXINE_TIMING_REMINDER in
+  # ../hypothyroidism_reminder_gate/tools.py, sent via context.send() from a
+  # deterministic ordered-block execute_tool step (see that skill's skill.md
+  # for why a blocks-only skill's first step is engine-forced, unlike a
+  # plain tool-call instruction). Kept here as the documented canonical
+  # wording; re-wire to `utter:` if/when Bug 7 is resolved upstream, and
+  # delete the gate skill then.
+  utter_levothyroxine_timing_reminder:
+    - text: >
+        Quick reminder on your levothyroxine: take it on an empty stomach,
+        first thing, with plain water. Wait at least four hours before
+        calcium or iron supplements, and before high-fiber or soy foods —
+        they can reduce how much your body absorbs.

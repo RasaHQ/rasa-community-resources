@@ -1,0 +1,69 @@
+schema:
+  public:
+    # Progress flags for the ordered collect_profile block. Rich preference
+    # values themselves are written straight to the file store via
+    # update_user_profile, so they are not staged here — only the "have we
+    # covered this yet" flags are.
+    goal_captured:
+      type: bool
+      description: Whether the person's name (if needed) and goal have been captured.
+      llm_settable: true
+    food_style_captured:
+      type: bool
+      description: Whether cuisine/region and dietary pattern have been captured.
+      llm_settable: true
+    likes_dislikes_captured:
+      type: bool
+      description: Whether liked and disliked foods have been captured.
+      llm_settable: true
+    practical_captured:
+      type: bool
+      description: Whether weekday cooking time and budget have been captured.
+      llm_settable: true
+    allergies_asked:
+      type: bool
+      description: Whether the allergies question has been asked and answered.
+      llm_settable: true
+    health_context_asked:
+      type: bool
+      description: Whether the optional health-context question has been asked and answered.
+      llm_settable: true
+
+    # Condition flags staged here, then copied to write-once project scope by
+    # save_health_profile (mirrors the original condition-intake pattern).
+    hypothyroidism_status:
+      type: categorical
+      enum_values: [confirmed, suspected, not_applicable]
+      description: Diagnosis status for hypothyroidism.
+      llm_settable: true
+    pcos_status:
+      type: categorical
+      enum_values: [confirmed, suspected, not_applicable]
+      description: Diagnosis status for PCOS.
+      llm_settable: true
+    diabetes_status:
+      type: categorical
+      enum_values: [confirmed, suspected, not_applicable]
+      description: Diagnosis status for type 2 diabetes.
+      llm_settable: true
+    fertility_status:
+      type: categorical
+      enum_values: [trying_to_conceive, preconception_planning, not_applicable]
+      description: Fertility-nutrition focus, if any.
+      llm_settable: true
+    takes_levothyroxine:
+      type: bool
+      description: Whether the person reports taking levothyroxine or another thyroid hormone replacement.
+      llm_settable: true
+    meds_list:
+      type: text
+      description: Free-text list of medications and supplements ("none" if none).
+      llm_settable: true
+    allergies_list:
+      type: text
+      description: Free-text list of food allergies or intolerances ("none" if none).
+      llm_settable: true
+    summary_confirmed:
+      type: bool
+      description: Person confirmed the read-back profile summary is correct.
+      llm_settable: true
