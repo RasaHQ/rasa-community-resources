@@ -1,0 +1,83 @@
+# integrations.yml — replaces classic CALM's endpoints.yml + credentials.yml
+# for a Maestro (calm_v2) agent. Schema confirmed empirically against the
+# installed rasa-pro==3.19.0.dev5 scaffold on 2026-08-17.
+#
+# LLM: the block below is a build-time placeholder only — agentProcess.ts's
+# writeLlmConfig() overwrites it on every start, from notevs.llmProvider
+# (Settings → Agent) and the LLM_PROVIDERS map there (provider/model/
+# api_key_env per provider). Added 2026-09-02: Groq was never actually
+# special here — confirmed against the installed rasa-pro package that
+# `provider: groq` was already going through the same generic LiteLLM
+# passthrough (rasa/shared/providers/mappings.py's
+# get_llm_client_from_provider) that `provider: openai`/`provider:
+# anthropic` also use; both are confirmed-recognized in the installed
+# litellm library. So this was a config-only limitation, not an engine one.
+# What's below is just what a fresh extract looks like before that
+# overwrite happens — do not treat it as the live config.
+#
+# LLM: LiteLLM passthrough — Rasa's `llm.provider` isn't a named Groq
+# wrapper, but LiteLLM supports `provider: groq` / GROQ_API_KEY, see
+# https://docs.litellm.ai/docs/providers/groq.
+#
+# Model history (2026-08-17), all same-day, all found via live failures:
+#   1. openai/gpt-oss-120b — failed strict tool-schema validation twice in
+#      one session against Maestro's orchestration tool set (a phantom
+#      repo_browser.search call on a zero-tool rephrase request, then an
+#      invalid `activate` target_id not in its own enum). Real Groq 400s
+#      that killed the whole turn, not cosmetic.
+#   2. llama-3.3-70b-versatile — tried based on Groq's docs listing it as
+#      tool-capable, but a live `GET /openai/v1/models` against this
+#      account's actual key shows it was never available here at all
+#      (404 model_not_found) — confirms an earlier README note that Groq
+#      deprecated it. Docs pages are not ground truth for what a given
+#      account can actually call; the models endpoint is.
+#   3. qwen/qwen3.6-27b — current pick, confirmed via that same live
+#      `GET /openai/v1/models` call to be one of only three chat-capable
+#      models on this account (the other two are the gpt-oss pair above).
+#      It's also the only model that has actually completed a full
+#      tool-calling turn correctly this session (activate -> search_notes
+#      -> real result). Its flaw: it's a thinking-mode-by-default model
+#      that doesn't reliably respect "just rephrase, no reasoning" as a
+#      plain instruction — confirmed live that its narrated reasoning
+#      isn't even consistently wrapped in <think> tags (Rasa also splits
+#      the completion into several separate bot messages, so a regex
+#      strip on <think>...</think> per-message can't catch reasoning that
+#      spans message boundaries or has no tags at all). Real fix below:
+#      reasoning_effort: none, Groq's actual switch to turn thinking mode
+#      off for this model family (not just hide it) — per
+#      console.groq.com/docs/model/qwen/qwen3-32b's documented dual-mode
+#      settings. Passed here on the assumption that integrations.yml's
+#      documented "additional provider-specific parameters" support means
+#      arbitrary extra keys reach LiteLLM/Groq; unconfirmed until tested
+#      live. If this doesn't take effect, the <think>-stripping code in
+#      agentPanel.ts stays as a second line of defense, but it's known to
+#      be incomplete against this model's actual leak pattern.
+#
+# Update 2026-09-20: qwen/qwen3.6-27b no longer exists on this account —
+# confirmed live via a real turn ("model_not_found") and cross-checked
+# against a live `GET /openai/v1/models` call, which lists
+# qwen/qwen3.8-27b (a version bump) in its place. Re-pinned to that;
+# same family, same reasoning_effort switch applies.
+llm:
+  provider: groq
+  model: qwen/qwen3.8-27b
+  api_key_env: GROQ_API_KEY
+  reasoning_effort: none
+
+# CONFIRMED 2026-08-18: `rasa run` does read this `channels.rest` block —
+# the REST webhook agentPanel.ts talks to comes up fine on its own.
+# `inspector.enabled: true` is what broke it: inspector is meant only for
+# the separate interactive `rasa inspect` debug command, but with it also
+# enabled here, `rasa run` starts a *second* voice_stream/inspector
+# listener on the same host:port right after the REST channel's own
+# listener has already bound it — log shows "Rasa server is up and
+# running" immediately followed by inspector's "voice_channel.initialized"
+# then an EADDRINUSE crash trying to bind 0.0.0.0:5005 again. We never use
+# Rasa's own voice channel anyway (see voice.ts — STT/TTS go through Groq
+# from the extension host, specifically to avoid this channel), so
+# inspector has nothing to do in a `rasa run` process and stays off.
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: false
