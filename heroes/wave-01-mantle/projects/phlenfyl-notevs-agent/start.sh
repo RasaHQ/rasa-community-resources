@@ -12,18 +12,32 @@ if [ ! -d .venv ]; then
   exit 1
 fi
 
-# GROQ_API_KEY / RASA_LICENSE may already be set in the environment (the
-# VS Code extension injects them from Settings → Agent when it spawns this
-# script). .env is only needed when running this by hand — load it if
-# present, but don't require it.
+# GROQ_API_KEY/OPENAI_API_KEY/ANTHROPIC_API_KEY + RASA_LICENSE may already be
+# set in the environment (the VS Code extension injects them from Settings →
+# Agent when it spawns this script). .env is only needed when running this
+# by hand — load it if present, but don't require it.
 if [ -f .env ]; then
   set -a
   source .env
   set +a
 fi
 
-if [ -z "${GROQ_API_KEY:-}" ]; then
-  echo "GROQ_API_KEY is not set — add it in NoteVs Settings → Agent, or in .env if running manually." >&2
+# Same three providers as the VS Code extension's LLM_PROVIDERS map
+# (agentProcess.ts) — LLM_PROVIDER selects which one this run uses.
+# set_llm_provider.py rewrites integrations.yml's llm: block to match.
+LLM_PROVIDER="${LLM_PROVIDER:-groq}"
+case "$LLM_PROVIDER" in
+  groq) API_KEY_VAR=GROQ_API_KEY ;;
+  openai) API_KEY_VAR=OPENAI_API_KEY ;;
+  anthropic) API_KEY_VAR=ANTHROPIC_API_KEY ;;
+  *)
+    echo "Unknown LLM_PROVIDER '$LLM_PROVIDER' — must be groq, openai, or anthropic." >&2
+    exit 1
+    ;;
+esac
+
+if [ -z "${!API_KEY_VAR:-}" ]; then
+  echo "$API_KEY_VAR is not set — add it to .env (see .env.example), matching LLM_PROVIDER=$LLM_PROVIDER." >&2
   exit 1
 fi
 if [ -z "${RASA_LICENSE:-}" ]; then
@@ -33,6 +47,8 @@ fi
 export RASA_PRO_LICENSE="${RASA_PRO_LICENSE:-$RASA_LICENSE}"
 
 source .venv/bin/activate
+
+python3 set_llm_provider.py
 
 # Confirmed live: `rasa run` serves the REST channel on :5005 reading
 # integrations.yml's channels.rest, same shape as classic CALM's

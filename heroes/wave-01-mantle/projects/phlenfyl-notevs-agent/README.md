@@ -93,23 +93,27 @@ notevs-agent (this project)
   favor of `qwen/qwen3.8-27b`. Docs pages aren't ground truth for what a
   given account can actually call — the models endpoint is.
 
-## Groq model
+## LLM provider
 
-`integrations.yml` points at `qwen/qwen3.8-27b` via Groq (LiteLLM
-passthrough — `provider: groq` isn't one of Rasa's named wrappers, but
-LiteLLM supports it, same mechanism `openai`/`anthropic` use). Check
+Groq, OpenAI, or Anthropic — `set_llm_provider.py` rewrites
+`integrations.yml`'s `llm:` block on every `start.sh` run, from the
+`LLM_PROVIDER` env var (default `groq`; set alongside the matching API
+key in `.env`). `provider: groq` isn't one of Rasa's named wrappers, but
+it goes through the same generic LiteLLM passthrough `openai`/`anthropic`
+use. Default models: Groq `qwen/qwen3.8-27b` (check
 https://console.groq.com/docs/models for whatever's current and confirm
 it supports tool calling well — this agent's entire job is calling tools
-correctly. `reasoning_effort: none` turns off this model's default
+correctly; `reasoning_effort: none` turns off this model's default
 thinking mode, which otherwise leaks its reasoning trace into chat
-replies.
+replies), OpenAI `gpt-4o-mini`, Anthropic `claude-3-5-haiku-20241022`.
 
 ## Running this project
 
 ```bash
 uv sync
 cp .env.example .env
-# fill in .env with GROQ_API_KEY and RASA_LICENSE
+# fill in .env — LLM_PROVIDER (groq/openai/anthropic, default groq), the
+# matching API key, and RASA_LICENSE
 ./start.sh
 ```
 
