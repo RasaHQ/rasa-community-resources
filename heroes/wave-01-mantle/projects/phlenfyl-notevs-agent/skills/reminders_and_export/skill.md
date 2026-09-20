@@ -36,7 +36,7 @@ about the auth note tomorrow"), look it up first rather than inventing an
 id.
 
 Use `create_reminder` for the reminder/task action (not a `set_*` name —
-Maestro reserves that prefix for its own tools).
+Mantle reserves that prefix for its own tools).
 
 ## Confirmation copy
 

@@ -1,4 +1,4 @@
-"""Shared Maestro tools for the NoteVs agent.
+"""Shared Mantle tools for the NoteVs agent.
 
 Thin async wrappers around the NoteVs VS Code extension's local HTTP server's
 plain REST endpoint (POST /call — see extension/src/mcpServer.ts). That
@@ -22,8 +22,8 @@ physical server instance answers, without needing to touch the port at
 all. NOTEVS_FOLDER_PATH is set per-window by agentProcess.ts from that
 window's own getFolderPath() at spawn time.
 [Historical note, no longer current: "folderPath is deliberately never
-sent... Maestro tools have no equivalent of the classic engine's flow-level
-cwd to forward anyway." — true that Maestro doesn't thread it through the
+sent... Mantle tools have no equivalent of the classic engine's flow-level
+cwd to forward anyway." — true that Mantle doesn't thread it through the
 conversation, but the process's own env var doesn't need to be threaded
 through anything; it's static for that window's whole session.]
 """
@@ -139,7 +139,7 @@ async def export_to_obsidian(id: str, context: ToolContext = None) -> ToolResult
 
 @tool(description="Create a reminder/task for a note, due on a given date (YYYY-MM-DD), via the user's connected Todoist or Google Tasks. External side effect — only call after explicit confirmation.")
 async def create_reminder(id: str, due_date: str, context: ToolContext = None) -> ToolResult:
-    # Named create_reminder, not set_reminder: Maestro's tool loader treats
+    # Named create_reminder, not set_reminder: Mantle's tool loader treats
     # `set_` as a reserved prefix (own to its memory-setter tools) and
     # silently drops any shared @tool with that prefix — confirmed via a
     # real `rasa train` run, which emitted
