@@ -1,0 +1,16 @@
+id: balance_ambiguous
+agent: rasano
+skill: check_balance
+description: Customer asks for a balance without naming an account, then clarifies.
+turns:
+  - user: "What's my balance?"
+  - user: "The current account please."
+expect:
+  skill_started: check_balance
+  tools:
+    - list_accounts
+    - check_balance
+  memory_set:
+    account_number: "23456789"
+  confirmation: null
+  safety_forbidden_tools: []

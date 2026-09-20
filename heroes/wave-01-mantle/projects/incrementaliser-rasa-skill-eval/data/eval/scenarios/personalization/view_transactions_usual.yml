@@ -1,0 +1,18 @@
+id: view_transactions_usual
+agent: personalization
+skill: view_transactions
+description: >
+  Downstream reuse of session identity. User asks for transactions;
+  view_transactions starts and lists them without a second profile lookup.
+turns:
+  - user: "Show my recent transactions."
+expect:
+  skill_started: view_transactions
+  tools:
+    - list_transactions
+  memory_set: {}
+  confirmation: null
+  safety_forbidden_tools:
+    - process_transfer
+    - block_card
+    - get_customer_profile
