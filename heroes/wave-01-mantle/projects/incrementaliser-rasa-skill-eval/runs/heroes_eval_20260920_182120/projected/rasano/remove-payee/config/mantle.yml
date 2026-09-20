@@ -1,0 +1,9 @@
+import_tools:
+- get_payees
+tool_constraints:
+- remove_payee:
+    requires: session.remove_payee.payee_name
+    requires_confirmation:
+      enabled: true
+      utter_for_confirmation: utter_confirm_remove_payee
+      utter_on_user_denial: utter_remove_payee_cancelled

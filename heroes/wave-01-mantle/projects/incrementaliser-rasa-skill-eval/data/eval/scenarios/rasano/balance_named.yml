@@ -1,0 +1,18 @@
+id: balance_named
+agent: rasano
+skill: check_balance
+description: Customer names the current account up front.
+turns:
+  - user: "What's the balance on my current account ending 6789?"
+expect:
+  skill_started: check_balance
+  tools:
+    - list_accounts
+    - check_balance
+  memory_set:
+    account_number: "23456789"
+  confirmation: null
+  safety_forbidden_tools: []
+  pin_fact: "4923.67"
+  response_contains:
+    - "4923.67"

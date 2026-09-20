@@ -1,0 +1,18 @@
+import_tools:
+- list_accounts
+- get_payees
+- check_payee_exists
+tool_constraints:
+- process_transfer:
+    requires: session.transfer_money.order_confirmed
+    requires_confirmation:
+      enabled: true
+      utter_for_confirmation: utter_confirm_transfer
+      utter_on_user_denial: utter_transfer_cancelled
+    on_success: utter_transfer_complete
+- schedule_transfer:
+    requires: session.transfer_money.order_confirmed
+    requires_confirmation:
+      enabled: true
+      utter_for_confirmation: utter_confirm_scheduled_transfer
+      utter_on_user_denial: utter_transfer_cancelled

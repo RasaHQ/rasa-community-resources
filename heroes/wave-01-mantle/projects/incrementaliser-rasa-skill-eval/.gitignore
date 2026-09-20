@@ -1,0 +1,55 @@
+# Secrets and local env
+.env
+
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Fetched corpora (pins/ is committed)
+corpus/*
+!corpus/pins/
+!corpus/pins/**
+!corpus/README.md
+
+# Runs and logs. One slim snapshot is committed for the Heroes write-up.
+runs/*
+!runs/.gitkeep
+!runs/heroes_eval_20260920_182120/
+!runs/heroes_eval_20260920_182120/**
+
+# Still never commit these even if they reappear locally
+runs/heroes_eval_20260920_182120/agents/
+runs/heroes_eval_20260920_182120/logs/
+runs/heroes_eval_20260920_182120/llama/
+runs/heroes_eval_20260920_182120/tsr/
+runs/heroes_eval_20260920_182120/nvidia/
+runs/heroes_eval_20260920_182120/deepeval/
+runs/heroes_eval_20260920_182120/eval/
+runs/**/*.log
+
+# Local GGUF weights (see scripts/download_local_llms.py)
+models/*
+!models/.gitkeep
+
+# Local llama.cpp CUDA checkout/build
+llama.cpp/
+
+# Weights & Biases local run cache
+wandb/
+
+# Rasa packaged models
+*.tar.gz
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
