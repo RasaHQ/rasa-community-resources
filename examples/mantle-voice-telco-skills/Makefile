@@ -28,7 +28,7 @@ RASA   := $(RUN) rasa
 
 .DEFAULT_GOAL := help
 
-.PHONY: help check-uv env install verify validate train inspect run \
+.PHONY: help check-uv env install verify validate test train inspect run \
         guard-env reset-db show-demo-data tutorial clean clean-all
 
 # ==============================================================================
@@ -48,6 +48,7 @@ help: ## Show this help message
 	@echo '$(YELLOW)Diagnostics:$(RESET)'
 	@echo '  $(GREEN)make verify$(RESET)           Full pre-flight diagnostics (start here if stuck)'
 	@echo '  $(GREEN)make validate$(RESET)         Fast skill/memory/tool validation only'
+	@echo '  $(GREEN)make test$(RESET)             SIM swap policy and tool tests (no model, no keys)'
 	@echo ''
 	@echo '$(YELLOW)Run:$(RESET)'
 	@echo '  $(GREEN)make inspect$(RESET)          Inspector UI — speak or type to Telano'
@@ -116,6 +117,9 @@ validate: check-uv guard-env ## Validate skills, memory, and tools (fast)
 		|| ( echo "$(RED)✗ Project validation failed. Details:$(RESET)"; \
 		     $(PYTHON) -c "from pathlib import Path; from rasa.mantle.validation import validate_project; validate_project(Path('.'))" 2>&1 | grep -v '^20' | tail -40; \
 		     exit 1 )
+
+test: check-uv ## SIM swap tests: no model, no network, no credentials
+	@$(PYTHON) -m unittest discover -s tests -v
 
 # ==============================================================================
 # Build & run

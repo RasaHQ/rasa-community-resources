@@ -85,6 +85,78 @@ class Database:
             ),
             "columns": ["customer_id", "device_id", "model", "status", "wifi_name"],
         },
+        # --- SIM swap (skills/sim_swap) -------------------------------------
+        "mobile_lines": {
+            "create_statement": """
+                CREATE TABLE IF NOT EXISTS mobile_lines (
+                    id INTEGER PRIMARY KEY,
+                    customer_id TEXT NOT NULL,
+                    line TEXT UNIQUE NOT NULL,
+                    label TEXT,
+                    sim_status TEXT NOT NULL,
+                    FOREIGN KEY(customer_id) REFERENCES customers(customer_id)
+                )
+            """,
+            "insert_statement": (
+                "INSERT INTO mobile_lines (customer_id, line, label, sim_status) "
+                "VALUES (?, ?, ?, ?)"
+            ),
+            "columns": ["customer_id", "line", "label", "sim_status"],
+        },
+        "registered_devices": {
+            "create_statement": """
+                CREATE TABLE IF NOT EXISTS registered_devices (
+                    id INTEGER PRIMARY KEY,
+                    customer_id TEXT NOT NULL,
+                    device_id TEXT UNIQUE NOT NULL,
+                    label TEXT,
+                    app_push INTEGER NOT NULL,
+                    status TEXT NOT NULL,
+                    registered_at TEXT,
+                    FOREIGN KEY(customer_id) REFERENCES customers(customer_id)
+                )
+            """,
+            "insert_statement": (
+                "INSERT INTO registered_devices "
+                "(customer_id, device_id, label, app_push, status, registered_at) "
+                "VALUES (?, ?, ?, ?, ?, ?)"
+            ),
+            "columns": [
+                "customer_id",
+                "device_id",
+                "label",
+                "app_push",
+                "status",
+                "registered_at",
+            ],
+        },
+        "sim_swaps": {
+            "create_statement": """
+                CREATE TABLE IF NOT EXISTS sim_swaps (
+                    id INTEGER PRIMARY KEY,
+                    reference TEXT UNIQUE NOT NULL,
+                    customer_id TEXT NOT NULL,
+                    line TEXT NOT NULL,
+                    new_iccid_last4 TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    requested_at TEXT NOT NULL,
+                    FOREIGN KEY(customer_id) REFERENCES customers(customer_id)
+                )
+            """,
+            "insert_statement": (
+                "INSERT INTO sim_swaps "
+                "(reference, customer_id, line, new_iccid_last4, status, requested_at) "
+                "VALUES (?, ?, ?, ?, ?, ?)"
+            ),
+            "columns": [
+                "reference",
+                "customer_id",
+                "line",
+                "new_iccid_last4",
+                "status",
+                "requested_at",
+            ],
+        },
     }
 
     def __init__(self, database_path: Optional[Path] = None) -> None:
