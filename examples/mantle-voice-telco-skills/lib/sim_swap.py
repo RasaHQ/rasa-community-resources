@@ -94,8 +94,16 @@ KNOWLEDGE_CHANNELS = frozenset({"pin", "dob", "security_answer"})
 #: Codes delivered to a phone number. Circular when the number is the target.
 LINE_CHANNELS = frozenset({"sms", "voice_call"})
 
-#: The only channels that can authorise a swap.
-INDEPENDENT_CHANNELS = frozenset({"app_push", "store_id_check"})
+#: The two independent channels, named once. `evaluate_swap` and the send tool
+#: in skills/sim_swap/tools.py each branch on these names explicitly.
+APP_PUSH = "app_push"
+STORE_ID_CHECK = "store_id_check"
+
+#: The only channels that can authorise a swap. This set is a declaration, not
+#: a router: adding a name here does NOT create an approval path, because no
+#: code allows a channel merely for being in it. A new channel needs its own
+#: explicit branch in `evaluate_swap` and in the send tool.
+INDEPENDENT_CHANNELS = frozenset({APP_PUSH, STORE_ID_CHECK})
 
 KNOWN_CHANNELS = KNOWLEDGE_CHANNELS | LINE_CHANNELS | INDEPENDENT_CHANNELS
 
@@ -253,10 +261,10 @@ def evaluate_swap(target_line: object, verification: object) -> SwapDecision:
     if not record.passed:
         return refuse(NO_VERIFICATION)
 
-    if record.channel == "app_push" and record.registered_before_call:
+    if record.channel == APP_PUSH and record.registered_before_call:
         return SwapDecision(True, ALLOWED, target, record.channel)
 
-    if record.channel == "store_id_check":
+    if record.channel == STORE_ID_CHECK:
         return SwapDecision(True, ALLOWED, target, record.channel)
 
     # A code to some other number, or a push to a device enrolled during this

@@ -13,7 +13,7 @@ does not matter.
 VERIFIED BY DELETION
 --------------------
 Each check below was deleted, the suite run, and the file restored and
-compared byte for byte with a copy taken first. All runs 2026-09-21, nine
+compared byte for byte with a copy taken first. All runs 2026-09-21, eleven
 tests. The counts are unittest failures, where each failing subtest counts
 once.
 
@@ -24,16 +24,18 @@ once.
        -    except SwapRefused as exc:
        -        return _refuse(exc, context)
 
-   The suite went red: 6 of the 9 tests failed, 30 failures in all
+   The suite went red: 8 of the 11 tests failed, 32 failures in all
    (test_sms_code_to_the_line_being_replaced_is_refused,
    test_knowledge_factors_never_authorise_a_swap,
    test_changing_the_target_line_discards_the_verification,
    test_device_registered_during_the_call_does_not_count,
-   test_refusal_returns_no_swap_reference and
+   test_refusal_returns_no_swap_reference,
+   test_widening_the_channel_set_does_not_open_a_new_path,
+   test_resending_a_push_does_not_reset_the_attempt_budget and
    test_malformed_verification_fails_closed). Each one was a swap reference
    returned, or a queued row written, for a caller who had not verified
-   independently. The three tests that describe a caller the guard should let
-   through, or that never reach request_sim_swap, stayed green:
+   independently. Three tests stayed green, because they describe a caller the
+   guard should let through or never reach request_sim_swap:
    test_app_push_to_a_registered_device_authorises_the_swap,
    test_a_queued_request_is_not_reported_as_active and
    test_unverified_caller_learns_nothing_about_the_device.
@@ -43,14 +45,14 @@ once.
        -    if line_digits(record.issued_for_line) != line_digits(target):
        -        return refuse(TARGET_CHANGED)
 
-   3 failures in 2 tests. The policy returned `allowed` for a push issued for
-   555-0187 when 555-0142 was requested
-   (test_changing_the_target_line_discards_the_verification). In
-   test_refusal_returns_no_swap_reference the tool then queued a swap of
+   3 failures in 2 tests, and each direction was seen once.
+   test_changing_the_target_line_discards_the_verification failed on its
+   first, policy-level assertion. `evaluate_swap` returned `allowed` for a push
+   issued for 555-0142 when 555-0187 was requested. In
+   test_refusal_returns_no_swap_reference the tool itself queued a swap of
    555-0142 on a push issued for 555-0187. That test failed twice: once in
    its "other line" case, where ok came back True, and once on its check that
-   no row was written. This check stops a swap. It is
-   not only a label.
+   no row was written. This check stops a swap. It is not only a label.
 
 3. The knowledge check in evaluate_swap: 3 failures, all in
    test_knowledge_factors_never_authorise_a_swap.
@@ -66,6 +68,18 @@ once.
    `registered is not None`): 1 failure, in
    test_device_registered_during_the_call_does_not_count. The push went to
    DEV-125-01, a device registered four minutes after the call began.
+
+6. The explicit channel gate in send_swap_verification, reverted to the
+   earlier `if wanted not in INDEPENDENT_CHANNELS:`. That gate sent every
+   accepted channel other than store_id_check down the push path. 1 failure,
+   in test_widening_the_channel_set_does_not_open_a_new_path: with "email"
+   patched into INDEPENDENT_CHANNELS, send returned ok True for "email".
+
+7. The deliberate absence of an attempt reset in `_discard_verification`
+   (adding `context.memory.set(ATTEMPTS_KEY, 0.0)` there): 1 failure, in
+   test_resending_a_push_does_not_reset_the_attempt_budget. After one wrong
+   code and a re-sent push, the second wrong code came back `retry`, not
+   `locked_out`. The re-send had handed out a fresh budget.
 """
 
 from __future__ import annotations
@@ -78,6 +92,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -407,6 +422,60 @@ class SimSwapTest(unittest.TestCase):
         self.assertIsNotNone(first)
         run(tools.send_swap_verification(line=LINE, channel="app_push", context=fresh))
         self.assertEqual(fresh.memory.get("swap_call_started_at"), first)
+
+    def test_widening_the_channel_set_does_not_open_a_new_path(self):
+        """Adding a name to INDEPENDENT_CHANNELS must not create an approval path."""
+        import lib.sim_swap as policy
+
+        widened = policy.INDEPENDENT_CHANNELS | {"email"}
+        with mock.patch.object(policy, "INDEPENDENT_CHANNELS", widened), \
+                mock.patch.object(tools, "INDEPENDENT_CHANNELS", widened):
+            context = FakeContext()
+            sent = payload(run(tools.send_swap_verification(line=LINE, channel="email", context=context)))
+            self.assertIs(sent["ok"], False)
+            self.assertEqual(sent["reason"], NO_VERIFICATION)
+            self.assertIsNone(context.memory.get("swap_verification"))  # nothing written
+
+            # Even a code read back cannot pass: there is no pending record.
+            confirmed = payload(run(tools.confirm_swap_verification(
+                code=tools.DEMO_PUSH_CODE, context=context)))
+            self.assertIs(confirmed["ok"], False)
+
+            before = self.swap_rows()
+            result = payload(run(tools.request_sim_swap(line=LINE, new_iccid=NEW_ICCID, context=context)))
+            self.assert_refused_without_reference(result, NO_VERIFICATION)
+
+            # A passed "email" record placed straight into memory is refused too.
+            forged = {"channel": "email", "destination": "caller@example.com",
+                      "issued_for_line": LINE, "passed": True, "registered_before_call": True}
+            self.assertFalse(evaluate_swap(LINE, forged).allowed)
+            result = payload(run(tools.request_sim_swap(
+                line=LINE, new_iccid=NEW_ICCID, context=caller_holding(json.dumps(forged)))))
+            self.assert_refused_without_reference(result, NO_VERIFICATION)
+            self.assertEqual(self.swap_rows(), before)
+
+    def test_resending_a_push_does_not_reset_the_attempt_budget(self):
+        """One wrong code, a fresh push, one wrong code: locked out, not a new budget."""
+        self.assertEqual(tools.RETRY_BUDGET, 2)  # the arithmetic below assumes it
+        context = FakeContext()
+        run(tools.send_swap_verification(line=LINE, channel="app_push", context=context))
+        first = payload(run(tools.confirm_swap_verification(code="one one one one", context=context)))
+        self.assertEqual(first["outcome"], "retry")
+
+        resent = payload(run(tools.send_swap_verification(line=LINE, channel="app_push", context=context)))
+        self.assertTrue(resent["ok"])
+
+        second = payload(run(tools.confirm_swap_verification(code="two two two two", context=context)))
+        self.assertEqual(second["outcome"], "locked_out")
+        self.assertTrue(second["handoff_required"])
+
+        # Locked means locked: no new push, no correct code, no swap.
+        again = payload(run(tools.send_swap_verification(line=LINE, channel="app_push", context=context)))
+        self.assertEqual(again["outcome"], "locked_out")
+        late = payload(run(tools.confirm_swap_verification(code=tools.DEMO_PUSH_CODE, context=context)))
+        self.assertIs(late["ok"], False)
+        result = payload(run(tools.request_sim_swap(line=LINE, new_iccid=NEW_ICCID, context=context)))
+        self.assert_refused_without_reference(result, NO_VERIFICATION)
 
     def test_malformed_verification_fails_closed(self):
         """Anything that is not a clean, known, passed record is no verification."""

@@ -407,7 +407,11 @@ guard decides what actually happens. Other rules the code enforces:
   discarded, and switching back does not bring it back.
 - The push code is compared and then dropped. It is never written to memory
   or returned in a tool result, and log lines show only its length.
-- Two wrong codes lock the call. The skill then hands off to the identity team
+- The send tool issues only `app_push` or `store_id_check`, each handled by
+  its own branch. Adding a name to `INDEPENDENT_CHANNELS` does not create a
+  new way to approve a swap.
+- Two wrong codes lock the call, and re-sending a push does not reset the
+  count. The skill then hands off to the identity team
   through `human_handoff`.
 - A successful request returns `status: queued` and `active: false`.
   `check_swap_status` reports the status stored for the reference and never
@@ -449,12 +453,15 @@ test_a_queued_request_is_not_reported_as_active
 test_malformed_verification_fails_closed
 test_unverified_caller_learns_nothing_about_the_device
 test_device_registered_during_the_call_does_not_count
+test_widening_the_channel_set_does_not_open_a_new_path
+test_resending_a_push_does_not_reset_the_attempt_budget
 ```
 
-The test module's docstring records five deletion checks. With the guard
-removed from `request_sim_swap`, six of the nine tests fail. The docstring
-also records which checks stop a swap (the guard, the target binding, the
-call-start comparison) and which only change the reason code (the knowledge
+The test module's docstring records seven deletion checks. With the guard
+removed from `request_sim_swap`, eight of the eleven tests fail. The
+docstring also records which checks stop a swap (the guard, the target
+binding, the call-start comparison, the explicit channel gate, the attempt
+budget) and which only change the reason code (the knowledge
 and circular checks, since the channel allowlist refuses those records
 anyway).
 

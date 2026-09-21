@@ -42,12 +42,14 @@ from rasa.mantle.tools.result import ToolResult
 
 from lib.database import Database, customer_id_from_context
 from lib.sim_swap import (
+    APP_PUSH,
     CIRCULAR_VERIFICATION,
     INDEPENDENT_CHANNELS,
     KNOWLEDGE_CHANNELS,
     KNOWLEDGE_ONLY,
     LINE_CHANNELS,
     NO_VERIFICATION,
+    STORE_ID_CHECK,
     TARGET_CHANGED,
     SwapDecision,
     SwapVerification,
@@ -409,12 +411,21 @@ async def send_swap_verification(
             }
         )
 
-    if wanted not in INDEPENDENT_CHANNELS:
+    # Explicit per-channel handling. A channel must be BOTH declared
+    # independent AND one of the two this tool knows how to issue. Widening
+    # INDEPENDENT_CHANNELS alone therefore cannot open a new approval path,
+    # and nothing below ever writes a record whose channel differs from the
+    # one requested.
+    if wanted not in INDEPENDENT_CHANNELS or wanted not in (APP_PUSH, STORE_ID_CHECK):
         return ToolResult(
             llm_response={
                 "ok": False,
-                "error": "unsupported_channel",
-                "hint": "Use app_push or store_id_check.",
+                "reason": NO_VERIFICATION,
+                "hint": (
+                    "That is not a way to verify a SIM swap. Offer an app push "
+                    "to a registered device (app_push) or a store visit with "
+                    "photo ID (store_id_check)."
+                ),
             }
         )
 
@@ -435,11 +446,11 @@ async def send_swap_verification(
     # different line. Only one record exists at a time.
     _discard_verification(context)
 
-    if wanted == "store_id_check":
+    if wanted == STORE_ID_CHECK:
         _write_verification(
             context,
             SwapVerification(
-                channel="store_id_check",
+                channel=STORE_ID_CHECK,
                 destination="store",
                 issued_for_line=stored_line,
                 passed=False,
@@ -479,7 +490,7 @@ async def send_swap_verification(
     _write_verification(
         context,
         SwapVerification(
-            channel="app_push",
+            channel=APP_PUSH,
             destination=PUSH_DESTINATION,
             issued_for_line=stored_line,
             passed=False,
@@ -533,7 +544,7 @@ async def confirm_swap_verification(
         )
 
     pending = _read_verification(context)
-    if pending is None or pending.channel != "app_push":
+    if pending is None or pending.channel != APP_PUSH:
         return ToolResult(
             llm_response={
                 "ok": False,
