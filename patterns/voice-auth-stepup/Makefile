@@ -43,7 +43,7 @@ check-uv:
 	fi
 
 install: check-uv ## Install dependencies
-	@$(UV) sync --prerelease=allow
+	@$(UV) sync
 
 env: ## Create .env from the example, never overwriting an existing one
 	@if [ -f .env ]; then echo "$(YELLOW).env already exists — leaving it alone.$(RESET)"; \

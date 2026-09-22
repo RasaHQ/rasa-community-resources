@@ -72,7 +72,7 @@ not mention Python at all:
 
 ```text
 versions that are not supported by your dependencies
-(e.g., rasa-pro==3.20.0rc1 only supports >=3.11, <3.15)
+(e.g., rasa-pro==3.20.0 only supports >=3.11, <3.15)
 ```
 
 Three resources in this catalog hit exactly that during the 3.20 migration.
@@ -111,14 +111,14 @@ make test-all      # check-all, then rasa train when a license is present
 Override the target version for a one-shot bump (also rewrites `RASA_PRO_VERSION`):
 
 ```bash
-make migrate VERSION=3.20.0rc1
+make migrate VERSION=3.20.0
 ```
 
 Preview any bump before it touches the working tree — nothing is written and
 `uv lock` never runs:
 
 ```bash
-make migrate-dry VERSION=3.20.0rc1
+make migrate-dry VERSION=3.20.0
 ```
 
 Jump to the newest release on the supported line (see the box at the top —
@@ -158,7 +158,7 @@ should not need to hand-edit those flags.
    ```
 2. Preview the bump:
    ```bash
-   make migrate-dry VERSION=3.20.0rc1
+   make migrate-dry VERSION=3.20.0
    ```
 3. Run the migrator. It verifies the version exists on the index *before*
    rewriting anything, then updates every `pyproject.toml` pin and prerelease
@@ -166,7 +166,7 @@ should not need to hand-edit those flags.
    resolved, rewrites `Verified with:` / `rasa-pro==…` prose in README/AGENTS
    and the project Makefiles, and finally writes `RASA_PRO_VERSION`:
    ```bash
-   make migrate VERSION=3.20.0rc1
+   make migrate VERSION=3.20.0
    # or, for the newest release on the supported line:
    make latest
    ```

@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners running a Rasa voice agent that is not allowed to go quiet
 Time:          30–45 minutes
 ```
@@ -169,7 +169,7 @@ That is a real outcome, and better seen in a drill than in production.
 The ASR chain ends in faster-whisper, which needs an extra:
 
 ```bash
-uv sync --prerelease=allow --extra local-asr
+uv sync --extra local-asr
 ```
 
 The model downloads on first use (~75 MB for `tiny.en`). Until then that link is

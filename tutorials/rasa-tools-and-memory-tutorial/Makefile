@@ -17,7 +17,7 @@ help: ## Show this help message
 	@echo '$(YELLOW)Sterling — tool scope and memory scope$(RESET)'
 	@echo ''
 	@echo '  $(GREEN)make env$(RESET)        Create .env from .env.example'
-	@echo '  $(GREEN)make install$(RESET)    Install dependencies (uv sync --prerelease=allow)'
+	@echo '  $(GREEN)make install$(RESET)    Install dependencies (uv sync)'
 	@echo '  $(GREEN)make train$(RESET)      Validate and train the agent'
 	@echo '  $(GREEN)make chat$(RESET)       Talk to the agent in the Inspector'
 	@echo '  $(GREEN)make validate$(RESET)   Validate the project without training'
@@ -43,7 +43,7 @@ guard-env:
 	@if [ ! -f .env ]; then echo "$(RED)✗ No .env — run: make env$(RESET)"; exit 1; fi
 
 install: check-uv ## Install dependencies
-	@$(UV) sync --prerelease=allow
+	@$(UV) sync
 
 validate: check-uv guard-env ## Validate the project without training
 	@$(UV) run rasa validate-project 2>/dev/null || $(UV) run python -c "\

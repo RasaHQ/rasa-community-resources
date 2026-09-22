@@ -2,7 +2,7 @@
 proof:
 	python3 -m unittest discover -s tests -v
 install:
-	uv sync --prerelease=allow
+	uv sync
 validate:
 	uv run python -c "from pathlib import Path; from rasa.mantle.validation import validate_project; validate_project(Path('.'))"
 train:

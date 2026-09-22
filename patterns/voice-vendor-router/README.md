@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners running voice agents who cannot afford one vendor to be single points of failure
 Time:          30–45 minutes
 ```
@@ -188,9 +188,9 @@ Both install through one extra, which — unlike NeuTTS — resolves cleanly aga
 Rasa's numpy pin:
 
 ```bash
-uv sync --prerelease=allow --extra local-asr   # vosk + faster-whisper
-uv sync --prerelease=allow --extra aws         # boto3 + amazon-transcribe
-uv sync --prerelease=allow --extra google      # google-cloud-{texttospeech,speech}
+uv sync --extra local-asr   # vosk + faster-whisper
+uv sync --extra aws         # boto3 + amazon-transcribe
+uv sync --extra google      # google-cloud-{texttospeech,speech}
 ```
 
 Each extra was checked with `uv pip compile` against Python 3.12 *before* being
@@ -518,7 +518,7 @@ what this machine can reach.
 To get a credential-free comparison you need two local adapters:
 
 ```bash
-uv sync --prerelease=allow --extra local-asr   # vosk + faster-whisper
+uv sync --extra local-asr   # vosk + faster-whisper
 # Vosk also needs a model; unpack one from https://alphacephei.com/vosk/models
 # into models/ and bench will find it.
 ```

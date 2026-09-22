@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners wiring an agent to a system of record
 Time:          45–60 minutes, plus 20–30 for the MCP chapter
 ```
@@ -168,7 +168,7 @@ a new one — the swap is only visible against something that already worked.
 ## Commands
 
 ```bash
-make install    # uv sync --prerelease=allow
+make install    # uv sync
 make mock       # run the mock CRM (second terminal)
 make train      # rasa train
 make chat       # rasa inspect
@@ -192,7 +192,7 @@ This tutorial used to end with a promise:
 > REST. When MCP lands, the same three skills can keep their instructions and
 > swap `tools/crm.py` for imported remote tools.
 
-MCP has landed, and the promise held. `rasa-pro 3.20.0rc1` connects to
+MCP has landed, and the promise held. `rasa-pro 3.20.0` connects to
 `mcp_servers:` and resolves `import_tools: mcp/<server>:<tool>` at model load.
 The three skills now run against a remote MCP server **with their instructions
 unchanged**.
