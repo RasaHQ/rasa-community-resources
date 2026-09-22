@@ -4,7 +4,7 @@
     Assessed on:   2026-09-02
     Assessed by:   Rod Rivera
     Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-    Installation: rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+    Installation: rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners whose agents hand callers to humans and whose callers then repeat themselves
     Time:          30–45 minutes
 
@@ -336,7 +336,7 @@ make test
 
 # Talk to the agent
 cp .env.example .env          # then fill RASA_LICENSE and OPENAI_API_KEY
-uv sync --prerelease=allow
+uv sync
 uv run rasa train
 uv run rasa inspect
 ```

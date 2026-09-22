@@ -1,7 +1,7 @@
 # Building risk-tiered step-up, one decision at a time
 
 ```text
-Verified with: rasa-pro 3.20.0rc1, Python 3.11+, uv
+Verified with: rasa-pro 3.20.0, Python 3.11+, uv
 Time:          40–60 minutes
 Prerequisites: a working Rasa Pro setup; you have built at least one skill before
 ```

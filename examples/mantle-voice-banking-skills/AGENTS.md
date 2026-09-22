@@ -23,7 +23,7 @@ building a **voice** retail banking assistant with **Deepgram** ASR + TTS.
 ## Build loop
 
 ```bash
-make install   # uv sync --prerelease=allow
+make install   # uv sync
 make env       # copy .env.example -> .env, then fill in the keys
 make verify    # pre-flight diagnostics (scripts/verify_setup.py)
 make train

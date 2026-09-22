@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice insurance agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -64,7 +64,7 @@ Run `make` alone for the full grouped help screen.
 
 ## Stack
 
-- `rasa-pro==3.20.0rc1` via `uv`, Python 3.10–3.13
+- `rasa-pro==3.20.0` via `uv`, Python 3.10–3.13
 - LLM: OpenAI `gpt-5.2` in `integrations.yml` and `endpoints.yml` — **no temperature**
 - Voice: Deepgram Flux ASR + Aura TTS under `channels.inspector`
 - Tools: local-first (`skills/<id>/tools.py`) + shared (`tools/insurance.py`)
@@ -141,7 +141,7 @@ make tutorial
 
 | Target | Purpose |
 | --- | --- |
-| `make install` | `uv sync --prerelease=allow` |
+| `make install` | `uv sync` |
 | `make env` | Create `.env` from `.env.example` (never overwrites) |
 | `make verify` | Full pre-flight diagnostics |
 | `make validate` | Fast skill/memory/tool validation |

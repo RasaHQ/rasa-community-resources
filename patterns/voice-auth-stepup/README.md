@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice agents that can do something worth stealing
 Time:          40–60 minutes
 ```
@@ -190,7 +190,7 @@ factors. Keep the shape.
 
 ```bash
 cp .env.example .env          # fill RASA_LICENSE and OPENAI_API_KEY
-uv sync --prerelease=allow
+uv sync
 make test                     # the guard suite — runs with no keys at all
 make prove                    # the guard suite proving itself
 

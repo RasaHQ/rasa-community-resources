@@ -2,7 +2,7 @@
 
 This directory is a **Rasa Mantle** agent (Skills / `rasa.mantle`) that teaches
 building a **voice** appointment-booking assistant for the Clinic of Rasa with
-**Deepgram** ASR + TTS. It targets `rasa-pro==3.20.0rc1` on `gpt-5.2`.
+**Deepgram** ASR + TTS. It targets `rasa-pro==3.20.0` on `gpt-5.2`.
 
 ## Layout
 
@@ -31,7 +31,7 @@ building a **voice** appointment-booking assistant for the Clinic of Rasa with
 ## Build loop
 
 ```bash
-make install   # uv sync --prerelease=allow
+make install   # uv sync
 make env       # copy .env.example -> .env, then fill in the keys
 make verify    # pre-flight diagnostics (scripts/verify_setup.py)
 make train

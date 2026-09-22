@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice telecom care agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -525,7 +525,7 @@ Common fixes are printed inline by the verifier (`make install`, `make env`,
 Pinned in `pyproject.toml`:
 
 ```text
-rasa-pro==3.20.0rc1
+rasa-pro==3.20.0
 ```
 
 LLM: `gpt-5.2` in `integrations.yml` and `endpoints.yml` — do not set `temperature`.

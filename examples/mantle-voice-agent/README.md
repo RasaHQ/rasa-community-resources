@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice agents with Rasa Skills
 Time:          60–90 minutes
 ```
@@ -158,7 +158,7 @@ ordered collection, confirmation, and verbatim success text.
 | `scripts/verify_setup.py` | Pre-flight diagnostics |
 | `tutorial/snippets/` | Paste-ready chapter checkpoints |
 
-Pin: `rasa-pro==3.20.0rc1`. New empty projects: `rasa init --engine mantle`.
+Pin: `rasa-pro==3.20.0`. New empty projects: `rasa init --engine mantle`.
 
 This is a **Skills / Mantle** project. Do **not** add CALM v1 files
 (`config.yml`, `domain.yml`, flow YAMLs under `data/`).

@@ -5,7 +5,7 @@
   persisted replay, lost acknowledgments and receipt reconciliation per case.
   Other methods cover concurrent requests, cross-case/revision conflicts,
   unknown records, strict boolean authority and malformed identifiers.
-- Installed project: `uv sync --prerelease=allow` succeeds with the committed
+- Installed project: `uv sync` succeeds with the committed
   lock, Python 3.12.13 and the repository's pinned engine.
 - Rasa configuration: `rasa.mantle.validation.validate_project(Path('.'))`
   succeeds against the installed engine and loads the scenario skill and all three

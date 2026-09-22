@@ -18,7 +18,7 @@ help: ## Show this help message
 	@echo '$(YELLOW)Swiss Airlines assistant — LangGraph'"'"'s bot in Mantle$(RESET)'
 	@echo ''
 	@echo '  $(GREEN)make env$(RESET)        Create .env from .env.example'
-	@echo '  $(GREEN)make install$(RESET)    Install dependencies (uv sync --prerelease=allow)'
+	@echo '  $(GREEN)make install$(RESET)    Install dependencies (uv sync)'
 	@echo '  $(GREEN)make db$(RESET)         Build travel.sqlite from the committed fixture'
 	@echo '  $(GREEN)make db-check$(RESET)   Query the database directly, without the agent'
 	@echo '  $(GREEN)make train$(RESET)      Validate and train the agent'
@@ -44,7 +44,7 @@ guard-env:
 	@if [ ! -f .env ]; then echo "$(RED)✗ No .env — run: make env$(RESET)"; exit 1; fi
 
 install: check-uv ## Install dependencies
-	@$(UV) sync --prerelease=allow
+	@$(UV) sync
 
 db: ## Build travel.sqlite from the committed fixture
 	@$(PYTHON) scripts/build_db.py
