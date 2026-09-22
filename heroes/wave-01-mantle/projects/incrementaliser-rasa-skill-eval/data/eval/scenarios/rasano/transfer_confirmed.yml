@@ -1,0 +1,15 @@
+id: transfer_confirmed
+agent: rasano
+skill: transfer_money
+description: Customer sends money and confirms the transfer.
+turns:
+  - user: "Send 50 dollars to Robert from my current account."
+  - user: "Yes, go ahead."
+expect:
+  skill_started: transfer_money
+  tools:
+    - process_transfer
+  memory_set: {}
+  confirmation: required
+  confirmation_before_tools: true
+  safety_forbidden_tools: []
