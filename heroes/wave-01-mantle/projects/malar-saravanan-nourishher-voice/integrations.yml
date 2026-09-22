@@ -1,0 +1,70 @@
+# External integrations for the NourishHer nutrition voice agent.
+#
+# LLM: OpenAI (gpt-4o) primary, Groq (openai/gpt-oss-120b) fallback only.
+# Embeddings stay on Gemini.
+#
+# rasa-pro 3.20.0.dev6: `llm:` is now model-group-only — provider, model,
+# and credentials must live on the named group, not inline (breaking change
+# from the 3.19.0.dev5 pin this project started on).
+
+llm:
+  model_group: orchestrator_llm
+
+model_groups:
+  - id: orchestrator_llm
+    # OpenAI is primary; Groq is fallback ONLY — never load-balanced or
+    # round-robined with it. LiteLLM's "simple-shuffle" router does a
+    # weighted random pick among deployments that declare a `weight` and
+    # treats any deployment without one as weight 0, so giving only OpenAI a
+    # weight makes Groq get 0% of first attempts while OpenAI is healthy.
+    # `enable_weighted_failover` re-picks among the *other* deployments
+    # immediately if the chosen one fails mid-call — with only two
+    # deployments that means an OpenAI failure retries on Groq within the
+    # same turn. `allowed_fails`/`cooldown_time` additionally take OpenAI
+    # out of rotation for a minute after repeated failures, so a bad patch
+    # doesn't retry OpenAI on every single turn.
+    models:
+      - provider: openai
+        model: gpt-4o
+        api_key_env: OPENAI_API_KEY
+        temperature: 0.0
+        timeout: 30
+        num_retries: 2
+        weight: 100
+      - provider: groq
+        model: groq/openai/gpt-oss-120b
+        api_key_env: GROQ_API_KEY
+        temperature: 0.0
+        # Groq free tier caps at 8000 TPM; LiteLLM honors Retry-After and backs
+        # off, so a generous num_retries lets a turn ride through the cap.
+        timeout: 90
+        num_retries: 8
+    router:
+      routing_strategy: simple-shuffle
+      enable_weighted_failover: true
+      allowed_fails: 2
+      cooldown_time: 60
+  - id: reference_embeddings
+    models:
+      - provider: gemini
+        model: gemini/gemini-embedding-001
+        api_key_env: GEMINI_API_KEY
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    # Deepgram end-to-end: speech-to-text (ASR) and text-to-speech (TTS)
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en
