@@ -1,0 +1,33 @@
+schema:
+  public:
+    ticket_mode:
+      type: categorical
+      enum_values: [new, track]
+      description: Whether the employee is creating a ticket or tracking one.
+      llm_settable: true
+    ticket_number:
+      type: text
+      description: The supplied or newly created HR ticket number.
+      llm_settable: true
+    ticket_confirmed:
+      type: bool
+      description: Whether the employee confirmed the summarized new ticket.
+      llm_settable: true
+    category:
+      type: categorical
+      enum_values: [hr_policy, payroll, benefits, workplace_technology, other]
+      description: The category of the new HR ticket.
+      llm_settable: true
+    subject:
+      type: text
+      description: A concise subject for the ticket.
+      llm_settable: true
+    description:
+      type: text
+      description: A concise description of the employee's issue.
+      llm_settable: true
+    priority:
+      type: categorical
+      enum_values: [low, normal, high, urgent]
+      description: The requested ticket priority.
+      llm_settable: true
