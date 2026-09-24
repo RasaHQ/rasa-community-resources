@@ -4,7 +4,7 @@
 Author:        Samrudha Kelkar
 Wave:          wave-01-mantle
 Assessed on:   2026-09-11
-Verified with: rasa-pro 3.20.0.dev9, Python 3.12, uv
+Verified with: rasa-pro 3.20.0, Python 3.12, uv
 ```
 
 > **Overview for Rasa Practitioners & Architects:**  

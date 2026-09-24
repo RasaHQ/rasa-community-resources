@@ -386,7 +386,6 @@ def get_executive_revenue_summary(
     cursor.execute(sql, params)
     summary = dict(cursor.fetchone())
 
-    # Top product categories by revenue
     cat_sql = """
         SELECT product_category, ROUND(SUM(line_total), 2) AS category_revenue,
                ROUND(SUM(line_total) * 100.0 / (SELECT SUM(line_total) FROM transactions), 1) AS revenue_share_pct

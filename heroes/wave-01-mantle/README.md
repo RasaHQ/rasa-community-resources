@@ -49,7 +49,7 @@ No projects have landed yet. This wave is open.
 
 | Project | What it does | Author | Verified with | Assessed on |
 |---|---|---|---|---|
-| [samrudh-coffee-shop](projects/samrudh-coffee-shop/) | Voice & text assistant for Artisan Roast Coffee Co. supporting drink ordering, customer loyalty, barista store queues, and CEO financial revenue analytics | Samrudha Kelkar (@samrudh) | `3.20.0.dev9` | 2026-09-11 |
+| [samrudh-coffee-shop](projects/samrudh-coffee-shop/) | Voice & text assistant for Artisan Roast Coffee Co. supporting drink ordering, customer loyalty, barista store queues, and CEO financial revenue analytics | Samrudha Kelkar (@samrudh) | `3.20.0` | 2026-09-11 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a
