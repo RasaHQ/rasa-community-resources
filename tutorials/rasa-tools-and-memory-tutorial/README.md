@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners deciding where a tool or a memory field belongs
 Time:          30–45 minutes
 ```
@@ -170,7 +170,7 @@ release ships `rasa.mantle`, change the import line and nothing else.
 ## Commands
 
 ```bash
-make install    # uv sync
+make install    # uv sync --prerelease=allow
 make train      # rasa train
 make chat       # rasa inspect
 make scopes     # print every tool and memory field with its scope

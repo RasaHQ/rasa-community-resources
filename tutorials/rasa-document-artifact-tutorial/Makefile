@@ -62,7 +62,7 @@ env: ## Create .env from .env.example if it does not exist
 
 install: check-uv ## Install all dependencies into .venv
 	@echo "$(BLUE)Installing dependencies with uv...$(RESET)"
-	$(UV) sync
+	$(UV) sync --prerelease=allow
 	@echo "$(GREEN)✓ Dependencies installed.$(RESET)"
 
 guard-env:

@@ -6,7 +6,7 @@ Kind:          example
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners who want a Mantle voice agent without an OpenAI key
 Time:          30–45 minutes
 ```
