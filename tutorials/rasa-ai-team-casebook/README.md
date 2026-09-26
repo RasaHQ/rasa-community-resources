@@ -4,7 +4,7 @@ Author:        Rasa Community
 Assessed on:   2026-09-08
 Assessed by:   Codex Principal (offline checks; runtime scope recorded below)
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
 Audience:      AI teams rehearsing evidence, authorization and recovery boundaries
 Time:          20–40 minutes per case; optional model integration takes longer
 

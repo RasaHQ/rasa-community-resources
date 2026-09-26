@@ -21,7 +21,7 @@ help: ## Show this help message
 	@echo '$(YELLOW)Wren — guarding an irreversible action$(RESET)'
 	@echo ''
 	@echo '  $(GREEN)make env$(RESET)        Create .env from .env.example'
-	@echo '  $(GREEN)make install$(RESET)    Install dependencies (uv sync)'
+	@echo '  $(GREEN)make install$(RESET)    Install dependencies (uv sync --prerelease=allow)'
 	@echo '  $(GREEN)make policy$(RESET)     Exercise the guard — no licence or network needed'
 	@echo '  $(GREEN)make validate$(RESET)   Validate the project without training'
 	@echo '  $(GREEN)make train$(RESET)      Train the agent'
@@ -47,7 +47,7 @@ guard-env:
 	@if [ ! -f .env ]; then echo "$(RED)✗ No .env — run: make env$(RESET)"; exit 1; fi
 
 install: check-uv ## Install dependencies
-	@$(UV) sync
+	@$(UV) sync --prerelease=allow
 
 policy: ## Exercise the guard directly — no licence, no model, no network
 	@$(PYTHON) scripts/prove_guard.py

@@ -16,7 +16,7 @@ engine package name.
 
 Non-negotiables:
 
-1. **Pin doctrine.** `rasa-pro==3.20.0`-style dev pins only;
+1. **Pin doctrine.** `rasa-pro==3.21.0.dev1`-style dev pins only;
    `prerelease = "allow"`; Python `>=3.11`. Never "upgrade to latest stable".
 2. **Engine imports only via `lib/engine.py`.** Never `from rasa.mantle...`
    in a tool file.

@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners whose agent can do something that cannot be undone
 Time:          45–60 minutes
 ```

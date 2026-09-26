@@ -4,7 +4,7 @@
     Assessed on:   2026-09-02
     Assessed by:   Rod Rivera
     Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-    Installation: rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
+    Installation: rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners building agents whose deliverable is a FILE — a suitability record, a claim summary, a mandate — and who cannot afford a plausible number in it
     Time:          45–60 minutes
 
@@ -238,7 +238,7 @@ make test
 
 # Talk to the agent
 cp .env.example .env          # then fill RASA_LICENSE and OPENAI_API_KEY
-uv sync
+uv sync --prerelease=allow
 make validate
 make train
 make chat

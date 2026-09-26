@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
 Audience:      Anyone comparing agent frameworks, or porting a CALM v1 agent
 Time:          60–90 minutes
 ```
@@ -144,7 +144,7 @@ memory.yml                 PROJECT memory: the trip
 ## Commands
 
 ```bash
-make install    # uv sync
+make install    # uv sync --prerelease=allow
 make db         # build travel.sqlite from the fixture
 make db-check   # query the database directly, without the agent
 make train      # rasa train
