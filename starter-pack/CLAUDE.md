@@ -8,7 +8,7 @@ misleadingly reported by the engine, verified against rasa-pro `3.20.0.dev6`.
 
 - The Mantle engine ships **only on the `3.20.0.dev` pre-release line**. The
   newest stable `rasa-pro` has **no engine package**. Never "upgrade to latest
-  stable"; pin `rasa-pro==3.20.0` (or the current dev release) and keep
+  stable"; pin `rasa-pro==3.21.0.dev1` (or the current dev release) and keep
   `[tool.uv] prerelease = "allow"`.
 - `requires-python = ">=3.11,<3.13"`. A lower floor fails `uv lock` with a
   resolver error that never mentions Python.

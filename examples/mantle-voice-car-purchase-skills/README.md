@@ -5,7 +5,7 @@ Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice auto-retail agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -520,7 +520,7 @@ to see the complete grouped help screen.
 
 | Command               | What it does                                            |
 | --------------------- | ------------------------------------------------------- |
-| `make install`        | Install dependencies with `uv sync`  |
+| `make install`        | Install dependencies with `uv sync --prerelease=allow`  |
 | `make env`            | Create `.env` from `.env.example` without overwriting   |
 | `make verify`         | Run full pre-flight diagnostics                         |
 | `make validate`       | Validate skills, memory, and tools                      |
@@ -621,14 +621,14 @@ make train
 This repository currently targets:
 
 ```text
-rasa-pro==3.20.0
+rasa-pro==3.21.0.dev1
 ```
 
 This is a **pre-release** version — the Mantle / Skills engine (`rasa.mantle`)
 ships only on the `3.19.0.devN` line — so installation uses:
 
 ```bash
-uv sync
+uv sync --prerelease=allow
 ```
 
 A few implementation details are specific to the Mantle architecture used by this release:
