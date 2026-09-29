@@ -24,18 +24,26 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from harness import REPO_ROOT, ledger_total, run_spec  # noqa: E402
+from harness import REPO_ROOT, ledger_total, rerender, run_spec  # noqa: E402
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("project", help="build project, e.g. examples/mantle-text-insurance-policy-status-gemini")
-    parser.add_argument("--budget-usd", type=float, required=True, help="cap on this build's total recorded spend")
+    parser.add_argument("--budget-usd", type=float, help="cap on this build's total recorded spend (required for a run)")
     parser.add_argument("--only", help="comma-separated conversation ids")
     parser.add_argument("--label", help="results folder name (default: UTC timestamp)")
     parser.add_argument("--skip-train", action="store_true", help="reuse the newest model in models/")
+    parser.add_argument("--rerender", metavar="RESULTS_JSON",
+                        help="recompute outcomes and summary.md of a stored run; no model calls")
     args = parser.parse_args()
+    if args.rerender:
+        s = rerender(Path(args.rerender).resolve())["summary"]
+        print(json.dumps({k: s[k] for k in ("passed", "failed", "provider_errors")}))
+        return 0
 
+    if args.budget_usd is None:
+        parser.error("--budget-usd is required for a live run")
     project = Path(args.project)
     if not project.is_absolute():
         project = REPO_ROOT / project
@@ -54,7 +62,7 @@ def main() -> int:
     print(json.dumps({k: s[k] for k in ("conversations_run", "passed", "failed", "turn_latency_ms",
                                         "cost_usd", "spent_before_usd")}, indent=1))
     print(f"results: {report['out_dir']}")
-    return 0 if s["failed"] == 0 and not s["skipped"] else 1
+    return 0 if s["failed"] == 0 and not s["provider_errors"] and not s["skipped"] else 1
 
 
 if __name__ == "__main__":

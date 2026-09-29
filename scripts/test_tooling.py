@@ -1596,6 +1596,12 @@ class TestCaseBuildHarness(unittest.TestCase):
             counts = self.h.log_events_for(log, "a", ["guard"])
             self.assertEqual(len(counts["guard"]), 1)
 
+    def test_provider_errors_are_not_agent_failures(self):
+        ok = [{"passed": True}]
+        self.assertEqual(self.h.classify(None, ok, {"failed_calls": 0}), "pass")
+        self.assertEqual(self.h.classify(None, [{"passed": False}], {"failed_calls": 0}), "fail")
+        self.assertEqual(self.h.classify(None, [{"passed": False}], {"failed_calls": 3}), "provider_error")
+
     def test_ledger_total_accumulates(self):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp)

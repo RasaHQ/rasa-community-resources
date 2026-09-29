@@ -531,6 +531,20 @@ def load_spec(project: Path) -> dict:
     return json.loads((project / SPEC_DIR / SPEC_FILE).read_text(encoding="utf-8"))
 
 
+def classify(error: Optional[str], checks: list[dict], usage: dict) -> str:
+    """pass, fail, or provider_error when a model call failed (quota, outage).
+
+    A provider error is not evidence about the agent: Mantle answers a failed
+    call with a canned apology, so its checks fail for a reason unrelated to
+    the behaviour under test. It is reported separately and never as a pass.
+    """
+    if usage.get("failed_calls"):
+        return "provider_error"
+    if error is None and all(c["passed"] for c in checks):
+        return "pass"
+    return "fail"
+
+
 def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict,
                      run_tag: str, out_dir: Path) -> dict:
     conversation_id = f"{spec['build']}-{conv['id']}-{run_tag}"
@@ -585,6 +599,7 @@ def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict
         "description": conv.get("description"),
         "conversation_id": conversation_id,
         "passed": error is None and all(c["passed"] for c in checks),
+        "outcome": classify(error, checks, usage),
         "error": error,
         "turns": turns,
         "checks": checks,
@@ -615,6 +630,45 @@ def _raise_exit(signum: int, _frame: Any) -> None:
     raise SystemExit(128 + signum)
 
 
+def aggregate(results: list[dict], spec: dict) -> dict:
+    """Summary figures derived only from per-conversation results."""
+    latencies = [t["latency_ms"] for r in results for t in r["turns"]]
+    usage_total = lambda key: sum(r["usage"].get(key, 0) or 0 for r in results)  # noqa: E731
+    return {
+        "conversations_run": len(results),
+        "passed": sum(r["outcome"] == "pass" for r in results),
+        "failed": sum(r["outcome"] == "fail" for r in results),
+        "provider_errors": sum(r["outcome"] == "provider_error" for r in results),
+        "turns": len(latencies),
+        "turn_latency_ms": {
+            "p50": percentile(latencies, 50),
+            "p95": percentile(latencies, 95),
+            "max": max(latencies) if latencies else None,
+            "mean": round(statistics.fmean(latencies), 1) if latencies else None,
+        },
+        "llm_calls": usage_total("llm_calls"),
+        "llm_calls_per_turn": round(usage_total("llm_calls") / len(latencies), 2) if latencies else None,
+        "side_channel_calls": usage_total("side_channel_calls"),
+        "empty_completions": usage_total("empty_completions"),
+        "failed_llm_calls": usage_total("failed_calls"),
+        "prompt_tokens": usage_total("prompt_tokens"),
+        "completion_tokens": usage_total("completion_tokens"),
+        "reasoning_tokens": usage_total("reasoning_tokens"),
+        "cached_prompt_tokens": usage_total("cached_prompt_tokens"),
+        "request_thought_signatures": usage_total("request_thought_signatures"),
+        "request_placeholder_signatures": usage_total("request_placeholder_signatures"),
+        "filler_messages": sum(len(r["metrics"]["filler_messages"]) for r in results),
+        "bot_text_metrics": {
+            name: sum(len(r["metrics"].get(name, [])) for r in results)
+            for name in (spec.get("bot_text_metrics") or {})
+        },
+        "log_events": {
+            name: sum(r["log_events"].get(name, 0) for r in results) for name in spec.get("log_events", [])
+        },
+        "cost_complete": all(r["usage"]["cost_complete"] for r in results),
+    }
+
+
 def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: float,
              train: bool = True, out_root: Optional[Path] = None, label: Optional[str] = None) -> dict:
     project = project.resolve()
@@ -641,6 +695,12 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
         with server:
             driver = driver_cls(server.base_url)
             for conv in conversations:
+                recent = [r["outcome"] for r in results[-2:]]
+                if len(recent) == 2 and set(recent) == {"provider_error"}:
+                    # Two conversations in a row lost to the provider (quota,
+                    # outage): the rest would only record the same refusal.
+                    skipped.append({"id": conv["id"], "reason": "provider errors in the previous two conversations"})
+                    continue
                 run_spent = usage_log_cost(server.usage_log)
                 done_turns = sum(len(r["turns"]) for r in results)
                 per_turn = run_spent / done_turns if done_turns else spec.get("prior_cost_per_turn_usd", 0)
@@ -671,11 +731,6 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
     rows = read_jsonl(server.usage_log)
     pricing = next((r for r in rows if r.get("kind") == "pricing"), None)
     unattributed = [r for r in rows if r.get("kind") == "llm_call" and not r.get("sender_id")]
-    latencies = [t["latency_ms"] for r in results for t in r["turns"]]
-    log_totals = {
-        name: sum(r["log_events"].get(name, 0) for r in results) for name in spec.get("log_events", [])
-    }
-    usage_total = lambda key: sum(r["usage"][key] for r in results)  # noqa: E731
     report = {
         "schema": 1,
         "build": spec["build"],
@@ -690,35 +745,9 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
         "train_seconds": round(train_seconds, 1) if train_seconds else None,
         "pricing": pricing,
         "summary": {
-            "conversations_run": len(results),
-            "passed": sum(r["passed"] for r in results),
-            "failed": sum(not r["passed"] for r in results),
+            **aggregate(results, spec),
             "skipped": skipped,
-            "turns": len(latencies),
-            "turn_latency_ms": {
-                "p50": percentile(latencies, 50),
-                "p95": percentile(latencies, 95),
-                "max": max(latencies) if latencies else None,
-                "mean": round(statistics.fmean(latencies), 1) if latencies else None,
-            },
-            "llm_calls": usage_total("llm_calls"),
-            "llm_calls_per_turn": round(usage_total("llm_calls") / len(latencies), 2) if latencies else None,
-            "side_channel_calls": usage_total("side_channel_calls"),
-            "empty_completions": usage_total("empty_completions"),
-            "prompt_tokens": usage_total("prompt_tokens"),
-            "completion_tokens": usage_total("completion_tokens"),
-            "reasoning_tokens": usage_total("reasoning_tokens"),
-            "cached_prompt_tokens": usage_total("cached_prompt_tokens"),
-            "request_thought_signatures": usage_total("request_thought_signatures"),
-            "request_placeholder_signatures": usage_total("request_placeholder_signatures"),
-            "filler_messages": sum(len(r["metrics"]["filler_messages"]) for r in results),
-            "bot_text_metrics": {
-                name: sum(len(r["metrics"].get(name, [])) for r in results)
-                for name in (spec.get("bot_text_metrics") or {})
-            },
-            "log_events": log_totals,
             "cost_usd": usage_log_cost(server.usage_log),
-            "cost_complete": all(r["usage"]["cost_complete"] for r in results),
             "unattributed_llm_calls": len(unattributed),
             "spent_before_usd": spent_before,
             "budget_usd": budget_usd,
@@ -728,6 +757,22 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
     (out_dir / "results.json").write_text(json.dumps(report, indent=1) + "\n")
     (out_dir / "summary.md").write_text(render_summary(report, spec))
     report["out_dir"] = str(out_dir)
+    return report
+
+
+OUTCOME_LABELS = {"pass": "pass", "fail": "FAIL", "provider_error": "ERROR (provider)"}
+
+
+def rerender(results_path: Path) -> dict:
+    """Recompute outcomes and summary.md for a stored run, with no model calls."""
+    report = json.loads(results_path.read_text())
+    project = REPO_ROOT / report["project"]
+    spec = load_spec(project)
+    for r in report["conversations"]:
+        r["outcome"] = classify(r.get("error"), r["checks"], r["usage"])
+    report["summary"].update(aggregate(report["conversations"], spec))
+    results_path.write_text(json.dumps(report, indent=1) + "\n")
+    (results_path.parent / "summary.md").write_text(render_summary(report, spec))
     return report
 
 
@@ -741,6 +786,7 @@ def render_summary(report: dict, spec: dict) -> str:
         f"(provider reported {', '.join(report['response_models']) or 'n/a'})",
         f"- Run: {report['started_at'][:19]}Z to {report['finished_at'][:19]}Z",
         f"- Conversations: {s['conversations_run']} run, {s['passed']} passed, {s['failed']} failed"
+        + (f", {s['provider_errors']} lost to provider errors" if s.get("provider_errors") else "")
         + (f", {len(s['skipped'])} skipped for budget" if s["skipped"] else ""),
         f"- Caller turns: {s['turns']}; turn latency p50 {lat['p50']} ms, p95 {lat['p95']} ms, "
         f"max {lat['max']} ms",
@@ -766,10 +812,18 @@ def render_summary(report: dict, spec: dict) -> str:
             for c in r["tool_calls"] if c["source"] == "llm" or c["tool"] not in ("load_caller_profile",)
         ) or "none"
         lines.append(
-            f"| {r['id']} | {r.get('kind') or ''} | {'pass' if r['passed'] else 'FAIL'} | {tools} | "
+            f"| {r['id']} | {r.get('kind') or ''} | {OUTCOME_LABELS[r['outcome']]} | {tools} | "
             f"{', '.join(str(round(t['latency_ms'])) for t in r['turns'])} | {r['usage']['cost_usd']} |"
         )
-    failures = [r for r in report["conversations"] if not r["passed"]]
+    failures = [r for r in report["conversations"] if r["outcome"] == "fail"]
+    errors = [r for r in report["conversations"] if r["outcome"] == "provider_error"]
+    if errors:
+        lines += ["", "## Provider errors", ""]
+        for r in errors:
+            lines.append(
+                f"- `{r['id']}`: {r['usage']['failed_calls']} failed model call(s); "
+                "not evidence about the agent. See usage.jsonl for the provider message."
+            )
     if failures:
         lines += ["", "## Failed checks", ""]
         for r in failures:

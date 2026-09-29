@@ -101,7 +101,17 @@ Verbatim responses are excluded.
 runs. Before each conversation the harness projects its cost from the run's
 cost per turn so far (or `prior_cost_per_turn_usd` for the first one) with a
 1.5x margin, and skips it if the projection crosses the cap. An interrupted
-run still writes its spend to the ledger. Estimate first with `--only` on one
+run still writes its spend to the ledger.
+
+A conversation with a failed model call (quota, outage) is recorded as
+`provider_error`, not as a failure: Mantle answers a failed call with a
+canned apology, so its checks say nothing about the agent. After two
+provider-error conversations in a row the rest of the run is skipped.
+Gemini API projects on a daily request quota need planning: one full
+31-conversation run of the pilot build made 214 model requests, and the
+project it ran on allowed 250 per model per day for `gemini-3.1-pro`.
+`--rerender <results.json>` recomputes outcomes and `summary.md` for a
+stored run without calling any model. Estimate first with `--only` on one
 long conversation, then run the rest.
 
 ## Adding a voice driver
