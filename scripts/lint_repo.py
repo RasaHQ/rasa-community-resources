@@ -865,21 +865,33 @@ def check_llm_model_group(projects: list[Project]) -> list[Finding]:
     return findings
 
 
-# `api_key` is on the engine's SENSITIVE_DATA list (rasa/shared/constants.py),
-# so `read_yaml` (rasa/shared/utils/yaml.py) returns it RAW on purpose — a
-# secret-leak guard. `api_key: ${VAR}` therefore never expands; the provider is
-# handed the literal characters `${VAR}` as its key. `api_key_env: VAR` is the
-# sanctioned channel: `_resolve_api_key_env` (rasa/mantle/llm/client.py) reads
-# the environment and substitutes the real value. Non-sensitive fields such as
-# `model:` DO expand `${VAR}` — the suppression is credential-specific.
+# Model-group credentials, rasa-pro 3.21.0.dev2 onward (checked against the
+# 3.21.0.dev3 wheel). `validate_model_group_credentials` in
+# rasa/shared/providers/model_group_validation.py runs from validate_project,
+# training and client construction, and:
+#   * rejects `api_key_env` outright ("Model group '<id>' uses 'api_key_env',
+#     which is no longer supported. Replace it with 'api_key: ${ENV_VAR_NAME}'.")
+#   * requires every SENSITIVE_DATA value (rasa/shared/constants.py: api_key,
+#     the AWS keys, client_id/client_secret, ...) to match `\${(\w+)}` exactly.
+# The provider clients expand that reference from the environment when they
+# are built, so `api_key: ${OPENAI_API_KEY}` is the one accepted spelling.
+#
+# Through 3.20 the rule ran the other way: `api_key: ${VAR}` reached the
+# provider unexpanded and `api_key_env: VAR` was the only form that worked.
+# Copies of that older advice are the likeliest way to reintroduce the removed
+# key, which is why this check keeps rejecting it by name.
+#
 # Anchored at start-of-line (after indent, and after a YAML `- ` item dash) so
-# it matches a real mapping entry, not prose that quotes the broken form inside
-# backticks while teaching against it. Covers `${VAR}`, bare `$VAR`, quoted
-# forms, and `${VAR:-default}` — every spelling is equally unexpanded.
-API_KEY_PLACEHOLDER_RE = re.compile(r"""^\s*(?:-\s+)?api_key\s*:\s*["']?\$""")
+# it matches a real mapping entry, not prose that quotes a form in backticks.
+API_KEY_ENV_RE = re.compile(r"^\s*(?:-\s+)?api_key_env\s*:")
+API_KEY_ENTRY_RE = re.compile(r"^\s*(?:-\s+)?api_key\s*:(.*)$")
+# The value the engine accepts: exactly `${NAME}`, optionally YAML-quoted, with
+# an optional trailing comment. `$VAR`, `${VAR:-default}`, a literal and an
+# empty value all fail validation.
+API_KEY_VALUE_RE = re.compile(r"""^\s*(["']?)\$\{\w+\}\1\s*(?:#.*)?$""")
 
-# Documentation must be able to QUOTE the broken form in order to teach against
-# it. Same rationale as VERSION_IGNORE_MARKER: mark those lines explicitly so
+# Documentation sometimes has to QUOTE a rejected form as a mapping entry.
+# Same rationale as VERSION_IGNORE_MARKER: mark those lines explicitly so
 # the check stays strict everywhere else. The alternative is authors phrasing
 # around the gate, which is how a gate quietly stops working.
 API_KEY_IGNORE_MARKER = "api-key-env-ignore"
@@ -898,17 +910,18 @@ ANY_API_KEY_RE = re.compile(r"^\s*(?:-\s*)?api_key(_env)?\s*:")
 
 
 def check_api_key_env() -> list[Finding]:
-    """Credentials use `api_key_env: NAME`; `api_key: ${VAR}` never expands.
+    """Model-group credentials are `api_key: ${VAR}`; `api_key_env` is gone.
 
-    The whole catalog documented and shipped `api_key: ${OPENAI_API_KEY}` — 67
-    occurrences across 46 files. None of them ever worked. `api_key` is a
-    SENSITIVE_DATA key, so the loader returns it unexpanded by design and every
-    affected project handed its provider the seven literal characters
-    `${VAR}`. Nothing caught it: `make validate` is offline and never builds a
-    client, so the only symptom was a provider auth error at runtime — which
-    reads like a bad key rather than a bad config shape.
+    Since rasa-pro 3.21.0.dev2 the engine rejects `api_key_env` in a model
+    group and accepts a sensitive value only as exactly `${ENV_VAR_NAME}`
+    (rasa/shared/providers/model_group_validation.py). The 3.21.0.dev3 release
+    run failed validate_project 22 times on `api_key_env` alone. This check
+    catches both shapes offline, before an install:
 
-    Also rejects any credential key inside an `asr:`/`tts:` block, where
+    * any `api_key_env:` entry;
+    * any `api_key:` entry whose value is not exactly `${NAME}`.
+
+    It also rejects any credential key inside an `asr:`/`tts:` block, where
     neither spelling works: the voice engines read a fixed environment variable
     and never consult the config.
     """
@@ -937,21 +950,6 @@ def check_api_key_env() -> list[Finding]:
             if stripped.startswith("#"):
                 continue
 
-            if API_KEY_PLACEHOLDER_RE.match(line):
-                findings.append(
-                    Finding(
-                        "api-key-env",
-                        rel,
-                        lineno,
-                        "'api_key' with a ${VAR} placeholder never expands: "
-                        "'api_key' is on the engine's SENSITIVE_DATA list, so "
-                        "read_yaml returns it raw and the provider receives the "
-                        "literal '${VAR}' as its key. Use 'api_key_env: VAR' "
-                        "(the variable NAME, unquoted) instead.",
-                    )
-                )
-                continue
-
             if voice_indent is not None and ANY_API_KEY_RE.match(line):
                 key = stripped.split(":", 1)[0].lstrip("- ")
                 findings.append(
@@ -965,6 +963,36 @@ def check_api_key_env() -> list[Finding]:
                         f"RIME_API_KEY, ...). ASR configs are extra='forbid' and "
                         f"reject it outright; TTS ignores it with a warning. "
                         f"Remove it and select the vendor with 'name:'.",
+                    )
+                )
+                continue
+
+            if API_KEY_ENV_RE.match(line):
+                findings.append(
+                    Finding(
+                        "api-key-env",
+                        rel,
+                        lineno,
+                        "'api_key_env' was removed in rasa-pro 3.21.0.dev2: "
+                        "validate_project rejects it with \"uses 'api_key_env', "
+                        "which is no longer supported\". Write "
+                        "'api_key: ${VAR}' with the same variable name instead.",
+                    )
+                )
+                continue
+
+            entry = API_KEY_ENTRY_RE.match(line)
+            if entry and not API_KEY_VALUE_RE.match(entry.group(1)):
+                findings.append(
+                    Finding(
+                        "api-key-env",
+                        rel,
+                        lineno,
+                        "'api_key' must be exactly '${VAR}' — the engine "
+                        "rejects a literal, a bare $VAR, a ${VAR:-default} or "
+                        "an empty value (rasa/shared/providers/"
+                        "model_group_validation.py). Name the environment "
+                        "variable, for example 'api_key: ${OPENAI_API_KEY}'.",
                     )
                 )
     return findings

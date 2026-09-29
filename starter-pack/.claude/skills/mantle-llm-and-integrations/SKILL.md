@@ -34,7 +34,7 @@ model_groups:
     models:
       - provider: openai
         model: gpt-4.1-mini
-        api_key_env: OPENAI_API_KEY
+        api_key: ${OPENAI_API_KEY}
         temperature: 0.0
 
 channels:
@@ -48,27 +48,30 @@ channels:
 - `temperature: 0.0` for orchestration — routing wants determinism.
 - Alternative providers slot in at the group level (e.g.
   `provider: gemini`, `model: gemini-2.0-flash`,
-  `api_key_env: GEMINI_API_KEY`) — the `llm:` reference never changes.
+  `api_key: ${GEMINI_API_KEY}`) — the `llm:` reference never changes.
 
-## Credentials: `api_key_env: NAME`, never `api_key: ${NAME}`
+## Credentials: `api_key: ${NAME}`, never `api_key_env`
 
-**`api_key: ${VAR}` does not expand.** `api_key` is on the engine's
-`SENSITIVE_DATA` list (`rasa/shared/constants.py`), so `read_yaml`
-(`rasa/shared/utils/yaml.py`) deliberately returns it *raw* — a secret-leak
-guard. The provider is handed the literal characters `${VAR}` as its key and
-fails with an auth error, which reads like a bad key rather than a bad config
-shape. Verified against `rasa-pro==3.21.0.dev3`:
+Since 3.21.0.dev2, `validate_model_group_credentials`
+(`rasa/shared/providers/model_group_validation.py`) checks every model group
+during validate, training and client construction:
 
-```
-read_yaml("api_key: ${MY_KEY}")                 -> {'api_key': '${MY_KEY}'}
-_resolve_api_key_env({'api_key_env': 'MY_KEY'}) -> {'api_key': 'sk-REAL-…'}
-_resolve_api_key_env({'api_key': '${MY_KEY}'})  -> {'api_key': '${MY_KEY}'}
-```
+- `api_key_env` is rejected: `Model group 'orchestrator' uses 'api_key_env',
+  which is no longer supported. Replace it with 'api_key: ${ENV_VAR_NAME}'.`
+- Every sensitive value (`api_key`, the AWS keys, `client_id`,
+  `client_secret` and the rest of `SENSITIVE_DATA` in
+  `rasa/shared/constants.py`) must be exactly `${ENV_VAR_NAME}`. A literal
+  key, a bare `$VAR`, a `${VAR:-default}` or an empty value fails.
 
-Use `api_key_env:` with the **name** of the variable — unquoted, no `${...}`.
-`_resolve_api_key_env` (`rasa/mantle/llm/client.py`) reads the environment and
-substitutes the real value. Note the asymmetry: `model: ${VAR}` *does* expand,
-because `model` is not sensitive. Only credential keys are suppressed.
+The provider client expands the `${NAME}` reference from the environment when
+it is built. Write the variable name inside `${...}`; quoting the whole value
+is optional.
+
+This is the reverse of the 3.20 rule, when `api_key: ${VAR}` reached the
+provider unexpanded and `api_key_env: VAR` was the only working form. Older
+examples and generated code still show `api_key_env`; convert them by keeping
+the variable name and changing only the key. The lint's `api-key-env` check
+catches both the removed key and a malformed value.
 
 ## ASR / TTS credentials are not config at all
 
@@ -103,8 +106,8 @@ channels:
 Keys resolve **shell env → project `.env` → repo-root `.env`**, first hit
 wins. Consequences:
 
-1. Every variable named by an `api_key_env:` (or used as `${VAR}` in a
-   non-sensitive field) MUST appear in `.env.example` with an empty value and
+1. Every variable referenced as `${VAR}` (in `api_key:` or any other
+   field) MUST appear in `.env.example` with an empty value and
    a comment saying where to get it. A key the example never mentions is one a
    new user cannot discover — the failure surfaces later as a provider auth
    error that looks like a broken project.

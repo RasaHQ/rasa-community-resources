@@ -89,8 +89,9 @@ Required secrets in `.env`:
 **No `OPENAI_API_KEY`.** That is the point of this resource — see
 [What is different here](#what-is-different-here).
 
-`make verify` reads `llm.api_key_env` out of `integrations.yml` and checks the
-key that configuration actually names, so if you swap providers it follows you
+`make verify` follows `llm.model_group` in `integrations.yml` to its model
+group, reads the variable named in `api_key: ${...}`, and checks the key that
+configuration actually names, so if you swap providers it follows you
 rather than checking whichever key happens to be exported.
 
 ---

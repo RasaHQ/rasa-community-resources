@@ -112,7 +112,7 @@ For a **voice** agent add, inside the `agent:` block:
 ```yaml
 # The orchestrator LLM is a model-group reference. Provider, model and
 # credentials live on the named group, never inline under `llm:` — the
-# inline form was removed in rasa-pro 3.21.0.dev3.
+# inline form was removed in 3.20.0.dev6.
 llm:
   model_group: orchestrator
 
@@ -121,7 +121,7 @@ model_groups:
     models:
       - provider: openai
         model: gpt-4.1-mini
-        api_key_env: OPENAI_API_KEY
+        api_key: ${OPENAI_API_KEY}
         temperature: 0.0
 
 channels:
