@@ -19,7 +19,7 @@ help: ## Show this help message
 	@echo '$(YELLOW)Ora — a Mantle agent on HubSpot CRM$(RESET)'
 	@echo ''
 	@echo '  $(GREEN)make env$(RESET)        Create .env from .env.example'
-	@echo '  $(GREEN)make install$(RESET)    Install dependencies (uv sync)'
+	@echo '  $(GREEN)make install$(RESET)    Install dependencies (uv sync --prerelease=allow)'
 	@echo '  $(GREEN)make mock$(RESET)       Run the mock CRM on :8787 (second terminal)'
 	@echo '  $(GREEN)make train$(RESET)      Validate and train the agent'
 	@echo '  $(GREEN)make chat$(RESET)       Talk to the agent in the Inspector'
@@ -55,7 +55,7 @@ guard-env:
 	@if [ ! -f .env ]; then echo "$(RED)✗ No .env — run: make env$(RESET)"; exit 1; fi
 
 install: check-uv ## Install dependencies
-	@$(UV) sync
+	@$(UV) sync --prerelease=allow
 
 mock: ## Run the mock HubSpot CRM (no account needed)
 	@$(PYTHON) scripts/mock_hubspot.py

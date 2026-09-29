@@ -4,7 +4,7 @@
     Assessed on:   2026-09-02
     Assessed by:   Rod Rivera
     Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-    Installation: rasa-pro 3.20.0 (automated check scope in COMPATIBILITY.json)
+    Installation: rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners building Mantle agents who want every conversation personalized
     Time:          15–20 minutes
 
@@ -71,7 +71,7 @@ session opens
 
 ```bash
 cp .env.example .env          # then fill RASA_LICENSE and OPENAI_API_KEY
-uv sync
+uv sync --prerelease=allow
 uv run rasa train
 uv run rasa inspect
 ```

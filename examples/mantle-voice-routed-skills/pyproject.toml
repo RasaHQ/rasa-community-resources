@@ -5,7 +5,7 @@ description = "Voice banking agent on Rasa Mantle whose ASR and TTS are routed a
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
-    "rasa-pro==3.20.0",
+    "rasa-pro==3.21.0.dev1",
     # The router itself. It is a real package, not a copied-in file, so this
     # example and the pattern cannot drift apart.
     "voice-vendor-router",
@@ -18,6 +18,9 @@ dependencies = [
 #   voice-vendor-router = { git = "https://github.com/RasaHQ/rasa-community-resources", subdirectory = "patterns/voice-vendor-router" }
 [tool.uv.sources]
 voice-vendor-router = { path = "../../patterns/voice-vendor-router", editable = true }
+
+[tool.uv]
+prerelease = "allow"
 
 [build-system]
 requires = ["hatchling"]
