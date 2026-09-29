@@ -873,13 +873,15 @@ def check_llm_model_group(projects: list[Project]) -> list[Finding]:
 #     which is no longer supported. Replace it with 'api_key: ${ENV_VAR_NAME}'.")
 #   * requires every SENSITIVE_DATA value (rasa/shared/constants.py: api_key,
 #     the AWS keys, client_id/client_secret, ...) to match `\${(\w+)}` exactly.
-# The provider clients expand that reference from the environment when they
-# are built, so `api_key: ${OPENAI_API_KEY}` is the one accepted spelling.
+# The litellm provider client expands that reference from the environment at
+# call time, so `api_key: ${OPENAI_API_KEY}` is the one accepted spelling.
 #
-# Through 3.20 the rule ran the other way: `api_key: ${VAR}` reached the
-# provider unexpanded and `api_key_env: VAR` was the only form that worked.
-# Copies of that older advice are the likeliest way to reintroduce the removed
-# key, which is why this check keeps rejecting it by name.
+# Through 3.20 both forms reached the provider as the real key: Mantle resolved
+# `api_key_env: VAR`, and the client expanded `api_key: ${VAR}` at call time.
+# This catalog advised `api_key_env` for 3.20 after a reproduction that stopped
+# at the YAML loader, which defers sensitive values rather than dropping them.
+# Copies of that advice are the likeliest way to reintroduce the removed key,
+# which is why this check keeps rejecting it by name.
 #
 # Anchored at start-of-line (after indent, and after a YAML `- ` item dash) so
 # it matches a real mapping entry, not prose that quotes a form in backticks.

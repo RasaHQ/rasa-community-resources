@@ -64,12 +64,11 @@ during validate, training and client construction:
   key, a bare `$VAR`, a `${VAR:-default}` or an empty value fails.
 
 The provider client expands the `${NAME}` reference from the environment when
-it is built. Write the variable name inside `${...}`; quoting the whole value
+it makes the call. Write the variable name inside `${...}`; quoting the whole value
 is optional.
 
-This is the reverse of the 3.20 rule, when `api_key: ${VAR}` reached the
-provider unexpanded and `api_key_env: VAR` was the only working form. Older
-examples and generated code still show `api_key_env`; convert them by keeping
+On 3.20 both `api_key: ${VAR}` and `api_key_env: VAR` worked; 3.21 removed
+`api_key_env`. Older examples and generated code still show `api_key_env`; convert them by keeping
 the variable name and changing only the key. The lint's `api-key-env` check
 catches both the removed key and a malformed value.
 

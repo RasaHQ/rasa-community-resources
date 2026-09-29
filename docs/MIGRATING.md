@@ -250,9 +250,13 @@ model_groups:
         api_key: ${OPENAI_API_KEY}   # was: api_key_env: OPENAI_API_KEY
 ```
 
-This reverses the 3.20 rule. On 3.20, `api_key: ${VAR}` reached the provider
-unexpanded and `api_key_env: VAR` was the only form that worked, so older
-examples, notes and generated code will show `api_key_env`. A bare `$VAR`, a
+On 3.20 both forms reached the provider as the real key: Mantle resolved
+`api_key_env: VAR` itself, and the litellm provider client expanded
+`api_key: ${VAR}` at call time (`resolve_environment_variables` in
+`rasa/shared/providers/llm/_base_litellm_client.py`). This catalog once
+advised `api_key_env` because a reproduction stopped at the YAML loader, which
+returns sensitive values unexpanded and defers expansion to the call. Older
+examples, notes and generated code will therefore show `api_key_env`. A bare `$VAR`, a
 `${VAR:-default}`, a literal key and an empty value are all rejected too. The
 `api-key-env` lint check enforces the new form offline, in YAML and in Markdown
 code blocks.
