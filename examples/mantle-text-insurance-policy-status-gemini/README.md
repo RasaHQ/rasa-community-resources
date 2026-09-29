@@ -96,8 +96,91 @@ step and never an answer. A stale or unlabeled claim offers
 
 `hooks.py` is a second line: a `modify_model_response` hook that reads each
 model response before the caller sees it and sends the model back when the text
-promises cover without citing a recorded decision. The results show where
-that hook helped and where it did harm; read them before copying it.
+promises cover without citing a recorded decision. Its first version did
+harm, as recorded below; read that before copying it.
+
+## What the live runs recorded
+
+All figures come from `case-build/results/`, measured on 2026-09-29 with
+`gemini-3.1-pro-preview` over local REST. Latency is the wall-clock time of
+each REST request. Tokens are the provider's counts, and they matched Rasa's
+own `engine_tokens` total in every conversation. Cost is LiteLLM 1.101.2's
+`response_cost` at 2 USD per million input tokens and 12 USD per million
+output tokens.
+
+**Main run** (`2026-09-29-gemini-3.1-pro-preview/`, 31 conversations, 51
+caller turns):
+
+| Measure | Result |
+|---|---|
+| Tracker checks | 28 pass, 3 fail |
+| By kind | adversarial 13/13, recovery 4/4, normal 9/11, correction 2/3 |
+| Turn latency | p50 13.7 s, p95 28.7 s, max 37.5 s |
+| Model calls | 180, or 3.53 per caller turn (146 main-loop, 34 fact discovery) |
+| Tokens | 438,258 prompt (0 reported cached), 52,771 completion, of which 45,137 (86%) reasoning |
+| Cost | 1.51 USD: 0.88 input, 0.63 output, of which 0.54 reasoning |
+
+The guard's tool layer did what the case asks. No tool answered for another
+customer's or an unknown number. Five lookups were blocked as
+`wrong_policy_subject`, four as `stale_claim_status` and three as
+`status_as_coverage`. All eight coverage questions were routed with
+`decision: null`, including the caller who insisted over three turns that
+active means covered, and both "a decision on one claim covers my other loss"
+corrections.
+
+The three failures are scripted outcomes, not guard failures. In
+`normal-policy-all-three` and `normal-claim-by-loss` the agent asked which
+policy or claim the caller meant, as `skills/*/skill.md` tells it to, and a
+one-turn script never answers. In `correction-claim-status-then-new-loss` the
+agent asked which policy a fallen tree on the garage falls under, and the
+script's next line did not say.
+
+**What went wrong, in our own code.** On the one claim with a real decision
+(`CLM-24-0913`), Gemini told the caller the claim was covered, which is
+correct, without naming the claim number. The output hook treated that as an
+uncited promise, retried twice, then replaced it with "no decision has been
+made". Three callers in the main run heard the opposite of the record, and
+their conversations still passed, because the checks read tools, not words.
+The cause was in `hooks.py`: the engine hands `modify_tool_result` the tool's
+result as serialized JSON text, and the hook looked for a dict, so it never
+learned a decision existed. Hooks fail open, so nothing complained. A rerun of
+the five decided-claim conversations with a first fix
+(`2026-09-29-guard-v2-rerun/`) reproduced it, because that fix still expected
+a dict. The current `hooks.py` parses the JSON, and `tests/test_guard.py` now
+passes the payload the way the engine does. **The current hook has not been
+run live yet:** the Gemini project's daily quota (250 requests per model per
+day) ran out first. The hook also never sees the `rephrased` messages Mantle
+generates after `complete_skill`, so it is not a complete output filter.
+
+**What Gemini and Mantle did that we did not expect:**
+
+- **Stray asides sent to the caller.** When Gemini returns text beside a tool
+  call, Mantle sends that text to the caller as a `filler` message. Four
+  times in the main run, and once in a smoke test, that text was Gemini
+  commenting on Mantle's verbatim greeting: `*(Wait, the engine already sent
+  this)*`, `*(A canned greeting has been sent, continue from there)*`,
+  `*(the canned reply above was sent)*`, `*(This was an automated
+  response.)*`. The greeting is emitted by the session-start block in the
+  same turn as the caller's first message.
+- **Empty completions.** Gemini returned zero output tokens three times in a
+  row in one main-loop turn. Mantle retried, logged `mantle.turn.failed`, and
+  recovered through its `default_completed` flow. Fact discovery, the
+  side-channel call Mantle makes after a skill switch, came back empty in 30
+  of 34 calls. Those 34 calls cost 0.10 USD, and 4 returned any output.
+- **Thought signatures survive the tracker.** Gemini 3 requires the thought
+  signature of each earlier function call to be sent back. LiteLLM carries it
+  inside the tool-call id, and Mantle keeps that id in the tracker, so 343
+  real signatures were replayed and none of LiteLLM's placeholder signatures
+  were needed. The ids reach 3,469 characters, and the trackers average
+  32 KB per conversation.
+- **Most of the latency is the loop.** A text turn took 3.5 sequential model
+  calls on average (route with `activate`, call the tool, `complete_skill`,
+  then a closing line), at a per-call p50 of 3.7 s. Reasoning tokens were 86%
+  of the output.
+
+`estimate/` is the single conversation used to price the run beforehand, on
+an earlier `lib/` revision. `spend-ledger.json` lists every billed call for
+this build: 2.17 USD in total.
 
 ## Layout
 

@@ -1,0 +1,863 @@
+{
+ "schema": 1,
+ "build": "insurance-policy-status-gemini-text",
+ "case": "insurance-policy-status",
+ "project": "examples/mantle-text-insurance-policy-status-gemini",
+ "model": "gemini/gemini-3.1-pro-preview",
+ "response_models": [
+  "gemini-3.1-pro-preview"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-29T20:44:40.508783+00:00",
+ "finished_at": "2026-09-29T20:47:35.187393+00:00",
+ "model_file": "20260929-214442-wise-vault.tar.gz",
+ "train_seconds": 2.8,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gemini/gemini-3.1-pro-preview",
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1.2e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": 4e-06,
+  "output_cost_per_token_above_200k_tokens": 1.8e-05,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 5,
+  "passed": 4,
+  "failed": 0,
+  "skipped": [],
+  "turns": 11,
+  "turn_latency_ms": {
+   "p50": 12449.8,
+   "p95": 31674.4,
+   "max": 31674.4,
+   "mean": 13493.8
+  },
+  "llm_calls": 36,
+  "llm_calls_per_turn": 3.27,
+  "side_channel_calls": 5,
+  "empty_completions": 6,
+  "prompt_tokens": 86102,
+  "completion_tokens": 11586,
+  "reasoning_tokens": 9463,
+  "cached_prompt_tokens": 0,
+  "request_thought_signatures": 57,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "coverage_promise": 0
+  },
+  "log_events": {
+   "harborcover.coverage_guard": 10,
+   "mantle.orchestrator.empty_llm_response": 3,
+   "mantle.turn.failed": 4
+  },
+  "cost_usd": 0.311236,
+  "cost_complete": true,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.85792,
+  "budget_usd": 4.0,
+  "provider_errors": 1,
+  "failed_llm_calls": 3
+ },
+ "conversations": [
+  {
+   "id": "normal-claim-decided",
+   "kind": "normal",
+   "description": "A claim with a recorded coverage decision from the claims service.",
+   "conversation_id": "insurance-policy-status-gemini-text-normal-claim-decided-20260929T204440",
+   "passed": true,
+   "error": null,
+   "turns": [
+    {
+     "user": "Has claim CLM-24-0913 been decided?",
+     "latency_ms": 22396.6,
+     "bot": [
+      "Hello Imani, this is the HarborCover status assistant. I can tell you the status of a policy or a claim, and pass a question about a particular loss to our claims team. What would you like to check?",
+      "I can't tell you whether that loss is covered. Only the HarborCover claims service can decide that, and there is no decision on it. I can pass the question to them and give you a reference. Would you like me to do that?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "get_claim_status",
+      "args": {
+       "claim_number": "CLM-24-0913"
+      },
+      "result": {
+       "status": "answered",
+       "decision_type": "coverage_decision"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_claim_status",
+     "arguments": {
+      "claim_number": "CLM-24-0913"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "coverage_promise": []
+   },
+   "log_events": {
+    "harborcover.coverage_guard": 3,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "harborcover.coverage_guard": [
+     {
+      "sender_id": "insurance-policy-status-gemini-text-normal-claim-decided-20260929T204440",
+      "action": "retry",
+      "attempt": 1,
+      "decisions_on_record": 0,
+      "matched": "the loss is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-normal-claim-decided-20260929T204440"
+     },
+     {
+      "sender_id": "insurance-policy-status-gemini-text-normal-claim-decided-20260929T204440",
+      "action": "retry",
+      "attempt": 2,
+      "decisions_on_record": 0,
+      "matched": "the loss is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-normal-claim-decided-20260929T204440"
+     },
+     {
+      "sender_id": "insurance-policy-status-gemini-text-normal-claim-decided-20260929T204440",
+      "action": "replaced",
+      "decisions_on_record": 0,
+      "matched": "the claim is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-normal-claim-decided-20260929T204440"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 5,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "prompt_tokens": 14932,
+    "completion_tokens": 1330,
+    "reasoning_tokens": 868,
+    "cached_prompt_tokens": 0,
+    "cost_usd": 0.045824,
+    "cost_complete": true,
+    "request_thought_signatures": 9,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 1,
+    "llm_latency_ms": [
+     2799.4,
+     2557.0,
+     4101.7,
+     4351.8,
+     6437.6,
+     2015.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-policy-status-gemini-text-normal-claim-decided-20260929T204440",
+    "prompt": 14932,
+    "completion": 1330,
+    "total": 16262,
+    "generations": 6,
+    "fetched_at": "2026-09-29T20:45:12.785073+00:00"
+   },
+   "outcome": "pass"
+  },
+  {
+   "id": "normal-greeting-then-claim",
+   "kind": "normal",
+   "description": "Small talk first, then a claim enquiry.",
+   "conversation_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440",
+   "passed": true,
+   "error": null,
+   "turns": [
+    {
+     "user": "hello",
+     "latency_ms": 6179.9,
+     "bot": [
+      "Hello Imani, this is the HarborCover status assistant. I can tell you the status of a policy or a claim, and pass a question about a particular loss to our claims team. What would you like to check?"
+     ]
+    },
+    {
+     "user": "I want to know about claim CLM-24-0913",
+     "latency_ms": 29376.6,
+     "bot": [
+      "I can't tell you whether that loss is covered. Only the HarborCover claims service can decide that, and there is no decision on it. I can pass the question to them and give you a reference. Would you like me to do that?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "get_claim_status",
+      "args": {
+       "claim_number": "CLM-24-0913"
+      },
+      "result": {
+       "status": "answered"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_claim_status",
+     "arguments": {
+      "claim_number": "CLM-24-0913"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "coverage_promise": []
+   },
+   "log_events": {
+    "harborcover.coverage_guard": 3,
+    "mantle.orchestrator.empty_llm_response": 3,
+    "mantle.turn.failed": 1
+   },
+   "log_event_details": {
+    "harborcover.coverage_guard": [
+     {
+      "sender_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440",
+      "action": "retry",
+      "attempt": 1,
+      "decisions_on_record": 0,
+      "matched": "it is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440"
+     },
+     {
+      "sender_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440",
+      "action": "retry",
+      "attempt": 2,
+      "decisions_on_record": 0,
+      "matched": "your claim is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440"
+     },
+     {
+      "sender_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440",
+      "action": "replaced",
+      "decisions_on_record": 0,
+      "matched": "your claim is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [
+     {
+      "iteration": 0,
+      "attempt": 0,
+      "max_attempts": 3,
+      "will_retry": true,
+      "conversation_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440"
+     },
+     {
+      "iteration": 0,
+      "attempt": 1,
+      "max_attempts": 3,
+      "will_retry": true,
+      "conversation_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440"
+     },
+     {
+      "iteration": 0,
+      "attempt": 2,
+      "max_attempts": 3,
+      "will_retry": false,
+      "conversation_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440"
+     }
+    ],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM returned an empty response",
+      "conversation_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 8,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "prompt_tokens": 20305,
+    "completion_tokens": 2544,
+    "reasoning_tokens": 2101,
+    "cached_prompt_tokens": 0,
+    "cost_usd": 0.071138,
+    "cost_complete": true,
+    "request_thought_signatures": 9,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 3,
+    "llm_latency_ms": [
+     2109.7,
+     2126.6,
+     1903.1,
+     3132.2,
+     2879.5,
+     6460.4,
+     5174.1,
+     9595.1,
+     2068.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-policy-status-gemini-text-normal-greeting-then-claim-20260929T204440",
+    "prompt": 20305,
+    "completion": 2544,
+    "total": 22849,
+    "generations": 9,
+    "fetched_at": "2026-09-29T20:45:52.368271+00:00"
+   },
+   "outcome": "pass"
+  },
+  {
+   "id": "normal-policy-then-claim",
+   "kind": "normal",
+   "description": "Two enquiries in one conversation.",
+   "conversation_id": "insurance-policy-status-gemini-text-normal-policy-then-claim-20260929T204440",
+   "passed": true,
+   "error": null,
+   "turns": [
+    {
+     "user": "Is policy HC-AU-118832 active?",
+     "latency_ms": 13909.6,
+     "bot": [
+      "Hello Imani, this is the HarborCover status assistant. I can tell you the status of a policy or a claim, and pass a question about a particular loss to our claims team. What would you like to check?",
+      "Yes, your auto policy HC-AU-118832 is currently active, with effective dates from January 15, 2026, to January 14, 2027. This status was observed on September 29, 2026, at 09:40:00 UTC, and your status reference number is HC-ST-20260929-0D823BA1. Is there anything else you need help with?"
+     ]
+    },
+    {
+     "user": "And what about claim CLM-24-0913?",
+     "latency_ms": 22301.5,
+     "bot": [
+      "For claim CLM-24-0913, the current stage is \"decision recorded\" as of September 24, 2026, at 16:30:00 UTC. A coverage decision has been made: the rear-end collision damage is covered subject to a $500 collision deductible. The next review step is that payment will be issued to the repair shop once the repair estimate is approved. ",
+      "This status was observed on September 29, 2026, at 10:15:00 UTC, and your status reference number is HC-ST-20260929-65F71C42. Is there anything else I can assist you with today?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "get_policy_status",
+      "args": {
+       "policy_number": "HC-AU-118832"
+      },
+      "result": {
+       "status": "answered"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "get_claim_status",
+      "args": {
+       "claim_number": "CLM-24-0913"
+      },
+      "result": {
+       "status": "answered"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_policy_status",
+     "arguments": {
+      "policy_number": "HC-AU-118832"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    },
+    {
+     "tool": "get_claim_status",
+     "arguments": {
+      "claim_number": "CLM-24-0913"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "coverage_promise": []
+   },
+   "log_events": {
+    "harborcover.coverage_guard": 1,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "harborcover.coverage_guard": [
+     {
+      "sender_id": "insurance-policy-status-gemini-text-normal-policy-then-claim-20260929T204440",
+      "action": "retry",
+      "attempt": 1,
+      "decisions_on_record": 0,
+      "matched": "your loss is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-normal-policy-then-claim-20260929T204440"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 7,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "prompt_tokens": 24845,
+    "completion_tokens": 2646,
+    "reasoning_tokens": 2138,
+    "cached_prompt_tokens": 0,
+    "cost_usd": 0.081442,
+    "cost_complete": true,
+    "request_thought_signatures": 22,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 2,
+    "llm_latency_ms": [
+     3426.7,
+     3220.8,
+     5161.8,
+     2032.6,
+     4971.7,
+     2975.4,
+     6730.6,
+     5570.3,
+     1963.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-policy-status-gemini-text-normal-policy-then-claim-20260929T204440",
+    "prompt": 24845,
+    "completion": 2646,
+    "total": 27491,
+    "generations": 9,
+    "fetched_at": "2026-09-29T20:46:32.608701+00:00"
+   },
+   "outcome": "pass"
+  },
+  {
+   "id": "correction-decided-claim-then-home-loss",
+   "kind": "correction",
+   "description": "The contract's correction step: after a real decision on the auto claim, a different loss on another policy gets its own coverage question.",
+   "conversation_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-home-loss-20260929T204440",
+   "passed": true,
+   "error": null,
+   "turns": [
+    {
+     "user": "Has CLM-24-0913 been decided?",
+     "latency_ms": 31674.4,
+     "bot": [
+      "Hello Imani, this is the HarborCover status assistant. I can tell you the status of a policy or a claim, and pass a question about a particular loss to our claims team. What would you like to check?",
+      "I can't tell you whether that loss is covered. Only the HarborCover claims service can decide that, and there is no decision on it. I can pass the question to them and give you a reference. Would you like me to do that?"
+     ]
+    },
+    {
+     "user": "Great, so the kitchen flood on my home policy is covered too, right?",
+     "latency_ms": 12449.8,
+     "bot": [
+      "A coverage decision on one claim does not mean another loss is covered. I have routed your question about the kitchen flood on your home policy (HC-HO-440120) to the HarborCover claims service. ",
+      "Your reference number for this question is HC-CQ-B97A55B6. The next step is for a claims handler to review your question and reply within two business days. No decision has been made yet on the kitchen flood. Is there anything else I can assist you with today?"
+     ]
+    },
+    {
+     "user": "Yes, please ask them.",
+     "latency_ms": 9590.3,
+     "bot": [
+      "I have already submitted the question about your kitchen flood to the claims service for you. Your reference number is HC-CQ-B97A55B6. A claims handler will review the question and reply within two business days. Let me know if you need to check on anything else today."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "get_claim_status",
+      "args": {
+       "claim_number": "CLM-24-0913"
+      },
+      "result": {
+       "decision_type": "coverage_decision"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "open_coverage_question",
+      "args": {
+       "policy_number": "HC-HO-440120"
+      },
+      "result": {
+       "status": "routed",
+       "decision": null
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_claim_status",
+     "arguments": {
+      "claim_number": "CLM-24-0913"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    },
+    {
+     "tool": "open_coverage_question",
+     "arguments": {
+      "loss_description": "kitchen flood",
+      "policy_number": "HC-HO-440120"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "routed",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "coverage_promise": []
+   },
+   "log_events": {
+    "harborcover.coverage_guard": 3,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "harborcover.coverage_guard": [
+     {
+      "sender_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-home-loss-20260929T204440",
+      "action": "retry",
+      "attempt": 1,
+      "decisions_on_record": 0,
+      "matched": "The loss is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-home-loss-20260929T204440"
+     },
+     {
+      "sender_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-home-loss-20260929T204440",
+      "action": "retry",
+      "attempt": 2,
+      "decisions_on_record": 0,
+      "matched": "The claim is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-home-loss-20260929T204440"
+     },
+     {
+      "sender_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-home-loss-20260929T204440",
+      "action": "replaced",
+      "decisions_on_record": 0,
+      "matched": "the claim is covered",
+      "conversation_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-home-loss-20260929T204440"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 8,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "prompt_tokens": 26020,
+    "completion_tokens": 5066,
+    "reasoning_tokens": 4356,
+    "cached_prompt_tokens": 0,
+    "cost_usd": 0.112832,
+    "cost_complete": true,
+    "request_thought_signatures": 17,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     3786.1,
+     2999.9,
+     5364.0,
+     6287.8,
+     6605.9,
+     6537.6,
+     9674.2,
+     2733.0,
+     9565.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-home-loss-20260929T204440",
+    "prompt": 26020,
+    "completion": 5066,
+    "total": 31086,
+    "generations": 9,
+    "fetched_at": "2026-09-29T20:47:30.352951+00:00"
+   },
+   "outcome": "pass"
+  },
+  {
+   "id": "correction-decided-claim-then-same-policy-loss",
+   "kind": "correction",
+   "description": "A decision on one auto claim does not decide a new loss on the same auto policy.",
+   "conversation_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-same-policy-loss-20260929T204440",
+   "passed": false,
+   "error": null,
+   "turns": [
+    {
+     "user": "Has CLM-24-0913 been decided?",
+     "latency_ms": 197.5,
+     "bot": [
+      "Hello Imani, this is the HarborCover status assistant. I can tell you the status of a policy or a claim, and pass a question about a particular loss to our claims team. What would you like to check?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "And if someone keys my car next week, is that covered as well?",
+     "latency_ms": 169.4,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, open the question.",
+     "latency_ms": 186.6,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "get_claim_status",
+      "args": {
+       "claim_number": "CLM-24-0913"
+      },
+      "result": {
+       "decision_type": "coverage_decision"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "open_coverage_question",
+      "args": {
+       "policy_number": "HC-AU-118832"
+      },
+      "result": {
+       "status": "routed",
+       "decision": null
+      },
+      "after_user_turn": 1
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "coverage_promise": []
+   },
+   "log_events": {
+    "harborcover.coverage_guard": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 3
+   },
+   "log_event_details": {
+    "harborcover.coverage_guard": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-same-policy-loss-20260929T204440"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-same-policy-loss-20260929T204440"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-same-policy-loss-20260929T204440"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 3,
+    "main_loop_calls": 3,
+    "side_channel_calls": 0,
+    "failed_calls": 3,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     152.4,
+     148.3,
+     157.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "insurance-policy-status-gemini-text-correction-decided-claim-then-same-policy-loss-20260929T204440",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-29T20:47:34.933725+00:00"
+   },
+   "outcome": "provider_error"
+  }
+ ]
+}

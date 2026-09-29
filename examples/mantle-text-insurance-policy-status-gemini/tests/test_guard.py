@@ -172,5 +172,58 @@ class OutputGuardPatternTests(unittest.TestCase):
         re.compile(metric["pattern"])
 
 
+class OutputHookTests(unittest.TestCase):
+    """hooks.py against the installed engine's payload types (skipped without rasa)."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import hooks  # noqa: F401
+            from rasa.mantle.hooks import ModelResponsePayload, RetryModel, ToolResultPayload
+        except ImportError as exc:  # bare python3 without the project venv
+            raise unittest.SkipTest(f"rasa not importable: {exc}")
+        cls.hooks, cls.Model, cls.Retry, cls.Tool = hooks, ModelResponsePayload, RetryModel, ToolResultPayload
+
+    def run_hook(self, coro):
+        import asyncio
+
+        return asyncio.run(coro)
+
+    def respond(self, sender, text):
+        return self.run_hook(self.hooks.block_coverage_promises(self.Model(sender_id=sender, text=text)))
+
+    def test_promise_without_decision_retries_then_refers(self):
+        sender = "no-decision"
+        for _ in range(self.hooks.MAX_CONSECUTIVE_RETRIES):
+            with self.assertRaises(self.Retry) as raised:
+                self.respond(sender, "Your policy is active, so you're covered.")
+            self.assertIn("No tool result", raised.exception.feedback)
+        replaced = self.respond(sender, "You're covered.")
+        self.assertEqual(replaced.text, self.hooks.NO_DECISION_TEXT)
+
+    def test_uncited_decision_falls_back_to_the_recorded_decision_not_a_denial(self):
+        sender = "decided"
+        # The engine passes the result as serialized JSON text, as dispatched.
+        value = json.dumps(hc.claim_status(ME, "CLM-24-0913"))
+        self.run_hook(self.hooks.remember_coverage_decisions(
+            self.Tool(sender_id=sender, tool_name="get_claim_status", arguments={}, value=value)))
+        for _ in range(self.hooks.MAX_CONSECUTIVE_RETRIES):
+            with self.assertRaises(self.Retry) as raised:
+                self.respond(sender, "Good news: the claim is covered.")
+            self.assertIn("HC-DEC-50412", raised.exception.feedback)
+        replaced = self.respond(sender, "The claim is covered.")
+        self.assertIn("CLM-24-0913", replaced.text)
+        self.assertIn("HC-DEC-50412", replaced.text)
+        self.assertNotIn("no decision", replaced.text.lower())
+
+    def test_cited_decision_passes_untouched(self):
+        sender = "cited"
+        value = json.dumps(hc.claim_status(ME, "CLM-24-0913"))
+        self.run_hook(self.hooks.remember_coverage_decisions(
+            self.Tool(sender_id=sender, tool_name="get_claim_status", arguments={}, value=value)))
+        text = "Claim CLM-24-0913 is covered subject to the deductible."
+        self.assertEqual(self.respond(sender, text).text, text)
+
+
 if __name__ == "__main__":
     unittest.main()
