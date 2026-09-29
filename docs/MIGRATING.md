@@ -219,9 +219,85 @@ Drift examples this tooling fixes:
 
 ## Breaking changes seen on this line
 
-A pin bump is usually just numbers. Twice it has not been, and both times every
-project failed at once. Recorded here because the error text names a field, not
-a cause.
+A pin bump is usually just numbers. Three times it has not been, and each time
+most of the catalog failed at once. Recorded here because the error text names a
+field, not a cause. Newest first.
+
+**3.21.0.dev2 — model-group credentials are `api_key: ${VAR}`; `api_key_env` is
+gone.**
+
+```text
+[mantle.validation.config.invalid_model_group_credentials] Model group
+'orchestrator' uses 'api_key_env', which is no longer supported. Replace it
+with 'api_key: ${ENV_VAR_NAME}'.
+```
+
+`validate_model_group_credentials`
+(`rasa/shared/providers/model_group_validation.py`) now runs during
+validate_project, training and client construction. It rejects `api_key_env`
+and requires every sensitive value in a model group (`api_key`, the AWS keys,
+`client_id`, `client_secret` and the rest of `SENSITIVE_DATA` in
+`rasa/shared/constants.py`) to be exactly `${ENV_VAR_NAME}`. The provider
+client expands that reference from the environment when it is built. Keep the
+variable name; only the key changes:
+
+```yaml
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}   # was: api_key_env: OPENAI_API_KEY
+```
+
+This reverses the 3.20 rule. On 3.20, `api_key: ${VAR}` reached the provider
+unexpanded and `api_key_env: VAR` was the only form that worked, so older
+examples, notes and generated code will show `api_key_env`. A bare `$VAR`, a
+`${VAR:-default}`, a literal key and an empty value are all rejected too. The
+`api-key-env` lint check enforces the new form offline, in YAML and in Markdown
+code blocks.
+
+**3.21.0.dev2 — skill-level `requires:` was removed.**
+
+```text
+[mantle.validation.skill.failed_to_load] Skill directory 'skills/change_booking'
+failed to load ...: Skill-level requires is no longer supported. Use
+precondition to park the skill until a resolver runs, or hidden: true to omit
+it from routing. Tool-level requires under tool_constraints is unchanged.
+```
+
+A skill that fails to load also breaks every skill that links to it
+(`skill.referenced.invalid_target`) and every shared tool that writes one of
+its memory fields (`mantle.validation.tools.undeclared_memory_write`). Fix the
+skill and those follow-on errors go away.
+
+Pick the replacement by what the skill needs:
+
+- **`precondition: <name>`** when the skill must wait for something another
+  skill establishes. Bind the name in `agent.yml`, as a top-level sibling of
+  `agent:`. When the skill starts and `satisfied_when` is false, the engine
+  parks it, runs the `resolve_with` skill, then resumes it (or says
+  `utter_precondition_unmet` if the resolver finishes without satisfying it).
+- **`hidden: true`** when the skill should never be routed to directly and is
+  only reached through a `call:`/`link:` step or as a resolver. Validation
+  rejects `@skill.<id>` prose references to a hidden skill.
+
+`change_booking` in the Atlas voice agent needed the first, because
+`flight_status` offers it through `@skill.change_booking`:
+
+```yaml
+# skills/change_booking/skill.md frontmatter
+precondition: authenticated          # was: requires: session.project.authenticated
+
+# agent.yml
+orchestrator:
+  preconditions:
+    authenticated:
+      satisfied_when: session.project.authenticated
+      resolve_with: authenticate
+```
+
+`requires:` under `tool_constraints` is unchanged.
 
 **3.20.0.dev6 — the orchestrator LLM became a model-group reference.**
 
@@ -243,19 +319,12 @@ model_groups:
     models:
       - provider: openai
         model: gpt-5.2
-        api_key_env: OPENAI_API_KEY
+        api_key: ${OPENAI_API_KEY}
 ```
 
-Enforced from here on by the `llm-model-group` lint check.
-
-**Credentials use `api_key_env: NAME`, not `api_key: ${NAME}`.** This was never
-a version change — the `${VAR}` form has never worked. `api_key` is on the
-engine's `SENSITIVE_DATA` list (`rasa/shared/constants.py`), so `read_yaml`
-returns it raw on purpose as a secret-leak guard, and the provider receives the
-literal seven characters `${VAR}` as its key. There is no rescue path:
-`_resolve_api_key_env` only substitutes when `api_key_env` is present. The
-symptom is a provider auth error, which reads like a bad key rather than a bad
-config shape. Enforced from here on by the `api-key-env` lint check.
+Enforced from here on by the `llm-model-group` lint check. (The credential line
+shows the 3.21.0.dev2 form. On 3.20 it had to be `api_key_env: OPENAI_API_KEY`;
+see the 3.21.0.dev2 entry above.)
 
 ASR/TTS blocks take **no** credential key at all — the voice engines read a
 fixed environment variable (`DEEPGRAM_API_KEY`, `RIME_API_KEY`, …) directly.
