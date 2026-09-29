@@ -36,6 +36,9 @@ if str(SCRIPTS) not in sys.path:
 from check_project import _load_dotenv  # noqa: E402
 from rasa_projects import REPO_ROOT  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import voice_driver  # noqa: E402
+
 LAUNCHER = Path(__file__).resolve().parent / "usage_launcher.py"
 SPEC_DIR = "case-build"
 SPEC_FILE = "conversations.json"
@@ -234,7 +237,7 @@ class RestDriver(Driver):
 
     channel = "rest"
 
-    def __init__(self, base_url: str, timeout: float = 180.0) -> None:
+    def __init__(self, base_url: str, timeout: float = 180.0, **_: Any) -> None:
         self.base_url = base_url
         self.timeout = timeout
 
@@ -252,20 +255,91 @@ class RestDriver(Driver):
 
 
 class BrowserAudioDriver(Driver):
-    """Placeholder for voice builds (browser_audio websocket). Not built yet.
+    """Voice over Rasa's browser_audio WebSocket channel (voice_driver.py).
 
-    Contract for the implementation: synthesize each turn's `user` text (or
-    play `turn["audio"]`) as caller audio in the build's language, stream it
-    to the channel's websocket, capture bot audio and transcripts, and return
-    a TurnObservation whose `latency_ms` is end of caller speech to first bot
-    audio byte. Everything downstream (trackers, checks, usage, reports) is
-    shared with text builds unchanged.
+    Each turn streams the turn's pre-rendered caller WAV (`turn["audio"]`,
+    relative to the spec's `voice.caller_audio_dir`) in real time, or in
+    `text` mode sends `{"text": turn["user"]}`, which skips speech-to-text but
+    still bills the model and text-to-speech. `latency_ms` is end of caller
+    speech to the first bot audio frame with sound in it; the driver also
+    records the end-marker latency figures, what the tracker heard, and
+    Mantle's latency_breakdown for the turn.
     """
 
     channel = "browser_audio"
 
-    def send(self, turn: dict) -> TurnObservation:  # pragma: no cover
-        raise NotImplementedError("the browser_audio driver is not built yet")
+    def __init__(self, base_url: str, *, spec: Optional[dict] = None, project: Optional[Path] = None,
+                 mode: Optional[str] = None, **_: Any) -> None:
+        voice = (spec or {}).get("voice", {})
+        self.base_url = base_url
+        self.ws_url = base_url.replace("http://", "ws://", 1) + voice.get(
+            "path", "/webhooks/browser_audio/websocket")
+        self.mode = mode or voice.get("mode", "audio")
+        if self.mode not in ("audio", "text"):
+            raise ValueError(f"unknown voice mode {self.mode!r}")
+        self.audio_dir = (project or Path(".")) / voice.get("caller_audio_dir", "case-build/caller-audio")
+        self.sender_header = voice.get("sender_header", voice_driver.DEFAULT_SENDER_HEADER)
+        self.prompt_ack = bool(voice.get("prompt_marker_ack", False))
+        self.turn_timeout_s = float(voice.get("turn_timeout_s", 90))
+        self.default_voice = (voice.get("caller") or {}).get("voice", "")
+        self.call_stats: dict = {}
+
+    def _fetch_tracker(self, sender_id: str) -> dict:
+        return http_json("GET", f"{self.base_url}/conversations/{sender_id}/tracker", timeout=10)
+
+    def start(self, conversation_id: str) -> None:
+        super().start(conversation_id)
+        self.call_stats = {}
+        self.call = voice_driver.BrowserAudioCall(
+            self.ws_url, conversation_id, sender_header=self.sender_header,
+            fetch_tracker=self._fetch_tracker, prompt_ack=self.prompt_ack,
+            turn_timeout_s=self.turn_timeout_s,
+        )
+        self.greeting = self.call.open()
+
+    def send(self, turn: dict) -> TurnObservation:
+        started_wall = time.time()
+        if self.mode == "text":
+            result = self.call.say(text=turn["user"])
+        else:
+            name = voice_driver.turn_audio_name(turn, self.default_voice)
+            pcm, rate = voice_driver.load_pcm16(self.audio_dir / name)
+            if rate != self.call.rate:
+                raise ValueError(f"{name} is {rate} Hz; the channel handshake asked for {self.call.rate} Hz")
+            result = self.call.say(pcm=pcm)
+        if result["voice"]["ended_by"] in ("timeout", "closed") and not result["bot_messages"]:
+            raise RuntimeError(f"no bot turn after caller turn ({result['voice']['ended_by']})")
+        return TurnObservation(turn["user"], result["bot_messages"], result["latency_ms"], started_wall,
+                               extra=result["voice"])
+
+    def finish(self) -> None:
+        call = getattr(self, "call", None)
+        if call is not None and getattr(call, "ws", None) is not None:
+            self.call_stats = {**call.close(), "mode": self.mode, **(self.greeting or {})} \
+                if hasattr(self, "greeting") else call.close()
+            self.call_stats["session_end_turn_s"] = self._wait_session_end_turn()
+        self.call = None
+        self.greeting = None
+
+    def _wait_session_end_turn(self, timeout: float = 30.0) -> Optional[float]:
+        """Wait for the model turn Mantle runs on /session_end after a hangup.
+
+        Mantle answers the caller's hangup with a full turn (model calls
+        included) that nobody hears. Waiting for its bot_turn_ended keeps
+        those calls attributed to this conversation. Returns the seconds it
+        took, or None if it did not finish in time.
+        """
+        started = time.monotonic()
+        while time.monotonic() - started < timeout:
+            try:
+                events = self._fetch_tracker(self.conversation_id).get("events", [])
+            except Exception:
+                events = []
+            ends = [i for i, e in enumerate(events) if e.get("event") == "user" and e.get("text") == "/session_end"]
+            if ends and any(e.get("event") == "bot_turn_ended" for e in events[ends[-1]:]):
+                return round(time.monotonic() - started, 2)
+            time.sleep(0.5)
+        return None
 
 
 DRIVERS = {"rest": RestDriver, "browser_audio": BrowserAudioDriver}
@@ -548,16 +622,16 @@ def classify(error: Optional[str], checks: list[dict], usage: dict) -> str:
 def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict,
                      run_tag: str, out_dir: Path) -> dict:
     conversation_id = f"{spec['build']}-{conv['id']}-{run_tag}"
-    driver.start(conversation_id)
     turns: list[dict] = []
     error = None
     try:
+        driver.start(conversation_id)
         for turn in conv["turns"]:
             observation = driver.send(turn)
             turns.append(
                 {
                     "user": observation.user_text,
-                    "latency_ms": round(observation.latency_ms, 1),
+                    "latency_ms": None if observation.latency_ms is None else round(observation.latency_ms, 1),
                     "bot": [m.get("text") for m in observation.bot_messages if m.get("text")],
                     **({"extra": observation.extra} if observation.extra else {}),
                 }
@@ -565,7 +639,10 @@ def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict
     except Exception as exc:  # recorded, never hidden
         error = f"{type(exc).__name__}: {exc}"
     finally:
-        driver.finish()
+        try:
+            driver.finish()
+        except Exception as exc:
+            error = error or f"{type(exc).__name__} on finish: {exc}"
 
     # Side-channel calls (fact discovery) finish after the reply; give them
     # a moment to land in the usage log before attribution.
@@ -590,9 +667,13 @@ def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict
         metrics[name] = [
             b["text"] for b in bots if b["source"] != "verbatim" and text_metric_hits(metric, b["text"])
         ]
+    for name, spec_metric in (spec.get("tool_result_metrics") or {}).items():
+        metrics[name] = tool_result_metric(spec_metric, tracker)
     rows = read_jsonl(server.usage_log)
     usage = usage_for(rows, conversation_id)
     logs = log_events_for(server.server_log, conversation_id, spec.get("log_events", []))
+    voice = voice_report(spec, conv, turns, tracker, getattr(driver, "call_stats", None)) \
+        if driver.channel == "browser_audio" else None
     return {
         "id": conv["id"],
         "kind": conv.get("kind"),
@@ -615,7 +696,165 @@ def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict
         "log_events": {name: len(items) for name, items in logs.items()},
         "log_event_details": logs,
         "usage": usage,
+        **({"voice": voice} if voice is not None else {}),
         "engine_tokens": server.engine_tokens(conversation_id),
+    }
+
+
+# ----------------------------------------------------------------------------
+# Voice: speech usage, speech cost and what speech-to-text heard
+# ----------------------------------------------------------------------------
+
+
+def speech_cost(pricing: dict, stt_seconds: float, tts_characters: int) -> dict:
+    """Speech spend from the spec's published per-unit prices; None when unpriced."""
+    stt = (pricing or {}).get("stt") or {}
+    tts = (pricing or {}).get("tts") or {}
+    stt_usd = None if stt.get("usd_per_minute") is None else round(stt_seconds / 60 * stt["usd_per_minute"], 6)
+    tts_usd = None if tts.get("usd_per_1k_characters") is None else round(
+        tts_characters / 1000 * tts["usd_per_1k_characters"], 6)
+    return {
+        "stt_usd": stt_usd,
+        "tts_usd": tts_usd,
+        "cost_usd": None if stt_usd is None or tts_usd is None else round(stt_usd + tts_usd, 6),
+    }
+
+
+def voice_report(spec: dict, conv: dict, turns: list[dict], tracker: dict, call_stats: Optional[dict]) -> dict:
+    """Per-conversation speech usage, speech cost and speech-to-text accuracy.
+
+    Speech-to-text is billed on every second of audio streamed to it, and the
+    channel forwards the caller's continuous stream, silence included, so the
+    billed seconds are the seconds the driver sent. Text-to-speech is counted
+    as the characters of every bot message in the tracker. Rasa's in-process
+    TTS cache can serve a repeated text without a vendor call, so this is an
+    upper bound.
+    """
+    stats = call_stats or {}
+    for observed in turns:
+        extra = observed.get("extra") or {}
+        if extra.get("end_markers"):
+            extra["end_markers"] = voice_driver.dedupe_latency_markers(extra["end_markers"])
+    stt_seconds = float(stats.get("audio_seconds_sent") or 0)
+    tts_characters = sum(len(b["text"]) for b in bot_events(tracker))
+    asr = []
+    for spec_turn, observed in zip(conv["turns"], turns):
+        extra = observed.get("extra") or {}
+        if extra.get("mode") != "audio" or observed.get("user") != spec_turn["user"]:
+            # Text turns skip speech-to-text; a turn whose script line has
+            # changed since the run cannot be checked against the new line.
+            continue
+        heard_parts = [h for h in extra.get("heard") or [] if h]
+        heard = " ".join(heard_parts)
+        asr.append({
+            "intended": spec_turn["user"],
+            "heard": heard_parts,
+            "user_events": len(extra.get("heard") or []),
+            "wer": voice_driver.word_error_rate(spec_turn["user"], heard),
+            "tokens": voice_driver.check_tokens(heard, spec_turn.get("asr_tokens", [])),
+        })
+    return {
+        "mode": stats.get("mode"),
+        "stt_audio_seconds": round(stt_seconds, 2),
+        "tts_characters": tts_characters,
+        "call": stats,
+        **speech_cost(spec.get("speech_pricing") or {}, stt_seconds, tts_characters),
+        "asr": asr,
+    }
+
+
+def tool_result_metric(metric: dict, tracker: dict) -> dict:
+    """Sum of one numeric result field over a tool's calls that report it.
+
+    For the case metric, e.g. {"tool": "block_card", "field":
+    "unselected_cards_changed"}: the numerator summed over block attempts.
+    """
+    values = [
+        c["result"].get(metric["field"])
+        for c in tool_events(tracker)
+        if c["tool"] == metric["tool"] and isinstance(c["result"], dict)
+        and isinstance(c["result"].get(metric["field"]), (int, float))
+    ]
+    return {"attempts": len(values), "total": sum(values)}
+
+
+def run_speech_cost(results: list[dict]) -> float:
+    return round(sum(((r.get("voice") or {}).get("cost_usd") or 0) for r in results), 6)
+
+
+def _pcts(values: list) -> dict:
+    values = [v for v in values if isinstance(v, (int, float))]
+    return {"n": len(values), "p50": percentile(values, 50), "p95": percentile(values, 95),
+            "max": round(max(values), 1) if values else None}
+
+
+def aggregate_voice(results: list[dict]) -> Optional[dict]:
+    """Voice figures across a run: latency parts, speech usage, ASR accuracy."""
+    voiced = [r for r in results if r.get("voice")]
+    if not voiced:
+        return None
+    turns = [t.get("extra") or {} for r in voiced for t in r["turns"]]
+    audio_turns = [t for t in turns if t.get("mode") == "audio"]
+    first_end = [t["end_markers"][0] for t in turns if t.get("end_markers")]
+    breakdowns = [b for t in turns for b in (t.get("latency_breakdown") or [])[:1] if b]
+
+    def bd(path: str) -> list:
+        out = []
+        for b in breakdowns:
+            value: Any = b
+            for key in path.split("."):
+                value = value.get(key) if isinstance(value, dict) else None
+            out.append(value)
+        return out
+
+    tokens = [tok for r in voiced for a in r["voice"]["asr"] for tok in a["tokens"]]
+    by_kind: dict[str, dict] = {}
+    for tok in tokens:
+        k = by_kind.setdefault(tok["kind"], {"checked": 0, "exact": 0, "normalised": 0})
+        k["checked"] += 1
+        k["exact"] += tok["exact"]
+        k["normalised"] += tok["normalised"]
+    asr_turns = [a for r in voiced for a in r["voice"]["asr"]]
+    wers = [a["wer"] for a in asr_turns if a["wer"] is not None]
+    unpriced = any(r["voice"].get("cost_usd") is None for r in voiced)
+    return {
+        "turns": len(turns),
+        "audio_turns": len(audio_turns),
+        "eos_to_first_audible_ms": _pcts([t.get("eos_to_first_audible_ms") for t in turns]),
+        "eos_to_first_audio_ms": _pcts([t.get("eos_to_first_audio_ms") for t in turns]),
+        "eos_to_first_marker_ms": _pcts([t.get("eos_to_first_marker_ms") for t in turns]),
+        "end_marker_first_message": {
+            key: _pcts([m.get(key) for m in first_end])
+            for key in ("rasa_processing_latency_ms", "tts_first_byte_latency_ms", "tts_complete_latency_ms")
+        },
+        "latency_breakdown_first": {
+            "turns_with_breakdown": len(breakdowns),
+            **{path: _pcts(bd(path)) for path in (
+                "user_perceived_latency_ms",
+                "llm_generation_before_first_output_ms",
+                "first_agent_response.llm_time_to_first_token_ms",
+                "first_agent_response.llm_total_generation_ms",
+                "first_voice_response.tts_time_to_first_byte_ms",
+                "first_voice_response.tts_total_generation_ms",
+            )},
+        },
+        "turns_ended_by": {k: sum(t.get("ended_by") == k for t in turns)
+                           for k in ("tracker", "quiet_window", "timeout", "closed")},
+        "interrupts": sum(t.get("interrupts") or 0 for t in turns),
+        "asr": {
+            "turns_checked": len(asr_turns),
+            "turns_heard_nothing": sum(a["user_events"] == 0 for a in asr_turns),
+            "turns_split": sum(a["user_events"] > 1 for a in asr_turns),
+            "wer_mean": round(statistics.fmean(wers), 3) if wers else None,
+            "wer_p50": percentile(wers, 50) if wers else None,
+            "tokens": by_kind,
+        },
+        "stt_audio_seconds": round(sum(r["voice"]["stt_audio_seconds"] for r in voiced), 1),
+        "tts_characters": sum(r["voice"]["tts_characters"] for r in voiced),
+        "stt_usd": round(sum(r["voice"].get("stt_usd") or 0 for r in voiced), 6),
+        "tts_usd": round(sum(r["voice"].get("tts_usd") or 0 for r in voiced), 6),
+        "speech_cost_usd": run_speech_cost(voiced),
+        "speech_cost_complete": not unpriced,
     }
 
 
@@ -632,14 +871,15 @@ def _raise_exit(signum: int, _frame: Any) -> None:
 
 def aggregate(results: list[dict], spec: dict) -> dict:
     """Summary figures derived only from per-conversation results."""
-    latencies = [t["latency_ms"] for r in results for t in r["turns"]]
+    latencies = [t["latency_ms"] for r in results for t in r["turns"] if t["latency_ms"] is not None]
     usage_total = lambda key: sum(r["usage"].get(key, 0) or 0 for r in results)  # noqa: E731
+    n_turns = sum(len(r["turns"]) for r in results)
     return {
         "conversations_run": len(results),
         "passed": sum(r["outcome"] == "pass" for r in results),
         "failed": sum(r["outcome"] == "fail" for r in results),
         "provider_errors": sum(r["outcome"] == "provider_error" for r in results),
-        "turns": len(latencies),
+        "turns": n_turns,
         "turn_latency_ms": {
             "p50": percentile(latencies, 50),
             "p95": percentile(latencies, 95),
@@ -647,7 +887,7 @@ def aggregate(results: list[dict], spec: dict) -> dict:
             "mean": round(statistics.fmean(latencies), 1) if latencies else None,
         },
         "llm_calls": usage_total("llm_calls"),
-        "llm_calls_per_turn": round(usage_total("llm_calls") / len(latencies), 2) if latencies else None,
+        "llm_calls_per_turn": round(usage_total("llm_calls") / n_turns, 2) if n_turns else None,
         "side_channel_calls": usage_total("side_channel_calls"),
         "empty_completions": usage_total("empty_completions"),
         "failed_llm_calls": usage_total("failed_calls"),
@@ -662,15 +902,60 @@ def aggregate(results: list[dict], spec: dict) -> dict:
             name: sum(len(r["metrics"].get(name, [])) for r in results)
             for name in (spec.get("bot_text_metrics") or {})
         },
+        "tool_result_metrics": {
+            name: {
+                "attempts": sum((r["metrics"].get(name) or {}).get("attempts", 0) for r in results),
+                "total": sum((r["metrics"].get(name) or {}).get("total", 0) for r in results),
+            }
+            for name in (spec.get("tool_result_metrics") or {})
+        },
         "log_events": {
             name: sum(r["log_events"].get(name, 0) for r in results) for name in spec.get("log_events", [])
         },
         "cost_complete": all(r["usage"]["cost_complete"] for r in results),
+        **({"voice": v} if (v := aggregate_voice(results)) else {}),
     }
 
 
+class ProjectVariant:
+    """Apply a spec variant's text edits to project files for one run, then restore.
+
+    `spec["variants"][name] = {"description": ..., "edits": [{"file": ...,
+    "find": ..., "replace": ...}]}`. Each `find` must occur exactly once, so a
+    variant cannot silently miss its target. The originals are restored in a
+    finally block, so the committed project always holds the default.
+    """
+
+    def __init__(self, project: Path, spec: dict, name: Optional[str]) -> None:
+        self.project = project
+        self.name = name
+        self.variant = (spec.get("variants") or {}).get(name) if name else None
+        if name and self.variant is None:
+            raise ValueError(f"unknown variant {name!r}")
+        self.originals: dict[Path, str] = {}
+
+    def __enter__(self) -> Optional[dict]:
+        if not self.variant:
+            return None
+        for edit in self.variant["edits"]:
+            path = self.project / edit["file"]
+            self.originals.setdefault(path, path.read_text(encoding="utf-8"))
+            current = path.read_text(encoding="utf-8")
+            if current.count(edit["find"]) != 1:
+                self.__exit__()
+                raise ValueError(f"variant {self.name}: {edit['find']!r} must occur once in {edit['file']}")
+            path.write_text(current.replace(edit["find"], edit["replace"]), encoding="utf-8")
+        return {"name": self.name, **self.variant}
+
+    def __exit__(self, *exc: Any) -> None:
+        for path, text in self.originals.items():
+            path.write_text(text, encoding="utf-8")
+        self.originals = {}
+
+
 def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: float,
-             train: bool = True, out_root: Optional[Path] = None, label: Optional[str] = None) -> dict:
+             train: bool = True, out_root: Optional[Path] = None, label: Optional[str] = None,
+             voice_mode: Optional[str] = None, variant: Optional[str] = None) -> dict:
     project = project.resolve()
     spec = load_spec(project)
     conversations = [c for c in spec["conversations"] if not only or c["id"] in only]
@@ -690,10 +975,15 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
     # already billed is always written to the ledger.
     previous_handler = signal.signal(signal.SIGTERM, _raise_exit)
     completed = False
+    project_variant = ProjectVariant(project, spec, variant)
+    variant_info = None
     try:
+        variant_info = project_variant.__enter__()
+        if variant_info and not train:
+            raise ValueError("a variant changes the project, so it needs a fresh train")
         train_seconds = server.train() if train else None
         with server:
-            driver = driver_cls(server.base_url)
+            driver = driver_cls(server.base_url, spec=spec, project=project, mode=voice_mode)
             for conv in conversations:
                 recent = [r["outcome"] for r in results[-2:]]
                 if len(recent) == 2 and set(recent) == {"provider_error"}:
@@ -701,7 +991,9 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
                     # outage): the rest would only record the same refusal.
                     skipped.append({"id": conv["id"], "reason": "provider errors in the previous two conversations"})
                     continue
-                run_spent = usage_log_cost(server.usage_log)
+                # Speech is billed per conversation (audio streamed, characters
+                # spoken), so the projection adds it to the model spend.
+                run_spent = usage_log_cost(server.usage_log) + run_speech_cost(results)
                 done_turns = sum(len(r["turns"]) for r in results)
                 per_turn = run_spent / done_turns if done_turns else spec.get("prior_cost_per_turn_usd", 0)
                 projected = spent_before + run_spent + per_turn * len(conv["turns"]) * 1.5
@@ -718,11 +1010,15 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
     finally:
         signal.signal(signal.SIGTERM, previous_handler)
         server.stop()
+        project_variant.__exit__()
+        llm_cost = usage_log_cost(server.usage_log)
+        speech = run_speech_cost(results)
         ledger_append(project, {
             "run": run_tag,
             "label": label if completed else f"{label or run_tag} (interrupted)",
             "conversations": len(results),
-            "cost_usd": usage_log_cost(server.usage_log),
+            "cost_usd": round(llm_cost + speech, 6),
+            **({"by_vendor": {"llm": llm_cost, "speech": speech}} if speech else {}),
             "finished_at": datetime.now(timezone.utc).isoformat(),
         })
 
@@ -742,12 +1038,15 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
         "started_at": started.isoformat(),
         "finished_at": finished.isoformat(),
         "model_file": getattr(server, "model_file", None),
+        **({"variant": variant_info} if variant_info else {}),
         "train_seconds": round(train_seconds, 1) if train_seconds else None,
         "pricing": pricing,
         "summary": {
             **aggregate(results, spec),
             "skipped": skipped,
-            "cost_usd": usage_log_cost(server.usage_log),
+            "cost_usd": round(usage_log_cost(server.usage_log) + run_speech_cost(results), 6),
+            "llm_cost_usd": usage_log_cost(server.usage_log),
+            "speech_cost_usd": run_speech_cost(results),
             "unattributed_llm_calls": len(unattributed),
             "spent_before_usd": spent_before,
             "budget_usd": budget_usd,
@@ -760,6 +1059,44 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
     return report
 
 
+def render_voice_summary(v: Optional[dict], spec: dict) -> list[str]:
+    if not v:
+        return []
+    fmt = lambda d: f"p50 {d['p50']}, p95 {d['p95']}, max {d['max']} (n={d['n']})"  # noqa: E731
+    em = v["end_marker_first_message"]
+    bd = v["latency_breakdown_first"]
+    pricing = spec.get("speech_pricing") or {}
+    lines = [
+        "",
+        "## Voice",
+        "",
+        f"- Turns: {v['turns']} ({v['audio_turns']} spoken); ended by "
+        + ", ".join(f"{k} {n}" for k, n in v["turns_ended_by"].items() if n),
+        f"- End of caller speech to first bot audio with sound, ms: {fmt(v['eos_to_first_audible_ms'])}",
+        f"- End of caller speech to first bot marker, ms: {fmt(v['eos_to_first_marker_ms'])}",
+        f"- First end marker per turn, ms: rasa_processing {fmt(em['rasa_processing_latency_ms'])}; "
+        f"tts_first_byte {fmt(em['tts_first_byte_latency_ms'])}; tts_complete {fmt(em['tts_complete_latency_ms'])}",
+        f"- Mantle latency_breakdown ({bd['turns_with_breakdown']} turns): "
+        + "; ".join(f"{k} {fmt(d)}" for k, d in bd.items() if isinstance(d, dict) and d["n"]),
+        f"- Speech-to-text: {v['asr']['turns_checked']} spoken turns, WER mean {v['asr']['wer_mean']}, "
+        f"{v['asr']['turns_heard_nothing']} heard nothing, {v['asr']['turns_split']} split into more than one user event",
+        "- Checked tokens: " + "; ".join(
+            f"{kind} {t['exact']}/{t['checked']} exact, {t['normalised']}/{t['checked']} after number normalisation"
+            for kind, t in v["asr"]["tokens"].items()),
+        f"- Speech usage: {v['stt_audio_seconds']} s streamed to speech-to-text, {v['tts_characters']} characters "
+        f"of bot text (upper bound for text-to-speech); {v['stt_usd']} + {v['tts_usd']} = {v['speech_cost_usd']} USD"
+        + ("" if v["speech_cost_complete"] else " (incomplete: a speech price is unverified)"),
+    ]
+    for part in ("stt", "tts"):
+        price = pricing.get(part) or {}
+        if price:
+            lines.append(f"- {part.upper()} price: {price.get('vendor')} {price.get('model')}, "
+                         f"{price.get('usd_per_minute') or price.get('usd_per_1k_characters')} USD per "
+                         f"{'minute' if 'usd_per_minute' in price else '1,000 characters'}, from {price.get('source')} "
+                         f"on {price.get('checked')}")
+    return lines
+
+
 OUTCOME_LABELS = {"pass": "pass", "fail": "FAIL", "provider_error": "ERROR (provider)"}
 
 
@@ -768,8 +1105,20 @@ def rerender(results_path: Path) -> dict:
     report = json.loads(results_path.read_text())
     project = REPO_ROOT / report["project"]
     spec = load_spec(project)
+    convs = {c["id"]: c for c in spec["conversations"]}
+    usage_rows = read_jsonl(results_path.parent / "usage.jsonl")
     for r in report["conversations"]:
+        if usage_rows:
+            # Calls that landed after the run attributed usage (for example a
+            # model turn after a voice hangup) are in the stored log; recount.
+            r["usage"] = usage_for(usage_rows, r["conversation_id"])
         r["outcome"] = classify(r.get("error"), r["checks"], r["usage"])
+        tracker_file = results_path.parent / "trackers" / f"{r['id']}.json"
+        if r.get("voice") and r["id"] in convs and tracker_file.is_file():
+            # Speech-to-text checks and speech cost are derived data: recompute
+            # them from the stored turns, tracker and call stats.
+            r["voice"] = voice_report(spec, convs[r["id"]], r["turns"], json.loads(tracker_file.read_text()),
+                                      r["voice"].get("call"))
     report["summary"].update(aggregate(report["conversations"], spec))
     results_path.write_text(json.dumps(report, indent=1) + "\n")
     (results_path.parent / "summary.md").write_text(render_summary(report, spec))
@@ -785,6 +1134,8 @@ def render_summary(report: dict, spec: dict) -> str:
         f"- Case: `{report['case']}`; channel: {report['channel']}; model: `{report['model']}` "
         f"(provider reported {', '.join(report['response_models']) or 'n/a'})",
         f"- Run: {report['started_at'][:19]}Z to {report['finished_at'][:19]}Z",
+        *([f"- Variant `{report['variant']['name']}`: {report['variant'].get('description', '')}"]
+          if report.get("variant") else []),
         f"- Conversations: {s['conversations_run']} run, {s['passed']} passed, {s['failed']} failed"
         + (f", {s['provider_errors']} lost to provider errors" if s.get("provider_errors") else "")
         + (f", {len(s['skipped'])} skipped for budget" if s["skipped"] else ""),
@@ -798,10 +1149,14 @@ def render_summary(report: dict, spec: dict) -> str:
         f"({s['request_placeholder_signatures']} LiteLLM placeholders)",
         f"- Bot text sent as 'filler' alongside a tool call: {s['filler_messages']}; "
         + "; ".join(f"{k}: {v}" for k, v in s["bot_text_metrics"].items()),
+        *[f"- Case metric {k}: {m['total']} over {m['attempts']} tool results"
+          for k, m in (s.get("tool_result_metrics") or {}).items()],
         f"- Server log events: " + (", ".join(f"{k} {v}" for k, v in s["log_events"].items()) or "none"),
         f"- Cost: {s['cost_usd']} USD"
+        + (f" ({s['llm_cost_usd']} model, {s['speech_cost_usd']} speech)" if s.get("speech_cost_usd") else "")
         + ("" if s["cost_complete"] else " (incomplete: some calls had no LiteLLM price)")
-        + f"; priced by LiteLLM {((report.get('pricing') or {}).get('litellm_version'))} bundled map",
+        + f"; model calls priced by LiteLLM {((report.get('pricing') or {}).get('litellm_version'))} bundled map",
+        *render_voice_summary(s.get("voice"), spec),
         "",
         "| Conversation | Kind | Result | Domain tool calls | Turn latency ms | Cost USD |",
         "|---|---|---|---|---|---|",
@@ -813,7 +1168,8 @@ def render_summary(report: dict, spec: dict) -> str:
         ) or "none"
         lines.append(
             f"| {r['id']} | {r.get('kind') or ''} | {OUTCOME_LABELS[r['outcome']]} | {tools} | "
-            f"{', '.join(str(round(t['latency_ms'])) for t in r['turns'])} | {r['usage']['cost_usd']} |"
+            f"{', '.join('n/a' if t['latency_ms'] is None else str(round(t['latency_ms'])) for t in r['turns'])} "
+            f"| {r['usage']['cost_usd']} |"
         )
     failures = [r for r in report["conversations"] if r["outcome"] == "fail"]
     errors = [r for r in report["conversations"] if r["outcome"] == "provider_error"]

@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import json
 import re
 import subprocess
 import sys
@@ -1602,6 +1603,23 @@ class TestCaseBuildHarness(unittest.TestCase):
         self.assertEqual(self.h.classify(None, [{"passed": False}], {"failed_calls": 0}), "fail")
         self.assertEqual(self.h.classify(None, [{"passed": False}], {"failed_calls": 3}), "provider_error")
 
+    def test_variant_edits_files_for_the_run_and_restores_them(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            (project / "integrations.yml").write_text("model: x\n")
+            spec = {"variants": {"low": {"edits": [
+                {"file": "integrations.yml", "find": "model: x\n", "replace": "model: x\neffort: low\n"}]}}}
+            variant = self.h.ProjectVariant(project, spec, "low")
+            info = variant.__enter__()
+            self.assertEqual(info["name"], "low")
+            self.assertIn("effort: low", (project / "integrations.yml").read_text())
+            variant.__exit__()
+            self.assertEqual((project / "integrations.yml").read_text(), "model: x\n")
+            bad = {"variants": {"low": {"edits": [{"file": "integrations.yml", "find": "nope", "replace": ""}]}}}
+            with self.assertRaises(ValueError):
+                self.h.ProjectVariant(project, bad, "low").__enter__()
+            self.assertIsNone(self.h.ProjectVariant(project, spec, None).__enter__())
+
     def test_ledger_total_accumulates(self):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp)
@@ -1609,6 +1627,276 @@ class TestCaseBuildHarness(unittest.TestCase):
             self.h.ledger_append(project, {"run": "2", "cost_usd": 0.2})
             self.assertAlmostEqual(self.h.ledger_total(project), 0.3)
 
+
+
+class FakeBrowserAudioServer:
+    """A stand-in for Rasa's browser_audio channel, built on its wire protocol.
+
+    Handshake first, then JSON text frames. A caller turn ends after 200 ms of
+    silence following speech, or on a `{"text"}` frame. The bot then answers
+    with a start marker, audio, and an end marker carrying `latency`, and the
+    fake tracker gains user, bot and bot_turn_ended events. Acknowledged
+    markers are recorded.
+    """
+
+    RATE = 16000
+
+    def __init__(self, reply_delay_s: float = 0.1, heard: str = "card ending four four one seven") -> None:
+        import socket as _socket
+        import threading as _threading
+
+        self.reply_delay_s = reply_delay_s
+        self.heard = heard
+        self.events: list[dict] = []
+        self.sent_markers: list[str] = []
+        self.acked: list[str] = []
+        self.sender_id = None
+        self.frames_in = 0
+        self.lock = _threading.Lock()
+        self.listener = _socket.socket()
+        self.listener.bind(("127.0.0.1", 0))
+        self.listener.listen(1)
+        self.port = self.listener.getsockname()[1]
+        self.thread = _threading.Thread(target=self._serve, daemon=True)
+        self.thread.start()
+
+    def tracker(self, sender_id):
+        with self.lock:
+            return {"sender_id": sender_id, "events": [dict(e) for e in self.events]}
+
+    def _send(self, obj):
+        from voice_driver import OP_TEXT, encode_frame
+
+        self.conn.sendall(encode_frame(OP_TEXT, json.dumps(obj).encode(), mask=False))
+
+    def _marker(self, latency=None):
+        import uuid
+
+        marker = uuid.uuid4().hex
+        self.sent_markers.append(marker)
+        self._send({"marker": marker, **({"latency": latency} if latency else {})})
+
+    def _speak(self, seconds):
+        import base64 as b64
+        import struct as st
+
+        self._marker()
+        n = int(self.RATE * seconds)
+        tone = st.pack("<%dh" % n, *([1200, -1200] * (n // 2)))
+        for i in range(0, len(tone), 4096):
+            self._send({"audio": b64.b64encode(tone[i:i + 4096]).decode()})
+        self._marker({"rasa_processing_latency_ms": 90.0, "tts_first_byte_latency_ms": 40.0,
+                      "tts_complete_latency_ms": 60.0})
+
+    def _reply(self, heard):
+        import time as _time
+
+        with self.lock:
+            self.events.append({"event": "user", "text": heard})
+        _time.sleep(self.reply_delay_s)
+        self._speak(0.3)
+        with self.lock:
+            self.events.append({"event": "bot", "text": "Do you mean the card ending 4 4 1 7?"})
+            self.events.append({"event": "bot_turn_ended", "metadata": {"latency_breakdown": {
+                "user_perceived_latency_ms": 150.0,
+                "first_agent_response": {"llm_time_to_first_token_ms": 80.0}}}})
+
+    def _serve(self):
+        import base64 as b64
+        from voice_driver import OP_CLOSE, OP_TEXT, accept_key, read_frame
+
+        self.conn, _ = self.listener.accept()
+        request = b""
+        while b"\r\n\r\n" not in request:
+            request += self.conn.recv(4096)
+        headers = dict(
+            line.split(": ", 1) for line in request.decode().split("\r\n")[1:] if ": " in line
+        )
+        self.sender_id = headers.get("X-Rasa-Sender-Id")
+        self.conn.sendall(
+            ("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+             f"Sec-WebSocket-Accept: {accept_key(headers['Sec-WebSocket-Key'])}\r\n\r\n").encode()
+        )
+        self._send({"type": "handshake", "sample_rate": self.RATE})
+        self._speak(0.2)  # greeting
+        speaking, silent = False, 0
+        try:
+            while True:
+                _, opcode, payload = read_frame(self.conn)
+                if opcode == OP_CLOSE:
+                    break
+                if opcode != OP_TEXT:
+                    continue
+                msg = json.loads(payload)
+                if "marker" in msg:
+                    self.acked.append(msg["marker"])
+                elif "text" in msg:
+                    self._reply(msg["text"])
+                elif "audio" in msg:
+                    self.frames_in += 1
+                    if any(b64.b64decode(msg["audio"])):
+                        speaking, silent = True, 0
+                    elif speaking:
+                        silent += 1
+                        if silent >= 10:
+                            speaking = False
+                            self._reply(self.heard)
+        except Exception:
+            pass
+        finally:
+            self.conn.close()
+            self.listener.close()
+
+
+class TestBrowserAudioDriver(unittest.TestCase):
+    """The voice driver against a fake browser_audio server. No Rasa, no vendor."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(_SCRIPTS / "case_builds"))
+        import voice_driver
+        import harness
+
+        cls.v = voice_driver
+        cls.h = harness
+
+    def call(self, server, **kwargs):
+        call = self.v.BrowserAudioCall(
+            f"ws://127.0.0.1:{server.port}/webhooks/browser_audio/websocket", "conv-1",
+            fetch_tracker=kwargs.pop("fetch_tracker", server.tracker), quiet_window_s=0.4, settle_s=0.2,
+            turn_timeout_s=10, **kwargs,
+        )
+        call.open(greeting_timeout_s=5)
+        return call
+
+    @staticmethod
+    def utterance(rate=16000):
+        import struct as st
+
+        silence = b"\x00\x00" * int(rate * 0.3)
+        n = int(rate * 0.5)
+        return silence + st.pack("<%dh" % n, *([3000, -3000] * (n // 2))) + silence
+
+    def test_framing_round_trips_all_length_encodings(self):
+        import socket as _socket
+
+        a, b = _socket.socketpair()
+        try:
+            for size in (0, 125, 126, 70000):
+                payload = bytes(range(256)) * (size // 256) + bytes(size % 256)
+                import threading as _threading
+
+                frame = self.v.encode_frame(self.v.OP_TEXT, payload, mask=True)
+                sender = _threading.Thread(target=a.sendall, args=(frame,))
+                sender.start()
+                fin, opcode, got = self.v.read_frame(b)
+                sender.join()
+                self.assertEqual((fin, opcode, got), (True, self.v.OP_TEXT, payload))
+        finally:
+            a.close()
+            b.close()
+
+    def test_text_dry_run_measures_latency_and_reads_the_tracker(self):
+        server = FakeBrowserAudioServer(reply_delay_s=0.15)
+        call = self.call(server)
+        result = call.say(text="block the card ending four four one seven", think_s=0)
+        stats = call.close()
+        self.assertEqual(server.sender_id, "conv-1")
+        self.assertEqual(result["voice"]["ended_by"], "tracker")
+        self.assertEqual(result["voice"]["heard"], ["block the card ending four four one seven"])
+        self.assertGreaterEqual(result["latency_ms"], 140)
+        self.assertLess(result["latency_ms"], 2000)
+        self.assertEqual(result["voice"]["end_markers"][0]["rasa_processing_latency_ms"], 90.0)
+        self.assertEqual(result["voice"]["latency_breakdown"][0]["user_perceived_latency_ms"], 150.0)
+        self.assertEqual(result["bot_messages"][0]["text"], "Do you mean the card ending 4 4 1 7?")
+        self.assertGreater(stats["audio_seconds_sent"], 0)  # silence streams even in dry-run
+
+    def test_spoken_turn_times_end_of_speech_and_acks_every_marker(self):
+        server = FakeBrowserAudioServer(reply_delay_s=0.1)
+        call = self.call(server)
+        result = call.say(pcm=self.utterance(), think_s=0)
+        import time as _time
+
+        _time.sleep(0.3)
+        call.close()
+        voice = result["voice"]
+        self.assertEqual(voice["mode"], "audio")
+        self.assertAlmostEqual(voice["speech_s"], 0.5, delta=0.02)
+        # Server endpointing (10 silent 20 ms frames) plus its reply delay.
+        self.assertGreaterEqual(result["latency_ms"], 250)
+        self.assertLess(result["latency_ms"], 2500)
+        self.assertEqual(voice["heard"], ["card ending four four one seven"])
+        self.assertEqual(sorted(server.acked), sorted(server.sent_markers))
+        self.assertEqual(voice["markers_pending"], 0)
+
+    def test_quiet_window_ends_the_turn_without_a_tracker(self):
+        server = FakeBrowserAudioServer()
+        call = self.call(server, fetch_tracker=None)
+        result = call.say(text="yes", think_s=0)
+        call.close()
+        self.assertEqual(result["voice"]["ended_by"], "quiet_window")
+        self.assertIsNotNone(result["latency_ms"])
+
+    def test_marker_on_an_empty_queue_waits_like_a_browser(self):
+        sent = []
+        speaker = self.v.Speaker(16000, sent.append)
+        speaker.add_marker("late")
+        import threading as _threading
+        import time as _time
+
+        _threading.Thread(target=speaker.run, daemon=True).start()
+        _time.sleep(0.1)
+        self.assertEqual(sent, [])
+        speaker.enqueue(b"\x01\x00" * 160)
+        _time.sleep(0.1)
+        self.assertEqual(sent, ['{"marker": "late"}'])
+        speaker.stop.set()
+
+    def test_digit_and_name_checks(self):
+        tokens = [{"token": "4417"}, {"token": "1986"}, {"token": "14"}, {"token": "Okafor", "kind": "name"}]
+        spoken = self.v.check_tokens("Nadia Okafor, March fourteenth, nineteen eighty-six, ending four four one seven",
+                                     tokens)
+        self.assertEqual([t["normalised"] for t in spoken], [True, True, True, True])
+        self.assertEqual([t["exact"] for t in spoken], [False, False, False, True])
+        wrong = self.v.check_tokens("Nadia Okafur, ending 4 4 1 8", tokens)
+        self.assertEqual([t["normalised"] for t in wrong], [False, False, False, False])
+        self.assertEqual(self.v.number_runs("fifty five oh two"), [["55", "0", "2"]])
+
+    def test_word_error_rate_ignores_number_spelling(self):
+        self.assertEqual(self.v.word_error_rate("born nineteen eighty-six", "born 1986"), 0.0)
+        self.assertAlmostEqual(self.v.word_error_rate("ending four four one seven", "ending 4 4 1 8"), 0.2)
+
+    def test_speech_cost_and_voice_report(self):
+        pricing = {"stt": {"usd_per_minute": 0.0065}, "tts": {"usd_per_1k_characters": 0.03}}
+        cost = self.h.speech_cost(pricing, 120, 2000)
+        self.assertEqual((cost["stt_usd"], cost["tts_usd"], cost["cost_usd"]), (0.013, 0.06, 0.073))
+        self.assertIsNone(self.h.speech_cost({"stt": {"usd_per_minute": 0.0065}}, 60, 10)["cost_usd"])
+        conv = {"turns": [{"user": "ending four four one seven", "asr_tokens": [{"token": "4417"}]}]}
+        turns = [{"user": "ending four four one seven", "extra": {"mode": "audio", "heard": ["ending 4417"], "eos_to_first_audible_ms": 800.0,
+                            "end_markers": [{"rasa_processing_latency_ms": 500.0}],
+                            "latency_breakdown": [{"user_perceived_latency_ms": 700.0}], "ended_by": "tracker"}}]
+        tracker = {"events": [{"event": "bot", "text": "x" * 100}]}
+        report = self.h.voice_report({"speech_pricing": pricing}, conv, turns, tracker,
+                                     {"audio_seconds_sent": 60, "mode": "audio"})
+        self.assertEqual(report["tts_characters"], 100)
+        self.assertEqual(report["asr"][0]["tokens"][0]["normalised"], True)
+        self.assertEqual(report["asr"][0]["wer"], 0.0)
+        agg = self.h.aggregate_voice([{"voice": report, "turns": turns}])
+        self.assertEqual(agg["eos_to_first_audible_ms"]["p50"], 800.0)
+        self.assertEqual(agg["asr"]["tokens"]["digits"], {"checked": 1, "exact": 1, "normalised": 1})
+        self.assertEqual(agg["latency_breakdown_first"]["user_perceived_latency_ms"]["p50"], 700.0)
+        changed = self.h.voice_report({}, conv, [dict(turns[0], user="an older script line")], tracker, {})
+        self.assertEqual(changed["asr"], [])
+
+    def test_repeated_latency_markers_collapse(self):
+        a = {"rasa_processing_latency_ms": 900.0, "tts_first_byte_latency_ms": 500.0, "tts_complete_latency_ms": 1700.0}
+        b = dict(a, tts_first_byte_latency_ms=200.0)
+        got = self.v.dedupe_latency_markers([dict(a, at_ms=1), dict(a, at_ms=2), dict(b, at_ms=3)])
+        self.assertEqual([m["at_ms"] for m in got], [1, 3])
+
+    def test_card_endings_are_normalised_like_digits(self):
+        got = self.v.check_tokens("ending four four one seven", [{"token": "4417", "kind": "card_ending"}])
+        self.assertEqual((got[0]["exact"], got[0]["normalised"]), (False, True))
 
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every

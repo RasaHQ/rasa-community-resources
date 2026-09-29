@@ -34,6 +34,10 @@ def main() -> int:
     parser.add_argument("--only", help="comma-separated conversation ids")
     parser.add_argument("--label", help="results folder name (default: UTC timestamp)")
     parser.add_argument("--skip-train", action="store_true", help="reuse the newest model in models/")
+    parser.add_argument("--voice-mode", choices=("audio", "text"),
+                        help="voice builds: stream the caller WAVs (audio) or send {\"text\"} frames "
+                             "that skip speech-to-text (text, a cheaper dry run); default from the spec")
+    parser.add_argument("--variant", help="apply the spec's named variant (file edits) for this run only")
     parser.add_argument("--rerender", metavar="RESULTS_JSON",
                         help="recompute outcomes and summary.md of a stored run; no model calls")
     args = parser.parse_args()
@@ -57,6 +61,8 @@ def main() -> int:
         budget_usd=args.budget_usd,
         train=not args.skip_train,
         label=args.label,
+        voice_mode=args.voice_mode,
+        variant=args.variant,
     )
     s = report["summary"]
     print(json.dumps({k: s[k] for k in ("conversations_run", "passed", "failed", "turn_latency_ms",

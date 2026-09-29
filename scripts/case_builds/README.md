@@ -19,8 +19,8 @@ and never printed.
 1. `uv run --locked rasa train` in the project.
 2. Starts `rasa run --enable-api` through `usage_launcher.py`, on a free local
    port.
-3. Drives each conversation through a driver (`rest` today), one scripted
-   caller turn at a time.
+3. Drives each conversation through a driver (`rest` for web chat,
+   `browser_audio` for voice), one scripted caller turn at a time.
 4. Fetches the tracker (`GET /conversations/<id>/tracker`) and saves it.
 5. Evaluates the conversation's checks against the tracker.
 6. Attributes LLM usage, cost and server-log events to the conversation.
@@ -34,7 +34,7 @@ Server logs and raw usage logs stay in `case-build/results/raw/` (gitignored).
 
 | Measure | Source |
 |---|---|
-| Turn latency | Wall clock around the driver's send. REST: request sent to full response received. |
+| Turn latency | REST: request sent to full response received. Voice: end of caller speech to first bot audio with sound (see Voice builds). |
 | Tokens per call | The provider's usage block, as LiteLLM parses it, captured by a LiteLLM `CustomLogger` inside the agent process (`usage_launcher.py`). Reasoning and cached tokens are recorded when the provider reports them. |
 | Cost | LiteLLM's `response_cost` for each call, priced from LiteLLM's bundled price map (`LITELLM_LOCAL_MODEL_COST_MAP=True`). The price row used is written to the usage log. A call LiteLLM cannot price leaves the cost `null` and the report says the total is incomplete; the harness never estimates. |
 | Cross-check | Rasa's own per-conversation token total, `GET /conversations/<id>/engine_tokens`, enabled with `RASA_FEATURE_FLAG_SIM_EVAL_EXTENDED=true`. Stored per conversation next to the LiteLLM figures. |
@@ -114,21 +114,93 @@ project it ran on allowed 250 per model per day for `gemini-3.1-pro`.
 stored run without calling any model. Estimate first with `--only` on one
 long conversation, then run the rest.
 
-## Adding a voice driver
+## Voice builds (`browser_audio`)
 
-`BrowserAudioDriver` in `harness.py` is a placeholder. A voice driver
-subclasses `Driver` and implements `send(turn) -> TurnObservation`:
+`driver: "browser_audio"` runs each conversation as a call on Rasa's
+`browser_audio` WebSocket channel, through `voice_driver.py` (stdlib only: it
+carries its own minimal RFC 6455 client, since scripts/ takes no packages and
+Python 3.13+ has no `audioop`).
 
-- synthesise `turn["user"]` as caller audio in the build's language and accent
-  (or play `turn["audio"]` if the spec supplies a file), and stream it to the
-  `browser_audio` websocket in real time;
-- use the conversation id it was started with as the channel's sender id, so
-  trackers, usage and log events join on it;
-- return the bot transcript in `bot_messages`, `latency_ms` measured from the
-  end of caller speech to the first bot audio byte, and component timings
-  (ASR final, first LLM token, first TTS byte, barge-in) in `extra`.
+```bash
+python3 scripts/case_builds/render_caller_audio.py examples/<build> --budget-usd 5   # once
+python3 scripts/case_builds/run_build.py examples/<build> --budget-usd 5
+python3 scripts/case_builds/run_build.py examples/<build> --budget-usd 5 --voice-mode text --label dry-run
+```
 
-The voice builds also need: the speech vendors' usage and cost (the LiteLLM
-logger sees only model calls), caller-audio fixtures per accent kept with
-the build, and checks on what the ASR heard (digits, amounts, names), which
-the tracker's `user` events carry.
+The project's `integrations.yml` needs `channels.browser_audio` with
+`external_sender_id_header` (the harness sends `X-Rasa-Sender-Id`, so the
+tracker, usage and logs join on the conversation id), and a `sample_rate`
+equal to the caller fixtures' rate.
+
+What the driver does per call:
+
+1. Connects to `/webhooks/browser_audio/websocket` with the sender-id header,
+   reads the `{"type": "handshake", "sample_rate": N}` frame, and from then on
+   streams 20 ms frames of 16-bit PCM in real time, silence included, like a
+   browser microphone.
+2. Plays every bot `audio` frame on an emulated speaker at the handshake rate
+   and echoes each `marker` once the audio before it has played. As in the
+   legacy Inspector client, a marker that arrives on an empty queue waits for
+   the next audio (`voice.prompt_marker_ack: true` acks it at once instead).
+3. Waits out the greeting on audio (first sound, speaker drained, 2.5 s quiet).
+4. For each turn, streams the turn's caller WAV, then polls the tracker until
+   every new `user` event has its own `bot_turn_ended`, the speaker has
+   drained and the server has been quiet for 0.6 s. There is no end-of-turn
+   frame on the wire. Without a tracker it falls back to a 2.5 s quiet window.
+5. In `text` mode it sends `{"text": ...}` instead of audio. That skips
+   speech-to-text only: the model and text-to-speech still bill, and the
+   silence stream still reaches (and bills) speech-to-text.
+
+Per turn it records, in `turns[].extra`:
+
+| Field | Meaning |
+|---|---|
+| `latency_ms` (turn) | End of caller speech to the first bot audio frame with a non-zero sample. End of speech is the last 10 ms window of the WAV above -40 dBFS, timed as the driver streamed it |
+| `eos_to_first_marker_ms`, `eos_to_first_audio_ms` | To the first bot marker, and to the first audio frame including silence |
+| `end_markers` | The `latency` objects on markers after the caller spoke (`rasa_processing_latency_ms`, `tts_first_byte_latency_ms`, `tts_complete_latency_ms`), repeats collapsed |
+| `latency_breakdown` | Mantle's `metadata.latency_breakdown` from each new `bot_turn_ended` |
+| `heard` | The text of each new tracker `user` event: what speech-to-text produced |
+| `ended_by` | `tracker`, `quiet_window`, `timeout` or `closed` |
+
+A conversation's `voice` block adds speech usage and cost, and a
+speech-to-text check per spoken turn: the word error rate against the
+script's line (numbers compared digit by digit, however they were spelled),
+and each `asr_tokens` entry checked `exact` (verbatim in the transcript) and
+`normalised` (after spoken numbers become digits; names are only checked
+exactly). These never decide pass or fail.
+
+Speech spend is priced from the spec's `speech_pricing` (vendor, per-unit
+price, source and date). Speech-to-text is billed on every second streamed,
+so it is the seconds the driver sent. Text-to-speech is the characters of all
+bot messages in the tracker, an upper bound because Rasa's TTS cache can
+serve a repeated text without a vendor call. A missing price leaves the cost
+`null` and the summary says so. Speech spend counts toward `--budget-usd`
+and is written to the ledger with the model spend.
+
+Voice spec keys:
+
+```json
+"driver": "browser_audio",
+"voice": {
+  "mode": "audio",
+  "sender_header": "X-Rasa-Sender-Id",
+  "caller_audio_dir": "case-build/caller-audio",
+  "caller": {"vendor": "openai", "model": "tts-1", "voice": "nova", "sample_rate": 16000,
+             "usd_per_1m_characters": 15.0, "price_source": "...", "price_checked": "2026-09-29"}
+},
+"speech_pricing": {
+  "stt": {"vendor": "deepgram", "model": "flux-general-en", "usd_per_minute": 0.0065, "source": "...", "checked": "..."},
+  "tts": {"vendor": "deepgram", "model": "aura-2-andromeda-en", "usd_per_1k_characters": 0.03, "source": "...", "checked": "..."}
+},
+"tool_result_metrics": {"unselected_cards_changed": {"tool": "block_card", "field": "unselected_cards_changed"}}
+```
+
+A turn is `{"user": "...", "asr_tokens": [{"token": "4417", "kind": "card_ending"}], "caller_voice": "onyx"}`.
+Its WAV is `<voice>-<sha256(voice|text)[:12]>.wav` in `caller_audio_dir`,
+rendered once by `render_caller_audio.py` (OpenAI TTS or local espeak-ng),
+listed in that folder's `manifest.json` with text, vendor, voice and SHA-256,
+and replayed byte for byte on every run. The caller's voice vendor must not be
+the build's own speech vendor. Rendering spend goes to the same ledger.
+
+`tool_result_metrics` sums a numeric field over one tool's results, for a
+case metric such as unselected cards changed per block attempt.
