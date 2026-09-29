@@ -55,6 +55,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Vela voice banking on Speechmatics | Vela | Retail banking / custom ASR | [`mantle-voice-speechmatics-skills`](mantle-voice-speechmatics-skills) | 2026-08-26 |
 | Vela voice banking, routed | Vela | Retail banking / vendor failover | [`mantle-voice-routed-skills`](mantle-voice-routed-skills) | 2026-09-02 |
 | HarborCover policy status on Gemini (text) | HarborCover status assistant | Insurance / casebook case build | [`mantle-text-insurance-policy-status-gemini`](mantle-text-insurance-policy-status-gemini) | 2026-09-29 |
+| Northgate block card on GPT with Deepgram (browser voice) | Northgate card services | Retail banking / casebook case build | [`mantle-voice-banking-block-card-gpt`](mantle-voice-banking-block-card-gpt) | 2026-09-29 |
 
 When you add an example, append a row here in the same PR.
 
