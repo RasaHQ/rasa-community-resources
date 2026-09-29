@@ -23,7 +23,7 @@ description = "<one line>"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
-    "rasa-pro==3.21.0.dev3",
+    "rasa-pro==3.21.0.dev5",
     "python-dotenv>=1.0.0",
 ]
 
