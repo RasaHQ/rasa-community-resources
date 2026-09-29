@@ -5,7 +5,7 @@ description = "Atlas voice travel agent running on Google Gemini with local embe
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
-    "rasa-pro==3.21.0.dev1",
+    "rasa-pro==3.21.0.dev3",
     "python-dateutil>=2.9.0",
     "python-dotenv>=1.0.0",
     "sentence-transformers>=5.7.0",
@@ -15,7 +15,9 @@ dependencies = [
 # and needs an issued Rasa licence, but does not call Gemini (verified on dev9).
 [tool.rasa-catalog]
 required-secrets = ["GEMINI_API_KEY"]
-training-secrets = []
+# 3.21 expands api_key: ${GEMINI_API_KEY} at train time, so the variable must
+# exist to train; training itself makes no Gemini call.
+training-secrets = ["GEMINI_API_KEY"]
 
 [tool.uv]
 prerelease = "allow"

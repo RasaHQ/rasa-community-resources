@@ -8,7 +8,7 @@ misleadingly reported by the engine, verified against rasa-pro `3.20.0.dev6`.
 
 - The Mantle engine ships **only on the `3.20.0.dev` pre-release line**. The
   newest stable `rasa-pro` has **no engine package**. Never "upgrade to latest
-  stable"; pin `rasa-pro==3.21.0.dev1` (or the current dev release) and keep
+  stable"; pin `rasa-pro==3.21.0.dev3` (or the current dev release) and keep
   `[tool.uv] prerelease = "allow"`.
 - `requires-python = ">=3.11,<3.13"`. A lower floor fails `uv lock` with a
   resolver error that never mentions Python.
@@ -39,10 +39,10 @@ lib/engine.py        # the only file that imports rasa.mantle directly
 2. **`llm:` in integrations.yml is a model-group reference**
    (`llm: {model_group: <id>}`). Inline `provider`/`model`/`api_key` there is
    rejected since 3.20.0.dev6. Providers/credentials live on the
-   `model_groups:` entry, with `api_key_env: SOME_ENV_VAR` — the *name* of the
-   variable, unquoted, no `${...}`. `api_key_env: VAR` does not expand: `api_key`
-   is on the engine's `SENSITIVE_DATA` list, so `read_yaml` returns it raw and
-   the provider receives the literal characters `${VAR}` as its key.
+   `model_groups:` entry, with `api_key: ${SOME_ENV_VAR}` — exactly `${NAME}`,
+   nothing else. Since 3.21.0.dev2 the engine rejects `api_key_env` (the 3.20
+   spelling) and any other value shape
+   (`rasa/shared/providers/model_group_validation.py`).
 3. **Root `memory.yml` may not contain `llm_settable: true`.** Project memory
    is written by tools. LLM-settable fields go in `skills/<id>/memory.yml`
    under `schema: public:`.

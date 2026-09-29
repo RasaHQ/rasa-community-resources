@@ -1,7 +1,7 @@
 # Building risk-tiered step-up, one decision at a time
 
 ```text
-Verified with: rasa-pro 3.21.0.dev1, Python 3.11+, uv
+Verified with: rasa-pro 3.21.0.dev3, Python 3.11+, uv
 Time:          40–60 minutes
 Prerequisites: a working Rasa Pro setup; you have built at least one skill before
 ```
@@ -19,12 +19,21 @@ Almost every voice agent that authenticates does this:
 
 ```yaml
 # skills/change_booking/skill.md
-requires: session.project.authenticated
+precondition: authenticated
+
+# agent.yml
+orchestrator:
+  preconditions:
+    authenticated:
+      satisfied_when: session.project.authenticated
+      resolve_with: authenticate
 ```
 
 and somewhere upstream, a skill that sets that boolean. It is in this repository
 too — `examples/mantle-voice-agent` does exactly this, and for a travel demo it
-is a perfectly reasonable design.
+is a perfectly reasonable design. (Before Rasa Pro 3.21.0.dev2 the same gate was
+a skill-level `requires: session.project.authenticated`; the engine no longer
+accepts that key.)
 
 Now write down the questions this shape cannot answer:
 

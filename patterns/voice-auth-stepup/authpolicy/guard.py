@@ -8,7 +8,7 @@ WHY THE CHECK LIVES HERE AND NOT IN THE SKILL PROSE
 ---------------------------------------------------
 Rasa gives you two places to express "you must be authenticated":
 
-    requires: session.project.authenticated        # skill frontmatter
+    precondition: authenticated                    # skill frontmatter (agent.yml binding)
     tool_constraints: [{tool: {requires: ...}}]    # tool frontmatter
 
 Both are real, both are useful, and **neither is sufficient on its own here.**

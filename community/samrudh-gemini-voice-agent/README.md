@@ -6,7 +6,7 @@ Kind:          example
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.21.0.dev1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev3 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners who want a Mantle voice agent without an OpenAI key
 Time:          30–45 minutes
 ```
@@ -89,8 +89,9 @@ Required secrets in `.env`:
 **No `OPENAI_API_KEY`.** That is the point of this resource — see
 [What is different here](#what-is-different-here).
 
-`make verify` reads `llm.api_key_env` out of `integrations.yml` and checks the
-key that configuration actually names, so if you swap providers it follows you
+`make verify` follows `llm.model_group` in `integrations.yml` to its model
+group, reads the variable named in `api_key: ${...}`, and checks the key that
+configuration actually names, so if you swap providers it follows you
 rather than checking whichever key happens to be exported.
 
 ---

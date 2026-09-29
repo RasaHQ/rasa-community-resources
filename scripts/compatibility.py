@@ -11,7 +11,7 @@ import json
 import os
 import subprocess
 import sys
-from rasa_projects import REPO_ROOT, discover_projects, read_expected_version
+from rasa_projects import REPO_ROOT, discover_projects, read_expected_version, read_training_secrets
 from check_project import _load_dotenv
 
 
@@ -26,9 +26,13 @@ def main():
     parser.add_argument('--train', action='store_true')
     parser.add_argument('--out', type=Path, default=Path('COMPATIBILITY.json'))
     parser.add_argument('--logs', type=Path, default=Path('/tmp/rasa-catalog-compatibility'))
+    parser.add_argument('--local-embeddings', metavar='PROVIDER/MODEL', help='Validate training with this local embedder for references indexes (see check_project.py)')
+    parser.add_argument('--placeholder-secret', action='append', default=[], metavar='NAME', help='Set NAME to an obviously fake value when unset. For provider keys that training must see defined but never calls; recorded in the report')
     args = parser.parse_args()
     args.logs.mkdir(parents=True, exist_ok=True)
     _load_dotenv(REPO_ROOT)
+    placeholders = [n for n in args.placeholder_secret if not os.environ.get(n, '').strip()]
+    for name in placeholders: os.environ[name] = 'placeholder-not-a-real-key'
     os.environ['RASA_TELEMETRY_ENABLED'] = 'false'
     secrets = [v for k,v in os.environ.items() if any(s in k.upper() for s in ('KEY','TOKEN','LICENSE','SECRET','PASSWORD')) and len(v)>8]
     def run(label, command, cwd=REPO_ROOT):
@@ -45,9 +49,10 @@ def main():
         rel=project.path.relative_to(REPO_ROOT).as_posix()
         command=[sys.executable,'scripts/check_project.py',rel]
         if args.train: command += ['--train','--require-license','--require-secrets']
+        if args.train and args.local_embeddings: command += ['--local-embeddings', args.local_embeddings]
         run(rel, command)
         checks=['locked-install','installed-version','mantle-import','project-validation']
-        if args.train: checks.append('licensed-training')
+        if args.train: checks.append(f'licensed-training (references embedded with {args.local_embeddings})' if args.local_embeddings and (project.path/'agent.yml').is_file() and ((project.path/'references').is_dir() or 'references:' in (project.path/'agent.yml').read_text()) else 'licensed-training')
         if (project.path/'tests').is_dir():
             run(rel+'-tests',['uv','run','--locked','python','-m','unittest','discover','-s','tests','-v'],project.path)
             checks.append('project-unittests')
@@ -57,7 +62,10 @@ def main():
         if rel=='tutorials/rasa-ai-team-casebook':
             run(rel+'-sdk',['uv','run','--locked','python',str(REPO_ROOT/'scripts/check_casebook_sdk.py')],project.path)
             checks += ['62-scenario-oracles','186-mutations-killed','62-sdk-tool-dispatches']
-        projects.append({'path':rel,'sourceHash':fingerprint(REPO_ROOT,rel+'/'),'checks':checks,'liveConversations':'not tested'})
+        entry={'path':rel,'sourceHash':fingerprint(REPO_ROOT,rel+'/'),'checks':checks,'liveConversations':'not tested'}
+        used=[n for n in placeholders if n in read_training_secrets(project)]
+        if args.train and used: entry['placeholderSecrets']=used
+        projects.append(entry)
     run('starter-pack',['uv','run','--project','tutorials/rasa-ai-team-casebook','python','scripts/check_starter_pack.py'])
     report={'schema':1,'testedAt':datetime.now(timezone.utc).isoformat(),'version':read_expected_version(),'sourceHash':fingerprint(REPO_ROOT),'projects':projects,'starterPack':['scaffold-sdk-validation','lint-negative-controls'],'liveConversations':'not tested; separate website quickstart live acceptance covers four synthetic text cases only'}
     args.out.write_text(json.dumps(report,indent=2)+'\n')

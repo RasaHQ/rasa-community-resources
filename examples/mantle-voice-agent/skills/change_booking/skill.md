@@ -3,7 +3,7 @@ name: change_booking
 description: >
   Change or cancel an existing Horizon Travel booking.
   Activate for date changes, cancellations, or "I need to change my trip".
-requires: session.project.authenticated
+precondition: authenticated
 tool_constraints:
   - cancel_booking:
       requires: session.project.selected_booking_ref

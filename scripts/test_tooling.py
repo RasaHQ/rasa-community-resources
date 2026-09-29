@@ -578,12 +578,14 @@ class TestWorkflowPins(unittest.TestCase):
 
 
 class TestApiKeyEnv(unittest.TestCase):
-    """`api_key: ${VAR}` never expanded; the gate has to be able to say so.
+    """Model-group credentials: `api_key: ${VAR}` only; `api_key_env` rejected.
 
-    The catalog shipped 67 of these across 46 files and every check stayed
-    green, because `make validate` is offline and never builds a provider
-    client. These tests exist so the check is known to FAIL on the broken form,
-    not merely known to pass on the fixed one.
+    rasa-pro 3.21.0.dev2 removed `api_key_env` and requires every sensitive
+    value to be exactly `${ENV_VAR_NAME}` (rasa/shared/providers/
+    model_group_validation.py). The 3.21.0.dev3 release run failed
+    validate_project 22 times on the removed key while `make validate` stayed
+    green. These tests exist so the check is known to FAIL on each rejected
+    form, not merely known to pass on the accepted one.
     """
 
     def _findings(self, body: str, name: str = "integrations.yml"):
@@ -592,50 +594,73 @@ class TestApiKeyEnv(unittest.TestCase):
         ), mock.patch.object(lint_repo, "_read", return_value=body):
             return lint_repo.check_api_key_env()
 
-    def test_braced_placeholder_is_rejected(self):
-        found = self._findings("        api_key: ${OPENAI_API_KEY}\n")
+    def test_api_key_env_is_rejected(self):
+        found = self._findings("        api_key_env: OPENAI_API_KEY\n")
         self.assertEqual(len(found), 1)
-        self.assertIn("never expands", found[0].message)
+        self.assertIn("removed in rasa-pro 3.21.0.dev2", found[0].message)
+        self.assertIn("api_key: ${VAR}", found[0].message)
 
-    def test_every_placeholder_spelling_is_rejected(self):
-        for value in (
-            "${OPENAI_API_KEY}",
-            "$OPENAI_API_KEY",
-            '"$OPENAI_API_KEY"',
-            "'${OPENAI_API_KEY}'",
-            "${OPENAI_API_KEY:-none}",
-        ):
+    def test_api_key_env_as_list_item_is_rejected(self):
+        self.assertEqual(
+            len(self._findings("      - api_key_env: OPENAI_API_KEY\n")), 1
+        )
+
+    def test_braced_placeholder_is_accepted(self):
+        for value in ("${OPENAI_API_KEY}", '"${OPENAI_API_KEY}"', "'${GEMINI_API_KEY}'"):
             self.assertEqual(
-                len(self._findings(f"        api_key: {value}\n")), 1, value
+                self._findings(f"        api_key: {value}\n"), [], value
             )
 
-    def test_api_key_env_is_accepted(self):
-        self.assertEqual(self._findings("        api_key_env: OPENAI_API_KEY\n"), [])
+    def test_placeholder_with_trailing_comment_is_accepted(self):
+        self.assertEqual(
+            self._findings("        api_key: ${OPENAI_API_KEY}  # from .env\n"), []
+        )
+
+    def test_every_other_value_is_rejected(self):
+        # The engine's pattern is fullmatch `\${(\w+)}`; anything else fails.
+        for value in (
+            "$OPENAI_API_KEY",
+            '"$OPENAI_API_KEY"',
+            "${OPENAI_API_KEY:-none}",
+            "OPENAI_API_KEY",
+            "sk-not-a-real-key",
+            "",
+        ):
+            found = self._findings(f"        api_key: {value}\n")
+            self.assertEqual(len(found), 1, repr(value))
+            self.assertIn("must be exactly '${VAR}'", found[0].message)
 
     def test_non_sensitive_placeholder_is_left_alone(self):
-        # `model:` is not on SENSITIVE_DATA, so ${VAR} there really does expand.
         self.assertEqual(self._findings("        model: ${OPENAI_MODEL}\n"), [])
 
     def test_commented_out_line_is_left_alone(self):
-        self.assertEqual(self._findings("      # api_key: ${OPENAI_API_KEY}\n"), [])
+        self.assertEqual(self._findings("      # api_key_env: OPENAI_API_KEY\n"), [])
 
-    def test_prose_quoting_the_broken_form_is_left_alone(self):
-        # Documentation must be able to name the defect in order to teach
-        # against it; only a real mapping entry is a finding.
-        body = "Never write `api_key: ${VAR}` — it does not expand.\n"
+    def test_prose_quoting_the_removed_form_is_left_alone(self):
+        # Documentation must be able to name the removed key in order to
+        # explain the migration; only a real mapping entry is a finding.
+        body = "Replace `api_key_env: OPENAI_API_KEY` with `api_key: ${OPENAI_API_KEY}`.\n"
+        self.assertEqual(self._findings(body, "MIGRATING.md"), [])
+
+    def test_ignore_marker_is_honoured(self):
+        body = "        api_key_env: OPENAI_API_KEY  # api-key-env-ignore\n"
         self.assertEqual(self._findings(body, "MIGRATING.md"), [])
 
     def test_credential_inside_voice_block_is_rejected(self):
         # ASR configs are extra="forbid" and TTS warns-and-ignores; either way
         # the engine reads DEEPGRAM_API_KEY from the environment, not config.
-        for key in ("api_key_env: DEEPGRAM_API_KEY", "api_key: DEEPGRAM_API_KEY"):
+        for key in (
+            "api_key_env: DEEPGRAM_API_KEY",
+            "api_key: DEEPGRAM_API_KEY",
+            "api_key: ${DEEPGRAM_API_KEY}",
+        ):
             body = f"asr:\n  deepgram:\n    {key}\n"
             found = self._findings(body)
             self.assertEqual(len(found), 1, key)
             self.assertIn("not read by the engine", found[0].message)
 
     def test_voice_block_ends_at_dedent(self):
-        # A model-group `api_key_env` after a tts: block is correct, not a
+        # A model-group `api_key` after a tts: block is correct, not a
         # voice-block finding — the block must not swallow the rest of the file.
         body = (
             "channels:\n"
@@ -644,12 +669,70 @@ class TestApiKeyEnv(unittest.TestCase):
             "      name: deepgram\n"
             "model_groups:\n"
             "  - models:\n"
-            "      - api_key_env: OPENAI_API_KEY\n"
+            "      - api_key: ${OPENAI_API_KEY}\n"
         )
         self.assertEqual(self._findings(body), [])
 
     def test_catalog_is_clean(self):
         self.assertEqual([f.location() for f in lint_repo.check_api_key_env()], [])
+
+
+class TestStarterPackApiKeyEnv(unittest.TestCase):
+    """starter-pack/scripts/lint_mantle.py enforces the same credential rule.
+
+    The starter pack ships this lint into other people's projects as a
+    pre-commit hook, so it has to agree with the catalog gate and the engine.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+
+        path = _SCRIPTS.parent / "starter-pack" / "scripts" / "lint_mantle.py"
+        spec = importlib.util.spec_from_file_location("lint_mantle", path)
+        cls.lint = importlib.util.module_from_spec(spec)
+        # dataclasses resolves the defining module through sys.modules.
+        sys.modules[spec.name] = cls.lint
+        spec.loader.exec_module(cls.lint)
+
+    def _findings(self, body: str):
+        with mock.patch.object(
+            self.lint, "_files", return_value=[Path("integrations.yml")]
+        ), mock.patch.object(self.lint, "_read", return_value=body):
+            return self.lint.check_api_key_env()
+
+    def test_api_key_env_is_rejected(self):
+        found = self._findings("        api_key_env: OPENAI_API_KEY\n")
+        self.assertEqual(len(found), 1)
+        self.assertIn("removed in rasa-pro 3.21.0.dev2", found[0].message)
+
+    def test_braced_placeholder_is_accepted(self):
+        self.assertEqual(self._findings("        api_key: ${OPENAI_API_KEY}\n"), [])
+
+    def test_other_values_are_rejected(self):
+        for value in ("$OPENAI_API_KEY", "${OPENAI_API_KEY:-x}", "OPENAI_API_KEY", ""):
+            self.assertEqual(
+                len(self._findings(f"        api_key: {value}\n")), 1, repr(value)
+            )
+
+    def test_commented_line_is_left_alone(self):
+        self.assertEqual(self._findings("  # api_key_env: OPENAI_API_KEY\n"), [])
+
+    def test_env_example_discovers_the_placeholder_name(self):
+        # .env.example discovery must see the variable named inside ${...}.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".env.example").write_text("RASA_LICENSE=\n")
+            (root / "integrations.yml").write_text(
+                "model_groups:\n  - id: o\n    models:\n"
+                "      - api_key: ${GEMINI_API_KEY}\n"
+            )
+            with mock.patch.object(self.lint, "ROOT", root), mock.patch.object(
+                self.lint, "_files", return_value=[root / "integrations.yml"]
+            ):
+                found = self.lint.check_env_example()
+        self.assertEqual(len(found), 1)
+        self.assertIn("GEMINI_API_KEY", found[0].message)
 
 
 class TestCliExitCodes(unittest.TestCase):
