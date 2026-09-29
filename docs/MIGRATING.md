@@ -237,9 +237,10 @@ with 'api_key: ${ENV_VAR_NAME}'.
 validate_project, training and client construction. It rejects `api_key_env`
 and requires every sensitive value in a model group (`api_key`, the AWS keys,
 `client_id`, `client_secret` and the rest of `SENSITIVE_DATA` in
-`rasa/shared/constants.py`) to be exactly `${ENV_VAR_NAME}`. The provider
-client expands that reference from the environment when it is built. Keep the
-variable name; only the key changes:
+`rasa/shared/constants.py`) to be exactly `${ENV_VAR_NAME}`. The litellm
+provider client expands that reference from the environment at each completion
+call, not when the client is built. Keep the variable name; only the key
+changes:
 
 ```yaml
 model_groups:
@@ -327,8 +328,11 @@ model_groups:
 ```
 
 Enforced from here on by the `llm-model-group` lint check. (The credential line
-shows the 3.21.0.dev2 form. On 3.20 it had to be `api_key_env: OPENAI_API_KEY`;
-see the 3.21.0.dev2 entry above.)
+shows the 3.21.0.dev2 form. On 3.20, `integrations.yml` accepted either
+`api_key_env: OPENAI_API_KEY` or `api_key: ${OPENAI_API_KEY}`. In `endpoints.yml`
+only `api_key: ${OPENAI_API_KEY}` works on 3.20: an `api_key_env` there is passed
+to the provider as a request parameter, which OpenAI rejects. See the 3.21.0.dev2
+entry above.)
 
 ASR/TTS blocks take **no** credential key at all — the voice engines read a
 fixed environment variable (`DEEPGRAM_API_KEY`, `RIME_API_KEY`, …) directly.
