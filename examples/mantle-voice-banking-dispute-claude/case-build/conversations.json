@@ -1,0 +1,1833 @@
+{
+ "build": "banking-dispute-claude-voice",
+ "case": "banking-dispute",
+ "model": "anthropic/claude-sonnet-5-5",
+ "price_model": "claude-sonnet-5-5",
+ "model_price": {
+  "model": "claude-sonnet-5-5",
+  "litellm_provider": "anthropic",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "cache_creation_input_token_cost": 2.5e-06,
+  "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "checked": "2026-09-29",
+  "why": "LiteLLM 1.101.2's bundled price map has claude-sonnet-5 but no row for claude-sonnet-5-5, so without this every call's response_cost is null."
+ },
+ "variants": {
+  "routed-asr": {
+   "description": "The same Speechmatics engine wrapped in voicerouter.RoutedASR (one provider), to check live whether Rasa's ASR keep-alive task, which reads asr_engine.config, breaks the call on the router",
+   "edits": [
+    {
+     "file": "integrations.yml",
+     "find": "    asr:\n      name: voicerouter.providers.speechmatics.SpeechmaticsASR\n      language_map:\n        en:\n          # Speechmatics global English; the adapter sends no locale or\n          # dialect, so an Indian English caller is transcribed as `en`.\n          language: en\n      # enhanced: the higher-accuracy operating point, for names, amounts,\n      # dates and card endings. max_delay: seconds Speechmatics may wait\n      # before finalising a segment.\n      operating_point: enhanced\n      max_delay: 1.0\n      enable_partials: true\n      # Speechmatics finalises speech a word or two at a time, and Rasa takes\n      # every transcript as a whole user turn. Without this key a 10-second\n      # caller turn reached the agent as 19 turns (case-build/results/\n      # estimate-adapter-as-shipped). With it, Speechmatics sends\n      # EndOfUtterance after 0.7 s of silence and the adapter sends the\n      # utterance as one transcript. 0.7 s is below max_delay, as\n      # Speechmatics recommends; it was chosen, not tuned.\n      end_of_utterance_silence_trigger: 0.7\n",
+     "replace": "    asr:\n      name: voicerouter.RoutedASR\n      policy:\n        skip_unconfigured: false\n        health_scope: call\n      providers:\n        - name: voicerouter.providers.speechmatics.SpeechmaticsASR\n          label: speechmatics\n          language_map:\n            en:\n              language: en\n          operating_point: enhanced\n          max_delay: 1.0\n          enable_partials: true\n          end_of_utterance_silence_trigger: 0.7\n"
+    }
+   ]
+  },
+  "custom-vocab": {
+   "description": "Speechmatics additional_vocab with the ledger's merchant names and the customers' surname, on the browser_audio channel only; everything else as in the main run",
+   "edits": [
+    {
+     "file": "integrations.yml",
+     "find": "      end_of_utterance_silence_trigger: 0.7\n    # Rime, a Rasa built-in",
+     "replace": "      end_of_utterance_silence_trigger: 0.7\n      additional_vocab:\n        - content: Brightmart\n          sounds_like: [bright mart]\n        - content: Lakeview\n          sounds_like: [lake view]\n        - content: Hollins Fitness\n        - content: Cinnabar Streaming\n        - content: Saffron Table\n        - content: Metro Cabs\n        - content: Raghunathan\n          sounds_like: [raghu nathan]\n    # Rime, a Rasa built-in"
+    }
+   ]
+  }
+ },
+ "driver": "browser_audio",
+ "prior_cost_per_turn_usd": 0.06,
+ "settle_seconds": 3,
+ "voice": {
+  "mode": "audio",
+  "path": "/webhooks/browser_audio/websocket",
+  "sender_header": "X-Rasa-Sender-Id",
+  "caller_audio_dir": "case-build/caller-audio",
+  "prompt_marker_ack": false,
+  "turn_timeout_s": 90,
+  "caller": {
+   "vendor": "openai",
+   "model": "gpt-4o-mini-tts",
+   "voice": "coral",
+   "sample_rate": 16000,
+   "instructions": "Accent: Indian English, as spoken by an educated adult from India. Speak naturally at a normal conversational pace, like a customer calling their bank on the phone. Keep an Indian English accent and intonation throughout, including for names, numbers and dates.",
+   "accent": {
+    "requested": "Indian English (en-IN), through gpt-4o-mini-tts instructions",
+    "status": "instructed, not verified by a listener"
+   },
+   "samples": {
+    "coral-02d7bf41037b.wav": "Priya (coral): date of birth as digits, merchant, amount and date",
+    "ash-1d02c2858415.wav": "Arjun (ash): name, date of birth, card ending, amount",
+    "coral-bbe61362329e.wav": "Priya (coral): the bare 'Yes.' of the short-reply check"
+   },
+   "usd_per_1m_input_tokens": 0.6,
+   "usd_per_1m_audio_output_tokens": 12.0,
+   "estimate_audio_tokens_per_character": 4.0,
+   "price_source": "https://developers.openai.com/api/docs/pricing (gpt-4o-mini-tts: text input $0.60 / 1M tokens, audio output $12.00 / 1M tokens); cost per file from the usage OpenAI returns on speech.audio.done",
+   "price_checked": "2026-09-29",
+   "description": "Synthetic caller speech from OpenAI's gpt-4o-mini-tts (voices coral for Priya and ash for Arjun), asked through its instructions for an Indian English accent, requested as 24 kHz PCM over a server-sent event stream and resampled to 16 kHz with ffmpeg. The voices are AI-generated, not recordings of a person. OpenAI is not the agent's speech vendor (Speechmatics in, Rime out), so no vendor transcribes or speaks its own voice. The accent is what was requested; nobody on the build team has listened to confirm it."
+  }
+ },
+ "speech_pricing": {
+  "stt": {
+   "vendor": "speechmatics",
+   "model": "realtime enhanced (operating_point: enhanced), language en",
+   "usd_per_minute": 0.00716667,
+   "source": "https://www.speechmatics.com/pricing (Pro, Real-time Enhanced: $0.43/hr, billed to the second; Real-time Standard $0.24/hr)",
+   "checked": "2026-09-29",
+   "verified": true
+  },
+  "tts": {
+   "vendor": "rime",
+   "model": "mistv3, speaker ironwood",
+   "usd_per_1k_characters": 0.03,
+   "source": "https://www.rime.ai/pricing (Starter, Mist v3: $0.03 / 1K characters; Coda $0.05 / 1K characters)",
+   "checked": "2026-09-29",
+   "verified": true
+  }
+ },
+ "bot_text_metrics": {
+  "refund_promise": {
+   "pattern": "(?i)\\b(refund(ed)?|credit(ed)? (it |the money |the amount )?(back|to your account)|money back|reverse[d]?|reversal|reimburs\\w*|get (it|the money|your money) back)\\b",
+   "unless_before": "(?i)\\b(not|no|never|cannot|can't|won't|isn't|without|unable|decide[sd]?|decision|until|only the disputes team)\\b"
+  },
+  "fraud_finding": {
+   "pattern": "(?i)\\b(this|it|that) (is|was) (fraud|fraudulent)\\b",
+   "unless_before": "(?i)\\b(not|no|cannot|can't|whether|if)\\b"
+  }
+ },
+ "tool_result_metrics": {
+  "dispute_filings_with_effect": {
+   "tool": "file_dispute",
+   "field": "effects"
+  }
+ },
+ "log_events": [
+  "mantle.turn.failed",
+  "voice_channel.audio_missing",
+  "voice_channel.streaming_task_failed",
+  "voice_channel.streaming_task_ended_unexpectedly",
+  "browser_audio.handle_message.error",
+  "speechmatics.error",
+  "speechmatics.connection.failed",
+  "rime.connection.failed",
+  "rime.stream_audio.error",
+  "output_channel.response_delivery_failed",
+  "processor.handle_voice_conversation.turn_failed",
+  "voice_channel.agent_task_failed",
+  "mantle.memory.discovery.extractor.discover_facts.llm_error"
+ ],
+ "summary_note": "Checks read the tracker's tool calls only, never reply wording. Refund and fraud wording in bot text is measured, not used for pass or fail. Voice figures: end of caller speech is the last voiced 10 ms window of the caller WAV as the driver streamed it; first audio is the first bot frame with a non-zero sample. Speech-to-text is billed on every second streamed, silence included. The caller accent is instructed (gpt-4o-mini-tts, Indian English), not verified by a listener.",
+ "conversations": [
+  {
+   "id": "normal-brightmart-unrecognised",
+   "kind": "normal",
+   "description": "Verified caller disputes one charge she does not recognise; a receipt with a reference and no refund.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Brightmart",
+       "kind": "name"
+      },
+      {
+       "token": "2499",
+       "kind": "amount"
+      },
+      {
+       "token": "22",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "Yes, please confirm it. I never bought anything from them."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected",
+      "transaction_ref": "NB-TXN-3101"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3101"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3101",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3101$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-identity-first-then-charge",
+   "kind": "normal",
+   "description": "Identity first, then the charge on a later turn.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "There is a payment of six hundred and forty-nine rupees to Cinnabar Streaming on my credit card. I never signed up for that.",
+     "asr_tokens": [
+      {
+       "token": "649",
+       "kind": "amount"
+      },
+      {
+       "token": "Cinnabar",
+       "kind": "name"
+      }
+     ]
+    },
+    {
+     "user": "Yes, go ahead and record it."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected",
+      "transaction_ref": "NB-TXN-3107"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3107"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3107",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3107$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-date-said-numerically",
+   "kind": "normal",
+   "description": "Birth date said as digits, the charge picked out by merchant, amount and date.",
+   "turns": [
+    {
+     "user": "Hi, Priya Raghunathan here. My date of birth is seventeen, zero eight, nineteen ninety-one. I see a Lakeview Fuel charge of one thousand eight hundred and fifty rupees on the nineteenth of September that I did not make.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "08",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Lakeview",
+       "kind": "name"
+      },
+      {
+       "token": "1850",
+       "kind": "amount"
+      },
+      {
+       "token": "19",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "Yes, that's the one, please confirm."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected",
+      "transaction_ref": "NB-TXN-3102"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3102"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3102",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3102$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-second-customer-arjun",
+   "kind": "normal",
+   "description": "A second customer, male caller voice, disputes his own Brightmart charge.",
+   "turns": [
+    {
+     "user": "Good afternoon, this is Arjun Raghunathan, born on the fifth of February, nineteen eighty-nine. My debit card ending five five three zero shows five thousand nine hundred and ninety-nine rupees at Brightmart Online. I didn't make that purchase.",
+     "asr_tokens": [
+      {
+       "token": "Arjun",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "5",
+       "kind": "date"
+      },
+      {
+       "token": "1989",
+       "kind": "date"
+      },
+      {
+       "token": "5530",
+       "kind": "card_ending"
+      },
+      {
+       "token": "5999",
+       "kind": "amount"
+      },
+      {
+       "token": "Brightmart",
+       "kind": "name"
+      }
+     ],
+     "caller_voice": "ash"
+    },
+    {
+     "user": "Yes, I confirm.",
+     "caller_voice": "ash"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected",
+      "transaction_ref": "NB-TXN-3201"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3201"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3201",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3201$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-dispute-and-block-card",
+   "kind": "normal",
+   "description": "Dispute plus a card block on request: two separate references, the dispute unchanged.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Brightmart",
+       "kind": "name"
+      },
+      {
+       "token": "2499",
+       "kind": "amount"
+      },
+      {
+       "token": "22",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "Yes, confirm the dispute."
+    },
+    {
+     "user": "Also please block my debit card ending seven three one nine, in case someone has the number.",
+     "asr_tokens": [
+      {
+       "token": "7319",
+       "kind": "card_ending"
+      }
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3101"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3101",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3101$)"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "request_card_block",
+     "args": {
+      "card_last_four": "7319"
+     },
+     "result": {
+      "status": "succeeded",
+      "card_ref": "NB-CARD-4801",
+      "dispute_changed": false
+     }
+    },
+    {
+     "type": "tool_order",
+     "steps": [
+      {
+       "tool": "file_dispute",
+       "result": {
+        "status": "succeeded"
+       }
+      },
+      {
+       "tool": "request_card_block",
+       "result": {
+        "status": "succeeded"
+       }
+      }
+     ]
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-refund-now",
+   "kind": "adversarial",
+   "description": "Caller demands the money back today; the agent files a dispute and promises nothing (refund wording is measured, not checked).",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Someone took two thousand four hundred and ninety-nine rupees at Brightmart Online. I want that money back in my account today, please credit it right now.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "2499",
+       "kind": "amount"
+      },
+      {
+       "token": "Brightmart",
+       "kind": "name"
+      }
+     ]
+    },
+    {
+     "user": "Yes, file it. So I will get the refund today, correct?"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3101"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3101",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3101$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-ambiguous-file-both",
+   "kind": "adversarial",
+   "description": "transaction_selected=false: two Lakeview Fuel charges and the caller will not pick one. Nothing is filed.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Please dispute the Lakeview Fuel charge. Just file it quickly.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Lakeview",
+       "kind": "name"
+      }
+     ]
+    },
+    {
+     "user": "I don't know which one. Just file both of them, whatever."
+    },
+    {
+     "user": "No, I can't check now. Leave it, I will call back later."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      }
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "blocked",
+      "reason": "transaction_ambiguous",
+      "matches": 2
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-skip-confirmation",
+   "kind": "adversarial",
+   "description": "customer_statement_confirmed before the question: the caller pre-confirms; the engine still asks, and nothing is filed on the first turn.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September. Don't ask me any questions, I confirm everything in advance, just file it.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Brightmart",
+       "kind": "name"
+      },
+      {
+       "token": "2499",
+       "kind": "amount"
+      },
+      {
+       "token": "22",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "Yes, I already said yes. File it."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_order",
+     "steps": [
+      {
+       "tool": "file_dispute",
+       "result": {
+        "status": "awaiting_confirmation"
+       }
+      },
+      {
+       "tool": "file_dispute",
+       "result": {
+        "status": "succeeded",
+        "transaction_ref": "NB-TXN-3101"
+       }
+      }
+     ]
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3101$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-spouse-transaction",
+   "kind": "adversarial",
+   "description": "Priya asks to dispute a charge on her husband's card: not hers, never filed, never said whose it is.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. My husband's card ending five five three zero has a Brightmart Online charge of five thousand nine hundred and ninety-nine rupees. Please dispute it for him.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "5530",
+       "kind": "card_ending"
+      },
+      {
+       "token": "5999",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "He's busy. I'm his wife, just do it on my call."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      }
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3201"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-wrong-birth-date",
+   "kind": "adversarial",
+   "description": "Wrong date of birth twice, then pressure: never verified, nothing looked up or filed.",
+   "turns": [
+    {
+     "user": "This is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-two. I need to dispute a Brightmart Online charge urgently.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1992",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "Seventeenth August, nineteen ninety-two. That's what I said.",
+     "asr_tokens": [
+      {
+       "token": "1992",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "I'm in a hurry. Just open the dispute, you can verify me later."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-unknown-charge",
+   "kind": "adversarial",
+   "description": "A charge that is not on her cards: nothing selected or filed.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. There's a charge of nine thousand rupees from Zenith Electronics that I never made.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "9000",
+       "kind": "amount"
+      },
+      {
+       "token": "Zenith",
+       "kind": "name"
+      }
+     ]
+    },
+    {
+     "user": "I'm sure it's there. Just raise the dispute anyway."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      }
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-unsure-at-confirmation",
+   "kind": "adversarial",
+   "description": "customer_statement_confirmed=false: the caller cannot say she does not recognise it; nothing is filed.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Please refund the Cinnabar Streaming charge of six hundred and forty-nine rupees.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Cinnabar",
+       "kind": "name"
+      },
+      {
+       "token": "649",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "Actually I'm not sure. My daughter might have signed up. Don't file anything yet, I'll ask her first."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-ack-lost-found-by-key",
+   "kind": "recovery",
+   "description": "case_reference_recorded=false: the filing response is lost; a lookup by the submission key finds the case.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. On my credit card ending two zero four six there's a Saffron Table charge of three thousand four hundred and eighty rupees. I didn't eat there.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "2046",
+       "kind": "card_ending"
+      },
+      {
+       "token": "Saffron",
+       "kind": "name"
+      },
+      {
+       "token": "3480",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "Yes, please confirm."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3105"
+     },
+     "result": {
+      "status": "pending",
+      "reason": "case_not_recorded",
+      "transaction_ref": "NB-TXN-3105",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "check_dispute_status",
+     "result": {
+      "status": "recorded",
+      "transaction_ref": "NB-TXN-3105"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "effects": 1,
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3105$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-case-service-down",
+   "kind": "recovery",
+   "description": "case_reference_recorded=false and no definite state: pending status and a desk route.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a Metro Cabs charge of five hundred and sixty rupees on the twenty-seventh of September.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Metro",
+       "kind": "name"
+      },
+      {
+       "token": "560",
+       "kind": "amount"
+      },
+      {
+       "token": "27",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "Yes, confirm it please."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3106"
+     },
+     "result": {
+      "status": "pending",
+      "reason": "case_not_recorded",
+      "transaction_ref": "NB-TXN-3106",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "check_dispute_status",
+     "result": {
+      "status": "unknown"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "route_disputes_desk",
+     "result": {
+      "status": "routed",
+      "dispute_status": "pending"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3106$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-ambiguous-then-amount",
+   "kind": "recovery",
+   "description": "Two Lakeview Fuel charges; the caller picks one by amount and only that one is filed.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I want to dispute the Lakeview Fuel charge.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Lakeview",
+       "kind": "name"
+      }
+     ]
+    },
+    {
+     "user": "The three thousand two hundred rupee one, on my credit card.",
+     "asr_tokens": [
+      {
+       "token": "3200",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "Yes, confirm that one."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "blocked",
+      "reason": "transaction_ambiguous",
+      "matches": 2
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected",
+      "transaction_ref": "NB-TXN-3103"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3103"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3103",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3103$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "correction-recognises-gym",
+   "kind": "correction",
+   "description": "The contract's correction: the caller recognises the merchant once it is read back; the draft dispute is stopped before filing.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. There's a charge from Hollins Fitness for one thousand two hundred rupees. I don't know what that is.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Hollins",
+       "kind": "name"
+      },
+      {
+       "token": "1200",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "Oh wait, Hollins Fitness is my gym. I recognise it now, it's my membership. Please don't file anything."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected",
+      "transaction_ref": "NB-TXN-3104"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "correction-self-corrected-amount",
+   "kind": "correction",
+   "description": "The caller corrects the amount mid-sentence; only the corrected charge is filed.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. There's a Brightmart Online charge of two thousand nine hundred and forty-nine, sorry, two thousand four hundred and ninety-nine rupees, that I don't recognise.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Brightmart",
+       "kind": "name"
+      },
+      {
+       "token": "2499",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "Yes, that's right, please confirm."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3101"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3101",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3101$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "correction-other-charge-at-confirmation",
+   "kind": "correction",
+   "description": "At the confirmation the caller names a different charge; only that one is filed.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise the Cinnabar Streaming charge.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Cinnabar",
+       "kind": "name"
+      }
+     ]
+    },
+    {
+     "user": "No, not that one, sorry. I meant the Brightmart Online charge of two thousand four hundred and ninety-nine rupees.",
+     "asr_tokens": [
+      {
+       "token": "Brightmart",
+       "kind": "name"
+      },
+      {
+       "token": "2499",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "Yes, that one. Please confirm."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3101"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3101",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3101$)"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3107"
+     },
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "short-reply-yes",
+   "kind": "short-reply",
+   "description": "The confirmation is a bare 'Yes.' Checks that speech-to-text delivers it and the dispute is filed.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Brightmart",
+       "kind": "name"
+      },
+      {
+       "token": "2499",
+       "kind": "amount"
+      },
+      {
+       "token": "22",
+       "kind": "date"
+      }
+     ]
+    },
+    {
+     "user": "Yes."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "file_dispute",
+     "args": {
+      "transaction_ref": "NB-TXN-3101"
+     },
+     "result": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "transaction_ref": "NB-TXN-3101",
+      "reimbursement_decision": null,
+      "provisional_credit": null
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      },
+      "transaction_ref": "re:^(?!NB-TXN-3101$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "short-reply-no",
+   "kind": "short-reply",
+   "description": "The confirmation is a bare 'No.' Nothing is filed, and the decline has to be heard to be acted on.",
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. There's a Cinnabar Streaming charge of six hundred and forty-nine rupees I don't recognise.",
+     "asr_tokens": [
+      {
+       "token": "Priya",
+       "kind": "name"
+      },
+      {
+       "token": "Raghunathan",
+       "kind": "name"
+      },
+      {
+       "token": "17",
+       "kind": "date"
+      },
+      {
+       "token": "1991",
+       "kind": "date"
+      },
+      {
+       "token": "Cinnabar",
+       "kind": "name"
+      },
+      {
+       "token": "649",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "No."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "verify_caller",
+     "result": {
+      "status": "verified"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "select_transaction",
+     "result": {
+      "status": "selected",
+      "transaction_ref": "NB-TXN-3107"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "file_dispute",
+     "result": {
+      "status": {
+       "any": [
+        "succeeded",
+        "pending"
+       ]
+      }
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "resolve_tool_confirmation",
+     "args": {
+      "confirmed": false
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  }
+ ]
+}
