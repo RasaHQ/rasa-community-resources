@@ -1,0 +1,607 @@
+{
+ "schema": 1,
+ "build": "banking-block-card-gpt-voice",
+ "case": "banking-block-card",
+ "project": "examples/mantle-voice-banking-block-card-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-29T22:01:55.352530+00:00",
+ "finished_at": "2026-09-29T22:03:04.578809+00:00",
+ "model_file": "20260929-230157-augmenting-satchel.tar.gz",
+ "train_seconds": 2.8,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 1954.4,
+   "p95": 3009.6,
+   "max": 3009.6,
+   "mean": 2134.4
+  },
+  "llm_calls": 11,
+  "llm_calls_per_turn": 3.67,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "prompt_tokens": 24818,
+  "completion_tokens": 418,
+  "reasoning_tokens": 0,
+  "cached_prompt_tokens": 3328,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 3,
+  "bot_text_metrics": {},
+  "tool_result_metrics": {
+   "unselected_cards_changed": {
+    "attempts": 1,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "browser_audio.handle_message.error": 0
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 3,
+   "audio_turns": 3,
+   "eos_to_first_audible_ms": {
+    "n": 3,
+    "p50": 1954.4,
+    "p95": 3009.6,
+    "max": 3009.6
+   },
+   "eos_to_first_audio_ms": {
+    "n": 3,
+    "p50": 1954.4,
+    "p95": 2827.6,
+    "max": 2827.6
+   },
+   "eos_to_first_marker_ms": {
+    "n": 3,
+    "p50": 1378.5,
+    "p95": 2390.3,
+    "max": 2390.3
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 3,
+     "p50": 701.1,
+     "p95": 857.0,
+     "max": 857.0
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 3,
+     "p50": 437.3,
+     "p95": 575.9,
+     "max": 575.9
+    },
+    "tts_complete_latency_ms": {
+     "n": 3,
+     "p50": 1400.8,
+     "p95": 1486.0,
+     "max": 1486.0
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 3,
+    "user_perceived_latency_ms": {
+     "n": 3,
+     "p50": 1276.9,
+     "p95": 1294.3,
+     "max": 1294.3
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 3,
+     "p50": 671.3,
+     "p95": 827.6,
+     "max": 827.6
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 3,
+     "p50": 1094.6,
+     "p95": 1099.5,
+     "max": 1099.5
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 3,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 3,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": 0.0,
+    "wer_p50": 0.0,
+    "tokens": {
+     "digits": {
+      "checked": 3,
+      "exact": 0,
+      "normalised": 3
+     },
+     "card_ending": {
+      "checked": 1,
+      "exact": 0,
+      "normalised": 1
+     }
+    }
+   },
+   "stt_audio_seconds": 60.1,
+   "tts_characters": 568,
+   "stt_usd": 0.006507,
+   "tts_usd": 0.01704,
+   "speech_cost_usd": 0.023547,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.145201,
+  "llm_cost_usd": 0.121654,
+  "speech_cost_usd": 0.023547,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 4.009976,
+  "budget_usd": 4.45
+ },
+ "conversations": [
+  {
+   "id": "recovery-verification-retry",
+   "kind": "recovery",
+   "description": "Wrong date first, corrected on the retry, then the block goes through.",
+   "conversation_id": "banking-block-card-gpt-voice-recovery-verification-retry-20260929T220155",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "This is Nadia Okafor, born March fifteenth, nineteen eighty-six. Block the card ending four four one seven.",
+     "latency_ms": 3009.6,
+     "bot": [
+      "Okay, I\u2019ll start securing that card now.",
+      "The details did not match our records. Please repeat your full name and date of birth."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 6.37,
+      "speech_off_epoch": 1790719335.091013,
+      "eos_to_first_marker_ms": 2390.3,
+      "eos_to_first_audio_ms": 2827.6,
+      "eos_to_first_audible_ms": 3009.6,
+      "end_markers": [
+       {
+        "at_ms": 3791.1,
+        "rasa_processing_latency_ms": 857.0289611816406,
+        "tts_first_byte_latency_ms": 437.2680187225342,
+        "tts_complete_latency_ms": 1400.7840156555176
+       },
+       {
+        "at_ms": 6908.3,
+        "rasa_processing_latency_ms": 857.0289611816406,
+        "tts_first_byte_latency_ms": 198.20809364318848,
+        "tts_complete_latency_ms": 2554.2421340942383
+       }
+      ],
+      "bot_audio_s": 8.88,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "This is Nadia Okafor. Born March fifteenth nineteen eighty six, block the card ending four four one seven."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1294.3113750079647,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 827.6076250185724,
+         "llm_total_generation_ms": 1099.4995000073686,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Sorry, my mistake. It's March fourteenth, nineteen eighty-six.",
+     "latency_ms": 1954.4,
+     "bot": [
+      "Ah, I\u2019ll check those corrected details.",
+      "Do you mean the debit card ending 4 4 1 7 on your everyday current account? Blocking that card will not replace it or change your other cards.\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.8,
+      "speech_off_epoch": 1790719350.226565,
+      "eos_to_first_marker_ms": 1378.5,
+      "eos_to_first_audio_ms": 1954.4,
+      "eos_to_first_audible_ms": 1954.4,
+      "end_markers": [
+       {
+        "at_ms": 2864.5,
+        "rasa_processing_latency_ms": 701.0800838470459,
+        "tts_first_byte_latency_ms": 575.9317874908447,
+        "tts_complete_latency_ms": 1485.9681129455566
+       },
+       {
+        "at_ms": 7599.3,
+        "rasa_processing_latency_ms": 701.0800838470459,
+        "tts_first_byte_latency_ms": 155.49278259277344,
+        "tts_complete_latency_ms": 3897.0508575439453
+       }
+      ],
+      "bot_audio_s": 11.48,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Sorry my mistake. It's March fourteenth nineteen eighty six."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1276.92112501245,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 671.3237499934621,
+         "llm_total_generation_ms": 1094.615750014782,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 1439.1,
+     "bot": [
+      "Right, I\u2019ll go ahead with that block.",
+      "That card is now blocked. Your reference is N B B L K E four one B eight one four zero, and your other cards are unchanged."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.33,
+      "speech_off_epoch": 1790719364.613352,
+      "eos_to_first_marker_ms": 1005.4,
+      "eos_to_first_audio_ms": 1439.1,
+      "eos_to_first_audible_ms": 1439.1,
+      "end_markers": [
+       {
+        "at_ms": 2253.4,
+        "rasa_processing_latency_ms": 630.1548480987549,
+        "tts_first_byte_latency_ms": 433.7499141693115,
+        "tts_complete_latency_ms": 1248.2249736785889
+       },
+       {
+        "at_ms": 7590.4,
+        "rasa_processing_latency_ms": 630.1548480987549,
+        "tts_first_byte_latency_ms": 162.06026077270508,
+        "tts_complete_latency_ms": 5335.747241973877
+       }
+      ],
+      "bot_audio_s": 15.16,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1063.8470829871949,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 593.3131669880822,
+         "llm_total_generation_ms": 866.554707987234,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "verify_caller",
+        "result": {
+         "status": "not_verified"
+        }
+       },
+       {
+        "tool": "verify_caller",
+        "result": {
+         "status": "verified"
+        }
+       },
+       {
+        "tool": "block_card",
+        "result": {
+         "status": "succeeded"
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "calls occurred in order"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "block_card",
+      "args": {
+       "card_ref": "NB-CARD-0101"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "card_ref": "NB-CARD-0101",
+       "unselected_cards_changed": 0,
+       "replacement_ordered": false
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "block_card",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "card_ref": "re:^(?!NB-CARD-0101$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Nadia Okafor",
+      "date_of_birth": "1986-03-15"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_verified",
+     "result_reason": "identity_mismatch"
+    },
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Nadia Okafor",
+      "date_of_birth": "1986-03-14"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_card",
+     "arguments": {
+      "card_last_four": "4417"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "block_card",
+     "arguments": {
+      "card_ref": "NB-CARD-0101"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "block_card",
+     "arguments": {
+      "card_ref": "NB-CARD-0101"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll start securing that card now.",
+     "Ah, I\u2019ll check those corrected details.",
+     "Right, I\u2019ll go ahead with that block."
+    ],
+    "unselected_cards_changed": {
+     "attempts": 1,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "voice_channel.audio_missing": 0,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "browser_audio.handle_message.error": 0
+   },
+   "log_event_details": {
+    "voice_channel.audio_missing": [],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "browser_audio.handle_message.error": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 10,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "prompt_tokens": 24818,
+    "completion_tokens": 418,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 3328,
+    "cost_usd": 0.121654,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1099.7,
+     1009.1,
+     787.8,
+     1795.6,
+     1094.8,
+     691.2,
+     1181.3,
+     866.4,
+     1087.5,
+     1104.1,
+     917.6
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 60.06,
+    "tts_characters": 568,
+    "call": {
+     "audio_seconds_sent": 60.06,
+     "call_seconds": 60.07,
+     "markers_acked": 62,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.04
+    },
+    "stt_usd": 0.006507,
+    "tts_usd": 0.01704,
+    "cost_usd": 0.023547,
+    "asr": [
+     {
+      "intended": "This is Nadia Okafor, born March fifteenth, nineteen eighty-six. Block the card ending four four one seven.",
+      "heard": [
+       "This is Nadia Okafor. Born March fifteenth nineteen eighty six, block the card ending four four one seven."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "15",
+        "kind": "digits",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "4417",
+        "kind": "card_ending",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Sorry, my mistake. It's March fourteenth, nineteen eighty-six.",
+      "heard": [
+       "Sorry my mistake. It's March fourteenth nineteen eighty six."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "14",
+        "kind": "digits",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1986",
+        "kind": "digits",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "Yes."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-block-card-gpt-voice-recovery-verification-retry-20260929T220155",
+    "prompt": 24818,
+    "completion": 418,
+    "total": 25236,
+    "generations": 11,
+    "fetched_at": "2026-09-29T22:03:04.314352+00:00"
+   }
+  }
+ ]
+}
