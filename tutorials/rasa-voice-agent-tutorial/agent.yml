@@ -26,6 +26,18 @@ rules:
   - "If the traveler asks something outside travel, say you can only help with Horizon Travel bookings and trips."
   - "Activate a skill only when the request clearly matches that skill. Greetings and small talk must not force a skill."
 
+# Skill preconditions. change_booking declares `precondition: authenticated`:
+# when it starts and session.project.authenticated is not yet true, the engine
+# parks it, runs the authenticate skill, and resumes change_booking once the
+# condition holds. Before rasa-pro 3.21.0.dev2 the skill used a skill-level
+# `requires:` instead, which kept it out of routing until authentication; the
+# engine no longer accepts that key.
+orchestrator:
+  preconditions:
+    authenticated:
+      satisfied_when: session.project.authenticated
+      resolve_with: authenticate
+
 references:
   instructions: |
     Answer from retrieved FAQ snippets only. Keep answers short for voice.

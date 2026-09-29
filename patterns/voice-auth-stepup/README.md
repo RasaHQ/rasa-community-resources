@@ -25,7 +25,8 @@ action is attempted, not at the top of the conversation.
 The existing auth artifact in this repository is
 `examples/mantle-voice-agent/skills/authenticate`. It is a single factor (a
 four-digit PIN), one retry, then a handoff — and downstream skills consume it as
-`requires: session.project.authenticated`, a boolean on the *caller*. That is
+`precondition: authenticated`, bound in `agent.yml` to
+`session.project.authenticated`: a boolean on the *caller*. That is
 the right shape for a demo and the wrong shape for anything that can move money.
 
 The difference this pattern adds is not "more factors". It is **where the
@@ -82,15 +83,19 @@ function. The guard is written inline in each tool rather than hidden behind a
 decorator on purpose: a decorator would be tidier and would put the check
 somewhere a reviewer skimming the diff of a *new* tool would not see it.
 
-### Why not just use `requires:` in the frontmatter?
+### Why not just gate it in the frontmatter?
 
 Rasa gives you two declarative places to say "you must be authenticated":
 
 ```yaml
-requires: session.project.authenticated          # skill frontmatter
+precondition: authenticated                      # skill frontmatter, bound in agent.yml
 tool_constraints:
   - reissue_card: { requires: session.project.verified }
 ```
+
+(Before Rasa Pro 3.21.0.dev2 the skill-level form was `requires:` in the skill
+frontmatter. The engine now rejects it and points to `precondition:`, which
+parks the skill and runs a resolver skill until the condition holds.)
 
 Both are real and this pattern uses the frontmatter layer too — it is what keeps
 the conversation coherent, so the caller gets asked for a code instead of being
