@@ -1501,6 +1501,109 @@ class TestStaleDocVersionsHonoursIgnoreMarker(unittest.TestCase):
 
 
 
+class TestCaseBuildHarness(unittest.TestCase):
+    """Offline checks for scripts/case_builds/harness.py (no server, no model)."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(_SCRIPTS / "case_builds"))
+        import harness
+
+        cls.h = harness
+
+    TRACKER = {
+        "events": [
+            {"event": "user", "text": "is my policy active?"},
+            {"event": "tool_executed", "tool_name": "activate", "arguments": {"target_id": "x"}, "result": "done"},
+            {"event": "tool_executed", "tool_name": "get_policy_status",
+             "arguments": {"policy_number": "hc-ho-1"},
+             "result": '{"status": "answered", "facts": {"subject": true}}', "is_error": False},
+            {"event": "bot", "text": "It is active.", "metadata": {"mantle_response_source": "filler"}},
+            {"event": "user", "text": "so it's covered?"},
+            {"event": "tool_executed", "tool_name": "open_question",
+             "arguments": {"policy_number": "HC-HO-1", "loss": "burst pipe"},
+             "result": '{"status": "routed", "decision": null}', "is_error": False},
+            {"event": "bot", "text": "Only the claims team can say whether it is covered. You're covered!",
+             "metadata": {"mantle_response_source": "llm"}},
+        ]
+    }
+
+    def check(self, check):
+        return self.h.evaluate_check(check, self.TRACKER)[0]
+
+    def test_tool_called_matches_args_case_insensitively_and_result_subset(self):
+        self.assertTrue(self.check({"type": "tool_called", "tool": "get_policy_status",
+                                    "args": {"policy_number": "HC-HO-1"},
+                                    "result": {"status": "answered", "facts": {"subject": True}}}))
+        self.assertFalse(self.check({"type": "tool_called", "tool": "get_policy_status",
+                                     "result": {"status": "blocked"}}))
+
+    def test_after_user_turn_and_order(self):
+        self.assertTrue(self.check({"type": "tool_called", "tool": "open_question", "after_user_turn": 1}))
+        self.assertFalse(self.check({"type": "tool_called", "tool": "get_policy_status", "after_user_turn": 1}))
+        self.assertTrue(self.check({"type": "tool_order", "steps": [{"tool": "get_policy_status"}, {"tool": "open_question"}]}))
+        self.assertFalse(self.check({"type": "tool_order", "steps": [{"tool": "open_question"}, {"tool": "get_policy_status"}]}))
+
+    def test_regex_null_any_of_and_not_called(self):
+        self.assertTrue(self.check({"type": "tool_called", "tool": "open_question",
+                                    "args": {"loss": "re:pipe|flood"}, "result": {"decision": None}}))
+        self.assertTrue(self.check({"type": "tool_not_called", "result": {"status": "blocked"}}))
+        self.assertFalse(self.check({"type": "tool_not_called", "tool": "open_question"}))
+        self.assertTrue(self.check({"type": "any_of", "checks": [
+            {"type": "tool_called", "tool": "missing"}, {"type": "no_tool_errors"}]}))
+
+    def test_engine_tools_are_separated_and_turns_counted(self):
+        calls = self.h.tool_events(self.TRACKER)
+        self.assertEqual([c["after_user_turn"] for c in calls], [0, 0, 1])
+        self.assertIn("activate", self.h.ENGINE_TOOLS)
+        self.assertNotIn("get_policy_status", self.h.ENGINE_TOOLS)
+
+    def test_text_metric_skips_hedged_sentences(self):
+        metric = {"pattern": r"\b(?:it is|you're) covered\b", "unless_before": r"\bwhether\b"}
+        text = self.TRACKER["events"][-1]["text"]
+        self.assertEqual(self.h.text_metric_hits(metric, text), ["You're covered"])
+        self.assertEqual(self.h.text_metric_hits(metric["pattern"], text), ["it is covered", "You're covered"])
+
+    def test_percentile_is_nearest_rank(self):
+        self.assertEqual(self.h.percentile([1, 2, 3, 4], 50), 2)
+        self.assertEqual(self.h.percentile(list(range(1, 21)), 95), 19)
+        self.assertIsNone(self.h.percentile([], 50))
+
+    def test_usage_attribution_and_unpriced_calls(self):
+        rows = [
+            {"kind": "pricing"},
+            {"kind": "llm_call", "ok": True, "sender_id": "a", "sender_source": "turn_context",
+             "prompt_tokens": 10, "completion_tokens": 5, "reasoning_tokens": 4, "response_cost_usd": 0.5,
+             "latency_ms": 100},
+            {"kind": "llm_call", "ok": True, "sender_id": "a", "sender_source": "structlog_context",
+             "prompt_tokens": 3, "completion_tokens": 0, "response_cost_usd": 0.25},
+            {"kind": "llm_call", "ok": True, "sender_id": "b", "prompt_tokens": 1, "completion_tokens": 1,
+             "response_cost_usd": None},
+        ]
+        a = self.h.usage_for(rows, "a")
+        self.assertEqual((a["llm_calls"], a["side_channel_calls"], a["empty_completions"]), (2, 1, 1))
+        self.assertEqual(a["cost_usd"], 0.75)
+        self.assertIsNone(self.h.usage_for(rows, "b")["cost_usd"])
+
+    def test_log_events_are_joined_on_conversation_id(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log = Path(tmp) / "server.log"
+            log.write_text(
+                'x WARNING m - {"event": "guard", "sender_id": "a", "level": "warning"}\n'
+                'x WARNING m - {"event": "guard", "conversation_id": "b"}\n'
+                "not json\n"
+            )
+            counts = self.h.log_events_for(log, "a", ["guard"])
+            self.assertEqual(len(counts["guard"]), 1)
+
+    def test_ledger_total_accumulates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.h.ledger_append(project, {"run": "1", "cost_usd": 0.1})
+            self.h.ledger_append(project, {"run": "2", "cost_usd": 0.2})
+            self.assertAlmostEqual(self.h.ledger_total(project), 0.3)
+
+
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every
     # caller reads as a pass. That is not hypothetical: an edit once removed
