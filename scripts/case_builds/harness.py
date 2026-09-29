@@ -94,7 +94,7 @@ class AgentServer:
     """`rasa train` and `rasa run --enable-api` for one project, through uv."""
 
     def __init__(self, project: Path, workdir: Path, *, price_model: Optional[str] = None,
-                 port: Optional[int] = None) -> None:
+                 port: Optional[int] = None, model_price: Optional[dict] = None) -> None:
         self.project = project
         self.workdir = workdir
         self.port = port or _free_port()
@@ -113,6 +113,9 @@ class AgentServer:
                 # Exposes GET /conversations/<id>/engine_tokens, Rasa's own
                 # per-conversation token total, used as a cross-check.
                 "RASA_FEATURE_FLAG_SIM_EVAL_EXTENDED": "true",
+                # A vendor-published price for a model LiteLLM's bundled map
+                # lacks; usage_launcher registers it only if the map has none.
+                **({"CASE_BUILD_MODEL_PRICE": json.dumps(model_price)} if model_price else {}),
             },
         )
 
@@ -520,10 +523,16 @@ def usage_for(rows: list[dict], conversation_id: str) -> dict:
         "main_loop_calls": sum(c.get("sender_source") == "turn_context" for c in calls),
         "side_channel_calls": sum(c.get("sender_source") != "turn_context" for c in calls),
         "failed_calls": sum(not c.get("ok") for c in calls),
+        # Failed calls outside the turn (fact discovery after a skill switch).
+        # Mantle logs and drops them; the caller's turn is unaffected.
+        "failed_side_channel_calls": sum(
+            not c.get("ok") and c.get("sender_source") != "turn_context" for c in calls
+        ),
         "prompt_tokens": total("prompt_tokens"),
         "completion_tokens": total("completion_tokens"),
         "reasoning_tokens": total("reasoning_tokens"),
         "cached_prompt_tokens": total("cached_prompt_tokens"),
+        "cache_creation_input_tokens": total("cache_creation_input_tokens"),
         "cost_usd": round(sum(costs), 6) if calls and priced else (0.0 if not calls else None),
         "cost_complete": priced,
         "request_thought_signatures": total("request_thought_signatures"),
@@ -611,8 +620,11 @@ def classify(error: Optional[str], checks: list[dict], usage: dict) -> str:
     A provider error is not evidence about the agent: Mantle answers a failed
     call with a canned apology, so its checks fail for a reason unrelated to
     the behaviour under test. It is reported separately and never as a pass.
+    Only failed calls inside a turn count. A failed side-channel call (fact
+    discovery after the reply) is logged and dropped by Mantle without
+    touching the turn, so it is counted in the summary instead.
     """
-    if usage.get("failed_calls"):
+    if (usage.get("failed_calls") or 0) - (usage.get("failed_side_channel_calls") or 0) > 0:
         return "provider_error"
     if error is None and all(c["passed"] for c in checks):
         return "pass"
@@ -891,10 +903,12 @@ def aggregate(results: list[dict], spec: dict) -> dict:
         "side_channel_calls": usage_total("side_channel_calls"),
         "empty_completions": usage_total("empty_completions"),
         "failed_llm_calls": usage_total("failed_calls"),
+        "failed_side_channel_calls": usage_total("failed_side_channel_calls"),
         "prompt_tokens": usage_total("prompt_tokens"),
         "completion_tokens": usage_total("completion_tokens"),
         "reasoning_tokens": usage_total("reasoning_tokens"),
         "cached_prompt_tokens": usage_total("cached_prompt_tokens"),
+        "cache_creation_input_tokens": usage_total("cache_creation_input_tokens"),
         "request_thought_signatures": usage_total("request_thought_signatures"),
         "request_placeholder_signatures": usage_total("request_placeholder_signatures"),
         "filler_messages": sum(len(r["metrics"]["filler_messages"]) for r in results),
@@ -967,7 +981,8 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
     raw_dir.mkdir(parents=True, exist_ok=True)
 
     spent_before = ledger_total(project)
-    server = AgentServer(project, raw_dir, price_model=spec.get("price_model"))
+    server = AgentServer(project, raw_dir, price_model=spec.get("price_model"),
+                         model_price=spec.get("model_price"))
     results: list[dict] = []
     skipped: list[dict] = []
     driver_cls = DRIVERS[spec.get("driver", "rest")]
@@ -1097,6 +1112,17 @@ def render_voice_summary(v: Optional[dict], spec: dict) -> list[str]:
     return lines
 
 
+def price_source_note(pricing: Optional[dict]) -> str:
+    """Where the model cost came from: LiteLLM's bundled map, or a spec price LiteLLM applied."""
+    pricing = pricing or {}
+    spec_price = pricing.get("spec_price") or {}
+    if spec_price.get("registered"):
+        return (f"model calls priced by LiteLLM {pricing.get('litellm_version')} from the vendor's published "
+                f"price ({spec_price.get('source')}, checked {spec_price.get('checked')}), because its bundled "
+                "map has no row for this model")
+    return f"model calls priced by LiteLLM {pricing.get('litellm_version')} bundled map"
+
+
 OUTCOME_LABELS = {"pass": "pass", "fail": "FAIL", "provider_error": "ERROR (provider)"}
 
 
@@ -1142,8 +1168,12 @@ def render_summary(report: dict, spec: dict) -> str:
         f"- Caller turns: {s['turns']}; turn latency p50 {lat['p50']} ms, p95 {lat['p95']} ms, "
         f"max {lat['max']} ms",
         f"- LLM calls: {s['llm_calls']} ({s['llm_calls_per_turn']} per caller turn, "
-        f"{s['side_channel_calls']} side-channel, {s['empty_completions']} empty completions)",
-        f"- Tokens: {s['prompt_tokens']} prompt ({s['cached_prompt_tokens']} cached), "
+        f"{s['side_channel_calls']} side-channel, {s['empty_completions']} empty completions"
+        + (f", {s['failed_side_channel_calls']} failed side-channel calls" if s.get("failed_side_channel_calls") else "")
+        + ")",
+        f"- Tokens: {s['prompt_tokens']} prompt ({s['cached_prompt_tokens']} cached"
+        + (f", {s['cache_creation_input_tokens']} written to cache" if s.get("cache_creation_input_tokens") else "")
+        + "), "
         f"{s['completion_tokens']} completion (of which {s['reasoning_tokens']} reasoning)",
         f"- Thought signatures sent back: {s['request_thought_signatures']} "
         f"({s['request_placeholder_signatures']} LiteLLM placeholders)",
@@ -1155,7 +1185,7 @@ def render_summary(report: dict, spec: dict) -> str:
         f"- Cost: {s['cost_usd']} USD"
         + (f" ({s['llm_cost_usd']} model, {s['speech_cost_usd']} speech)" if s.get("speech_cost_usd") else "")
         + ("" if s["cost_complete"] else " (incomplete: some calls had no LiteLLM price)")
-        + f"; model calls priced by LiteLLM {((report.get('pricing') or {}).get('litellm_version'))} bundled map",
+        + f"; {price_source_note(report.get('pricing'))}",
         *render_voice_summary(s.get("voice"), spec),
         "",
         "| Conversation | Kind | Result | Domain tool calls | Turn latency ms | Cost USD |",

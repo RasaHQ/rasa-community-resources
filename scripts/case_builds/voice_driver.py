@@ -685,8 +685,70 @@ _ORDINALS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixt
 _ORDINAL_SUFFIX_RE = re.compile(r"\b(\d+)(?:st|nd|rd|th)\b")
 
 
+_MAGNITUDES = {"hundred": 100, "thousand": 1000, "lakh": 100000, "lakhs": 100000}
+_CARDINAL_WORD_RE = re.compile(r"[a-z]+|\d+|[^a-z\d]+")
+
+
+def _cardinal_value(words: list[str]) -> Optional[int]:
+    """'two thousand four hundred and ninety nine' -> 2499; None without a magnitude word."""
+    if not any(w in _MAGNITUDES for w in words):
+        return None
+    total = current = 0
+    for w in words:
+        if w == "and":
+            continue
+        if w in _UNITS and w not in ("o", "oh"):
+            current += _UNITS[w]
+        elif w in _TENS:
+            current += _TENS[w]
+        elif w == "hundred":
+            current = (current or 1) * 100
+        elif w in _MAGNITUDES:
+            total += (current or 1) * _MAGNITUDES[w]
+            current = 0
+        else:
+            return None
+    return total + current
+
+
+def compose_cardinals(text: str) -> str:
+    """Spoken cardinals with a magnitude word become digits: 'two thousand four
+    hundred and ninety-nine rupees' -> '2499 rupees'. Digit-by-digit numbers
+    ('four four one seven') and years ('nineteen ninety-one') have no magnitude
+    word and are left alone, as are digits and anything else."""
+    pieces = _CARDINAL_WORD_RE.findall(text.lower().replace("-", " "))
+    out: list[str] = []
+    i = 0
+    number_words = set(_UNITS) | set(_TENS) | set(_MAGNITUDES)
+    while i < len(pieces):
+        if pieces[i] in number_words and pieces[i] not in ("o", "oh"):
+            j, words = i, []
+            while j < len(pieces):
+                piece = pieces[j]
+                if piece in number_words and piece not in ("o", "oh"):
+                    words.append(piece)
+                elif piece == "and" and words and j + 2 < len(pieces) and pieces[j + 2] in number_words:
+                    words.append(piece)
+                elif not piece.strip():
+                    pass
+                else:
+                    break
+                j += 1
+            value = _cardinal_value(words)
+            if value is not None:
+                # Keep the whitespace that ended the span.
+                trailing = pieces[j - 1] if j - 1 > i and not pieces[j - 1].strip() else ""
+                out.append(str(value) + trailing)
+                i = j
+                continue
+        out.append(pieces[i])
+        i += 1
+    return "".join(out)
+
+
 def _number_tokens(text: str) -> list:
     """Words, with each run of adjacent number groups as one list of groups."""
+    text = compose_cardinals(text)
     words = re.findall(r"[a-z]+|\d+", _ORDINAL_SUFFIX_RE.sub(r"\1 _ord_", text.lower().replace("-", " ")))
     items: list = []
     run: list[str] = []

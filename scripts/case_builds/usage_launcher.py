@@ -15,7 +15,12 @@ call to the file named by CASE_BUILD_USAGE_LOG:
   reasoning share of completion, cached prompt tokens);
 - `response_cost` as LiteLLM computed it from its bundled price map, or null
   when LiteLLM has no price for the model (the harness then reports cost as
-  unknown rather than estimating);
+  unknown rather than estimating). A model the bundled map does not list can
+  be given the vendor's published price in the build spec (`model_price`,
+  passed here as CASE_BUILD_MODEL_PRICE); it is registered with LiteLLM only
+  when the map has no row for that model, so LiteLLM still does the
+  arithmetic, cache reads and writes included, and the pricing record names
+  the source;
 - the conversation id, read from Mantle's turn context when the call happens
   inside a turn;
 - for Gemini requests, how many `thoughtSignature` parts were sent back and how
@@ -138,6 +143,9 @@ def _usage_record(kwargs: dict, response: Any, start: Any, end: Any, ok: bool) -
         "total_tokens": _get(usage, "total_tokens"),
         "reasoning_tokens": _get(completion_details, "reasoning_tokens"),
         "cached_prompt_tokens": _get(prompt_details, "cached_tokens"),
+        # Anthropic reports prompt-cache writes separately; LiteLLM keeps them
+        # on the usage object. None for providers that do not report them.
+        "cache_creation_input_tokens": _get(usage, "cache_creation_input_tokens"),
         "response_cost_usd": kwargs.get("response_cost"),
         "finish_reason": _get(first, "finish_reason"),
         "returned_tool_calls": [str(_get(_get(c, "function"), "name")) for c in tool_calls],
@@ -168,6 +176,7 @@ def install() -> None:
             _write(_usage_record(kwargs, response_obj, start_time, end_time, False))
 
     litellm.callbacks.append(CaseBuildUsageLogger())
+    spec_price = register_spec_price(litellm)
 
     # Record the price LiteLLM will charge against, so the report can show
     # where every cost figure came from.
@@ -178,6 +187,9 @@ def install() -> None:
             {
                 "kind": "pricing",
                 "model": model,
+                "price_source": spec_price["source"] if spec_price.get("registered") else "litellm bundled map",
+                **({"spec_price": spec_price} if spec_price else {}),
+                "cache_creation_input_token_cost": entry.get("cache_creation_input_token_cost"),
                 "litellm_version": _version("litellm"),
                 "rasa_pro_version": _version("rasa-pro"),
                 "input_cost_per_token": entry.get("input_cost_per_token"),
@@ -192,6 +204,47 @@ def install() -> None:
                 "local_cost_map": os.environ.get("LITELLM_LOCAL_MODEL_COST_MAP"),
             }
         )
+
+
+PRICE_FIELDS = (
+    "input_cost_per_token",
+    "output_cost_per_token",
+    "cache_read_input_token_cost",
+    "cache_creation_input_token_cost",
+)
+
+
+def price_row(price: dict) -> dict:
+    """The LiteLLM model_cost row for a spec `model_price` (vendor-published)."""
+    missing = [k for k in ("model", "litellm_provider", "input_cost_per_token", "output_cost_per_token")
+               if price.get(k) is None]
+    if missing:
+        raise ValueError(f"model_price is missing {missing}")
+    return {
+        "litellm_provider": price["litellm_provider"],
+        "mode": "chat",
+        **{k: float(price[k]) for k in PRICE_FIELDS if price.get(k) is not None},
+    }
+
+
+def register_spec_price(litellm: Any) -> dict:
+    """Give LiteLLM a published price for a model its bundled map lacks.
+
+    Never overrides a row LiteLLM already has: the bundled map stays the
+    source whenever it can price the model.
+    """
+    raw = os.environ.get("CASE_BUILD_MODEL_PRICE")
+    if not raw:
+        return {}
+    price = json.loads(raw)
+    row = price_row(price)
+    model = price["model"]
+    keys = (model, f"{price['litellm_provider']}/{model}")
+    info = {"model": model, "source": price.get("source"), "checked": price.get("checked")}
+    if any(k in litellm.model_cost for k in keys):
+        return {**info, "registered": False, "reason": "litellm already prices this model"}
+    litellm.register_model({model: row})
+    return {**info, "registered": True, **{k: row.get(k) for k in PRICE_FIELDS}}
 
 
 def _version(package: str) -> str | None:

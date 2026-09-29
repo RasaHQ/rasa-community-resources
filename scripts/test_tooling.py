@@ -19,9 +19,11 @@ Usage:
 
 from __future__ import annotations
 
+import base64
 import contextlib
 import io
 import json
+import os
 import re
 import subprocess
 import sys
@@ -1894,9 +1896,113 @@ class TestBrowserAudioDriver(unittest.TestCase):
         got = self.v.dedupe_latency_markers([dict(a, at_ms=1), dict(a, at_ms=2), dict(b, at_ms=3)])
         self.assertEqual([m["at_ms"] for m in got], [1, 3])
 
+    def test_spoken_amounts_compose_into_one_number(self):
+        self.assertEqual(self.v.spoken_numbers_to_digits("two thousand four hundred and ninety-nine rupees"), ["2499"])
+        self.assertEqual(self.v.spoken_numbers_to_digits("five hundred and sixty on the nineteenth"), ["560", "19"])
+        # No magnitude word: digit strings and years stay as they were.
+        self.assertEqual(self.v.spoken_numbers_to_digits("seven three one nine"), ["7319"])
+        self.assertEqual(self.v.spoken_numbers_to_digits("seventeenth August nineteen ninety-one"), ["17", "1991"])
+        got = self.v.check_tokens("I was charged Rs 2,499 at Brightmart", [{"token": "2499", "kind": "amount"}])
+        self.assertEqual((got[0]["exact"], got[0]["normalised"]), (False, True))
+        self.assertEqual(self.v.word_error_rate("two thousand four hundred and ninety-nine rupees", "2499 rupees"), 0.0)
+
     def test_card_endings_are_normalised_like_digits(self):
         got = self.v.check_tokens("ending four four one seven", [{"token": "4417", "kind": "card_ending"}])
         self.assertEqual((got[0]["exact"], got[0]["normalised"]), (False, True))
+
+class TestCaseBuildPricing(unittest.TestCase):
+    """Spec-published model prices and token-priced caller audio (offline)."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(_SCRIPTS / "case_builds"))
+        import harness
+        import render_caller_audio
+        import usage_launcher
+
+        cls.h, cls.r, cls.u = harness, render_caller_audio, usage_launcher
+
+    PRICE = {"model": "claude-x", "litellm_provider": "anthropic", "input_cost_per_token": 2e-06,
+             "output_cost_per_token": 1e-05, "cache_read_input_token_cost": 2e-07,
+             "cache_creation_input_token_cost": 2.5e-06, "source": "vendor page", "checked": "2026-09-29"}
+
+    class FakeLiteLLM:
+        def __init__(self, known=()):
+            self.model_cost = {k: {} for k in known}
+            self.registered = []
+
+        def register_model(self, rows):
+            self.registered.append(rows)
+            self.model_cost.update(rows)
+
+    def _register(self, fake, price):
+        with mock.patch.dict(os.environ, {"CASE_BUILD_MODEL_PRICE": json.dumps(price)}):
+            return self.u.register_spec_price(fake)
+
+    def test_spec_price_registers_only_when_litellm_has_no_row(self):
+        fake = self.FakeLiteLLM()
+        got = self._register(fake, self.PRICE)
+        self.assertTrue(got["registered"])
+        self.assertEqual(fake.registered[0]["claude-x"]["cache_creation_input_token_cost"], 2.5e-06)
+        self.assertEqual(fake.registered[0]["claude-x"]["mode"], "chat")
+        known = self.FakeLiteLLM(known=("anthropic/claude-x",))
+        self.assertFalse(self._register(known, self.PRICE)["registered"])
+        self.assertEqual(known.registered, [])
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("CASE_BUILD_MODEL_PRICE", None)
+            self.assertEqual(self.u.register_spec_price(self.FakeLiteLLM()), {})
+
+    def test_spec_price_without_a_required_field_is_refused(self):
+        with self.assertRaises(ValueError):
+            self.u.price_row({k: v for k, v in self.PRICE.items() if k != "output_cost_per_token"})
+
+    def test_summary_names_the_price_source(self):
+        spec_priced = {"litellm_version": "1.0", "spec_price": {"registered": True, "source": "vendor page",
+                                                                "checked": "2026-09-29"}}
+        self.assertIn("vendor page", self.h.price_source_note(spec_priced))
+        self.assertIn("bundled map", self.h.price_source_note({"litellm_version": "1.0"}))
+
+    def test_usage_sums_cache_writes(self):
+        rows = [{"kind": "llm_call", "ok": True, "sender_id": "c", "sender_source": "turn_context",
+                 "prompt_tokens": 100, "completion_tokens": 5, "cached_prompt_tokens": 40,
+                 "cache_creation_input_tokens": 60, "response_cost_usd": 0.001}]
+        got = self.h.usage_for(rows, "c")
+        self.assertEqual((got["cached_prompt_tokens"], got["cache_creation_input_tokens"]), (40, 60))
+
+    def test_a_failed_side_channel_call_is_not_a_provider_error(self):
+        rows = [
+            {"kind": "llm_call", "ok": True, "sender_id": "c", "sender_source": "turn_context", "response_cost_usd": 0.01},
+            {"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "structlog_context", "response_cost_usd": 0},
+        ]
+        usage = self.h.usage_for(rows, "c")
+        self.assertEqual((usage["failed_calls"], usage["failed_side_channel_calls"]), (1, 1))
+        passed = [{"passed": True}]
+        self.assertEqual(self.h.classify(None, passed, usage), "pass")
+        rows.append({"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "turn_context"})
+        self.assertEqual(self.h.classify(None, passed, self.h.usage_for(rows, "c")), "provider_error")
+
+    def test_speech_sse_stream_yields_pcm_and_usage(self):
+        lines = [
+            b"data: " + json.dumps({"type": "speech.audio.delta", "audio": base64.b64encode(b"ab").decode()}).encode(),
+            b"",
+            b"data: " + json.dumps({"type": "speech.audio.delta", "audio": base64.b64encode(b"cd").decode()}).encode(),
+            b"data: " + json.dumps({"type": "speech.audio.done",
+                                    "usage": {"input_tokens": 25, "output_tokens": 73}}).encode(),
+            b"data: [DONE]",
+        ]
+        pcm, usage = self.r.parse_speech_sse(lines)
+        self.assertEqual(pcm, b"abcd")
+        self.assertEqual(usage["output_tokens"], 73)
+
+    def test_token_priced_caller_audio_costs(self):
+        caller = {"usd_per_1m_input_tokens": 0.6, "usd_per_1m_audio_output_tokens": 12.0}
+        self.assertTrue(self.r.token_priced(caller))
+        self.assertAlmostEqual(self.r.token_cost({"input_tokens": 25, "output_tokens": 73}, caller), 0.000891)
+        est = self.r.estimate_cost([{"text": "x" * 100}], dict(caller, instructions="y" * 50))
+        self.assertAlmostEqual(est, (150 / 3) * 0.6 / 1e6 + 400 * 12.0 / 1e6)
+        self.assertFalse(self.r.token_priced({"usd_per_1m_characters": 15.0}))
+        self.assertAlmostEqual(self.r.estimate_cost([{"text": "x" * 1000}], {"usd_per_1m_characters": 15.0}), 0.015)
+
 
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every

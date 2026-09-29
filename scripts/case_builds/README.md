@@ -36,7 +36,7 @@ Server logs and raw usage logs stay in `case-build/results/raw/` (gitignored).
 |---|---|
 | Turn latency | REST: request sent to full response received. Voice: end of caller speech to first bot audio with sound (see Voice builds). |
 | Tokens per call | The provider's usage block, as LiteLLM parses it, captured by a LiteLLM `CustomLogger` inside the agent process (`usage_launcher.py`). Reasoning and cached tokens are recorded when the provider reports them. |
-| Cost | LiteLLM's `response_cost` for each call, priced from LiteLLM's bundled price map (`LITELLM_LOCAL_MODEL_COST_MAP=True`). The price row used is written to the usage log. A call LiteLLM cannot price leaves the cost `null` and the report says the total is incomplete; the harness never estimates. |
+| Cost | LiteLLM's `response_cost` for each call, priced from LiteLLM's bundled price map (`LITELLM_LOCAL_MODEL_COST_MAP=True`). The price row used is written to the usage log. A model the map lacks can be given the vendor's published price in the spec (`model_price`); it is registered with LiteLLM only when the map has no row for it, LiteLLM still does the arithmetic (cache reads and writes included), and the summary names the source. Otherwise a call LiteLLM cannot price leaves the cost `null` and the report says the total is incomplete; the harness never estimates. |
 | Cross-check | Rasa's own per-conversation token total, `GET /conversations/<id>/engine_tokens`, enabled with `RASA_FEATURE_FLAG_SIM_EVAL_EXTENDED=true`. Stored per conversation next to the LiteLLM figures. |
 | Attribution | Main-loop calls carry the conversation id from Mantle's turn context. Side-channel calls that run after the reply (fact discovery after a skill switch) carry it in Rasa's structlog context. Anything else is counted as unattributed; its cost is still in the run total. |
 | Log events | Structured server-log lines whose `event` is listed in the spec's `log_events` and whose `conversation_id` or `sender_id` is the conversation. |
@@ -56,6 +56,10 @@ harness does not depend on it.
   "price_model": "gemini/gemini-3.1-pro-preview",
   "driver": "rest",
   "prior_cost_per_turn_usd": 0.03,
+  "model_price": {"model": "claude-sonnet-5-5", "litellm_provider": "anthropic",
+                  "input_cost_per_token": 2e-06, "output_cost_per_token": 1e-05,
+                  "cache_read_input_token_cost": 2e-07, "cache_creation_input_token_cost": 2.5e-06,
+                  "source": "vendor pricing page", "checked": "2026-09-29"},
   "bot_text_metrics": {"coverage_promise": {"pattern": "...", "unless_before": "..."}},
   "log_events": ["harborcover.coverage_guard", "mantle.turn.failed"],
   "conversations": [
@@ -103,9 +107,11 @@ cost per turn so far (or `prior_cost_per_turn_usd` for the first one) with a
 1.5x margin, and skips it if the projection crosses the cap. An interrupted
 run still writes its spend to the ledger.
 
-A conversation with a failed model call (quota, outage) is recorded as
-`provider_error`, not as a failure: Mantle answers a failed call with a
-canned apology, so its checks say nothing about the agent. After two
+A conversation with a failed model call inside a turn (quota, outage) is
+recorded as `provider_error`, not as a failure: Mantle answers a failed call
+with a canned apology, so its checks say nothing about the agent. A failed
+side-channel call (fact discovery after the reply) does not touch the turn;
+it is counted as `failed_side_channel_calls` instead. After two
 provider-error conversations in a row the rest of the run is skipped.
 Gemini API projects on a daily request quota need planning: one full
 31-conversation run of the pilot build made 214 model requests, and the
@@ -164,7 +170,9 @@ Per turn it records, in `turns[].extra`:
 
 A conversation's `voice` block adds speech usage and cost, and a
 speech-to-text check per spoken turn: the word error rate against the
-script's line (numbers compared digit by digit, however they were spelled),
+script's line (numbers compared digit by digit, however they were spelled;
+spoken cardinals with "hundred", "thousand" or "lakh" become one number, so
+"two thousand four hundred and ninety-nine" matches "₹2,499"),
 and each `asr_tokens` entry checked `exact` (verbatim in the transcript) and
 `normalised` (after spoken numbers become digits; names are only checked
 exactly). These never decide pass or fail.
@@ -188,6 +196,13 @@ Voice spec keys:
   "caller": {"vendor": "openai", "model": "tts-1", "voice": "nova", "sample_rate": 16000,
              "usd_per_1m_characters": 15.0, "price_source": "...", "price_checked": "2026-09-29"}
 },
+// or, token-priced with an accent instruction:
+// "caller": {"vendor": "openai", "model": "gpt-4o-mini-tts", "voice": "coral", "sample_rate": 16000,
+//            "instructions": "Accent: Indian English ...",
+//            "accent": {"requested": "Indian English (en-IN)", "status": "instructed, not verified by a listener"},
+//            "samples": {"<file>.wav": "what to listen for"},
+//            "usd_per_1m_input_tokens": 0.6, "usd_per_1m_audio_output_tokens": 12.0,
+//            "price_source": "...", "price_checked": "2026-09-29"}
 "speech_pricing": {
   "stt": {"vendor": "deepgram", "model": "flux-general-en", "usd_per_minute": 0.0065, "source": "...", "checked": "..."},
   "tts": {"vendor": "deepgram", "model": "aura-2-andromeda-en", "usd_per_1k_characters": 0.03, "source": "...", "checked": "..."}
@@ -197,7 +212,9 @@ Voice spec keys:
 
 A turn is `{"user": "...", "asr_tokens": [{"token": "4417", "kind": "card_ending"}], "caller_voice": "onyx"}`.
 Its WAV is `<voice>-<sha256(voice|text)[:12]>.wav` in `caller_audio_dir`,
-rendered once by `render_caller_audio.py` (OpenAI TTS or local espeak-ng),
+rendered once by `render_caller_audio.py` (OpenAI TTS or local espeak-ng;
+`gpt-4o-mini-tts` takes `instructions`, for an accent, and is priced per
+token from the usage OpenAI reports for each file),
 listed in that folder's `manifest.json` with text, vendor, voice and SHA-256,
 and replayed byte for byte on every run. The caller's voice vendor must not be
 the build's own speech vendor. Rendering spend goes to the same ledger.

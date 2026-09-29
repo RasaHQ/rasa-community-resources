@@ -15,17 +15,29 @@ speech-to-text or text-to-speech. Supported sources:
 
 - `openai`: OpenAI's `/v1/audio/speech` (`tts-1`, `tts-1-hd` or
   `gpt-4o-mini-tts`), asked for raw 24 kHz PCM and resampled with ffmpeg.
-  Billed per character for tts-1 models; the price comes from the spec.
+  The tts-1 models bill per character (`usd_per_1m_characters`).
+  `gpt-4o-mini-tts` bills per token and takes free-text `instructions` (an
+  accent, for example). Priced per token (`usd_per_1m_input_tokens`,
+  `usd_per_1m_audio_output_tokens`), it is requested as a server-sent event
+  stream, whose closing `speech.audio.done` event carries the usage, so each
+  file's cost comes from the tokens OpenAI reported for it. The budget check
+  before rendering has no usage yet, so it projects the output tokens from
+  the characters (`estimate_audio_tokens_per_character`, default 4).
 - `espeak-ng`: the local formant synthesiser, free and robotic.
 
 Every file is listed in `manifest.json` next to it with the exact text, the
-vendor, model and voice, its SHA-256 and duration. The spend is added to the
-build's spend ledger. Keys load into this process only and are never printed.
+vendor, model and voice, its SHA-256 and duration (and, for token pricing,
+the tokens and cost). A spec `accent` block (what was requested, and its
+status) is copied into the manifest: an accent asked for through
+instructions is only what was requested until a person has listened. The
+spend is added to the build's spend ledger. Keys load into this process only
+and are never printed.
 """
 
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import shutil
@@ -35,6 +47,7 @@ import urllib.request
 import wave
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -69,16 +82,69 @@ def resample_to_wav(pcm: bytes, source_rate: int, target_rate: int, out: Path) -
     )
 
 
-def render_openai(text: str, voice: str, caller: dict, env: dict) -> bytes:
+def token_priced(caller: dict) -> bool:
+    return caller.get("usd_per_1m_audio_output_tokens") is not None
+
+
+def token_cost(usage: dict, caller: dict) -> float:
+    """USD for one render from OpenAI's reported usage and the spec's per-token prices."""
+    return round(
+        (usage.get("input_tokens") or 0) * caller["usd_per_1m_input_tokens"] / 1e6
+        + (usage.get("output_tokens") or 0) * caller["usd_per_1m_audio_output_tokens"] / 1e6,
+        8,
+    )
+
+
+def estimate_cost(lines: list[dict], caller: dict) -> float | None:
+    """Pre-render projection, used only for the budget check."""
+    chars = sum(len(line["text"]) for line in lines)
+    if token_priced(caller):
+        # Input: text plus the instructions, at a generous 1 token per 3 characters.
+        instr = len(caller.get("instructions") or "")
+        input_tokens = sum((len(line["text"]) + instr) / 3 for line in lines)
+        output_tokens = chars * float(caller.get("estimate_audio_tokens_per_character", 4.0))
+        return round(input_tokens * caller["usd_per_1m_input_tokens"] / 1e6
+                     + output_tokens * caller["usd_per_1m_audio_output_tokens"] / 1e6, 6)
+    per_char = caller.get("usd_per_1m_characters")
+    return round(chars * per_char / 1e6, 6) if per_char is not None else None
+
+
+def parse_speech_sse(lines: Any) -> tuple[bytes, dict]:
+    """PCM and usage from `/v1/audio/speech` with `stream_format: sse`."""
+    pcm = bytearray()
+    usage: dict = {}
+    for raw in lines:
+        line = (raw.decode() if isinstance(raw, bytes) else raw).strip()
+        if not line.startswith("data:"):
+            continue
+        payload = line[5:].strip()
+        if payload == "[DONE]":
+            continue
+        event = json.loads(payload)
+        if event.get("type") == "speech.audio.delta":
+            pcm += base64.b64decode(event["audio"])
+        elif event.get("type") == "speech.audio.done":
+            usage = event.get("usage") or {}
+    return bytes(pcm), usage
+
+
+def render_openai(text: str, voice: str, caller: dict, env: dict) -> tuple[bytes, dict]:
     body = {"model": caller["model"], "voice": voice, "input": text, "response_format": "pcm"}
     if caller.get("instructions"):
         body["instructions"] = caller["instructions"]
+    if token_priced(caller):
+        body["stream_format"] = "sse"
     request = urllib.request.Request(
         OPENAI_SPEECH_URL, data=json.dumps(body).encode(), method="POST",
         headers={"Authorization": f"Bearer {env['OPENAI_API_KEY']}", "Content-Type": "application/json"},
     )
     with urllib.request.urlopen(request, timeout=60) as response:
-        return response.read()
+        if token_priced(caller):
+            pcm, usage = parse_speech_sse(response)
+            if not usage:
+                raise RuntimeError("the speech stream ended without a usage block; cannot price this render")
+            return pcm, usage
+        return response.read(), {}
 
 
 def render_espeak(text: str, voice: str, out: Path, target_rate: int) -> None:
@@ -111,13 +177,14 @@ def main() -> int:
     todo = {name: line for name, line in lines.items() if not (out_dir / name).is_file()}
     chars = sum(len(line["text"]) for line in todo.values())
     per_char = caller.get("usd_per_1m_characters")
-    estimate = round(chars * per_char / 1e6, 6) if per_char is not None else None
-    print(f"{len(lines)} caller lines, {len(todo)} to render, {chars} characters, estimated {estimate} USD")
+    estimate = estimate_cost(list(todo.values()), caller)
+    print(f"{len(lines)} caller lines, {len(todo)} to render, {chars} characters, estimated {estimate} USD"
+          + (" (projected from characters; billed from reported tokens)" if token_priced(caller) else ""))
     if args.dry_run or not todo:
         return 0
     if caller["vendor"] == "openai":
         if estimate is None:
-            print("no per-character price in the spec; refusing to spend without one")
+            print("no price in the spec; refusing to spend without one")
             return 2
         if args.budget_usd is None:
             parser.error("--budget-usd is required to render billed audio")
@@ -126,12 +193,21 @@ def main() -> int:
             return 2
     env = agent_env(project)
     rendered_chars = 0
+    rendered_cost = 0.0
+    tokens = {"input_tokens": 0, "output_tokens": 0}
     try:
         for name, line in sorted(todo.items()):
             out = out_dir / name
+            usage: dict = {}
             if caller["vendor"] == "openai":
-                pcm = render_openai(line["text"], line["voice"], caller, env)
+                pcm, usage = render_openai(line["text"], line["voice"], caller, env)
                 rendered_chars += len(line["text"])
+                if usage:
+                    rendered_cost += token_cost(usage, caller)
+                    for key in tokens:
+                        tokens[key] += usage.get(key) or 0
+                elif per_char is not None:
+                    rendered_cost += len(line["text"]) * per_char / 1e6
                 resample_to_wav(pcm, OPENAI_PCM_RATE, caller["sample_rate"], out)
             elif caller["vendor"] == "espeak-ng":
                 render_espeak(line["text"], line["voice"], out, caller["sample_rate"])
@@ -149,6 +225,8 @@ def main() -> int:
                 "characters": len(line["text"]),
                 "sha256": hashlib.sha256(out.read_bytes()).hexdigest(),
                 "rendered_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                **({"usage": {k: usage.get(k) for k in ("input_tokens", "output_tokens")},
+                    "cost_usd": token_cost(usage, caller)} if usage else {}),
             }
             print(f"rendered {name} ({duration:.2f} s)")
     finally:
@@ -156,12 +234,17 @@ def main() -> int:
             "description": caller.get("description", ""),
             "vendor": caller["vendor"],
             "model": caller.get("model"),
-            "price": {k: caller.get(k) for k in ("usd_per_1m_characters", "price_source", "price_checked")},
+            **({"instructions": caller["instructions"]} if caller.get("instructions") else {}),
+            **({"accent": caller["accent"]} if caller.get("accent") else {}),
+            **({"samples": caller["samples"]} if caller.get("samples") else {}),
+            "price": {k: caller.get(k) for k in (
+                "usd_per_1m_characters", "usd_per_1m_input_tokens", "usd_per_1m_audio_output_tokens",
+                "price_source", "price_checked") if caller.get(k) is not None},
         })
         manifest["files"] = dict(sorted(manifest["files"].items()))
         manifest_path.write_text(json.dumps(manifest, indent=1) + "\n")
-        if rendered_chars and per_char is not None:
-            cost = round(rendered_chars * per_char / 1e6, 6)
+        if rendered_chars and rendered_cost:
+            cost = round(rendered_cost, 6)
             ledger_append(project, {
                 "run": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S"),
                 "label": f"caller audio ({caller['vendor']} {caller.get('model')})",
@@ -169,6 +252,7 @@ def main() -> int:
                 "cost_usd": cost,
                 "by_vendor": {f"{caller['vendor']}_tts": cost},
                 "characters": rendered_chars,
+                **({"tokens": tokens} if token_priced(caller) else {}),
                 "finished_at": datetime.now(timezone.utc).isoformat(),
             })
     return 0
