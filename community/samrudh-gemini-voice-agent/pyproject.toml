@@ -15,7 +15,9 @@ dependencies = [
 # and needs an issued Rasa licence, but does not call Gemini (verified on dev9).
 [tool.rasa-catalog]
 required-secrets = ["GEMINI_API_KEY"]
-training-secrets = []
+# 3.21 expands api_key: ${GEMINI_API_KEY} at train time, so the variable must
+# exist to train; training itself makes no Gemini call.
+training-secrets = ["GEMINI_API_KEY"]
 
 [tool.uv]
 prerelease = "allow"
