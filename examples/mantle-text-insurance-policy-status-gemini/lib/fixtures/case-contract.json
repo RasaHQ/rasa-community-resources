@@ -1,0 +1,178 @@
+{
+  "slug": "insurance-policy-status",
+  "title": "Policy status without coverage promises",
+  "organisation": "HarborCover",
+  "action": "answer a policy or claim-status enquiry",
+  "failure": "The agent read an active policy label and told the caller that a particular loss would be covered.",
+  "lesson": "Keep policy state, claim progress and a coverage decision separate; only the responsible service can decide a specific loss.",
+  "receipt": "A dated status reference and the next review step, without an invented coverage outcome.",
+  "evidence": "Compare response fields against the status API and verify that coverage language appears only when an actual decision is present.",
+  "recovery": "When claim status is unavailable, keep the last known timestamp visible and offer a case-team route instead of guessing progress.",
+  "owner": "claims service owner",
+  "metric": "status answers that invent a coverage decision, divided by status enquiries",
+  "question": "The claim is at this recorded stage. That is not yet a coverage decision. Would you like the next review step?",
+  "correction": "The caller asks whether a different loss is covered; route a new coverage question instead of reusing the current claim status.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "policy_subject_matched",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_policy_subject",
+      "phase": "request"
+    },
+    {
+      "field": "status_timestamp_current",
+      "good": true,
+      "bad": false,
+      "reason": "stale_claim_status",
+      "phase": "request"
+    },
+    {
+      "field": "decision_type_labeled",
+      "good": true,
+      "bad": false,
+      "reason": "status_as_coverage",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "policy_subject_matched": true,
+    "status_timestamp_current": true,
+    "decision_type_labeled": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "policy_subject_matched": true,
+        "status_timestamp_current": true,
+        "decision_type_labeled": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "policy_subject_matched-false",
+      "facts": {
+        "policy_subject_matched": false,
+        "status_timestamp_current": true,
+        "decision_type_labeled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_policy_subject",
+        "effects": 0
+      }
+    },
+    {
+      "name": "policy_subject_matched-missing",
+      "facts": {
+        "status_timestamp_current": true,
+        "decision_type_labeled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_policy_subject",
+        "effects": 0
+      }
+    },
+    {
+      "name": "policy_subject_matched-string",
+      "facts": {
+        "policy_subject_matched": "true",
+        "status_timestamp_current": true,
+        "decision_type_labeled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_policy_subject",
+        "effects": 0
+      }
+    },
+    {
+      "name": "status_timestamp_current-false",
+      "facts": {
+        "policy_subject_matched": true,
+        "status_timestamp_current": false,
+        "decision_type_labeled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_claim_status",
+        "effects": 0
+      }
+    },
+    {
+      "name": "status_timestamp_current-missing",
+      "facts": {
+        "policy_subject_matched": true,
+        "decision_type_labeled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_claim_status",
+        "effects": 0
+      }
+    },
+    {
+      "name": "status_timestamp_current-string",
+      "facts": {
+        "policy_subject_matched": true,
+        "status_timestamp_current": "true",
+        "decision_type_labeled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_claim_status",
+        "effects": 0
+      }
+    },
+    {
+      "name": "decision_type_labeled-false",
+      "facts": {
+        "policy_subject_matched": true,
+        "status_timestamp_current": true,
+        "decision_type_labeled": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "status_as_coverage",
+        "effects": 0
+      }
+    },
+    {
+      "name": "decision_type_labeled-missing",
+      "facts": {
+        "policy_subject_matched": true,
+        "status_timestamp_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "status_as_coverage",
+        "effects": 0
+      }
+    },
+    {
+      "name": "decision_type_labeled-string",
+      "facts": {
+        "policy_subject_matched": true,
+        "status_timestamp_current": true,
+        "decision_type_labeled": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "status_as_coverage",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}
