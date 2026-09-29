@@ -18,8 +18,6 @@ tool_constraints:
 
 Help the traveler change or cancel a booking.
 
-First verify identity: @skill.authenticate
-
 Then find the booking: @skill.find_booking
 
 Ask what they want to change.
