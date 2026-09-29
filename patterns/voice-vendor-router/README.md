@@ -77,6 +77,24 @@ delegates to Rasa's own factories. `voicerouter/providers/` adds the rest.
 | Azure | ASR + TTS | `azure` *(built-in)* | `AZURE_SPEECH_API_KEY` | not exercised — no key |
 | Cartesia | TTS | `cartesia` *(built-in)* | `CARTESIA_API_KEY` | not exercised — no key |
 
+**Speechmatics ASR on the catalog pin.** Two fixes, both found live by the
+`banking-dispute` case build
+([`examples/mantle-voice-banking-dispute-claude`](../../examples/mantle-voice-banking-dispute-claude))
+on 2026-09-29:
+
+- The first version opened its socket with the legacy
+  `websockets.connect(..., extra_headers=...)`. rasa-pro 3.21.0.dev5 resolves
+  websockets 15.0.1, where that raises `TypeError` on every call, so the agent
+  never heard the caller. It now uses `websockets.asyncio.client.connect` with
+  `additional_headers`, as Rasa's own engines do. The AssemblyAI adapter
+  still has the legacy call (it is config-only, never run).
+- Speechmatics finalises a word or two at a time, and Rasa's voice channel
+  treats every `NewTranscript` as a whole user turn. One 10-second caller
+  turn reached the agent as 19 turns, each with a model call. Set
+  `end_of_utterance_silence_trigger` (seconds, 0 to 2, below `max_delay`) and
+  the adapter holds the segments until Speechmatics sends `EndOfUtterance`,
+  then sends one transcript. Unset, the behaviour is unchanged.
+
 **"Live-verified"** means audio was actually synthesised or transcribed through
 that adapter, in this repository, against the vendor's real API.
 

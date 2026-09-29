@@ -331,6 +331,115 @@ class TestEngineContract(unittest.TestCase):
         self.assertEqual(contract.check(verbose=False), [])
 
 
+class TestSpeechmaticsSocket(unittest.TestCase):
+    """The ASR socket must open on the websockets client Rasa pins.
+
+    The first version called the legacy `websockets.connect(...,
+    extra_headers=...)`. On websockets 15.0.1, which rasa-pro 3.21.0.dev5
+    resolves to, that raised TypeError on every call and the agent never
+    heard the caller (found live by the banking-dispute case build).
+    """
+
+    def setUp(self):
+        # The engine checks its key at construction; a placeholder is enough offline.
+        patcher = mock.patch.dict("os.environ", {"SPEECHMATICS_API_KEY": "test-key"})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def _engine(self):
+        from rasa.core.channels.voice_stream.audio_bytes import L16_16KHZ
+
+        from voicerouter.providers.speechmatics import SpeechmaticsASR
+
+        return SpeechmaticsASR.from_config_dict(
+            {"language_map": {"en": {"language": "en"}}, "operating_point": "enhanced",
+             "max_delay": 1.0, "enable_partials": True},
+            L16_16KHZ, "en",
+        )
+
+    def test_connects_with_additional_headers_then_starts_recognition(self):
+        import asyncio
+        import json
+
+        socket = mock.AsyncMock()
+        with mock.patch.dict("os.environ", {"SPEECHMATICS_API_KEY": "test-key"}), \
+             mock.patch("voicerouter.providers.speechmatics.connect",
+                        new=mock.AsyncMock(return_value=socket)) as connect:
+            engine = self._engine()
+            asyncio.run(engine.open_websocket_connection())
+        kwargs = connect.call_args.kwargs
+        self.assertEqual(kwargs["additional_headers"], {"Authorization": "Bearer test-key"})
+        self.assertNotIn("extra_headers", kwargs)
+        start = json.loads(socket.send.call_args.args[0])
+        self.assertEqual(start["message"], "StartRecognition")
+        self.assertEqual(start["transcription_config"]["language"], "en")
+        self.assertEqual(start["audio_format"]["encoding"], "pcm_s16le")
+
+    @staticmethod
+    def _msg(kind, text=None):
+        import json
+
+        body = {"message": kind}
+        if text is not None:
+            body["metadata"] = {"transcript": text}
+        return json.dumps(body)
+
+    def test_default_mode_makes_every_final_segment_a_transcript(self):
+        from rasa.core.channels.voice_stream.asr.asr_event import NewTranscript
+
+        engine = self._engine()
+        events = [engine.engine_event_to_asr_event(self._msg("AddTranscript", t)) for t in ("Hello,", "this is", "Priya")]
+        self.assertEqual([type(e) for e in events], [NewTranscript] * 3)
+        self.assertNotIn("conversation_config", engine._start_recognition_message()["transcription_config"])
+
+    def test_utterance_mode_joins_segments_until_end_of_utterance(self):
+        from rasa.core.channels.voice_stream.asr.asr_event import NewTranscript, UserIsSpeaking
+        from rasa.core.channels.voice_stream.audio_bytes import L16_16KHZ
+
+        from voicerouter.providers.speechmatics import SpeechmaticsASR
+
+        engine = SpeechmaticsASR.from_config_dict(
+            {"language_map": {"en": {"language": "en"}}, "operating_point": "enhanced", "max_delay": 1.0,
+             "enable_partials": True, "end_of_utterance_silence_trigger": 0.7},
+            L16_16KHZ, "en",
+        )
+        start = engine._start_recognition_message()["transcription_config"]
+        self.assertEqual(start["conversation_config"], {"end_of_utterance_silence_trigger": 0.7})
+        held = [engine.engine_event_to_asr_event(self._msg("AddTranscript", t)) for t in ("Hello,", "this is", "Priya.")]
+        self.assertTrue(all(isinstance(e, UserIsSpeaking) for e in held))
+        done = engine.engine_event_to_asr_event(self._msg("EndOfUtterance"))
+        self.assertIsInstance(done, NewTranscript)
+        self.assertEqual(done.text, "Hello, this is Priya.")
+        # A second end of utterance with nothing new said sends nothing.
+        self.assertIsNone(engine.engine_event_to_asr_event(self._msg("EndOfUtterance")))
+        # A bare "Yes." is one segment and still becomes a transcript.
+        engine.engine_event_to_asr_event(self._msg("AddTranscript", "Yes."))
+        self.assertEqual(engine.engine_event_to_asr_event(self._msg("EndOfUtterance")).text, "Yes.")
+
+    def test_additional_vocab_is_sent_in_start_recognition(self):
+        from rasa.core.channels.voice_stream.audio_bytes import L16_16KHZ
+
+        from voicerouter.providers.speechmatics import SpeechmaticsASR
+
+        engine = SpeechmaticsASR.from_config_dict(
+            {"language_map": {"en": {"language": "en"}}, "operating_point": "enhanced", "max_delay": 1.0,
+             "enable_partials": True,
+             "additional_vocab": [{"content": "Brightmart", "sounds_like": ["bright mart"]}, "Raghunathan"]},
+            L16_16KHZ, "en",
+        )
+        vocab = engine._start_recognition_message()["transcription_config"]["additional_vocab"]
+        self.assertEqual(vocab, [{"content": "Brightmart", "sounds_like": ["bright mart"]}, {"content": "Raghunathan"}])
+        self.assertNotIn("additional_vocab", self._engine()._start_recognition_message()["transcription_config"])
+
+    def test_the_installed_client_rejects_the_legacy_keyword(self):
+        """Pins the reason for the fix to the installed websockets."""
+        import inspect
+
+        from websockets.asyncio.client import connect
+
+        self.assertIn("additional_headers", inspect.signature(connect.__init__).parameters)
+
+
 class TestVendorCatalogue(unittest.TestCase):
     """CATALOGUE is data nothing imports at runtime — that is its point, and
     also its risk. A typo'd dotted path or a renamed engine class would only
