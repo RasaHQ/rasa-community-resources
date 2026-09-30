@@ -62,6 +62,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | HarborCover quote and bind on GPT (text) | HarborCover quotes assistant | Insurance / casebook case build | [`mantle-text-insurance-quote-bind-gpt`](mantle-text-insurance-quote-bind-gpt) | 2026-09-30 |
 | Juniper Mobile connectivity recovery on GPT (text) | Juniper Mobile connection support | Telecom / casebook case build | [`mantle-text-telco-diagnostics-gpt`](mantle-text-telco-diagnostics-gpt) | 2026-09-30 |
 | Willow Shop guided selling on GPT (text) | Willow Shop accessories assistant | Retail / casebook case build | [`mantle-text-retail-guided-selling-gpt`](mantle-text-retail-guided-selling-gpt) | 2026-09-30 |
+| Horizon Rewards redemption on GPT (text) | Horizon Rewards chat | Travel loyalty / casebook case build | [`mantle-text-travel-redemption-gpt`](mantle-text-travel-redemption-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 

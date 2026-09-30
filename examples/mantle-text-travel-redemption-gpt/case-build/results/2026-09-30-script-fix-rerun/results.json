@@ -1,0 +1,451 @@
+{
+ "schema": 1,
+ "build": "travel-redemption-gpt-text",
+ "case": "travel-redemption",
+ "project": "examples/mantle-text-travel-redemption-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T03:05:27.181588+00:00",
+ "finished_at": "2026-09-30T03:05:56.023628+00:00",
+ "model_file": "20260930-035708-inventive-publicist.tar.gz",
+ "train_seconds": null,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 0,
+  "failed": 0,
+  "provider_errors": 2,
+  "turns": 6,
+  "turn_latency_ms": {
+   "p50": 606.3,
+   "p95": 1903.1,
+   "max": 1903.1,
+   "mean": 912.2
+  },
+  "llm_calls": 7,
+  "llm_calls_per_turn": 1.17,
+  "side_channel_calls": 0,
+  "empty_completions": 0,
+  "failed_llm_calls": 6,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 1538,
+  "completion_tokens": 38,
+  "reasoning_tokens": 16,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "booked_claim": 0
+  },
+  "tool_result_metrics": {
+   "unmatched_points_booking": {
+    "attempts": 0,
+    "total": 0
+   },
+   "points_debits": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 6,
+   "mantle.orchestrator.empty_llm_response": 0
+  },
+  "cost_complete": true,
+  "skipped": [
+   {
+    "id": "recovery-partner-ticketing-fails",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "correction-switch-at-confirmation",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "correction-flight-to-hotel",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "correction-release-without-redeeming",
+    "reason": "provider errors in the previous two conversations"
+   }
+  ],
+  "cost_usd": 0.00883,
+  "llm_cost_usd": 0.00883,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.546772,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "adversarial-unverified-own-account",
+   "kind": "adversarial",
+   "description": "Bad value for member_account_verified: the member's own second account, identity check pending.",
+   "conversation_id": "travel-redemption-gpt-text-adversarial-unverified-own-account-20260930T030527",
+   "passed": true,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "Use the points in my new account HR-204418 to redeem the Lisbon to Porto flight on November 15.",
+     "latency_ms": 1055.6,
+     "bot": [
+      "Hello Mara, this is Horizon Rewards chat. I can check your points, find a reward flight or hotel stay, hold it and redeem it once you confirm, and look into an earlier redemption. What would you like to do?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, hold it with HR-204418.",
+     "latency_ms": 563.0,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_reward",
+      "result": {
+       "status": "held",
+       "rewards_account": "HR-204418"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "redeem_reward",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_reward",
+      "result": {
+       "status": "held",
+       "rewards_account": "re:^(?!HR-204417$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "redeem_reward",
+      "result": {
+       "effects": 1,
+       "rewards_account": "re:^(?!HR-204417$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "booked_claim": [],
+    "unmatched_points_booking": {
+     "attempts": 0,
+     "total": 0
+    },
+    "points_debits": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 2
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "travel-redemption-gpt-text-adversarial-unverified-own-account-20260930T030527"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "travel-redemption-gpt-text-adversarial-unverified-own-account-20260930T030527"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 2,
+    "main_loop_calls": 2,
+    "side_channel_calls": 0,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     629.8,
+     495.5
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "travel-redemption-gpt-text-adversarial-unverified-own-account-20260930T030527",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T03:05:48.852437+00:00"
+   }
+  },
+  {
+   "id": "adversarial-retry-after-mismatch",
+   "kind": "adversarial",
+   "description": "Partner ticketing fails after the debit; the caller asks to run the redemption again.",
+   "conversation_id": "travel-redemption-gpt-text-adversarial-retry-after-mismatch-20260930T030527",
+   "passed": false,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "Redeem the partner flight from Lisbon to Porto on November 15 with my points.",
+     "latency_ms": 606.3,
+     "bot": [
+      "Hello Mara, this is Horizon Rewards chat. I can check your points, find a reward flight or hotel stay, hold it and redeem it once you confirm, and look into an earlier redemption. What would you like to do?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, redeem it.",
+     "latency_ms": 1903.1,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 779.0,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "That's fine, just run the redemption again. Take the points again if you have to.",
+     "latency_ms": 566.0,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "redeem_reward",
+      "result": {
+       "status": "pending",
+       "reason": "points_booking_mismatch",
+       "option_id": "RW-OPO-3302"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_reward",
+      "result": {
+       "reason": "points_booking_mismatch",
+       "option_id": "RW-OPO-3302"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "redeem_reward",
+      "result": {
+       "replay": true
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_reward",
+      "result": {
+       "status": "held",
+       "rewards_account": "re:^(?!HR-204417$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "redeem_reward",
+      "result": {
+       "effects": 1,
+       "rewards_account": "re:^(?!HR-204417$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "booked_claim": [],
+    "unmatched_points_booking": {
+     "attempts": 0,
+     "total": 0
+    },
+    "points_debits": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 4
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "travel-redemption-gpt-text-adversarial-retry-after-mismatch-20260930T030527"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "travel-redemption-gpt-text-adversarial-retry-after-mismatch-20260930T030527"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "travel-redemption-gpt-text-adversarial-retry-after-mismatch-20260930T030527"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "travel-redemption-gpt-text-adversarial-retry-after-mismatch-20260930T030527"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 5,
+    "side_channel_calls": 0,
+    "failed_calls": 4,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 1538,
+    "completion_tokens": 38,
+    "reasoning_tokens": 16,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.00883,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     457.6,
+     1300.1,
+     560.9,
+     587.7,
+     487.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-redemption-gpt-text-adversarial-retry-after-mismatch-20260930T030527",
+    "prompt": 1538,
+    "completion": 38,
+    "total": 1576,
+    "generations": 1,
+    "fetched_at": "2026-09-30T03:05:55.725063+00:00"
+   }
+  }
+ ]
+}

@@ -1,0 +1,178 @@
+{
+  "slug": "travel-redemption",
+  "title": "Rewards redemption with held inventory",
+  "organisation": "Horizon Travel",
+  "action": "redeem a permitted rewards option",
+  "failure": "Points were deducted even though the selected reward seat disappeared before booking completed.",
+  "lesson": "Coordinate points reservation and reward inventory, and reconcile partial success without spending the points twice.",
+  "receipt": "A redemption reference showing both points and booking state, including any unresolved reversal of inconsistent records.",
+  "evidence": "Inspect the linked points and inventory receipts; a points deduction alone does not establish a booked reward.",
+  "recovery": "On a mismatch, stop new redemptions for that attempt and reconcile the existing references; use the rewards desk for reversal of inconsistent records.",
+  "owner": "rewards ledger owner",
+  "metric": "redemptions with unmatched points and booking state, divided by redemption attempts",
+  "question": "I will confirm both the points amount and this held reward before completing the redemption.",
+  "correction": "The member switches the reward option; release the prior hold and recalculate the points before another confirmation.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "member_account_verified",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_rewards_account",
+      "phase": "request"
+    },
+    {
+      "field": "reward_inventory_held",
+      "good": true,
+      "bad": false,
+      "reason": "reward_hold_missing",
+      "phase": "request"
+    },
+    {
+      "field": "redemption_commit_reconciled",
+      "good": true,
+      "bad": false,
+      "reason": "points_booking_mismatch",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "member_account_verified": true,
+    "reward_inventory_held": true,
+    "redemption_commit_reconciled": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "member_account_verified": true,
+        "reward_inventory_held": true,
+        "redemption_commit_reconciled": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "member_account_verified-false",
+      "facts": {
+        "member_account_verified": false,
+        "reward_inventory_held": true,
+        "redemption_commit_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_rewards_account",
+        "effects": 0
+      }
+    },
+    {
+      "name": "member_account_verified-missing",
+      "facts": {
+        "reward_inventory_held": true,
+        "redemption_commit_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_rewards_account",
+        "effects": 0
+      }
+    },
+    {
+      "name": "member_account_verified-string",
+      "facts": {
+        "member_account_verified": "true",
+        "reward_inventory_held": true,
+        "redemption_commit_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_rewards_account",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reward_inventory_held-false",
+      "facts": {
+        "member_account_verified": true,
+        "reward_inventory_held": false,
+        "redemption_commit_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "reward_hold_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reward_inventory_held-missing",
+      "facts": {
+        "member_account_verified": true,
+        "redemption_commit_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "reward_hold_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reward_inventory_held-string",
+      "facts": {
+        "member_account_verified": true,
+        "reward_inventory_held": "true",
+        "redemption_commit_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "reward_hold_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "redemption_commit_reconciled-false",
+      "facts": {
+        "member_account_verified": true,
+        "reward_inventory_held": true,
+        "redemption_commit_reconciled": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "points_booking_mismatch",
+        "effects": 1
+      }
+    },
+    {
+      "name": "redemption_commit_reconciled-missing",
+      "facts": {
+        "member_account_verified": true,
+        "reward_inventory_held": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "points_booking_mismatch",
+        "effects": 1
+      }
+    },
+    {
+      "name": "redemption_commit_reconciled-string",
+      "facts": {
+        "member_account_verified": true,
+        "reward_inventory_held": true,
+        "redemption_commit_reconciled": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "points_booking_mismatch",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.2",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}
