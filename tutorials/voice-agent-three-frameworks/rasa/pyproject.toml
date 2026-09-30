@@ -1,0 +1,25 @@
+# concern: ops
+[project]
+name = "voice-agent-three-frameworks-rasa"
+version = "0.1.0"
+description = "Cedar Clinic refill-request voice agent on Rasa Mantle, one of three builds of the same agent: GPT-5.5, Speechmatics speech in and out, the refill guard in the engine"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "rasa-pro==3.21.0.dev5",
+    # The shared Cedar Clinic domain, the same package the LangGraph and
+    # Strands versions install.
+    "cedar-clinic",
+]
+
+[tool.rasa-catalog]
+# OPENAI_API_KEY trains and runs; SPEECHMATICS_API_KEY is read only when a
+# call starts (the engines are built per call), so training does not need it.
+required-secrets = ["OPENAI_API_KEY"]
+
+[tool.uv.sources]
+cedar-clinic = { path = "../shared/clinic", editable = true }
+
+[tool.uv]
+prerelease = "allow"
+package = false

@@ -1,0 +1,103 @@
+# External integrations for the Rasa Mantle version of the Cedar Clinic voice agent.
+#
+# concern-begin: agent-logic
+# The model, the same for all three versions: gpt-5.5-2026-04-23 at
+# reasoning_effort low, through Rasa's OpenAI client (LiteLLM underneath).
+# Rasa's default reasoning_effort for this model is none; the Northgate
+# block-card build saw GPT-5.5 speak tool calls aloud or announce an action
+# without taking it at none (4 of 24 calls) and not at low.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+# concern-end
+
+# concern-begin: voice-loop
+# The voice loop is Rasa's built-in browser_audio channel: WebSocket, handshake,
+# audio framing, playback markers, turn taking, TTS caching, silence check-ins.
+# Nothing in this folder moves audio. Speechmatics is not a built-in engine on
+# this release, so both engines are named by dotted path to the custom engine
+# classes in engines/speechmatics.py (the voice adapter). The LangGraph and
+# Strands versions make the same Speechmatics calls through shared/speech.
+channels:
+  browser_audio:
+    server_url: localhost
+    # 24 kHz 16-bit PCM both ways: the shared caller fixtures are 24 kHz, and
+    # Speechmatics realtime takes raw pcm_s16le at the stream's rate. The TTS
+    # returns 16 kHz WAV; the engine resamples it to 24 kHz.
+    sample_rate: 24000
+    # The shared spec runner names each call with this header so the clinic
+    # audit log, the tracker and the LLM meter join on one id. Trusted local
+    # transports only: any client can pick any conversation id.
+    external_sender_id_header: X-Rasa-Sender-Id
+    silence_timeout: 30
+    # Barge-in is off, as it is by default on this release (and beta when on).
+    interruptions:
+      enabled: false
+    # Speechmatics realtime, EU endpoint, enhanced operating point.
+    # end_of_utterance_silence_trigger: Speechmatics finalises a word or two at
+    # a time and Rasa takes every transcript as a whole user turn; with 0.7 s
+    # it marks the end of each utterance and the engine sends one transcript
+    # (the Northgate dispute build saw 19 user turns from one 14-second caller
+    # turn without it). additional_vocab: the clinic's medicine names, known
+    # before any call; no patient names.
+    asr:
+      name: engines.speechmatics.SpeechmaticsASR
+      language_map:
+        en:
+          language: en
+      endpoint: wss://eu.rt.speechmatics.com/v2
+      operating_point: enhanced
+      max_delay: 1.0
+      enable_partials: true
+      end_of_utterance_silence_trigger: 0.7
+      additional_vocab: &vocab
+        - Cedar Clinic
+        - lisinopril
+        - atorvastatin
+        - albuterol
+        - budesonide
+        - lorazepam
+        - simvastatin
+        - metformin
+        - sertraline
+        - amoxicillin
+    # Speechmatics text-to-speech (preview API), voice megan, 16 kHz WAV.
+    tts:
+      name: engines.speechmatics.SpeechmaticsTTS
+      endpoint: https://preview.tts.speechmatics.com/generate
+      output_format: wav_16000
+      language_map:
+        en:
+          voice: megan
+  inspector:
+    enabled: true
+    # The inspector turns interruptions on unless told otherwise, which makes
+    # Rasa load a barge-in model from Hugging Face at startup. Off, as above.
+    interruptions:
+      enabled: false
+    asr:
+      name: engines.speechmatics.SpeechmaticsASR
+      language_map:
+        en:
+          language: en
+      endpoint: wss://eu.rt.speechmatics.com/v2
+      operating_point: enhanced
+      max_delay: 1.0
+      enable_partials: true
+      end_of_utterance_silence_trigger: 0.7
+      additional_vocab: *vocab
+    tts:
+      name: engines.speechmatics.SpeechmaticsTTS
+      endpoint: https://preview.tts.speechmatics.com/generate
+      output_format: wav_16000
+      language_map:
+        en:
+          voice: megan
+# concern-end
