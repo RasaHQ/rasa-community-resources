@@ -18,7 +18,7 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 
 ## Start here
 
-**New to Rasa Skills / Mantle voice agents.** Request a free [Developer Edition licence key](https://rasa.com/rasa-pro-developer-edition-license-key-request/), then clone and run the flagship Atlas travel agent:
+**New to Rasa Skills / Mantle voice agents.** Request a free [Developer Edition licence key](https://rasa.community/license/), then clone and run the flagship Atlas travel agent:
 
 1. [`examples/mantle-voice-agent`](examples/mantle-voice-agent) — finished agent you can run with `make install` → `make inspect`
 2. Hosted walkthrough: [Build a Voice AI Agent with Rasa Skills](https://rasa.community/library/tutorials/voice-ai-agent/)
@@ -121,7 +121,7 @@ Resources here typically assume:
 
 - Python 3.11 or later (see each resource’s `Verified with` line)
 - [uv](https://docs.astral.sh/uv/) for dependency management
-- A `RASA_LICENSE` key — the [Developer Edition](https://rasa.com/rasa-pro-developer-edition-license-key-request/) key is free
+- A `RASA_LICENSE` key — the [Developer Edition](https://rasa.community/license/) key is free
 - An LLM provider key, typically `OPENAI_API_KEY`
 - For voice examples: a `DEEPGRAM_API_KEY`
 
