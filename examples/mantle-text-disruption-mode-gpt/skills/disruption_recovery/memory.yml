@@ -1,0 +1,17 @@
+# Written only by find_recovery_options, select_option and
+# hold_recovery_option (never llm_settable), so the option the engine asks the
+# passenger to confirm is always the one the tool resolved from the latest
+# list. One short field per value: Mantle cuts a memory value at 100
+# characters in the prompt, silently.
+# selected_option_id: the option chosen; hold_recovery_option is offered only
+#   while it is set (`requires` in skill.md). A new list clears it.
+# selected_booking_ref: the booking that option recovers.
+# selected_option_summary: flight, date, time and booking, read in the question.
+schema:
+  public:
+    selected_option_id:
+      type: text
+    selected_booking_ref:
+      type: text
+    selected_option_summary:
+      type: text
