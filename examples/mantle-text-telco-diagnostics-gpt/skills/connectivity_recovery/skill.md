@@ -15,7 +15,6 @@ tool_constraints:
       requires_confirmation:
         enabled: true
         utter_for_confirmation: utter_confirm_recovery_step
-        utter_on_user_denial: utter_recovery_step_cancelled
 ---
 
 Help with one of the customer's services: @memory.project.service_1,
@@ -42,10 +41,13 @@ Three kinds of action differ, and you must keep them apart:
    only "reset", ask the question the tool gives you.
 4. When select_recovery_step returns selected, call @tool.run_recovery_step
    with its selection_ref straight away. The engine shows the customer the
-   disruption and asks them to confirm.
+   disruption and asks them to confirm. Do not ask for confirmation
+   yourself first; the engine's question is the confirmation.
 5. If the customer declines, or says someone else is using the connection,
-   decline the confirmation, call @tool.cancel_recovery_step, and keep to
-   read-only diagnostics.
+   decline the confirmation, call @tool.cancel_recovery_step, and say
+   nothing was sent to the hub. Then act on the rest of their message in
+   the same reply: run read-only diagnostics if they asked for a check, or
+   select the different step they now want.
 6. When run_recovery_step returns executed, give the receipt and the
    disruption boundary, and offer diagnostics again. If a tool returns
    blocked, follow its next_step.
