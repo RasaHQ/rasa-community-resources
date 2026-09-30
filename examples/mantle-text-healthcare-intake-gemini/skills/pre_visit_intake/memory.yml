@@ -1,0 +1,32 @@
+# Written only by start_intake, update_intake, check_eligibility and
+# assign_access_followup (never llm_settable), so the intake the engine reads
+# back is always the one the tools hold. One short field per value: Mantle
+# cuts a memory value at 100 characters in the prompt, silently.
+# intake_id: the intake's id.
+# intake_tag: id and version, read in the question; record_intake checks it.
+# intake_visit: visit kind, date and time.
+# intake_contact: the phone number.
+# intake_insurance: payer, member id and policyholder.
+# intake_payer_response: response code, label and what it does not mean.
+# intake_open_question: the patient access desk reference, or none.
+# intake_ready_to_record: "yes" when the payer response is labelled and any
+#   open question has an owner; the engine offers record_intake only then
+#   (`requires` in skill.md).
+schema:
+  public:
+    intake_id:
+      type: text
+    intake_tag:
+      type: text
+    intake_visit:
+      type: text
+    intake_contact:
+      type: text
+    intake_insurance:
+      type: text
+    intake_payer_response:
+      type: text
+    intake_open_question:
+      type: text
+    intake_ready_to_record:
+      type: text
