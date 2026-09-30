@@ -78,6 +78,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Horizon Travel disruption mode on GPT (text, web chat) | Horizon Travel disruption assistant | Travel / casebook case build | [`mantle-text-disruption-mode-gpt`](mantle-text-disruption-mode-gpt) | 2026-09-30 |
 | Amber Grid payment-plan offers on GPT (text, web chat) | Amber Grid billing assistant | Energy billing / casebook case build | [`mantle-text-payment-plan-authority-gpt`](mantle-text-payment-plan-authority-gpt) | 2026-09-30 |
 | Amber Grid home moves on GPT (text, web chat) | Amber Grid home moves assistant | Utilities / casebook case build | [`mantle-text-utilities-service-move-gpt`](mantle-text-utilities-service-move-gpt) | 2026-09-30 |
+| Pine University enrolment and aid enquiries on GPT (text, web chat) | Pine University applicant support | Education / casebook case build | [`mantle-text-education-enrolment-gpt`](mantle-text-education-enrolment-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 
