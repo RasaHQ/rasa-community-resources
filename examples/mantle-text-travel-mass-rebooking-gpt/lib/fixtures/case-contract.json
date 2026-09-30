@@ -1,0 +1,178 @@
+{
+  "slug": "travel-mass-rebooking",
+  "title": "Rebooking during a mass disruption",
+  "organisation": "Horizon Travel",
+  "action": "reserve a recovery itinerary",
+  "failure": "A storm response offered the same last seat to many passengers and confirmed each before capacity was committed.",
+  "lesson": "Use expiring capacity holds, preserve itinerary constraints and distinguish an offer, a hold and a committed replacement.",
+  "receipt": "A committed replacement reference or an explicitly expiring hold with unresolved services listed.",
+  "evidence": "Compare hold expiry and itinerary constraints to the commit receipt; count rejected holds separately from abandoned conversations.",
+  "recovery": "If a hold expires during confirmation, keep the original disruption case and request a new option. Do not reuse the expired hold.",
+  "owner": "disruption recovery owner",
+  "metric": "rebooking confirmations without committed capacity, divided by accepted recovery offers",
+  "question": "I can hold this option until the stated time. It is only confirmed after the booking service accepts it.",
+  "correction": "The passenger needs an accessible connection not in the offer; release the unsuitable hold and search with that requirement.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "itinerary_constraints_met",
+      "good": true,
+      "bad": false,
+      "reason": "unusable_itinerary",
+      "phase": "request"
+    },
+    {
+      "field": "capacity_hold_valid",
+      "good": true,
+      "bad": false,
+      "reason": "hold_expired",
+      "phase": "request"
+    },
+    {
+      "field": "replacement_commit_verified",
+      "good": true,
+      "bad": false,
+      "reason": "replacement_uncommitted",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "itinerary_constraints_met": true,
+    "capacity_hold_valid": true,
+    "replacement_commit_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "itinerary_constraints_met": true,
+        "capacity_hold_valid": true,
+        "replacement_commit_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "itinerary_constraints_met-false",
+      "facts": {
+        "itinerary_constraints_met": false,
+        "capacity_hold_valid": true,
+        "replacement_commit_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unusable_itinerary",
+        "effects": 0
+      }
+    },
+    {
+      "name": "itinerary_constraints_met-missing",
+      "facts": {
+        "capacity_hold_valid": true,
+        "replacement_commit_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unusable_itinerary",
+        "effects": 0
+      }
+    },
+    {
+      "name": "itinerary_constraints_met-string",
+      "facts": {
+        "itinerary_constraints_met": "true",
+        "capacity_hold_valid": true,
+        "replacement_commit_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unusable_itinerary",
+        "effects": 0
+      }
+    },
+    {
+      "name": "capacity_hold_valid-false",
+      "facts": {
+        "itinerary_constraints_met": true,
+        "capacity_hold_valid": false,
+        "replacement_commit_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "hold_expired",
+        "effects": 0
+      }
+    },
+    {
+      "name": "capacity_hold_valid-missing",
+      "facts": {
+        "itinerary_constraints_met": true,
+        "replacement_commit_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "hold_expired",
+        "effects": 0
+      }
+    },
+    {
+      "name": "capacity_hold_valid-string",
+      "facts": {
+        "itinerary_constraints_met": true,
+        "capacity_hold_valid": "true",
+        "replacement_commit_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "hold_expired",
+        "effects": 0
+      }
+    },
+    {
+      "name": "replacement_commit_verified-false",
+      "facts": {
+        "itinerary_constraints_met": true,
+        "capacity_hold_valid": true,
+        "replacement_commit_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "replacement_uncommitted",
+        "effects": 1
+      }
+    },
+    {
+      "name": "replacement_commit_verified-missing",
+      "facts": {
+        "itinerary_constraints_met": true,
+        "capacity_hold_valid": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "replacement_uncommitted",
+        "effects": 1
+      }
+    },
+    {
+      "name": "replacement_commit_verified-string",
+      "facts": {
+        "itinerary_constraints_met": true,
+        "capacity_hold_valid": true,
+        "replacement_commit_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "replacement_uncommitted",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

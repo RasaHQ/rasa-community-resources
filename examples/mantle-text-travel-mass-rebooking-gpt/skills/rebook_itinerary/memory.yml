@@ -1,0 +1,19 @@
+# Written only by hold_recovery_option, resume_hold, release_hold and
+# commit_rebooking (never llm_settable), so the option and the expiry the
+# engine asks the passenger to confirm are always the hold the tool made.
+# One short field per value: Mantle cuts a memory value at 100 characters in
+# the prompt, silently (tests/test_guard.py checks every fixture fits).
+# held_hold_id: the active hold; commit_rebooking is withheld while it is empty.
+# held_flight: the held option, read in the confirmation question.
+# held_until: when the hold expires on the fixture clock.
+# held_open_services: services the booking service does not settle at commit.
+schema:
+  public:
+    held_hold_id:
+      type: text
+    held_flight:
+      type: text
+    held_until:
+      type: text
+    held_open_services:
+      type: text
