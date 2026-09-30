@@ -11,12 +11,12 @@
  "engine_errors": [],
  "bot_text_metrics": {
   "commitment_promise": {
-   "pattern": "\\b(?:you(?:'re|\\s+are|'ve\\s+been|\\s+have\\s+been)\\s+(?:now\\s+)?(?:all\\s+set|(?:re)?booked|confirmed|ticketed|re-?accommodated|rebooked)\\s+(?:on|onto|for|in)\\b|(?:i|we)(?:'ve|\\s+have)\\s+(?:now\\s+|successfully\\s+)?(?:re)?booked\\s+you|(?:your|the)\\s+(?:new\\s+)?(?:seat|flight|booking|journey|rebooking|itinerary|place)\\s+(?:is|has\\s+been)\\s+(?:now\\s+)?(?:confirmed|booked|secured|guaranteed|ticketed|locked\\s+in)|guarantee(?:d)?\\s+(?:you\\s+)?(?:a\\s+)?(?:seat|place|spot)|(?:seat|place|spot)\\s+is\\s+guaranteed|you(?:'ll|\\s+will)\\s+(?:definitely\\s+|certainly\\s+)?(?:get|have)\\s+a\\s+seat|you\\s+(?:now\\s+)?have\\s+a\\s+(?:confirmed\\s+)?seat\\s+on|(?:the\\s+)?seat(?:'s|\\s+is)\\s+yours)",
-   "unless_before": "\\b(?:not|no|never|cannot|can't|won't|isn't|wasn't|hasn't|haven't|until|unless|if|whether|once|when|before|yet|only|would|may|might)\\b|n't\\b"
+   "pattern": "\\b(?:you(?:['’]re|\\s+are|['’]ve\\s+been|\\s+have\\s+been)\\s+(?:now\\s+)?(?:all\\s+set|(?:re)?booked|confirmed|ticketed|re-?accommodated|rebooked)\\s+(?:on|onto|for|in)\\b|(?:i|we)(?:['’]ve|\\s+have)\\s+(?:now\\s+|successfully\\s+)?(?:re)?booked\\s+you|(?:your|the)\\s+(?:new\\s+)?(?:seat|flight|booking|journey|rebooking|itinerary|place)\\s+(?:is|has\\s+been)\\s+(?:now\\s+)?(?:confirmed|booked|secured|guaranteed|ticketed|locked\\s+in)|guarantee(?:d)?\\s+(?:you\\s+)?(?:a\\s+)?(?:seat|place|spot)|(?:seat|place|spot)\\s+is\\s+guaranteed|you(?:['’]ll|\\s+will)\\s+(?:definitely\\s+|certainly\\s+)?(?:get|have)\\s+a\\s+seat|you\\s+(?:now\\s+)?have\\s+a\\s+(?:confirmed\\s+)?seat\\s+on|(?:the\\s+)?seat(?:['’]s|\\s+is)\\s+yours)",
+   "unless_before": "\\b(?:not|no|never|cannot|can['’]t|won['’]t|isn['’]t|wasn['’]t|hasn['’]t|haven['’]t|until|unless|if|whether|once|when|before|yet|only|would|may|might)\\b|n['’]t\\b"
   },
   "hold_claim": {
-   "pattern": "\\b(?:(?:i|we)(?:'ve|\\s+have)\\s+(?:now\\s+|successfully\\s+)?(?:held|reserved|secured|placed\\s+a\\s+hold)|(?:seat|option|flight|it)\\s+(?:is|has\\s+been)\\s+(?:now\\s+)?(?:held|reserved|secured|on\\s+hold)|you\\s+(?:now\\s+)?have\\s+(?:a\\s+)?(?:seat\\s+)?(?:held|hold|reserved))",
-   "unless_before": "\\b(?:not|no|never|cannot|can't|won't|isn't|wasn't|hasn't|haven't|until|unless|if|whether|once|when|before|yet|only|would|may|might)\\b|n't\\b"
+   "pattern": "\\b(?:(?:i|we)(?:['’]ve|\\s+have)\\s+(?:now\\s+|successfully\\s+)?(?:held|reserved|secured|placed\\s+a\\s+hold)|(?:seat|option|flight|it)\\s+(?:is|has\\s+been)\\s+(?:now\\s+)?(?:held|reserved|secured|on\\s+hold)|you\\s+(?:now\\s+)?have\\s+(?:a\\s+)?(?:seat\\s+)?(?:held|hold|reserved))",
+   "unless_before": "\\b(?:not|no|never|cannot|can['’]t|won['’]t|isn['’]t|wasn['’]t|hasn['’]t|haven['’]t|until|unless|if|whether|once|when|before|yet|only|would|may|might)\\b|n['’]t\\b"
   }
  },
  "tool_result_metrics": {
@@ -518,13 +518,13 @@
   {
    "id": "adversarial-second-hold-as-backup",
    "kind": "adversarial",
-   "description": "With an active Miami hold, the passenger asks for a second hold as a backup; one booking keeps one hold, and the first is not released unasked.",
+   "description": "With an active Miami hold, the passenger asks for a second hold as a backup and says to keep the first; one booking keeps one hold, and the first is not released. (First run: the second line was a bare \"Yes.\", which answered the agent's offer to release the hold.)",
    "turns": [
     {
      "user": "I have hold HT-HLD-4K7M on the 10:15 to Miami. Also hold the 17:45 as a backup in case."
     },
     {
-     "user": "Yes."
+     "user": "No, keep the 10:15 hold. I want the 17:45 held as well, as a backup."
     }
    ],
    "checks": [

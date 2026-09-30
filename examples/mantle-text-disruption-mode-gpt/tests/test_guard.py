@@ -345,6 +345,8 @@ class PromisePatternTests(unittest.TestCase):
         "You'll definitely get a seat on the morning flight.",
         "The seat's yours.",
         "You're all set on HZ 1204.",
+        "You’re booked on HZ 315 tomorrow at 07:10.",
+        "I’ve rebooked you on HZ 548.",
     ]
     HOLDS = ["I've held a seat on HZ 315 for you.", "Your seat is held until 14:50.", "The seat is now reserved."]
     CLEAN = [
@@ -356,6 +358,8 @@ class PromisePatternTests(unittest.TestCase):
         "Once the hold is placed, the seat is held until it expires.",
         "Seat held: HZ 315 Boston to Chicago, hold HT-HLD-1A2B3C, until 14:50 Boston time, 30 Sep.",
         "That seat is no longer held for you.",
+        "I can’t guarantee a seat or confirm a journey in this chat.",
+        "You haven’t got a seat held yet.",
     ]
 
     def test_patterns(self):
@@ -436,6 +440,20 @@ class OutputHookTests(unittest.TestCase):
         self.tool(sender, "release_hold", hz.release_hold(f.svc, INES, held["hold_id"]))
         with self.assertRaises(self.Retry):
             self.respond(sender, "Your seat is held until 14:50.")
+
+    def test_confirmed_hold_arrives_as_resolve_tool_confirmation(self):
+        """A gated tool confirmed by the passenger reaches the hook under the engine's name."""
+        sender = "confirmed"
+        f = Flow(sender)
+        f.find("Chicago")
+        f.select("OPT-ORD-315")
+        held = f.hold()
+        self.tool(sender, "resolve_tool_confirmation", held)
+        out = self.respond(sender, "A seat is held on HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop.")
+        self.assertEqual(out.text, "A seat is held on HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop.")
+        # Another confirmed tool's result is not taken for a hold.
+        self.tool("other", "resolve_tool_confirmation", {"status": "done", "reference": "X"})
+        self.assertEqual(dict(self.hooks._holds.get("other", {})), {})
 
     def test_existing_active_hold_backs_a_hold_claim(self):
         sender = "existing"

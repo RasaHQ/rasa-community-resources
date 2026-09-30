@@ -27,6 +27,10 @@ passenger get a message in that turn, and from whom. Turns where the model
 closed the skill (complete_skill) with no text of its own after an outcome
 are listed as silent completions.
 
+The opposite error is listed too: a bot message that says no seat is held
+(DENIED_HOLD) while a hold is active, as the output hook's fallback did in
+the first run when it missed confirmed holds.
+
 Also: the wait for the answer, tracker time from each passenger message to
 the last bot message of that turn.
 
@@ -38,6 +42,7 @@ trackers.
 from __future__ import annotations
 
 import json
+import re
 import statistics
 import sys
 from pathlib import Path
@@ -47,6 +52,7 @@ sys.path.insert(0, str(PROJECT))
 
 from lib import recovery as hz  # noqa: E402
 
+DENIED_HOLD = re.compile(r"\bno seat is held\b|\bnothing is held\b", re.IGNORECASE)
 REFUSALS = ("capacity_not_reserved", "stale_incident_state", "no_recovery_channel")
 
 
@@ -106,7 +112,7 @@ def outcome_of(tool: str, res: dict):
 
 def analyse(run: Path) -> dict:
     report = {"run": run.name, "sessions": 0, "sessions_with_unbacked_promise": [], "unbacked_messages": [],
-              "backed_hold_claims": 0, "outcomes": [], "silent_completions": [], "tool_receipt_messages": 0,
+              "backed_hold_claims": 0, "denied_active_hold": [], "outcomes": [], "silent_completions": [], "tool_receipt_messages": 0,
               "answer_wait_ms": []}
     for path in sorted((run / "trackers").glob("*.json")):
         conv = path.stem
@@ -121,6 +127,9 @@ def analyse(run: Path) -> dict:
             if kind == "bot" and i not in receipts:
                 if (e.get("metadata") or {}).get("mantle_response_source") == "verbatim":
                     continue
+                if any(active.values()) and DENIED_HOLD.search(e.get("text") or ""):
+                    report["denied_active_hold"].append({"conversation": conv, "turn": e["_turn"],
+                                                         "text": e.get("text")})
                 for claim, sentence in hz.promise_claims(e.get("text") or ""):
                     if claim == "hold" and any(active.values()):
                         report["backed_hold_claims"] += 1
@@ -188,6 +197,9 @@ def main() -> int:
           f"{report['backed_hold_claims']} hold claims backed by an active hold)")
     for m in report["unbacked_messages"]:
         print(f"    {m['conversation']} turn {m['turn']} [{m['kind']}]: {m['sentence']}")
+    print(f"  messages saying no seat is held while a hold was active: {len(report['denied_active_hold'])}")
+    for m in report["denied_active_hold"]:
+        print(f"    {m['conversation']} turn {m['turn']}: {m['text']}")
     for what in ("hold", "queue", "release", "refusal"):
         items = [o for o in report["outcomes"] if o["outcome"] == what]
         if not items:

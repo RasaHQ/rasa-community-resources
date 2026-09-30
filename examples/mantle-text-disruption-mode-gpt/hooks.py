@@ -17,7 +17,13 @@ states. After two consecutive retries the text is replaced with a fixed
 answer built from tool data.
 
 Mantle hands ``modify_tool_result`` the tool's result as serialized JSON
-text, not a dict (found in the HarborCover case build), so it is parsed.
+text, not a dict (found in the HarborCover case build), so it is parsed. A
+confirmed ``hold_recovery_option`` runs inside the engine's
+``resolve_tool_confirmation`` and reaches the hook under that name (found in
+the HarborCover quote build, and missed here in the first live run: the hook
+never saw a confirmed hold, so it replaced two correct "the seat is held"
+replies with "No seat is held"). A result under that name that carries a
+hold id is recorded as a hold.
 
 Each intervention is logged as ``horizon.promise_guard`` with the sender id,
 so the case-build harness counts how often the model tried.
@@ -43,6 +49,8 @@ log = structlog.get_logger()
 
 MAX_CONSECUTIVE_RETRIES = 2
 HOLD_TOOLS = {"hold_recovery_option", "check_hold", "release_hold"}
+# The engine's name for a gated tool's call once the passenger confirmed it.
+CONFIRMATION_TOOL = "resolve_tool_confirmation"
 
 # Per conversation, in process memory: each hold the tools reported, and retries.
 _holds: dict[str, dict[str, dict]] = defaultdict(dict)
@@ -103,10 +111,17 @@ def fallback_text(holds: dict[str, dict]) -> str:
     return " ".join(lines) + " A hold is not a confirmed journey."
 
 
+def is_hold_result(tool_name: str, value: dict) -> bool:
+    if tool_name in HOLD_TOOLS:
+        return True
+    return tool_name == CONFIRMATION_TOOL and "hold_id" in value and "option_id" in value
+
+
 @modify_tool_result()
 async def remember_hold_states(payload: ToolResultPayload) -> ToolResultPayload:
-    if payload.tool_name in HOLD_TOOLS:
-        remember(_holds[payload.sender_id], payload.tool_name, _as_dict(payload.value))
+    value = _as_dict(payload.value)
+    if is_hold_result(payload.tool_name, value):
+        remember(_holds[payload.sender_id], payload.tool_name, value)
     return payload
 
 

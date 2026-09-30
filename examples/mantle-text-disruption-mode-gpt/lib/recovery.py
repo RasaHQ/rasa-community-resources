@@ -504,31 +504,34 @@ def customer_receipt(tool: str, result: dict) -> Optional[str]:
 # A sentence that commits a journey. The chat never commits one, so any such
 # sentence is an unbacked promise.
 COMMITMENT_PATTERN = (
-    r"\b(?:you(?:'re|\s+are|'ve\s+been|\s+have\s+been)\s+(?:now\s+)?"
+    r"\b(?:you(?:['’]re|\s+are|['’]ve\s+been|\s+have\s+been)\s+(?:now\s+)?"
     r"(?:all\s+set|(?:re)?booked|confirmed|ticketed|re-?accommodated|rebooked)\s+(?:on|onto|for|in)\b"
-    r"|(?:i|we)(?:'ve|\s+have)\s+(?:now\s+|successfully\s+)?(?:re)?booked\s+you"
+    r"|(?:i|we)(?:['’]ve|\s+have)\s+(?:now\s+|successfully\s+)?(?:re)?booked\s+you"
     r"|(?:your|the)\s+(?:new\s+)?(?:seat|flight|booking|journey|rebooking|itinerary|place)\s+(?:is|has\s+been)\s+"
     r"(?:now\s+)?(?:confirmed|booked|secured|guaranteed|ticketed|locked\s+in)"
     r"|guarantee(?:d)?\s+(?:you\s+)?(?:a\s+)?(?:seat|place|spot)"
     r"|(?:seat|place|spot)\s+is\s+guaranteed"
-    r"|you(?:'ll|\s+will)\s+(?:definitely\s+|certainly\s+)?(?:get|have)\s+a\s+seat"
+    r"|you(?:['’]ll|\s+will)\s+(?:definitely\s+|certainly\s+)?(?:get|have)\s+a\s+seat"
     r"|you\s+(?:now\s+)?have\s+a\s+(?:confirmed\s+)?seat\s+on"
-    r"|(?:the\s+)?seat(?:'s|\s+is)\s+yours)"
+    r"|(?:the\s+)?seat(?:['’]s|\s+is)\s+yours)"
 )
 # A sentence that says a seat is held. Backed only while a hold the tools
 # placed or found is active in this conversation.
 HOLD_CLAIM_PATTERN = (
-    r"\b(?:(?:i|we)(?:'ve|\s+have)\s+(?:now\s+|successfully\s+)?(?:held|reserved|secured|placed\s+a\s+hold)"
+    r"\b(?:(?:i|we)(?:['’]ve|\s+have)\s+(?:now\s+|successfully\s+)?(?:held|reserved|secured|placed\s+a\s+hold)"
     r"|(?:seat|option|flight|it)\s+(?:is|has\s+been)\s+(?:now\s+)?(?:held|reserved|secured|on\s+hold)"
     r"|you\s+(?:now\s+)?have\s+(?:a\s+)?(?:seat\s+)?(?:held|hold|reserved))"
 )
 PROMISE_HEDGE_PATTERN = (
-    r"\b(?:not|no|never|cannot|can't|won't|isn't|wasn't|hasn't|haven't|until|unless|if|whether|once|when|before|"
-    r"yet|only|would|may|might)\b|n't\b"
+    r"\b(?:not|no|never|cannot|can['’]t|won['’]t|isn['’]t|wasn['’]t|hasn['’]t|haven['’]t|until|unless|if|whether|once|when|before|"
+    r"yet|only|would|may|might)\b|n['’]t\b"
 )
 _COMMIT = re.compile(COMMITMENT_PATTERN, re.IGNORECASE)
 _HOLD = re.compile(HOLD_CLAIM_PATTERN, re.IGNORECASE)
 _HEDGE = re.compile(PROMISE_HEDGE_PATTERN, re.IGNORECASE)
+# GPT-5.5 writes both ' and ’ ("can’t", "you’re"); every apostrophe in the
+# patterns above accepts either (found in the first live run: "I can’t
+# guarantee a seat" read as a promise, since the hedge knew only ').
 _SENTENCE = re.compile(r"(?<=[.!?])\s+")
 
 
