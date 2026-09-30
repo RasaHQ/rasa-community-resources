@@ -147,7 +147,7 @@ test holds every receipt under 380.
 
 ## Results
 
-**Main run** (`case-build/results/2026-09-30-gpt-5.5-low/`): 16 calls, 50
+**Main run** (`2026-09-30-gpt-5.5-low/`, in `case-build/results/`): 16 calls, 50
 spoken caller turns. Pass or fail is read from the tracker's tool calls and
 results only.
 
