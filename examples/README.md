@@ -59,6 +59,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Cedar Clinic refill requests on GPT, speech on the Mac (browser voice) | Cedar Clinic prescription line | Healthcare / casebook case build, self-hosted speech | [`mantle-voice-healthcare-refill-request-gpt-local`](mantle-voice-healthcare-refill-request-gpt-local) | 2026-09-30 |
 | Northgate transfers on GPT (text) | Northgate Bank transfers assistant | Retail banking / casebook case build | [`mantle-text-banking-transfer-gpt`](mantle-text-banking-transfer-gpt) | 2026-09-30 |
 | Northgate risk step-up on GPT (text, web chat) | Northgate payments assistant | Retail banking / casebook case build | [`mantle-text-banking-risk-step-up-gpt`](mantle-text-banking-risk-step-up-gpt) | 2026-09-30 |
+| Northgate transaction search on GPT (text, web chat) | Northgate Bank transactions assistant | Retail banking / casebook case build | [`mantle-text-banking-statement-search-gpt`](mantle-text-banking-statement-search-gpt) | 2026-09-30 |
 | HarborCover quote and bind on GPT (text) | HarborCover quotes assistant | Insurance / casebook case build | [`mantle-text-insurance-quote-bind-gpt`](mantle-text-insurance-quote-bind-gpt) | 2026-09-30 |
 | Juniper Mobile connectivity recovery on GPT (text) | Juniper Mobile connection support | Telecom / casebook case build | [`mantle-text-telco-diagnostics-gpt`](mantle-text-telco-diagnostics-gpt) | 2026-09-30 |
 | Willow Shop guided selling on GPT (text) | Willow Shop accessories assistant | Retail / casebook case build | [`mantle-text-retail-guided-selling-gpt`](mantle-text-retail-guided-selling-gpt) | 2026-09-30 |
@@ -70,6 +71,12 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Northgate advisor appointments on Claude with Deepgram and Rime (browser voice, en-GB caller) | Northgate Bank appointments | Retail banking / casebook case build | [`mantle-voice-banking-advisor-appointment-claude`](mantle-voice-banking-advisor-appointment-claude) | 2026-09-30 |
 | Orchard Works IT helpdesk access requests on Claude (text, web chat; Slack target) | Orchard Works IT helpdesk | Internal IT / casebook case build | [`mantle-text-internal-it-helpdesk-claude`](mantle-text-internal-it-helpdesk-claude) | 2026-09-30 |
 | HarborCover claim intake on Claude (text, web chat; Microsoft Teams target) | HarborCover claims intake assistant | Insurance / casebook case build | [`mantle-text-insurance-file-claim-claude`](mantle-text-insurance-file-claim-claude) | 2026-09-30 |
+| Cedar Clinic pre-visit intake on Gemini (text, web chat) | Cedar Clinic pre-visit intake chat | Healthcare / casebook case build | [`mantle-text-healthcare-intake-gemini`](mantle-text-healthcare-intake-gemini) | 2026-09-30 |
+| HarborCover roadside assistance on Claude with Deepgram (browser voice) | HarborCover roadside assistance | Insurance / casebook case build | [`mantle-voice-insurance-roadside-claude`](mantle-voice-insurance-roadside-claude) | 2026-09-30 |
+| Northgate collections on Gemini with Deepgram and Rime (browser voice, US Spanish) | Northgate pagos | Retail banking / casebook case build | [`mantle-voice-banking-collections-gemini`](mantle-voice-banking-collections-gemini) | 2026-09-30 |
+| Horizon Travel storm rebooking on GPT (text, web chat) | Horizon Travel rebooking chat | Travel disruption / casebook case build | [`mantle-text-travel-mass-rebooking-gpt`](mantle-text-travel-mass-rebooking-gpt) | 2026-09-30 |
+| Horizon Travel disruption mode on GPT (text, web chat) | Horizon Travel disruption assistant | Travel / casebook case build | [`mantle-text-disruption-mode-gpt`](mantle-text-disruption-mode-gpt) | 2026-09-30 |
+| Amber Grid payment-plan offers on GPT (text, web chat) | Amber Grid billing assistant | Energy billing / casebook case build | [`mantle-text-payment-plan-authority-gpt`](mantle-text-payment-plan-authority-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 

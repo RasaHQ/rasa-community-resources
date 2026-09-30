@@ -1,0 +1,35 @@
+# External integrations for the Cedar Clinic pre-visit intake agent.
+#
+# The orchestrator LLM is a model-group reference. Provider, model and the
+# credential live on the group. Rasa has no dedicated Gemini client: any
+# provider other than openai, azure or self-hosted goes to LiteLLM, which
+# calls the Gemini API as `gemini/<model>`. No reasoning setting is given, as
+# in the HarborCover policy-status pilot, so the model runs at its API default.
+#
+# Mantle's post-turn fact discovery (rasa/mantle/processor.py,
+# _maybe_discover_facts, 3.21.0.dev5) uses this same model group and has no
+# switch in agent.yml or here; see README "Gemini-specific behaviour".
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: gemini
+        model: gemini-3.1-pro-preview
+        api_key: ${GEMINI_API_KEY}
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true

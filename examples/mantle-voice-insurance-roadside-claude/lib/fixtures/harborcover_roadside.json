@@ -1,0 +1,113 @@
+{
+  "organisation": "HarborCover (fictional insurer)",
+  "note": "Invented fixture. Every person, policy, vehicle, address, place, roadside provider and reference here is fictional. Coordinates are kilometres on an invented fixture map, not latitude and longitude.",
+  "case_slug": "insurance-roadside",
+  "fictional_providers": [
+    "Ridgeline Towing",
+    "Easton Flatbed Services",
+    "Harbor Hook and Flatbed",
+    "Grayhaven Heavy Recovery",
+    "Millbrook Road Help",
+    "Quarry Hill Auto",
+    "Coastline Roadside"
+  ],
+  "services": {
+    "tow": {"label": "a tow"},
+    "jump_start": {"label": "a jump start"},
+    "flat_tyre": {"label": "a flat tire change"},
+    "lockout": {"label": "a lockout"},
+    "fuel": {"label": "a fuel delivery"}
+  },
+  "tow_equipment": {
+    "any_tow": ["wheel_lift", "flatbed", "heavy_duty"],
+    "flatbed": ["flatbed"],
+    "heavy_duty": ["heavy_duty"]
+  },
+  "policies": {
+    "HC-AU-440218": {
+      "first_name": "Maria",
+      "last_name": "Delgado",
+      "registered_address": "HOME-ALDER",
+      "vehicles": {
+        "VEH-4402-1": {"label": "2024 Volta Arc electric sedan", "tow_requirement": "flatbed",
+                       "why": "electric, all-wheel drive: tow only on a flatbed"}
+      }
+    },
+    "HC-AU-517306": {
+      "first_name": "James",
+      "last_name": "Whitfield",
+      "registered_address": "HOME-BIRCH",
+      "vehicles": {
+        "VEH-5173-1": {"label": "2019 Corvan Ridgeback pickup", "tow_requirement": "any_tow",
+                       "why": "two-wheel drive, standard weight: any tow truck"}
+      }
+    },
+    "HC-AU-362941": {
+      "first_name": "Priya",
+      "last_name": "Raman",
+      "registered_address": "HOME-QUARRY",
+      "vehicles": {
+        "VEH-3629-1": {"label": "2021 Halden Transit 350 van", "tow_requirement": "heavy_duty",
+                       "why": "over 10,000 pounds loaded: heavy-duty tow only"},
+        "VEH-3629-2": {"label": "2016 Corvan Sprite hatchback", "tow_requirement": "any_tow",
+                       "why": "front-wheel drive, standard weight: any tow truck"}
+      }
+    },
+    "HC-AU-608175": {
+      "first_name": "Kevin",
+      "last_name": "O'Hara",
+      "registered_address": "HOME-LINDEN",
+      "vehicles": {
+        "VEH-6081-1": {"label": "2022 Volta Arc electric sedan", "tow_requirement": "flatbed",
+                       "why": "electric, all-wheel drive: tow only on a flatbed"}
+      }
+    }
+  },
+  "places": {
+    "R12-N-EXIT14": {"label": "Route 12 northbound, just past exit 14, Millbrook", "area": "route12",
+                     "xy": [10, 20], "match": {"road": "12", "exit": "14"}},
+    "R12-N-EXIT16": {"label": "Route 12 northbound, at exit 16, Millbrook", "area": "route12",
+                     "xy": [10, 26], "match": {"road": "12", "exit": "16"}},
+    "R12-S-MM37": {"label": "Route 12 southbound, at mile marker 37", "area": "route12",
+                   "xy": [12, 31], "match": {"road": "12", "mile_marker": "37"}},
+    "KESTREL-PLAZA": {"label": "Kestrel Plaza parking lot, 2200 Harbor Road, Easton Falls", "area": "easton_falls",
+                      "xy": [25, 8], "match": {"words": ["kestrel"]}, "number": "2200", "street": "harbor"},
+    "HARBOR-MARKET": {"label": "Harbor Road Market parking lot, 2150 Harbor Road, Easton Falls",
+                      "area": "easton_falls", "xy": [24.6, 8.1], "match": {"words": ["market"]},
+                      "number": "2150", "street": "harbor"},
+    "FERRY-LOT": {"label": "Grayhaven ferry terminal parking lot, 5 Wharf Street", "area": "grayhaven",
+                  "xy": [40, 2], "match": {"words": ["ferry"]}, "number": "5", "street": "wharf"},
+    "HOME-ALDER": {"label": "301 Alder Court, Easton Falls", "area": "easton_falls", "xy": [22, 10],
+                   "number": "301", "street": "alder"},
+    "HOME-BIRCH": {"label": "14 Birch Lane, Millbrook", "area": "millbrook", "xy": [8, 15],
+                   "number": "14", "street": "birch"},
+    "HOME-QUARRY": {"label": "77 Quarry Road, Grayhaven", "area": "grayhaven", "xy": [38, 5],
+                    "number": "77", "street": "quarry"},
+    "HOME-LINDEN": {"label": "9 Linden Way, Millbrook", "area": "millbrook", "xy": [6, 18],
+                    "number": "9", "street": "linden"}
+  },
+  "providers": {
+    "PRV-RT": {"name": "Ridgeline Towing", "fictional": true, "equipment": ["wheel_lift"], "services": ["tow"],
+               "areas": ["route12", "millbrook"], "xy": [9, 21],
+               "answers": {"kind": "accept", "eta_minutes": 25}},
+    "PRV-EF": {"name": "Easton Flatbed Services", "fictional": true, "equipment": ["flatbed"], "services": ["tow"],
+               "areas": ["route12", "millbrook", "easton_falls"], "xy": [20, 12],
+               "answers": {"kind": "accept", "eta_minutes": 45}},
+    "PRV-HH": {"name": "Harbor Hook and Flatbed", "fictional": true, "equipment": ["flatbed"], "services": ["tow"],
+               "areas": ["easton_falls", "grayhaven"], "xy": [26, 7],
+               "answers": {"kind": "decline", "why": "no truck free"}},
+    "PRV-GH": {"name": "Grayhaven Heavy Recovery", "fictional": true, "equipment": ["heavy_duty", "flatbed"],
+               "services": ["tow"], "areas": ["route12", "grayhaven"], "xy": [36, 6],
+               "answers": {"kind": "accept", "eta_minutes": 70}},
+    "PRV-MR": {"name": "Millbrook Road Help", "fictional": true, "equipment": ["service_van"],
+               "services": ["jump_start", "flat_tyre", "lockout", "fuel"],
+               "areas": ["millbrook", "route12", "easton_falls"], "xy": [10, 13],
+               "answers": {"kind": "accept", "eta_minutes": 30}},
+    "PRV-QH": {"name": "Quarry Hill Auto", "fictional": true, "equipment": ["service_van"],
+               "services": ["jump_start", "flat_tyre", "lockout"], "areas": ["millbrook"], "xy": [4, 21],
+               "answers": {"kind": "accept_on_first_check", "eta_minutes": 20}},
+    "PRV-CR": {"name": "Coastline Roadside", "fictional": true, "equipment": ["service_van"],
+               "services": ["jump_start", "flat_tyre", "lockout", "fuel"], "areas": ["grayhaven"], "xy": [38, 4],
+               "answers": {"kind": "accept_no_eta"}}
+  }
+}

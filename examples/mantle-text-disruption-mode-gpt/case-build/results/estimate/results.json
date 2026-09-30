@@ -1,0 +1,370 @@
+{
+ "schema": 1,
+ "build": "disruption-mode-gpt-text",
+ "case": "disruption-mode",
+ "project": "examples/mantle-text-disruption-mode-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T17:08:45.327444+00:00",
+ "finished_at": "2026-09-30T17:09:23.627928+00:00",
+ "model_file": "20260930-180832-mature-stew.tar.gz",
+ "train_seconds": null,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 5,
+  "turn_latency_ms": {
+   "p50": 5511.7,
+   "p95": 8954.9,
+   "max": 8954.9,
+   "mean": 6098.9
+  },
+  "llm_calls": 13,
+  "llm_calls_per_turn": 2.6,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 42108,
+  "completion_tokens": 706,
+  "reasoning_tokens": 143,
+  "cached_prompt_tokens": 15872,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "commitment_promise": 0,
+   "hold_claim": 0
+  },
+  "tool_result_metrics": {
+   "holds_placed": {
+    "attempts": 2,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "horizon.promise_guard": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 2,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.160296,
+  "llm_cost_usd": 0.160296,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "recovery-stale-then-rehold-denver",
+   "kind": "recovery",
+   "description": "After the stale refusal the agent searches again at revision 5 and the passenger holds the earliest new option.",
+   "conversation_id": "disruption-mode-gpt-text-recovery-stale-then-rehold-denver-20260930T170845",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "My Denver flight's cancelled. What can you get me tomorrow?",
+     "latency_ms": 8954.9,
+     "bot": [
+      "Hello Ines, this is Horizon Travel. The storm has cancelled flights from Boston. I can tell you what is happening, look for another flight, try to hold a seat for you, or put you in the recovery queue. Which trip is it about?",
+      "For your Denver booking HT-9D2K8, I found one recovery option for tomorrow:",
+      "- HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop \u2014 4 seats shown",
+      "That seat count is only information and is not a hold. If you want this option, I can try to hold it for you."
+     ]
+    },
+    {
+     "user": "The 8:30 please.",
+     "latency_ms": 3440.4,
+     "bot": [
+      "Options are changing during the disruption. Shall I try to hold HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 7278.4,
+     "bot": [
+      "No seat held: the disruption plan changed after these options were listed, so the list is out of date. I need to look again.",
+      "The earlier 8:30 option is no longer available from the current disruption list, so nothing was held.",
+      "Current Denver recovery options are:",
+      "- HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop \u2014 2 seats shown\n- HZ 540 Boston to Denver, Thu 2 Oct 20:15, nonstop \u2014 9 seats shown",
+      "These seat counts are not holds. Which option would you like me to try to hold?"
+     ]
+    },
+    {
+     "user": "OK, what's there now then? I'll take the earliest one.",
+     "latency_ms": 5309.3,
+     "bot": [
+      "Options are changing during the disruption. Shall I try to hold HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 5511.7,
+     "bot": [
+      "Seat held: HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop, hold HT-HLD-74037A, until 14:50 Boston time, 30 Sep. This is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires.",
+      "Seat held for HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop.",
+      "Hold id: HT-HLD-74037A. It expires at 14:50 Boston time, 30 Sep.",
+      "This is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "hold_recovery_option",
+        "result": {
+         "status": "blocked",
+         "reason": "stale_incident_state"
+        }
+       },
+       {
+        "tool": "find_recovery_options",
+        "result": {
+         "status": "options",
+         "booking_ref": "HT-9D2K8",
+         "incident_revision": 5
+        }
+       },
+       {
+        "tool": "hold_recovery_option",
+        "result": {
+         "status": "held",
+         "option_id": "OPT-DEN-548"
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "calls occurred in order"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_passenger",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_recovery_options",
+     "arguments": {
+      "booking": "HT-9D2K8"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "select_option",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "blocked",
+     "result_reason": "stale_incident_state"
+    },
+    {
+     "tool": "find_recovery_options",
+     "arguments": {
+      "booking": "HT-9D2K8"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "select_option",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "after_user_turn": 4,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "held",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "commitment_promise": [],
+    "hold_claim": [],
+    "holds_placed": {
+     "attempts": 2,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "horizon.promise_guard": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 2
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "horizon.promise_guard": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "hold_recovery_option",
+      "conversation_id": "disruption-mode-gpt-text-recovery-stale-then-rehold-denver-20260930T170845"
+     },
+     {
+      "tool_name": "hold_recovery_option",
+      "conversation_id": "disruption-mode-gpt-text-recovery-stale-then-rehold-denver-20260930T170845"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 13,
+    "main_loop_calls": 12,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 42108,
+    "completion_tokens": 706,
+    "reasoning_tokens": 143,
+    "cached_prompt_tokens": 15872,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.160296,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1876.1,
+     2085.7,
+     2974.8,
+     1747.9,
+     1819.3,
+     1601.9,
+     1428.1,
+     2708.9,
+     3114.8,
+     3821.4,
+     1464.4,
+     2240.0,
+     3246.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "disruption-mode-gpt-text-recovery-stale-then-rehold-denver-20260930T170845",
+    "prompt": 42108,
+    "completion": 706,
+    "total": 42814,
+    "generations": 13,
+    "fetched_at": "2026-09-30T17:09:23.371438+00:00"
+   }
+  }
+ ]
+}

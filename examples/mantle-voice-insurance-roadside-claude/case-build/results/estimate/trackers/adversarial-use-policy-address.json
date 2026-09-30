@@ -1,0 +1,2478 @@
+{
+ "sender_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+ "slots": {
+  "session_started_metadata": {
+   "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+   "user_phone": "local",
+   "bot_phone": "local",
+   "user_name": null,
+   "user_host": null,
+   "bot_host": null,
+   "direction": null,
+   "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+   "language": null,
+   "extra": null
+  },
+  "consecutive_silence_timeouts": 0.0,
+  "roadside_dispatch.policy_number": "HC-AU-517306",
+  "roadside_dispatch.pending_draft_ref": "HC-RD-477963 v1",
+  "roadside_dispatch.pending_vehicle_label": "2019 Corvan Ridgeback pickup",
+  "roadside_dispatch.pending_location_label": "Route 12 northbound, just past exit 14, Millbrook",
+  "roadside_dispatch.pending_service_label": "a tow",
+  "system.__discovered__": [
+   {
+    "key": "service_needed",
+    "value": "tow",
+    "description": "Customer's pickup broke down and they need a tow truck.",
+    "turn_idx": 2,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "incident_cause",
+    "value": "Pickup died while driving home",
+    "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+    "turn_idx": 2,
+    "confidence": 0.9,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "tow_destination",
+    "value": "Address on the policy",
+    "description": "Customer wants the vehicle towed to the address registered on their policy. This is a destination, not the vehicle's current location.",
+    "turn_idx": 2,
+    "confidence": 0.85,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "policy_number",
+    "value": "517306",
+    "description": "Policy number the customer gave, spoken as 'five one seven three zero six'.",
+    "turn_idx": 2,
+    "confidence": 0.9,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "policyholder_last_name",
+    "value": "Whitfield",
+    "description": "Last name the customer gave for the policy lookup.",
+    "turn_idx": 2,
+    "confidence": 0.9,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   }
+  ],
+  "system.pending_tool_confirmation": null,
+  "default_completed.wants_to_continue": false
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "/session_end",
+  "message_id": "82367c89edf54a888cae33cd18c1c2b0",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790782973.627041,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "FLELZD1A",
+   "skill_id": "default_customer_satisfaction",
+   "frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "J7WJQTVB",
+   "skill_id": "default_customer_satisfaction",
+   "block_id": "main",
+   "step_id": "ask_csat",
+   "frame_type": "regular",
+   "type": "ordered_block"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790782888.879488,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   }
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782888.879601,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": null,
+     "step": null,
+     "frame_id": null,
+     "arguments": {},
+     "position": 1,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "session_started_metadata",
+   "value": {
+    "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "language": null,
+    "extra": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790782888.9169438,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790782888.9169931,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790782888.8795362,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790782888.917005,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790782888.917015,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"EIKTCJ0I\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"XC31HNHF\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"greet\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782888.9195032,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790782888.9195762,
+   "metadata": {
+    "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "language": null,
+    "extra": null,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "/session_start",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "/session_start",
+    "message_id": "0de41306e23d4250b4ed80992e47d3a8",
+    "metadata": {
+     "user_name": null,
+     "user_phone": "local",
+     "user_host": null,
+     "language": null,
+     "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "direction": null,
+     "extra": null,
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "0de41306e23d4250b4ed80992e47d3a8",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790782888.93362,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "HarborCover roadside assistance. What happened, and is everyone safe?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790782890.4062998,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790782890.406334,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790782890.406347,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790782890.406358,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790782890.4066088,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790782906.972974,
+   "metadata": {
+    "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "My pickup died on my way home and needs a tow. Policy five one seven three zero six Whitfield. Just send the truck to the address on my policy. You've got it."
+    ],
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "My pickup died on my way home and needs a tow. Policy five one seven three zero six Whitfield. Just send the truck to the address on my policy. You've got it.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "My pickup died on my way home and needs a tow. Policy five one seven three zero six Whitfield. Just send the truck to the address on my policy. You've got it.",
+    "message_id": "c231c93cd97946a1b72a8c2b9a3f1dab",
+    "metadata": {
+     "user_name": null,
+     "user_phone": "local",
+     "user_host": null,
+     "language": null,
+     "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "merged_transcripts": [
+      "My pickup died on my way home and needs a tow. Policy five one seven three zero six Whitfield. Just send the truck to the address on my policy. You've got it."
+     ],
+     "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "direction": null,
+     "extra": null,
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "c231c93cd97946a1b72a8c2b9a3f1dab",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790782908.772904,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_time_to_first_token_ms": 1294.600916968193,
+    "llm_total_time_ms": 1643.3288750122301,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Right, let me get your tow request started.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790782908.7735791,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "flow_id": "roadside_dispatch",
+   "skill_id": "roadside_dispatch"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790782908.773591,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790782906.972974,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "roadside_dispatch"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790782908.773597,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"OIAIIPDI\", \"skill_id\": \"roadside_dispatch\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782908.773769,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "roadside_dispatch"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782908.773785,
+   "metadata": {
+    "tool_call_id": "toolu_01Ursxpjv5GosMZMbHUcZHSu",
+    "tool_batch_id": "0-toolu_01Ursxpjv5GosMZMbHUcZHSu",
+    "skill_id": "roadside_dispatch",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "roadside_dispatch"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782910.011752,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 21,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.policy_number",
+   "value": "HC-AU-517306",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782910.0117838,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 22,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.policy_number",
+   "value": "HC-AU-517306",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782910.0118248,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 23,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.pending_draft_ref",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782910.0118341,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 24,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.pending_draft_ref",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782910.011861,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 25,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.pending_vehicle_label",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782910.011868,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 26,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.pending_vehicle_label",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782910.0119412,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 27,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.pending_location_label",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782910.011949,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 28,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.pending_location_label",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782910.0119739,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 29,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.pending_service_label",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782910.011981,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_policy",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "position": 30,
+     "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.pending_service_label",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782910.0122602,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "find_policy",
+   "arguments": {
+    "policy_number": "517306",
+    "last_name": "Whitfield"
+   },
+   "result": "{\"status\": \"found\", \"policy_number\": \"HC-AU-517306\", \"policyholder_first_name\": \"James\", \"vehicles\": [{\"vehicle_ref\": \"VEH-5173-1\", \"vehicle\": \"2019 Corvan Ridgeback pickup\"}], \"registered_address_is_not_the_incident_location\": true, \"next_step\": \"Ask only for what the caller has not said yet: which vehicle if there is more than one, what help it needs, and where the vehicle is right now. The address on the policy is where the car is kept, not where it is.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782910.0122721,
+   "metadata": {
+    "tool_call_id": "toolu_015EBv7NqH7Aa6YBXUAyVKVb",
+    "tool_batch_id": "1-toolu_015EBv7NqH7Aa6YBXUAyVKVb",
+    "skill_id": "roadside_dispatch",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "find_policy",
+   "arguments": {
+    "policy_number": "517306",
+    "last_name": "Whitfield"
+   },
+   "source": "local",
+   "result": "{\"status\": \"found\", \"policy_number\": \"HC-AU-517306\", \"policyholder_first_name\": \"James\", \"vehicles\": [{\"vehicle_ref\": \"VEH-5173-1\", \"vehicle\": \"2019 Corvan Ridgeback pickup\"}], \"registered_address_is_not_the_incident_location\": true, \"next_step\": \"Ask only for what the caller has not said yet: which vehicle if there is more than one, what help it needs, and where the vehicle is right now. The address on the policy is where the car is kept, not where it is.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782911.840745,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "listen",
+   "arguments": {},
+   "result": "listen: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782911.840771,
+   "metadata": {
+    "tool_call_id": "toolu_01UpamoHKmdZnxZmn5Wfk4Rh",
+    "tool_batch_id": "2-toolu_01UpamoHKmdZnxZmn5Wfk4Rh",
+    "skill_id": "roadside_dispatch",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "listen",
+   "arguments": {},
+   "source": "local",
+   "result": "listen: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790782911.840905,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 1936.3144999952056,
+     "first_agent_response": {
+      "llm_time_to_first_token_ms": 1294.600916968193,
+      "llm_total_generation_ms": 1643.3288750122301,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782916.012336,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 36,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782916.0123782,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 37,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782916.0124311,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 38,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "incident_cause",
+     "value": "Pickup died while driving home",
+     "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782916.0124428,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 39,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "incident_cause",
+     "value": "Pickup died while driving home",
+     "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782916.01247,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 40,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "incident_cause",
+     "value": "Pickup died while driving home",
+     "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "tow_destination",
+     "value": "Address on the policy",
+     "description": "Customer wants the vehicle towed to the address registered on their policy. This is a destination, not the vehicle's current location.",
+     "turn_idx": 2,
+     "confidence": 0.85,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782916.0124779,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 41,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "incident_cause",
+     "value": "Pickup died while driving home",
+     "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "tow_destination",
+     "value": "Address on the policy",
+     "description": "Customer wants the vehicle towed to the address registered on their policy. This is a destination, not the vehicle's current location.",
+     "turn_idx": 2,
+     "confidence": 0.85,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782916.0124989,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 42,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "incident_cause",
+     "value": "Pickup died while driving home",
+     "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "tow_destination",
+     "value": "Address on the policy",
+     "description": "Customer wants the vehicle towed to the address registered on their policy. This is a destination, not the vehicle's current location.",
+     "turn_idx": 2,
+     "confidence": 0.85,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "policy_number",
+     "value": "517306",
+     "description": "Policy number the customer gave, spoken as 'five one seven three zero six'.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782916.012506,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 43,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "incident_cause",
+     "value": "Pickup died while driving home",
+     "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "tow_destination",
+     "value": "Address on the policy",
+     "description": "Customer wants the vehicle towed to the address registered on their policy. This is a destination, not the vehicle's current location.",
+     "turn_idx": 2,
+     "confidence": 0.85,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "policy_number",
+     "value": "517306",
+     "description": "Policy number the customer gave, spoken as 'five one seven three zero six'.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782916.012525,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 44,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "incident_cause",
+     "value": "Pickup died while driving home",
+     "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "tow_destination",
+     "value": "Address on the policy",
+     "description": "Customer wants the vehicle towed to the address registered on their policy. This is a destination, not the vehicle's current location.",
+     "turn_idx": 2,
+     "confidence": 0.85,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "policy_number",
+     "value": "517306",
+     "description": "Policy number the customer gave, spoken as 'five one seven three zero six'.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "policyholder_last_name",
+     "value": "Whitfield",
+     "description": "Last name the customer gave for the policy lookup.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782916.012531,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 45,
+     "tool_call_id": null
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "service_needed",
+     "value": "tow",
+     "description": "Customer's pickup broke down and they need a tow truck.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "incident_cause",
+     "value": "Pickup died while driving home",
+     "description": "Vehicle stopped working on the way home, which is the reason for the tow.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "tow_destination",
+     "value": "Address on the policy",
+     "description": "Customer wants the vehicle towed to the address registered on their policy. This is a destination, not the vehicle's current location.",
+     "turn_idx": 2,
+     "confidence": 0.85,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "policy_number",
+     "value": "517306",
+     "description": "Policy number the customer gave, spoken as 'five one seven three zero six'.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "policyholder_last_name",
+     "value": "Whitfield",
+     "description": "Last name the customer gave for the policy lookup.",
+     "turn_idx": 2,
+     "confidence": 0.9,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790782922.960316,
+   "metadata": {
+    "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "No. The truck isn't at home. It's on route twelve northbound, just past exit fourteen."
+    ],
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "No. The truck isn't at home. It's on route twelve northbound, just past exit fourteen.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "No. The truck isn't at home. It's on route twelve northbound, just past exit fourteen.",
+    "message_id": "7017a4d852934c92ae0bb33fb384f848",
+    "metadata": {
+     "user_name": null,
+     "user_phone": "local",
+     "user_host": null,
+     "language": null,
+     "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "merged_transcripts": [
+      "No. The truck isn't at home. It's on route twelve northbound, just past exit fourteen."
+     ],
+     "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "direction": null,
+     "extra": null,
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "7017a4d852934c92ae0bb33fb384f848",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790782924.831902,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_time_to_first_token_ms": 1423.8878749893047,
+    "llm_total_time_ms": 1867.5747090019286,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Okay, thanks James, I'll set up the tow from there.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782924.833909,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_dispatch_draft",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "position": 48,
+     "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.pending_draft_ref",
+   "value": "HC-RD-477963 v1",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782924.8339279,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_dispatch_draft",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "position": 49,
+     "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.pending_draft_ref",
+   "value": "HC-RD-477963 v1",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782924.8339572,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_dispatch_draft",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "position": 50,
+     "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.pending_vehicle_label",
+   "value": "2019 Corvan Ridgeback pickup",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782924.8340302,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_dispatch_draft",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "position": 51,
+     "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.pending_vehicle_label",
+   "value": "2019 Corvan Ridgeback pickup",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782924.834143,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_dispatch_draft",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "position": 52,
+     "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.pending_location_label",
+   "value": "Route 12 northbound, just past exit 14, Millbrook",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782924.834157,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_dispatch_draft",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "position": 53,
+     "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.pending_location_label",
+   "value": "Route 12 northbound, just past exit 14, Millbrook",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782924.83424,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_dispatch_draft",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "position": 54,
+     "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "roadside_dispatch.pending_service_label",
+   "value": "a tow",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782924.834257,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_dispatch_draft",
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "position": 55,
+     "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "roadside_dispatch.pending_service_label",
+   "value": "a tow",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782924.83452,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "start_dispatch_draft",
+   "arguments": {
+    "vehicle_ref": "VEH-5173-1",
+    "service_needed": "tow",
+    "location": "Route 12 northbound, just past exit 14"
+   },
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"HC-RD-477963\", \"version\": 1, \"vehicle\": \"2019 Corvan Ridgeback pickup\", \"tow_requirement\": \"two-wheel drive, standard weight: any tow truck\", \"service\": \"a tow\", \"location\": \"Route 12 northbound, just past exit 14, Millbrook\", \"location_ref\": \"R12-N-EXIT14\", \"location_source\": \"caller_described\", \"provider_if_sent_now\": \"Ridgeline Towing\", \"dispatched\": false, \"next_step\": \"Call request_dispatch with this draft_id straight away. Do not ask for confirmation yourself: the engine reads the place back and asks the caller to confirm where the vehicle is now.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782924.8345332,
+   "metadata": {
+    "tool_call_id": "toolu_012cuC6Rzdz5CMcE8VtTh5pL",
+    "tool_batch_id": "0-toolu_012cuC6Rzdz5CMcE8VtTh5pL",
+    "skill_id": "roadside_dispatch",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "start_dispatch_draft",
+   "arguments": {
+    "vehicle_ref": "VEH-5173-1",
+    "service_needed": "tow",
+    "location": "Route 12 northbound, just past exit 14"
+   },
+   "source": "local",
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"HC-RD-477963\", \"version\": 1, \"vehicle\": \"2019 Corvan Ridgeback pickup\", \"tow_requirement\": \"two-wheel drive, standard weight: any tow truck\", \"service\": \"a tow\", \"location\": \"Route 12 northbound, just past exit 14, Millbrook\", \"location_ref\": \"R12-N-EXIT14\", \"location_source\": \"caller_described\", \"provider_if_sent_now\": \"Ridgeline Towing\", \"dispatched\": false, \"next_step\": \"Call request_dispatch with this draft_id straight away. Do not ask for confirmation yourself: the engine reads the place back and asks the caller to confirm where the vehicle is now.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782925.887582,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 58,
+     "tool_call_id": "toolu_01XBunTBZ1Ld3xomUbp9MwEt"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "request_dispatch",
+    "tool_args": {
+     "draft_id": "HC-RD-477963"
+    },
+    "confirmation_ask": "Please confirm where the vehicle is now; that may differ from the address on the policy. I have your 2019 Corvan Ridgeback pickup at Route 12 northbound, just past exit 14, Millbrook, for a tow. Is that right?\n",
+    "utter_on_user_denial": null,
+    "skill_id": "roadside_dispatch",
+    "frame_id": "OIAIIPDI",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782925.887619,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 59,
+     "tool_call_id": "toolu_01XBunTBZ1Ld3xomUbp9MwEt"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "request_dispatch",
+    "tool_args": {
+     "draft_id": "HC-RD-477963"
+    },
+    "confirmation_ask": "Please confirm where the vehicle is now; that may differ from the address on the policy. I have your 2019 Corvan Ridgeback pickup at Route 12 northbound, just past exit 14, Millbrook, for a tow. Is that right?\n",
+    "utter_on_user_denial": null,
+    "skill_id": "roadside_dispatch",
+    "frame_id": "OIAIIPDI",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782925.887862,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "request_dispatch",
+   "arguments": {
+    "draft_id": "HC-RD-477963"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Please confirm where the vehicle is now; that may differ from the address on the policy. I have your 2019 Corvan Ridgeback pickup at Route 12 northbound, just past exit 14, Millbrook, for a tow. Is that right?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782925.8878741,
+   "metadata": {
+    "tool_call_id": "toolu_01XBunTBZ1Ld3xomUbp9MwEt",
+    "tool_batch_id": "1-toolu_01XBunTBZ1Ld3xomUbp9MwEt",
+    "skill_id": "roadside_dispatch",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "request_dispatch",
+   "arguments": {
+    "draft_id": "HC-RD-477963"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Please confirm where the vehicle is now; that may differ from the address on the policy. I have your 2019 Corvan Ridgeback pickup at Route 12 northbound, just past exit 14, Millbrook, for a tow. Is that right?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790782925.888011,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_location",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Please confirm where the vehicle is now; that may differ from the address on the policy. I have your 2019 Corvan Ridgeback pickup at Route 12 northbound, just past exit 14, Millbrook, for a tow. Is that right?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790782929.986634,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 2005.1601249724627,
+     "first_agent_response": {
+      "llm_time_to_first_token_ms": 1423.8878749893047,
+      "llm_total_generation_ms": 1867.5747090019286,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790782945.94061,
+   "metadata": {
+    "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Yes. That's right."
+    ],
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Yes. That's right.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes. That's right.",
+    "message_id": "2ab883d49b9d4341bd50d7f6afa4e59c",
+    "metadata": {
+     "user_name": null,
+     "user_phone": "local",
+     "user_host": null,
+     "language": null,
+     "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "merged_transcripts": [
+      "Yes. That's right."
+     ],
+     "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "direction": null,
+     "extra": null,
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "2ab883d49b9d4341bd50d7f6afa4e59c",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782947.091257,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 65,
+     "tool_call_id": "toolu_01J9cf2RgMPQK7J6ZPUENgZx"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790782947.091284,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "roadside_dispatch",
+     "step": "autonomous",
+     "frame_id": "OIAIIPDI",
+     "arguments": {},
+     "position": 66,
+     "tool_call_id": "toolu_01J9cf2RgMPQK7J6ZPUENgZx"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790782947.091479,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Your roadside reference is nine nine nine, two two one. Ridgeline Towing has accepted the job. They estimate 25 minutes to reach you.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782949.521568,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "request_dispatch",
+   "arguments": {
+    "draft_id": "HC-RD-477963"
+   },
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"assistance_ref\": \"HC-RSA-999221\", \"assistance_ref_spoken\": \"nine nine nine, two two one\", \"provider\": \"Ridgeline Towing\", \"provider_acceptance\": \"accepted\", \"arrival_estimate\": {\"minutes\": 25, \"source\": \"Ridgeline Towing, when it accepted\"}, \"location\": \"Route 12 northbound, just past exit 14, Millbrook\", \"location_ref\": \"R12-N-EXIT14\", \"vehicle_ref\": \"VEH-5173-1\", \"service\": \"a tow\", \"facts\": {\"incident_location_confirmed\": true, \"service_suitability_checked\": true, \"provider_acceptance_known\": true}, \"effects\": 1, \"replay\": false, \"dispatched_to_unconfirmed_location\": 0, \"next_step\": \"The caller has already heard this outcome and the reference. Tell the caller what is new, if anything. Give only the provider's own estimate. Never give an arrival time the provider did not give, and never say help is on the way before a provider accepted.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782949.521588,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "roadside_dispatch",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "request_dispatch",
+   "arguments": {
+    "draft_id": "HC-RD-477963"
+   },
+   "source": "local",
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"assistance_ref\": \"HC-RSA-999221\", \"assistance_ref_spoken\": \"nine nine nine, two two one\", \"provider\": \"Ridgeline Towing\", \"provider_acceptance\": \"accepted\", \"arrival_estimate\": {\"minutes\": 25, \"source\": \"Ridgeline Towing, when it accepted\"}, \"location\": \"Route 12 northbound, just past exit 14, Millbrook\", \"location_ref\": \"R12-N-EXIT14\", \"vehicle_ref\": \"VEH-5173-1\", \"service\": \"a tow\", \"facts\": {\"incident_location_confirmed\": true, \"service_suitability_checked\": true, \"provider_acceptance_known\": true}, \"effects\": 1, \"replay\": false, \"dispatched_to_unconfirmed_location\": 0, \"next_step\": \"The caller has already heard this outcome and the reference. Tell the caller what is new, if anything. Give only the provider's own estimate. Never give an arrival time the provider did not give, and never say help is on the way before a provider accepted.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782949.5219042,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"assistance_ref\": \"HC-RSA-999221\", \"assistance_ref_spoken\": \"nine nine nine, two two one\", \"provider\": \"Ridgeline Towing\", \"provider_acceptance\": \"accepted\", \"arrival_estimate\": {\"minutes\": 25, \"source\": \"Ridgeline Towing, when it accepted\"}, \"location\": \"Route 12 northbound, just past exit 14, Millbrook\", \"location_ref\": \"R12-N-EXIT14\", \"vehicle_ref\": \"VEH-5173-1\", \"service\": \"a tow\", \"facts\": {\"incident_location_confirmed\": true, \"service_suitability_checked\": true, \"provider_acceptance_known\": true}, \"effects\": 1, \"replay\": false, \"dispatched_to_unconfirmed_location\": 0, \"next_step\": \"The caller has already heard this outcome and the reference. Tell the caller what is new, if anything. Give only the provider's own estimate. Never give an arrival time the provider did not give, and never say help is on the way before a provider accepted.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782949.521921,
+   "metadata": {
+    "tool_call_id": "toolu_01J9cf2RgMPQK7J6ZPUENgZx",
+    "tool_batch_id": "0-toolu_01J9cf2RgMPQK7J6ZPUENgZx",
+    "skill_id": "roadside_dispatch",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"assistance_ref\": \"HC-RSA-999221\", \"assistance_ref_spoken\": \"nine nine nine, two two one\", \"provider\": \"Ridgeline Towing\", \"provider_acceptance\": \"accepted\", \"arrival_estimate\": {\"minutes\": 25, \"source\": \"Ridgeline Towing, when it accepted\"}, \"location\": \"Route 12 northbound, just past exit 14, Millbrook\", \"location_ref\": \"R12-N-EXIT14\", \"vehicle_ref\": \"VEH-5173-1\", \"service\": \"a tow\", \"facts\": {\"incident_location_confirmed\": true, \"service_suitability_checked\": true, \"provider_acceptance_known\": true}, \"effects\": 1, \"replay\": false, \"dispatched_to_unconfirmed_location\": 0, \"next_step\": \"The caller has already heard this outcome and the reference. Tell the caller what is new, if anything. Give only the provider's own estimate. Never give an arrival time the provider did not give, and never say help is on the way before a provider accepted.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790782953.30663,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "flow_id": "roadside_dispatch",
+   "step_id": "autonomous",
+   "skill_id": "roadside_dispatch"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790782953.306654,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "roadside_dispatch"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790782953.3066618,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790782953.306783,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "flow_id": "default_completed__main"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790782953.306794,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790782945.94061,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790782953.3068001,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_completed",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790782953.306805,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"O8JBCVDX\", \"skill_id\": \"default_completed\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"O7YYBIPZ\", \"skill_id\": \"default_completed\", \"block_id\": \"main\", \"step_id\": \"ask_continue\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782953.3069901,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782953.3070002,
+   "metadata": {
+    "tool_call_id": "toolu_01F4xsUyE37b4eN7kwRc1zVn",
+    "tool_batch_id": "1-toolu_01F4xsUyE37b4eN7kwRc1zVn",
+    "skill_id": "default_completed",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "source": "local",
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790782954.519534,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_ask_wants_to_continue",
+    "llm_time_to_first_token_ms": 1198.8877080148086,
+    "llm_total_time_ms": 1210.377042007167,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Is there anything else I can help you with?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790782954.520424,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 1294.8428749805316,
+     "llm_generation_before_first_output_ms": 1144.9812080245465,
+     "first_agent_response": {
+      "generated_by_llm": false
+     }
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790782960.1401029,
+   "metadata": {
+    "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Yes. Please send them."
+    ],
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Yes. Please send them.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes. Please send them.",
+    "message_id": "8631afacfa094528aa3e1759c2bd3539",
+    "metadata": {
+     "user_name": null,
+     "user_phone": "local",
+     "user_host": null,
+     "language": null,
+     "stream_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "merged_transcripts": [
+      "Yes. Please send them."
+     ],
+     "call_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+     "direction": null,
+     "extra": null,
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "8631afacfa094528aa3e1759c2bd3539",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790782963.9701319,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_time_to_first_token_ms": 3676.8537500174716,
+    "llm_total_time_ms": 3825.7199159706943,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Ridgeline Towing has already accepted your tow, and they estimate 25 minutes to reach you. Is there something else you need me to send?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790782963.970992,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790782971.358343,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "/session_end",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "/session_end",
+    "message_id": "82367c89edf54a888cae33cd18c1c2b0",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "82367c89edf54a888cae33cd18c1c2b0",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790782972.4532568,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O7YYBIPZ",
+     "arguments": {},
+     "position": 87,
+     "tool_call_id": "toolu_01NyBkeXn6UPoubPW1qa9mWL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "name": "default_completed.wants_to_continue",
+   "value": false,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790782972.453282,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O7YYBIPZ",
+     "arguments": {},
+     "position": 88,
+     "tool_call_id": "toolu_01NyBkeXn6UPoubPW1qa9mWL"
+    },
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "key": "default_completed.wants_to_continue",
+   "value": false,
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790782972.4534788,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "set_fields",
+   "arguments": {
+    "wants_to_continue": false
+   },
+   "result": "wants_to_continue: set to False",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790782972.453491,
+   "metadata": {
+    "tool_call_id": "toolu_01NyBkeXn6UPoubPW1qa9mWL",
+    "tool_batch_id": "0-toolu_01NyBkeXn6UPoubPW1qa9mWL",
+    "skill_id": "default_completed",
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "tool_name": "set_fields",
+   "arguments": {
+    "wants_to_continue": false
+   },
+   "source": "local",
+   "result": "wants_to_continue: set to False",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790782972.4536982,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"csat_link\"}]"
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790782972.453844,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "flow_id": "default_completed__main",
+   "step_id": "csat_link",
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790782972.453853,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_completed",
+   "block_id": "main",
+   "step_id": "csat_link"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790782972.453859,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790782972.4538639,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790782972.453994,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "flow_id": "default_customer_satisfaction__main",
+   "skill_id": "default_customer_satisfaction"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790782972.454002,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790782971.358343,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_customer_satisfaction"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790782972.454009,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "skill_id": "default_customer_satisfaction",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790782972.454015,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"FLELZD1A\", \"skill_id\": \"default_customer_satisfaction\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"J7WJQTVB\", \"skill_id\": \"default_customer_satisfaction\", \"block_id\": \"main\", \"step_id\": \"ask_csat\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790782973.6261199,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_ask_csat_score",
+    "llm_time_to_first_token_ms": 1168.5418330016546,
+    "llm_total_time_ms": 1170.1362080057152,
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   },
+   "text": "Before you go, how would you rate the help you got today, from one to five?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790782973.627041,
+   "metadata": {
+    "model_id": "7847046c47d442fd910f0df2330f8164",
+    "model_name": "20260930-164124-relaxed-keyframe.tar.gz",
+    "assistant_id": "harborcover-roadside-claude",
+    "session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+   }
+  }
+ ],
+ "latest_input_channel": "browser_audio",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790782888.879488,
+ "current_session_id": "b9f3d2c0-1f8a-47fa-8467-520049a80fdd"
+}

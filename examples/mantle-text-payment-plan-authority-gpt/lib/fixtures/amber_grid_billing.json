@@ -1,0 +1,120 @@
+{
+  "note": "Fictional fixture data. Amber Grid, its customers, accounts, balances and payment-plan offers are invented for this teaching project. No record here belongs to a real supplier or person.",
+  "organisation": "Amber Grid (fictional energy supplier)",
+  "as_of": "2026-09-30T09:00:00+00:00",
+  "session_customer_id": "AG-CUST-2208",
+  "customers": {
+    "AG-CUST-2208": {"first_name": "Dana", "last_name": "Whitcombe"},
+    "AG-CUST-3391": {"first_name": "Rhea", "last_name": "Castellano"}
+  },
+  "accounts": {
+    "AG-4471": {
+      "customer_id": "AG-CUST-2208",
+      "label": "home electricity",
+      "overdue_usd": "642.00",
+      "status": "in arrears"
+    },
+    "AG-4472": {
+      "customer_id": "AG-CUST-2208",
+      "label": "home gas",
+      "overdue_usd": "318.40",
+      "status": "in arrears"
+    },
+    "AG-5820": {
+      "customer_id": "AG-CUST-2208",
+      "label": "flat electricity",
+      "overdue_usd": "1284.00",
+      "status": "in arrears"
+    },
+    "AG-7310": {
+      "customer_id": "AG-CUST-3391",
+      "label": "home electricity",
+      "overdue_usd": "455.00",
+      "status": "in arrears"
+    }
+  },
+  "offers": {
+    "AG-OFR-4471-A": {
+      "account": "AG-4471",
+      "authorized": true,
+      "billing_status": "authorized",
+      "revision": 2,
+      "instalments": 3,
+      "instalment_usd": "214.00",
+      "first_due": "2026-10-15",
+      "valid_until": "2026-10-14T23:59:00+00:00"
+    },
+    "AG-OFR-4471-B": {
+      "account": "AG-4471",
+      "authorized": true,
+      "billing_status": "authorized",
+      "revision": 2,
+      "instalments": 6,
+      "instalment_usd": "107.00",
+      "first_due": "2026-10-15",
+      "valid_until": "2026-10-14T23:59:00+00:00"
+    },
+    "AG-OFR-4471-C": {
+      "account": "AG-4471",
+      "authorized": false,
+      "billing_status": "requested, not approved",
+      "revision": 1,
+      "instalments": 12,
+      "instalment_usd": "53.50",
+      "first_due": "2026-10-15",
+      "valid_until": "2026-10-14T23:59:00+00:00",
+      "history": "Terms the customer asked for in a chat on 2026-09-22. The billing service did not approve them."
+    },
+    "AG-OFR-4472-A": {
+      "account": "AG-4472",
+      "authorized": true,
+      "billing_status": "authorized",
+      "revision": 1,
+      "instalments": 4,
+      "instalment_usd": "76.10",
+      "first_due": "2026-09-28",
+      "valid_until": "2026-09-25T23:59:00+00:00"
+    },
+    "AG-OFR-5820-A": {
+      "account": "AG-5820",
+      "authorized": true,
+      "billing_status": "authorized",
+      "revision": 3,
+      "instalments": 6,
+      "instalment_usd": "214.00",
+      "first_due": "2026-09-22",
+      "valid_until": "2026-09-20T23:59:00+00:00"
+    },
+    "AG-OFR-7310-A": {
+      "account": "AG-7310",
+      "authorized": true,
+      "billing_status": "authorized",
+      "revision": 1,
+      "instalments": 5,
+      "instalment_usd": "91.00",
+      "first_due": "2026-10-15",
+      "valid_until": "2026-10-14T23:59:00+00:00"
+    }
+  },
+  "refresh": {
+    "AG-4471": {"outcome": "unchanged"},
+    "AG-4472": {
+      "outcome": "reissued",
+      "why": "The September bill of 14.00 was added to the overdue balance after the offer was made.",
+      "offers": {
+        "AG-OFR-4472-A": {
+          "revision": 2,
+          "instalments": 4,
+          "instalment_usd": "79.60",
+          "first_due": "2026-10-20",
+          "valid_until": "2026-10-19T23:59:00+00:00"
+        }
+      }
+    },
+    "AG-5820": {
+      "outcome": "no_eligible_offer",
+      "why": "Two payment plans on this account ended unpaid in the last 12 months, so the billing service has no plan it can offer automatically."
+    },
+    "AG-7310": {"outcome": "unchanged"}
+  }
+}

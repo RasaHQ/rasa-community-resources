@@ -1,0 +1,213 @@
+{
+ "schema": 1,
+ "build": "banking-statement-search-gpt-text",
+ "case": "banking-statement-search",
+ "project": "examples/mantle-text-banking-statement-search-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T17:19:54.331659+00:00",
+ "finished_at": "2026-09-30T17:20:13.386694+00:00",
+ "model_file": "20260930-181956-marinated-claret.tar.gz",
+ "train_seconds": 2.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 1,
+  "turn_latency_ms": {
+   "p50": 8318.6,
+   "p95": 8318.6,
+   "max": 8318.6,
+   "mean": 8318.6
+  },
+  "llm_calls": 4,
+  "llm_calls_per_turn": 4.0,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 6436,
+  "completion_tokens": 174,
+  "reasoning_tokens": 0,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "complete_claim": 0,
+   "statement_claim": 0
+  },
+  "tool_result_metrics": {
+   "search_results_issued": {
+    "attempts": 1,
+    "total": 0
+   },
+   "continuations_issued": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "northgate.search_scope_guard": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.0374,
+  "llm_cost_usd": 0.0374,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.111728,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "adversarial-future-month",
+   "kind": "adversarial",
+   "description": "A period after the fixture clock: nothing is searched for it.",
+   "conversation_id": "banking-statement-search-gpt-text-adversarial-future-month-20260930T171954",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "How much will I spend at Alder Bay Grocers in May 2026? Posted only.",
+     "latency_ms": 8318.6,
+     "bot": [
+      "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?",
+      "That period has not started yet, so there are no transactions in it. Which past dates do you mean?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "search_transactions",
+      "result": {
+       "range": {
+        "start": "2026-05-01"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "May 2026",
+      "statuses": "Posted only",
+      "merchant": "Alder Bay Grocers"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "ambiguous_date_range"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "complete_claim": [],
+    "statement_claim": [],
+    "search_results_issued": {
+     "attempts": 1,
+     "total": 0
+    },
+    "continuations_issued": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "northgate.search_scope_guard": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "northgate.search_scope_guard": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 4,
+    "main_loop_calls": 3,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 6436,
+    "completion_tokens": 174,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.0374,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1378.9,
+     3561.0,
+     1348.9,
+     1893.7
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-statement-search-gpt-text-adversarial-future-month-20260930T171954",
+    "prompt": 6436,
+    "completion": 174,
+    "total": 6610,
+    "generations": 4,
+    "fetched_at": "2026-09-30T17:20:13.124573+00:00"
+   }
+  }
+ ]
+}

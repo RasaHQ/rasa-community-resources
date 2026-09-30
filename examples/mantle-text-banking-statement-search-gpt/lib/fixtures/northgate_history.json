@@ -1,0 +1,820 @@
+{
+  "organisation": "Northgate Bank (fictional bank)",
+  "note": "Invented fixture. Every person, account, merchant, amount and reference here is fictional.",
+  "as_of": "2026-04-02T15:00:00-04:00",
+  "timezone": "America/New_York",
+  "timezone_label": "Eastern time",
+  "session_customer_id": "NB-CUST-4810",
+  "customers": {
+    "NB-CUST-4810": {
+      "first_name": "Elena",
+      "last_name": "Marsh"
+    },
+    "NB-CUST-5520": {
+      "first_name": "Jordan",
+      "last_name": "Vale"
+    }
+  },
+  "accounts": {
+    "NB-ACC-1001": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Everyday Checking",
+      "last_four": "3301",
+      "aliases": [
+        "everyday",
+        "checking",
+        "main account",
+        "debit card",
+        "debit"
+      ]
+    },
+    "NB-ACC-1003": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Savings",
+      "last_four": "7740",
+      "aliases": [
+        "savings",
+        "saver",
+        "savings account"
+      ]
+    },
+    "NB-ACC-1004": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Rewards Card",
+      "last_four": "5512",
+      "aliases": [
+        "rewards card",
+        "credit card",
+        "card",
+        "rewards"
+      ]
+    },
+    "NB-ACC-2001": {
+      "customer_id": "NB-CUST-5520",
+      "name": "Everyday Checking",
+      "last_four": "6628",
+      "aliases": [
+        "everyday",
+        "checking"
+      ]
+    }
+  },
+  "history_source": {
+    "page_size": 10,
+    "pages_per_call": 3,
+    "archive_before": "2025-04-01",
+    "archive_pages_per_call": 1,
+    "partial_page_once": {
+      "account_ref": "NB-ACC-1004",
+      "page": 1,
+      "items_returned": 3
+    },
+    "note": "Transactions dated before archive_before come from the archive, which serves one page per request. The Rewards Card source times out on its second page the first time it is asked and returns 3 of that page's items, marked incomplete; asked again, it returns the whole page."
+  },
+  "statements": [
+    {
+      "account_ref": "NB-ACC-1001",
+      "cycle_start": "2026-01-06",
+      "cycle_end": "2026-02-05",
+      "issued_on": "2026-02-06",
+      "closing_balance": "3102.55"
+    },
+    {
+      "account_ref": "NB-ACC-1001",
+      "cycle_start": "2026-02-06",
+      "cycle_end": "2026-03-05",
+      "issued_on": "2026-03-06",
+      "closing_balance": "2914.37"
+    },
+    {
+      "account_ref": "NB-ACC-1001",
+      "cycle_start": "2026-03-06",
+      "cycle_end": "2026-04-05",
+      "issued_on": null,
+      "closing_balance": null
+    },
+    {
+      "account_ref": "NB-ACC-1003",
+      "cycle_start": "2026-02-01",
+      "cycle_end": "2026-02-28",
+      "issued_on": "2026-03-01",
+      "closing_balance": "8099.94"
+    },
+    {
+      "account_ref": "NB-ACC-1003",
+      "cycle_start": "2026-03-01",
+      "cycle_end": "2026-03-31",
+      "issued_on": "2026-04-01",
+      "closing_balance": "8402.08"
+    },
+    {
+      "account_ref": "NB-ACC-1004",
+      "cycle_start": "2026-02-13",
+      "cycle_end": "2026-03-12",
+      "issued_on": "2026-03-13",
+      "closing_balance": "1284.60"
+    },
+    {
+      "account_ref": "NB-ACC-1004",
+      "cycle_start": "2026-03-13",
+      "cycle_end": "2026-04-12",
+      "issued_on": null,
+      "closing_balance": null
+    }
+  ],
+  "transactions": [
+    {
+      "id": "TX-0001",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-02-20T14:10:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-73.18",
+      "status": "posted",
+      "posted_on": "2026-02-20"
+    },
+    {
+      "id": "TX-0002",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-02-27T22:40:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-4.85",
+      "status": "posted",
+      "posted_on": "2026-02-27"
+    },
+    {
+      "id": "TX-0003",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-02-28T23:00:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-30.00",
+      "status": "posted",
+      "posted_on": "2026-02-28",
+      "fixture_note": "the day before March"
+    },
+    {
+      "id": "TX-0004",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-01T04:30:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-3.95",
+      "status": "posted",
+      "posted_on": "2026-03-02",
+      "fixture_note": "1 March in UTC, 28 February in Eastern time: outside a March search"
+    },
+    {
+      "id": "TX-0005",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-01T13:00:00Z",
+      "merchant": "Marlow Property Management",
+      "amount": "-1450.00",
+      "status": "posted",
+      "posted_on": "2026-03-01"
+    },
+    {
+      "id": "TX-0006",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-02T12:45:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-4.85",
+      "status": "posted",
+      "posted_on": "2026-03-02"
+    },
+    {
+      "id": "TX-0007",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-03T23:20:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-86.12",
+      "status": "posted",
+      "posted_on": "2026-03-03"
+    },
+    {
+      "id": "TX-0008",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-04T17:30:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-42.18",
+      "status": "posted",
+      "posted_on": "2026-03-04"
+    },
+    {
+      "id": "TX-0009",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-05T11:00:00Z",
+      "merchant": "Kestrel Fitness",
+      "amount": "-39.00",
+      "status": "posted",
+      "posted_on": "2026-03-05"
+    },
+    {
+      "id": "TX-0010",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-06T08:00:00Z",
+      "merchant": "Payroll: Harbor Lane Clinic",
+      "amount": "2310.44",
+      "status": "posted",
+      "posted_on": "2026-03-06"
+    },
+    {
+      "id": "TX-0011",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-07T13:10:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-5.10",
+      "status": "posted",
+      "posted_on": "2026-03-07"
+    },
+    {
+      "id": "TX-0012",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-09T14:00:00Z",
+      "merchant": "Tollgate Energy",
+      "amount": "-118.63",
+      "status": "posted",
+      "posted_on": "2026-03-09"
+    },
+    {
+      "id": "TX-0013",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-10T23:05:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-64.90",
+      "status": "posted",
+      "posted_on": "2026-03-10"
+    },
+    {
+      "id": "TX-0014",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-12T17:15:00Z",
+      "merchant": "Wrenfield Books",
+      "amount": "-23.99",
+      "status": "posted",
+      "posted_on": "2026-03-12"
+    },
+    {
+      "id": "TX-0015",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-13T11:50:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-4.85",
+      "status": "posted",
+      "posted_on": "2026-03-13"
+    },
+    {
+      "id": "TX-0016",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-14T15:00:00Z",
+      "merchant": "Bluewater Transit",
+      "amount": "-45.00",
+      "status": "posted",
+      "posted_on": "2026-03-14"
+    },
+    {
+      "id": "TX-0017",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-16T22:45:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-71.34",
+      "status": "posted",
+      "posted_on": "2026-03-16"
+    },
+    {
+      "id": "TX-0018",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-17T20:30:00Z",
+      "merchant": "Harbor Lane Pharmacy",
+      "amount": "-18.20",
+      "status": "posted",
+      "posted_on": "2026-03-17"
+    },
+    {
+      "id": "TX-0019",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-19T19:10:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-126.40",
+      "status": "posted",
+      "posted_on": "2026-03-20"
+    },
+    {
+      "id": "TX-0020",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-20T07:00:00Z",
+      "merchant": "Payroll: Harbor Lane Clinic",
+      "amount": "2310.44",
+      "status": "posted",
+      "posted_on": "2026-03-20"
+    },
+    {
+      "id": "TX-0021",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-21T13:30:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-6.25",
+      "status": "posted",
+      "posted_on": "2026-03-21"
+    },
+    {
+      "id": "TX-0022",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-23T22:10:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-92.07",
+      "status": "posted",
+      "posted_on": "2026-03-23"
+    },
+    {
+      "id": "TX-0023",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-24T13:00:00Z",
+      "merchant": "Transfer to Savings (ending 7740)",
+      "amount": "-300.00",
+      "status": "posted",
+      "posted_on": "2026-03-24"
+    },
+    {
+      "id": "TX-0024",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-26T16:40:00Z",
+      "merchant": "Wrenfield Books",
+      "amount": "-12.50",
+      "status": "posted",
+      "posted_on": "2026-03-26"
+    },
+    {
+      "id": "TX-0025",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-27T21:30:00Z",
+      "merchant": "Kestrel Fitness",
+      "amount": "-25.00",
+      "status": "posted",
+      "posted_on": "2026-03-27"
+    },
+    {
+      "id": "TX-0026",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-28T14:15:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-58.66",
+      "status": "posted",
+      "posted_on": "2026-03-30"
+    },
+    {
+      "id": "TX-0027",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-03-30T11:40:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-4.85",
+      "status": "pending",
+      "fixture_note": "authorised in March, still pending on 2 April"
+    },
+    {
+      "id": "TX-0028",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-04-01T01:45:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-15.99",
+      "status": "pending",
+      "fixture_note": "31 March in Eastern time, 1 April in UTC: inside a March search"
+    },
+    {
+      "id": "TX-0029",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-04-01T03:00:00Z",
+      "merchant": "Northgate Bank monthly service fee",
+      "amount": "-5.00",
+      "status": "posted",
+      "posted_on": "2026-04-01"
+    },
+    {
+      "id": "TX-0030",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-04-01T14:20:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-88.00",
+      "status": "pending",
+      "fixture_note": "the pending April item the case's failure put into March"
+    },
+    {
+      "id": "TX-0031",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-04-01T12:05:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-4.85",
+      "status": "posted",
+      "posted_on": "2026-04-02"
+    },
+    {
+      "id": "TX-0032",
+      "account_ref": "NB-ACC-1001",
+      "at": "2026-04-02T13:30:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-40.12",
+      "status": "pending"
+    },
+    {
+      "id": "TX-0033",
+      "account_ref": "NB-ACC-1003",
+      "at": "2026-03-01T04:00:00Z",
+      "merchant": "Interest",
+      "amount": "1.98",
+      "status": "posted",
+      "posted_on": "2026-02-28"
+    },
+    {
+      "id": "TX-0034",
+      "account_ref": "NB-ACC-1003",
+      "at": "2026-03-24T13:00:00Z",
+      "merchant": "Transfer from Everyday Checking (ending 3301)",
+      "amount": "300.00",
+      "status": "posted",
+      "posted_on": "2026-03-24"
+    },
+    {
+      "id": "TX-0035",
+      "account_ref": "NB-ACC-1003",
+      "at": "2026-04-01T03:00:00Z",
+      "merchant": "Interest",
+      "amount": "2.14",
+      "status": "posted",
+      "posted_on": "2026-03-31"
+    },
+    {
+      "id": "TX-0036",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-01T13:30:00Z",
+      "merchant": "Bluewater Transit",
+      "amount": "-2.75",
+      "status": "posted",
+      "posted_on": "2026-03-01"
+    },
+    {
+      "id": "TX-0037",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-02T19:10:00Z",
+      "merchant": "Wrenfield Books",
+      "amount": "-31.40",
+      "status": "posted",
+      "posted_on": "2026-03-02"
+    },
+    {
+      "id": "TX-0038",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-04T12:55:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-7.20",
+      "status": "posted",
+      "posted_on": "2026-03-04"
+    },
+    {
+      "id": "TX-0039",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-06T22:05:00Z",
+      "merchant": "Harbor Lane Pharmacy",
+      "amount": "-12.99",
+      "status": "posted",
+      "posted_on": "2026-03-06"
+    },
+    {
+      "id": "TX-0040",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-08T16:00:00Z",
+      "merchant": "Tollgate Energy",
+      "amount": "-61.20",
+      "status": "posted",
+      "posted_on": "2026-03-08"
+    },
+    {
+      "id": "TX-0041",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-10T22:30:00Z",
+      "merchant": "Kestrel Fitness",
+      "amount": "-39.00",
+      "status": "posted",
+      "posted_on": "2026-03-10"
+    },
+    {
+      "id": "TX-0042",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-11T23:20:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-112.45",
+      "status": "posted",
+      "posted_on": "2026-03-11"
+    },
+    {
+      "id": "TX-0043",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-13T13:45:00Z",
+      "merchant": "Seabright Air",
+      "amount": "-289.00",
+      "status": "posted",
+      "posted_on": "2026-03-13"
+    },
+    {
+      "id": "TX-0044",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-15T12:15:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-6.80",
+      "status": "posted",
+      "posted_on": "2026-03-15"
+    },
+    {
+      "id": "TX-0045",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-18T00:10:00Z",
+      "merchant": "Copperleaf Kitchen",
+      "amount": "-54.30",
+      "status": "posted",
+      "posted_on": "2026-03-17"
+    },
+    {
+      "id": "TX-0046",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-18T14:00:00Z",
+      "merchant": "Card payment, thank you",
+      "amount": "600.00",
+      "status": "posted",
+      "posted_on": "2026-03-18"
+    },
+    {
+      "id": "TX-0047",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-20T12:30:00Z",
+      "merchant": "Bluewater Transit",
+      "amount": "-2.75",
+      "status": "posted",
+      "posted_on": "2026-03-20"
+    },
+    {
+      "id": "TX-0048",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-22T16:00:00Z",
+      "merchant": "Tollgate Energy",
+      "amount": "-58.75",
+      "status": "posted",
+      "posted_on": "2026-03-22"
+    },
+    {
+      "id": "TX-0049",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-24T23:40:00Z",
+      "merchant": "Copperleaf Kitchen",
+      "amount": "-38.10",
+      "status": "posted",
+      "posted_on": "2026-03-24"
+    },
+    {
+      "id": "TX-0050",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-26T19:25:00Z",
+      "merchant": "Wrenfield Books",
+      "amount": "-18.99",
+      "status": "posted",
+      "posted_on": "2026-03-26"
+    },
+    {
+      "id": "TX-0051",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-28T21:50:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-76.43",
+      "status": "posted",
+      "posted_on": "2026-03-28"
+    },
+    {
+      "id": "TX-0052",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-30T11:35:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-7.20",
+      "status": "posted",
+      "posted_on": "2026-03-30"
+    },
+    {
+      "id": "TX-0053",
+      "account_ref": "NB-ACC-1004",
+      "at": "2026-03-31T23:15:00Z",
+      "merchant": "Copperleaf Kitchen",
+      "amount": "-44.00",
+      "status": "pending"
+    },
+    {
+      "id": "TX-0054",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-12-01T13:00:00Z",
+      "merchant": "Marlow Property Management",
+      "amount": "-1450.00",
+      "status": "posted",
+      "posted_on": "2025-12-01"
+    },
+    {
+      "id": "TX-0055",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-12-03T23:00:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-98.44",
+      "status": "posted",
+      "posted_on": "2025-12-03"
+    },
+    {
+      "id": "TX-0056",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-12-06T16:20:00Z",
+      "merchant": "Wrenfield Books",
+      "amount": "-76.20",
+      "status": "posted",
+      "posted_on": "2025-12-06"
+    },
+    {
+      "id": "TX-0057",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-12-12T08:00:00Z",
+      "merchant": "Payroll: Harbor Lane Clinic",
+      "amount": "2310.44",
+      "status": "posted",
+      "posted_on": "2025-12-12"
+    },
+    {
+      "id": "TX-0058",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-12-14T21:40:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-54.99",
+      "status": "posted",
+      "posted_on": "2025-12-14"
+    },
+    {
+      "id": "TX-0059",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-12-20T00:30:00Z",
+      "merchant": "Copperleaf Kitchen",
+      "amount": "-132.60",
+      "status": "posted",
+      "posted_on": "2025-12-19"
+    },
+    {
+      "id": "TX-0060",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-12-22T15:10:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-187.35",
+      "status": "posted",
+      "posted_on": "2025-12-22"
+    },
+    {
+      "id": "TX-0061",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-12-26T08:00:00Z",
+      "merchant": "Payroll: Harbor Lane Clinic",
+      "amount": "2310.44",
+      "status": "posted",
+      "posted_on": "2025-12-26"
+    },
+    {
+      "id": "TX-0062",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-01T13:00:00Z",
+      "merchant": "Marlow Property Management",
+      "amount": "-1395.00",
+      "status": "posted",
+      "posted_on": "2025-03-01"
+    },
+    {
+      "id": "TX-0063",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-03T22:45:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-79.10",
+      "status": "posted",
+      "posted_on": "2025-03-03"
+    },
+    {
+      "id": "TX-0064",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-05T11:00:00Z",
+      "merchant": "Kestrel Fitness",
+      "amount": "-35.00",
+      "status": "posted",
+      "posted_on": "2025-03-05"
+    },
+    {
+      "id": "TX-0065",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-07T08:00:00Z",
+      "merchant": "Payroll: Harbor Lane Clinic",
+      "amount": "2240.10",
+      "status": "posted",
+      "posted_on": "2025-03-07"
+    },
+    {
+      "id": "TX-0066",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-08T14:15:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-4.50",
+      "status": "posted",
+      "posted_on": "2025-03-08"
+    },
+    {
+      "id": "TX-0067",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-11T17:30:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-64.00",
+      "status": "posted",
+      "posted_on": "2025-03-11"
+    },
+    {
+      "id": "TX-0068",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-12T14:00:00Z",
+      "merchant": "Tollgate Energy",
+      "amount": "-131.77",
+      "status": "posted",
+      "posted_on": "2025-03-12"
+    },
+    {
+      "id": "TX-0069",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-14T22:25:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-66.08",
+      "status": "posted",
+      "posted_on": "2025-03-14"
+    },
+    {
+      "id": "TX-0070",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-18T16:10:00Z",
+      "merchant": "Wrenfield Books",
+      "amount": "-19.99",
+      "status": "posted",
+      "posted_on": "2025-03-18"
+    },
+    {
+      "id": "TX-0071",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-21T07:00:00Z",
+      "merchant": "Payroll: Harbor Lane Clinic",
+      "amount": "2240.10",
+      "status": "posted",
+      "posted_on": "2025-03-21"
+    },
+    {
+      "id": "TX-0072",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-22T14:45:00Z",
+      "merchant": "Bluewater Transit",
+      "amount": "-45.00",
+      "status": "posted",
+      "posted_on": "2025-03-22"
+    },
+    {
+      "id": "TX-0073",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-25T22:05:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-88.31",
+      "status": "posted",
+      "posted_on": "2025-03-25"
+    },
+    {
+      "id": "TX-0074",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-27T18:50:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-210.00",
+      "status": "posted",
+      "posted_on": "2025-03-27"
+    },
+    {
+      "id": "TX-0075",
+      "account_ref": "NB-ACC-1001",
+      "at": "2025-03-29T12:40:00Z",
+      "merchant": "Pinecrest Coffee",
+      "amount": "-4.50",
+      "status": "posted",
+      "posted_on": "2025-03-29"
+    },
+    {
+      "id": "TX-0076",
+      "account_ref": "NB-ACC-2001",
+      "at": "2026-03-09T15:00:00Z",
+      "merchant": "Acme Hardware",
+      "amount": "-500.00",
+      "status": "posted",
+      "posted_on": "2026-03-09"
+    },
+    {
+      "id": "TX-0077",
+      "account_ref": "NB-ACC-2001",
+      "at": "2026-03-15T15:00:00Z",
+      "merchant": "Alder Bay Grocers",
+      "amount": "-61.00",
+      "status": "posted",
+      "posted_on": "2026-03-15"
+    }
+  ]
+}
