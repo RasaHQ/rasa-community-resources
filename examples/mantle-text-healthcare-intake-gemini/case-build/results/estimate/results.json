@@ -1,0 +1,363 @@
+{
+ "schema": 1,
+ "build": "healthcare-intake-gemini-text",
+ "case": "healthcare-intake",
+ "project": "examples/mantle-text-healthcare-intake-gemini",
+ "model": "gemini/gemini-3.1-pro-preview",
+ "response_models": [
+  "gemini-3.1-pro-preview"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T15:30:07.616406+00:00",
+ "finished_at": "2026-09-30T15:30:52.487720+00:00",
+ "model_file": "20260930-163009-dynamic-poodle.tar.gz",
+ "train_seconds": 2.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gemini/gemini-3.1-pro-preview",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1.2e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": 4e-06,
+  "output_cost_per_token_above_200k_tokens": 1.8e-05,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 0,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 2,
+  "turn_latency_ms": {
+   "p50": 4605.9,
+   "p95": 28522.8,
+   "max": 28522.8,
+   "mean": 16564.3
+  },
+  "llm_calls": 8,
+  "llm_calls_per_turn": 4.0,
+  "side_channel_calls": 1,
+  "empty_completions": 1,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 30067,
+  "completion_tokens": 1593,
+  "reasoning_tokens": 1314,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 25,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "payment_guarantee": 0
+  },
+  "tool_result_metrics": {
+   "intakes_recorded": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.processor.discover_facts.completed": 1,
+   "mantle.processor.discover_facts.failed": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.07925,
+  "llm_cost_usd": 0.07925,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-new-insurance-unavailable",
+   "kind": "normal",
+   "description": "New payer that cannot answer (EL-42): the open question goes to patient access before the intake is recorded, and the visit stays booked.",
+   "conversation_id": "healthcare-intake-gemini-text-normal-new-insurance-unavailable-20260930T153007",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "I have new insurance since I registered: Oakhollow Mutual Health, member ID OMH-55812040. I'm the policyholder. Please update my intake.",
+     "latency_ms": 28522.8,
+     "bot": [
+      "Hello Nadia, this is Cedar Clinic's pre-visit intake chat. I can confirm your contact and insurance details for your new patient visit on 6 October 2026 at 09:30. What would you like to do?",
+      "Your insurance question is with the Cedar Clinic patient access team under CC-PAQ-90EBA9; they reply within one business day. Your new patient visit on 6 October 2026 stays booked. Coverage and payment are not confirmed.",
+      "I ran an eligibility check on your new insurance. The payer returned code EL-42 and label payer_unable_to_respond, which means they could not answer the request and your coverage is unknown. ",
+      "Would you like me to record your pre-visit intake now?"
+     ]
+    },
+    {
+     "user": "Yes, that's correct. Please record it.",
+     "latency_ms": 4605.9,
+     "bot": [
+      "Here is the intake I will record for your new patient visit on 6 October 2026 at 09:30: phone 555-0147; insurance Oakhollow Mutual Health, member OMH-55812040, holder: patient. Payer response: EL-42 payer unable to respond; coverage unknown. Open question: with the patient access team, CC-PAQ-90EBA9. Intake CC-IN-F59A3 v4. Is that correct?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "update_intake",
+      "result": {
+       "status": "updated",
+       "member_id": "OMH-55812040"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_eligibility",
+      "result": {
+       "status": "checked",
+       "payer_response": {
+        "code": "EL-42"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "assign_access_followup",
+      "result": {
+       "status": "assigned",
+       "open_question_owner": {
+        "owner": "patient access owner"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_intake",
+      "result": {
+       "status": "succeeded",
+       "payer_response": {
+        "code": "EL-42"
+       },
+       "payment_guarantee": null,
+       "open_question_owner": {
+        "owner": "patient access owner"
+       },
+       "member_id": "OMH-55812040"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "check_eligibility",
+        "result": {
+         "payer_response": {
+          "code": "EL-42"
+         }
+        }
+       },
+       {
+        "tool": "assign_access_followup",
+        "result": {
+         "status": "assigned"
+        }
+       },
+       {
+        "tool": "record_intake",
+        "result": {
+         "status": "succeeded"
+        }
+       }
+      ]
+     },
+     "passed": false,
+     "detail": "no record_intake call after position 5"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_patient",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "start_intake",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "update_intake",
+     "arguments": {
+      "phone": "555-0147",
+      "payer": "Oakhollow Mutual Health",
+      "intake_id": "CC-IN-F59A3",
+      "member_id": "OMH-55812040",
+      "policyholder": "patient"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "updated",
+     "result_reason": null
+    },
+    {
+     "tool": "check_eligibility",
+     "arguments": {
+      "intake_id": "CC-IN-F59A3"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "checked",
+     "result_reason": null
+    },
+    {
+     "tool": "assign_access_followup",
+     "arguments": {
+      "question": "Payer unable to respond for Oakhollow Mutual Health member OMH-55812040",
+      "intake_id": "CC-IN-F59A3"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "assigned",
+     "result_reason": null
+    },
+    {
+     "tool": "record_intake",
+     "arguments": {
+      "intake_id": "CC-IN-F59A3"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "payment_guarantee": [],
+    "intakes_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.processor.discover_facts.completed": 1,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.processor.discover_facts.failed": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.processor.discover_facts.completed": [
+     {
+      "previous_flow_id": null,
+      "new_flow_id": "pre_visit_intake",
+      "captured_by_skill": null,
+      "facts_count": 0,
+      "fact_keys": [],
+      "conversation_id": "healthcare-intake-gemini-text-normal-new-insurance-unavailable-20260930T153007"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.processor.discover_facts.failed": []
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 7,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 30067,
+    "completion_tokens": 1593,
+    "reasoning_tokens": 1314,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.07925,
+    "cost_complete": true,
+    "request_thought_signatures": 25,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 1,
+    "llm_latency_ms": [
+     5309.6,
+     2890.3,
+     6210.9,
+     2437.2,
+     3209.8,
+     5606.1,
+     2458.2,
+     4554.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "healthcare-intake-gemini-text-normal-new-insurance-unavailable-20260930T153007",
+    "prompt": 30067,
+    "completion": 1593,
+    "total": 31660,
+    "generations": 8,
+    "fetched_at": "2026-09-30T15:30:52.229763+00:00"
+   }
+  }
+ ]
+}
