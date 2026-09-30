@@ -59,6 +59,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Cedar Clinic refill requests on GPT, speech on the Mac (browser voice) | Cedar Clinic prescription line | Healthcare / casebook case build, self-hosted speech | [`mantle-voice-healthcare-refill-request-gpt-local`](mantle-voice-healthcare-refill-request-gpt-local) | 2026-09-30 |
 | Northgate transfers on GPT (text) | Northgate Bank transfers assistant | Retail banking / casebook case build | [`mantle-text-banking-transfer-gpt`](mantle-text-banking-transfer-gpt) | 2026-09-30 |
 | Northgate risk step-up on GPT (text, web chat) | Northgate payments assistant | Retail banking / casebook case build | [`mantle-text-banking-risk-step-up-gpt`](mantle-text-banking-risk-step-up-gpt) | 2026-09-30 |
+| HarborCover quote and bind on GPT (text) | HarborCover quotes assistant | Insurance / casebook case build | [`mantle-text-insurance-quote-bind-gpt`](mantle-text-insurance-quote-bind-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 
