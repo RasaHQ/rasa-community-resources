@@ -63,6 +63,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Juniper Mobile connectivity recovery on GPT (text) | Juniper Mobile connection support | Telecom / casebook case build | [`mantle-text-telco-diagnostics-gpt`](mantle-text-telco-diagnostics-gpt) | 2026-09-30 |
 | Willow Shop guided selling on GPT (text) | Willow Shop accessories assistant | Retail / casebook case build | [`mantle-text-retail-guided-selling-gpt`](mantle-text-retail-guided-selling-gpt) | 2026-09-30 |
 | Horizon Rewards redemption on GPT (text) | Horizon Rewards chat | Travel loyalty / casebook case build | [`mantle-text-travel-redemption-gpt`](mantle-text-travel-redemption-gpt) | 2026-09-30 |
+| Willow Shop order status on Gemini with Deepgram and Rime (browser voice) | Willow Shop order help | Retail / casebook case build | [`mantle-voice-retail-order-status-gemini`](mantle-voice-retail-order-status-gemini) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 
