@@ -1,0 +1,353 @@
+# The refill guard as a diff: from the guard-off baseline (the same tools, prompt, model and voice
+# loop; the model passes the patient id and decides when the caller has confirmed) to this folder
+# as shipped. In a copy of this folder, `patch -R -E -p1 < guard.diff` gives the guard-off
+# baseline. Measured by shared/spec/count_concerns.py langgraph --diff.
+diff -ruN a/agent.py b/agent.py
+--- a/agent.py
++++ b/agent.py
+@@ -7,7 +7,8 @@
+ langchain-openai), the system prompt built from cedar_clinic.instructions,
+ the five tools with the names, descriptions and parameters in
+ cedar_clinic.tools.TOOL_SPECS, and a checkpointer keyed by the conversation
+-id.
++id. The regions marked refill-guard are the state only tools write; the rest
++of the guard is RefillGuard in guard.py.
+ """
+ 
+ from __future__ import annotations
+@@ -27,24 +28,18 @@
+ from langgraph.types import Command
+ from pydantic import Field, create_model
+ 
++# concern-begin: refill-guard
++from guard import RefillGuard, llm_classifier
++# concern-end
+ 
+ #: The model, the same for all three versions. The runner points the openai
+ #: client at its meter through OPENAI_BASE_URL.
+ MODEL = os.environ.get("CEDAR_MODEL", "gpt-5.5-2026-04-23")
+ REASONING_EFFORT = "low"
+ 
+-SYSTEM_PROMPT = instructions.system_prompt(instructions.PROCEDURE.replace(
+-    """4. When select_medication returns selected, call send_refill_request straight
+-   away, with its record_id and anything the caller wants the team to know.
+-   Do not ask for confirmation yourself first: the recorded medicine is read
+-   back and the caller is asked to confirm once, as part of sending, and a
+-   question of your own would make them confirm twice. If the caller names a
+-   different medicine, do not send, and start again from step 2.""",
+-    """4. When select_medication returns selected, read its confirmation_question
+-   to the caller. Only when the caller says yes, call send_refill_request with
+-   its record_id, the patient_id and anything the caller wants the team to
+-   know. If the caller names a different medicine, do not send, and start
+-   again from step 2."""))
++#: The shared procedure is already written for a framework that reads the
++#: medicine back as part of sending, so it is used verbatim.
++SYSTEM_PROMPT = instructions.system_prompt()
+ 
+ 
+ def make_model(**kwargs: Any) -> ChatOpenAI:
+@@ -53,14 +48,12 @@
+ 
+ 
+ def _args_schema(name: str):
+-    """The tool's parameters as TOOL_SPECS states them, plus the patient id the model passes."""
++    """The tool's parameters exactly as TOOL_SPECS states them."""
+     spec = TOOL_SPECS[name]
+     fields = {
+         param: (str, Field(... if param in spec["required"] else "", description=info["description"]))
+         for param, info in spec["parameters"].items()
+     }
+-    if name != "verify_patient":
+-        fields = {"patient_id": (str, Field(..., description="The patient_id verify_patient returned.")), **fields}
+     return create_model(name, **fields)
+ 
+ 
+@@ -69,8 +62,9 @@
+     return runtime.config["configurable"]["thread_id"]
+ 
+ 
+-def _reply(runtime: ToolRuntime, result: dict) -> Command:
+-    return Command(update={"messages": [ToolMessage(json.dumps(result), tool_call_id=runtime.tool_call_id)]})
++def _reply(runtime: ToolRuntime, result: dict, **update: Any) -> Command:
++    return Command(update={**update, "messages": [
++        ToolMessage(json.dumps(result), tool_call_id=runtime.tool_call_id)]})
+ 
+ 
+ def _spec(name: str) -> dict:
+@@ -79,45 +73,65 @@
+ 
+ @tool("verify_patient", **_spec("verify_patient"))
+ async def verify_patient(full_name: str, date_of_birth: str, runtime: ToolRuntime) -> Command:
+-    return _reply(runtime, clinic.verify_patient(_conversation_id(runtime), full_name, date_of_birth))
++    result = clinic.verify_patient(_conversation_id(runtime), full_name, date_of_birth)
++    update: dict = {}
++    # concern-begin: refill-guard
++    # The patient id goes to state, never to the model. The first verified
++    # patient stays: a call verified as one patient cannot become another.
++    if result["status"] == "verified":
++        current = runtime.state.get("patient_id")
++        if not current:
++            update = {"patient_id": result["patient_id"], "patient_first_name": result["first_name"]}
++        elif current != result["patient_id"]:
++            result = {"status": "not_verified", "reason": "already_verified_as_another_patient",
++                      "next_step": "This call is verified for a different patient. Do not act for this one."}
++    # concern-end
++    return _reply(runtime, clinic.for_model(result), **update)
+ 
+ 
+ @tool("select_medication", **_spec("select_medication"))
+-async def select_medication(patient_id: str, medication_name: str, runtime: ToolRuntime) -> Command:
+-    return _reply(runtime, clinic.select_medication(_conversation_id(runtime), patient_id, medication_name))
++async def select_medication(medication_name: str, runtime: ToolRuntime) -> Command:
++    result = clinic.select_medication(_conversation_id(runtime), runtime.state.get("patient_id"), medication_name)
++    # concern-begin: refill-guard
++    # A new selection always replaces the old one, so a correction can never
++    # leave the previous medicine selected for the confirmation step.
++    update = {"selected_record_id": result.get("record_id", ""),
++              "selected_label": result.get("medication_label", "")}
++    # concern-end
++    return _reply(runtime, result, **update)
+ 
+ 
+ @tool("send_refill_request", **_spec("send_refill_request"))
+-async def send_refill_request(patient_id: str, record_id: str, runtime: ToolRuntime,
+-                              patient_note: str = "") -> Command:
+-    conversation_id = _conversation_id(runtime)
+-    # The model asked the caller (or said it did); nothing checks.
+-    clinic.record_confirmation(conversation_id, record_id, True, mechanism="none: the model decided")
+-    result = clinic.send_refill_request(conversation_id, patient_id, record_id, record_id, patient_note)
++async def send_refill_request(record_id: str, runtime: ToolRuntime, patient_note: str = "") -> Command:
++    result = clinic.send_refill_request(_conversation_id(runtime), runtime.state.get("patient_id"),
++                                        runtime.state.get("selected_record_id"), record_id, patient_note)
+     return _reply(runtime, result)
+ 
+ 
+ @tool("check_request_status", **_spec("check_request_status"))
+-async def check_request_status(patient_id: str, submission_key: str, runtime: ToolRuntime) -> Command:
+-    return _reply(runtime, clinic.check_request_status(_conversation_id(runtime), patient_id, submission_key))
++async def check_request_status(submission_key: str, runtime: ToolRuntime) -> Command:
++    return _reply(runtime, clinic.check_request_status(
++        _conversation_id(runtime), runtime.state.get("patient_id"), submission_key))
+ 
+ 
+ @tool("route_clinical_question", **_spec("route_clinical_question"))
+-async def route_clinical_question(patient_id: str, question: str, runtime: ToolRuntime,
+-                                  record_id: str = "") -> Command:
++async def route_clinical_question(question: str, runtime: ToolRuntime, record_id: str = "") -> Command:
+     return _reply(runtime, clinic.route_clinical_question(
+-        _conversation_id(runtime), patient_id, question, record_id or None))
++        _conversation_id(runtime), runtime.state.get("patient_id"), question, record_id or None))
+ 
+ 
+ TOOLS = [verify_patient, select_medication, send_refill_request, check_request_status, route_clinical_question]
+ 
+ 
+-def build_agent(model: Any = None, *, checkpointer: Any = None):
++def build_agent(model: Any = None, *, classify: Any = None, checkpointer: Any = None):
+     """The compiled graph. One checkpointer per process; thread_id is the conversation id."""
+     model = model if model is not None else make_model(streaming=True)
+     return create_agent(
+         model=model,
+         tools=TOOLS,
+         system_prompt=SYSTEM_PROMPT,
++        # concern-begin: refill-guard
++        middleware=[RefillGuard(classify or llm_classifier(make_model()))],
++        # concern-end
+         checkpointer=checkpointer or InMemorySaver(),
+     )
+diff -ruN a/guard.py b/guard.py
+--- a/guard.py
++++ b/guard.py
+@@ -0,0 +1,140 @@
++# concern: refill-guard
++"""The refill guard: agent middleware, private state and interrupt().
++
++The hard guarantee is: no refill request without a patient verified on this
++call and a medicine the caller confirmed on a later turn than its selection.
++cedar_clinic refuses a send it can see is wrong. What this module adds is
++what the library cannot see, with LangChain and LangGraph's own mechanisms:
++
++- ``RefillState``: the verified patient id and the selected record entry are
++  graph state marked ``PrivateStateAttr``, so they are not in the graph's
++  input or output schema. Only the tools write them, through the ``Command``
++  updates they return (agent.py); no tool takes a patient id from the model.
++- ``RefillGuard.awrap_model_call``: ``send_refill_request`` is left out of the
++  tools offered to the model until ``select_medication`` has put a record id
++  in state.
++- ``RefillGuard.awrap_tool_call``: a ``send_refill_request`` call is refused
++  (fails closed) unless its record id is the one selected. Otherwise the
++  guard calls ``interrupt()`` with the contract's question and the selected
++  medicine read back. The run ends there and the voice loop speaks the
++  question. The call resumes only with ``Command(resume=...)``, which the voice
++  loop sends with the caller's next final transcript, so the answer is always
++  from a later caller turn. The answer is classified by the model (as Rasa's
++  engine also leaves to the model), recorded with the clinic with the
++  caller's words, and only a yes runs the tool.
++"""
++
++from __future__ import annotations
++
++import json
++from typing import Annotated, Any, Awaitable, Callable
++
++from cedar_clinic import tools as clinic
++from langchain.agents.middleware import AgentMiddleware, AgentState, ModelRequest, ToolCallRequest
++from langchain.agents.middleware.types import PrivateStateAttr
++from langchain_core.messages import ToolMessage
++from langgraph.types import interrupt
++from pydantic import BaseModel, Field
++from typing_extensions import NotRequired
++
++SEND = "send_refill_request"
++MECHANISM = "langgraph interrupt() in RefillGuard.awrap_tool_call"
++
++Classifier = Callable[[str, str], Awaitable[bool]]
++
++
++class RefillState(AgentState):
++    """Agent state plus what only tools write. Private: not settable from the graph's input."""
++
++    patient_id: NotRequired[Annotated[str, PrivateStateAttr]]
++    patient_first_name: NotRequired[Annotated[str, PrivateStateAttr]]
++    selected_record_id: NotRequired[Annotated[str, PrivateStateAttr]]
++    selected_label: NotRequired[Annotated[str, PrivateStateAttr]]
++
++
++class CallerAnswer(BaseModel):
++    confirmed: bool = Field(description="True only when the caller said yes to sending this request for this medicine.")
++
++
++CLASSIFY_PROMPT = (
++    "A caller on a clinic's prescription line was asked: \"{question}\"\n"
++    "The caller answered: \"{answer}\"\n"
++    "Did the caller say yes to sending this request for this medicine? A no, a different medicine, "
++    "a question without a yes, or anything unclear is not a yes."
++)
++
++
++def llm_classifier(model: Any) -> Classifier:
++    """Yes or no from the model, with structured output: the judgement Rasa's engine also leaves to the model."""
++    structured = model.with_structured_output(CallerAnswer, method="json_schema")
++
++    async def classify(question: str, answer: str) -> bool:
++        result = await structured.ainvoke(CLASSIFY_PROMPT.format(question=question, answer=answer))
++        return bool(result.confirmed)
++
++    return classify
++
++
++def _blocked(call: dict, reason: str, next_step: str) -> ToolMessage:
++    return ToolMessage(json.dumps({"status": "blocked", "reason": reason, "effects": 0, "next_step": next_step}),
++                       tool_call_id=call["id"], name=SEND)
++
++
++class RefillGuard(AgentMiddleware[RefillState]):
++    state_schema = RefillState
++
++    def __init__(self, classify: Classifier) -> None:
++        super().__init__()
++        self.classify = classify
++
++    async def awrap_model_call(self, request: ModelRequest, handler: Callable) -> Any:
++        """Hide send_refill_request until a record entry is selected."""
++        if not request.state.get("selected_record_id"):
++            request = request.override(tools=[t for t in request.tools if getattr(t, "name", None) != SEND])
++        return await handler(request)
++
++    async def awrap_tool_call(self, request: ToolCallRequest, handler: Callable) -> Any:
++        call = request.tool_call
++        if call["name"] != SEND:
++            return await handler(request)
++        state = request.state
++        selected = state.get("selected_record_id") or ""
++        record_id = str(call["args"].get("record_id") or "").strip().upper()
++        if not selected or record_id != selected:
++            return _blocked(call, "medication_not_resolved",
++                            "Call select_medication first and send only the record_id it returned.")
++        question = clinic.confirmation_question(state.get("selected_label") or "")
++        # Everything above runs again on resume and has no side effects.
++        resumed = interrupt({"kind": "confirm_refill", "question": question, "record_id": record_id})
++        answer = str(resumed.get("text") if isinstance(resumed, dict) else resumed or "").strip()
++        confirmed = bool(answer) and await self.classify(question, answer)
++        conversation_id = request.runtime.config["configurable"]["thread_id"]
++        clinic.record_confirmation(conversation_id, record_id, confirmed, mechanism=MECHANISM,
++                                   question=question, answer=answer)
++        if not confirmed:
++            request.runtime.stream_writer({"say": clinic.DECLINED_TEXT})
++            return ToolMessage(json.dumps({
++                "status": "declined", "effects": 0, "caller_answer": answer,
++                "caller_was_told": clinic.DECLINED_TEXT,
++                "next_step": ("Nothing was sent and the caller has been told so; do not repeat it. If the caller "
++                              "named a different medicine, call select_medication with it. Otherwise answer "
++                              "what they said or ask what else they need."),
++            }), tool_call_id=call["id"], name=SEND)
++        # A progress event for the voice loop, which may say a filler while the request is sent.
++        request.runtime.stream_writer({"confirmed": record_id})
++        result = await handler(request)
++        return _with_answer(result, answer)
++
++
++def _with_answer(result: Any, answer: str) -> Any:
++    """The tool's result with the caller's words added, so the model sees what else they said."""
++    messages = result.update.get("messages") if hasattr(result, "update") and isinstance(result.update, dict) \
++        else [result]
++    for message in messages or []:
++        if isinstance(message, ToolMessage) and isinstance(message.content, str):
++            try:
++                body = json.loads(message.content)
++            except ValueError:
++                continue
++            message.content = json.dumps({"caller_answer": answer, **body})
++    return result
+diff -ruN a/voice_loop.py b/voice_loop.py
+--- a/voice_loop.py
++++ b/voice_loop.py
+@@ -41,6 +41,7 @@
+ from cedar_clinic import instructions
+ from cedar_speech import SpeechmaticsASR
+ from langchain_core.messages import AIMessage, HumanMessage
++from langgraph.types import Command
+ 
+ log = logging.getLogger("cedar.voice")
+ 
+@@ -236,6 +237,13 @@
+         if not state.values.get("messages"):
+             messages.insert(0, AIMessage(instructions.GREETING))
+         payload: Any = {"messages": messages}
++        # concern-begin: refill-guard
++        # The guard asked the confirmation question on an earlier caller turn and the run is paused
++        # in interrupt(). This caller turn is the answer: it is the resume value, and only a caller
++        # turn ever resumes it, so the answer always comes from a later turn than the question.
++        if state.interrupts:
++            payload = Command(resume={"text": text, "turn": self.turn_count})
++        # concern-end
+         current: Optional[Message] = None
+         current_id = None
+         async for mode, data in self.agent.astream(payload, self.config,
+@@ -256,6 +264,26 @@
+                 if calls and not spoke:
+                     self._speak_whole(FILLERS.get(calls[0].get("name") or "", "One moment."), clock)
+                     spoke = True
++            # concern-begin: refill-guard
++            # What the guard asks to be spoken: the decline, a filler once a yes is accepted, and
++            # the confirmation question from interrupt().
++            elif mode == "custom" and isinstance(data, dict) and data.get("say"):
++                self._finish(current)
++                current = None
++                self._speak_whole(data["say"], clock)
++                spoke = True
++            elif mode == "custom" and isinstance(data, dict) and data.get("confirmed") and not spoke:
++                # The caller's yes was accepted and the request is being sent.
++                self._speak_whole(FILLERS["confirmed"], clock)
++                spoke = True
++            elif mode == "updates" and isinstance(data, dict) and "__interrupt__" in data:
++                self._finish(current)
++                current = None
++                for item in data["__interrupt__"]:
++                    value = getattr(item, "value", None)
++                    if isinstance(value, dict) and value.get("question"):
++                        self._speak_whole(value["question"], clock)
++            # concern-end
+         self._finish(current)
+ 
+     # -- speaking ----------------------------------------------------------------

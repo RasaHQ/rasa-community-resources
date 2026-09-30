@@ -233,14 +233,17 @@ class Call:
     async def _agent_turn(self, text: str, clock: TurnClock) -> None:
         state = await self.agent.aget_state(self.config)
         spoke = False
+        messages = [HumanMessage(text)]
+        if not state.values.get("messages"):
+            messages.insert(0, AIMessage(instructions.GREETING))
+        payload: Any = {"messages": messages}
+        # concern-begin: refill-guard
+        # The guard asked the confirmation question on an earlier caller turn and the run is paused
+        # in interrupt(). This caller turn is the answer: it is the resume value, and only a caller
+        # turn ever resumes it, so the answer always comes from a later turn than the question.
         if state.interrupts:
-            # The guard asked the confirmation question on an earlier turn; this is the answer.
-            payload: Any = Command(resume={"text": text, "turn": self.turn_count})
-        else:
-            messages = [HumanMessage(text)]
-            if not state.values.get("messages"):
-                messages.insert(0, AIMessage(instructions.GREETING))
-            payload = {"messages": messages}
+            payload = Command(resume={"text": text, "turn": self.turn_count})
+        # concern-end
         current: Optional[Message] = None
         current_id = None
         async for mode, data in self.agent.astream(payload, self.config,
@@ -261,6 +264,9 @@ class Call:
                 if calls and not spoke:
                     self._speak_whole(FILLERS.get(calls[0].get("name") or "", "One moment."), clock)
                     spoke = True
+            # concern-begin: refill-guard
+            # What the guard asks to be spoken: the decline, a filler once a yes is accepted, and
+            # the confirmation question from interrupt().
             elif mode == "custom" and isinstance(data, dict) and data.get("say"):
                 self._finish(current)
                 current = None
@@ -277,6 +283,7 @@ class Call:
                     value = getattr(item, "value", None)
                     if isinstance(value, dict) and value.get("question"):
                         self._speak_whole(value["question"], clock)
+            # concern-end
         self._finish(current)
 
     # -- speaking ----------------------------------------------------------------
