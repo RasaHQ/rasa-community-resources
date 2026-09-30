@@ -317,8 +317,8 @@ def replay(args) -> None:
         eot = next((m["t_ms"] for m in msgs if not m["after_close_stream"] and m["message"].get("event") == "EndOfTurn"), None)
         rows.append((a, cls, where, outs, final, late, eot))
 
-    out.append(header("cd examples/mantle-voice-banking-block-card-gpt && .venv/bin/python flux-short-reply-probe.py replay "
-                      "--frames flux-short-reply-frames.jsonl --out flux-short-reply-replay.txt",
+    out.append(header(f"cd examples/mantle-voice-banking-block-card-gpt && .venv/bin/python {sys.argv[0]} replay "
+                      f"--frames {args.frames} --out {args.out}",
                       "offline replay of the recorded Flux messages through the installed "
                       "DeepgramASR.engine_event_to_asr_event; live capture started "
                       + (attempts[0]["started_utc"] if attempts else "-")))

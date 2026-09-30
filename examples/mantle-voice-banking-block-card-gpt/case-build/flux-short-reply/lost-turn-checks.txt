@@ -1,0 +1,13 @@
+2026-09-30 | $ cd case-build/results && python3 ../flux-short-reply/lost_turn_checks.py 2026-09-29-gpt-5.5-default/results.json 2026-09-29-gpt-5.5-reasoning-low/results.json 2026-09-29-gpt-5.5-default-verify-fix/results.json 2026-09-29-gpt-5.5-default-fix-rerun/results.json   (companion RasaHQ/rasa-community-resources examples/mantle-voice-banking-block-card-gpt; reads the committed results.json files; no model or network call)
+2026-09-29-gpt-5.5-default recovery-verification-retry turn(s) [2] (0-based, as unheard_turns.py prints) passed=False
+  FAILED tool_order None: no verify_caller call after position 1
+  FAILED tool_called block_card: 0 matching call(s), need >= 1
+  FAILED no_tool_errors None: tool errors: ['verify_caller']
+2026-09-29-gpt-5.5-reasoning-low normal-block-then-asked-replacement turn(s) [1] (0-based, as unheard_turns.py prints) passed=False
+  FAILED tool_called block_card: 0 matching call(s), need >= 1
+  FAILED tool_order None: no block_card call after position -1
+2026-09-29-gpt-5.5-reasoning-low adversarial-lost-debit-two-debits turn(s) [2] (0-based, as unheard_turns.py prints) passed=False
+  FAILED tool_called block_card: 0 matching call(s), need >= 1
+2026-09-29-gpt-5.5-reasoning-low correction-other-card-at-confirmation turn(s) [3] (0-based, as unheard_turns.py prints) passed=False
+  FAILED tool_called block_card: 0 matching call(s), need >= 1
+  FAILED tool_order None: no block_card call after position 6
