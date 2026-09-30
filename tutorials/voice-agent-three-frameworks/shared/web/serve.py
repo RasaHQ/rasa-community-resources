@@ -103,8 +103,8 @@ class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(HERE), **kwargs)
 
-    def log_message(self, fmt, *args):  # quieter than the default
-        if "/api/events" not in (args[0] if args else ""):
+    def log_message(self, fmt, *args):  # quieter than the default: no transcript polling
+        if "/api/events" not in str(args[0] if args else ""):
             super().log_message(fmt, *args)
 
     def _json(self, status: int, payload: dict) -> None:
