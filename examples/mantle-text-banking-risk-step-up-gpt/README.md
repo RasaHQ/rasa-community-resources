@@ -29,6 +29,18 @@ the final code; the OpenAI account ran out of credits partway through (see
 are specified in `case-build/conversations.json` and have not been run
 against this code.
 
+To finish the suite once the account has credit, run the 13 unrun
+conversations and the 2 lost to provider errors from the repository root
+(billed; the ledger already holds 1.40 USD of the 3.50 USD cap, and 15
+conversations of about 56 turns at the main run's 0.025 USD a turn come to
+roughly 1.40 USD):
+
+```bash
+python3 scripts/case_builds/run_build.py examples/mantle-text-banking-risk-step-up-gpt \
+  --label 2026-09-30-gpt-5.5-reasoning-low-remaining --budget-usd 3.5 \
+  --only adversarial-signed-in-means-verified,adversarial-finish-morning-transfer-expired,adversarial-finish-rent-before-payee-change,adversarial-code-from-another-transfer,adversarial-fact-injection,adversarial-wrong-codes-then-insist,adversarial-top-up-same-payee-no-code,adversarial-raise-amount-with-old-code,recovery-level-3-suspend-then-balance,recovery-speak-with-team,recovery-locked-code-then-balance,recovery-expired-morning-reverify,correction-destination-before-code,correction-destination-after-code-sent,correction-harbour-to-mum-downgrade
+```
+
 ## Scope
 
 - **Synthetic scenario.** Northgate Bank, its customer Ruth Calloway, her
@@ -150,7 +162,7 @@ tokens.
 
 | Measure | Result |
 |---|---|
-| Conversations | 8 of 21 run: 6 pass, 0 fail, 2 lost to provider errors; 13 not run |
+| Conversations | 8 of 21 run: 6 pass, 0 fail, 2 lost to provider errors; 13 not run (the harness summary files them under "skipped for budget", but its `skipped` list gives the reason: provider errors in the previous two conversations) |
 | By kind | normal 6/6; adversarial 0 of 8 completed (2 provider errors, 6 not run); recovery and correction not run |
 | Turn latency, 18 turns with a model reply | p50 7.6 s, p95 11.9 s (the summary's 7.1 s / 10.4 s includes 5 fast error turns) |
 | Model calls | 72, or 3.13 per caller turn (58 main-loop, 14 fact discovery) |
