@@ -70,6 +70,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Northgate advisor appointments on Claude with Deepgram and Rime (browser voice, en-GB caller) | Northgate Bank appointments | Retail banking / casebook case build | [`mantle-voice-banking-advisor-appointment-claude`](mantle-voice-banking-advisor-appointment-claude) | 2026-09-30 |
 | Orchard Works IT helpdesk access requests on Claude (text, web chat; Slack target) | Orchard Works IT helpdesk | Internal IT / casebook case build | [`mantle-text-internal-it-helpdesk-claude`](mantle-text-internal-it-helpdesk-claude) | 2026-09-30 |
 | HarborCover claim intake on Claude (text, web chat; Microsoft Teams target) | HarborCover claims intake assistant | Insurance / casebook case build | [`mantle-text-insurance-file-claim-claude`](mantle-text-insurance-file-claim-claude) | 2026-09-30 |
+| Pine University enrolment and aid enquiries on GPT (text, web chat) | Pine University applicant support | Education / casebook case build | [`mantle-text-education-enrolment-gpt`](mantle-text-education-enrolment-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 
