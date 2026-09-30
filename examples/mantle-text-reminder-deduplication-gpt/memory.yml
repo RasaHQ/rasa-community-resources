@@ -1,0 +1,17 @@
+# Project-wide memory (session.project.*). Written once by
+# load_patient_profile at session start, never by the model. One short field
+# per value: Mantle cuts a memory value at 100 characters in the prompt,
+# silently; tests/test_guard.py checks these. Appointment times are never kept
+# here: they change, and project memory is write-once.
+patient_id:
+  type: text
+  description: Patient id of the patient this SMS thread belongs to.
+patient_first_name:
+  type: text
+  description: Patient's first name, for greeting.
+sms_on_file:
+  type: text
+  description: The patient's SMS number on file and whether it is confirmed for reminders.
+today:
+  type: text
+  description: Today's date at Cedar Clinic (the fixture clock).

@@ -1,0 +1,14 @@
+responses:
+  # The contract's question, with the offer read back from memory: its id,
+  # the service, the catalogue's terms and what happens to the cancellation
+  # request. accept_retention_offer checks that the customer was asked about
+  # this offer with these terms and this way out.
+  # utter_on_user_denial is left unset on purpose: with one, the engine ends
+  # the turn on that response, so a customer who answers "continue to
+  # cancellation" would get only a canned line and their cancellation a turn
+  # later (found in the Northgate transfer and Juniper diagnostics builds).
+  utter_offer_or_cancel:
+    - text: >
+        Authorized offer {offer_id} for your {offer_service}: {offer_terms}.
+        {offer_exit_note} You can review this authorized option or continue
+        to cancellation. Which would you prefer?

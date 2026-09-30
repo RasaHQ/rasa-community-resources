@@ -1,0 +1,16 @@
+responses:
+  # The confirmation question, read back from memory the subscription service
+  # filled. The change tag (subscription, change type and revision) is part
+  # of it: apply_subscription_change checks the member was asked about this
+  # exact change at the current revision, with its effective date and
+  # entitlements.
+  # utter_on_user_denial is left unset on purpose: with one, the engine ends
+  # the turn on that response, so a correction given in answer to this
+  # question ("actually, pause it instead") would be handled a turn later
+  # (found in the Northgate transfer build).
+  utter_confirm_subscription_change:
+    - text: >
+        Please confirm this change to your {change_subscription}:
+        {change_label}. It takes effect {change_effective}. What changes for
+        you: {change_entitlements}. (Change {change_tag}.) Shall I make this
+        change? If you meant a different change, say which.

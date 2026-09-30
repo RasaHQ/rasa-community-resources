@@ -7,7 +7,7 @@
     "revision": "15afa7c752f96e8c761c352ba67894c44c156600",
     "checkedAt": "2026-09-30T18:21:10Z"
   },
-  "count": 28,
+  "count": 31,
   "builds": [
     {
       "slug": "banking-loan-servicing",
@@ -490,6 +490,47 @@
       "casebookUrl": null
     },
     {
+      "slug": "reminder-deduplication",
+      "path": "examples/mantle-text-reminder-deduplication-gpt",
+      "title": "Cedar Clinic appointment reminders on GPT-5.5: one reminder per booking version",
+      "caseTitle": "Reminders without duplicate calls",
+      "organisation": "Cedar Clinic",
+      "industry": "Shared primitives",
+      "summary": "Send a patient of Cedar Clinic, a fictional clinic, a reminder for one of their appointments, take their reply to it, and pass a change of time to the scheduling team.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": "Twilio SMS",
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 21,
+        "total": 21,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.08695,
+      "recordedAt": "2026-09-30T19:19:53.518654+00:00",
+      "findings": [
+        "When GPT-5.5 returned nothing after the tool, the tool's own message was the only reply.",
+        "As Twilio SMS, GPT-5.5's typographic apostrophe costs a segment on short refusals.",
+        "Our own SMS style rule dropped two appointments from a question."
+      ],
+      "casebookUrl": null
+    },
+    {
       "slug": "retail-guided-selling",
       "path": "examples/mantle-text-retail-guided-selling-gpt",
       "title": "Willow Shop guided selling on GPT-5.5: an agent that won't read \"fits\" from a product name",
@@ -524,6 +565,47 @@
       "spendUsd": 2.551315,
       "recordedAt": "2026-09-30T02:56:11.340924+00:00",
       "findings": [],
+      "casebookUrl": null
+    },
+    {
+      "slug": "retail-loyalty",
+      "path": "examples/mantle-text-retail-loyalty-gpt",
+      "title": "Willow Shop subscriptions on GPT-5.5: stop renewal, pause and cancel now as three confirmed commands",
+      "caseTitle": "Subscriptions without hidden entitlement loss",
+      "organisation": "Willow Shop",
+      "industry": "Retail & e-commerce",
+      "summary": "Change a loyalty or subscription setting for a signed-in member of Willow Shop, a fictional retailer.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": "Telegram",
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 20,
+        "total": 20,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 2.105143,
+      "recordedAt": "2026-09-30T19:20:08.569773+00:00",
+      "findings": [
+        "The case's failure did not occur, and the guard was not what stopped it.",
+        "GPT-5.5 repeated the references the skill did not tell it to leave alone.",
+        "A disclosure tied to a revision changed the member's choice."
+      ],
       "casebookUrl": null
     },
     {
@@ -605,6 +687,47 @@
         "A Mantle decline response ends the turn, and the customer's correction goes with it.",
         "Mantle cuts each memory value to 100 characters in the prompt, and the agent treated the cut list as complete.",
         "GPT-5.5 adds its own confirmation in front of the engine's."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "telco-retention",
+      "path": "examples/mantle-text-telco-retention-gpt",
+      "title": "Juniper Mobile retention on GPT-5.5: the cancellation is recorded first, and a refusal ends the offers",
+      "caseTitle": "Retention that respects the exit",
+      "organisation": "Juniper Mobile",
+      "industry": "Telco & ISP",
+      "summary": "Record a cancellation request, or a permitted retention offer, for a signed-in customer of Juniper Mobile, a fictional mobile and broadband provider.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": "Telegram",
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 22,
+        "total": 22,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.11972,
+      "recordedAt": "2026-09-30T19:19:56.253501+00:00",
+      "findings": [
+        "GPT-5.5 asked for an offer for a customer who had withdrawn consent six weeks earlier, twice; only the permission check in the tool stopped it.",
+        "Every other refusal was decided in the prompt, and GPT-5.5 honoured all of them.",
+        "On `/stop`, GPT-5.5 declined the offer and ended all contact."
       ],
       "casebookUrl": null
     },

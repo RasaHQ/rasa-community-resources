@@ -64,6 +64,7 @@ Looking for a case build? The case-build rows below are in the order the builds 
 | Northgate transaction search on GPT (text, web chat) | Northgate Bank transactions assistant | Retail banking / casebook case build | [`mantle-text-banking-statement-search-gpt`](mantle-text-banking-statement-search-gpt) | 2026-09-30 |
 | HarborCover quote and bind on GPT (text) | HarborCover quotes assistant | Insurance / casebook case build | [`mantle-text-insurance-quote-bind-gpt`](mantle-text-insurance-quote-bind-gpt) | 2026-09-30 |
 | Juniper Mobile connectivity recovery on GPT (text) | Juniper Mobile connection support | Telecom / casebook case build | [`mantle-text-telco-diagnostics-gpt`](mantle-text-telco-diagnostics-gpt) | 2026-09-30 |
+| Juniper Mobile retention on GPT (text; Telegram target, run in web chat) | Juniper Mobile account assistant | Telecom / casebook case build | [`mantle-text-telco-retention-gpt`](mantle-text-telco-retention-gpt) | 2026-09-30 |
 | Willow Shop guided selling on GPT (text) | Willow Shop accessories assistant | Retail / casebook case build | [`mantle-text-retail-guided-selling-gpt`](mantle-text-retail-guided-selling-gpt) | 2026-09-30 |
 | Horizon Rewards redemption on GPT (text) | Horizon Rewards chat | Travel loyalty / casebook case build | [`mantle-text-travel-redemption-gpt`](mantle-text-travel-redemption-gpt) | 2026-09-30 |
 | Willow Shop order status on Gemini with Deepgram and Rime (browser voice) | Willow Shop order help | Retail / casebook case build | [`mantle-voice-retail-order-status-gemini`](mantle-voice-retail-order-status-gemini) | 2026-09-30 |
@@ -83,6 +84,8 @@ Looking for a case build? The case-build rows below are in the order the builds 
 | Pine University enrolment and aid enquiries on GPT (text, web chat) | Pine University applicant support | Education / casebook case build | [`mantle-text-education-enrolment-gpt`](mantle-text-education-enrolment-gpt) | 2026-09-30 |
 | Amber Grid budget plans on GPT (text, web chat) | Amber Grid billing chat | Utilities / casebook case build | [`mantle-text-utilities-budget-plan-gpt`](mantle-text-utilities-budget-plan-gpt) | 2026-09-30 |
 | Willow Shop order payments on GPT with Deepgram and Rime (browser voice; card details never taken by voice) | Willow Shop order help | Retail payments / casebook case build | [`mantle-voice-payment-boundary-gpt`](mantle-voice-payment-boundary-gpt) | 2026-09-30 |
+| Cedar Clinic appointment reminders on GPT (text, web chat; Twilio SMS target) | Cedar Clinic appointment messages | Healthcare / casebook case build | [`mantle-text-reminder-deduplication-gpt`](mantle-text-reminder-deduplication-gpt) | 2026-09-30 |
+| Willow Shop subscriptions and memberships on GPT (text, web chat; Telegram target) | Willow Shop member assistant | Retail loyalty / casebook case build | [`mantle-text-retail-loyalty-gpt`](mantle-text-retail-loyalty-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 
