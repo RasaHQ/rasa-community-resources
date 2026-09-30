@@ -56,31 +56,20 @@ PROMPT_MEMORY_VALUE_LIMIT = 100
 
 OWNER = "loan servicing owner"
 
-# Real lenders and servicers the fixture must never name. The fixture is public
-# teaching data; a real name in it would read as a claim about that company.
-# This list is a tripwire, not a register of every lender.
-REAL_LENDERS = (
-    "chase", "jpmorgan", "wells fargo", "bank of america", "citi", "citibank", "capital one",
-    "us bank", "u.s. bank", "pnc", "truist", "td bank", "ally", "santander", "barclays", "hsbc",
-    "lloyds", "natwest", "discover", "sofi", "navient", "nelnet", "mr. cooper", "rocket mortgage",
-)
-
-
 class FictionalOrganisationError(RuntimeError):
     """The fixture does not describe a clearly fictional organisation."""
 
 
 def assert_fictional(data: dict) -> None:
-    """Refuse fixture data that is not marked fictional or names a real lender."""
+    """Refuse fixture data that is not marked fictional.
+
+    Real institution names are caught repository-wide by scripts/lint_repo.py
+    (fictional-data policy), so this check does not keep its own list."""
     organisation = str(data.get("organisation") or "")
     if "(fictional" not in organisation.lower():
         raise FictionalOrganisationError(f"organisation must be marked '(fictional)': {organisation!r}")
     if "fictional" not in str(data.get("note") or "").lower():
         raise FictionalOrganisationError("the fixture note must say the data is fictional")
-    text = json.dumps(data).lower()
-    for name in REAL_LENDERS:
-        if re.search(rf"(?<![a-z]){re.escape(name)}(?![a-z])", text):
-            raise FictionalOrganisationError(f"the fixture names a real lender: {name!r}")
 
 
 # Read once, at import. Mantle imports lib/ from a temporary snapshot that is
