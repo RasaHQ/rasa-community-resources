@@ -1,0 +1,15 @@
+responses:
+  # The contract's question, with the move read back from memory: both sides,
+  # both days and the draft tag (id and version). submit_move_order checks
+  # that the customer was asked about the current version with these dates.
+  # utter_on_user_denial is left unset on purpose: with one, the engine ends
+  # the turn on that response, so a date change given in answer to this
+  # question would get only "not scheduled" and the new version a turn later
+  # (found in the Northgate transfer build).
+  utter_confirm_move:
+    - text: >
+        Here is {move_order_note} (draft {move_draft_tag}): your supply at
+        {move_from} stays on through {move_out_on}, and supply at {move_to}
+        starts on {move_in_on}. This schedules the change for the date you
+        chose and leaves the current service as it is until then. Is that
+        right?
