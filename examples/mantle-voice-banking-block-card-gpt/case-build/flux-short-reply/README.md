@@ -1,6 +1,6 @@
 # Deepgram Flux short replies: probe, saved frames and replays
 
-The build lost the caller's bare "Yes." in 4 of 10 live turns and heard every longer reply. This folder holds the evidence for the cause: Rasa's Flux handler `_DeepgramV2.parse_event` fills its transcript buffer only from `Update` messages. When Flux sends `StartOfTurn` and then `EndOfTurn` with no `Update` between them, the handler returns `None`, even though both messages carry the words.
+The build's bare "Yes." produced no user event in 4 of 10 live turns, while every longer reply was heard. No Flux messages were saved inside those live calls, so their cause is inferred, not observed. This folder holds a direct capture that reproduces a mechanism consistent with them: Rasa's Flux handler `_DeepgramV2.parse_event` fills its transcript buffer only from `Update` messages. When Flux sends `StartOfTurn` and then `EndOfTurn` with no `Update` between them, the handler returns `None`, even though both messages carry the words. In the capture that happened on 26 of 54 attempts, all with the 0.33 s "Yes." recording.
 
 Every command runs from `examples/mantle-voice-banking-block-card-gpt` in the project's `.venv` (rasa-pro 3.21.0.dev5). Apart from the capture, none of them needs a key or the network.
 
