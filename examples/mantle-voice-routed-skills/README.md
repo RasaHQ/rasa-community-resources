@@ -159,10 +159,15 @@ recorded and ends the sentence rather than restarting it in a different voice.
 four times. Sharing it needs a store and a failure mode of its own; process
 scope already removes most of the waste. See the pattern README.
 
-**The `offline` stack has no voice out of the box.** NeuTTS cannot be installed
-alongside rasa-pro in one environment — rasa-pro pins numpy `<2.2`, neutts needs
-`>=2.2.6`. It is skipped with that reason until you run it out of a second venv.
-That is a real outcome, and better seen in a drill than in production.
+**The `offline` stack has no voice out of the box.** The Python `neutts`
+package cannot be installed alongside rasa-pro in one environment — rasa-pro pins
+numpy `<2.2`, neutts needs `>=2.2.6` — so `NeuTTSLocal` is skipped with that
+reason until you run it out of a second venv. That is a real outcome, and better
+seen in a drill than in production. The conflict belongs to the package, not to
+NeuTTS: on Apple silicon,
+[`NeuTTSNative`](../../patterns/voice-vendor-router/native/neutts/) runs
+NeuTTS-2E natively in Rasa's own venv, and was run live in
+[`mantle-voice-healthcare-refill-request-gpt-local`](../mantle-voice-healthcare-refill-request-gpt-local/).
 
 ## Running the local last resort
 
