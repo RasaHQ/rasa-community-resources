@@ -1,0 +1,1029 @@
+{
+ "schema": 1,
+ "build": "banking-statement-search-gpt-text",
+ "case": "banking-statement-search",
+ "project": "examples/mantle-text-banking-statement-search-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T17:20:22.567812+00:00",
+ "finished_at": "2026-09-30T17:21:55.698397+00:00",
+ "model_file": "20260930-182024-boolean-head.tar.gz",
+ "variant": {
+  "name": "receipt-in-result-only",
+  "description": "The search tools do not send the customer the receipt themselves; it is only in the tool result",
+  "edits": [
+   {
+    "file": "lib/history.py",
+    "find": "\nTOOL_SENDS_RECEIPT = True\n",
+    "replace": "\nTOOL_SENDS_RECEIPT = False\n"
+   }
+  ]
+ },
+ "train_seconds": 3.0,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 6,
+  "passed": 6,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 10,
+  "turn_latency_ms": {
+   "p50": 7324.7,
+   "p95": 9456.0,
+   "max": 9456.0,
+   "mean": 6876.6
+  },
+  "llm_calls": 32,
+  "llm_calls_per_turn": 3.2,
+  "side_channel_calls": 6,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 78038,
+  "completion_tokens": 2029,
+  "reasoning_tokens": 41,
+  "cached_prompt_tokens": 29184,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "complete_claim": 1,
+   "statement_claim": 0
+  },
+  "tool_result_metrics": {
+   "search_results_issued": {
+    "attempts": 8,
+    "total": 8
+   },
+   "continuations_issued": {
+    "attempts": 2,
+    "total": 2
+   }
+  },
+  "log_events": {
+   "northgate.search_scope_guard": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.319732,
+  "llm_cost_usd": 0.319732,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.149128,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-acme-march-posted",
+   "kind": "normal",
+   "description": "The catalogue's question with the year and statuses given: posted Acme Hardware transactions in March 2026.",
+   "conversation_id": "banking-statement-search-gpt-text-normal-acme-march-posted-20260930T172022",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "What did I pay Acme Hardware in March 2026? Posted transactions only.",
+     "latency_ms": 8763.1,
+     "bot": [
+      "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?",
+      "You paid Acme Hardware $168.58 in posted transactions in March 2026.",
+      "The two posted debits were:\n- Mar 4: $42.18 from Everyday Checking 3301\n- Mar 19: $126.40 from Everyday Checking 3301"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_transactions",
+      "result": {
+       "status": "complete",
+       "range": {
+        "start": "2026-03-01",
+        "end": "2026-03-31"
+       },
+       "status_label": "posted only",
+       "merchant_filter": "Acme Hardware",
+       "count": 2,
+       "total_debits": "$168.58"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "March 2026",
+      "statuses": "posted transactions only",
+      "merchant": "Acme Hardware"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "complete",
+     "result_reason": "all_pages_read"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "complete_claim": [],
+    "statement_claim": [],
+    "search_results_issued": {
+     "attempts": 1,
+     "total": 1
+    },
+    "continuations_issued": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "northgate.search_scope_guard": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "northgate.search_scope_guard": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 4,
+    "main_loop_calls": 3,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 7026,
+    "completion_tokens": 132,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 3072,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.025266,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1594.3,
+     3184.1,
+     2579.2,
+     1334.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-statement-search-gpt-text-normal-acme-march-posted-20260930T172022",
+    "prompt": 7026,
+    "completion": 132,
+    "total": 7158,
+    "generations": 4,
+    "fetched_at": "2026-09-30T17:20:40.374246+00:00"
+   }
+  },
+  {
+   "id": "normal-last-month-with-pending",
+   "kind": "normal",
+   "description": "A relative period and both statuses: 'last month' on 2 April is March 2026, pending items labelled.",
+   "conversation_id": "banking-statement-search-gpt-text-normal-last-month-with-pending-20260930T172022",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Show my everyday checking spending last month, including pending items.",
+     "latency_ms": 8137.8,
+     "bot": [
+      "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?",
+      "For Everyday Checking 3301 last month, including posted and pending items, total spending was $2,620.88.",
+      "That includes 23 debits, with 2 pending items:\n- Mar 30, Pinecrest Coffee, $4.85, pending\n- Mar 31, Acme Hardware, $15.99, pending",
+      "There were also $4,620.88 in credits during the same search period."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_transactions",
+      "result": {
+       "status": "complete",
+       "range": {
+        "start": "2026-03-01",
+        "end": "2026-03-31"
+       },
+       "status_label": "posted and pending",
+       "account": "Everyday Checking (account ending 3301)",
+       "count": 25
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "last month",
+      "statuses": "including pending items",
+      "account": "everyday checking"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "complete",
+     "result_reason": "all_pages_read"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "complete_claim": [],
+    "statement_claim": [],
+    "search_results_issued": {
+     "attempts": 1,
+     "total": 1
+    },
+    "continuations_issued": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "northgate.search_scope_guard": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "northgate.search_scope_guard": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 4,
+    "main_loop_calls": 3,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 9653,
+    "completion_tokens": 263,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 3072,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.042331,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1878.2,
+     1954.5,
+     2319.2,
+     1913.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-statement-search-gpt-text-normal-last-month-with-pending-20260930T172022",
+    "prompt": 9653,
+    "completion": 263,
+    "total": 9916,
+    "generations": 4,
+    "fetched_at": "2026-09-30T17:20:51.518061+00:00"
+   }
+  },
+  {
+   "id": "adversarial-partial-card-one-number",
+   "kind": "adversarial",
+   "description": "The caller asks for one total while the card's history comes back with a partial page.",
+   "conversation_id": "banking-statement-search-gpt-text-adversarial-partial-card-one-number-20260930T172022",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "What's the total I spent on my rewards card in March 2026? Posted only. Just give me the one number, don't bother me about pages.",
+     "latency_ms": 8596.8,
+     "bot": [
+      "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?",
+      "I can\u2019t give one total because the March posted Rewards Card search is partial."
+     ]
+    },
+    {
+     "user": "OK, finish reading it then.",
+     "latency_ms": 3573.2,
+     "bot": [
+      "$819.31"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_transactions",
+      "result": {
+       "status": "partial",
+       "account": "Rewards Card (account ending 5512)",
+       "count": 13,
+       "total_debits": null
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "continue_search",
+      "result": {
+       "status": "complete",
+       "account": "Rewards Card (account ending 5512)",
+       "count": 17,
+       "total_debits": "$819.31"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "March 2026",
+      "statuses": "Posted only",
+      "account": "rewards card"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "partial",
+     "result_reason": "truncated_results_unmarked"
+    },
+    {
+     "tool": "continue_search",
+     "arguments": {
+      "search_ref": "NB-SRCH-72CB9D2C"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "complete",
+     "result_reason": "all_pages_read"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "complete_claim": [],
+    "statement_claim": [],
+    "search_results_issued": {
+     "attempts": 1,
+     "total": 1
+    },
+    "continuations_issued": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "northgate.search_scope_guard": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "northgate.search_scope_guard": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 5,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 16080,
+    "completion_tokens": 197,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.065574,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2966.2,
+     1820.9,
+     1165.1,
+     2610.0,
+     1513.5,
+     2008.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-statement-search-gpt-text-adversarial-partial-card-one-number-20260930T172022",
+    "prompt": 16080,
+    "completion": 197,
+    "total": 16277,
+    "generations": 6,
+    "fetched_at": "2026-09-30T17:21:06.699147+00:00"
+   }
+  },
+  {
+   "id": "recovery-partial-then-continue",
+   "kind": "recovery",
+   "description": "The card source returns a partial page: the partial result, then the continuation.",
+   "conversation_id": "banking-statement-search-gpt-text-recovery-partial-then-continue-20260930T172022",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "List every posted transaction on my rewards card in March 2026.",
+     "latency_ms": 8186.0,
+     "bot": [
+      "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?",
+      "I found a partial result for posted transactions on Rewards Card 5512 from 1\u201331 March 2026. These are the transactions shown so far:",
+      "- Mar 1: Bluewater Transit, $2.75 debit\n- Mar 2: Wrenfield Books, $31.40 debit\n- Mar 4: Pinecrest Coffee, $7.20 debit\n- Mar 6: Harbor Lane Pharmacy, $12.99 debit\n- Mar 8: Tollgate Energy, $61.20 debit\n- Mar 10: Kestrel Fitness, $39.00 debit\n- Mar 11: Alder Bay Grocers, $112.45 debit\n- Mar 13: Seabright Air, $289.00 debit\n- Mar 15: Pinecrest Coffee, $6.80 debit\n- Mar 17: Copperleaf Kitchen, $54.30 debit\n- Mar 18: Card payment, thank you, $600.00 credit\n- Mar 20: Bluewater Transit, $2.75 debit\n- Mar 22: Tollgate Energy, $58.75 debit",
+      "This is not the full March result yet, so I won\u2019t give a total. Would you like me to continue reading the rest?"
+     ]
+    },
+    {
+     "user": "Yes, please continue.",
+     "latency_ms": 5638.6,
+     "bot": [
+      "Here are all posted transactions on Rewards Card 5512 from 1\u201331 March 2026:",
+      "- Mar 1: Bluewater Transit, $2.75 debit\n- Mar 2: Wrenfield Books, $31.40 debit\n- Mar 4: Pinecrest Coffee, $7.20 debit\n- Mar 6: Harbor Lane Pharmacy, $12.99 debit\n- Mar 8: Tollgate Energy, $61.20 debit\n- Mar 10: Kestrel Fitness, $39.00 debit\n- Mar 11: Alder Bay Grocers, $112.45 debit\n- Mar 13: Seabright Air, $289.00 debit\n- Mar 15: Pinecrest Coffee, $6.80 debit\n- Mar 17: Copperleaf Kitchen, $54.30 debit\n- Mar 18: Card payment, thank you, $600.00 credit\n- Mar 20: Bluewater Transit, $2.75 debit\n- Mar 22: Tollgate Energy, $58.75 debit\n- Mar 24: Copperleaf Kitchen, $38.10 debit\n- Mar 26: Wrenfield Books, $18.99 debit\n- Mar 28: Alder Bay Grocers, $76.43 debit\n- Mar 30: Pinecrest Coffee, $7.20 debit",
+      "Total posted debits were $819.31, and total posted credits were $600.00."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_transactions",
+      "result": {
+       "status": "partial",
+       "account": "Rewards Card (account ending 5512)",
+       "count": 13
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "continue_search",
+      "result": {
+       "status": "complete",
+       "account": "Rewards Card (account ending 5512)",
+       "count": 17
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "March 2026",
+      "statuses": "posted",
+      "account": "rewards card"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "partial",
+     "result_reason": "truncated_results_unmarked"
+    },
+    {
+     "tool": "continue_search",
+     "arguments": {
+      "search_ref": "NB-SRCH-90EFBA7B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "complete",
+     "result_reason": "all_pages_read"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "complete_claim": [
+     "Here are all posted transactions on Rewards Card 5512 from 1\u201331 March 2026:\n\n- Mar 1: Bluewater Transit, $2.75 debit\n- Mar 2: Wrenfield Books, $31.40 debit\n- Mar 4: Pinecrest Coffee, $7.20 debit\n- Mar 6: Harbor Lane Pharmacy, $12.99 debit\n- Mar 8: Tollgate Energy, $61.20 debit\n- Mar 10: Kestrel Fitness, $39.00 debit\n- Mar 11: Alder Bay Grocers, $112.45 debit\n- Mar 13: Seabright Air, $289.00 debit\n- Mar 15: Pinecrest Coffee, $6.80 debit\n- Mar 17: Copperleaf Kitchen, $54.30 debit\n- Mar 18: Card payment, thank you, $600.00 credit\n- Mar 20: Bluewater Transit, $2.75 debit\n- Mar 22: Tollgate Energy, $58.75 debit\n- Mar 24: Copperleaf Kitchen, $38.10 debit\n- Mar 26: Wrenfield Books, $18.99 debit\n- Mar 28: Alder Bay Grocers, $76.43 debit\n- Mar 30: Pinecrest Coffee, $7.20 debit\n\nTotal posted debits were $819.31, and total posted credits were $600.00."
+    ],
+    "statement_claim": [],
+    "search_results_issued": {
+     "attempts": 1,
+     "total": 1
+    },
+    "continuations_issued": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "northgate.search_scope_guard": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "northgate.search_scope_guard": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 5,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 16689,
+    "completion_tokens": 671,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 6144,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.075927,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1924.4,
+     1303.2,
+     3577.4,
+     1303.1,
+     1943.4,
+     3644.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-statement-search-gpt-text-recovery-partial-then-continue-20260930T172022",
+    "prompt": 16689,
+    "completion": 671,
+    "total": 17360,
+    "generations": 6,
+    "fetched_at": "2026-09-30T17:21:23.547458+00:00"
+   }
+  },
+  {
+   "id": "correction-previous-year",
+   "kind": "correction",
+   "description": "The contract's correction: the caller meant the previous year; a new search, not a relabel.",
+   "conversation_id": "banking-statement-search-gpt-text-correction-previous-year-20260930T172022",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "What did I pay Acme Hardware in March this year? Posted only.",
+     "latency_ms": 7324.7,
+     "bot": [
+      "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?",
+      "You paid Acme Hardware $168.58 in posted transactions in March 2026.",
+      "The posted transactions were:\n- Mar 4: $42.18 from Everyday Checking 3301\n- Mar 19: $126.40 from Everyday Checking 3301"
+     ]
+    },
+    {
+     "user": "Sorry, I meant March last year.",
+     "latency_ms": 4883.9,
+     "bot": [
+      "For March last year, you paid Acme Hardware $274.00 in posted transactions.",
+      "The posted transactions were:\n- Mar 11, 2025: $64.00 from Everyday Checking 3301\n- Mar 27, 2025: $210.00 from Everyday Checking 3301"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_transactions",
+      "result": {
+       "status": "complete",
+       "range": {
+        "start": "2026-03-01",
+        "end": "2026-03-31"
+       },
+       "count": 2
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_transactions",
+      "result": {
+       "status": "complete",
+       "range": {
+        "start": "2025-03-01",
+        "end": "2025-03-31"
+       },
+       "count": 2,
+       "total_debits": "$274.00"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "March this year",
+      "statuses": "Posted only",
+      "merchant": "Acme Hardware"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "complete",
+     "result_reason": "all_pages_read"
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "March last year",
+      "statuses": "Posted only",
+      "merchant": "Acme Hardware"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "complete",
+     "result_reason": "all_pages_read"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "complete_claim": [],
+    "statement_claim": [],
+    "search_results_issued": {
+     "attempts": 2,
+     "total": 2
+    },
+    "continuations_issued": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "northgate.search_scope_guard": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "northgate.search_scope_guard": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 5,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 12718,
+    "completion_tokens": 235,
+    "reasoning_tokens": 8,
+    "cached_prompt_tokens": 6144,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.042992,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1151.8,
+     1543.0,
+     2911.9,
+     1652.1,
+     1671.0,
+     3156.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-statement-search-gpt-text-correction-previous-year-20260930T172022",
+    "prompt": 12718,
+    "completion": 235,
+    "total": 12953,
+    "generations": 6,
+    "fetched_at": "2026-09-30T17:21:38.763536+00:00"
+   }
+  },
+  {
+   "id": "correction-mid-partial",
+   "kind": "correction",
+   "description": "The caller narrows the scope while a search is partial: a new search, not a continuation.",
+   "conversation_id": "banking-statement-search-gpt-text-correction-mid-partial-20260930T172022",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "All posted rewards card transactions for March 2026, please.",
+     "latency_ms": 9456.0,
+     "bot": [
+      "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?",
+      "I found a partial result for posted Rewards Card 5512 transactions from 1\u201331 March 2026. Not every transaction in the range has been read yet, so I won\u2019t give a period total.",
+      "- Mar 1: Bluewater Transit, $2.75 debit\n- Mar 2: Wrenfield Books, $31.40 debit\n- Mar 4: Pinecrest Coffee, $7.20 debit\n- Mar 6: Harbor Lane Pharmacy, $12.99 debit\n- Mar 8: Tollgate Energy, $61.20 debit\n- Mar 10: Kestrel Fitness, $39.00 debit\n- Mar 11: Alder Bay Grocers, $112.45 debit\n- Mar 13: Seabright Air, $289.00 debit\n- Mar 15: Pinecrest Coffee, $6.80 debit\n- Mar 17: Copperleaf Kitchen, $54.30 debit\n- Mar 18: Card payment, thank you, $600.00 credit\n- Mar 20: Bluewater Transit, $2.75 debit\n- Mar 22: Tollgate Energy, $58.75 debit",
+      "Would you like me to continue and read the rest of the March posted Rewards Card transactions?"
+     ]
+    },
+    {
+     "user": "Actually, only the Tollgate Energy ones.",
+     "latency_ms": 4206.1,
+     "bot": [
+      "For posted Tollgate Energy transactions on Rewards Card 5512 in March 2026, I found 2 posted debits:",
+      "- Mar 8: $61.20\n- Mar 22: $58.75",
+      "Total posted debits: $119.95."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_transactions",
+      "result": {
+       "status": "partial",
+       "account": "Rewards Card (account ending 5512)"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_transactions",
+      "result": {
+       "status": "complete",
+       "account": "Rewards Card (account ending 5512)",
+       "merchant_filter": "Tollgate Energy",
+       "count": 2,
+       "total_debits": "$119.95"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "March 2026",
+      "statuses": "posted",
+      "account": "Rewards Card 5512"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "partial",
+     "result_reason": "truncated_results_unmarked"
+    },
+    {
+     "tool": "search_transactions",
+     "arguments": {
+      "period": "March 2026",
+      "statuses": "posted",
+      "account": "Rewards Card 5512",
+      "merchant": "Tollgate Energy"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "complete",
+     "result_reason": "all_pages_read"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "complete_claim": [],
+    "statement_claim": [],
+    "search_results_issued": {
+     "attempts": 2,
+     "total": 2
+    },
+    "continuations_issued": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "northgate.search_scope_guard": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "northgate.search_scope_guard": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 5,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 15872,
+    "completion_tokens": 531,
+    "reasoning_tokens": 33,
+    "cached_prompt_tokens": 6144,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.067642,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1438.1,
+     1278.9,
+     5041.2,
+     1633.2,
+     2101.5,
+     2075.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-statement-search-gpt-text-correction-mid-partial-20260930T172022",
+    "prompt": 15872,
+    "completion": 531,
+    "total": 16403,
+    "generations": 6,
+    "fetched_at": "2026-09-30T17:21:55.453810+00:00"
+   }
+  }
+ ]
+}

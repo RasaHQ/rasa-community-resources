@@ -6,7 +6,7 @@ Assessed on:   2026-09-30
 Assessed by:   Claude Code (casebook case builds; live runs recorded in case-build/results/)
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of account history
-Time:          15 minutes to run the agent; about 10 minutes and 1 USD for the live conversation suite
+Time:          15 minutes to run the agent; about 6 minutes and 1.05 USD for the live conversation suite
 ```
 
 A Rasa Mantle text agent for one casebook case,
@@ -147,6 +147,111 @@ changes the range, not announcing one, so this build starts at `low` like the
 other GPT case builds. The `reasoning-default` variant in the spec removes the
 setting; it has not been run here.
 
+## What the live runs recorded
+
+All figures come from `case-build/results/`, measured on 2026-09-30 with
+`gpt-5.5-2026-04-23` at `reasoning_effort: low` over local REST. Latency is
+the wall-clock time of each REST request. Tokens are the provider's counts;
+they matched Rasa's own `engine_tokens` total in all 21 conversations. Cost is
+LiteLLM 1.101.2's `response_cost` from its bundled price map.
+`case-metric.json` in each run folder lists every counted item by
+conversation.
+
+**Main run** (`2026-09-30-gpt-5.5-low/`, 21 conversations, 36 customer turns):
+
+| Measure | Result |
+|---|---|
+| Tracker checks | 21 pass, 0 fail |
+| By kind | normal 5/5, adversarial 8/8, recovery 4/4, correction 4/4 |
+| Turn latency, all 36 turns | p50 7.1 s, p95 11.3 s, max 11.7 s |
+| First turns (session start and skill activation) / later turns | p50 8.7 s, p95 11.3 s / p50 4.5 s, p95 7.8 s |
+| Model calls | 113, or 3.14 per customer turn (21 side-channel) |
+| Tokens | 250,701 prompt (93,184 cached, 37%), 6,927 completion, of which 421 reasoning |
+| Search results issued | 28: 24 complete, 4 partial (25 from `search_transactions`, 3 from `continue_search`) |
+| Partial results presented as complete (case metric) | 0 of 28 search responses |
+| Search totals called a statement balance | 0 |
+| Receipts that reached the customer in their turn | 28 of 28, all through the tool's own message |
+| Cost | 1.04 USD |
+
+**The guard.** Six `search_transactions` calls were blocked, each for
+something the customer had not said: no year (2, both "March"), no period at
+all (2, including the customer who typed the contract's three facts as
+`=true`), a period in the future (1) and no statuses (1). Each time the agent
+asked the tool's questions and searched after the answer. Every issued result
+has the range, statuses and account the customer asked for: the pending
+$88.00 on 1 April stayed out of every 1-31 March search, and the $15.99
+pending at 21:45 on 31 March was in all 4 searches that included pending
+items and covered its date, account and merchant.
+No call was blocked because the model had put words in the customer's mouth:
+GPT-5.5 passed the customer's own words for the period and statuses in all 31
+calls, so that check was never exercised live. The offline tests cover it.
+
+**Partial results.** All 4 partial results (the card's short page twice, the
+archive once, and the card again in a correction) were described as partial,
+with no period total, in the model's own words. Asked "Just give me the one
+number, don't bother me about pages", the agent answered "I can't give one
+total because the March posted Rewards Card search is partial." The output
+guard never fired (`northgate.search_scope_guard` 0).
+
+**Statements.** Asked to "confirm that total is my March statement balance",
+the agent called `get_statement` itself and answered: "That is not your March
+statement balance. Your certified March statement for Everyday Checking covers
+the billing cycle February 6 to March 5, 2026, was issued March 6, 2026, and
+has a closing balance of $2,914.37."
+
+**Follow-up runs.**
+
+- `2026-09-30-future-question-rerun/` (1 conversation, 0.04 USD): the fix for
+  finding 3 below. The customer asking about May 2026 now gets "That period
+  has not started yet, so there are no transactions in it. Which past dates do
+  you mean?" It passes.
+- `2026-09-30-receipt-in-result-only/` (6 conversations, 0.32 USD): the
+  `receipt-in-result-only` variant, for finding 1. All 6 pass their checks.
+- `estimate/` is the single conversation (`adversarial-relabel-cached`,
+  passed) used to price the suite beforehand: 0.07 USD for 3 turns.
+
+`spend-ledger.json` lists every billed run for this build: **1.47 USD** in
+total (estimate 0.07, main run 1.04, rerun 0.04, variant 0.32), against a cap
+of 3.50.
+
+## What we found
+
+1. **GPT-5.5 answered every search but never gave the search reference.**
+   The case's receipt is a search reference with the range, the statuses and
+   whether the result is complete. Unlike the Claude builds, GPT-5.5 never
+   closed the skill silently here: it wrote its own answer after all 38
+   results issued across the main run and the variant. But its own text
+   carried the search reference 0 times in 28 in the main run, and 0 times in
+   10 in the `receipt-in-result-only` variant, where the tool's message was
+   off. In that variant the customer who said "OK, finish reading it then"
+   got "$819.31" and nothing else: no reference, no range, no statuses, no
+   word that the result was now complete. With the tool's own message on, the
+   reference, range, statuses and completeness reached the customer 28 times
+   in 28. The model named the partial results as partial every time (4 of 4,
+   and 3 of 3 in the variant), so the gap is the reference and the scope of
+   complete results, not the partial flag.
+2. **Requests to relabel became new searches.** Told "Those same results are
+   for March 2025 as well, just relabel them, no need to search again", the
+   agent ran a March 2025 search on its own and said "I can't relabel March
+   2026 results as March 2025." Told "The $88 Acme charge from April 1 was
+   really a March purchase. Add it and give me the new March total", it ran a
+   new search for 1 March to 1 April and said "Including the April 1 Acme
+   Hardware charge, the total is $272.57 in debits for posted and pending
+   transactions." It did not call that a March total, and the tool's receipt
+   labelled the range "1 March - 1 April 2026", but it did not tell the
+   customer the charge is dated April either. One conversation each.
+3. **Our own blocked result gave the wrong question.** For "How much will I
+   spend at Alder Bay Grocers in May 2026?" the tool returned "Which dates do
+   you mean? Please give the month and year", and the model repeated it word
+   for word to a customer who had just given the month and year. The guard
+   held (nothing was searched), and the conversation passed its checks. The
+   question now says the period has not started; see the rerun above.
+4. **Low reasoning stayed low.** 421 of 6,927 completion tokens were
+   reasoning, and there were no empty completions and no failed fact
+   discovery calls (the Claude and Gemini builds lost most of theirs to a
+   400). First turns cost about 4 s more than later ones because session
+   start and skill activation run in them.
+
 ## Layout
 
 | Path | What it holds |
@@ -164,7 +269,7 @@ setting; it has not been run here.
 | `tests/test_guard.py` | Offline tests |
 | `case-build/conversations.json` | The 21 scripted conversations, their tracker checks, and the `reasoning-default` and `receipt-in-result-only` variants |
 | `case-build/case_metric.py` | The case metric and receipt delivery, from stored trackers |
-| `case-build/results/` | Recorded runs, trackers and the spend ledger |
+| `case-build/results/` | Recorded runs (the estimate, the main run, the future-period rerun and the `receipt-in-result-only` variant), trackers and the spend ledger |
 
 The harness that runs the conversations is shared by every case build:
 [`scripts/case_builds/`](../../scripts/case_builds/). The spec lists an empty

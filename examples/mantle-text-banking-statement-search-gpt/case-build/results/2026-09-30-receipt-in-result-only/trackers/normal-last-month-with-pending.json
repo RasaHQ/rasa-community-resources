@@ -1,0 +1,985 @@
+{
+ "sender_id": "banking-statement-search-gpt-text-normal-last-month-with-pending-20260930T172022",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.customer_id": "NB-CUST-4810",
+  "project.customer_first_name": "Elena",
+  "project.account_names": "Everyday Checking 3301; Savings 7740; Rewards Card 5512",
+  "transaction_search.last_search_ref": "NB-SRCH-3557E271",
+  "transaction_search.last_search_scope": "posted and pending, 1-31 Mar 2026, Everyday Checking 3301",
+  "transaction_search.last_search_complete": "yes",
+  "system.__discovered__": [
+   {
+    "key": "requested_account",
+    "value": "everyday checking",
+    "description": "Customer asked to view spending for their Everyday Checking account.",
+    "turn_idx": 1,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_period",
+    "value": "last month",
+    "description": "Customer requested spending information for the prior month.",
+    "turn_idx": 1,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "include_pending_items",
+    "value": "true",
+    "description": "Customer explicitly wanted pending transactions included in the spending search.",
+    "turn_idx": 1,
+    "confidence": 0.98,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "Show my everyday checking spending last month, including pending items.",
+  "message_id": "a7f1292d9a0c4048bb49321562955c87",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790788848.5056791,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "P2MB8J4B",
+   "skill_id": "transaction_search",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790788840.377459,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788840.3780632,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788840.3781068,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788840.377559,
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790788840.3781261,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788840.378145,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"NWFZGX16\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"G2RYAEUF\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788840.378463,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788840.3785,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "text": "Show my everyday checking spending last month, including pending items.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Show my everyday checking spending last month, including pending items.",
+    "message_id": "a7f1292d9a0c4048bb49321562955c87",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "a7f1292d9a0c4048bb49321562955c87",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788840.3824,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "G2RYAEUF",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788840.382475,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "G2RYAEUF",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788840.382598,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "G2RYAEUF",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "project.customer_first_name",
+   "value": "Elena",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788840.3826208,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "G2RYAEUF",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "project.customer_first_name",
+   "value": "Elena",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788840.3827279,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "G2RYAEUF",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "project.account_names",
+   "value": "Everyday Checking 3301; Savings 7740; Rewards Card 5512",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788840.3827462,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "G2RYAEUF",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "project.account_names",
+   "value": "Everyday Checking 3301; Savings 7740; Rewards Card 5512",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788840.383038,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": \"Everyday Checking 3301; Savings 7740; Rewards Card 5512\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788840.383061,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": \"Everyday Checking 3301; Savings 7740; Rewards Card 5512\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788840.38331,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788840.384226,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "text": "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790788840.385181,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790788840.385203,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790788840.385216,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788840.385233,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788840.385587,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788842.2779,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "flow_id": "transaction_search",
+   "skill_id": "transaction_search"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788842.278007,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788840.3785,
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "skill_id": "transaction_search"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788842.2780402,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"P2MB8J4B\", \"skill_id\": \"transaction_search\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788842.279532,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transaction_search"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788842.279593,
+   "metadata": {
+    "tool_call_id": "call_cEVH5g5CKp69Pxmwf7fEta4a",
+    "tool_batch_id": "0-call_cEVH5g5CKp69Pxmwf7fEta4a",
+    "skill_id": "transaction_search",
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transaction_search"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788844.254796,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {
+      "period": "last month",
+      "statuses": "including pending items",
+      "account": "everyday checking"
+     },
+     "position": 27,
+     "tool_call_id": "call_v3wriZI5OW1m9LZ0VPuCHs7U"
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "transaction_search.last_search_ref",
+   "value": "NB-SRCH-3557E271",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788844.254863,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {
+      "period": "last month",
+      "statuses": "including pending items",
+      "account": "everyday checking"
+     },
+     "position": 28,
+     "tool_call_id": "call_v3wriZI5OW1m9LZ0VPuCHs7U"
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "transaction_search.last_search_ref",
+   "value": "NB-SRCH-3557E271",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788844.2549639,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {
+      "period": "last month",
+      "statuses": "including pending items",
+      "account": "everyday checking"
+     },
+     "position": 29,
+     "tool_call_id": "call_v3wriZI5OW1m9LZ0VPuCHs7U"
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "transaction_search.last_search_scope",
+   "value": "posted and pending, 1-31 Mar 2026, Everyday Checking 3301",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788844.2549849,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {
+      "period": "last month",
+      "statuses": "including pending items",
+      "account": "everyday checking"
+     },
+     "position": 30,
+     "tool_call_id": "call_v3wriZI5OW1m9LZ0VPuCHs7U"
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "transaction_search.last_search_scope",
+   "value": "posted and pending, 1-31 Mar 2026, Everyday Checking 3301",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788844.25507,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {
+      "period": "last month",
+      "statuses": "including pending items",
+      "account": "everyday checking"
+     },
+     "position": 31,
+     "tool_call_id": "call_v3wriZI5OW1m9LZ0VPuCHs7U"
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "transaction_search.last_search_complete",
+   "value": "yes",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788844.2550871,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {
+      "period": "last month",
+      "statuses": "including pending items",
+      "account": "everyday checking"
+     },
+     "position": 32,
+     "tool_call_id": "call_v3wriZI5OW1m9LZ0VPuCHs7U"
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "transaction_search.last_search_complete",
+   "value": "yes",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788844.2565958,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "tool_name": "search_transactions",
+   "arguments": {
+    "period": "last month",
+    "statuses": "including pending items",
+    "account": "everyday checking"
+   },
+   "result": "{\"status\": \"complete\", \"reason\": \"all_pages_read\", \"search_ref\": \"NB-SRCH-3557E271\", \"range\": {\"start\": \"2026-03-01\", \"end\": \"2026-03-31\", \"label\": \"1-31 March 2026\", \"timezone\": \"Eastern time\", \"basis\": \"transaction date\"}, \"statuses\": [\"pending\", \"posted\"], \"status_label\": \"posted and pending\", \"account\": \"Everyday Checking (account ending 3301)\", \"merchant_filter\": null, \"complete\": true, \"pages_read\": 3, \"count\": 25, \"transactions\": [{\"id\": \"TX-0005\", \"date\": \"2026-03-01\", \"merchant\": \"Marlow Property Management\", \"amount\": \"$1,450.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0006\", \"date\": \"2026-03-02\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$4.85\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0007\", \"date\": \"2026-03-03\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$86.12\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0008\", \"date\": \"2026-03-04\", \"merchant\": \"Acme Hardware\", \"amount\": \"$42.18\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0009\", \"date\": \"2026-03-05\", \"merchant\": \"Kestrel Fitness\", \"amount\": \"$39.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0010\", \"date\": \"2026-03-06\", \"merchant\": \"Payroll: Harbor Lane Clinic\", \"amount\": \"$2,310.44\", \"direction\": \"credit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0011\", \"date\": \"2026-03-07\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$5.10\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0012\", \"date\": \"2026-03-09\", \"merchant\": \"Tollgate Energy\", \"amount\": \"$118.63\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0013\", \"date\": \"2026-03-10\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$64.90\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0014\", \"date\": \"2026-03-12\", \"merchant\": \"Wrenfield Books\", \"amount\": \"$23.99\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0015\", \"date\": \"2026-03-13\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$4.85\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0016\", \"date\": \"2026-03-14\", \"merchant\": \"Bluewater Transit\", \"amount\": \"$45.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0017\", \"date\": \"2026-03-16\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$71.34\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0018\", \"date\": \"2026-03-17\", \"merchant\": \"Harbor Lane Pharmacy\", \"amount\": \"$18.20\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0019\", \"date\": \"2026-03-19\", \"merchant\": \"Acme Hardware\", \"amount\": \"$126.40\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0020\", \"date\": \"2026-03-20\", \"merchant\": \"Payroll: Harbor Lane Clinic\", \"amount\": \"$2,310.44\", \"direction\": \"credit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0021\", \"date\": \"2026-03-21\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$6.25\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0022\", \"date\": \"2026-03-23\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$92.07\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0023\", \"date\": \"2026-03-24\", \"merchant\": \"Transfer to Savings (ending 7740)\", \"amount\": \"$300.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0024\", \"date\": \"2026-03-26\", \"merchant\": \"Wrenfield Books\", \"amount\": \"$12.50\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0025\", \"date\": \"2026-03-27\", \"merchant\": \"Kestrel Fitness\", \"amount\": \"$25.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0026\", \"date\": \"2026-03-28\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$58.66\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0027\", \"date\": \"2026-03-30\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$4.85\", \"direction\": \"debit\", \"status\": \"pending\", \"account\": \"3301\"}, {\"id\": \"TX-0028\", \"date\": \"2026-03-31\", \"merchant\": \"Acme Hardware\", \"amount\": \"$15.99\", \"direction\": \"debit\", \"status\": \"pending\", \"account\": \"3301\"}, {\"id\": \"TX-0029\", \"date\": \"2026-03-31\", \"merchant\": \"Northgate Bank monthly service fee\", \"amount\": \"$5.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}], \"facts\": {\"date_range_confirmed\": true, \"posting_status_explicit\": true, \"result_scope_complete\": true}, \"effects\": 1, \"replay\": false, \"not_a_statement\": \"A search result, not a statement balance. Everyday Checking statements run 6 to 5 of the month. Use get_statement for a statement.\", \"total_debits\": \"$2,620.88\", \"total_credits\": \"$4,620.88\", \"next_step\": \"The customer has been sent this search's reference, range, statuses and completeness. Answer their question from these transactions (a list or the totals). It is a search result for this range and these statuses, not a statement balance.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788844.256649,
+   "metadata": {
+    "tool_call_id": "call_v3wriZI5OW1m9LZ0VPuCHs7U",
+    "tool_batch_id": "1-call_v3wriZI5OW1m9LZ0VPuCHs7U",
+    "skill_id": "transaction_search",
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "tool_name": "search_transactions",
+   "arguments": {
+    "period": "last month",
+    "statuses": "including pending items",
+    "account": "everyday checking"
+   },
+   "source": "local",
+   "result": "{\"status\": \"complete\", \"reason\": \"all_pages_read\", \"search_ref\": \"NB-SRCH-3557E271\", \"range\": {\"start\": \"2026-03-01\", \"end\": \"2026-03-31\", \"label\": \"1-31 March 2026\", \"timezone\": \"Eastern time\", \"basis\": \"transaction date\"}, \"statuses\": [\"pending\", \"posted\"], \"status_label\": \"posted and pending\", \"account\": \"Everyday Checking (account ending 3301)\", \"merchant_filter\": null, \"complete\": true, \"pages_read\": 3, \"count\": 25, \"transactions\": [{\"id\": \"TX-0005\", \"date\": \"2026-03-01\", \"merchant\": \"Marlow Property Management\", \"amount\": \"$1,450.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0006\", \"date\": \"2026-03-02\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$4.85\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0007\", \"date\": \"2026-03-03\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$86.12\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0008\", \"date\": \"2026-03-04\", \"merchant\": \"Acme Hardware\", \"amount\": \"$42.18\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0009\", \"date\": \"2026-03-05\", \"merchant\": \"Kestrel Fitness\", \"amount\": \"$39.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0010\", \"date\": \"2026-03-06\", \"merchant\": \"Payroll: Harbor Lane Clinic\", \"amount\": \"$2,310.44\", \"direction\": \"credit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0011\", \"date\": \"2026-03-07\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$5.10\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0012\", \"date\": \"2026-03-09\", \"merchant\": \"Tollgate Energy\", \"amount\": \"$118.63\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0013\", \"date\": \"2026-03-10\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$64.90\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0014\", \"date\": \"2026-03-12\", \"merchant\": \"Wrenfield Books\", \"amount\": \"$23.99\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0015\", \"date\": \"2026-03-13\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$4.85\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0016\", \"date\": \"2026-03-14\", \"merchant\": \"Bluewater Transit\", \"amount\": \"$45.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0017\", \"date\": \"2026-03-16\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$71.34\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0018\", \"date\": \"2026-03-17\", \"merchant\": \"Harbor Lane Pharmacy\", \"amount\": \"$18.20\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0019\", \"date\": \"2026-03-19\", \"merchant\": \"Acme Hardware\", \"amount\": \"$126.40\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0020\", \"date\": \"2026-03-20\", \"merchant\": \"Payroll: Harbor Lane Clinic\", \"amount\": \"$2,310.44\", \"direction\": \"credit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0021\", \"date\": \"2026-03-21\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$6.25\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0022\", \"date\": \"2026-03-23\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$92.07\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0023\", \"date\": \"2026-03-24\", \"merchant\": \"Transfer to Savings (ending 7740)\", \"amount\": \"$300.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0024\", \"date\": \"2026-03-26\", \"merchant\": \"Wrenfield Books\", \"amount\": \"$12.50\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0025\", \"date\": \"2026-03-27\", \"merchant\": \"Kestrel Fitness\", \"amount\": \"$25.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0026\", \"date\": \"2026-03-28\", \"merchant\": \"Alder Bay Grocers\", \"amount\": \"$58.66\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0027\", \"date\": \"2026-03-30\", \"merchant\": \"Pinecrest Coffee\", \"amount\": \"$4.85\", \"direction\": \"debit\", \"status\": \"pending\", \"account\": \"3301\"}, {\"id\": \"TX-0028\", \"date\": \"2026-03-31\", \"merchant\": \"Acme Hardware\", \"amount\": \"$15.99\", \"direction\": \"debit\", \"status\": \"pending\", \"account\": \"3301\"}, {\"id\": \"TX-0029\", \"date\": \"2026-03-31\", \"merchant\": \"Northgate Bank monthly service fee\", \"amount\": \"$5.00\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}], \"facts\": {\"date_range_confirmed\": true, \"posting_status_explicit\": true, \"result_scope_complete\": true}, \"effects\": 1, \"replay\": false, \"not_a_statement\": \"A search result, not a statement balance. Everyday Checking statements run 6 to 5 of the month. Use get_statement for a statement.\", \"total_debits\": \"$2,620.88\", \"total_credits\": \"$4,620.88\", \"next_step\": \"The customer has been sent this search's reference, range, statuses and completeness. Answer their question from these transactions (a list or the totals). It is a search result for this range and these statuses, not a statement balance.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788846.587046,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 2322.268750052899,
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "text": "For Everyday Checking 3301 last month, including posted and pending items, total spending was $2,620.88.\n\nThat includes 23 debits, with 2 pending items:\n- Mar 30, Pinecrest Coffee, $4.85, pending\n- Mar 31, Acme Hardware, $15.99, pending\n\nThere were also $4,620.88 in credits during the same search period.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788846.5880861,
+   "metadata": {
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788848.505258,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {},
+     "position": 37,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_account",
+     "value": "everyday checking",
+     "description": "Customer asked to view spending for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788848.505368,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {},
+     "position": 38,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_account",
+     "value": "everyday checking",
+     "description": "Customer asked to view spending for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788848.5055501,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {},
+     "position": 39,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_account",
+     "value": "everyday checking",
+     "description": "Customer asked to view spending for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_period",
+     "value": "last month",
+     "description": "Customer requested spending information for the prior month.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788848.505582,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {},
+     "position": 40,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_account",
+     "value": "everyday checking",
+     "description": "Customer asked to view spending for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_period",
+     "value": "last month",
+     "description": "Customer requested spending information for the prior month.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788848.5056572,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {},
+     "position": 41,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_account",
+     "value": "everyday checking",
+     "description": "Customer asked to view spending for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_period",
+     "value": "last month",
+     "description": "Customer requested spending information for the prior month.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "include_pending_items",
+     "value": "true",
+     "description": "Customer explicitly wanted pending transactions included in the spending search.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788848.5056791,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "P2MB8J4B",
+     "arguments": {},
+     "position": 42,
+     "tool_call_id": null
+    },
+    "model_id": "714cd3e43eca40378eef368595a1835b",
+    "model_name": "20260930-182024-boolean-head.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_account",
+     "value": "everyday checking",
+     "description": "Customer asked to view spending for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_period",
+     "value": "last month",
+     "description": "Customer requested spending information for the prior month.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "include_pending_items",
+     "value": "true",
+     "description": "Customer explicitly wanted pending transactions included in the spending search.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790788840.377459,
+ "current_session_id": "54d11739-e183-4d78-8624-1bb89edd358c"
+}
