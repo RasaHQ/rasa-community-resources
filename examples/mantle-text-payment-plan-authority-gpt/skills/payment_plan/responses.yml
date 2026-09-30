@@ -1,0 +1,14 @@
+responses:
+  # The acceptance question, with the billing service's terms read back from
+  # memory. The offer tag (id and revision) is part of it: accept_plan_offer
+  # checks that the customer was asked about the current revision.
+  # utter_on_user_denial is left unset on purpose: with one, the engine ends
+  # the turn on that response, so a correction given in answer to this
+  # question would get only "not recorded" and the new choice a turn later
+  # (found in the Northgate transfer build).
+  utter_confirm_plan_acceptance:
+    - text: >
+        The billing team has offered this schedule for account
+        {plan_account}: {offer_terms} (offer {offer_tag}). Do you accept this
+        plan? If you would rather review it or speak with the support team,
+        say so.
