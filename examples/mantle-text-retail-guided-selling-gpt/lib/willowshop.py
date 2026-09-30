@@ -152,14 +152,26 @@ def latest_declared_devices(user_texts: Iterable[str], data: Optional[dict] = No
 
 
 def resolve_device(device_model: Any, data: Optional[dict] = None) -> tuple[Optional[str], list[str]]:
-    """Exact catalogue device for a model name, or None with candidate names."""
+    """The one catalogue device a model name names, or None with candidate names.
+
+    The name may carry the shopper's own words around the model ("the regular
+    Lumen 7"): it resolves when exactly one device name appears in it.
+
+    Revision note: the first version required the whole string to equal a
+    device name. In the recorded main run the model passed "regular Lumen 7",
+    as the tool description asks (the model exactly as the shopper wrote it),
+    and a correct correction was blocked as ambiguous.
+    """
     data = data or _DATA
     wanted = _words(device_model)
     if not wanted:
         return None, []
-    for device_id, device in data["devices"].items():
-        if any(_words(p) == wanted for p in [device["name"], *device.get("aliases", [])]):
-            return device_id, [device["name"]]
+    named = set(device_mentions(" ".join(wanted), data))
+    if len(named) == 1:
+        device_id = named.pop()
+        return device_id, [data["devices"][device_id]["name"]]
+    if len(named) > 1:
+        return None, sorted(data["devices"][d]["name"] for d in named)
     candidates = [
         device["name"]
         for device in data["devices"].values()

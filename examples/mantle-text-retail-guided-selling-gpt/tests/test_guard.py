@@ -77,6 +77,12 @@ class RequirementTests(unittest.TestCase):
         self.assertEqual(result["reason"], "requirements_ambiguous")
         self.assertIn("Lumen 7 Lite", result["candidates"])
 
+    def test_model_name_may_carry_the_shoppers_words(self):
+        """Regression: the main run's model passed "regular Lumen 7"."""
+        said = ["A case for my Lumen 7 Pro, please.", "Wait, it's actually the regular Lumen 7, not the Pro."]
+        self.assertEqual(ws.record_requirements("regular Lumen 7", said)["device_id"], "DEV-L7")
+        self.assertEqual(ws.resolve_device("Lumen 7 or Lumen 7 Pro")[0], None)
+
     def test_the_latest_named_device_wins(self):
         said = ["Dock for my Lumen 7 please.", "Sorry, it's a Lumen 7 Lite."]
         self.assertEqual(ws.record_requirements("Lumen 7", said)["status"], "blocked")
