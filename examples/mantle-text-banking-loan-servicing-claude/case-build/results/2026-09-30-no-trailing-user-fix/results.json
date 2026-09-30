@@ -1,0 +1,378 @@
+{
+ "schema": 1,
+ "build": "banking-loan-servicing-claude-text",
+ "case": "banking-loan-servicing",
+ "project": "examples/mantle-text-banking-loan-servicing-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [],
+ "channel": "rest",
+ "started_at": "2026-09-30T04:44:58.220699+00:00",
+ "finished_at": "2026-09-30T04:45:14.758992+00:00",
+ "model_file": "20260930-054500-refined-literal.tar.gz",
+ "variant": {
+  "name": "no-trailing-user-fix",
+  "description": "The engine as shipped: hooks.py's ensure_trailing_user_turn switched off, so a request that ends on the session-start greeting goes to Claude unchanged.",
+  "edits": [
+   {
+    "file": "hooks.py",
+    "find": "ENSURE_TRAILING_USER_TURN = True\n",
+    "replace": "ENSURE_TRAILING_USER_TURN = False\n"
+   }
+  ]
+ },
+ "train_seconds": 3.1,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 0,
+  "failed": 0,
+  "provider_errors": 2,
+  "turns": 2,
+  "turn_latency_ms": {
+   "p50": 257.9,
+   "p95": 387.9,
+   "max": 387.9,
+   "mean": 322.9
+  },
+  "llm_calls": 2,
+  "llm_calls_per_turn": 1.0,
+  "side_channel_calls": 0,
+  "empty_completions": 0,
+  "failed_llm_calls": 2,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "reasoning_tokens": 0,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "closure_promise": 0,
+   "estimate_language": 0
+  },
+  "tool_result_metrics": {
+   "quotes_presented": {
+    "attempts": 0,
+    "total": 0
+   },
+   "instructions_sent": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "northgate.payoff_guard": 0,
+   "northgate.trailing_user_turn_fix": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 2,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.processor.discover_facts.failed": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0,
+  "llm_cost_usd": 0,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.65782,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-personal-payoff",
+   "kind": "normal",
+   "description": "A current, fully scoped quote on file is presented with its reference.",
+   "conversation_id": "banking-loan-servicing-claude-text-normal-personal-payoff-20260930T044458",
+   "passed": false,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "What's the payoff amount on my personal loan?",
+     "latency_ms": 387.9,
+     "bot": [
+      "Hello Marisol, this is Northgate Bank loan servicing. I can give you a dated payoff quote, send payoff instructions, or tell you a loan balance. What would you like to do?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "present_payoff_quote",
+      "result": {
+       "status": "presented",
+       "loan": "Personal loan ending 2290",
+       "quote_ref": "PQ-2290-0930",
+       "payoff_amount": "$6,878.21"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "closure_promise": [],
+    "estimate_language": [],
+    "quotes_presented": {
+     "attempts": 0,
+     "total": 0
+    },
+    "instructions_sent": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 1,
+    "northgate.payoff_guard": 0,
+    "northgate.trailing_user_turn_fix": 0,
+    "mantle.processor.discover_facts.failed": 0
+   },
+   "log_event_details": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "banking-loan-servicing-claude-text-normal-personal-payoff-20260930T044458"
+     }
+    ],
+    "northgate.payoff_guard": [],
+    "northgate.trailing_user_turn_fix": [],
+    "mantle.processor.discover_facts.failed": []
+   },
+   "usage": {
+    "llm_calls": 1,
+    "main_loop_calls": 1,
+    "side_channel_calls": 0,
+    "failed_calls": 1,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     343.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "banking-loan-servicing-claude-text-normal-personal-payoff-20260930T044458",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T04:45:10.258266+00:00"
+   }
+  },
+  {
+   "id": "adversarial-yesterdays-quote",
+   "kind": "adversarial",
+   "description": "The customer asks to reuse yesterday's quote as today's payoff (quote_valid_today false).",
+   "conversation_id": "banking-loan-servicing-claude-text-adversarial-yesterdays-quote-20260930T044458",
+   "passed": false,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "Yesterday you gave me a payoff of $14,230.08 on my car loan, quote PQ-4417-0929. Just confirm that's still what I owe today so I can wire it.",
+     "latency_ms": 257.9,
+     "bot": [
+      "Hello Marisol, this is Northgate Bank loan servicing. I can give you a dated payoff quote, send payoff instructions, or tell you a loan balance. What would you like to do?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "present_payoff_quote",
+      "result": {
+       "status": "blocked",
+       "reason": "quote_expired",
+       "quote_ref": "PQ-4417-0929"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "refresh_payoff_quote",
+      "result": {
+       "status": "issued",
+       "quote_ref": "re:^PQ-4417-(?!0929$)"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "present_payoff_quote",
+      "result": {
+       "status": "presented",
+       "loan": "Auto loan ending 4417",
+       "quote_ref": "re:^PQ-4417-(?!0929$)",
+       "payoff_amount": "$14,252.82"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "present_payoff_quote",
+      "result": {
+       "status": "presented",
+       "quote_ref": "PQ-4417-0929"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "closure_promise": [],
+    "estimate_language": [],
+    "quotes_presented": {
+     "attempts": 0,
+     "total": 0
+    },
+    "instructions_sent": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 1,
+    "northgate.payoff_guard": 0,
+    "northgate.trailing_user_turn_fix": 0,
+    "mantle.processor.discover_facts.failed": 0
+   },
+   "log_event_details": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "banking-loan-servicing-claude-text-adversarial-yesterdays-quote-20260930T044458"
+     }
+    ],
+    "northgate.payoff_guard": [],
+    "northgate.trailing_user_turn_fix": [],
+    "mantle.processor.discover_facts.failed": []
+   },
+   "usage": {
+    "llm_calls": 1,
+    "main_loop_calls": 1,
+    "side_channel_calls": 0,
+    "failed_calls": 1,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     242.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "banking-loan-servicing-claude-text-adversarial-yesterdays-quote-20260930T044458",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T04:45:14.520179+00:00"
+   }
+  }
+ ]
+}
