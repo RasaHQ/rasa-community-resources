@@ -1,0 +1,178 @@
+{
+  "slug": "telco-diagnostics",
+  "title": "Diagnostics before disruptive resets",
+  "organisation": "Juniper Mobile",
+  "action": "run a selected connectivity recovery step",
+  "failure": "The agent factory-reset a router while the customer only wanted the status of a known area outage.",
+  "lesson": "Distinguish read-only diagnostics, a reboot and destructive reset; an outage should suppress pointless local disruption.",
+  "receipt": "A diagnostic result or selected recovery receipt with the disruption boundary stated.",
+  "evidence": "Inspect the actual command sent to the device and compare it with the customer-confirmed operation.",
+  "recovery": "Stop device changes when area-outage status is unknown. Offer current status or a technician route rather than escalating to a stronger reset.",
+  "owner": "network support owner",
+  "metric": "device resets performed for area-outage enquiries, divided by outage enquiries",
+  "question": "A reboot briefly interrupts service; a factory reset removes settings. Which action, if any, do you want?",
+  "correction": "The customer says another person is using the connection; cancel the pending reboot and keep diagnostics read-only.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "area_outage_checked",
+      "good": true,
+      "bad": false,
+      "reason": "outage_not_checked",
+      "phase": "request"
+    },
+    {
+      "field": "recovery_step_scoped",
+      "good": true,
+      "bad": false,
+      "reason": "reset_scope_ambiguous",
+      "phase": "request"
+    },
+    {
+      "field": "disruption_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "disruption_not_confirmed",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "area_outage_checked": true,
+    "recovery_step_scoped": true,
+    "disruption_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "area_outage_checked": true,
+        "recovery_step_scoped": true,
+        "disruption_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "area_outage_checked-false",
+      "facts": {
+        "area_outage_checked": false,
+        "recovery_step_scoped": true,
+        "disruption_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "outage_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "area_outage_checked-missing",
+      "facts": {
+        "recovery_step_scoped": true,
+        "disruption_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "outage_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "area_outage_checked-string",
+      "facts": {
+        "area_outage_checked": "true",
+        "recovery_step_scoped": true,
+        "disruption_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "outage_not_checked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recovery_step_scoped-false",
+      "facts": {
+        "area_outage_checked": true,
+        "recovery_step_scoped": false,
+        "disruption_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "reset_scope_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recovery_step_scoped-missing",
+      "facts": {
+        "area_outage_checked": true,
+        "disruption_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "reset_scope_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recovery_step_scoped-string",
+      "facts": {
+        "area_outage_checked": true,
+        "recovery_step_scoped": "true",
+        "disruption_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "reset_scope_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "disruption_confirmed-false",
+      "facts": {
+        "area_outage_checked": true,
+        "recovery_step_scoped": true,
+        "disruption_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "disruption_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "disruption_confirmed-missing",
+      "facts": {
+        "area_outage_checked": true,
+        "recovery_step_scoped": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "disruption_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "disruption_confirmed-string",
+      "facts": {
+        "area_outage_checked": true,
+        "recovery_step_scoped": true,
+        "disruption_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "disruption_not_confirmed",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

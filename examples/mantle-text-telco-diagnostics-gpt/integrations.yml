@@ -1,0 +1,38 @@
+# External integrations for the Juniper Mobile connection support agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa's OpenAI client sends
+# gpt-5.5-2026-04-23 through LiteLLM. reasoning_effort is set to low rather
+# than Rasa's default for this model (none, applied in
+# rasa/shared/utils/llm.py when the project sets nothing). In the Northgate
+# block-card build (examples/mantle-voice-banking-block-card-gpt), at none
+# GPT-5.5 sometimes wrote its tool calls out as text, which Mantle then sent
+# to the caller, or announced an action and ended the turn without taking it
+# (4 times in 24 calls); at low it did neither, for about 0.1 s more at the
+# median. In web chat the same leak would put raw tool-call text in front of
+# the customer, and this agent's point is that nothing is announced without
+# being done, so the build starts from low.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true
