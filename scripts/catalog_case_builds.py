@@ -249,6 +249,49 @@ def main_run_dir(readme: str | None) -> str | None:
     return m.group(1) if m else None
 
 
+def completion_run_dirs(readme: str | None) -> list[str]:
+    """Results folders the README names as completion runs, in README order.
+
+    A completion run reruns the conversations a main run lost to provider errors
+    or never reached, e.g. after an API credit outage:
+    "**Completion run** (`<dir>/`, ...)".
+    """
+    if not readme:
+        return []
+    return [m.group(1) for m in re.finditer(r"\*\*Completion run[^*]*\*\*\s*\(\s*`([^`]+?)/?`", readme)]
+
+
+def combined_result(project: Path, runs: list[str], spec_ids: list[str] | None) -> dict | None:
+    """Each conversation's latest pass or fail across the runs, in order.
+
+    A provider error counts only when no run gave that conversation a real
+    outcome; conversations no run reached are "not run".
+    """
+    final: dict[str, str] = {}
+    for run in runs:
+        results = _json(project / "case-build" / "results" / run / "results.json")
+        convs = results.get("conversations") if isinstance(results, dict) else None
+        if not isinstance(convs, list):
+            return None
+        for conv in convs:
+            cid, outcome = conv.get("id"), conv.get("outcome")
+            if not cid or outcome not in ("pass", "fail", "provider_error"):
+                continue
+            if outcome == "provider_error" and final.get(cid) in ("pass", "fail"):
+                continue
+            final[cid] = outcome
+    counts = {o: sum(1 for v in final.values() if v == o) for o in ("pass", "fail", "provider_error")}
+    not_run = len([c for c in spec_ids if c not in final]) if spec_ids else None
+    return {
+        "run": f"case-build/results/{runs[0]}/",
+        "passed": counts["pass"],
+        "total": len(final),
+        "failed": counts["fail"],
+        "providerErrors": counts["provider_error"],
+        "notRun": not_run,
+    }
+
+
 def readme_findings(readme: str | None, limit: int = 3) -> list[str]:
     """The bold lead of the first `limit` items under '## What we found'."""
     if not readme:
@@ -535,7 +578,11 @@ def build_entry(root: Path, project: Path, site: dict | None, vendors: dict) -> 
     results = _json(project / "case-build" / "results" / run / "results.json") if run else None
     summary = results.get("summary") if isinstance(results, dict) else None
     result = None
-    if isinstance(summary, dict) and isinstance(summary.get("passed"), int):
+    completions = completion_run_dirs(readme)
+    if run and completions:
+        spec_ids = [c.get("id") for c in spec.get("conversations") or [] if isinstance(c, dict)]
+        result = combined_result(project, [run, *completions], spec_ids or None)
+    elif isinstance(summary, dict) and isinstance(summary.get("passed"), int):
         result = {
             "run": f"case-build/results/{run}/",
             "passed": summary.get("passed"),
@@ -679,8 +726,9 @@ def render_markdown(catalog: dict, root: Path = REPO_ROOT) -> str:
       "whose outcomes are read from the tracker. The same data is in "
       "[`catalog/case-builds.json`](catalog/case-builds.json).")
     w("")
-    w("- **Result** is the build's main run as its README names it: conversations passed over "
-      "conversations run, from that run's `results.json`.")
+    w("- **Result** is the build's main run as its README names it, plus any completion runs it "
+      "names for conversations the main run lost or never reached: conversations passed over "
+      "conversations run, each counted once at its latest outcome, from those runs' `results.json`.")
     w("- **Article** links the build's case on rasa.community once that article is published"
       + (f" (publication state read from `{snapshot.get('repository')}` at "
          f"`{(snapshot.get('revision') or '')[:7]}`, {str(snapshot.get('checkedAt', ''))[:10]})."

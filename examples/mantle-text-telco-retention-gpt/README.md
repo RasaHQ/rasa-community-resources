@@ -178,14 +178,14 @@ conversation.
 | Run | Conversations | Result | Cost |
 |---|---|---|---|
 | `estimate/` | `correction-accept-then-cancel` | 1 pass | 0.11 USD |
-| `2026-09-30-gpt-5.5-low/` (first run) | 8 of 22, then stopped: OpenAI `insufficient_quota` at 19:19:49 UTC | 6 pass, 0 fail, 2 provider errors, 14 not run | 0.28 USD |
-| `2026-09-30-gpt-5.5-low-completion/` (main run) | the 14 not run and the 2 lost | 16 pass, 0 fail | 0.72 USD |
+| `2026-09-30-gpt-5.5-low/` (main) | 8 of 22, then stopped: OpenAI `insufficient_quota` at 19:19:49 UTC | 6 pass, 0 fail, 2 provider errors, 14 not run | 0.28 USD |
+| `2026-09-30-gpt-5.5-low-completion/` (completion run) | the 14 not run and the 2 lost | 16 pass, 0 fail | 0.72 USD |
 
 **Across the two runs every one of the 22 conversations ran once and
 passed**: normal 5/5, adversarial 10/10, recovery 4/4, correction 3/3. No
 conversation was rerun to get a pass.
 
-**Main run** (`2026-09-30-gpt-5.5-low-completion/`, 16 conversations, 26
+**Completion run** (`2026-09-30-gpt-5.5-low-completion/`, 16 conversations, 26
 customer turns):
 
 | Measure | Result |
@@ -218,7 +218,7 @@ called `withdraw_contact`, the fibre was paused with reconciliation
 stored tracker with no model calls; `results.json` lists it under `rechecks`.
 
 `spend-ledger.json` lists every billed run for this build: **1.12 USD** in
-total (estimate 0.11, first run 0.28, main run 0.72), against a cap of 3.50.
+total (estimate 0.11, main run 0.28, completion run 0.72), against a cap of 3.50.
 The estimate ran before the new-request receipt gained its "the offer you
 accepted no longer applies" line, so `case_metric.py` does not recognise that
 one receipt in `estimate/` as the tool's.

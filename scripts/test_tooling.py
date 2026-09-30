@@ -2058,6 +2058,30 @@ class TestCaseBuildCatalog(unittest.TestCase):
         self.assertEqual(self.cat.main_run_dir(table), "2026-09-30-gpt-5.5-reasoning-low")
         self.assertIsNone(self.cat.main_run_dir("No runs were recorded."))
 
+    def test_completion_runs_combine_at_each_conversation_latest_outcome(self):
+        import json
+        import tempfile
+        from pathlib import Path
+
+        readme = ("**Main run** (`first/`, stopped).\n\n"
+                  "**Completion run** (`second/`, the rest).\n")
+        self.assertEqual(self.cat.main_run_dir(readme), "first")
+        self.assertEqual(self.cat.completion_run_dirs(readme), ["second"])
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            runs = {
+                "first": [("a", "pass"), ("b", "provider_error"), ("c", "fail")],
+                "second": [("b", "pass"), ("c", "pass")],
+            }
+            for run, convs in runs.items():
+                folder = project / "case-build" / "results" / run
+                folder.mkdir(parents=True)
+                (folder / "results.json").write_text(json.dumps(
+                    {"conversations": [{"id": i, "outcome": o} for i, o in convs]}))
+            result = self.cat.combined_result(project, ["first", "second"], ["a", "b", "c", "d"])
+        self.assertEqual((result["passed"], result["total"], result["failed"],
+                          result["providerErrors"], result["notRun"]), (3, 3, 0, 0, 1))
+
     def test_findings_are_bold_leads_and_absent_section_is_empty(self):
         readme = (
             "## What we found\n\n"

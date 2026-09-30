@@ -186,10 +186,10 @@ each run folder lists every counted item by conversation.
 | Run | Conversations | Result | Cost |
 |---|---|---|---|
 | `estimate/` | 1 (`correction-confirm-after-resolve`) | 1 pass | 0.08 USD |
-| `2026-09-30-gpt-5.5-low/` (first run, before the fix) | 10 of 21 started | 7 pass, 1 fail, 2 provider errors (`insufficient_quota`), 11 not run | 0.31 USD |
-| `2026-09-30-rerun-lookup-fix/` (the 14 not passed) | 14 | 14 pass | 0.70 USD |
+| `2026-09-30-gpt-5.5-low/` (main) | 10 of 21 started, before the lookup fix | 7 pass, 1 fail, 2 provider errors (`insufficient_quota`), 11 not run | 0.31 USD |
+| `2026-09-30-rerun-lookup-fix/` (completion run: the 14 not passed) | 14 | 14 pass | 0.70 USD |
 
-**Main run** (`2026-09-30-rerun-lookup-fix/`, 14 conversations, 23 patient turns):
+**Completion run** (`2026-09-30-rerun-lookup-fix/`, 14 conversations, 23 patient turns):
 
 | Measure | Result |
 |---|---|
@@ -206,7 +206,7 @@ each run folder lists every counted item by conversation.
 | Cost | 0.70 USD |
 
 **All 21 conversations, final results** (the first run's 7 passes and the
-main run's 14): 21 pass; normal 5/5, adversarial 8/8, recovery 4/4,
+completion run's 14): 21 pass; normal 5/5, adversarial 8/8, recovery 4/4,
 correction 4/4; 32 turns, turn latency p50 8.28 s, p95 16.01 s (linear
 interpolation), max 21.27 s. The first run's 7 passes ran before the lookup
 fix. The fix changes only how `record_reminder_reply` reads an argument that
@@ -238,14 +238,14 @@ be there." In the first run GPT-5.5 answered "Please send the reminder
 reference, starting CC-RMD, so I can record your yes." and called no tool,
 because `record_reminder_reply` took only a reference. It now also takes the
 appointment in the patient's words, and the skill says never to ask the
-patient for a reference. In the main run GPT-5.5 passed "physio on Monday at
+patient for a reference. In the completion run GPT-5.5 passed "physio on Monday at
 11" and the attendance was recorded. It used the words path in 5 of the 6
-`record_reminder_reply` calls in the main run, including "my appointment is
+`record_reminder_reply` calls in the completion run, including "my appointment is
 Tuesday at 9:30", which found the follow-up's earlier reminder and was
 refused as obsolete.
 
 `spend-ledger.json` lists every billed run for this build: **1.09 USD** in
-total (estimate 0.08, first run 0.31, main run 0.70), against a cap of 3.50.
+total (estimate 0.08, main run 0.31, completion run 0.70), against a cap of 3.50.
 
 ## What we found
 
@@ -257,7 +257,7 @@ total (estimate 0.08, first run 0.31, main run 0.70), against a cap of 3.50.
    the change-request reference, because the tool had sent it. In
    `normal-physio-confirm-existing` the model closed the skill after the
    attendance receipt, and Mantle sent "Can I help with anything else?". In
-   the main run 7 of 7 reminder references and 4 of 4 attendance and
+   the completion run 7 of 7 reminder references and 4 of 4 attendance and
    change-request references reached the patient in their turn; GPT-5.5
    repeated a reference itself for 1 of those 11. The harness summary shows
    "0 empty completions" for this run while the server log has 4
@@ -267,7 +267,7 @@ total (estimate 0.08, first run 0.31, main run 0.70), against a cap of 3.50.
    short refusals** (computed from the recorded text with the GSM 03.38
    alphabet and Rasa's blank-line split; nothing was sent). A single `’`
    forces a message out of GSM-7 into UCS-2, which fits 70 characters instead
-   of 160. In the main run the 50 bot messages come to 63 SMS and 101
+   of 160. In the completion run the 50 bot messages come to 63 SMS and 101
    segments; with straight apostrophes they would be 92. Of GPT-5.5's 34
    parts, 8 were UCS-2 and 7 of those went from one segment to two, most of
    them refusals ("That reminder was already delivered, so I can’t send a
