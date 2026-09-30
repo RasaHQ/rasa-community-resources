@@ -1,4 +1,4 @@
-2026-09-30 | cd editorial/receipts/rasa-deepgram-flux-drops-one-word-replies && <companion examples/mantle-voice-banking-block-card-gpt>/.venv/bin/python ga_3_20_1_handler_replay.py rasa_pro-3.20.1-py3-none-any.whl flux-short-reply-frames.jsonl | grep -v deepgram.v2.connected   (the 3.20.1 engine.py is executed from the wheel inside the 3.21.0.dev5 environment for its imports; offline, no key, no network)
+2026-09-30 | $ pip download rasa-pro==3.20.1 --no-deps -d <dir> && cd case-build/flux-short-reply && ../../.venv/bin/python ga_3_20_1_handler_replay.py <dir>/rasa_pro-3.20.1-py3-none-any.whl flux-short-reply-frames.jsonl | grep -v deepgram.v2.connected   (3.20.1's engine.py is executed from the wheel inside the project's rasa-pro 3.21.0.dev5 environment, which supplies its config and event classes; offline apart from the download, no key)
 wheel rasa_pro-3.20.1-py3-none-any.whl sha256 e468eedd57d9c814137b04065c35c256dddbc73dcd2a0eba9d02f1fa30e6c858
 engine.py sha256 29b89b337a7fd349b7ee7a2a52fad1e88a2df1523ba343f7da0a38499d3fd066
 attempt | wav text | 3.20.1 handler outputs (before CloseStream) | committed

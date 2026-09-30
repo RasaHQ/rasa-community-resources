@@ -14,6 +14,7 @@ Every command runs from `examples/mantle-voice-banking-block-card-gpt` in the pr
 | `patched_handler_replay.py`, `patched-handler-replay.txt` | The same 54 sequences through a one-line change: on `EndOfTurn` with an empty buffer, commit `EndOfTurn`'s own transcript. 26 `None` become 0, and no attempt commits twice. |
 | `ga_3_20_1_handler_replay.py`, `ga-3-20-1-handler-check.txt`, `ga-3-20-1-handler-replay.txt` | The released rasa-pro 3.20.1 has the same `EndOfTurn` logic; its `StartOfTurn` returns `UserIsSpeaking(text="")`. Replayed, it also commits nothing on 26 of 54. <!-- rasa-version-ignore: the released handler, compared on purpose --> |
 | `unheard_turns.py`, `unheard-turns-output.txt` | Flags caller turns that produced no user event in a run's `results.json`. |
+| `lost_turn_checks.py`, `lost-turn-checks.txt` | The failed checks of each call with a lost turn: all four failed `block_card` ("0 matching call(s)"). |
 
 ```bash
 .venv/bin/python case-build/flux-short-reply/flux-short-reply-probe.py replay \
