@@ -7,7 +7,7 @@
     "revision": "15afa7c752f96e8c761c352ba67894c44c156600",
     "checkedAt": "2026-09-30T18:21:10Z"
   },
-  "count": 28,
+  "count": 29,
   "builds": [
     {
       "slug": "banking-loan-servicing",
@@ -1248,6 +1248,52 @@
         "On browser voice, Rasa with Claude has no first-turn prefill 400.",
         "Claude's refusals go unspoken on voice.",
         "Mantle's fact discovery fails on every call with Claude."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "travel-booking",
+      "path": "examples/mantle-voice-travel-booking-gpt",
+      "title": "Horizon Travel journey changes on GPT-5.5 with Deepgram and Rime: a voice agent that never changes one flight on its own",
+      "caseTitle": "Journey changes with linked services",
+      "organisation": "Horizon Travel",
+      "industry": "Travel & hospitality",
+      "summary": "Change a selected flight on a signed-in Horizon Travel traveller's booking, together with everything linked to it.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "flux-general-en",
+        "label": "Deepgram Flux",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "engines.rime_idle.RimeTTSReconnectOnIdle",
+        "vendor": "Rime",
+        "model": "mistv3",
+        "voice": "peak",
+        "label": "Rime",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": null,
+      "spendUsd": 0.238891,
+      "recordedAt": null,
+      "findings": [
+        "A spelled booking code lost its last letter between speech-to-text and the model.",
+        "The harness's console line hides a provider error."
       ],
       "casebookUrl": null
     }
