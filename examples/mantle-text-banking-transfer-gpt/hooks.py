@@ -42,7 +42,10 @@ from rasa.mantle.hooks import (
 log = structlog.get_logger()
 
 MAX_CONSECUTIVE_RETRIES = 2
-LEDGER_TOOLS = {"submit_transfer", "check_transfer_status"}
+# A tool behind requires_confirmation reaches this hook as resolve_tool_confirmation,
+# which carries the gated tool's result (rasa/mantle/orchestration/orchestrator.py,
+# 3.21.0.dev5), so that name is read too.
+LEDGER_TOOLS = {"submit_transfer", "check_transfer_status", "resolve_tool_confirmation"}
 
 # Per conversation, in process memory: what the ledger said about each transfer
 # (key: reference, or attempt id when the reference was lost), and retries.

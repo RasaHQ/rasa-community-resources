@@ -1,0 +1,16 @@
+responses:
+  # The contract's question, with the billing service's schedule, estimate and
+  # balance read back from memory as three separate lines. The option tag (id
+  # and quote revision) is part of it: request_budget_option checks that the
+  # customer was asked about the current revision and saw all three.
+  # utter_on_user_denial is left unset on purpose: with one, the engine ends
+  # the turn on that response, so a correction given in answer to this
+  # question would get only "not requested" and the new choice a turn later
+  # (found in the Northgate transfer build).
+  utter_confirm_budget_option:
+    - text: >
+        Budget plan for {plan_account}, option {option_tag}. Payments:
+        {option_schedule}. Based on: {option_basis}. Balance:
+        {option_balance}. This option changes the payment schedule, not the
+        stated balance. Shall I request it? You can also review it or speak
+        to support.

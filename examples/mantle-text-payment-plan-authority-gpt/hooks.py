@@ -46,7 +46,11 @@ log = structlog.get_logger()
 MAX_CONSECUTIVE_RETRIES = 2
 # The `no-words-guard` variant in case-build/conversations.json sets this to False.
 ENABLED = True
-BILLING_TOOLS = {"get_plan_offers", "select_plan_offer", "refresh_plan_offer", "accept_plan_offer"}
+# A tool behind requires_confirmation reaches this hook as resolve_tool_confirmation,
+# which carries the gated tool's result (rasa/mantle/orchestration/orchestrator.py,
+# 3.21.0.dev5), so that name is read too.
+BILLING_TOOLS = {"get_plan_offers", "select_plan_offer", "refresh_plan_offer", "accept_plan_offer",
+                 "resolve_tool_confirmation"}
 
 # Per conversation, in process memory: authorized offers seen, and retries.
 _offers: dict[str, dict[str, dict]] = defaultdict(dict)

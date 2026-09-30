@@ -1,0 +1,24 @@
+# Written only by select_budget_option, request_budget_option and the routing
+# tools (never llm_settable), so what the engine reads back before a request
+# is always the billing service's. One short field per value: Mantle cuts a
+# memory value at 100 characters in the prompt, silently; tests/test_guard.py
+# checks every fixture option at every revision.
+# plan_account: the account the selected option is for, with its label.
+# option_tag: option id and quote revision, read in the question; the request
+#   checks it. The engine offers request_budget_option only while it is set
+#   (`requires` in skill.md).
+# option_schedule: the payment schedule, one line.
+# option_basis: the usage estimate the budget amount comes from, one line.
+# option_balance: the outstanding balance and what happens to it, one line.
+schema:
+  public:
+    plan_account:
+      type: text
+    option_tag:
+      type: text
+    option_schedule:
+      type: text
+    option_basis:
+      type: text
+    option_balance:
+      type: text

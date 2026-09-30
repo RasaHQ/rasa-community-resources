@@ -1,0 +1,1843 @@
+{
+ "sender_id": "utilities-service-move-gpt-text-normal-overlap-from-flat-20260930T180605",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.customer_id": "AG-C-20417",
+  "project.customer_first_name": "Noor",
+  "project.service_list": "AG-SP-1204 12 Wren Street, Millbrook; AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook",
+  "project.today": "2026-09-30",
+  "service_move.move_draft_tag": "AG-MVD-059D9 v1",
+  "service_move.move_order_note": "a new move order",
+  "service_move.move_from": "Flat 2, 7 Mill Yard, Millbrook (electricity)",
+  "service_move.move_to": "30 Fenn Road, Easton",
+  "service_move.move_out_on": "Tuesday 3 November 2026",
+  "service_move.move_in_on": "Wednesday 28 October 2026",
+  "service_move.move_ready": "yes",
+  "system.pending_tool_confirmation": null,
+  "system.__discovered__": [
+   {
+    "key": "moving_out_address",
+    "value": "7 Mill Yard",
+    "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+    "turn_idx": 1,
+    "confidence": 0.95,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "move_out_date",
+    "value": "November 3rd",
+    "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+    "turn_idx": 1,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "moving_in_address",
+    "value": "30 Fenn Road, Easton",
+    "description": "Customer stated they are moving into 30 Fenn Road in Easton.",
+    "turn_idx": 1,
+    "confidence": 0.98,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "move_in_date",
+    "value": "October 28th",
+    "description": "Customer stated they move into 30 Fenn Road, Easton on October 28th.",
+    "turn_idx": 1,
+    "confidence": 0.98,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "move_overlap_period",
+    "value": "October 28th to November 3rd",
+    "description": "Customer stated there will be a few days of overlap between moving into the new address and leaving the old flat.",
+    "turn_idx": 1,
+    "confidence": 0.9,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "Yes.",
+  "message_id": "784afab38c1d4aa884c1dd0e328fadad",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790791615.8138292,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "KFZ8HVAY",
+   "skill_id": "service_move",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790791599.05936,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790791599.059521,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790791599.059533,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790791599.05939,
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790791599.0595388,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790791599.059545,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"38YC4YP6\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"A4GHJ8OH\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791599.0596328,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790791599.059645,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "text": "I'm leaving my flat at 7 Mill Yard. My last day there is November 3rd. I move into 30 Fenn Road, Easton on October 28th, so there are a few days of overlap.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "I'm leaving my flat at 7 Mill Yard. My last day there is November 3rd. I move into 30 Fenn Road, Easton on October 28th, so there are a few days of overlap.",
+    "message_id": "82ba178a6fda41449f2d7ac41406d4a3",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "82ba178a6fda41449f2d7ac41406d4a3",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791599.0609221,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_customer_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "A4GHJ8OH",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "project.customer_id",
+   "value": "AG-C-20417",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791599.060935,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_customer_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "A4GHJ8OH",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "project.customer_id",
+   "value": "AG-C-20417",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791599.060978,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_customer_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "A4GHJ8OH",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "project.customer_first_name",
+   "value": "Noor",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791599.060986,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_customer_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "A4GHJ8OH",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "project.customer_first_name",
+   "value": "Noor",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791599.0610251,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_customer_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "A4GHJ8OH",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "project.service_list",
+   "value": "AG-SP-1204 12 Wren Street, Millbrook; AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791599.0610309,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_customer_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "A4GHJ8OH",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "project.service_list",
+   "value": "AG-SP-1204 12 Wren Street, Millbrook; AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791599.06107,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_customer_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "A4GHJ8OH",
+     "arguments": {},
+     "position": 13,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "project.today",
+   "value": "2026-09-30",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791599.061076,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_customer_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "A4GHJ8OH",
+     "arguments": {},
+     "position": 14,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "project.today",
+   "value": "2026-09-30",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790791599.061182,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "load_customer_profile",
+   "arguments": {},
+   "result": "{\"ok\": true, \"first_name\": \"Noor\", \"service_list\": \"AG-SP-1204 12 Wren Street, Millbrook; AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook\", \"today\": \"2026-09-30\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790791599.06119,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "load_customer_profile",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"first_name\": \"Noor\", \"service_list\": \"AG-SP-1204 12 Wren Street, Millbrook; AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook\", \"today\": \"2026-09-30\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790791599.0612779,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790791599.0616572,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "text": "Hello Noor, this is Amber Grid home moves chat. I can schedule your supply to move with you, check the supply at one of your addresses, or look up a move you have requested. How can I help?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790791599.0621572,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790791599.062166,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790791599.062173,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790791599.0621781,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790791599.062294,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790791601.2614741,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "flow_id": "service_move",
+   "skill_id": "service_move"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790791601.261502,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790791599.059645,
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "skill_id": "service_move"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790791601.26151,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"KFZ8HVAY\", \"skill_id\": \"service_move\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790791601.261921,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "service_move"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790791601.261935,
+   "metadata": {
+    "tool_call_id": "call_brvMoBX9C6L6wXfQTXkoBFvq",
+    "tool_batch_id": "0-call_brvMoBX9C6L6wXfQTXkoBFvq",
+    "skill_id": "service_move",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "service_move"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791603.577329,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 29,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "service_move.move_draft_tag",
+   "value": "AG-MVD-059D9 v1",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791603.577357,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 30,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "service_move.move_draft_tag",
+   "value": "AG-MVD-059D9 v1",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791603.577397,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 31,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "service_move.move_order_note",
+   "value": "a new move order",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791603.577405,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 32,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "service_move.move_order_note",
+   "value": "a new move order",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791603.577437,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 33,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "service_move.move_from",
+   "value": "Flat 2, 7 Mill Yard, Millbrook (electricity)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791603.577444,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 34,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "service_move.move_from",
+   "value": "Flat 2, 7 Mill Yard, Millbrook (electricity)",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791603.577475,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 35,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "service_move.move_to",
+   "value": "30 Fenn Road, Easton",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791603.577482,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 36,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "service_move.move_to",
+   "value": "30 Fenn Road, Easton",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791603.5775108,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 37,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "service_move.move_out_on",
+   "value": "Tuesday 3 November 2026",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791603.577517,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 38,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "service_move.move_out_on",
+   "value": "Tuesday 3 November 2026",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791603.577545,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 39,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "service_move.move_in_on",
+   "value": "Wednesday 28 October 2026",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791603.5775518,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 40,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "service_move.move_in_on",
+   "value": "Wednesday 28 October 2026",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791603.57758,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 41,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "service_move.move_ready",
+   "value": "yes",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791603.577586,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "start_move_draft",
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {
+      "moving_out_of": "my flat at 7 Mill Yard",
+      "moving_to": "30 Fenn Road, Easton",
+      "move_out_date": "November 3rd",
+      "move_in_date": "October 28th"
+     },
+     "position": 42,
+     "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "service_move.move_ready",
+   "value": "yes",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790791603.578059,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "start_move_draft",
+   "arguments": {
+    "moving_out_of": "my flat at 7 Mill Yard",
+    "moving_to": "30 Fenn Road, Easton",
+    "move_out_date": "November 3rd",
+    "move_in_date": "October 28th"
+   },
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"AG-MVD-059D9\", \"draft_tag\": \"AG-MVD-059D9 v1\", \"version\": 1, \"moving_out_of\": \"AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook\", \"moving_to\": \"30 Fenn Road, Easton\", \"move_out_date\": \"2026-11-03\", \"move_in_date\": \"2026-10-28\", \"amends_order\": null, \"current_service\": {\"service_point\": \"AG-SP-1377\", \"address\": \"Flat 2, 7 Mill Yard, Millbrook\", \"supply\": \"electricity\", \"status\": \"active\", \"on_now\": true, \"stays_on_through\": null, \"closure_instruction\": \"none\"}, \"next_step\": \"Call submit_move_order with this draft_id now; the engine reads both sides and dates back and asks. A draft schedules nothing.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790791603.578071,
+   "metadata": {
+    "tool_call_id": "call_OlLMydEzBGamxcXAvydzdijV",
+    "tool_batch_id": "1-call_OlLMydEzBGamxcXAvydzdijV",
+    "skill_id": "service_move",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "start_move_draft",
+   "arguments": {
+    "moving_out_of": "my flat at 7 Mill Yard",
+    "moving_to": "30 Fenn Road, Easton",
+    "move_out_date": "November 3rd",
+    "move_in_date": "October 28th"
+   },
+   "source": "local",
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"AG-MVD-059D9\", \"draft_tag\": \"AG-MVD-059D9 v1\", \"version\": 1, \"moving_out_of\": \"AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook\", \"moving_to\": \"30 Fenn Road, Easton\", \"move_out_date\": \"2026-11-03\", \"move_in_date\": \"2026-10-28\", \"amends_order\": null, \"current_service\": {\"service_point\": \"AG-SP-1377\", \"address\": \"Flat 2, 7 Mill Yard, Millbrook\", \"supply\": \"electricity\", \"status\": \"active\", \"on_now\": true, \"stays_on_through\": null, \"closure_instruction\": \"none\"}, \"next_step\": \"Call submit_move_order with this draft_id now; the engine reads both sides and dates back and asks. A draft schedules nothing.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791606.1391098,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 45,
+     "tool_call_id": "call_ICtGw3GBOpHwaJSs68RmZybK"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "submit_move_order",
+    "tool_args": {
+     "draft_id": "AG-MVD-059D9"
+    },
+    "confirmation_ask": "Here is a new move order (draft AG-MVD-059D9 v1): your supply at Flat 2, 7 Mill Yard, Millbrook (electricity) stays on through Tuesday 3 November 2026, and supply at 30 Fenn Road, Easton starts on Wednesday 28 October 2026. This schedules the change for the date you chose and leaves the current service as it is until then. Is that right?\n",
+    "utter_on_user_denial": null,
+    "skill_id": "service_move",
+    "frame_id": "KFZ8HVAY",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791606.1391392,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 46,
+     "tool_call_id": "call_ICtGw3GBOpHwaJSs68RmZybK"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "submit_move_order",
+    "tool_args": {
+     "draft_id": "AG-MVD-059D9"
+    },
+    "confirmation_ask": "Here is a new move order (draft AG-MVD-059D9 v1): your supply at Flat 2, 7 Mill Yard, Millbrook (electricity) stays on through Tuesday 3 November 2026, and supply at 30 Fenn Road, Easton starts on Wednesday 28 October 2026. This schedules the change for the date you chose and leaves the current service as it is until then. Is that right?\n",
+    "utter_on_user_denial": null,
+    "skill_id": "service_move",
+    "frame_id": "KFZ8HVAY",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790791606.139551,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "submit_move_order",
+   "arguments": {
+    "draft_id": "AG-MVD-059D9"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Here is a new move order (draft AG-MVD-059D9 v1): your supply at Flat 2, 7 Mill Yard, Millbrook (electricity) stays on through Tuesday 3 November 2026, and supply at 30 Fenn Road, Easton starts on Wednesday 28 October 2026. This schedules the change for the date you chose and leaves the current service as it is until then. Is that right?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790791606.139563,
+   "metadata": {
+    "tool_call_id": "call_ICtGw3GBOpHwaJSs68RmZybK",
+    "tool_batch_id": "2-call_ICtGw3GBOpHwaJSs68RmZybK",
+    "skill_id": "service_move",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "submit_move_order",
+   "arguments": {
+    "draft_id": "AG-MVD-059D9"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Here is a new move order (draft AG-MVD-059D9 v1): your supply at Flat 2, 7 Mill Yard, Millbrook (electricity) stays on through Tuesday 3 November 2026, and supply at 30 Fenn Road, Easton starts on Wednesday 28 October 2026. This schedules the change for the date you chose and leaves the current service as it is until then. Is that right?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790791606.139701,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_move",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "text": "Here is a new move order (draft AG-MVD-059D9 v1): your supply at Flat 2, 7 Mill Yard, Millbrook (electricity) stays on through Tuesday 3 November 2026, and supply at 30 Fenn Road, Easton starts on Wednesday 28 October 2026. This schedules the change for the date you chose and leaves the current service as it is until then. Is that right?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790791606.140348,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791610.893473,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 51,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791610.893505,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 52,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791610.893537,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 53,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_out_date",
+     "value": "November 3rd",
+     "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791610.893545,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 54,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_out_date",
+     "value": "November 3rd",
+     "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791610.8935711,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 55,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_out_date",
+     "value": "November 3rd",
+     "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "moving_in_address",
+     "value": "30 Fenn Road, Easton",
+     "description": "Customer stated they are moving into 30 Fenn Road in Easton.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791610.893578,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 56,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_out_date",
+     "value": "November 3rd",
+     "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "moving_in_address",
+     "value": "30 Fenn Road, Easton",
+     "description": "Customer stated they are moving into 30 Fenn Road in Easton.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791610.8936021,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 57,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_out_date",
+     "value": "November 3rd",
+     "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "moving_in_address",
+     "value": "30 Fenn Road, Easton",
+     "description": "Customer stated they are moving into 30 Fenn Road in Easton.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_in_date",
+     "value": "October 28th",
+     "description": "Customer stated they move into 30 Fenn Road, Easton on October 28th.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791610.893609,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 58,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_out_date",
+     "value": "November 3rd",
+     "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "moving_in_address",
+     "value": "30 Fenn Road, Easton",
+     "description": "Customer stated they are moving into 30 Fenn Road in Easton.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_in_date",
+     "value": "October 28th",
+     "description": "Customer stated they move into 30 Fenn Road, Easton on October 28th.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791610.893632,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 59,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_out_date",
+     "value": "November 3rd",
+     "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "moving_in_address",
+     "value": "30 Fenn Road, Easton",
+     "description": "Customer stated they are moving into 30 Fenn Road in Easton.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_in_date",
+     "value": "October 28th",
+     "description": "Customer stated they move into 30 Fenn Road, Easton on October 28th.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_overlap_period",
+     "value": "October 28th to November 3rd",
+     "description": "Customer stated there will be a few days of overlap between moving into the new address and leaving the old flat.",
+     "turn_idx": 1,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790791610.8936388,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 60,
+     "tool_call_id": null
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "moving_out_address",
+     "value": "7 Mill Yard",
+     "description": "Customer stated they are leaving their flat at 7 Mill Yard.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_out_date",
+     "value": "November 3rd",
+     "description": "Customer stated their last day at the 7 Mill Yard flat is November 3rd.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "moving_in_address",
+     "value": "30 Fenn Road, Easton",
+     "description": "Customer stated they are moving into 30 Fenn Road in Easton.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_in_date",
+     "value": "October 28th",
+     "description": "Customer stated they move into 30 Fenn Road, Easton on October 28th.",
+     "turn_idx": 1,
+     "confidence": 0.98,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "move_overlap_period",
+     "value": "October 28th to November 3rd",
+     "description": "Customer stated there will be a few days of overlap between moving into the new address and leaving the old flat.",
+     "turn_idx": 1,
+     "confidence": 0.9,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790791610.9018528,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "text": "Yes.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes.",
+    "message_id": "784afab38c1d4aa884c1dd0e328fadad",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "784afab38c1d4aa884c1dd0e328fadad",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790791613.209217,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 62,
+     "tool_call_id": "call_mhhBsvr34uHOeD9e78na7Uai"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790791613.209246,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "service_move",
+     "step": "autonomous",
+     "frame_id": "KFZ8HVAY",
+     "arguments": {},
+     "position": 63,
+     "tool_call_id": "call_mhhBsvr34uHOeD9e78na7Uai"
+    },
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790791613.209579,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "text": "Move order AG-MOV-291EDE is scheduled. Your electricity at Flat 2, 7 Mill Yard, Millbrook stays on through Tuesday 3 November 2026 and nothing changes there before then. Supply at 30 Fenn Road, Easton starts on Wednesday 28 October 2026.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790791613.210325,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "submit_move_order",
+   "arguments": {
+    "draft_id": "AG-MVD-059D9"
+   },
+   "result": "{\"status\": \"succeeded\", \"order_ref\": \"AG-MOV-291EDE\", \"order_revision\": 1, \"draft_id\": \"AG-MVD-059D9\", \"draft_tag\": \"AG-MVD-059D9 v1\", \"moving_out_of\": \"AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook\", \"moving_to\": \"30 Fenn Road, Easton\", \"move_out_date\": \"2026-11-03\", \"move_in_date\": \"2026-10-28\", \"new_service_starts\": \"2026-10-28\", \"current_service\": {\"service_point\": \"AG-SP-1377\", \"address\": \"Flat 2, 7 Mill Yard, Millbrook\", \"supply\": \"electricity\", \"status\": \"active\", \"on_now\": true, \"stays_on_through\": \"2026-11-03\", \"closure_instruction\": \"scheduled after 2026-11-03\"}, \"receipt_verified\": true, \"replay\": false, \"effects\": 1, \"next_step\": \"The customer has been sent the move-order reference and dates. Their current service stays on through the move-out date; never say it is off or closed now.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790791613.2103412,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "service_move",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "submit_move_order",
+   "arguments": {
+    "draft_id": "AG-MVD-059D9"
+   },
+   "source": "local",
+   "result": "{\"status\": \"succeeded\", \"order_ref\": \"AG-MOV-291EDE\", \"order_revision\": 1, \"draft_id\": \"AG-MVD-059D9\", \"draft_tag\": \"AG-MVD-059D9 v1\", \"moving_out_of\": \"AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook\", \"moving_to\": \"30 Fenn Road, Easton\", \"move_out_date\": \"2026-11-03\", \"move_in_date\": \"2026-10-28\", \"new_service_starts\": \"2026-10-28\", \"current_service\": {\"service_point\": \"AG-SP-1377\", \"address\": \"Flat 2, 7 Mill Yard, Millbrook\", \"supply\": \"electricity\", \"status\": \"active\", \"on_now\": true, \"stays_on_through\": \"2026-11-03\", \"closure_instruction\": \"scheduled after 2026-11-03\"}, \"receipt_verified\": true, \"replay\": false, \"effects\": 1, \"next_step\": \"The customer has been sent the move-order reference and dates. Their current service stays on through the move-out date; never say it is off or closed now.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790791613.210711,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"status\": \"succeeded\", \"order_ref\": \"AG-MOV-291EDE\", \"order_revision\": 1, \"draft_id\": \"AG-MVD-059D9\", \"draft_tag\": \"AG-MVD-059D9 v1\", \"moving_out_of\": \"AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook\", \"moving_to\": \"30 Fenn Road, Easton\", \"move_out_date\": \"2026-11-03\", \"move_in_date\": \"2026-10-28\", \"new_service_starts\": \"2026-10-28\", \"current_service\": {\"service_point\": \"AG-SP-1377\", \"address\": \"Flat 2, 7 Mill Yard, Millbrook\", \"supply\": \"electricity\", \"status\": \"active\", \"on_now\": true, \"stays_on_through\": \"2026-11-03\", \"closure_instruction\": \"scheduled after 2026-11-03\"}, \"receipt_verified\": true, \"replay\": false, \"effects\": 1, \"next_step\": \"The customer has been sent the move-order reference and dates. Their current service stays on through the move-out date; never say it is off or closed now.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790791613.2107232,
+   "metadata": {
+    "tool_call_id": "call_mhhBsvr34uHOeD9e78na7Uai",
+    "tool_batch_id": "0-call_mhhBsvr34uHOeD9e78na7Uai",
+    "skill_id": "service_move",
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"status\": \"succeeded\", \"order_ref\": \"AG-MOV-291EDE\", \"order_revision\": 1, \"draft_id\": \"AG-MVD-059D9\", \"draft_tag\": \"AG-MVD-059D9 v1\", \"moving_out_of\": \"AG-SP-1377 Flat 2, 7 Mill Yard, Millbrook\", \"moving_to\": \"30 Fenn Road, Easton\", \"move_out_date\": \"2026-11-03\", \"move_in_date\": \"2026-10-28\", \"new_service_starts\": \"2026-10-28\", \"current_service\": {\"service_point\": \"AG-SP-1377\", \"address\": \"Flat 2, 7 Mill Yard, Millbrook\", \"supply\": \"electricity\", \"status\": \"active\", \"on_now\": true, \"stays_on_through\": \"2026-11-03\", \"closure_instruction\": \"scheduled after 2026-11-03\"}, \"receipt_verified\": true, \"replay\": false, \"effects\": 1, \"next_step\": \"The customer has been sent the move-order reference and dates. Their current service stays on through the move-out date; never say it is off or closed now.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790791615.813045,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 2598.882708000019,
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   },
+   "text": "Your move is scheduled under AG-MOV-291EDE. Your electricity at Flat 2, 7 Mill Yard, Millbrook stays on through Tuesday 3 November 2026, and supply at 30 Fenn Road, Easton starts on Wednesday 28 October 2026.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790791615.8138292,
+   "metadata": {
+    "model_id": "6e71cbb190574dd0bb61806368871cc0",
+    "model_name": "20260930-190609-online-action.tar.gz",
+    "assistant_id": "amber-grid-service-move-gpt",
+    "session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+   }
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790791599.05936,
+ "current_session_id": "e2a24e07-3ebf-40b4-ba23-198453fd0d22"
+}
