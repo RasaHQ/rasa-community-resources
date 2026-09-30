@@ -1,0 +1,371 @@
+{
+ "schema": 1,
+ "build": "travel-redemption-gpt-text",
+ "case": "travel-redemption",
+ "project": "examples/mantle-text-travel-redemption-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T02:54:17.812130+00:00",
+ "finished_at": "2026-09-30T02:55:24.080383+00:00",
+ "model_file": "20260930-035425-radioactive-antagonist.tar.gz",
+ "train_seconds": 9.0,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 4490.5,
+   "p95": 17009.2,
+   "max": 17009.2,
+   "mean": 7191.1
+  },
+  "llm_calls": 11,
+  "llm_calls_per_turn": 2.75,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 33294,
+  "completion_tokens": 622,
+  "reasoning_tokens": 170,
+  "cached_prompt_tokens": 9728,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "booked_claim": 0
+  },
+  "tool_result_metrics": {
+   "unmatched_points_booking": {
+    "attempts": 1,
+    "total": 0
+   },
+   "points_debits": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.141354,
+  "llm_cost_usd": 0.141354,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-switch-at-confirmation",
+   "kind": "correction",
+   "description": "The contract's correction: at the confirmation the member switches cabin; the prior hold is released and the points recalculated before a new confirmation.",
+   "conversation_id": "travel-redemption-gpt-text-correction-switch-at-confirmation-20260930T025417",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Redeem the economy seat on HZ 214, Boston to Lisbon, 12 November.",
+     "latency_ms": 17009.2,
+     "bot": [
+      "Hello Mara, this is Horizon Rewards chat. I can check your points, find a reward flight or hotel stay, hold it and redeem it once you confirm, and look into an earlier redemption. What would you like to do?",
+      "I\u2019ve held one economy award seat on Horizon flight HZ 214, Boston (BOS) to Lisbon (LIS), 12 November 2026, for 42,000 points."
+     ]
+    },
+    {
+     "user": "Actually, make it premium economy instead.",
+     "latency_ms": 5323.4,
+     "bot": [
+      "I released the economy seat hold and held one premium economy award seat on Horizon flight HZ 214, Boston (BOS) to Lisbon (LIS), 12 November 2026, for 64,000 points."
+     ]
+    },
+    {
+     "user": "Yes, confirm.",
+     "latency_ms": 1941.4,
+     "bot": [
+      "Before I complete this: 64,000 points will come from account HR-204417 for one premium economy award seat on Horizon flight HZ 214, Boston (BOS) to Lisbon (LIS), 12 November 2026, held for you under HT-H-7EEC2. Shall I redeem it?"
+     ]
+    },
+    {
+     "user": "Yes, go ahead.",
+     "latency_ms": 4490.5,
+     "bot": [
+      "Done. Your redemption succeeded.",
+      "64,000 points were taken from account HR-204417 for one premium economy award seat on Horizon flight HZ 214, Boston (BOS) to Lisbon (LIS), 12 November 2026.",
+      "Redemption reference: HT-RD-162AD. Booking reference: HZ9A9D9."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "hold_reward",
+        "result": {
+         "status": "held",
+         "option_id": "RW-LIS-1014"
+        }
+       },
+       {
+        "tool": "release_hold",
+        "result": {
+         "status": "released",
+         "option_id": "RW-LIS-1014"
+        }
+       },
+       {
+        "tool": "hold_reward",
+        "result": {
+         "status": "held",
+         "option_id": "RW-LIS-1015"
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "calls occurred in order"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "redeem_reward",
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "option_id": "RW-LIS-1015",
+       "rewards_account": "HR-204417",
+       "points": {
+        "state": "debited",
+        "amount": 64000
+       },
+       "booking": {
+        "state": "ticketed",
+        "booking_reference": "re:^HZ"
+       },
+       "effects": 1
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "redeem_reward",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "option_id": "RW-LIS-1014"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_reward",
+      "result": {
+       "status": "held",
+       "rewards_account": "re:^(?!HR-204417$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "redeem_reward",
+      "result": {
+       "effects": 1,
+       "rewards_account": "re:^(?!HR-204417$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_reward_options",
+     "arguments": {
+      "destination": "Lisbon",
+      "travel_date": "2026-11-12"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_reward",
+     "arguments": {
+      "option_id": "RW-LIS-1014",
+      "rewards_account": "HR-204417"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "held",
+     "result_reason": null
+    },
+    {
+     "tool": "release_hold",
+     "arguments": {
+      "hold_id": "HT-H-54168"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "released",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_reward",
+     "arguments": {
+      "option_id": "RW-LIS-1015",
+      "rewards_account": "HR-204417"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "held",
+     "result_reason": null
+    },
+    {
+     "tool": "redeem_reward",
+     "arguments": {
+      "hold_id": "HT-H-7EEC2"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "redeem_reward",
+     "arguments": {
+      "hold_id": "HT-H-7EEC2"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "booked_claim": [],
+    "unmatched_points_booking": {
+     "attempts": 1,
+     "total": 0
+    },
+    "points_debits": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 10,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 33294,
+    "completion_tokens": 622,
+    "reasoning_tokens": 170,
+    "cached_prompt_tokens": 9728,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.141354,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2263.5,
+     4126.4,
+     2211.5,
+     2448.1,
+     3844.2,
+     2143.8,
+     1684.1,
+     1338.6,
+     1896.0,
+     2326.9,
+     2058.5
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-redemption-gpt-text-correction-switch-at-confirmation-20260930T025417",
+    "prompt": 33294,
+    "completion": 622,
+    "total": 33916,
+    "generations": 11,
+    "fetched_at": "2026-09-30T02:55:23.668566+00:00"
+   }
+  }
+ ]
+}
