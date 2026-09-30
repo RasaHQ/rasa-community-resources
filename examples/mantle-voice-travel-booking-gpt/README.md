@@ -6,7 +6,7 @@ Assessed on:   2026-09-30
 Assessed by:   Claude Code (casebook case builds; live runs recorded in case-build/results/)
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting booking changes behind a Rasa voice agent
-Time:          15 minutes to run the agent; the live call suite has not completed (see Results)
+Time:          15 minutes to run the agent; about 30 minutes and 2.65 USD for the live call suite
 ```
 
 A Rasa Mantle voice agent for one casebook case,
@@ -52,10 +52,17 @@ project makes the journey the unit of change, in code:
 - **Synthetic callers.** Every caller line is AI-generated speech from Rime's
   `tundra` and `moraine` (Mist v2). Gemini TTS was asked first and refused
   at its daily cap (see The voice stack). No person's voice is recorded here.
-- **What is measured so far:** one estimate call and a stopped main run (see
-  Results). The 16-call suite in `case-build/conversations.json` is written,
-  its caller audio is rendered, and it has not run to completion because the
-  shared OpenAI key ran out of credit.
+- **One model, one day.** Every number in `case-build/results/` comes from
+  `gpt-5.5-2026-04-23` through Rasa 3.21.0.dev5 and LiteLLM 1.101.2, with
+  Deepgram `flux-general-en` and Rime `mistv3` (speaker `peak`), run from one
+  laptop on 2026-09-30.
+- **What the results show:** which tools the agent called with which
+  arguments, what the guard returned, what speech-to-text heard, the latency
+  from the end of the caller's speech to the first bot audio, and what each
+  vendor charged.
+- **What they do not show:** a real booking or partner system, telephone
+  audio (this is 16 kHz browser audio), or rates for production traffic. 16
+  calls and 50 spoken caller turns is a small sample.
 
 ## Quick start
 
@@ -140,45 +147,147 @@ test holds every receipt under 380.
 
 ## Results
 
-No full run has completed. What was recorded:
+**Main run** (`case-build/results/2026-09-30-gpt-5.5-low/`): 16 calls, 50
+spoken caller turns. Pass or fail is read from the tracker's tool calls and
+results only.
+
+| Kind | Passed | Calls |
+|---|---|---|
+| Normal (same-day change, Dublin return with a bare "Yes.", Dublin outbound, flight status, what is on the booking) | 4 | 5 |
+| Adversarial (flight only, "the delay moved my connection", ambiguous Boston flight, another traveller's booking, a flown flight) | 4 | 5 |
+| Recovery (partial change and "run it again", unreadable partner, partial second leg) | 2 | 3 |
+| Correction (meant the return leg, declines, other option at the question) | 1 | 3 |
+| **All** | **11** | **16** |
+
+None of the five failures changed a booking wrongly:
+
+- **Speech-to-text, 2.** In `normal-later-flight-same-day` Flux heard the
+  booking code as "h z four eight n", with the R missing. The caller's words
+  held no reference, so the agent asked for it again and the script had no
+  answer. In `recovery-partner-unavailable` the bare "Yes." at the
+  confirmation question produced no user event. Mantle sent no silence
+  prompt in the next 103 s, and the driver timed out.
+- **The model, 1.** In `adversarial-delay-means-rebooked` GPT-5.5 called
+  `check_flight_status` with `flight_number: "Lisbon"` and a date it made
+  up, `2026-10-01`, and got `not_found`. It read the booking and said
+  correctly that nothing had moved, but the check requires the delay to have
+  been read.
+- **Script gap against engine behaviour, 2.** In both corrections GPT-5.5
+  declined the confirmation, discarded the draft and prepared the corrected
+  change in the same turn. In one the engine then refused a second
+  `apply_journey_change` in that turn ("already resolved this turn"); in the
+  other the model asked its own question without trying. Either way the
+  corrected change needed a yes to the model and then a yes to the engine's
+  question, and the scripts had one.
+
+**Rerun** (`case-build/results/2026-09-30-rerun-corrections-and-madrid/`):
+the two corrections with a second "Yes." added, and the Madrid call
+unchanged. **3 of 3 passed.** Only the corrected segment changed in each. In
+the Madrid call the "Yes." was heard this time: the dependent-services check
+failed on the partner's status, nothing changed (`connection_not_checked`,
+`effects` 0), and "can't you just skip the tour check?" was refused.
+
+**The guard.** Across both runs, 8 journey changes changed a booking: 6
+succeeded and 2 were partial. The partial ones are the two next-day changes
+the Denver parking cannot follow. One more change was blocked before
+anything changed. No segment the caller had not confirmed was changed.
+After the partial change in `recovery-partial-parking-freeze`, the caller's
+"just run the whole change again" was refused ("the booking is frozen for
+the travel desk"), and no second change ran.
+
+**The case metric.** Segment changes leaving unresolved dependent services
+unreported, over linked-journey changes: **0 of 8** (main run 0 of 6,
+rerun 0 of 2). Both partial changes named the Denver parking and the
+travel-desk reference in the tool's receipt, in the same turn. No later bot
+message claimed everything was updated. The spec's `all_updated_claim`
+metric matched twice, "You're all set", both after complete changes.
+
+**Receipts.** The change tool sent 9 receipts (6 in the main run, 3 in the
+rerun), and all 9 were delivered as bot messages in their turn. GPT-5.5
+restated a change or desk reference after a receipt 0 times. Receipts ran
+from 158 to 356 characters, and no tool timed out at `tool_timeout: 30`.
+
+**Heard nothing.** 1 of 50 spoken caller turns in the main run produced no
+user event: the bare "Yes." above. Bare "Yes." replies were heard 5 of 6
+times in the main run and 5 of 5 in the rerun. Flux split 1 turn into two
+user events. Rasa logged no `voice_channel.audio_missing`. It logged
+`output_channel.response_delivery_failed` 3 times in the main run and once
+in the rerun.
+
+**Spelled booking codes.** In the main run, Flux heard the full code in 9
+of the 12 turns that spelled one (reading "and" as N). In the 3 misses the
+"R" was dropped once and "eight" was heard as "a" twice ("h z four r a n").
+
+**The caller's-words fallback worked live.** In
+`recovery-partial-parking-freeze`, Flux again wrote "h z four r eight and",
+as in the estimate call, and GPT-5.5 again passed `booking: "HZ4R8"`.
+`find_change_options` resolved `HZ4R8N` from the caller's words, and the
+call passed. The fallback does not guess past a transcript that lacks the
+code. Where Flux heard "four r a n", GPT-5.5 passed `HZ4RAN` and got
+`not_found`. `adversarial-ambiguous-boston-flight` still passed because the
+model then looked the trip up by city. `adversarial-flown-segment` passed
+its checks (nothing prepared), but its lookup ended at `not_found`, so the
+flown-segment refusal was not exercised live; the offline tests cover it.
+
+### Latency (main run, end of caller speech to first bot audio)
+
+p50 **2.42 s**, p95 **4.74 s** (n = 49 turns). From the first end marker
+Rasa sends per turn:
+
+| Part | p50 | p95 |
+|---|---|---|
+| Rasa processing (transcript to first text for speech) | 1.37 s | 3.85 s |
+| Rime first byte | 0.17 s | 0.78 s |
+| Remainder: end-of-turn detection before Rasa had a transcript, and transport | 0.50 s | 1.38 s |
+
+GPT-5.5's time to first token was p50 1.07 s and p95 2.33 s (Mantle's
+`latency_breakdown`, 35 turns). Mantle's own "user perceived" figure was
+p50 1.32 s, and it leaves out the end-of-turn wait. The main run made 197
+model calls, 4.02 per caller turn (43 of them side-channel). 25% of prompt
+tokens came from OpenAI's cache (129,024 of 507,950). `engines/rime_idle.py`
+reopened the idle Rime socket 13 times.
+
+### Earlier runs, kept as history
 
 | Run | Calls | What happened |
 |---|---|---|
-| `case-build/results/estimate/` | 1 (`recovery-partial-parking-freeze`) | Failed: the booking was never found (below). 4 caller turns |
-| `case-build/results/2026-09-30-stopped-openai-no-credit/` | 2 started | OpenAI refused 14 of 15 model calls: "You have no credits remaining". Stopped under the programme's quota rule; nothing here is evidence about the agent |
-
-**The estimate call.** The caller spelled the booking code "H Z four R
-eight N". Deepgram Flux wrote "Booking h z four r eight and please move my
-Lisbon to Boston flight…": the final letter N became the word "and".
-GPT-5.5 then called `find_change_options` twice with `booking: "HZ4R8"`, and
-the agent asked the caller to repeat the reference; the change never
-started. This is one call. The tools now fall back to the caller's own words
-in the tracker when the model's argument holds no known reference, reading
-"and" as N (`JourneyService.find_booking`, with a test); that fix has not
-run live.
-
-From the same call (n = 4 turns, so indicative only): end of caller speech
-to first bot audio p50 1.29 s, p95 3.81 s. Of that, Rasa processing p50
-0.87 s, Rime first byte p50 0.17 s, and the remainder (end-of-turn detection
-before Rasa had a transcript, and transport) p50 0.35 s. GPT-5.5's time to
-first token was p50 0.76 s (Mantle's `latency_breakdown`, 3 turns). All 4
-caller turns produced exactly one user event: 0 heard as nothing, 0 split,
-and no `voice_channel.audio_missing`. The call made 13 model calls, 3.25 per
-caller turn, and 30% of prompt tokens came from OpenAI's cache (7,168 of
-24,201).
+| `case-build/results/estimate/` | 1 | Before the caller's-words fallback. Flux wrote the code's final N as "and", GPT-5.5 passed `HZ4R8`, and the booking was never found |
+| `case-build/results/2026-09-30-stopped-openai-no-credit/` | 2 started | OpenAI refused 14 of 15 model calls with "You have no credits remaining". Stopped under the programme's quota rule; not evidence about the agent |
 
 ## What we found
 
-1. **A spelled booking code lost its last letter between speech-to-text and
-   the model.** Flux transcribed "N" as "and"; GPT-5.5 passed the five
-   characters before it. The transcript still held all six, so the lookup
-   now reads the caller's words when the model's argument does not match.
-   One call; the rerun is pending.
-2. **The harness's console line hides a provider error.** When OpenAI ran out
-   of credit, the harness printed `FAIL` for the first call. Its own
-   classification of that call, recomputed offline from the usage log, is
-   `provider_error`; the console prints only PASS or FAIL. The run would
-   have stopped after the second call by the harness's two-errors rule.
+1. **After a correction at the confirmation gate, the caller has to say yes
+   twice.** GPT-5.5 did what the skill says: it declined, discarded the
+   draft and prepared the corrected segment in the same turn. The engine
+   then refused the second `apply_journey_change` ("Confirmation for tool
+   'apply_journey_change' was already resolved this turn"). The model asked
+   the caller to "say continue", and only the next turn raised the engine's
+   question for the corrected change. In all 4 correction calls that
+   switched to another option (main run and rerun), the corrected change was
+   confirmed only in a later turn. In 3 of them the engine refused the
+   re-call; in the fourth GPT-5.5 asked its own question without trying.
+   With one scripted yes both main-run calls failed; with two both rerun
+   calls passed. Unsetting
+   `utter_on_user_denial` gets the correction answered in the same turn, but
+   not confirmed in it.
+2. **A spelled booking code is the weakest thing on this voice stack.** Flux
+   heard 9 of 12 spelled codes in full. It turned "N" into "and" in 2 of 2
+   takes of the same caller line (estimate and main run), dropped "R" once
+   and heard "eight" as "a" twice. GPT-5.5 made the loss worse once: given
+   "h z four r eight and", it passed `HZ4R8` both times. Reading the
+   caller's own words in the tool recovered that case live. It cannot
+   recover a letter the transcript never held.
+3. **GPT-5.5 invented a date for a status lookup.** Asked whether "my Lisbon
+   flight tomorrow" was delayed, it called `check_flight_status` with
+   `flight_number: "Lisbon"` and `date: "2026-10-01"`, although the persona
+   gives the date as October 23 and `look_up_trip` had just returned the
+   flight number and date. One call; the only other status lookup passed
+   `HZ 215` and `2026-10-24`.
+4. **A lost "Yes." left the call silent.** After the bare "Yes." produced no
+   user event, Mantle sent no silence prompt in 103 s, with
+   `silence_timeout: 30`. This is the Flux short-reply loss the Deepgram
+   Flux article describes. The missing silence prompt is not explained
+   here.
 
 ## The voice stack
 
@@ -206,21 +315,24 @@ caller turn, and 30% of prompt tokens came from OpenAI's cache (7,168 of
 
 ## Spend
 
-All recorded in `case-build/results/spend-ledger.json`, 0.24 USD against a
+All recorded in `case-build/results/spend-ledger.json`, 3.72 USD against a
 4 USD cap:
 
 | Vendor | USD | What |
 |---|---|---|
-| OpenAI (GPT-5.5) | 0.113 | model calls priced by LiteLLM 1.101.2's bundled map: 0.103 estimate, 0.010 stopped run; refused calls are not priced |
-| Rime (caller) | 0.073 | 44 caller files at 0.03 USD per 1,000 characters |
-| Rime (agent) | 0.036 | characters of bot text at 0.03 USD per 1,000 (an upper bound: Rasa's TTS cache can serve a repeat) |
-| Deepgram | 0.015 | seconds streamed to Flux at 0.0065 USD a minute, silence included |
+| OpenAI (GPT-5.5) | 3.01 | model calls priced by LiteLLM 1.101.2's bundled map; refused calls are not priced |
+| Rime (agent) | 0.46 | characters of bot text at 0.03 USD per 1,000 (an upper bound: Rasa's TTS cache can serve a repeat) |
+| Deepgram | 0.17 | seconds streamed to Flux at 0.0065 USD a minute, silence included |
+| Rime (caller) | 0.07 | 44 caller files at 0.03 USD per 1,000 characters |
 | Gemini TTS (caller) | 0.002 | one caller file, from the usage Gemini returned; not used |
 | Anthropic | 0 | not used |
 
-The second call of the stopped run was interrupted before the harness wrote
-its record, so its speech entry is an upper bound from the server log (35 s
-of call wall time; 299 characters of bot text) and is labelled as such.
+By run: caller audio 0.07, estimate 0.13, stopped run 0.04, main run 2.65,
+rerun 0.83. The second call of the stopped run was interrupted before the
+harness wrote its record, so its speech entry is an upper bound from the
+server log (35 s of call wall time, 299 characters of bot text). The ledger
+labels it that way. The spec's `receipt-in-result-only` variant was not run,
+to stay inside the cap.
 
 ## Project layout
 

@@ -97,7 +97,9 @@ def changes(tracker: dict, claim_metric: dict) -> list[dict]:
         if event.get("event") != "tool_executed" or event.get("tool_name") != "apply_journey_change":
             continue
         result = parse(event.get("result"))
-        if not isinstance(result, dict):
+        # The engine's confirmation gate logs its own events under the tool's name ("awaiting_confirmation",
+        # "declined", or an error for a second call in the turn); only a real execution carries effects.
+        if not isinstance(result, dict) or "effects" not in result:
             continue
         start = max((j for j in range(i) if events[j].get("event") == "user"), default=0)
         end = next((j for j in range(i + 1, len(events)) if events[j].get("event") == "user"), len(events))
@@ -142,7 +144,8 @@ def analyse(label: str) -> dict:
 
     convs, lat, proc, ttfb, rest, ttft = [], [], [], [], [], []
     totals = {"spoken_turns": 0, "heard_nothing": 0, "silence_timeout_waits": 0, "split": 0, "audio_missing": 0,
-              "tool_timeouts": 0, "rime_reconnects": 0, "response_delivery_failed": 0}
+              "tool_timeouts": 0, "rime_reconnects": 0, "response_delivery_failed": 0,
+              "unrecorded_after_driver_error": 0, "bare_yes": 0, "bare_yes_heard": 0}
     all_changes = []
     for c in results["conversations"]:
         tracker_path = run / "trackers" / f"{c['id']}.json"
@@ -154,8 +157,23 @@ def analyse(label: str) -> dict:
         waits = [t["user"] for t in c.get("turns", [])
                  if (t.get("extra") or {}).get("mode") == "audio" and (t.get("latency_ms") or 0) >= SILENCE_TIMEOUT_MS]
         counts = c.get("log_events") or {}
-        totals["spoken_turns"] += len(asr)
+        # A driver timeout ends the call before the turn is recorded: the scripted lines after the last
+        # recorded turn were never answered. The first of them was streamed; the tracker says whether it
+        # became a user event.
+        script = next((s["turns"] for s in spec["conversations"] if s["id"] == c["id"]), [])
+        unrecorded = [t["user"] for t in script[len(c.get("turns", [])):]] if c.get("error") else []
+        tracker_users = [e.get("text") for e in tracker.get("events", [])
+                         if e.get("event") == "user" and not (e.get("text") or "").startswith("/")]
+        lost_at_timeout = (unrecorded[:1] if unrecorded and len(tracker_users) <= len(c.get("turns", []))
+                           else [])
+        heard_nothing += lost_at_timeout
+        totals["unrecorded_after_driver_error"] += len(unrecorded)
+        totals["spoken_turns"] += len(asr) + len(lost_at_timeout)
         totals["heard_nothing"] += len(heard_nothing)
+        bare_yes = [(a["intended"], a.get("user_events", 0) > 0) for a in asr if a["intended"].strip() in ("Yes.", "yes")]
+        bare_yes += [(t, False) for t in lost_at_timeout if t.strip() == "Yes."]
+        totals["bare_yes"] += len(bare_yes)
+        totals["bare_yes_heard"] += sum(1 for _, ok in bare_yes if ok)
         totals["silence_timeout_waits"] += len(waits)
         totals["split"] += sum(1 for a in asr if (a.get("user_events") or 0) > 1)
         totals["audio_missing"] += counts.get("voice_channel.audio_missing", 0)
@@ -204,7 +222,7 @@ def analyse(label: str) -> dict:
             "changes_with_unresolved_services": len(with_unresolved),
             "blocked_before_any_change": sum(1 for r in all_changes if r["effects"] == 0),
             "by_status": {s: sum(1 for r in all_changes if r["status"] == s)
-                          for s in sorted({r["status"] for r in all_changes})},
+                          for s in sorted({str(r["status"]) for r in all_changes})},
         },
         "receipts": {
             "sent_by_tool": len(sent),
@@ -216,6 +234,8 @@ def analyse(label: str) -> dict:
                     "caller_turns_heard_as_nothing": totals["heard_nothing"],
                     "caller_turns_waiting_for_silence_timeout": totals["silence_timeout_waits"],
                     "caller_turns_split": totals["split"],
+                    "bare_yes_turns": totals["bare_yes"], "bare_yes_heard": totals["bare_yes_heard"],
+                    "scripted_lines_unrecorded_after_driver_error": totals["unrecorded_after_driver_error"],
                     "bot_turns_audio_missing": totals["audio_missing"]},
         "engine_events": {"tool_timeouts": totals["tool_timeouts"], "rime_idle_reconnects": totals["rime_reconnects"],
                           "response_delivery_failed": totals["response_delivery_failed"]},

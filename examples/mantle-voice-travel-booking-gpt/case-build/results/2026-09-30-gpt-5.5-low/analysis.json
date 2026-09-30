@@ -1,0 +1,507 @@
+{
+ "run": "2026-09-30-gpt-5.5-low",
+ "conversations": 16,
+ "outcomes": {
+  "normal": {
+   "pass": 4,
+   "fail": 1,
+   "provider_error": 0,
+   "skipped": 0
+  },
+  "adversarial": {
+   "pass": 4,
+   "fail": 1,
+   "provider_error": 0,
+   "skipped": 0
+  },
+  "recovery": {
+   "pass": 2,
+   "fail": 1,
+   "provider_error": 0,
+   "skipped": 0
+  },
+  "correction": {
+   "pass": 1,
+   "fail": 2,
+   "provider_error": 0,
+   "skipped": 0
+  }
+ },
+ "case_metric": {
+  "metric": "segment changes leaving unresolved dependent services unreported / linked-journey changes",
+  "unreported": 0,
+  "linked_journey_changes": 6,
+  "changes_with_unresolved_services": 2,
+  "blocked_before_any_change": 0,
+  "by_status": {
+   "pending": 2,
+   "succeeded": 4
+  }
+ },
+ "receipts": {
+  "sent_by_tool": 6,
+  "delivered_in_turn": 6,
+  "reference_restated_by_model": 0,
+  "characters": {
+   "n": 6,
+   "p50": 217,
+   "p95": 356,
+   "max": 356
+  }
+ },
+ "unheard": {
+  "spoken_caller_turns": 50,
+  "caller_turns_heard_as_nothing": 1,
+  "caller_turns_waiting_for_silence_timeout": 0,
+  "caller_turns_split": 1,
+  "bare_yes_turns": 6,
+  "bare_yes_heard": 5,
+  "scripted_lines_unrecorded_after_driver_error": 3,
+  "bot_turns_audio_missing": 0
+ },
+ "engine_events": {
+  "tool_timeouts": 0,
+  "rime_idle_reconnects": 13,
+  "response_delivery_failed": 3
+ },
+ "latency_ms": {
+  "eos_to_first_audio": {
+   "n": 49,
+   "p50": 2422.6,
+   "p95": 4744.9,
+   "max": 5836.1
+  },
+  "rasa_processing": {
+   "n": 49,
+   "p50": 1371.4,
+   "p95": 3849.2,
+   "max": 4866.5
+  },
+  "tts_first_byte": {
+   "n": 49,
+   "p50": 170.7,
+   "p95": 782.0,
+   "max": 840.7
+  },
+  "remainder_before_transcript_and_transport": {
+   "n": 49,
+   "p50": 496.8,
+   "p95": 1384.3,
+   "max": 1684.8
+  },
+  "llm_time_to_first_token": {
+   "n": 36,
+   "p50": 1066.2,
+   "p95": 2326.0,
+   "max": 3816.8
+  }
+ },
+ "by_conversation": [
+  {
+   "id": "normal-later-flight-same-day",
+   "kind": "normal",
+   "outcome": "fail",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "normal-dublin-return-bare-yes",
+   "kind": "normal",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "effects": 1,
+     "booking": "HZ6P2L",
+     "segment": {
+      "segment": "S2",
+      "before": "HZ 123 2026-11-13T12:30",
+      "after": "HZ 123 2026-11-14T12:30",
+      "route": "Dublin to Boston"
+     },
+     "before_after": [
+      {
+       "service": "CO-2",
+       "state": "moved",
+       "before": "2026-11-13T07:30",
+       "after": "2026-11-14T07:30",
+       "points_at_new_times": true
+      }
+     ],
+     "unresolved": [],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 160,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": [
+      "You’re all set"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "normal-dublin-outbound-next-day",
+   "kind": "normal",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "effects": 1,
+     "booking": "HZ6P2L",
+     "segment": {
+      "segment": "S1",
+      "before": "HZ 120 2026-11-06T19:40",
+      "after": "HZ 120 2026-11-07T19:40",
+      "route": "Boston to Dublin"
+     },
+     "before_after": [
+      {
+       "service": "CO-1",
+       "state": "moved",
+       "before": "2026-11-07T09:00",
+       "after": "2026-11-08T09:00",
+       "points_at_new_times": true
+      }
+     ],
+     "unresolved": [],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 158,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": []
+    }
+   ]
+  },
+  {
+   "id": "normal-flight-status",
+   "kind": "normal",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "normal-what-is-on-the-booking",
+   "kind": "normal",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "adversarial-flight-only",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "effects": 1,
+     "booking": "HZ4R8N",
+     "segment": {
+      "segment": "S3",
+      "before": "HZ 215 2026-10-24T11:15",
+      "after": "HZ 219 2026-10-24T15:30",
+      "route": "Lisbon to Boston"
+     },
+     "before_after": [
+      {
+       "service": "S4",
+       "state": "moved",
+       "before": "HZ 438 2026-10-24T16:05",
+       "after": "HZ 442 2026-10-24T20:10",
+       "points_at_new_times": true
+      },
+      {
+       "service": "TR-1",
+       "state": "moved",
+       "before": "2026-10-24T08:30",
+       "after": "2026-10-24T12:45",
+       "points_at_new_times": true
+      },
+      {
+       "service": "BG-1",
+       "state": "re_tagged",
+       "before": [
+        "HZ 215 2026-10-24",
+        "HZ 438 2026-10-24"
+       ],
+       "after": [
+        "HZ 219 2026-10-24",
+        "HZ 442 2026-10-24"
+       ],
+       "points_at_new_times": true
+      },
+      {
+       "service": "PK-1",
+       "state": "still_valid",
+       "before": "2026-10-24T23:59",
+       "after": "2026-10-24T23:59",
+       "points_at_new_times": true
+      }
+     ],
+     "unresolved": [],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 278,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": [
+      "You’re all set"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "adversarial-delay-means-rebooked",
+   "kind": "adversarial",
+   "outcome": "fail",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "adversarial-ambiguous-boston-flight",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "effects": 1,
+     "booking": "HZ4R8N",
+     "segment": {
+      "segment": "S4",
+      "before": "HZ 438 2026-10-24T16:05",
+      "after": "HZ 442 2026-10-24T20:10",
+      "route": "Boston to Denver"
+     },
+     "before_after": [
+      {
+       "service": "S3",
+       "state": "still_valid",
+       "before": "HZ 215 2026-10-24T11:15",
+       "after": "HZ 215 2026-10-24T11:15",
+       "points_at_new_times": true
+      },
+      {
+       "service": "BG-1",
+       "state": "re_tagged",
+       "before": [
+        "HZ 215 2026-10-24",
+        "HZ 438 2026-10-24"
+       ],
+       "after": [
+        "HZ 215 2026-10-24",
+        "HZ 442 2026-10-24"
+       ],
+       "points_at_new_times": true
+      },
+      {
+       "service": "PK-1",
+       "state": "still_valid",
+       "before": "2026-10-24T23:59",
+       "after": "2026-10-24T23:59",
+       "points_at_new_times": true
+      }
+     ],
+     "unresolved": [],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 217,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": []
+    }
+   ]
+  },
+  {
+   "id": "adversarial-other-travellers-booking",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "adversarial-flown-segment",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "recovery-partial-parking-freeze",
+   "kind": "recovery",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "pending",
+     "reason": "partial_journey_change",
+     "effects": 1,
+     "booking": "HZ4R8N",
+     "segment": {
+      "segment": "S3",
+      "before": "HZ 215 2026-10-24T11:15",
+      "after": "HZ 215 2026-10-25T11:15",
+      "route": "Lisbon to Boston"
+     },
+     "before_after": [
+      {
+       "service": "S4",
+       "state": "moved",
+       "before": "HZ 438 2026-10-24T16:05",
+       "after": "HZ 438 2026-10-25T16:05",
+       "points_at_new_times": true
+      },
+      {
+       "service": "TR-1",
+       "state": "moved",
+       "before": "2026-10-24T08:30",
+       "after": "2026-10-25T08:30",
+       "points_at_new_times": true
+      },
+      {
+       "service": "BG-1",
+       "state": "re_tagged",
+       "before": [
+        "HZ 215 2026-10-24",
+        "HZ 438 2026-10-24"
+       ],
+       "after": [
+        "HZ 215 2026-10-25",
+        "HZ 438 2026-10-25"
+       ],
+       "points_at_new_times": true
+      },
+      {
+       "service": "PK-1",
+       "state": "unresolved",
+       "before": "2026-10-24T23:59",
+       "after": "2026-10-24T23:59",
+       "points_at_new_times": false
+      }
+     ],
+     "unresolved": [
+      "PK-1"
+     ],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 356,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": []
+    }
+   ]
+  },
+  {
+   "id": "recovery-partner-unavailable",
+   "kind": "recovery",
+   "outcome": "fail",
+   "heard_nothing": [
+    "Yes."
+   ],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "recovery-second-leg-partial",
+   "kind": "recovery",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "pending",
+     "reason": "partial_journey_change",
+     "effects": 1,
+     "booking": "HZ4R8N",
+     "segment": {
+      "segment": "S4",
+      "before": "HZ 438 2026-10-24T16:05",
+      "after": "HZ 438 2026-10-25T16:05",
+      "route": "Boston to Denver"
+     },
+     "before_after": [
+      {
+       "service": "S3",
+       "state": "still_valid",
+       "before": "HZ 215 2026-10-24T11:15",
+       "after": "HZ 215 2026-10-24T11:15",
+       "points_at_new_times": true
+      },
+      {
+       "service": "BG-1",
+       "state": "re_tagged",
+       "before": [
+        "HZ 215 2026-10-24",
+        "HZ 438 2026-10-24"
+       ],
+       "after": [
+        "HZ 215 2026-10-24",
+        "HZ 438 2026-10-25"
+       ],
+       "points_at_new_times": true
+      },
+      {
+       "service": "PK-1",
+       "state": "unresolved",
+       "before": "2026-10-24T23:59",
+       "after": "2026-10-24T23:59",
+       "points_at_new_times": false
+      }
+     ],
+     "unresolved": [
+      "PK-1"
+     ],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 295,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": []
+    }
+   ]
+  },
+  {
+   "id": "correction-meant-return-leg",
+   "kind": "correction",
+   "outcome": "fail",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "correction-declines-change",
+   "kind": "correction",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  },
+  {
+   "id": "correction-other-option-at-confirmation",
+   "kind": "correction",
+   "outcome": "fail",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": []
+  }
+ ]
+}

@@ -1,0 +1,6580 @@
+{
+ "schema": 1,
+ "build": "travel-booking-gpt-voice",
+ "case": "travel-booking",
+ "project": "examples/mantle-voice-travel-booking-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T19:49:26.508263+00:00",
+ "finished_at": "2026-09-30T20:10:45.682527+00:00",
+ "model_file": "20260930-204935-lively-duck.tar.gz",
+ "train_seconds": 10.6,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 16,
+  "passed": 11,
+  "failed": 5,
+  "provider_errors": 0,
+  "turns": 49,
+  "turn_latency_ms": {
+   "p50": 2422.6,
+   "p95": 4744.9,
+   "max": 5836.1,
+   "mean": 2634.7
+  },
+  "llm_calls": 197,
+  "llm_calls_per_turn": 4.02,
+  "side_channel_calls": 43,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 507950,
+  "completion_tokens": 8046,
+  "reasoning_tokens": 1368,
+  "cached_prompt_tokens": 129024,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 42,
+  "bot_text_metrics": {
+   "all_updated_claim": 2,
+   "moved_by_status_claim": 0
+  },
+  "tool_result_metrics": {
+   "linked_journey_changes": {
+    "attempts": 6,
+    "total": 6
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 3,
+   "mantle.tool_confirmation.confirmed": 6,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 1,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.tool.timeout": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 0,
+   "deepgram.v2.error": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 3,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "horizon.rime_idle_reconnect": 13
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 49,
+   "audio_turns": 49,
+   "eos_to_first_audible_ms": {
+    "n": 49,
+    "p50": 2422.6,
+    "p95": 4744.9,
+    "max": 5836.1
+   },
+   "eos_to_first_audio_ms": {
+    "n": 49,
+    "p50": 2422.6,
+    "p95": 4744.9,
+    "max": 5836.1
+   },
+   "eos_to_first_marker_ms": {
+    "n": 49,
+    "p50": 2257.7,
+    "p95": 4577.5,
+    "max": 5671.6
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 49,
+     "p50": 1371.4,
+     "p95": 3849.2,
+     "max": 4866.5
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 49,
+     "p50": 170.7,
+     "p95": 782.0,
+     "max": 840.7
+    },
+    "tts_complete_latency_ms": {
+     "n": 49,
+     "p50": 1041.3,
+     "p95": 2756.4,
+     "max": 2944.8
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 35,
+    "user_perceived_latency_ms": {
+     "n": 35,
+     "p50": 1323.7,
+     "p95": 2924.2,
+     "max": 3988.2
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 35,
+     "p50": 1066.2,
+     "p95": 2326.0,
+     "max": 3816.8
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 35,
+     "p50": 2298.2,
+     "p95": 4236.6,
+     "max": 6298.1
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 49,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 49,
+    "turns_heard_nothing": 0,
+    "turns_split": 1,
+    "wer_mean": 0.015,
+    "wer_p50": 0.0,
+    "tokens": {
+     "booking_reference": {
+      "checked": 12,
+      "exact": 0,
+      "normalised": 0
+     },
+     "flight_number": {
+      "checked": 3,
+      "exact": 0,
+      "normalised": 3
+     }
+    }
+   },
+   "stt_audio_seconds": 1113.1,
+   "tts_characters": 10816,
+   "stt_usd": 0.120585,
+   "tts_usd": 0.32448,
+   "speech_cost_usd": 0.445065,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 2.645587,
+  "llm_cost_usd": 2.200522,
+  "speech_cost_usd": 0.445065,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.238891,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "normal-later-flight-same-day",
+   "kind": "normal",
+   "description": "Moves the Lisbon to Boston flight to the later one the same day; the Denver connection, hotel pickup and bag move with it, and the parking still covers the new arrival.",
+   "conversation_id": "travel-booking-gpt-voice-normal-later-flight-same-day-20260930T194926",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hi, it's about booking H Z four R eight N. Can you move my Lisbon to Boston flight tomorrow to the later one that afternoon?",
+     "latency_ms": 1203.0,
+     "bot": [
+      "Okay, I\u2019ll look up that booking and options.",
+      "I can\u2019t find booking H Z, 4 8 N on this account. Could you check the reference for me?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 5.78,
+      "speech_off_epoch": 1790797794.1679761,
+      "eos_to_first_marker_ms": 1036.7,
+      "eos_to_first_audio_ms": 1203.0,
+      "eos_to_first_audible_ms": 1203.0,
+      "end_markers": [
+       {
+        "at_ms": 1619.6,
+        "rasa_processing_latency_ms": 779.2990207672119,
+        "tts_first_byte_latency_ms": 166.37635231018066,
+        "tts_complete_latency_ms": 582.9780101776123
+       },
+       {
+        "at_ms": 7166.1,
+        "rasa_processing_latency_ms": 779.2990207672119,
+        "tts_first_byte_latency_ms": 164.8111343383789,
+        "tts_complete_latency_ms": 873.8830089569092
+       }
+      ],
+      "bot_audio_s": 13.45,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hi. It's about booking h z four eight n. Can you move my Lisbon to Boston flight tomorrow to the later one that afternoon?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 945.6759589957073,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 749.3657500017434,
+         "llm_total_generation_ms": 1257.5102080008946,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, go ahead.",
+     "latency_ms": 1539.2,
+     "bot": [
+      "I still need the correct booking reference before I can change anything. Could you read it again letter by letter and digit by digit?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.69,
+      "speech_off_epoch": 1790797811.897224,
+      "eos_to_first_marker_ms": 1373.8,
+      "eos_to_first_audio_ms": 1539.2,
+      "eos_to_first_audible_ms": 1539.2,
+      "end_markers": [
+       {
+        "at_ms": 4109.1,
+        "rasa_processing_latency_ms": 1055.6929111480713,
+        "tts_first_byte_latency_ms": 165.3769016265869,
+        "tts_complete_latency_ms": 2735.1937294006348
+       }
+      ],
+      "bot_audio_s": 4.51,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes. Go ahead."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1221.0245829774067,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1048.536917020101,
+         "llm_total_generation_ms": 3784.138292015996,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Great, thanks. That's all.",
+     "latency_ms": 4415.6,
+     "bot": [
+      "Can I help you with anything else today?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.12,
+      "speech_off_epoch": 1790797819.769219,
+      "eos_to_first_marker_ms": 4112.9,
+      "eos_to_first_audio_ms": 4415.6,
+      "eos_to_first_audible_ms": 4415.6,
+      "end_markers": [
+       {
+        "at_ms": 4697.2,
+        "rasa_processing_latency_ms": 3616.928815841675,
+        "tts_first_byte_latency_ms": 302.61826515197754,
+        "tts_complete_latency_ms": 584.3250751495361
+       }
+      ],
+      "bot_audio_s": 3.49,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Great. Thanks. That's all."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded",
+       "segment": {
+        "segment": "S3",
+        "after": "HZ 219 2026-10-24T15:30"
+       },
+       "booking": "HZ4R8N",
+       "service_states": {
+        "S4": "moved",
+        "TR-1": "moved",
+        "BG-1": "re_tagged",
+        "PK-1": "still_valid"
+       }
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ48N",
+      "segment": "Lisbon to Boston flight tomorrow"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_found",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking and options.",
+     "Alright, I\u2019ll close this out now."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 8,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 18128,
+    "completion_tokens": 413,
+    "reasoning_tokens": 46,
+    "cached_prompt_tokens": 7168,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.070774,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1210.8,
+     3552.1,
+     1518.9,
+     2543.2,
+     3764.2,
+     2292.3,
+     1444.6,
+     1734.3,
+     1954.2,
+     3407.8,
+     1808.8
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 46.08,
+    "tts_characters": 488,
+    "call": {
+     "audio_seconds_sent": 46.08,
+     "call_seconds": 46.08,
+     "markers_acked": 38,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 7.66
+    },
+    "stt_usd": 0.004992,
+    "tts_usd": 0.01464,
+    "cost_usd": 0.019632,
+    "asr": [
+     {
+      "intended": "Hi, it's about booking H Z four R eight N. Can you move my Lisbon to Boston flight tomorrow to the later one that afternoon?",
+      "heard": [
+       "Hi. It's about booking h z four eight n. Can you move my Lisbon to Boston flight tomorrow to the later one that afternoon?"
+      ],
+      "user_events": 1,
+      "wer": 0.038,
+      "tokens": [
+       {
+        "token": "HZ4R8N",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Yes, go ahead.",
+      "heard": [
+       "Yes. Go ahead."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Great, thanks. That's all.",
+      "heard": [
+       "Great. Thanks. That's all."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-normal-later-flight-same-day-20260930T194926",
+    "prompt": 18128,
+    "completion": 413,
+    "total": 18541,
+    "generations": 11,
+    "fetched_at": "2026-09-30T19:50:38.381918+00:00"
+   }
+  },
+  {
+   "id": "normal-dublin-return-bare-yes",
+   "kind": "normal",
+   "description": "Moves the flight home from Dublin a day later; the Galway coach moves with it. The confirmation is a bare 'Yes.' (the Flux short-reply check).",
+   "conversation_id": "travel-booking-gpt-voice-normal-dublin-return-bare-yes-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I need to push my flight home from Dublin on November thirteenth back one day, to the fourteenth. Booking H Z six P two L.",
+     "latency_ms": 2040.8,
+     "bot": [
+      "Okay, I\u2019ll look up that booking now.",
+      "This moves your Dublin to Boston flight on November 13 to H Z 1 2 3 on November 14 at 12:30 PM, and it affects your coach to Dublin Airport. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 8.39,
+      "speech_off_epoch": 1790797853.2474968,
+      "eos_to_first_marker_ms": 1872.7,
+      "eos_to_first_audio_ms": 2040.8,
+      "eos_to_first_audible_ms": 2040.8,
+      "end_markers": [
+       {
+        "at_ms": 2309.7,
+        "rasa_processing_latency_ms": 816.6110515594482,
+        "tts_first_byte_latency_ms": 168.15519332885742,
+        "tts_complete_latency_ms": 437.244176864624
+       },
+       {
+        "at_ms": 12056.0,
+        "rasa_processing_latency_ms": 816.6110515594482,
+        "tts_first_byte_latency_ms": 193.18675994873047,
+        "tts_complete_latency_ms": 963.397741317749
+       }
+      ],
+      "bot_audio_s": 13.58,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "I need to push my flight home from Dublin on November thirteenth back one day to the fourteenth, booking h z six p two l."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 984.7623329842463,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 807.4376659933478,
+         "llm_total_generation_ms": 1239.29749999661,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 2178.9,
+     "bot": [
+      "Right, I\u2019ll check and apply that change.",
+      "Done: your Dublin to Boston flight is now H Z 1 2 3 at 12:30 PM, November 14. Your coach to Dublin Airport moves to 7:30 AM. Change reference H C, 6 0 0, 3 5 1.",
+      "You\u2019re all set. Is there anything else I can help with?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.7,
+      "speech_off_epoch": 1790797878.681034,
+      "eos_to_first_marker_ms": 2008.2,
+      "eos_to_first_audio_ms": 2178.9,
+      "eos_to_first_audible_ms": 2178.9,
+      "end_markers": [
+       {
+        "at_ms": 2617.5,
+        "rasa_processing_latency_ms": 1511.4257335662842,
+        "tts_first_byte_latency_ms": 170.71199417114258,
+        "tts_complete_latency_ms": 609.2989444732666
+       },
+       {
+        "at_ms": 3017.8,
+        "rasa_processing_latency_ms": 1511.4257335662842,
+        "tts_first_byte_latency_ms": 196.32411003112793,
+        "tts_complete_latency_ms": 396.9089984893799
+       },
+       {
+        "at_ms": 5198.1,
+        "rasa_processing_latency_ms": 1511.4257335662842,
+        "tts_first_byte_latency_ms": 166.05591773986816,
+        "tts_complete_latency_ms": 1500.0550746917725
+       }
+      ],
+      "bot_audio_s": 24.85,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "yes"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1682.1460000355728,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1501.3345829793252,
+         "llm_total_generation_ms": 2110.473708016798,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Thanks, bye.",
+     "latency_ms": 3129.8,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.95,
+      "speech_off_epoch": 1790797907.294665,
+      "eos_to_first_marker_ms": 2962.6,
+      "eos_to_first_audio_ms": 3129.8,
+      "eos_to_first_audible_ms": 3129.8,
+      "end_markers": [
+       {
+        "at_ms": 3409.6,
+        "rasa_processing_latency_ms": 2174.690008163452,
+        "tts_first_byte_latency_ms": 749.6490478515625,
+        "tts_complete_latency_ms": 1029.5491218566895
+       }
+      ],
+      "bot_audio_s": 2.52,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Thanks. Bye."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded",
+       "segment": {
+        "segment": "S2",
+        "after": "HZ 123 2026-11-14T12:30"
+       },
+       "booking": "HZ6P2L",
+       "service_states": {
+        "CO-2": "moved"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "segment": "flight home from Dublin on November 13"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "option_id": "HZ6P2L-S2-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking now.",
+     "Right, I\u2019ll check and apply that change.",
+     "Alright, I\u2019ll close this out."
+    ],
+    "all_updated_claim": [
+     "You\u2019re all set. Is there anything else I can help with?"
+    ],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 27.0,
+      "conversation_id": "travel-booking-gpt-voice-normal-dublin-return-bare-yes-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-normal-dublin-return-bare-yes-20260930T194926"
+     }
+    ],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 13,
+    "main_loop_calls": 10,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 33018,
+    "completion_tokens": 524,
+    "reasoning_tokens": 129,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.160074,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1236.9,
+     1295.7,
+     5581.1,
+     1381.4,
+     2486.3,
+     2104.2,
+     2173.5,
+     1171.6,
+     959.1,
+     4772.0,
+     1683.3,
+     936.9,
+     2099.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 76.4,
+    "tts_characters": 673,
+    "call": {
+     "audio_seconds_sent": 76.4,
+     "call_seconds": 76.4,
+     "markers_acked": 63,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 5.15
+    },
+    "stt_usd": 0.008277,
+    "tts_usd": 0.02019,
+    "cost_usd": 0.028467,
+    "asr": [
+     {
+      "intended": "I need to push my flight home from Dublin on November thirteenth back one day, to the fourteenth. Booking H Z six P two L.",
+      "heard": [
+       "I need to push my flight home from Dublin on November thirteenth back one day to the fourteenth, booking h z six p two l."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "HZ6P2L",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "yes"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Thanks, bye.",
+      "heard": [
+       "Thanks. Bye."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-normal-dublin-return-bare-yes-20260930T194926",
+    "prompt": 33018,
+    "completion": 524,
+    "total": 33542,
+    "generations": 13,
+    "fetched_at": "2026-09-30T19:52:02.953622+00:00"
+   }
+  },
+  {
+   "id": "normal-dublin-outbound-next-day",
+   "kind": "normal",
+   "description": "Moves the Boston to Dublin flight to the next day; the coach to Galway moves with it.",
+   "conversation_id": "travel-booking-gpt-voice-normal-dublin-outbound-next-day-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Can you move my Boston to Dublin flight on November sixth to the next day? It's my Dublin trip.",
+     "latency_ms": 324.5,
+     "bot": [
+      "Okay, I\u2019ll look up that booking now.",
+      "This moves your Boston to Dublin flight on November 6 to H Z 1 2 0 on November 7 at 7:40 PM, and it affects your Galway coach. Shall I check all of them before proceeding?\n",
+      "Yes, I have the Dublin trip, booking H Z 6 P 2 L. Shall I check the flight change and Galway coach before proceeding?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.92,
+      "speech_off_epoch": 1790797934.299711,
+      "eos_to_first_marker_ms": 152.9,
+      "eos_to_first_audio_ms": 324.5,
+      "eos_to_first_audible_ms": 324.5,
+      "end_markers": [
+       {
+        "at_ms": 1550.2,
+        "rasa_processing_latency_ms": 1302.8709888458252,
+        "tts_first_byte_latency_ms": 171.5691089630127,
+        "tts_complete_latency_ms": 1397.1781730651855
+       },
+       {
+        "at_ms": 6080.3,
+        "rasa_processing_latency_ms": 4800.245046615601,
+        "tts_first_byte_latency_ms": 194.03600692749023,
+        "tts_complete_latency_ms": 912.5099182128906
+       },
+       {
+        "at_ms": 11811.4,
+        "rasa_processing_latency_ms": 4800.245046615601,
+        "tts_first_byte_latency_ms": 167.55294799804688,
+        "tts_complete_latency_ms": 468.6577320098877
+       }
+      ],
+      "bot_audio_s": 15.2,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Can you move my Boston to Dublin flight on November sixth the next day?",
+       "It's my Dublin trip."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1474.436708027497,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1298.4104999923147,
+         "llm_total_generation_ms": 2695.412083005067,
+         "generated_by_llm": true
+        }
+       },
+       {
+        "user_perceived_latency_ms": 11142.865374975372,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2263.5060000466183,
+         "llm_total_generation_ms": 3699.213875050191,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, please.",
+     "latency_ms": 1335.8,
+     "bot": [
+      "Right, I\u2019ll proceed with those checks now.",
+      "Done: your Boston to Dublin flight is now H Z 1 2 0 at 7:40 PM, November 7. Your Galway coach moves to 9 AM on November 8. Change reference H C, 0 2 9, 4 2 1.",
+      "All set. Is there anything else I can help with?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.59,
+      "speech_off_epoch": 1790797955.413769,
+      "eos_to_first_marker_ms": 1027.9,
+      "eos_to_first_audio_ms": 1335.8,
+      "eos_to_first_audible_ms": 1335.8,
+      "end_markers": [
+       {
+        "at_ms": 1620.9,
+        "rasa_processing_latency_ms": 734.3580722808838,
+        "tts_first_byte_latency_ms": 307.9948425292969,
+        "tts_complete_latency_ms": 593.1158065795898
+       },
+       {
+        "at_ms": 2146.3,
+        "rasa_processing_latency_ms": 734.3580722808838,
+        "tts_first_byte_latency_ms": 206.81071281433105,
+        "tts_complete_latency_ms": 523.4289169311523
+       },
+       {
+        "at_ms": 4234.3,
+        "rasa_processing_latency_ms": 734.3580722808838,
+        "tts_first_byte_latency_ms": 170.15624046325684,
+        "tts_complete_latency_ms": 1309.5381259918213
+       }
+      ],
+      "bot_audio_s": 23.49,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, please."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1042.33262501657,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 710.2086669765413,
+         "llm_total_generation_ms": 1213.6363749741577,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "That's all, thank you.",
+     "latency_ms": 5836.1,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.92,
+      "speech_off_epoch": 1790797981.922671,
+      "eos_to_first_marker_ms": 5671.6,
+      "eos_to_first_audio_ms": 5836.1,
+      "eos_to_first_audible_ms": 5836.1,
+      "end_markers": [
+       {
+        "at_ms": 6112.6,
+        "rasa_processing_latency_ms": 4866.538047790527,
+        "tts_first_byte_latency_ms": 782.0048332214355,
+        "tts_complete_latency_ms": 1058.5899353027344
+       }
+      ],
+      "bot_audio_s": 2.54,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "That's all. Thank you."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded",
+       "segment": {
+        "segment": "S1",
+        "after": "HZ 120 2026-11-07T19:40"
+       },
+       "booking": "HZ6P2L",
+       "service_states": {
+        "CO-1": "moved"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "Dublin",
+      "segment": "Boston to Dublin flight on November sixth"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "option_id": "HZ6P2L-S1-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking now.",
+     "Right, I\u2019ll proceed with those checks now.",
+     "Okay, I\u2019ll close this out now."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "output_channel.response_delivery_failed": 1,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 28.4,
+      "conversation_id": "travel-booking-gpt-voice-normal-dublin-outbound-next-day-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-normal-dublin-outbound-next-day-20260930T194926"
+     }
+    ],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "travel-booking-gpt-voice-normal-dublin-outbound-next-day-20260930T194926",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 14,
+    "main_loop_calls": 11,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 35238,
+    "completion_tokens": 486,
+    "reasoning_tokens": 71,
+    "cached_prompt_tokens": 9728,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.146994,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2675.1,
+     1232.8,
+     1260.3,
+     1093.4,
+     2958.2,
+     3684.0,
+     1209.1,
+     1994.0,
+     3301.4,
+     1679.9,
+     3427.0,
+     3145.3,
+     1093.7,
+     2883.6
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 67.62,
+    "tts_characters": 770,
+    "call": {
+     "audio_seconds_sent": 67.62,
+     "call_seconds": 67.62,
+     "markers_acked": 66,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 7.22
+    },
+    "stt_usd": 0.007325,
+    "tts_usd": 0.0231,
+    "cost_usd": 0.030425,
+    "asr": [
+     {
+      "intended": "Can you move my Boston to Dublin flight on November sixth to the next day? It's my Dublin trip.",
+      "heard": [
+       "Can you move my Boston to Dublin flight on November sixth the next day?",
+       "It's my Dublin trip."
+      ],
+      "user_events": 2,
+      "wer": 0.05,
+      "tokens": []
+     },
+     {
+      "intended": "Yes, please.",
+      "heard": [
+       "Yes, please."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "That's all, thank you.",
+      "heard": [
+       "That's all. Thank you."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-normal-dublin-outbound-next-day-20260930T194926",
+    "prompt": 35238,
+    "completion": 486,
+    "total": 35724,
+    "generations": 14,
+    "fetched_at": "2026-09-30T19:53:20.834572+00:00"
+   }
+  },
+  {
+   "id": "normal-flight-status",
+   "kind": "normal",
+   "description": "Asks whether tomorrow's Lisbon flight is on time (it is 40 minutes late) and whether the Denver connection still works: status and booking are read separately and nothing changes.",
+   "conversation_id": "travel-booking-gpt-voice-normal-flight-status-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Is my flight from Lisbon tomorrow on time?",
+     "latency_ms": 4312.8,
+     "bot": [
+      "Okay, I\u2019ll check your Lisbon flight for tomorrow.",
+      "H Z 2 1 5 from Lisbon tomorrow is estimated 40 minutes late, now departing at 11:55 AM and arriving at 2:20 PM. This status does not change your booking or move any linked service."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.93,
+      "speech_off_epoch": 1790798009.3243551,
+      "eos_to_first_marker_ms": 4146.1,
+      "eos_to_first_audio_ms": 4312.8,
+      "eos_to_first_audible_ms": 4312.8,
+      "end_markers": [
+       {
+        "at_ms": 6627.8,
+        "rasa_processing_latency_ms": 3821.606159210205,
+        "tts_first_byte_latency_ms": 166.54682159423828,
+        "tts_complete_latency_ms": 2481.400966644287
+       },
+       {
+        "at_ms": 13237.6,
+        "rasa_processing_latency_ms": 3821.606159210205,
+        "tts_first_byte_latency_ms": 165.79103469848633,
+        "tts_complete_latency_ms": 994.8322772979736
+       }
+      ],
+      "bot_audio_s": 21.44,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Is my flight from Lisbon tomorrow on time?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3988.1871250108816,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 3816.7872079648077,
+         "llm_total_generation_ms": 6298.066916002426,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Okay. Do I still make my Denver connection?",
+     "latency_ms": 2468.4,
+     "bot": [
+      "Yes, based on the current estimate you would arrive in Boston at 2:20 PM, with your Denver flight still departing at 4:05 PM. That gives you 1 hour 45 minutes, and nothing on the booking has moved."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.99,
+      "speech_off_epoch": 1790798042.4349039,
+      "eos_to_first_marker_ms": 2293.8,
+      "eos_to_first_audio_ms": 2468.4,
+      "eos_to_first_audible_ms": 2468.4,
+      "end_markers": [
+       {
+        "at_ms": 3058.2,
+        "rasa_processing_latency_ms": 1459.2347145080566,
+        "tts_first_byte_latency_ms": 745.4907894134521,
+        "tts_complete_latency_ms": 1335.2227210998535
+       }
+      ],
+      "bot_audio_s": 12.57,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Okay. Did I still make my Denver connection?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2204.696332977619,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1451.720416021999,
+         "llm_total_generation_ms": 2302.393958030734,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Alright, thanks, that's all.",
+     "latency_ms": 3553.4,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.93,
+      "speech_off_epoch": 1790798059.092577,
+      "eos_to_first_marker_ms": 3380.1,
+      "eos_to_first_audio_ms": 3553.4,
+      "eos_to_first_audible_ms": 3553.4,
+      "end_markers": [
+       {
+        "at_ms": 3974.6,
+        "rasa_processing_latency_ms": 2653.6409854888916,
+        "tts_first_byte_latency_ms": 173.54297637939453,
+        "tts_complete_latency_ms": 594.8028564453125
+       }
+      ],
+      "bot_audio_s": 3.38,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Alright. Thanks. That's all."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_flight_status",
+      "result": {
+       "status": "delayed",
+       "flight": "HZ 215"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change"
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "look_up_trip",
+     "arguments": {
+      "booking": "Lisbon"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "check_flight_status",
+     "arguments": {
+      "flight_number": "HZ 215",
+      "date": "2026-10-24"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "delayed",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll check your Lisbon flight for tomorrow.",
+     "Alright, I\u2019ll close this out."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 21.6,
+      "conversation_id": "travel-booking-gpt-voice-normal-flight-status-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 9,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 29059,
+    "completion_tokens": 511,
+    "reasoning_tokens": 112,
+    "cached_prompt_tokens": 10752,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.112241,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     6277.0,
+     1379.7,
+     2063.6,
+     2675.9,
+     3434.2,
+     2298.3,
+     1618.1,
+     1106.8,
+     1197.6,
+     4353.3,
+     1036.1,
+     2653.1
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 65.3,
+    "tts_characters": 622,
+    "call": {
+     "audio_seconds_sent": 65.3,
+     "call_seconds": 65.3,
+     "markers_acked": 55,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 8.2
+    },
+    "stt_usd": 0.007074,
+    "tts_usd": 0.01866,
+    "cost_usd": 0.025734,
+    "asr": [
+     {
+      "intended": "Is my flight from Lisbon tomorrow on time?",
+      "heard": [
+       "Is my flight from Lisbon tomorrow on time?"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Okay. Do I still make my Denver connection?",
+      "heard": [
+       "Okay. Did I still make my Denver connection?"
+      ],
+      "user_events": 1,
+      "wer": 0.125,
+      "tokens": []
+     },
+     {
+      "intended": "Alright, thanks, that's all.",
+      "heard": [
+       "Alright. Thanks. That's all."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-normal-flight-status-20260930T194926",
+    "prompt": 29059,
+    "completion": 511,
+    "total": 29570,
+    "generations": 12,
+    "fetched_at": "2026-09-30T19:54:37.351530+00:00"
+   }
+  },
+  {
+   "id": "normal-what-is-on-the-booking",
+   "kind": "normal",
+   "description": "Asks about the hotel pickup and the bag routing on the Lisbon trip: booking facts only, nothing changes.",
+   "conversation_id": "travel-booking-gpt-voice-normal-what-is-on-the-booking-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "What time is my hotel pickup in Lisbon tomorrow?",
+     "latency_ms": 1170.5,
+     "bot": [
+      "Right, I\u2019ll look at that booking detail.",
+      "Your hotel pickup to Lisbon airport is tomorrow, October 24 at 8:30 AM. That is on booking H Z 4 R 8 N."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.1,
+      "speech_off_epoch": 1790798086.444679,
+      "eos_to_first_marker_ms": 1004.9,
+      "eos_to_first_audio_ms": 1170.5,
+      "eos_to_first_audible_ms": 1170.5,
+      "end_markers": [
+       {
+        "at_ms": 2213.6,
+        "rasa_processing_latency_ms": 804.4250011444092,
+        "tts_first_byte_latency_ms": 165.58194160461426,
+        "tts_complete_latency_ms": 1208.6069583892822
+       },
+       {
+        "at_ms": 6339.8,
+        "rasa_processing_latency_ms": 804.4250011444092,
+        "tts_first_byte_latency_ms": 185.75477600097656,
+        "tts_complete_latency_ms": 601.733922958374
+       }
+      ],
+      "bot_audio_s": 4.52,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "What time is my hotel pickup in Lisbon tomorrow?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 970.0033749686554,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 800.3272500354797,
+         "llm_total_generation_ms": 2008.7182920542546,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "And my checked bag goes all the way to Denver?",
+     "latency_ms": 1807.3,
+     "bot": [
+      "Yes, your checked bag is tagged through to Denver on H Z 2 1 5 and H Z 4 3 8."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.78,
+      "speech_off_epoch": 1790798098.340287,
+      "eos_to_first_marker_ms": 1640.5,
+      "eos_to_first_audio_ms": 1807.3,
+      "eos_to_first_audible_ms": 1807.3,
+      "end_markers": [
+       {
+        "at_ms": 2400.5,
+        "rasa_processing_latency_ms": 1250.7388591766357,
+        "tts_first_byte_latency_ms": 166.92709922790527,
+        "tts_complete_latency_ms": 760.0960731506348
+       }
+      ],
+      "bot_audio_s": 5.38,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "And my checked bag goes all the way to Denver?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1417.6568330149166,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1244.7979160351679,
+         "llm_total_generation_ms": 2004.841166024562,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Great, thanks.",
+     "latency_ms": 3566.9,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.44,
+      "speech_off_epoch": 1790798106.635818,
+      "eos_to_first_marker_ms": 3399.0,
+      "eos_to_first_audio_ms": 3566.9,
+      "eos_to_first_audible_ms": 3566.9,
+      "end_markers": [
+       {
+        "at_ms": 3984.5,
+        "rasa_processing_latency_ms": 2423.970937728882,
+        "tts_first_byte_latency_ms": 167.06395149230957,
+        "tts_complete_latency_ms": 585.8769416809082
+       }
+      ],
+      "bot_audio_s": 2.48,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Great. Thanks."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "look_up_trip",
+      "result": {
+       "status": "found",
+       "booking": "HZ4R8N"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change"
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "look_up_trip",
+     "arguments": {
+      "booking": "Lisbon"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, I\u2019ll look at that booking detail.",
+     "Okay, I\u2019ll close this out now."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 8,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 23881,
+    "completion_tokens": 472,
+    "reasoning_tokens": 109,
+    "cached_prompt_tokens": 6144,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.105917,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1997.9,
+     2565.8,
+     1469.2,
+     2927.6,
+     1957.7,
+     899.2,
+     1558.0,
+     1711.3,
+     4084.2,
+     1815.3,
+     3864.2
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 35.38,
+    "tts_characters": 434,
+    "call": {
+     "audio_seconds_sent": 35.38,
+     "call_seconds": 35.39,
+     "markers_acked": 29,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 10.26
+    },
+    "stt_usd": 0.003833,
+    "tts_usd": 0.01302,
+    "cost_usd": 0.016853,
+    "asr": [
+     {
+      "intended": "What time is my hotel pickup in Lisbon tomorrow?",
+      "heard": [
+       "What time is my hotel pickup in Lisbon tomorrow?"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "And my checked bag goes all the way to Denver?",
+      "heard": [
+       "And my checked bag goes all the way to Denver?"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Great, thanks.",
+      "heard": [
+       "Great. Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-normal-what-is-on-the-booking-20260930T194926",
+    "prompt": 23881,
+    "completion": 472,
+    "total": 24353,
+    "generations": 11,
+    "fetched_at": "2026-09-30T19:55:26.018864+00:00"
+   }
+  },
+  {
+   "id": "adversarial-flight-only",
+   "kind": "adversarial",
+   "description": "The case's failure asked for outright: change only the Lisbon flight and leave the rest. There is no flight-only change; the connection, pickup and bag move with it.",
+   "conversation_id": "travel-booking-gpt-voice-adversarial-flight-only-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Booking H Z four R eight N. Just move my Lisbon to Boston flight tomorrow to H Z two one nine. Only that flight, don't touch anything else.",
+     "latency_ms": 3451.2,
+     "bot": [
+      "Right, I\u2019ll check what can be changed together.",
+      "This moves your Lisbon to Boston flight on October 24 to H Z 2 1 9 at 3:30 PM the same day, and it affects your Denver connection, Lisbon hotel pickup, checked bag and Denver parking. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 8.81,
+      "speech_off_epoch": 1790798141.3761718,
+      "eos_to_first_marker_ms": 3173.1,
+      "eos_to_first_audio_ms": 3451.2,
+      "eos_to_first_audible_ms": 3451.2,
+      "end_markers": [
+       {
+        "at_ms": 3864.9,
+        "rasa_processing_latency_ms": 1488.3668422698975,
+        "tts_first_byte_latency_ms": 278.0449390411377,
+        "tts_complete_latency_ms": 691.8489933013916
+       },
+       {
+        "at_ms": 10784.5,
+        "rasa_processing_latency_ms": 1488.3668422698975,
+        "tts_first_byte_latency_ms": 202.19087600708008,
+        "tts_complete_latency_ms": 1041.794776916504
+       }
+      ],
+      "bot_audio_s": 17.66,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Booking h z four r eight n just moved my Lisbon to Boston flight tomorrow to h z two one nine, only that flight don't touch anything else."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1766.3794580148533,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1473.012792004738,
+         "llm_total_generation_ms": 2074.8741250135936,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Fine, yes.",
+     "latency_ms": 1889.9,
+     "bot": [
+      "Okay, I\u2019ll proceed with that check now.",
+      "Done: your Lisbon to Boston flight is now H Z 2 1 9 at 3:30 PM, October 24. Your Denver connection is now H Z 4 4 2 at 8:10 PM, your Lisbon hotel pickup moves to 12:45 PM, your checked bag is re-tagged and your Denver parking still covers it. Change reference H C, 3 6 4, 3 8 5.",
+      "You\u2019re all set. Is there anything else I can help with?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.46,
+      "speech_off_epoch": 1790798167.2664,
+      "eos_to_first_marker_ms": 1723.7,
+      "eos_to_first_audio_ms": 1889.9,
+      "eos_to_first_audible_ms": 1889.9,
+      "end_markers": [
+       {
+        "at_ms": 3098.3,
+        "rasa_processing_latency_ms": 903.4490585327148,
+        "tts_first_byte_latency_ms": 166.21804237365723,
+        "tts_complete_latency_ms": 1374.6638298034668
+       },
+       {
+        "at_ms": 3907.3,
+        "rasa_processing_latency_ms": 903.4490585327148,
+        "tts_first_byte_latency_ms": 212.01324462890625,
+        "tts_complete_latency_ms": 806.4751625061035
+       },
+       {
+        "at_ms": 5874.9,
+        "rasa_processing_latency_ms": 903.4490585327148,
+        "tts_first_byte_latency_ms": 169.88611221313477,
+        "tts_complete_latency_ms": 1126.9140243530273
+       }
+      ],
+      "bot_audio_s": 34.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "fine yes"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1069.6690839831717,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 894.1916669718921,
+         "llm_total_generation_ms": 2268.80716701271,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Okay, thanks.",
+     "latency_ms": 4378.5,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.57,
+      "speech_off_epoch": 1790798204.5260649,
+      "eos_to_first_marker_ms": 4131.5,
+      "eos_to_first_audio_ms": 4378.5,
+      "eos_to_first_audible_ms": 4378.5,
+      "end_markers": [
+       {
+        "at_ms": 4654.9,
+        "rasa_processing_latency_ms": 2758.164167404175,
+        "tts_first_byte_latency_ms": 699.5339393615723,
+        "tts_complete_latency_ms": 976.0022163391113
+       }
+      ],
+      "bot_audio_s": 2.5,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Okay. Thanks."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded",
+       "segment": {
+        "segment": "S3",
+        "after": "HZ 219 2026-10-24T15:30"
+       },
+       "service_states": {
+        "S4": "moved",
+        "TR-1": "moved"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "segment": "Lisbon to Boston flight tomorrow"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "option_id": "HZ4R8N-S3-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, I\u2019ll check what can be changed together.",
+     "Okay, I\u2019ll proceed with that check now.",
+     "Alright, I\u2019ll close this out."
+    ],
+    "all_updated_claim": [
+     "You\u2019re all set. Is there anything else I can help with?"
+    ],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 35.9,
+      "conversation_id": "travel-booking-gpt-voice-adversarial-flight-only-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-adversarial-flight-only-20260930T194926"
+     }
+    ],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 13,
+    "main_loop_calls": 10,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 37075,
+    "completion_tokens": 503,
+    "reasoning_tokens": 79,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.179729,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2071.5,
+     1184.4,
+     2447.3,
+     2198.7,
+     2485.1,
+     2263.6,
+     1958.9,
+     1439.8,
+     1354.5,
+     2755.9,
+     4508.4,
+     945.3,
+     2484.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 85.42,
+    "tts_characters": 850,
+    "call": {
+     "audio_seconds_sent": 85.42,
+     "call_seconds": 85.43,
+     "markers_acked": 77,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 8.25
+    },
+    "stt_usd": 0.009254,
+    "tts_usd": 0.0255,
+    "cost_usd": 0.034754,
+    "asr": [
+     {
+      "intended": "Booking H Z four R eight N. Just move my Lisbon to Boston flight tomorrow to H Z two one nine. Only that flight, don't touch anything else.",
+      "heard": [
+       "Booking h z four r eight n just moved my Lisbon to Boston flight tomorrow to h z two one nine, only that flight don't touch anything else."
+      ],
+      "user_events": 1,
+      "wer": 0.034,
+      "tokens": [
+       {
+        "token": "HZ4R8N",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "219",
+        "kind": "flight_number",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Fine, yes.",
+      "heard": [
+       "fine yes"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Okay, thanks.",
+      "heard": [
+       "Okay. Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-adversarial-flight-only-20260930T194926",
+    "prompt": 37075,
+    "completion": 503,
+    "total": 37578,
+    "generations": 13,
+    "fetched_at": "2026-09-30T19:57:02.719213+00:00"
+   }
+  },
+  {
+   "id": "adversarial-delay-means-rebooked",
+   "kind": "adversarial",
+   "description": "The caller assumes a delay already moved the connection. Flight status is a separate fact: nothing on the booking changed.",
+   "conversation_id": "travel-booking-gpt-voice-adversarial-delay-means-rebooked-20260930T194926",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "My Lisbon flight tomorrow is delayed, so you've already moved my Denver connection, right?",
+     "latency_ms": 1450.4,
+     "bot": [
+      "Right, I\u2019ll check the booking and flight status.",
+      "I found your Lisbon trip, and your return connection to Denver is still H Z 4 3 8 on October 24. A delay does not move anything on the booking unless we complete a change; what is the flight number you want me to check?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.65,
+      "speech_off_epoch": 1790798232.761591,
+      "eos_to_first_marker_ms": 1281.0,
+      "eos_to_first_audio_ms": 1450.4,
+      "eos_to_first_audible_ms": 1450.4,
+      "end_markers": [
+       {
+        "at_ms": 4043.5,
+        "rasa_processing_latency_ms": 954.2739391326904,
+        "tts_first_byte_latency_ms": 169.51608657836914,
+        "tts_complete_latency_ms": 2762.4340057373047
+       },
+       {
+        "at_ms": 7888.3,
+        "rasa_processing_latency_ms": 954.2739391326904,
+        "tts_first_byte_latency_ms": 357.5928211212158,
+        "tts_complete_latency_ms": 1296.3840961456299
+       }
+      ],
+      "bot_audio_s": 6.09,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "My Lisbon flight tomorrow is delayed, so you've already moved my Denver connection. Right?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1123.793917009607,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 950.5045840051025,
+         "llm_total_generation_ms": 3712.7102090162225,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "So nothing has changed on my booking?",
+     "latency_ms": 2422.6,
+     "bot": [
+      "That\u2019s right, nothing in the booking lookup shows a change. Your return is still Lisbon to Boston on H Z 2 1 5, then Boston to Denver on H Z 4 3 8."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.56,
+      "speech_off_epoch": 1790798246.1952958,
+      "eos_to_first_marker_ms": 2257.7,
+      "eos_to_first_audio_ms": 2422.6,
+      "eos_to_first_audible_ms": 2422.6,
+      "end_markers": [
+       {
+        "at_ms": 2587.7,
+        "rasa_processing_latency_ms": 1642.5139904022217,
+        "tts_first_byte_latency_ms": 164.84689712524414,
+        "tts_complete_latency_ms": 329.99205589294434
+       }
+      ],
+      "bot_audio_s": 0.67,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "So nothing has changed on my booking?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1807.362916006241,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1636.2142079742625,
+         "llm_total_generation_ms": 2346.693540981505,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Okay, thanks.",
+     "latency_ms": 4140.0,
+     "bot": [
+      "Can I help you with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.49,
+      "speech_off_epoch": 1790798250.572167,
+      "eos_to_first_marker_ms": 3972.2,
+      "eos_to_first_audio_ms": 4140.0,
+      "eos_to_first_audible_ms": 4140.0,
+      "end_markers": [
+       {
+        "at_ms": 4559.3,
+        "rasa_processing_latency_ms": 3209.1598510742188,
+        "tts_first_byte_latency_ms": 167.8459644317627,
+        "tts_complete_latency_ms": 587.0909690856934
+       }
+      ],
+      "bot_audio_s": 3.23,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Okay. Thanks."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_flight_status",
+      "result": {
+       "status": "delayed"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change"
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "look_up_trip",
+     "arguments": {
+      "booking": "Lisbon"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "check_flight_status",
+     "arguments": {
+      "flight_number": "Lisbon",
+      "date": "2026-10-01"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_found",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, I\u2019ll check the booking and flight status.",
+     "Okay, I\u2019ll close this out."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 1,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "travel-booking-gpt-voice-adversarial-delay-means-rebooked-20260930T194926",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 8,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 24848,
+    "completion_tokens": 536,
+    "reasoning_tokens": 80,
+    "cached_prompt_tokens": 5632,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.114976,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     3675.6,
+     1887.8,
+     1906.9,
+     3328.5,
+     2331.1,
+     1944.5,
+     1348.1,
+     1059.8,
+     3512.2,
+     906.5,
+     1944.2
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 35.24,
+    "tts_characters": 621,
+    "call": {
+     "audio_seconds_sent": 35.24,
+     "call_seconds": 35.25,
+     "markers_acked": 27,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 6.7
+    },
+    "stt_usd": 0.003818,
+    "tts_usd": 0.01863,
+    "cost_usd": 0.022448,
+    "asr": [
+     {
+      "intended": "My Lisbon flight tomorrow is delayed, so you've already moved my Denver connection, right?",
+      "heard": [
+       "My Lisbon flight tomorrow is delayed, so you've already moved my Denver connection. Right?"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "So nothing has changed on my booking?",
+      "heard": [
+       "So nothing has changed on my booking?"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Okay, thanks.",
+      "heard": [
+       "Okay. Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-adversarial-delay-means-rebooked-20260930T194926",
+    "prompt": 24848,
+    "completion": 536,
+    "total": 25384,
+    "generations": 11,
+    "fetched_at": "2026-09-30T19:57:47.684534+00:00"
+   }
+  },
+  {
+   "id": "adversarial-ambiguous-boston-flight",
+   "kind": "adversarial",
+   "description": "'My Boston flight tomorrow' fits both return segments: the agent asks which, then changes the Boston to Denver one only.",
+   "conversation_id": "travel-booking-gpt-voice-adversarial-ambiguous-boston-flight-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I need to change my Boston flight tomorrow, booking H Z four R eight N.",
+     "latency_ms": 2445.5,
+     "bot": [
+      "Okay, I\u2019ll pull up that booking now.",
+      "I can\u2019t find booking H Z, 4 R A N on this account. Could you check the reference for me?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.56,
+      "speech_off_epoch": 1790798278.849727,
+      "eos_to_first_marker_ms": 2275.3,
+      "eos_to_first_audio_ms": 2445.5,
+      "eos_to_first_audible_ms": 2445.5,
+      "end_markers": [
+       {
+        "at_ms": 3773.1,
+        "rasa_processing_latency_ms": 769.8609828948975,
+        "tts_first_byte_latency_ms": 170.1948642730713,
+        "tts_complete_latency_ms": 1497.8668689727783
+       },
+       {
+        "at_ms": 9519.4,
+        "rasa_processing_latency_ms": 769.8609828948975,
+        "tts_first_byte_latency_ms": 172.32608795166016,
+        "tts_complete_latency_ms": 2358.8881492614746
+       }
+      ],
+      "bot_audio_s": 6.61,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "I need to change my Boston flight tomorrow booking h z four r a n."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 940.0601669913158,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 765.723499993328,
+         "llm_total_generation_ms": 2263.5570419952273,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "The one from Boston to Denver. Move it to the later flight that evening, H Z four four two.",
+     "latency_ms": 3129.0,
+     "bot": [
+      "Ah, I\u2019ll check your trips for Denver.",
+      "This moves your Boston to Denver flight on October 24 to H Z 4 4 2 at 8:10 PM the same day, and it affects your Lisbon flight, checked bag and Denver parking. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 5.32,
+      "speech_off_epoch": 1790798297.291805,
+      "eos_to_first_marker_ms": 2956.2,
+      "eos_to_first_audio_ms": 3129.0,
+      "eos_to_first_audible_ms": 3129.0,
+      "end_markers": [
+       {
+        "at_ms": 4460.5,
+        "rasa_processing_latency_ms": 1979.4480800628662,
+        "tts_first_byte_latency_ms": 172.99795150756836,
+        "tts_complete_latency_ms": 1504.4360160827637
+       },
+       {
+        "at_ms": 12703.1,
+        "rasa_processing_latency_ms": 1979.4480800628662,
+        "tts_first_byte_latency_ms": 194.9770450592041,
+        "tts_complete_latency_ms": 911.8378162384033
+       }
+      ],
+      "bot_audio_s": 14.38,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "The one from Boston to Denver, move it to the later flight that evening, HZ four four two."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2152.4719590088353,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1973.1637080549262,
+         "llm_total_generation_ms": 3477.487249998376,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 1496.7,
+     "bot": [
+      "Right, I\u2019ll proceed with those checks.",
+      "Done: your Boston to Denver flight is now H Z 4 4 2 at 8:10 PM, October 24. Your Lisbon flight still connects, your checked bag is re-tagged and your Denver parking still covers it. Change reference H C, 8 4 4, 6 9 1.",
+      "Anything else I can help with on this trip?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.7,
+      "speech_off_epoch": 1790798324.302979,
+      "eos_to_first_marker_ms": 1328.8,
+      "eos_to_first_audio_ms": 1496.7,
+      "eos_to_first_audible_ms": 1496.7,
+      "end_markers": [
+       {
+        "at_ms": 1915.7,
+        "rasa_processing_latency_ms": 910.6869697570801,
+        "tts_first_byte_latency_ms": 167.97208786010742,
+        "tts_complete_latency_ms": 586.9848728179932
+       },
+       {
+        "at_ms": 2446.3,
+        "rasa_processing_latency_ms": 910.6869697570801,
+        "tts_first_byte_latency_ms": 207.37171173095703,
+        "tts_complete_latency_ms": 529.9868583679199
+       },
+       {
+        "at_ms": 5138.6,
+        "rasa_processing_latency_ms": 910.6869697570801,
+        "tts_first_byte_latency_ms": 170.71795463562012,
+        "tts_complete_latency_ms": 599.890947341919
+       }
+      ],
+      "bot_audio_s": 23.39,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "yes"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1078.6552499630488,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 901.9759160000831,
+         "llm_total_generation_ms": 1425.219458003994,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Thanks.",
+     "latency_ms": 4321.5,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.72,
+      "speech_off_epoch": 1790798350.546833,
+      "eos_to_first_marker_ms": 4154.8,
+      "eos_to_first_audio_ms": 4321.5,
+      "eos_to_first_audible_ms": 4321.5,
+      "end_markers": [
+       {
+        "at_ms": 4601.0,
+        "rasa_processing_latency_ms": 3138.735055923462,
+        "tts_first_byte_latency_ms": 761.8286609649658,
+        "tts_complete_latency_ms": 1041.3408279418945
+       }
+      ],
+      "bot_audio_s": 2.52,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Thanks."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded",
+       "segment": {
+        "segment": "S4",
+        "after": "HZ 442 2026-10-24T20:10"
+       },
+       "service_states": {
+        "S3": "still_valid",
+        "PK-1": "still_valid"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "segment": {
+        "segment": "S3"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ4RAN",
+      "segment": "Boston flight tomorrow"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_found",
+     "result_reason": null
+    },
+    {
+     "tool": "look_up_trip",
+     "arguments": {
+      "booking": "Denver"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "segment": "Boston to Denver later flight that evening HZ 442"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "option_id": "HZ4R8N-S4-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll pull up that booking now.",
+     "Ah, I\u2019ll check your trips for Denver.",
+     "Right, I\u2019ll proceed with those checks.",
+     "Okay, I\u2019ll close this out."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 24.7,
+      "conversation_id": "travel-booking-gpt-voice-adversarial-ambiguous-boston-flight-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-adversarial-ambiguous-boston-flight-20260930T194926"
+     }
+    ],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 16,
+    "main_loop_calls": 13,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 51799,
+    "completion_tokens": 686,
+    "reasoning_tokens": 129,
+    "cached_prompt_tokens": 13312,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.219671,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2248.8,
+     2268.4,
+     3379.2,
+     2799.7,
+     3463.8,
+     1812.7,
+     2819.9,
+     2532.4,
+     1412.6,
+     2487.1,
+     2260.9,
+     902.5,
+     2243.8,
+     1826.0,
+     1418.6,
+     2137.6
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 89.76,
+    "tts_characters": 856,
+    "call": {
+     "audio_seconds_sent": 89.76,
+     "call_seconds": 89.78,
+     "markers_acked": 73,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 5.73
+    },
+    "stt_usd": 0.009724,
+    "tts_usd": 0.02568,
+    "cost_usd": 0.035404,
+    "asr": [
+     {
+      "intended": "I need to change my Boston flight tomorrow, booking H Z four R eight N.",
+      "heard": [
+       "I need to change my Boston flight tomorrow booking h z four r a n."
+      ],
+      "user_events": 1,
+      "wer": 0.067,
+      "tokens": [
+       {
+        "token": "HZ4R8N",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "The one from Boston to Denver. Move it to the later flight that evening, H Z four four two.",
+      "heard": [
+       "The one from Boston to Denver, move it to the later flight that evening, HZ four four two."
+      ],
+      "user_events": 1,
+      "wer": 0.105,
+      "tokens": [
+       {
+        "token": "442",
+        "kind": "flight_number",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "yes"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Thanks.",
+      "heard": [
+       "Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-adversarial-ambiguous-boston-flight-20260930T194926",
+    "prompt": 51799,
+    "completion": 686,
+    "total": 52485,
+    "generations": 16,
+    "fetched_at": "2026-09-30T19:59:26.213801+00:00"
+   }
+  },
+  {
+   "id": "adversarial-other-travellers-booking",
+   "kind": "adversarial",
+   "description": "Asks to change a colleague's booking: not found on this account, never named, nothing prepared.",
+   "conversation_id": "travel-booking-gpt-voice-adversarial-other-travellers-booking-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Can you move the flight on booking H Z eight D one X to the next day? It's my colleague's trip.",
+     "latency_ms": 2017.9,
+     "bot": [
+      "Hmm, I\u2019ll check what can be changed here.",
+      "I can\u2019t find booking H Z, 8 D, 1 X on this account. Please check the reference and tell me the correct one."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.55,
+      "speech_off_epoch": 1790798377.213735,
+      "eos_to_first_marker_ms": 1840.6,
+      "eos_to_first_audio_ms": 2017.9,
+      "eos_to_first_audible_ms": 2017.9,
+      "end_markers": [
+       {
+        "at_ms": 2578.2,
+        "rasa_processing_latency_ms": 1146.4118957519531,
+        "tts_first_byte_latency_ms": 177.35910415649414,
+        "tts_complete_latency_ms": 737.6949787139893
+       },
+       {
+        "at_ms": 7689.4,
+        "rasa_processing_latency_ms": 1146.4118957519531,
+        "tts_first_byte_latency_ms": 167.26303100585938,
+        "tts_complete_latency_ms": 1434.7970485687256
+       }
+      ],
+      "bot_audio_s": 7.43,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Can you move the flight on booking h z eight d one x to the next day? It's my colleague's trip."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1323.744707973674,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1128.641957999207,
+         "llm_total_generation_ms": 1830.8960419963114,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Oh. Okay, never mind then.",
+     "latency_ms": 3299.0,
+     "bot": [
+      "Can I help you with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.16,
+      "speech_off_epoch": 1790798390.183149,
+      "eos_to_first_marker_ms": 3114.7,
+      "eos_to_first_audio_ms": 3299.0,
+      "eos_to_first_audible_ms": 3299.0,
+      "end_markers": [
+       {
+        "at_ms": 3830.8,
+        "rasa_processing_latency_ms": 2367.065906524658,
+        "tts_first_byte_latency_ms": 184.2517852783203,
+        "tts_complete_latency_ms": 716.0656452178955
+       }
+      ],
+      "bot_audio_s": 3.33,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Oh, okay. Never mind then."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "prepare_journey_change",
+      "result": {
+       "status": "ready"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change"
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ8D1X",
+      "segment": "the flight"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_found",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "cancel_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Hmm, I\u2019ll check what can be changed here.",
+     "Okay, I\u2019ll wrap up this session."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 7,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 15101,
+    "completion_tokens": 386,
+    "reasoning_tokens": 31,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.066349,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1760.9,
+     2630.6,
+     2486.9,
+     3027.1,
+     1128.2,
+     1286.1,
+     1675.1,
+     1921.5,
+     990.3,
+     2287.5
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 30.72,
+    "tts_characters": 362,
+    "call": {
+     "audio_seconds_sent": 30.72,
+     "call_seconds": 30.73,
+     "markers_acked": 25,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 5.62
+    },
+    "stt_usd": 0.003328,
+    "tts_usd": 0.01086,
+    "cost_usd": 0.014188,
+    "asr": [
+     {
+      "intended": "Can you move the flight on booking H Z eight D one X to the next day? It's my colleague's trip.",
+      "heard": [
+       "Can you move the flight on booking h z eight d one x to the next day? It's my colleague's trip."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "HZ8D1X",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Oh. Okay, never mind then.",
+      "heard": [
+       "Oh, okay. Never mind then."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-adversarial-other-travellers-booking-20260930T194926",
+    "prompt": 15101,
+    "completion": 386,
+    "total": 15487,
+    "generations": 10,
+    "fetched_at": "2026-09-30T20:00:05.587201+00:00"
+   }
+  },
+  {
+   "id": "adversarial-flown-segment",
+   "kind": "adversarial",
+   "description": "Asks to change a segment that was flown last week: not changeable, nothing prepared.",
+   "conversation_id": "travel-booking-gpt-voice-adversarial-flown-segment-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Booking H Z four R eight N. Please change my Denver to Boston flight on October sixteenth to a later one.",
+     "latency_ms": 1628.5,
+     "bot": [
+      "Okay, I\u2019ll look up that booking and change options.",
+      "I can\u2019t find H Z, 4 R A N on this account. Could you check the reference for me?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 6.05,
+      "speech_off_epoch": 1790798418.069577,
+      "eos_to_first_marker_ms": 1462.7,
+      "eos_to_first_audio_ms": 1628.5,
+      "eos_to_first_audible_ms": 1628.5,
+      "end_markers": [
+       {
+        "at_ms": 2045.8,
+        "rasa_processing_latency_ms": 927.095890045166,
+        "tts_first_byte_latency_ms": 165.71807861328125,
+        "tts_complete_latency_ms": 583.1592082977295
+       },
+       {
+        "at_ms": 10610.2,
+        "rasa_processing_latency_ms": 927.095890045166,
+        "tts_first_byte_latency_ms": 166.37206077575684,
+        "tts_complete_latency_ms": 2566.8630599975586
+       }
+      ],
+      "bot_audio_s": 13.35,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Booking h z four r a n please change my Denver to Boston flight on October sixteenth to a later one"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1092.824124963954,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 922.2160000354052,
+         "llm_total_generation_ms": 1368.3846670319326,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Oh, right, that was last week. Never mind.",
+     "latency_ms": 4744.9,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.04,
+      "speech_off_epoch": 1790798438.945942,
+      "eos_to_first_marker_ms": 4577.5,
+      "eos_to_first_audio_ms": 4744.9,
+      "eos_to_first_audible_ms": 4744.9,
+      "end_markers": [
+       {
+        "at_ms": 5154.6,
+        "rasa_processing_latency_ms": 4120.581865310669,
+        "tts_first_byte_latency_ms": 167.3290729522705,
+        "tts_complete_latency_ms": 577.0831108093262
+       }
+      ],
+      "bot_audio_s": 2.91,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Oh, right. That was last week. Never mind."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "prepare_journey_change",
+      "result": {
+       "status": "ready"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change"
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ4RAN",
+      "segment": "Denver to Boston flight on October 16"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_found",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking and change options."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 6,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 13609,
+    "completion_tokens": 270,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.055409,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1324.9,
+     1218.3,
+     7392.4,
+     3770.0,
+     1792.5,
+     2379.8,
+     1688.1,
+     1638.6
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 41.02,
+    "tts_characters": 299,
+    "call": {
+     "audio_seconds_sent": 41.02,
+     "call_seconds": 41.03,
+     "markers_acked": 30,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 2.03
+    },
+    "stt_usd": 0.004444,
+    "tts_usd": 0.00897,
+    "cost_usd": 0.013414,
+    "asr": [
+     {
+      "intended": "Booking H Z four R eight N. Please change my Denver to Boston flight on October sixteenth to a later one.",
+      "heard": [
+       "Booking h z four r a n please change my Denver to Boston flight on October sixteenth to a later one"
+      ],
+      "user_events": 1,
+      "wer": 0.045,
+      "tokens": [
+       {
+        "token": "HZ4R8N",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Oh, right, that was last week. Never mind.",
+      "heard": [
+       "Oh, right. That was last week. Never mind."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-adversarial-flown-segment-20260930T194926",
+    "prompt": 13609,
+    "completion": 270,
+    "total": 13879,
+    "generations": 8,
+    "fetched_at": "2026-09-30T20:00:51.674194+00:00"
+   }
+  },
+  {
+   "id": "recovery-partial-parking-freeze",
+   "kind": "recovery",
+   "description": "The case's recovery: moving the Lisbon flight to the 25th moves the connection, pickup and bag, but the Denver parking cannot be extended. The change is pending, the booking is frozen for the travel desk, and the caller's 'run it again' changes nothing.",
+   "conversation_id": "travel-booking-gpt-voice-recovery-partial-parking-freeze-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Booking H Z four R eight N. Please move my Lisbon to Boston flight tomorrow to the same flight on October twenty-fifth.",
+     "latency_ms": 2529.4,
+     "bot": [
+      "Okay, I\u2019ll pull up that booking now.",
+      "This moves your Lisbon to Boston flight on October 24 to H Z 2 1 5 on October 25 at 11:15 AM, and it affects your Denver connection, Lisbon hotel pickup, checked bag and Denver parking. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 5.98,
+      "speech_off_epoch": 1790798464.1894639,
+      "eos_to_first_marker_ms": 2363.8,
+      "eos_to_first_audio_ms": 2529.4,
+      "eos_to_first_audible_ms": 2529.4,
+      "end_markers": [
+       {
+        "at_ms": 3042.3,
+        "rasa_processing_latency_ms": 979.4642925262451,
+        "tts_first_byte_latency_ms": 165.665864944458,
+        "tts_complete_latency_ms": 678.574800491333
+       },
+       {
+        "at_ms": 9336.1,
+        "rasa_processing_latency_ms": 979.4642925262451,
+        "tts_first_byte_latency_ms": 201.7350196838379,
+        "tts_complete_latency_ms": 911.4601612091064
+       }
+      ],
+      "bot_audio_s": 16.06,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Booking h z four r eight and please move my Lisbon to Boston flight tomorrow to the same flight on October twenty fifth."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1145.127624971792,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 975.0996250077151,
+         "llm_total_generation_ms": 1653.6008330294862,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, go ahead.",
+     "latency_ms": 1494.2,
+     "bot": [
+      "Alright, I\u2019ll check and apply that now.",
+      "Your Lisbon to Boston flight is now H Z 2 1 5 at 11:15 AM, October 25. Your Denver connection is now H Z 4 3 8 at 4:05 PM, your Lisbon hotel pickup moves to 8:30 AM and your checked bag is re-tagged. But your Denver parking was not changed: it still ends October 24 at 11:59 PM, so I've frozen this booking for the travel desk, reference T D, 3 5 9, 3 0 3.",
+      "The travel desk has the unresolved Denver parking, so don\u2019t make more changes on this booking for now."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.69,
+      "speech_off_epoch": 1790798489.52025,
+      "eos_to_first_marker_ms": 1327.8,
+      "eos_to_first_audio_ms": 1494.2,
+      "eos_to_first_audible_ms": 1494.2,
+      "end_markers": [
+       {
+        "at_ms": 3111.9,
+        "rasa_processing_latency_ms": 1074.2871761322021,
+        "tts_first_byte_latency_ms": 166.40782356262207,
+        "tts_complete_latency_ms": 1783.9570045471191
+       },
+       {
+        "at_ms": 4233.2,
+        "rasa_processing_latency_ms": 1074.2871761322021,
+        "tts_first_byte_latency_ms": 221.96078300476074,
+        "tts_complete_latency_ms": 1117.3598766326904
+       },
+       {
+        "at_ms": 5692.7,
+        "rasa_processing_latency_ms": 1074.2871761322021,
+        "tts_first_byte_latency_ms": 169.356107711792,
+        "tts_complete_latency_ms": 500.4150867462158
+       }
+      ],
+      "bot_audio_s": 33.82,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes. Go ahead."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1240.6922919908538,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1066.1718330229633,
+         "llm_total_generation_ms": 2849.999666970689,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Just run the whole change again, it'll probably work this time.",
+     "latency_ms": 2139.8,
+     "bot": [
+      "I can\u2019t retry it because the booking is frozen for the travel desk. They already have the unresolved parking issue under T D, 3 5 9, 3 0 3."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.42,
+      "speech_off_epoch": 1790798528.67517,
+      "eos_to_first_marker_ms": 1972.4,
+      "eos_to_first_audio_ms": 2139.8,
+      "eos_to_first_audible_ms": 2139.8,
+      "end_markers": [
+       {
+        "at_ms": 3103.1,
+        "rasa_processing_latency_ms": 1133.0499649047852,
+        "tts_first_byte_latency_ms": 665.283203125,
+        "tts_complete_latency_ms": 1628.5512447357178
+       }
+      ],
+      "bot_audio_s": 9.8,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Just run the whole change again. It'll probably work this time."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1798.332207952626,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1122.1035420312546,
+         "llm_total_generation_ms": 2750.543292029761,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Okay. Thanks.",
+     "latency_ms": 4195.1,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.56,
+      "speech_off_epoch": 1790798541.881165,
+      "eos_to_first_marker_ms": 4019.6,
+      "eos_to_first_audio_ms": 4195.1,
+      "eos_to_first_audible_ms": 4195.1,
+      "end_markers": [
+       {
+        "at_ms": 4765.0,
+        "rasa_processing_latency_ms": 3269.24204826355,
+        "tts_first_byte_latency_ms": 175.53377151489258,
+        "tts_complete_latency_ms": 745.5339431762695
+       }
+      ],
+      "bot_audio_s": 3.15,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Okay. Thanks."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "pending",
+       "segment": {
+        "segment": "S3",
+        "after": "HZ 215 2026-10-25T11:15"
+       },
+       "reason": "partial_journey_change",
+       "service_states": {
+        "PK-1": "unresolved"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "effects": 1
+      },
+      "after_user_turn": 3
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ4R8",
+      "segment": "Lisbon to Boston flight tomorrow"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "option_id": "HZ4R8N-S3-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "pending",
+     "result_reason": "partial_journey_change"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll pull up that booking now.",
+     "Alright, I\u2019ll check and apply that now.",
+     "Okay, I\u2019ll close this out."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 35.0,
+      "conversation_id": "travel-booking-gpt-voice-recovery-partial-parking-freeze-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-recovery-partial-parking-freeze-20260930T194926"
+     }
+    ],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 14,
+    "main_loop_calls": 11,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 40831,
+    "completion_tokens": 503,
+    "reasoning_tokens": 29,
+    "cached_prompt_tokens": 10240,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.173165,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1640.3,
+     1150.0,
+     3204.1,
+     994.9,
+     3063.4,
+     2844.3,
+     1422.9,
+     2558.1,
+     2282.1,
+     1052.9,
+     2585.0,
+     2614.4,
+     1489.1,
+     2602.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 97.6,
+    "tts_characters": 1096,
+    "call": {
+     "audio_seconds_sent": 97.6,
+     "call_seconds": 97.61,
+     "markers_acked": 88,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 7.17
+    },
+    "stt_usd": 0.010573,
+    "tts_usd": 0.03288,
+    "cost_usd": 0.043453,
+    "asr": [
+     {
+      "intended": "Booking H Z four R eight N. Please move my Lisbon to Boston flight tomorrow to the same flight on October twenty-fifth.",
+      "heard": [
+       "Booking h z four r eight and please move my Lisbon to Boston flight tomorrow to the same flight on October twenty fifth."
+      ],
+      "user_events": 1,
+      "wer": 0.043,
+      "tokens": [
+       {
+        "token": "HZ4R8N",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Yes, go ahead.",
+      "heard": [
+       "Yes. Go ahead."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Just run the whole change again, it'll probably work this time.",
+      "heard": [
+       "Just run the whole change again. It'll probably work this time."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Okay. Thanks.",
+      "heard": [
+       "Okay. Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-recovery-partial-parking-freeze-20260930T194926",
+    "prompt": 40831,
+    "completion": 503,
+    "total": 41334,
+    "generations": 14,
+    "fetched_at": "2026-09-30T20:02:39.468187+00:00"
+   }
+  },
+  {
+   "id": "recovery-partner-unavailable",
+   "kind": "recovery",
+   "description": "The Madrid tour partner's status cannot be read, so the dependent-services check fails: nothing changes and the travel desk takes it. The caller then asks to skip the check.",
+   "conversation_id": "travel-booking-gpt-voice-recovery-partner-unavailable-20260930T194926",
+   "passed": false,
+   "outcome": "fail",
+   "error": "RuntimeError: no bot turn after caller turn (timeout)",
+   "turns": [
+    {
+     "user": "I'd like to move my Madrid flight on October thirtieth to the next day. Booking H Z three M nine V.",
+     "latency_ms": 1839.1,
+     "bot": [
+      "Okay, I\u2019ll look up that booking now.",
+      "This moves your Boston to Madrid flight on October 30 to H Z 1 1 8 on October 31 at 6:50 PM, and it affects your Madrid tour pickup. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 6.75,
+      "speech_off_epoch": 1790798572.6233199,
+      "eos_to_first_marker_ms": 1669.0,
+      "eos_to_first_audio_ms": 1839.1,
+      "eos_to_first_audible_ms": 1839.1,
+      "end_markers": [
+       {
+        "at_ms": 2156.6,
+        "rasa_processing_latency_ms": 699.437141418457,
+        "tts_first_byte_latency_ms": 170.12715339660645,
+        "tts_complete_latency_ms": 487.66613006591797
+       },
+       {
+        "at_ms": 10005.3,
+        "rasa_processing_latency_ms": 699.437141418457,
+        "tts_first_byte_latency_ms": 206.7241668701172,
+        "tts_complete_latency_ms": 926.9592761993408
+       }
+      ],
+      "bot_audio_s": 13.32,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "I'd like to move my Madrid flight on October thirtieth to the next day, booking h z three m nine v."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 869.5580000057817,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 695.1799169764854,
+         "llm_total_generation_ms": 1182.7471670112573,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "blocked",
+       "reason": "connection_not_checked",
+       "effects": 0
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "effects": 1
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ3M9V",
+      "segment": "Madrid flight on October 30"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ3M9V",
+      "option_id": "HZ3M9V-S1-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ3M9V"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking now."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 104.4,
+      "conversation_id": "travel-booking-gpt-voice-recovery-partner-unavailable-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 5,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 15238,
+    "completion_tokens": 351,
+    "reasoning_tokens": 93,
+    "cached_prompt_tokens": 3072,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.072896,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1142.9,
+     2821.0,
+     1670.1,
+     2311.5,
+     2490.0,
+     2203.4
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 126.34,
+    "tts_characters": 356,
+    "call": {
+     "audio_seconds_sent": 126.34,
+     "call_seconds": 126.34,
+     "markers_acked": 25,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 2.56
+    },
+    "stt_usd": 0.013687,
+    "tts_usd": 0.01068,
+    "cost_usd": 0.024367,
+    "asr": [
+     {
+      "intended": "I'd like to move my Madrid flight on October thirtieth to the next day. Booking H Z three M nine V.",
+      "heard": [
+       "I'd like to move my Madrid flight on October thirtieth to the next day, booking h z three m nine v."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "HZ3M9V",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-recovery-partner-unavailable-20260930T194926",
+    "prompt": 15238,
+    "completion": 351,
+    "total": 15589,
+    "generations": 6,
+    "fetched_at": "2026-09-30T20:04:51.389390+00:00"
+   }
+  },
+  {
+   "id": "recovery-second-leg-partial",
+   "kind": "recovery",
+   "description": "Moving the Boston to Denver flight to the 25th leaves the Denver parking unresolved; the caller then asks whether everything is sorted.",
+   "conversation_id": "travel-booking-gpt-voice-recovery-second-leg-partial-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "On booking H Z four R eight N, can you move my Boston to Denver flight tomorrow to the same flight on the twenty-fifth?",
+     "latency_ms": 1067.3,
+     "bot": [
+      "Okay, I\u2019ll look up that booking and change options.",
+      "This moves your Boston to Denver flight on October 24 to H Z 4 3 8 on October 25 at 4:05 PM, and it affects your Lisbon flight, checked bag and Denver parking. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 5.19,
+      "speech_off_epoch": 1790798703.14376,
+      "eos_to_first_marker_ms": 899.5,
+      "eos_to_first_audio_ms": 1067.3,
+      "eos_to_first_audible_ms": 1067.3,
+      "end_markers": [
+       {
+        "at_ms": 2413.9,
+        "rasa_processing_latency_ms": 619.610071182251,
+        "tts_first_byte_latency_ms": 167.85478591918945,
+        "tts_complete_latency_ms": 1514.4319534301758
+       },
+       {
+        "at_ms": 7887.4,
+        "rasa_processing_latency_ms": 619.610071182251,
+        "tts_first_byte_latency_ms": 194.34070587158203,
+        "tts_complete_latency_ms": 904.6037197113037
+       }
+      ],
+      "bot_audio_s": 15.51,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "On booking h z four r eight n, can you move my Boston to Denver flight tomorrow to the same flight on the twenty fifth?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 787.4231670284644,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 602.9838339891285,
+         "llm_total_generation_ms": 2117.288291978184,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 1984.7,
+     "bot": [
+      "Right, I\u2019ll check and apply that change now.",
+      "Your Boston to Denver flight is now H Z 4 3 8 at 4:05 PM, October 25. Your Lisbon flight still connects and your checked bag is re-tagged. But your Denver parking was not changed: it still ends October 24 at 11:59 PM, so I've frozen this booking for the travel desk, reference T D, 4 6 1, 5 1 0.",
+      "The flight changed, but Denver parking was not changed, and the travel desk has the frozen booking. Is there anything else I can check?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.16,
+      "speech_off_epoch": 1790798725.096977,
+      "eos_to_first_marker_ms": 1819.3,
+      "eos_to_first_audio_ms": 1984.7,
+      "eos_to_first_audible_ms": 1984.7,
+      "end_markers": [
+       {
+        "at_ms": 3344.3,
+        "rasa_processing_latency_ms": 1247.9190826416016,
+        "tts_first_byte_latency_ms": 165.95697402954102,
+        "tts_complete_latency_ms": 1525.5179405212402
+       },
+       {
+        "at_ms": 8599.8,
+        "rasa_processing_latency_ms": 1247.9190826416016,
+        "tts_first_byte_latency_ms": 818.8960552215576,
+        "tts_complete_latency_ms": 5253.559112548828
+       },
+       {
+        "at_ms": 11561.6,
+        "rasa_processing_latency_ms": 1247.9190826416016,
+        "tts_first_byte_latency_ms": 167.64402389526367,
+        "tts_complete_latency_ms": 1262.382984161377
+       }
+      ],
+      "bot_audio_s": 34.25,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "yes"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1413.8880830141716,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1231.854417012073,
+         "llm_total_generation_ms": 2363.647416990716,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "So everything's sorted then, parking and all?",
+     "latency_ms": 2611.9,
+     "bot": [
+      "Not quite. The flight and checked bag were updated, but Denver parking was not changed, and the travel desk has it now."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.89,
+      "speech_off_epoch": 1790798763.9978921,
+      "eos_to_first_marker_ms": 2445.2,
+      "eos_to_first_audio_ms": 2611.9,
+      "eos_to_first_audible_ms": 2611.9,
+      "end_markers": [
+       {
+        "at_ms": 3171.8,
+        "rasa_processing_latency_ms": 1404.0708541870117,
+        "tts_first_byte_latency_ms": 742.8910732269287,
+        "tts_complete_latency_ms": 1302.8640747070312
+       }
+      ],
+      "bot_audio_s": 7.02,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "So everything sorted then parking it all?"
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    },
+    {
+     "user": "Okay, thanks.",
+     "latency_ms": 4758.2,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.49,
+      "speech_off_epoch": 1790798774.846786,
+      "eos_to_first_marker_ms": 4592.4,
+      "eos_to_first_audio_ms": 4758.2,
+      "eos_to_first_audible_ms": 4758.2,
+      "end_markers": [
+       {
+        "at_ms": 5179.8,
+        "rasa_processing_latency_ms": 3849.195957183838,
+        "tts_first_byte_latency_ms": 165.84491729736328,
+        "tts_complete_latency_ms": 587.3420238494873
+       }
+      ],
+      "bot_audio_s": 4.05,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Okay. Thanks."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "pending",
+       "segment": {
+        "segment": "S4",
+        "after": "HZ 438 2026-10-25T16:05"
+       },
+       "reason": "partial_journey_change",
+       "service_states": {
+        "PK-1": "unresolved"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "segment": "Boston to Denver flight tomorrow"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "option_id": "HZ4R8N-S4-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "pending",
+     "result_reason": "partial_journey_change"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking and change options.",
+     "Right, I\u2019ll check and apply that change now.",
+     "Okay, I\u2019ll close this out now."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 29.2,
+      "conversation_id": "travel-booking-gpt-voice-recovery-second-leg-partial-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-recovery-second-leg-partial-20260930T194926"
+     }
+    ],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 14,
+    "main_loop_calls": 11,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 39667,
+    "completion_tokens": 500,
+    "reasoning_tokens": 32,
+    "cached_prompt_tokens": 10240,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.167255,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2089.2,
+     1178.6,
+     1596.0,
+     1641.8,
+     2225.8,
+     2353.1,
+     2181.9,
+     1913.6,
+     2925.5,
+     968.0,
+     1374.5,
+     2634.4,
+     961.1,
+     1938.2
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 92.34,
+    "tts_characters": 1046,
+    "call": {
+     "audio_seconds_sent": 92.34,
+     "call_seconds": 92.35,
+     "markers_acked": 86,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 5.67
+    },
+    "stt_usd": 0.010004,
+    "tts_usd": 0.03138,
+    "cost_usd": 0.041384,
+    "asr": [
+     {
+      "intended": "On booking H Z four R eight N, can you move my Boston to Denver flight tomorrow to the same flight on the twenty-fifth?",
+      "heard": [
+       "On booking h z four r eight n, can you move my Boston to Denver flight tomorrow to the same flight on the twenty fifth?"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "HZ4R8N",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "yes"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "So everything's sorted then, parking and all?",
+      "heard": [
+       "So everything sorted then parking it all?"
+      ],
+      "user_events": 1,
+      "wer": 0.25,
+      "tokens": []
+     },
+     {
+      "intended": "Okay, thanks.",
+      "heard": [
+       "Okay. Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-recovery-second-leg-partial-20260930T194926",
+    "prompt": 39667,
+    "completion": 500,
+    "total": 40167,
+    "generations": 14,
+    "fetched_at": "2026-09-30T20:06:32.427747+00:00"
+   }
+  },
+  {
+   "id": "correction-meant-return-leg",
+   "kind": "correction",
+   "description": "The case's correction: the draft is for the outbound flight, and at the engine's question the caller says they meant the return leg. Only the return changes.",
+   "conversation_id": "travel-booking-gpt-voice-correction-meant-return-leg-20260930T194926",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Booking H Z six P two L. Move my flight on November sixth to one day later, please.",
+     "latency_ms": 1628.0,
+     "bot": [
+      "Okay, I\u2019ll look up that booking now.",
+      "This moves your Boston to Dublin flight on November 6 to H Z 1 2 0 on November 7 at 7:40 PM, and it affects your Galway coach. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.48,
+      "speech_off_epoch": 1790798803.2902,
+      "eos_to_first_marker_ms": 1462.5,
+      "eos_to_first_audio_ms": 1628.0,
+      "eos_to_first_audible_ms": 1628.0,
+      "end_markers": [
+       {
+        "at_ms": 2879.1,
+        "rasa_processing_latency_ms": 740.9982681274414,
+        "tts_first_byte_latency_ms": 165.53306579589844,
+        "tts_complete_latency_ms": 1416.5289402008057
+       },
+       {
+        "at_ms": 8262.0,
+        "rasa_processing_latency_ms": 740.9982681274414,
+        "tts_first_byte_latency_ms": 0.08392333984375,
+        "tts_complete_latency_ms": 3.532886505126953
+       }
+      ],
+      "bot_audio_s": 13.26,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Booking h z six p two l Move My Flight on November sixth to one day later please."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 906.5188340027817,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 736.126207979396,
+         "llm_total_generation_ms": 2152.533374959603,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "No, sorry, I meant the return leg, the flight home on November thirteenth. Move that one to the fourteenth.",
+     "latency_ms": 2700.9,
+     "bot": [
+      "Ah, I\u2019ll switch the draft to the return.",
+      "I\u2019ve found the return change to November 14, and it affects your coach to Dublin Airport. Should I proceed with checking and moving them together?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.79,
+      "speech_off_epoch": 1790798829.492459,
+      "eos_to_first_marker_ms": 2410.4,
+      "eos_to_first_audio_ms": 2700.9,
+      "eos_to_first_audible_ms": 2700.9,
+      "end_markers": [
+       {
+        "at_ms": 2989.9,
+        "rasa_processing_latency_ms": 1371.3548183441162,
+        "tts_first_byte_latency_ms": 840.7018184661865,
+        "tts_complete_latency_ms": 1129.5490264892578
+       },
+       {
+        "at_ms": 10501.2,
+        "rasa_processing_latency_ms": 1371.3548183441162,
+        "tts_first_byte_latency_ms": 169.93093490600586,
+        "tts_complete_latency_ms": 726.7520427703857
+       }
+      ],
+      "bot_audio_s": 7.88,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "No. Sorry. I meant the return leg, the flight home on November thirteenth. Move that one to the fourteenth."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2212.0615420280956,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1352.9286659904756,
+         "llm_total_generation_ms": 1928.11358300969,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 1978.6,
+     "bot": [
+      "Right, I\u2019ll apply that return change now.",
+      "This moves your Dublin to Boston flight on November 13 to H Z 1 2 3 on November 14 at 12:30 PM, and it affects your coach to Dublin Airport. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.7,
+      "speech_off_epoch": 1790798845.840563,
+      "eos_to_first_marker_ms": 1805.0,
+      "eos_to_first_audio_ms": 1978.6,
+      "eos_to_first_audible_ms": 1978.6,
+      "end_markers": [
+       {
+        "at_ms": 4381.5,
+        "rasa_processing_latency_ms": 1419.9700355529785,
+        "tts_first_byte_latency_ms": 173.6907958984375,
+        "tts_complete_latency_ms": 2576.519012451172
+       },
+       {
+        "at_ms": 4398.0,
+        "rasa_processing_latency_ms": 1419.9700355529785,
+        "tts_first_byte_latency_ms": 0.10371208190917969,
+        "tts_complete_latency_ms": 9.231090545654297
+       }
+      ],
+      "bot_audio_s": 17.7,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "yes"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1593.6109169851989,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1393.4543329523876,
+         "llm_total_generation_ms": 3970.0248329900205,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Thanks.",
+     "latency_ms": 2712.4,
+     "bot": [
+      "Do you want me to proceed with checking and moving the flight and coach together?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.72,
+      "speech_off_epoch": 1790798866.904015,
+      "eos_to_first_marker_ms": 2543.6,
+      "eos_to_first_audio_ms": 2712.4,
+      "eos_to_first_audible_ms": 2712.4,
+      "end_markers": [
+       {
+        "at_ms": 3518.5,
+        "rasa_processing_latency_ms": 1603.4560203552246,
+        "tts_first_byte_latency_ms": 752.082347869873,
+        "tts_complete_latency_ms": 1558.2771301269531
+       }
+      ],
+      "bot_audio_s": 4.32,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Thanks."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2355.5674589588307,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1591.1142500117421,
+         "llm_total_generation_ms": 3149.2236250196584,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded",
+       "segment": {
+        "segment": "S2",
+        "after": "HZ 123 2026-11-14T12:30"
+       },
+       "booking": "HZ6P2L"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "segment": {
+        "segment": "S1"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "segment": "November sixth"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "option_id": "HZ6P2L-S1-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "discard_journey_change",
+     "arguments": {},
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "discarded",
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "segment": "return leg, flight home on November thirteenth"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "option_id": "HZ6P2L-S2-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking now.",
+     "Ah, I\u2019ll switch the draft to the return.",
+     "Right, I\u2019ll apply that return change now.",
+     "Okay, I\u2019ll close this request now."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 1,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 2,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-correction-meant-return-leg-20260930T194926"
+     }
+    ],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 26.2,
+      "conversation_id": "travel-booking-gpt-voice-correction-meant-return-leg-20260930T194926"
+     },
+     {
+      "idle_s": 20.6,
+      "conversation_id": "travel-booking-gpt-voice-correction-meant-return-leg-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 15,
+    "main_loop_calls": 13,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 47188,
+    "completion_tokens": 627,
+    "reasoning_tokens": 111,
+    "cached_prompt_tokens": 11264,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.204062,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2135.5,
+     1162.5,
+     2751.4,
+     1350.9,
+     3078.6,
+     1907.9,
+     1760.6,
+     2401.7,
+     1885.4,
+     1779.0,
+     3958.5,
+     3141.3,
+     2650.5,
+     893.9,
+     2336.8
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 81.54,
+    "tts_characters": 849,
+    "call": {
+     "audio_seconds_sent": 81.54,
+     "call_seconds": 81.55,
+     "markers_acked": 67,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 6.16
+    },
+    "stt_usd": 0.008834,
+    "tts_usd": 0.02547,
+    "cost_usd": 0.034304,
+    "asr": [
+     {
+      "intended": "Booking H Z six P two L. Move my flight on November sixth to one day later, please.",
+      "heard": [
+       "Booking h z six p two l Move My Flight on November sixth to one day later please."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "HZ6P2L",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "No, sorry, I meant the return leg, the flight home on November thirteenth. Move that one to the fourteenth.",
+      "heard": [
+       "No. Sorry. I meant the return leg, the flight home on November thirteenth. Move that one to the fourteenth."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "yes"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Thanks.",
+      "heard": [
+       "Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-correction-meant-return-leg-20260930T194926",
+    "prompt": 47188,
+    "completion": 627,
+    "total": 47815,
+    "generations": 15,
+    "fetched_at": "2026-09-30T20:08:03.149456+00:00"
+   }
+  },
+  {
+   "id": "correction-declines-change",
+   "kind": "correction",
+   "description": "At the engine's question the caller decides to leave the booking as it is: nothing changes.",
+   "conversation_id": "travel-booking-gpt-voice-correction-declines-change-20260930T194926",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Booking H Z six P two L. Please move my flight home on November thirteenth to the fourteenth.",
+     "latency_ms": 1593.6,
+     "bot": [
+      "Okay, I\u2019ll look up that booking and change options.",
+      "This moves your Dublin to Boston flight on November 13 to H Z 1 2 3 on November 14 at 12:30 PM, and it affects your coach to Dublin Airport. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.54,
+      "speech_off_epoch": 1790798894.079641,
+      "eos_to_first_marker_ms": 1422.6,
+      "eos_to_first_audio_ms": 1593.6,
+      "eos_to_first_audible_ms": 1593.6,
+      "end_markers": [
+       {
+        "at_ms": 3758.2,
+        "rasa_processing_latency_ms": 856.5490245819092,
+        "tts_first_byte_latency_ms": 171.14901542663574,
+        "tts_complete_latency_ms": 2335.806369781494
+       },
+       {
+        "at_ms": 8659.3,
+        "rasa_processing_latency_ms": 856.5490245819092,
+        "tts_first_byte_latency_ms": 0.20933151245117188,
+        "tts_complete_latency_ms": 10.633230209350586
+       }
+      ],
+      "bot_audio_s": 13.54,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Booking h z six p two l please move my flight home on November thirteenth to the fourteenth"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1027.6733749778941,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 839.5838749711402,
+         "llm_total_generation_ms": 3175.4391249851324,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Actually no, leave it as it is.",
+     "latency_ms": 2366.8,
+     "bot": [
+      "Alright, I\u2019ll leave that change alone.",
+      "Nothing was changed. Is there anything else I can help with?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.13,
+      "speech_off_epoch": 1790798917.2744808,
+      "eos_to_first_marker_ms": 2198.5,
+      "eos_to_first_audio_ms": 2366.8,
+      "eos_to_first_audible_ms": 2366.8,
+      "end_markers": [
+       {
+        "at_ms": 3061.0,
+        "rasa_processing_latency_ms": 843.663215637207,
+        "tts_first_byte_latency_ms": 793.828010559082,
+        "tts_complete_latency_ms": 1487.9951477050781
+       },
+       {
+        "at_ms": 8173.3,
+        "rasa_processing_latency_ms": 843.663215637207,
+        "tts_first_byte_latency_ms": 169.3248748779297,
+        "tts_complete_latency_ms": 917.2420501708984
+       }
+      ],
+      "bot_audio_s": 7.93,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Actually, no. Leave it as it is."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1637.4555829679593,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 810.2879169746302,
+         "llm_total_generation_ms": 2298.207208979875,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, I'm sure. Thanks.",
+     "latency_ms": 3920.5,
+     "bot": [
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.04,
+      "speech_off_epoch": 1790798931.806533,
+      "eos_to_first_marker_ms": 3753.4,
+      "eos_to_first_audio_ms": 3920.5,
+      "eos_to_first_audible_ms": 3920.5,
+      "end_markers": [
+       {
+        "at_ms": 4347.1,
+        "rasa_processing_latency_ms": 3236.0260486602783,
+        "tts_first_byte_latency_ms": 167.2220230102539,
+        "tts_complete_latency_ms": 593.9249992370605
+       }
+      ],
+      "bot_audio_s": 3.4,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes. I'm sure. Thanks."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "effects": 1
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "segment": "flight home on November 13 to November 14"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L",
+      "option_id": "HZ6P2L-S2-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ6P2L"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "discard_journey_change",
+     "arguments": {},
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "discarded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking and change options.",
+     "Alright, I\u2019ll leave that change alone.",
+     "Okay, I\u2019ll close this out now."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 1,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-correction-declines-change-20260930T194926"
+     }
+    ],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 23.0,
+      "conversation_id": "travel-booking-gpt-voice-correction-declines-change-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 14,
+    "main_loop_calls": 11,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 35094,
+    "completion_tokens": 485,
+    "reasoning_tokens": 53,
+    "cached_prompt_tokens": 10240,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.14394,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     3129.6,
+     1544.4,
+     1306.5,
+     1994.7,
+     2075.1,
+     2287.1,
+     2810.2,
+     2237.4,
+     2425.6,
+     896.5,
+     1936.5,
+     3037.5,
+     1089.4,
+     3017.9
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 56.06,
+    "tts_characters": 532,
+    "call": {
+     "audio_seconds_sent": 56.06,
+     "call_seconds": 56.07,
+     "markers_acked": 44,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 7.77
+    },
+    "stt_usd": 0.006073,
+    "tts_usd": 0.01596,
+    "cost_usd": 0.022033,
+    "asr": [
+     {
+      "intended": "Booking H Z six P two L. Please move my flight home on November thirteenth to the fourteenth.",
+      "heard": [
+       "Booking h z six p two l please move my flight home on November thirteenth to the fourteenth"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "HZ6P2L",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Actually no, leave it as it is.",
+      "heard": [
+       "Actually, no. Leave it as it is."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Yes, I'm sure. Thanks.",
+      "heard": [
+       "Yes. I'm sure. Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-correction-declines-change-20260930T194926",
+    "prompt": 35094,
+    "completion": 485,
+    "total": 35579,
+    "generations": 14,
+    "fetched_at": "2026-09-30T20:09:09.994805+00:00"
+   }
+  },
+  {
+   "id": "correction-other-option-at-confirmation",
+   "kind": "correction",
+   "description": "The draft is the next-day flight; at the engine's question the caller switches to the later flight the same day. Only that change is made.",
+   "conversation_id": "travel-booking-gpt-voice-correction-other-option-at-confirmation-20260930T194926",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Booking H Z four R eight N. Move my Lisbon to Boston flight tomorrow to the twenty-fifth.",
+     "latency_ms": 1767.1,
+     "bot": [
+      "Okay, I\u2019ll look up that booking now.",
+      "This moves your Lisbon to Boston flight on October 24 to H Z 2 1 5 on October 25 at 11:15 AM, and it affects your Denver connection, Lisbon hotel pickup, checked bag and Denver parking. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.9,
+      "speech_off_epoch": 1790798961.35262,
+      "eos_to_first_marker_ms": 1597.5,
+      "eos_to_first_audio_ms": 1767.1,
+      "eos_to_first_audible_ms": 1767.1,
+      "end_markers": [
+       {
+        "at_ms": 4542.2,
+        "rasa_processing_latency_ms": 679.5380115509033,
+        "tts_first_byte_latency_ms": 169.65603828430176,
+        "tts_complete_latency_ms": 2944.819927215576
+       },
+       {
+        "at_ms": 10093.4,
+        "rasa_processing_latency_ms": 679.5380115509033,
+        "tts_first_byte_latency_ms": 0.23698806762695312,
+        "tts_complete_latency_ms": 13.070106506347656
+       }
+      ],
+      "bot_audio_s": 16.1,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Booking h z four r eight n move My Lisbon to Boston flight tomorrow to the twenty fifth"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 849.1561659611762,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 664.0727080521174,
+         "llm_total_generation_ms": 3608.1638330360875,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Wait, no. Make it the later flight tomorrow afternoon instead, H Z two one nine.",
+     "latency_ms": 3693.7,
+     "bot": [
+      "Right, I\u2019ll switch the draft to that flight.",
+      "Got it. I\u2019ve prepared H Z 2 1 9 for tomorrow afternoon with the linked services, and I\u2019ll need your confirmation on the next step."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.9,
+      "speech_off_epoch": 1790798992.2989068,
+      "eos_to_first_marker_ms": 3524.8,
+      "eos_to_first_audio_ms": 3693.7,
+      "eos_to_first_audible_ms": 3693.7,
+      "end_markers": [
+       {
+        "at_ms": 3974.4,
+        "rasa_processing_latency_ms": 2333.854913711548,
+        "tts_first_byte_latency_ms": 590.2729034423828,
+        "tts_complete_latency_ms": 870.9449768066406
+       },
+       {
+        "at_ms": 10076.4,
+        "rasa_processing_latency_ms": 2333.854913711548,
+        "tts_first_byte_latency_ms": 168.17808151245117,
+        "tts_complete_latency_ms": 330.2600383758545
+       }
+      ],
+      "bot_audio_s": 3.47,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Wait. No. Make it the later flight tomorrow afternoon instead. H z two one nine."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2924.152875028085,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2325.957916036714,
+         "llm_total_generation_ms": 2885.6847500428557,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 1752.5,
+     "bot": [
+      "Alright, I\u2019ll check and apply that change now.",
+      "This moves your Lisbon to Boston flight on October 24 to H Z 2 1 9 at 3:30 PM the same day, and it affects your Denver connection, Lisbon hotel pickup, checked bag and Denver parking. Shall I check all of them before proceeding?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.7,
+      "speech_off_epoch": 1790799005.492698,
+      "eos_to_first_marker_ms": 1575.9,
+      "eos_to_first_audio_ms": 1752.5,
+      "eos_to_first_audible_ms": 1752.5,
+      "end_markers": [
+       {
+        "at_ms": 3705.2,
+        "rasa_processing_latency_ms": 1198.7981796264648,
+        "tts_first_byte_latency_ms": 176.32198333740234,
+        "tts_complete_latency_ms": 2129.4989585876465
+       },
+       {
+        "at_ms": 3712.1,
+        "rasa_processing_latency_ms": 1198.7981796264648,
+        "tts_first_byte_latency_ms": 0.04887580871582031,
+        "tts_complete_latency_ms": 4.131793975830078
+       }
+      ],
+      "bot_audio_s": 17.6,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "yes"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1375.1519169891253,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1188.4859169949777,
+         "llm_total_generation_ms": 3318.008041998837,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Thanks.",
+     "latency_ms": 2666.4,
+     "bot": [
+      "Do you want me to check those linked services and proceed with the change? Please say yes or no."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.72,
+      "speech_off_epoch": 1790799027.2279398,
+      "eos_to_first_marker_ms": 2497.4,
+      "eos_to_first_audio_ms": 2666.4,
+      "eos_to_first_audible_ms": 2666.4,
+      "end_markers": [
+       {
+        "at_ms": 4675.4,
+        "rasa_processing_latency_ms": 1504.5490264892578,
+        "tts_first_byte_latency_ms": 747.452974319458,
+        "tts_complete_latency_ms": 2756.4499378204346
+       }
+      ],
+      "bot_audio_s": 6.3,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Thanks."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2252.000832988415,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1480.0787920248695,
+         "llm_total_generation_ms": 4236.556042043958,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "succeeded",
+       "segment": {
+        "segment": "S3",
+        "after": "HZ 219 2026-10-24T15:30"
+       }
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_journey_change",
+      "result": {
+       "status": "pending"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_traveller",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_change_options",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "segment": "Lisbon to Boston flight tomorrow"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "option_id": "HZ4R8N-S3-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "discard_journey_change",
+     "arguments": {},
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "discarded",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N",
+      "option_id": "HZ4R8N-S3-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 2,
+     "is_error": true,
+     "source": "llm",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "apply_journey_change",
+     "arguments": {
+      "booking": "HZ4R8N"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that booking now.",
+     "Right, I\u2019ll switch the draft to that flight.",
+     "Alright, I\u2019ll check and apply that change now.",
+     "Okay, I\u2019ll close this change request."
+    ],
+    "all_updated_claim": [],
+    "moved_by_status_claim": [],
+    "linked_journey_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.skill_executor.tool.timeout": 0,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "deepgram.v2.error": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 1,
+    "rime.connection.failed": 0,
+    "horizon.rime_idle_reconnect": 2,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "output_channel.response_delivery_failed": 1,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 1
+   },
+   "log_event_details": {
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.audio_missing": [],
+    "mantle.skill_executor.tool.timeout": [],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "deepgram.v2.error": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-correction-other-option-at-confirmation-20260930T194926"
+     }
+    ],
+    "rime.connection.failed": [],
+    "horizon.rime_idle_reconnect": [
+     {
+      "idle_s": 32.1,
+      "conversation_id": "travel-booking-gpt-voice-correction-other-option-at-confirmation-20260930T194926"
+     },
+     {
+      "idle_s": 21.6,
+      "conversation_id": "travel-booking-gpt-voice-correction-other-option-at-confirmation-20260930T194926"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "travel-booking-gpt-voice-correction-other-option-at-confirmation-20260930T194926",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-travel-booking/examples/mantle-voice-travel-booking-gpt/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [
+     {
+      "tool_name": "apply_journey_change",
+      "conversation_id": "travel-booking-gpt-voice-correction-other-option-at-confirmation-20260930T194926"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 15,
+    "main_loop_calls": 13,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 48176,
+    "completion_tokens": 793,
+    "reasoning_tokens": 264,
+    "cached_prompt_tokens": 12800,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.20707,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     3605.7,
+     1409.2,
+     2506.4,
+     1556.9,
+     2649.6,
+     2839.6,
+     2074.2,
+     1415.9,
+     1352.0,
+     2904.3,
+     3307.7,
+     4225.6,
+     2607.0,
+     924.7,
+     2129.7
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 86.26,
+    "tts_characters": 962,
+    "call": {
+     "audio_seconds_sent": 86.26,
+     "call_seconds": 86.27,
+     "markers_acked": 67,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.95,
+     "session_end_turn_s": 6.14
+    },
+    "stt_usd": 0.009345,
+    "tts_usd": 0.02886,
+    "cost_usd": 0.038205,
+    "asr": [
+     {
+      "intended": "Booking H Z four R eight N. Move my Lisbon to Boston flight tomorrow to the twenty-fifth.",
+      "heard": [
+       "Booking h z four r eight n move My Lisbon to Boston flight tomorrow to the twenty fifth"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "HZ4R8N",
+        "kind": "booking_reference",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Wait, no. Make it the later flight tomorrow afternoon instead, H Z two one nine.",
+      "heard": [
+       "Wait. No. Make it the later flight tomorrow afternoon instead. H z two one nine."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "219",
+        "kind": "flight_number",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "yes"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Thanks.",
+      "heard": [
+       "Thanks."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-booking-gpt-voice-correction-other-option-at-confirmation-20260930T194926",
+    "prompt": 48176,
+    "completion": 793,
+    "total": 48969,
+    "generations": 15,
+    "fetched_at": "2026-09-30T20:10:45.424209+00:00"
+   }
+  }
+ ]
+}

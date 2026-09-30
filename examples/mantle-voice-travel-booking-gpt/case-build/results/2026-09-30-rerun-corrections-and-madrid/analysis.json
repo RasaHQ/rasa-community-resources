@@ -1,0 +1,214 @@
+{
+ "run": "2026-09-30-rerun-corrections-and-madrid",
+ "conversations": 3,
+ "outcomes": {
+  "recovery": {
+   "pass": 1,
+   "fail": 0,
+   "provider_error": 0,
+   "skipped": 0
+  },
+  "correction": {
+   "pass": 2,
+   "fail": 0,
+   "provider_error": 0,
+   "skipped": 0
+  }
+ },
+ "case_metric": {
+  "metric": "segment changes leaving unresolved dependent services unreported / linked-journey changes",
+  "unreported": 0,
+  "linked_journey_changes": 2,
+  "changes_with_unresolved_services": 0,
+  "blocked_before_any_change": 1,
+  "by_status": {
+   "blocked": 1,
+   "succeeded": 2
+  }
+ },
+ "receipts": {
+  "sent_by_tool": 3,
+  "delivered_in_turn": 3,
+  "reference_restated_by_model": 0,
+  "characters": {
+   "n": 3,
+   "p50": 196,
+   "p95": 278,
+   "max": 278
+  }
+ },
+ "unheard": {
+  "spoken_caller_turns": 14,
+  "caller_turns_heard_as_nothing": 0,
+  "caller_turns_waiting_for_silence_timeout": 0,
+  "caller_turns_split": 0,
+  "bare_yes_turns": 5,
+  "bare_yes_heard": 5,
+  "scripted_lines_unrecorded_after_driver_error": 0,
+  "bot_turns_audio_missing": 0
+ },
+ "engine_events": {
+  "tool_timeouts": 0,
+  "rime_idle_reconnects": 5,
+  "response_delivery_failed": 1
+ },
+ "latency_ms": {
+  "eos_to_first_audio": {
+   "n": 14,
+   "p50": 2756.2,
+   "p95": 4622.2,
+   "max": 4622.2
+  },
+  "rasa_processing": {
+   "n": 14,
+   "p50": 1226.0,
+   "p95": 3454.0,
+   "max": 3454.0
+  },
+  "tts_first_byte": {
+   "n": 14,
+   "p50": 169.2,
+   "p95": 786.5,
+   "max": 786.5
+  },
+  "remainder_before_transcript_and_transport": {
+   "n": 14,
+   "p50": 502.6,
+   "p95": 1090.5,
+   "max": 1090.5
+  },
+  "llm_time_to_first_token": {
+   "n": 12,
+   "p50": 1118.5,
+   "p95": 2640.3,
+   "max": 2640.3
+  }
+ },
+ "by_conversation": [
+  {
+   "id": "recovery-partner-unavailable",
+   "kind": "recovery",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "blocked",
+     "reason": "connection_not_checked",
+     "effects": 0,
+     "booking": "HZ3M9V",
+     "segment": null,
+     "before_after": [],
+     "unresolved": [],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 196,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": []
+    }
+   ]
+  },
+  {
+   "id": "correction-meant-return-leg",
+   "kind": "correction",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "effects": 1,
+     "booking": "HZ6P2L",
+     "segment": {
+      "segment": "S2",
+      "before": "HZ 123 2026-11-13T12:30",
+      "after": "HZ 123 2026-11-14T12:30",
+      "route": "Dublin to Boston"
+     },
+     "before_after": [
+      {
+       "service": "CO-2",
+       "state": "moved",
+       "before": "2026-11-13T07:30",
+       "after": "2026-11-14T07:30",
+       "points_at_new_times": true
+      }
+     ],
+     "unresolved": [],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 160,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": []
+    }
+   ]
+  },
+  {
+   "id": "correction-other-option-at-confirmation",
+   "kind": "correction",
+   "outcome": "pass",
+   "heard_nothing": [],
+   "silence_timeout_waits": [],
+   "changes": [
+    {
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "effects": 1,
+     "booking": "HZ4R8N",
+     "segment": {
+      "segment": "S3",
+      "before": "HZ 215 2026-10-24T11:15",
+      "after": "HZ 219 2026-10-24T15:30",
+      "route": "Lisbon to Boston"
+     },
+     "before_after": [
+      {
+       "service": "S4",
+       "state": "moved",
+       "before": "HZ 438 2026-10-24T16:05",
+       "after": "HZ 442 2026-10-24T20:10",
+       "points_at_new_times": true
+      },
+      {
+       "service": "TR-1",
+       "state": "moved",
+       "before": "2026-10-24T08:30",
+       "after": "2026-10-24T12:45",
+       "points_at_new_times": true
+      },
+      {
+       "service": "BG-1",
+       "state": "re_tagged",
+       "before": [
+        "HZ 215 2026-10-24",
+        "HZ 438 2026-10-24"
+       ],
+       "after": [
+        "HZ 219 2026-10-24",
+        "HZ 442 2026-10-24"
+       ],
+       "points_at_new_times": true
+      },
+      {
+       "service": "PK-1",
+       "state": "still_valid",
+       "before": "2026-10-24T23:59",
+       "after": "2026-10-24T23:59",
+       "points_at_new_times": true
+      }
+     ],
+     "unresolved": [],
+     "receipt_sent": true,
+     "receipt_delivered_in_turn": true,
+     "receipt_characters": 278,
+     "model_messages_after_receipt_in_turn": 1,
+     "reference_restated_by_model": 0,
+     "all_updated_claims_after": []
+    }
+   ]
+  }
+ ]
+}

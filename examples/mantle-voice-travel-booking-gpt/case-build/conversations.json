@@ -711,7 +711,7 @@
   {
    "id": "correction-meant-return-leg",
    "kind": "correction",
-   "description": "The case's correction: the draft is for the outbound flight, and at the engine's question the caller says they meant the return leg. Only the return changes.",
+   "description": "The case's correction: the draft is for the outbound flight, and at the engine's question the caller says they meant the return leg. Only the return changes. Two yeses: the engine refuses a second gated call in the turn that resolved the first, so the corrected change is confirmed in a later turn (the main run scripted one and failed on it).",
    "turns": [
     {
      "user": "Booking H Z six P two L. Move my flight on November sixth to one day later, please.",
@@ -725,6 +725,10 @@
     },
     {
      "user": "No, sorry, I meant the return leg, the flight home on November thirteenth. Move that one to the fourteenth.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Yes.",
      "caller_voice": "moraine"
     },
     {
@@ -797,7 +801,7 @@
   {
    "id": "correction-other-option-at-confirmation",
    "kind": "correction",
-   "description": "The draft is the next-day flight; at the engine's question the caller switches to the later flight the same day. Only that change is made.",
+   "description": "The draft is the next-day flight; at the engine's question the caller switches to the later flight the same day. Only that change is made. Two yeses, for the same reason as correction-meant-return-leg.",
    "turns": [
     {
      "user": "Booking H Z four R eight N. Move my Lisbon to Boston flight tomorrow to the twenty-fifth.",
@@ -818,6 +822,10 @@
        "kind": "flight_number"
       }
      ]
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "moraine"
     },
     {
      "user": "Yes.",
