@@ -26,6 +26,14 @@ and only a transfer between the customer's own accounts posts at once. Then
 trying to make it do exactly the wrong thing, and each outcome was read from
 the tracker.
 
+**Status: two of the three correction reruns are still unrun.** The second
+rerun of the correction conversations (`2026-09-30-corrections-rerun-2/`)
+passed `correction-amount-at-confirmation` live with the extra caller turn.
+The other two, `correction-payee-at-confirmation` and
+`correction-source-account`, hit `insufficient_quota` again and are recorded
+as provider errors, so the added turn is verified live for one of the three.
+See [What the live runs recorded](#what-the-live-runs-recorded).
+
 ## Scope
 
 - **Synthetic scenario.** Northgate Bank, its customer Elena Marsh, her
@@ -204,7 +212,9 @@ three correction conversations one more caller turn: the restated
 correction, then the confirmation. The rerun of those three hit the same
 exhausted credit on its first calls, recorded 2 provider errors, and the
 harness skipped the third. No outcome in it is evidence about the agent.
-Once credit is restored, rerun them with:
+
+**Second rerun** (`2026-09-30-corrections-rerun-2/`, 16:56 to 16:58 UTC,
+the same three conversations, 12 caller turns), run with:
 
 ```bash
 python3 scripts/case_builds/run_build.py examples/mantle-text-banking-transfer-gpt \
@@ -212,11 +222,42 @@ python3 scripts/case_builds/run_build.py examples/mantle-text-banking-transfer-g
     --label 2026-09-30-corrections-rerun-2 --budget-usd 3.5
 ```
 
+| Measure | Result |
+|---|---|
+| Tracker checks | 1 pass, 0 fail, 2 lost to provider errors |
+| Model calls | 30 (27 answered, 3 failed with `insufficient_quota`), 3 side-channel |
+| Tokens | 75,840 prompt (22,528 cached), 1,124 completion, of which 191 reasoning |
+| Cost | 0.31 USD |
+
+`correction-amount-at-confirmation` passed with the added turn. The engine
+still answered "Actually, make that $150." with the denial response alone
+("Okay, I have not submitted that transfer."), as in the main run. At the
+restated "Yes, $150." the agent drafted $150, the engine asked the
+confirmation question for the new draft, and the $150 posted after "Yes."
+Nothing was submitted for $250. So the script fix held live for this
+conversation, and the second finding below still stands: the correction
+costs the caller a turn.
+
+The other two failed with HTTP 429 `insufficient_quota`
+("credit_balance_exhausted") at 16:57:31, 16:57:39 and 16:58:21 UTC, with
+successful calls in between: the shared account was running at its credit
+limit while other builds used it. Each lost the first model call of the
+conversation to the canned apology, which shifted every later caller turn,
+and `correction-payee-at-confirmation` lost the correction turn too. Their
+checks happen to hold, but they are provider errors and say nothing about
+the agent. They still need a live run:
+
+```bash
+python3 scripts/case_builds/run_build.py examples/mantle-text-banking-transfer-gpt \
+    --only correction-payee-at-confirmation,correction-source-account \
+    --label 2026-09-30-corrections-rerun-3 --budget-usd 3.5
+```
+
 `estimate/` is the single conversation (`recovery-stale-then-reconfirm`,
 passed) used to price the run beforehand: 0.14 USD for 4 turns.
-`spend-ledger.json` lists every billed call for this build: **1.92 USD** in
-total (estimate 0.14, main run 1.77, stopped rerun 0.01), against a cap of
-3.50.
+`spend-ledger.json` lists every billed call for this build: **2.23 USD** in
+total (estimate 0.14, main run 1.77, stopped rerun 0.01, second rerun 0.31),
+against a cap of 3.50. Before the second rerun the total was 1.92 USD.
 
 ## What we found
 
@@ -234,7 +275,11 @@ total (estimate 0.14, main run 1.77, stopped rerun 0.01), against a cap of
    reference, and the output hook cannot help, because there was no model
    text to read. A tool can send a message itself (`ToolContext.send`), so
    the next step is for `submit_transfer` to send the receipt from ledger
-   data; that change has not been run live.
+   data; that change has not been run live. The second correction rerun
+   repeated it once more: after the $150 own-account transfer posted in
+   `correction-amount-at-confirmation`, the model called `complete_skill`
+   and the caller got only "Can I help you with anything else?", with no
+   reference (`case_metric.py`: 1 of that run's 3 receipts not given).
 2. **A correction at the confirmation step costs the caller a turn.** When
    the caller answers the confirmation question with a change ("Wait, no,
    not Sam Patel. Send it to Sam Okoro instead.", "Actually, make that
@@ -246,6 +291,8 @@ total (estimate 0.14, main run 1.77, stopped rerun 0.01), against a cap of
    The agent drafted the correction at the caller's next message, even
    when that message was only "Yes." The earlier confirmation never carried over, which
    is what the case asks; the cost is a confusing reply and an extra turn.
+   The second rerun showed the same for the amount correction: the denial
+   response alone, then the new $150 draft one turn later.
 3. **"Send it to him instead" became a second transfer.** In
    `correction-payee-after-confirming` the $80 to Sam Patel was already
    submitted when the caller said they meant Sam Okoro. The agent drafted
@@ -282,7 +329,7 @@ total (estimate 0.14, main run 1.77, stopped rerun 0.01), against a cap of
 | `tests/test_guard.py` | Offline tests |
 | `case-build/conversations.json` | The 21 scripted conversations, their tracker checks and the `reasoning-default` variant. The three correction conversations have one more turn than in the main run |
 | `case-build/case_metric.py` | The case metric and receipt delivery, from stored trackers |
-| `case-build/results/` | Recorded runs (the estimate, the main run and the stopped rerun), trackers and the spend ledger |
+| `case-build/results/` | Recorded runs (the estimate, the main run, the stopped rerun and the second rerun), trackers and the spend ledger |
 
 The harness that runs the conversations is shared by every case build:
 [`scripts/case_builds/`](../../scripts/case_builds/).
