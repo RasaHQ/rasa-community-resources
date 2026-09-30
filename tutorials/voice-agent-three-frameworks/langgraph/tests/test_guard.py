@@ -16,7 +16,7 @@ sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(TUTORIAL / "shared" / "spec"))
 
-from langchain_core.messages import HumanMessage  # noqa: E402
+from langchain_core.messages import AIMessage, HumanMessage  # noqa: E402
 from langgraph.types import Command  # noqa: E402
 
 import checks  # noqa: E402
@@ -101,6 +101,17 @@ class GuardTests(unittest.TestCase):
         last_tool = [m for m in state.values["messages"] if m.type == "tool"][-1]
         self.assertIn("budesonide", last_tool.content)
         self.assertIn('"declined"', last_tool.content)
+
+    def test_a_tool_called_beside_the_paused_send_is_not_run_again_on_resume(self):
+        both = AIMessage(content="", tool_calls=[
+            {"name": "route_clinical_question", "args": {"question": "wants 1000 mg"}, "id": "call_route"},
+            {"name": "send_refill_request", "args": {"record_id": "CC-RX-2041"}, "id": "call_send"}])
+        self.model.script = [VERIFY, call("select_medication", medication_name="lisinopril"), both, say("Done.")]
+        self.turn("g8", "Maria Alvarez, March 14th, 1968. Lisinopril, and ask about a higher dose.")
+        self.turn("g8", Command(resume={"text": "Yes, send it."}))
+        names = [e["name"] for e in AUDIT.entries("g8")]
+        self.assertEqual(names.count("route_clinical_question"), 1)
+        self.assertEqual([s["result"]["status"] for s in self.sends("g8")], ["succeeded"])
 
     def test_guard_state_cannot_be_set_from_the_graph_input(self):
         self.model.script = [say("Please tell me your name and date of birth.")]

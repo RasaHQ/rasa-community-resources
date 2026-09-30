@@ -310,7 +310,7 @@ diff -ruN a/voice_loop.py b/voice_loop.py
  
  log = logging.getLogger("cedar.voice")
  
-@@ -236,6 +237,13 @@
+@@ -238,6 +239,13 @@
          if not state.values.get("messages"):
              messages.insert(0, AIMessage(instructions.GREETING))
          payload: Any = {"messages": messages}
@@ -324,7 +324,7 @@ diff -ruN a/voice_loop.py b/voice_loop.py
          current: Optional[Message] = None
          current_id = None
          async for mode, data in self.agent.astream(payload, self.config,
-@@ -256,6 +264,26 @@
+@@ -258,6 +266,26 @@
                  if calls and not spoke:
                      self._speak_whole(FILLERS.get(calls[0].get("name") or "", "One moment."), clock)
                      spoke = True
