@@ -1,0 +1,108 @@
+{
+  "organisation": "Cedar Clinic (fictional clinic)",
+  "note": "Fictional fixture data for a casebook case build. Cedar Clinic, its patients, clinicians, sites, phone numbers, appointments and reminder references are invented; nothing here belongs to anyone. Not medical guidance.",
+  "as_of": "2026-09-30T10:00:00",
+  "session_patient_id": "CC-PT-4471",
+  "patients": {
+    "CC-PT-4471": {
+      "first_name": "Lena",
+      "last_name": "Marsh",
+      "contacts": {
+        "sms": {"number": "555-0142", "confirmed": true, "reminder_consent": true, "verified_on": "2026-03-02"},
+        "email": {"address": "lena.marsh@example.org", "confirmed": false, "why": "bounced on 2026-08-14 and not re-verified"}
+      }
+    },
+    "CC-PT-6034": {
+      "first_name": "Arlo",
+      "last_name": "Finch",
+      "contacts": {
+        "sms": {"number": "555-0175", "confirmed": true, "reminder_consent": true, "verified_on": "2026-01-19"}
+      }
+    }
+  },
+  "appointments": {
+    "CC-APT-5512": {
+      "patient_id": "CC-PT-4471",
+      "kind": "follow-up visit",
+      "aliases": ["follow-up", "follow up", "followup", "check-up", "checkup"],
+      "with": "Dr Ilse Marr",
+      "surname": "Marr",
+      "site": "Riverside",
+      "delivery": "delivers",
+      "revisions": [
+        {"revision": 1, "starts": "2026-10-06T09:30", "changed_on": "2026-09-10", "why": "booked"},
+        {"revision": 2, "starts": "2026-10-08T14:15", "changed_on": "2026-09-29", "why": "moved by the patient by phone"}
+      ]
+    },
+    "CC-APT-6120": {
+      "patient_id": "CC-PT-4471",
+      "kind": "physiotherapy session",
+      "aliases": ["physio", "physiotherapy"],
+      "with": "Owen Petrakis",
+      "surname": "Petrakis",
+      "site": "Hillside",
+      "delivery": "delivers",
+      "revisions": [
+        {"revision": 1, "starts": "2026-10-12T11:00", "changed_on": "2026-09-14", "why": "booked"}
+      ]
+    },
+    "CC-APT-7304": {
+      "patient_id": "CC-PT-4471",
+      "kind": "blood test",
+      "aliases": ["blood test", "blood draw", "bloods", "lab"],
+      "with": "the Riverside lab team",
+      "surname": "",
+      "site": "Riverside",
+      "delivery": "rescheduled_before_delivery",
+      "revisions": [
+        {"revision": 1, "starts": "2026-10-14T08:10", "changed_on": "2026-09-21", "why": "booked"}
+      ],
+      "reschedule_at_delivery": {"starts": "2026-10-14T08:40", "why": "moved by the front desk: the lab opens later that day"}
+    },
+    "CC-APT-8015": {
+      "patient_id": "CC-PT-4471",
+      "kind": "dermatology consultation",
+      "aliases": ["dermatology", "dermatologist", "skin"],
+      "with": "Dr Priya Anand",
+      "surname": "Anand",
+      "site": "Hillside",
+      "delivery": "loses_acknowledgment",
+      "revisions": [
+        {"revision": 1, "starts": "2026-10-20T15:00", "changed_on": "2026-09-18", "why": "booked"}
+      ]
+    },
+    "CC-APT-8233": {
+      "patient_id": "CC-PT-4471",
+      "kind": "eye test",
+      "aliases": ["eye test", "eye exam", "eyes", "optician", "optometrist"],
+      "with": "Tom Keel",
+      "surname": "Keel",
+      "site": "Riverside",
+      "delivery": "fails_first_attempt",
+      "revisions": [
+        {"revision": 1, "starts": "2026-10-22T10:00", "changed_on": "2026-09-22", "why": "booked"}
+      ]
+    },
+    "CC-APT-9150": {
+      "patient_id": "CC-PT-6034",
+      "kind": "follow-up visit",
+      "aliases": ["follow-up", "follow up"],
+      "with": "Dr Ilse Marr",
+      "surname": "Marr",
+      "site": "Riverside",
+      "delivery": "delivers",
+      "revisions": [
+        {"revision": 1, "starts": "2026-10-09T10:00", "changed_on": "2026-09-15", "why": "booked"}
+      ]
+    }
+  },
+  "reminder_ledger": [
+    {"appointment_id": "CC-APT-5512", "revision": 1, "state": "delivered", "queued_at": "2026-09-27T18:00", "delivered_at": "2026-09-28T09:00", "attempts": 1},
+    {"appointment_id": "CC-APT-6120", "revision": 1, "state": "delivered", "queued_at": "2026-09-28T18:00", "delivered_at": "2026-09-29T09:00", "attempts": 1},
+    {"appointment_id": "CC-APT-7304", "revision": 1, "state": "queued", "queued_at": "2026-09-29T18:00", "delivered_at": null, "attempts": 0}
+  ],
+  "scheduling_team": {
+    "desk": "the Cedar Clinic scheduling team",
+    "reply_within": "one business day"
+  }
+}
