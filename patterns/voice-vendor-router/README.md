@@ -668,7 +668,7 @@ Stated plainly, because these are the cases where a router could mislead you.
 | `voicerouter/routed_asr.py` | `RoutedASR` — reconnect-and-resume on stream death |
 | `voicerouter/base.py` | provider specs, policy, and building engines through Rasa's factories |
 | `voicerouter/health.py` | per-provider circuit breaker |
-| `voicerouter/contract.py` | asserts the router still covers what Rasa calls |
+| `voicerouter/contract.py` | asserts the router still covers what Rasa uses on an engine |
 | `voicerouter/providers/` | adapters for OpenAI, ElevenLabs, Speechmatics, AssemblyAI |
 | `voicerouter/audio.py` | streaming format conversion shared by every HTTP adapter |
 | `examples/` | one copy-pasteable config block per vendor |
@@ -683,17 +683,28 @@ Stated plainly, because these are the cases where a router could mislead you.
 The router is deliberately **not** a `TTSEngine` / `ASREngine` subclass. Rasa
 never type-checks engines, and the base classes carry per-connection state that
 would have to be kept in step with whichever child is active. Satisfying the
-surface Rasa actually calls is simpler and less fragile.
+surface Rasa actually uses is simpler and less fragile.
 
-The risk in that trade is a future Rasa release calling something new and the
-router raising `AttributeError` mid-call. So the surface is **derived from the
-installed Rasa** rather than written down:
+The risk in that trade is a Rasa release using something new and the router
+failing mid-call. So the surface is **derived from the installed Rasa** rather
+than written down. It covers four kinds of use, because method calls alone are
+not enough: on rasa-pro 3.21.0.dev5 a check of calls alone passed while every
+routed call died, first on `async with asr_engine, tts_engine:` (no
+`__aenter__`) and then on `asr_engine.config` (no attribute).
+
+| Kind | Found as | 3.21.0.dev5 examples |
+|---|---|---|
+| calls | `tts_engine.synthesize(` | `synthesize`, `start_response`, `send_keep_alive` |
+| reads | `asr_engine.config`, and `engine.<name>` in the voice tracing recorders | `config`, `streaming_input`, `current_language_config` |
+| writes | `tts_engine.stream_state = ...` | `stream_state`, `stop_streaming_output_audio_chunks` |
+| protocols | `async with` entering an engine | the async context manager |
 
 ```bash
 make contract
-#   RoutedTTS: 8/8 of the surface Rasa calls
-#   RoutedASR: 8/8 of the surface Rasa calls
+#   RoutedTTS: 15/15 of the surface Rasa uses on a TTS engine (8 calls, 4 reads, 2 writes, 1 protocol)
+#   RoutedASR: 11/11 of the surface Rasa uses on an ASR engine (8 calls, 2 reads, 0 writes, 1 protocol)
 #   contract holds against the installed rasa-pro
+uv run python -m voicerouter.contract --surface   # each use, with its file and line
 ```
 
 It runs in `make verify`, needs no credentials and no network, and fails at

@@ -33,7 +33,7 @@ from typing import Any, AsyncIterator, List, Optional
 
 import structlog
 from rasa.core.channels.voice_stream.audio_bytes import AudioFormat, RasaAudioBytes
-from rasa.core.channels.voice_stream.tts.tts_engine import TTSEngine, TTSError
+from rasa.core.channels.voice_stream.tts.tts_engine import StreamState, TTSError
 
 from voicerouter.base import (
     BuiltProvider,
@@ -61,10 +61,18 @@ class RoutedTTS:
     state — response runtimes, locks, a resolved config — that would have to be
     kept in step with whichever child is currently active. Rasa resolves engines
     by dotted path and never type-checks them, so satisfying the surface it
-    actually calls is both sufficient and less fragile.
+    actually uses is both sufficient and less fragile.
+
+    That surface is more than method calls. The voice channel opens each call
+    with `async with asr_engine, tts_engine:`, reads and writes `stream_state`
+    and `stop_streaming_output_audio_chunks` on the engine, and reports
+    `tts_engine.streaming_input` as the channel's `supports_streaming`, which
+    Mantle reads to decide whether to stream model tokens into speech. The
+    flags are read from the active provider and written to every provider, so
+    a failover mid-utterance inherits a barge-in rather than missing it.
 
     The surface Rasa uses is asserted by a contract test, so a future release
-    that starts calling something new fails loudly here rather than at 3am on a
+    that starts using something new fails loudly here rather than at 3am on a
     live call.
     """
 
@@ -152,6 +160,44 @@ class RoutedTTS:
     @property
     def current_language_config(self) -> Any:
         return self._active.engine.current_language_config
+
+    @property
+    def config(self) -> Any:
+        return getattr(self._active.engine, "config", None)
+
+    # ---- what the voice channel reads and writes ----------------------------
+
+    @property
+    def streaming_input(self) -> bool:
+        """Whether the active provider takes text as it is generated.
+
+        The voice channel returns this as `supports_streaming`, so it decides
+        whether Mantle streams model tokens into speech (`start_response`) or
+        hands over whole messages (`synthesize`). It is read again after
+        `start_response`, which may have failed over to a provider that does
+        not stream; the channel then falls back to whole messages.
+        """
+        return bool(getattr(self._active.engine, "streaming_input", False))
+
+    @property
+    def stream_state(self) -> StreamState:
+        return getattr(self._active.engine, "stream_state", StreamState.NO_STREAMING)
+
+    @stream_state.setter
+    def stream_state(self, value: StreamState) -> None:
+        for provider in self._providers:
+            provider.engine.stream_state = value
+
+    @property
+    def stop_streaming_output_audio_chunks(self) -> bool:
+        return bool(
+            getattr(self._active.engine, "stop_streaming_output_audio_chunks", False)
+        )
+
+    @stop_streaming_output_audio_chunks.setter
+    def stop_streaming_output_audio_chunks(self, value: bool) -> None:
+        for provider in self._providers:
+            provider.engine.stop_streaming_output_audio_chunks = value
 
     @property
     def active_provider(self) -> str:
@@ -297,6 +343,16 @@ class RoutedTTS:
                 )
         self._connected.clear()
 
+    async def __aenter__(self) -> "RoutedTTS":
+        """Connect on `async with`, as Rasa's voice channel enters every engine."""
+        await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> bool:
+        """Close every connected provider; never swallow the call's exception."""
+        await self.close_connection()
+        return False
+
     # ---- speaking -----------------------------------------------------------
 
     async def synthesize(
@@ -391,10 +447,76 @@ class RoutedTTS:
             f"utterance. Last error: {last_error}"
         )
 
-    async def start_response(self, *args: Any, **kwargs: Any) -> Any:
-        return await self._active.engine.start_response(*args, **kwargs)
+    async def start_response(self, streaming_config: Optional[Any] = None) -> Any:
+        """Open a streamed response on the first provider that will start one.
+
+        Failover happens here, before any text is written, for the same reason
+        `synthesize` fails over only before the first byte. The response is
+        the provider's own; the wrapper only watches it, so a provider whose
+        stream dies is marked and the *next* response goes elsewhere.
+        """
+        last_error: Optional[BaseException] = None
+        previous_label: Optional[str] = None
+        for index in self._candidates():
+            provider = self._providers[index]
+            label = provider.spec.label
+            self._metrics.record_attempt(label)
+            try:
+                await self._ensure_connected(index)
+                response = await provider.engine.start_response(
+                    streaming_config=streaming_config
+                )
+            except Exception as exc:  # noqa: BLE001 - any vendor failure routes
+                verdict = self._health.get(label).record_failure(exc)
+                self._metrics.record_failure(label, verdict.kind.value)
+                self._connected.discard(index)
+                logger.warning(
+                    "voicerouter.tts.start_response_failed",
+                    provider=label, error=str(exc), verdict=str(verdict),
+                )
+                last_error = exc
+                previous_label = label
+                continue
+            self._active_index = index
+            if previous_label:
+                self._metrics.record_failover(
+                    previous_label, label, "started response after failover"
+                )
+            return _ObservedResponse(response, self, index)
+        raise TTSError(
+            f"{self._exhausted_message('TTS')} — no provider started a streamed "
+            f"response. Last error: {last_error}"
+        )
+
+    def _streamed_audio(self, index: int) -> None:
+        label = self._providers[index].spec.label
+        self._health.get(label).record_success()
+        # No latency sample: on a streamed response the clock includes the
+        # model's own token generation, which would skew latency selection.
+        self._metrics.record_success(label)
+
+    def _streamed_failure(self, index: int, exc: BaseException, emitted: bool) -> None:
+        label = self._providers[index].spec.label
+        verdict = self._health.get(label).record_failure(exc)
+        self._metrics.record_failure(label, verdict.kind.value)
+        self._connected.discard(index)
+        logger.error(
+            "voicerouter.tts.streamed_response_failed",
+            provider=label, error=str(exc), verdict=str(verdict),
+            note=(
+                "response truncated; provider marked unhealthy" if emitted
+                else "no audio; provider marked unhealthy"
+            ),
+        )
 
     def interrupt(self) -> Any:
+        """Barge-in: flag every provider, then interrupt the active one.
+
+        The active provider owns any streamed response, so its `interrupt()`
+        is what drains it, and its awaitable is what the channel waits on.
+        """
+        self.stop_streaming_output_audio_chunks = True
+        self.stream_state = StreamState.INTERRUPTED
         return self._active.engine.interrupt()
 
     async def signal_interrupt(self) -> None:
@@ -421,3 +543,70 @@ class RoutedTTS:
                 )
                 results.append(False)
         return any(results)
+
+
+class _ObservedResponse:
+    """A provider's streamed `TTSResponse`, watched on the router's behalf.
+
+    Everything is delegated to the provider's own response, which keeps
+    owning its reader, its interruption and its audio queue. The wrapper only
+    reports to the router: first audio proves the provider healthy, and an
+    error in writing text or reading audio marks it unhealthy and drops its
+    connection, so the next response starts somewhere else.
+    """
+
+    def __init__(self, response: Any, router: RoutedTTS, index: int) -> None:
+        self._response = response
+        self._router = router
+        self._index = index
+        self._emitted = False
+        self._failed = False
+
+    @property
+    def response_id(self) -> str:
+        return self._response.response_id
+
+    def _fail(self, exc: BaseException) -> None:
+        if not self._failed:
+            self._failed = True
+            self._router._streamed_failure(self._index, exc, self._emitted)
+
+    async def write(self, text: str) -> None:
+        try:
+            await self._response.write(text)
+        except Exception as exc:  # noqa: BLE001
+            self._fail(exc)
+            raise
+
+    async def finish(self) -> None:
+        try:
+            await self._response.finish()
+        except Exception as exc:  # noqa: BLE001
+            self._fail(exc)
+            raise
+
+    def interrupt(self) -> Any:
+        return self._response.interrupt()
+
+    async def wait_until_finished(self) -> None:
+        await self._response.wait_until_finished()
+
+    def __aiter__(self) -> AsyncIterator[RasaAudioBytes]:
+        return self._iterate()
+
+    async def _iterate(self) -> AsyncIterator[RasaAudioBytes]:
+        try:
+            async for chunk in self._response:
+                if not self._emitted:
+                    self._emitted = True
+                    self._router._streamed_audio(self._index)
+                yield chunk
+        except Exception as exc:  # noqa: BLE001
+            self._fail(exc)
+            raise
+
+    def __getattr__(self, name: str) -> Any:
+        # Anything a later Rasa reads on a response reaches the real one.
+        if name == "_response":
+            raise AttributeError(name)
+        return getattr(self._response, name)
