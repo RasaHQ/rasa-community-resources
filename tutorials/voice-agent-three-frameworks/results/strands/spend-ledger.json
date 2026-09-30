@@ -1,0 +1,65 @@
+{
+  "runs": [
+    {
+      "label": "2026-10-01-dev-model-checks",
+      "mode": "text, no voice",
+      "conversations": 3,
+      "cost_usd": 0.076706,
+      "llm_cost_usd": 0.076706,
+      "stt_cost_usd": 0.0,
+      "source": "llm_meter.py token usage x spec prices (the meter started by hand around three dev scripts; rows not committed)",
+      "note": "Before the first spec run: the temperature check (one 400, one 200, Chat Completions), the Chat Completions tools-with-reasoning_effort refusal (one 400), then two scripted text conversations through the agent on the Responses API (10 calls). No Speechmatics."
+    },
+    {
+      "label": "2026-10-01-smoke-text",
+      "run_tag": "20260930T231335",
+      "mode": "text",
+      "conversations": 1,
+      "cost_usd": 0.03807,
+      "llm_cost_usd": 0.034155,
+      "stt_cost_usd": 0.003915,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-smoke-audio",
+      "run_tag": "20260930T231437",
+      "mode": "audio",
+      "conversations": 1,
+      "cost_usd": 0.040406,
+      "llm_cost_usd": 0.03451,
+      "stt_cost_usd": 0.005896,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-speechmatics-live",
+      "run_tag": "20260930T231948",
+      "mode": "audio",
+      "conversations": 17,
+      "cost_usd": 0.695158,
+      "llm_cost_usd": 0.593306,
+      "stt_cost_usd": 0.101852,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-guard-off-adversarial",
+      "run_tag": "20260930T233501",
+      "mode": "audio",
+      "conversations": 6,
+      "cost_usd": 0.197453,
+      "llm_cost_usd": 0.162568,
+      "stt_cost_usd": 0.034885,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-web-page-check",
+      "mode": "browser page, headless Chromium",
+      "conversations": 1,
+      "cost_usd": 0.038289,
+      "llm_cost_usd": 0.03451,
+      "stt_cost_usd": 0.003779,
+      "source": "llm_meter.py around server.py (llm-calls.jsonl in the run folder); speech-to-text priced from the page's 1,582 frames sent (31.6 s) x 0.43 USD per hour, from the page's state rather than the runner",
+      "note": "One two-turn call through shared/web/serve.py and check_page.py."
+    }
+  ],
+  "total_cost_usd": 1.086082
+}
