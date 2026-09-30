@@ -1,0 +1,81 @@
+{
+  "organisation": "Willow Shop (fictional)",
+  "processor": "Quillfeather Payments (fictional payment processor)",
+  "note": "Entirely fictional fixture data for a teaching project. No real retailer, payment processor, customer, order, card, phone number or address.",
+  "as_of": "2026-09-30T12:00:00-04:00",
+  "session_customer_id": "WS-CUST-5521",
+  "customers": {
+    "WS-CUST-5521": {
+      "first_name": "Dana",
+      "last_name": "Whitlock",
+      "mobile": "+1 614 555 0142",
+      "email": "dana.whitlock@example.com"
+    },
+    "WS-CUST-6034": {
+      "first_name": "Rafael",
+      "last_name": "Ostrander",
+      "mobile": "+1 614 555 0187",
+      "email": "rafael.ostrander@example.com"
+    }
+  },
+  "approved_channels": {
+    "text": "a secure payment link by text message to the mobile number on the account",
+    "email": "a secure payment link by email to the address on the account"
+  },
+  "approved_alternative": "pay it yourself from the order page in the Willow Shop app or website, under Orders, then Pay balance",
+  "orders": {
+    "WS-10517": {
+      "customer_id": "WS-CUST-5521",
+      "summary": "oak entryway bench",
+      "balance_cents": 14900,
+      "hold_reason": "the card payment failed at checkout",
+      "processor": {"sessions": ["captured"]}
+    },
+    "WS-10528": {
+      "customer_id": "WS-CUST-5521",
+      "summary": "brass table lamp",
+      "balance_cents": 6250,
+      "hold_reason": "the card on the order expired before it shipped",
+      "processor": {"sessions": ["captured"]}
+    },
+    "WS-10546": {
+      "customer_id": "WS-CUST-5521",
+      "summary": "wool area rug",
+      "balance_cents": 8999,
+      "hold_reason": "the card payment failed at checkout",
+      "processor": {"sessions": ["expired", "captured"]}
+    },
+    "WS-10563": {
+      "customer_id": "WS-CUST-5521",
+      "summary": "walnut bookshelf",
+      "balance_cents": 21000,
+      "hold_reason": "the card payment failed at checkout",
+      "processor": {"sessions": ["captured_unverified"]}
+    },
+    "WS-10581": {
+      "customer_id": "WS-CUST-5521",
+      "summary": "two patio chairs from a partner seller",
+      "balance_cents": 4500,
+      "hold_reason": "the partner seller is waiting for payment",
+      "processor": {"sessions": [], "hosted_session_unavailable": "partner-seller orders are paid on the partner seller's own payment page"}
+    },
+    "WS-10592": {
+      "customer_id": "WS-CUST-5521",
+      "summary": "linen throw pillows",
+      "balance_cents": 0,
+      "hold_reason": null,
+      "processor": {"sessions": []}
+    },
+    "WS-10610": {
+      "customer_id": "WS-CUST-6034",
+      "summary": "ceramic planter",
+      "balance_cents": 3800,
+      "hold_reason": "the card payment failed at checkout",
+      "processor": {"sessions": ["captured"]}
+    }
+  },
+  "receipt_signing": {
+    "algorithm": "HMAC-SHA256 over reference|order|amount_cents|status",
+    "fixture_key": "fixture-only-signing-key-not-a-secret"
+  }
+}

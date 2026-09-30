@@ -1,0 +1,14 @@
+[project]
+name = "mantle-voice-payment-boundary-gpt"
+version = "0.1.0"
+description = "Willow Shop order-payment voice agent on GPT-5.5 with Deepgram Flux and Rime speech: card details never taken by voice, payment only through a processor-hosted link, card digits removed from transcripts before Rasa records them"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = ["rasa-pro==3.21.0.dev5"]
+
+[tool.rasa-catalog]
+required-secrets = ["OPENAI_API_KEY", "DEEPGRAM_API_KEY", "RIME_API_KEY"]
+
+[tool.uv]
+prerelease = "allow"
+package = false
