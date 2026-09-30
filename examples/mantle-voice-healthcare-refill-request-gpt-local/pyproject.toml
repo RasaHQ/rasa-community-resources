@@ -1,0 +1,31 @@
+[project]
+name = "mantle-voice-healthcare-refill-request-gpt-local"
+version = "0.1.0"
+description = "Cedar Clinic refill-request voice agent on GPT-5.5 whose speech runs on the Mac: faster-whisper in, NeuTTS on Metal out, the no-approval guard enforced in the tool layer"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "rasa-pro==3.21.0.dev5",
+    # The speech engines are the companion's voice-vendor-router providers,
+    # used as plain engine classes, not through RoutedASR/RoutedTTS:
+    # voicerouter.providers.whisper.FasterWhisperASR (speech-to-text) and
+    # voicerouter.providers.neutts_native.NeuTTSNative (text-to-speech, which
+    # drives the native runtime built by native/neutts/build.sh).
+    "voice-vendor-router",
+    # faster-whisper resolves against rasa-pro's numpy pin; the Python neutts
+    # package does not, and is not used.
+    "faster-whisper==1.2.1",
+]
+
+[tool.rasa-catalog]
+required-secrets = ["OPENAI_API_KEY"]
+
+# A path source, because the router lives in this repository. Lifted out on its
+# own, replace it with a git source:
+#   voice-vendor-router = { git = "https://github.com/RasaHQ/rasa-community-resources", subdirectory = "patterns/voice-vendor-router" }
+[tool.uv.sources]
+voice-vendor-router = { path = "../../patterns/voice-vendor-router", editable = true }
+
+[tool.uv]
+prerelease = "allow"
+package = false

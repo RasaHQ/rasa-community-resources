@@ -1,0 +1,44 @@
+2026-09-30 | curl https://pypi.org/pypi/rasa-pro/json (latest non-prerelease: 3.20.1; info.version 3.20.1; rasa_pro-3.20.1-py3-none-any.whl uploaded 2026-09-29T12:01:49, PyPI sha256 e468eedd57d9c814137b04065c35c256dddbc73dcd2a0eba9d02f1fa30e6c858); downloaded wheel sha256 matches
+latest prereleases on PyPI: 3.21.0.dev1 .. 3.21.0.dev5
+3.20.1 engine.py sha256 29b89b337a7fd349b7ee7a2a52fad1e88a2df1523ba343f7da0a38499d3fd066
+3.21.0.dev5 engine.py sha256 fe65f02f6d4f6965b10ef76afd33c50a5f542dfb28c0b35ebe3412936df4a8a8
+
+$ diff <3.21.0.dev5 engine.py> <3.20.1 engine.py>
+278c278
+<             return None
+---
+>             return UserIsSpeaking(text="")
+
+$ unzip -p rasa_pro-3.20.1-py3-none-any.whl rasa/core/channels/voice_stream/asr/deepgram/engine.py | cat -n | sed -n 216,222p;270,294p
+   216	class _DeepgramV2(_DeepgramVersionHandler):
+   217	    """Handler for the Deepgram ``/v2/listen`` (Flux) API.
+   218	
+   219	    Signals speech onset on ``StartOfTurn``, tracks the latest ``Update``
+   220	    transcript, and commits it on ``EndOfTurn``. The v2 endpoint rejects
+   221	    ``KeepAlive`` messages, so :meth:`send_keep_alive` is a no-op.
+   222	    """
+   270	        if data_type != "TurnInfo":
+   271	            return None
+   272	
+   273	        event_type = data.get("event")
+   274	        transcript = data.get("transcript", "")
+   275	
+   276	        if event_type == "StartOfTurn":
+   277	            self._accumulated_transcript = ""
+   278	            return UserIsSpeaking(text="")
+   279	
+   280	        if event_type == "Update":
+   281	            # v2 sends the full current-turn transcript on every Update; replace.
+   282	            if not transcript:
+   283	                return None
+   284	            self._accumulated_transcript = transcript
+   285	            return UserIsSpeaking(text=transcript)
+   286	
+   287	        if event_type == "EndOfTurn":
+   288	            if self._accumulated_transcript:
+   289	                committed = self._accumulated_transcript
+   290	                self._accumulated_transcript = ""
+   291	                return NewTranscript(text=committed)
+   292	            return None
+   293	
+   294	        return None

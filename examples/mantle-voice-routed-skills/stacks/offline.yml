@@ -17,11 +17,16 @@
 # Setup, both of which are more than an install:
 #   ASR   uv sync --prerelease=allow --extra local-asr, then download a Vosk
 #         model and point `model_path` at it.
-#   TTS   NeuTTS cannot be installed alongside rasa-pro in one environment —
-#         rasa-pro pins numpy <2.2 and neutts needs >=2.2.6. Run it out of a
-#         second venv or a container; the pattern README has both recipes.
-#         Until then it is skipped with that reason and this stack has no voice,
-#         which is a real outcome you should see before you plan around it.
+#   TTS   The Python `neutts` package cannot be installed alongside rasa-pro
+#         in one environment — rasa-pro pins numpy <2.2 and neutts needs
+#         >=2.2.6 — so NeuTTSLocal below is skipped with that reason and this
+#         stack has no voice until you run it out of a second venv or a
+#         container. NeuTTS itself does not need that package: on Apple
+#         silicon, voicerouter.providers.neutts_native.NeuTTSNative runs
+#         NeuTTS-2E natively (llama.cpp on Metal plus a C++ decoder) inside
+#         Rasa's own venv, with no torch and no numpy. Build it with
+#         patterns/voice-vendor-router/native/neutts/build.sh; it was run live
+#         in examples/mantle-voice-healthcare-refill-request-gpt-local.
 
 llm:
   model_group: orchestrator

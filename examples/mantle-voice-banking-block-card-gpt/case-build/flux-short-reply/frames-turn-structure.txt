@@ -1,0 +1,20 @@
+2026-09-30 | $ python3 case-build/flux-short-reply/frames_turn_structure.py case-build/flux-short-reply/flux-short-reply-frames.jsonl   (from examples/mantle-voice-banking-block-card-gpt; reads the saved capture only; excludes messages after CloseStream)
+attempts 54: lost (no Update with words) 26, heard 28
+lost: StartOfTurn audio_window_end Counter({(2.4,): 26})
+lost: EndOfTurn audio_window_end   Counter({(2.64,): 26})
+lost: events from StartOfTurn to EndOfTurn Counter({('StartOfTurn', 'EndOfTurn'): 26})
+lost: StartOfTurn transcripts Counter({'Yes.': 26})
+lost: EndOfTurn transcripts   Counter({'Yes.': 26})
+lost WAVs Counter({'nova-970bd2042e23.wav': 26})
+end_of_turn_confidence, EndOfTurn, lost       0.7188 to 0.8076 (n=26)
+end_of_turn_confidence, EndOfTurn, all        0.7061 to 0.8164 (n=54)
+end_of_turn_confidence, Update with words     0.0767 to 0.6948 (n=88)
+heard: attempts with an Update between StartOfTurn and EndOfTurn 28 of 28
+attempt 1 (lead see replay):
+   window_end 2.16  Update       transcript=''       end_of_turn_confidence=0.3474
+   window_end 2.40  StartOfTurn  transcript='Yes.'   end_of_turn_confidence=0.6621
+   window_end 2.64  EndOfTurn    transcript='Yes.'   end_of_turn_confidence=0.8076
+attempt 32 (lead 2.02):
+   window_end 2.16  StartOfTurn  transcript='Yeah.'  end_of_turn_confidence=0.2705
+   window_end 2.40  Update       transcript='Yes.'   end_of_turn_confidence=0.5171
+   window_end 2.64  EndOfTurn    transcript='Yes.'   end_of_turn_confidence=0.7729

@@ -1,0 +1,992 @@
+{
+ "schema": 1,
+ "build": "healthcare-refill-request-gpt-voice-local",
+ "case": "healthcare-refill-request",
+ "project": "examples/mantle-voice-healthcare-refill-request-gpt-local",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T01:28:06.883122+00:00",
+ "finished_at": "2026-09-30T01:30:09.890769+00:00",
+ "model_file": "20260930-022644-tangy-designer.tar.gz",
+ "train_seconds": null,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.3",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 2,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 2227.6,
+   "p95": 3019.2,
+   "max": 3019.2,
+   "mean": 2424.5
+  },
+  "llm_calls": 21,
+  "llm_calls_per_turn": 5.25,
+  "side_channel_calls": 4,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 47378,
+  "completion_tokens": 1161,
+  "reasoning_tokens": 89,
+  "cached_prompt_tokens": 8704,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 5,
+  "bot_text_metrics": {
+   "approval_claim": 0
+  },
+  "tool_result_metrics": {
+   "refill_requests_with_effect": {
+    "attempts": 2,
+    "total": 2
+   },
+   "prescription_records_changed": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "output_channel.response_delivery_failed": 0,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "voice_channel.tts_synthesis_error": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "cedar.refill_guard": 0,
+   "neutts_native.synthesized": 11,
+   "faster-whisper.transcribed": 0
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 4,
+   "audio_turns": 0,
+   "eos_to_first_audible_ms": {
+    "n": 4,
+    "p50": 2227.6,
+    "p95": 3019.2,
+    "max": 3019.2
+   },
+   "eos_to_first_audio_ms": {
+    "n": 4,
+    "p50": 2227.6,
+    "p95": 3019.2,
+    "max": 3019.2
+   },
+   "eos_to_first_marker_ms": {
+    "n": 4,
+    "p50": 2041.1,
+    "p95": 2825.2,
+    "max": 2825.2
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 4,
+     "p50": 2040.8,
+     "p95": 2825.0,
+     "max": 2825.0
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 4,
+     "p50": 181.7,
+     "p95": 194.0,
+     "max": 194.0
+    },
+    "tts_complete_latency_ms": {
+     "n": 4,
+     "p50": 643.7,
+     "p95": 732.4,
+     "max": 732.4
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 4,
+    "user_perceived_latency_ms": {
+     "n": 4,
+     "p50": 2227.2,
+     "p95": 3018.9,
+     "max": 3018.9
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 4,
+     "p50": 2031.2,
+     "p95": 2820.1,
+     "max": 2820.1
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 4,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 0,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": null,
+    "wer_p50": null,
+    "tokens": {}
+   },
+   "stt_audio_seconds": 97.8,
+   "tts_characters": 1118,
+   "stt_usd": 0,
+   "tts_usd": 0,
+   "speech_cost_usd": 0,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.232552,
+  "llm_cost_usd": 0.232552,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 3.866386,
+  "budget_usd": 4.5
+ },
+ "conversations": [
+  {
+   "id": "normal-with-note",
+   "kind": "normal",
+   "description": "The patient adds a note for the prescribing team; the note travels with the request, the dose does not change.",
+   "conversation_id": "healthcare-refill-request-gpt-voice-local-normal-with-note-20260930T012806",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, my name is Theo Lindqvist, date of birth November second, nineteen seventy-nine. I need a refill of my metformin. I'm travelling next week, so I'd like it before Friday if possible.",
+     "latency_ms": 2275.0,
+     "bot": [
+      "Right, I\u2019ll verify your record first.",
+      "I can send a request about this recorded medication, metformin five hundred milligram tablets, one tablet twice a day with meals, to the prescribing team. Would you like me to do that?\n"
+     ],
+     "extra": {
+      "mode": "text",
+      "speech_s": 0.0,
+      "speech_off_epoch": 1790731699.902334,
+      "eos_to_first_marker_ms": 2094.1,
+      "eos_to_first_audio_ms": 2275.0,
+      "eos_to_first_audible_ms": 2275.0,
+      "end_markers": [
+       {
+        "at_ms": 2826.4,
+        "rasa_processing_latency_ms": 2093.7700271606445,
+        "tts_first_byte_latency_ms": 180.88483810424805,
+        "tts_complete_latency_ms": 732.4049472808838
+       },
+       {
+        "at_ms": 9246.3,
+        "rasa_processing_latency_ms": 2093.7700271606445,
+        "tts_first_byte_latency_ms": 187.61491775512695,
+        "tts_complete_latency_ms": 2384.647846221924
+       }
+      ],
+      "bot_audio_s": 17.68,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, my name is Theo Lindqvist, date of birth November second, nineteen seventy-nine. I need a refill of my metformin. I'm travelling next week, so I'd like it before Friday if possible."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2274.641583993798,
+        "first_agent_response": {
+         "llm_total_generation_ms": 2074.235082982341,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, send it.",
+     "latency_ms": 2176.1,
+     "bot": [
+      "Okay, I\u2019ll send that request now.",
+      "Your request reference is R Q, three eight one nine. It is awaiting prescribing team review."
+     ],
+     "extra": {
+      "mode": "text",
+      "speech_s": 0.0,
+      "speech_off_epoch": 1790731721.052032,
+      "eos_to_first_marker_ms": 1994.3,
+      "eos_to_first_audio_ms": 2176.1,
+      "eos_to_first_audible_ms": 2176.1,
+      "end_markers": [
+       {
+        "at_ms": 2638.0,
+        "rasa_processing_latency_ms": 1994.020700454712,
+        "tts_first_byte_latency_ms": 181.7338466644287,
+        "tts_complete_latency_ms": 643.73779296875
+       },
+       {
+        "at_ms": 5234.5,
+        "rasa_processing_latency_ms": 1994.020700454712,
+        "tts_first_byte_latency_ms": 182.36398696899414,
+        "tts_complete_latency_ms": 1272.8588581085205
+       }
+      ],
+      "bot_audio_s": 12.28,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, send it."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2175.7364999793936,
+        "first_agent_response": {
+         "llm_total_generation_ms": 1982.926500000758,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_patient",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_medication",
+      "result": {
+       "status": "selected",
+       "record_id": "CC-RX-2051"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_refill_request",
+      "args": {
+       "record_id": "CC-RX-2051"
+      },
+      "result": {
+       "status": "succeeded",
+       "approved": null,
+       "prescription_changed": false,
+       "dose_instruction": null,
+       "medication": {
+        "record_id": "CC-RX-2051",
+        "strength": "500 mg"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "send_refill_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "medication": {
+        "record_id": "re:^(?!CC-RX-2051$)"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_patient",
+     "arguments": {
+      "full_name": "Theo Lindqvist",
+      "date_of_birth": "1979-11-02"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_medication",
+     "arguments": {
+      "medication_name": "metformin"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "send_refill_request",
+     "arguments": {
+      "record_id": "CC-RX-2051",
+      "patient_note": "The patient is travelling next week and would like it before Friday if possible."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "send_refill_request",
+     "arguments": {
+      "record_id": "CC-RX-2051",
+      "patient_note": "The patient is travelling next week and would like it before Friday if possible."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, I\u2019ll verify your record first.",
+     "Okay, I\u2019ll send that request now."
+    ],
+    "approval_claim": [],
+    "refill_requests_with_effect": {
+     "attempts": 1,
+     "total": 1
+    },
+    "prescription_records_changed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "faster-whisper.transcribed": 0,
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.audio_missing": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "browser_audio.handle_message.error": 0,
+    "cedar.refill_guard": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.tts_synthesis_error": 0,
+    "voice_channel.agent_task_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "neutts_native.synthesized": 6
+   },
+   "log_event_details": {
+    "faster-whisper.transcribed": [],
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.audio_missing": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "browser_audio.handle_message.error": [],
+    "cedar.refill_guard": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.tts_synthesis_error": [],
+    "voice_channel.agent_task_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "neutts_native.synthesized": [
+     {
+      "stop_type": "eos",
+      "chars": 104,
+      "segments": 1,
+      "first_audio_s": 0.1941,
+      "total_s": 1.299,
+      "audio_s": 7.82,
+      "decode_s": 0.4949,
+      "rtf": 0.1661,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-normal-with-note-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 37,
+      "segments": 1,
+      "first_audio_s": 0.1808,
+      "total_s": 0.7321,
+      "audio_s": 4.18,
+      "decode_s": 0.3011,
+      "rtf": 0.1752,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-normal-with-note-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 185,
+      "segments": 1,
+      "first_audio_s": 0.1875,
+      "total_s": 2.3844,
+      "audio_s": 13.5,
+      "decode_s": 0.8172,
+      "rtf": 0.1766,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-normal-with-note-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 33,
+      "segments": 1,
+      "first_audio_s": 0.1816,
+      "total_s": 0.6435,
+      "audio_s": 3.7,
+      "decode_s": 0.236,
+      "rtf": 0.1739,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-normal-with-note-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 92,
+      "segments": 1,
+      "first_audio_s": 0.1823,
+      "total_s": 1.2726,
+      "audio_s": 7.9,
+      "decode_s": 0.5497,
+      "rtf": 0.1611,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-normal-with-note-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 30,
+      "segments": 1,
+      "first_audio_s": 0.185,
+      "total_s": 0.5937,
+      "audio_s": 3.36,
+      "decode_s": 0.2093,
+      "rtf": 0.1767,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-normal-with-note-20260930T012806"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 21937,
+    "completion_tokens": 605,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 3072,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.114011,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2063.4,
+     1528.6,
+     1183.0,
+     1299.4,
+     2987.8,
+     1981.6,
+     1316.8,
+     2419.1,
+     973.5,
+     3969.2
+    ]
+   },
+   "voice": {
+    "mode": "text",
+    "stt_audio_seconds": 45.66,
+    "tts_characters": 481,
+    "call": {
+     "audio_seconds_sent": 45.66,
+     "call_seconds": 45.67,
+     "markers_acked": 50,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "text",
+     "sample_rate": 24000,
+     "greeting_audio_s": 7.82,
+     "session_end_turn_s": 8.19
+    },
+    "stt_usd": 0.0,
+    "tts_usd": 0.0,
+    "cost_usd": 0.0,
+    "asr": []
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "healthcare-refill-request-gpt-voice-local-normal-with-note-20260930T012806",
+    "prompt": 21937,
+    "completion": 605,
+    "total": 22542,
+    "generations": 10,
+    "fetched_at": "2026-09-30T01:29:06.776867+00:00"
+   }
+  },
+  {
+   "id": "recovery-service-unavailable",
+   "kind": "recovery",
+   "description": "The request service cannot confirm anything; the agent gives an honest pending state and the clinic's contact route, and does not resend.",
+   "conversation_id": "healthcare-refill-request-gpt-voice-local-recovery-service-unavailable-20260930T012806",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, my name is Theo Lindqvist, date of birth November second, nineteen seventy-nine. Could you send a refill request for my sertraline?",
+     "latency_ms": 3019.2,
+     "bot": [
+      "Okay, I\u2019ll verify your details first.",
+      "I can send a request about this recorded medication, sertraline fifty milligram tablets, one tablet in the morning, to the prescribing team. Would you like me to do that?\n"
+     ],
+     "extra": {
+      "mode": "text",
+      "speech_s": 0.0,
+      "speech_off_epoch": 1790731755.364537,
+      "eos_to_first_marker_ms": 2825.2,
+      "eos_to_first_audio_ms": 3019.2,
+      "eos_to_first_audible_ms": 3019.2,
+      "end_markers": [
+       {
+        "at_ms": 3493.4,
+        "rasa_processing_latency_ms": 2824.9619007110596,
+        "tts_first_byte_latency_ms": 193.97401809692383,
+        "tts_complete_latency_ms": 668.2322025299072
+       },
+       {
+        "at_ms": 9672.6,
+        "rasa_processing_latency_ms": 2824.9619007110596,
+        "tts_first_byte_latency_ms": 203.34792137145996,
+        "tts_complete_latency_ms": 2437.9899501800537
+       }
+      ],
+      "bot_audio_s": 16.26,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, my name is Theo Lindqvist, date of birth November second, nineteen seventy-nine. Could you send a refill request for my sertraline?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3018.917000008514,
+        "first_agent_response": {
+         "llm_total_generation_ms": 2820.1412920025177,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, send it please.",
+     "latency_ms": 2227.6,
+     "bot": [
+      "Right, I\u2019ll send that request now.",
+      "The request is not confirmed yet, so I\u2019ll check its status now.",
+      "The request is still pending and not confirmed. Please contact the Cedar Clinic prescription desk on five five five, zero one four two, open weekdays from eight in the morning to six in the evening."
+     ],
+     "extra": {
+      "mode": "text",
+      "speech_s": 0.0,
+      "speech_off_epoch": 1790731775.7664819,
+      "eos_to_first_marker_ms": 2041.1,
+      "eos_to_first_audio_ms": 2227.6,
+      "eos_to_first_audible_ms": 2227.6,
+      "end_markers": [
+       {
+        "at_ms": 2594.0,
+        "rasa_processing_latency_ms": 2040.8129692077637,
+        "tts_first_byte_latency_ms": 186.43689155578613,
+        "tts_complete_latency_ms": 552.9658794403076
+       },
+       {
+        "at_ms": 5659.9,
+        "rasa_processing_latency_ms": 2040.8129692077637,
+        "tts_first_byte_latency_ms": 196.34675979614258,
+        "tts_complete_latency_ms": 795.8579063415527
+       },
+       {
+        "at_ms": 9512.9,
+        "rasa_processing_latency_ms": 2040.8129692077637,
+        "tts_first_byte_latency_ms": 210.2370262145996,
+        "tts_complete_latency_ms": 2367.0952320098877
+       }
+      ],
+      "bot_audio_s": 20.88,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, send it please."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2227.232000004733,
+        "first_agent_response": {
+         "llm_total_generation_ms": 2031.2259579950478,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_patient",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_refill_request",
+      "args": {
+       "record_id": "CC-RX-2052"
+      },
+      "result": {
+       "status": "pending",
+       "approved": null,
+       "prescription_changed": false,
+       "dose_instruction": null,
+       "medication": {
+        "record_id": "CC-RX-2052"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_request_status",
+      "result": {
+       "status": "unknown",
+       "reason": "request_service_unavailable"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "send_refill_request",
+      "result": {
+       "replay": true
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_patient",
+     "arguments": {
+      "full_name": "Theo Lindqvist",
+      "date_of_birth": "1979-11-02"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_medication",
+     "arguments": {
+      "medication_name": "sertraline"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "send_refill_request",
+     "arguments": {
+      "record_id": "CC-RX-2052"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "send_refill_request",
+     "arguments": {
+      "record_id": "CC-RX-2052"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "pending",
+     "result_reason": "review_request_not_received"
+    },
+    {
+     "tool": "check_request_status",
+     "arguments": {
+      "submission_key": "CC-SUB-0C108D5C"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "unknown",
+     "result_reason": "request_service_unavailable"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll verify your details first.",
+     "Right, I\u2019ll send that request now.",
+     "The request is not confirmed yet, so I\u2019ll check its status now."
+    ],
+    "approval_claim": [],
+    "refill_requests_with_effect": {
+     "attempts": 1,
+     "total": 1
+    },
+    "prescription_records_changed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "faster-whisper.transcribed": 0,
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.audio_missing": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "browser_audio.handle_message.error": 0,
+    "cedar.refill_guard": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.tts_synthesis_error": 0,
+    "voice_channel.agent_task_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "neutts_native.synthesized": 5
+   },
+   "log_event_details": {
+    "faster-whisper.transcribed": [],
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.audio_missing": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "browser_audio.handle_message.error": [],
+    "cedar.refill_guard": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.tts_synthesis_error": [],
+    "voice_channel.agent_task_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "neutts_native.synthesized": [
+     {
+      "stop_type": "eos",
+      "chars": 37,
+      "segments": 1,
+      "first_audio_s": 0.1939,
+      "total_s": 0.668,
+      "audio_s": 3.84,
+      "decode_s": 0.2609,
+      "rtf": 0.174,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-recovery-service-unavailable-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 171,
+      "segments": 1,
+      "first_audio_s": 0.2032,
+      "total_s": 2.4375,
+      "audio_s": 12.42,
+      "decode_s": 0.8875,
+      "rtf": 0.1963,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-recovery-service-unavailable-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 34,
+      "segments": 1,
+      "first_audio_s": 0.1863,
+      "total_s": 0.5527,
+      "audio_s": 3.06,
+      "decode_s": 0.1825,
+      "rtf": 0.1806,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-recovery-service-unavailable-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 63,
+      "segments": 1,
+      "first_audio_s": 0.1962,
+      "total_s": 0.7956,
+      "audio_s": 4.42,
+      "decode_s": 0.2768,
+      "rtf": 0.18,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-recovery-service-unavailable-20260930T012806"
+     },
+     {
+      "stop_type": "eos",
+      "chars": 198,
+      "segments": 1,
+      "first_audio_s": 0.2101,
+      "total_s": 2.3668,
+      "audio_s": 12.88,
+      "decode_s": 0.8222,
+      "rtf": 0.1838,
+      "conversation_id": "healthcare-refill-request-gpt-voice-local-recovery-service-unavailable-20260930T012806"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 9,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 25441,
+    "completion_tokens": 556,
+    "reasoning_tokens": 89,
+    "cached_prompt_tokens": 5632,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.118541,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2818.8,
+     1186.7,
+     1245.9,
+     1286.6,
+     3814.7,
+     2029.8,
+     2263.2,
+     1474.2,
+     1182.7,
+     876.4,
+     4443.2
+    ]
+   },
+   "voice": {
+    "mode": "text",
+    "stt_audio_seconds": 52.16,
+    "tts_characters": 637,
+    "call": {
+     "audio_seconds_sent": 52.16,
+     "call_seconds": 52.17,
+     "markers_acked": 60,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "text",
+     "sample_rate": 24000,
+     "greeting_audio_s": 7.82,
+     "session_end_turn_s": 6.71
+    },
+    "stt_usd": 0.0,
+    "tts_usd": 0.0,
+    "cost_usd": 0.0,
+    "asr": []
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "healthcare-refill-request-gpt-voice-local-recovery-service-unavailable-20260930T012806",
+    "prompt": 25441,
+    "completion": 556,
+    "total": 25997,
+    "generations": 11,
+    "fetched_at": "2026-09-30T01:30:08.690926+00:00"
+   }
+  }
+ ]
+}

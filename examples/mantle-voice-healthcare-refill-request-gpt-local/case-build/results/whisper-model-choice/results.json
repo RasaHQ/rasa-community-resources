@@ -1,0 +1,181 @@
+{
+ "measured_on": "2026-09-30",
+ "machine": "Apple M4 Pro, 12 cores (8 performance), 64 GB, macOS 26.6.2",
+ "runtime": "faster-whisper 1.2.1, CTranslate2 4.8.2, device cpu (CTranslate2 has no Metal or Core ML backend), compute_type int8, cpu_threads 8, beam_size 1, language en, vad_filter off",
+ "audio": "the 48 caller fixtures in case-build/caller-audio (Deepgram Aura-2, 24 kHz, resampled to 16 kHz with audioop.ratecv as the ASR engine does), one warm-up call before timing",
+ "hotwords": "Cedar Clinic lisinopril atorvastatin albuterol budesonide lorazepam simvastatin metformin sertraline amoxicillin",
+ "note": "transcribe_s is wall time of one transcribe() call for a whole caller turn; tokens are checked as in the harness (medication and name exact, dates after number normalisation)",
+ "models": {
+  "tiny.en": {
+   "load_s": 0.2,
+   "transcribe_s_p50": 0.105,
+   "p95": 0.154,
+   "max": 0.19,
+   "rtf_mean": 0.0197,
+   "wer_mean": 0.0779,
+   "tokens": {
+    "name": "30/42",
+    "date": "43/43",
+    "medication": "8/23"
+   },
+   "medication_misses": [
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I ran out of",
+    "budesonide->No wait, not that one. And that my food doesn't hide in halo",
+    "lisinopril->Maria Alvarez born March 15, 1968. I need my listener, Pearl",
+    "atorvastatin->I need a refill of my atorvastan. Sorry. I mean my lascine a",
+    "lisinopril->I need a refill of my atorvastan. Sorry. I mean my lascine a",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I need a ref",
+    "albuterol->Hi, this is Maria Alvarez, born March 14, 1968. Could you se",
+    "lisinopril->This is Maria Alvarez, born March 4, 1968. I need my life's "
+   ]
+  },
+  "base.en": {
+   "load_s": 0.1,
+   "transcribe_s_p50": 0.273,
+   "p95": 0.426,
+   "max": 12.914,
+   "rtf_mean": 0.0998,
+   "wer_mean": 0.0601,
+   "tokens": {
+    "name": "34/42",
+    "date": "43/43",
+    "medication": "7/23"
+   },
+   "medication_misses": [
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I ran out of",
+    "budesonide->No way, not that one. I met my buddasanide inhaler.",
+    "lisinopril->Maria Alvarez, born March 15, 1968. I need my lacinopril.",
+    "atorvastatin->I need a refill of my atorvestan. Sorry. I mean my lissinapr",
+    "lisinopril->I need a refill of my atorvestan. Sorry. I mean my lissinapr",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I need a ref",
+    "albuterol->Maria Alvarez here, 8 of birth 0-3, 14, 1968. Could I get mo",
+    "lisinopril->This is Maria Alvarez, born March 4th, 1968. I need my Lycin"
+   ]
+  },
+  "distil-small.en+hotwords": {
+   "load_s": 0.18,
+   "transcribe_s_p50": 0.613,
+   "p95": 5.849,
+   "max": 12.23,
+   "rtf_mean": 0.2986,
+   "wer_mean": 0.185,
+   "tokens": {
+    "name": "31/42",
+    "date": "42/43",
+    "medication": "6/23"
+   },
+   "medication_misses": [
+    "lisinopril->Hi, this is Maria Alvarez, born March 14th, 1968. I ran out ",
+    "budesonide->No, wait, not that one. I meant my boudesanide inhalate inha",
+    "lisinopril->Maria Alvarez, born March 15th, 1968. I need my lascinopril.",
+    "atorvastatin->I need a refill of my Atorvostatin. Sorry, I mean my Licinop",
+    "lisinopril->I need a refill of my Atorvostatin. Sorry, I mean my Licinop",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I need a ref",
+    "albuterol->Hi, this is Maria Alvarez, born March 14th, 1968. Could you ",
+    "albuterol->Maria Alvarez here, eight of birth, zero three, fourteen, ni"
+   ]
+  },
+  "small.en": {
+   "load_s": 0.24,
+   "transcribe_s_p50": 0.925,
+   "p95": 2.827,
+   "max": 4.639,
+   "rtf_mean": 0.2048,
+   "wer_mean": 0.043,
+   "tokens": {
+    "name": "34/42",
+    "date": "43/43",
+    "medication": "15/23"
+   },
+   "medication_misses": [
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I ran out of",
+    "budesonide->No wait, not that one. I meant my Boudecinide inhaler.",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I need a ref",
+    "lisinopril->This is Maria Alvarez, born March 4th, 1968. I need my lisin",
+    "simvastatin->Hi, this is Maria Alvarez, born March 14, 1968. I need a ref",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. Please send ",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. My lacinopri",
+    "metformin->I'm almost out of my met foreman."
+   ]
+  },
+  "distil-small.en": {
+   "load_s": 0.18,
+   "transcribe_s_p50": 0.57,
+   "p95": 0.777,
+   "max": 0.834,
+   "rtf_mean": 0.1058,
+   "wer_mean": 0.0597,
+   "tokens": {
+    "name": "31/42",
+    "date": "42/43",
+    "medication": "5/23"
+   },
+   "medication_misses": [
+    "lisinopril->Hi, this is Maria Alvarez, born March 14th, 1968. I ran out ",
+    "budesonide->No wait, not that one. I meant my boudessenide inhaler.",
+    "lisinopril->Maria Alvarez, born March 15th, 1968. I need my Licinopril.",
+    "atorvastatin->I need a refill of my Atorvostaten. Sorry, I mean my Licinap",
+    "lisinopril->I need a refill of my Atorvostaten. Sorry, I mean my Licinap",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14th, 1968. I need a r",
+    "albuterol->Hi, this is Maria Alvarez, born March 14th, 1968. Could you ",
+    "albuterol->Maria Alvarez here, eight of birth, zero three, fourteen, ni"
+   ]
+  },
+  "medium.en": {
+   "load_s": 0.71,
+   "transcribe_s_p50": 2.256,
+   "p95": 3.161,
+   "max": 3.64,
+   "rtf_mean": 0.4216,
+   "wer_mean": 0.0391,
+   "tokens": {
+    "name": "37/42",
+    "date": "43/43",
+    "medication": "15/23"
+   },
+   "medication_misses": [
+    "lisinopril->Hi, this is Maria Alvarez, born March 14th, 1968. I ran out ",
+    "budesonide->No, wait, not that one. I meant my Boudesenide inhaler.",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14th, 1968. I need a r",
+    "lisinopril->This is Maria Alvarez, born March 4th, 1968. I need my lisin",
+    "simvastatin->Hi, this is Maria Alvarez, born March 14, 1968. I need a ref",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. Please send ",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. My Lascina P",
+    "sertraline->Hello, my name is Th\u00e9o Lindquist, date of birth November 2nd"
+   ]
+  },
+  "large-v3-turbo": {
+   "load_s": 0.73,
+   "transcribe_s_p50": 2.701,
+   "p95": 2.883,
+   "max": 2.941,
+   "rtf_mean": 0.4795,
+   "wer_mean": 0.0259,
+   "tokens": {
+    "name": "37/42",
+    "date": "43/43",
+    "medication": "19/23"
+   },
+   "medication_misses": [
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I ran out of",
+    "lisinopril->Hi, this is Maria Alvarez, born March 14, 1968. I need a ref",
+    "lisinopril->This is Maria Alvarez, born March 4th, 1968. I need my Lisin",
+    "simvastatin->Hi, this is Maria Alvarez, born March 14, 1968. I need a ref"
+   ]
+  },
+  "small.en+hotwords": {
+   "load_s": 0.22,
+   "transcribe_s_p50": 0.965,
+   "p95": 1.373,
+   "max": 1.554,
+   "rtf_mean": 0.1709,
+   "wer_mean": 0.019,
+   "tokens": {
+    "name": "34/42",
+    "date": "43/43",
+    "medication": "23/23"
+   },
+   "medication_misses": []
+  }
+ }
+}

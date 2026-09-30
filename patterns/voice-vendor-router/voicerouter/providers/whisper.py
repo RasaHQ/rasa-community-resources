@@ -5,6 +5,8 @@
       model_id: tiny.en       # tiny(.en) base(.en) small(.en) medium large-v3
       device: cpu
       compute_type: int8
+      cpu_threads: 8          # CTranslate2 threads; 0 lets it choose (4)
+      hotwords: "lisinopril metformin"   # optional bias towards words it should expect
 
 Whisper is a batch model: it takes a finished utterance and returns a
 transcript. `LocalBufferedASR` supplies the streaming shape around it —
@@ -35,6 +37,13 @@ class FasterWhisperASRConfig(LocalASRConfig):
     #: `force_language` because `language` is reserved by ASREngineConfig.
     force_language: Optional[str] = None
     vad_filter: Optional[bool] = None
+    #: CTranslate2 intra-op threads on the CPU; 0 or unset lets it choose.
+    cpu_threads: Optional[int] = None
+    #: Words to bias recognition towards (faster-whisper `hotwords`), for
+    #: names and terms a caller is expected to say. Unset sends none.
+    hotwords: Optional[str] = None
+    #: Text to condition the first window on (faster-whisper `initial_prompt`).
+    initial_prompt: Optional[str] = None
 
 
 class FasterWhisperASR(LocalBufferedASR):
@@ -56,6 +65,7 @@ class FasterWhisperASR(LocalBufferedASR):
             self.config.model_id or "tiny.en",
             device=self.config.device or "cpu",
             compute_type=self.config.compute_type or "int8",
+            cpu_threads=self.config.cpu_threads or 0,
         )
 
     def transcribe(self, pcm16: bytes, sample_rate: int) -> str:
@@ -68,6 +78,8 @@ class FasterWhisperASR(LocalBufferedASR):
             beam_size=self.config.beam_size or 1,
             language=self.config.force_language or "en",
             vad_filter=bool(self.config.vad_filter),
+            hotwords=self.config.hotwords or None,
+            initial_prompt=self.config.initial_prompt or None,
         )
         return " ".join(segment.text.strip() for segment in segments).strip()
 

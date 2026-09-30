@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import quote
 
 import structlog
-import websockets
+import websockets.exceptions
 from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine, ASREngineConfig
 from rasa.core.channels.voice_stream.asr.asr_event import (
     ASREvent,
@@ -38,7 +38,7 @@ from rasa.core.channels.voice_stream.tts.tts_engine import (
     TTSEngineConfig,
     TTSLanguageMapEntry,
 )
-from websockets.legacy.client import WebSocketClientProtocol
+from websockets.asyncio.client import ClientConnection, connect
 
 from voicerouter.providers._http_tts import HttpStreamingTTS
 
@@ -115,6 +115,16 @@ class SpeechmaticsASRConfig(ASREngineConfig):
     operating_point: Optional[str] = None
     max_delay: Optional[float] = None
     enable_partials: Optional[bool] = None
+    #: Seconds of silence (0 to 2) after which Speechmatics sends
+    #: `EndOfUtterance`. When set, final segments are held and joined into one
+    #: transcript per utterance. Unset keeps the original behaviour: every
+    #: final segment is its own transcript, which Rasa treats as a whole user
+    #: turn (see SpeechmaticsASR).
+    end_of_utterance_silence_trigger: Optional[float] = None
+    #: Speechmatics custom dictionary, sent as `additional_vocab`: a list of
+    #: `{"content": "Brightmart", "sounds_like": ["bright mart"]}` entries (or
+    #: plain strings) for names the base model does not know.
+    additional_vocab: Optional[List[Any]] = None
 
 
 class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
@@ -127,6 +137,19 @@ class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
       sending audio first gets a connection that transcribes nothing, silently.
     * `EndOfStream` must carry `last_seq_no`, the count of audio messages sent,
       so the count is tracked here rather than inferred.
+
+    Speechmatics finalises speech in segments, often a word or two at a
+    time, and Rasa's voice channel treats every `NewTranscript` as a complete
+    user turn. So by default one spoken sentence reaches the agent as many
+    turns: in the banking-dispute case build a 10-second caller turn arrived
+    as 19 user events and cost a model call each. Set
+    `end_of_utterance_silence_trigger` to have Speechmatics mark the end of
+    each utterance; the segments are then buffered and sent as one transcript.
+
+    The socket uses websockets' asyncio client (`additional_headers`), the
+    same client Rasa's own ASR engines use. The legacy `websockets.connect(...,
+    extra_headers=...)` form raises TypeError on websockets 14 and later, which
+    rasa-pro 3.21.0.dev5 resolves to (15.0.1).
     """
 
     required_env_vars = (SPEECHMATICS_API_KEY_ENV_VAR,)
@@ -136,10 +159,16 @@ class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
                  additional_languages: Optional[List[str]] = None) -> None:
         super().__init__(rasa_language, format, config, additional_languages)
         self._seq_no = 0
+        self._segments: List[str] = []
 
     @classmethod
     def name(cls) -> str:
         return "speechmatics"
+
+    @property
+    def _utterance_mode(self) -> bool:
+        trigger = self.config.end_of_utterance_silence_trigger
+        return trigger is not None and trigger > 0
 
     def _start_recognition_message(self) -> Dict[str, Any]:
         encoding = _ENCODING_MAP.get(self.audio_format.encoding)
@@ -156,36 +185,50 @@ class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
             or self.current_language_config.rasa_language_key
             or "en"
         )
+        transcription_config: Dict[str, Any] = {
+            "language": language,
+            "enable_partials": bool(self.config.enable_partials),
+            "max_delay": float(self.config.max_delay),
+            "operating_point": self.config.operating_point,
+        }
+        if self.config.additional_vocab:
+            transcription_config["additional_vocab"] = [
+                {"content": entry} if isinstance(entry, str) else dict(entry)
+                for entry in self.config.additional_vocab
+            ]
+        if self._utterance_mode:
+            transcription_config["conversation_config"] = {
+                "end_of_utterance_silence_trigger": float(
+                    self.config.end_of_utterance_silence_trigger
+                ),
+            }
         return {
             "message": "StartRecognition",
             "audio_format": {
                 "type": "raw", "encoding": encoding,
                 "sample_rate": self.audio_format.sample_rate,
             },
-            "transcription_config": {
-                "language": language,
-                "enable_partials": bool(self.config.enable_partials),
-                "max_delay": float(self.config.max_delay),
-                "operating_point": self.config.operating_point,
-            },
+            "transcription_config": transcription_config,
         }
 
-    async def open_websocket_connection(self) -> WebSocketClientProtocol:
+    async def open_websocket_connection(self) -> ClientConnection:
         api_key = os.environ[SPEECHMATICS_API_KEY_ENV_VAR]
         endpoint = self.config.endpoint or DEFAULT_ASR_ENDPOINT
         try:
-            socket = await websockets.connect(
-                endpoint, extra_headers={"Authorization": f"Bearer {api_key}"}
+            socket = await connect(
+                endpoint, additional_headers={"Authorization": f"Bearer {api_key}"}
             )
-        except websockets.exceptions.InvalidStatusCode as e:
+        except websockets.exceptions.InvalidStatus as e:
+            status_code = e.response.status_code
             logger.error(
-                "speechmatics.connection.failed", status_code=e.status_code,
-                error=("check your Speechmatics API key" if e.status_code == 401
+                "speechmatics.connection.failed", status_code=status_code,
+                error=("check your Speechmatics API key" if status_code == 401
                        else "connection to Speechmatics failed"),
                 endpoint=endpoint,
             )
             raise
         self._seq_no = 0
+        self._segments = []
         await socket.send(json.dumps(self._start_recognition_message()))
         return socket
 
@@ -215,7 +258,18 @@ class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
             return UserIsSpeaking(text) if text else None
         if kind == "AddTranscript":
             text = message.get("metadata", {}).get("transcript", "").strip()
-            return NewTranscript(text) if text else None
+            if not text:
+                return None
+            if not self._utterance_mode:
+                return NewTranscript(text)
+            # Hold the segment until Speechmatics says the utterance ended.
+            self._segments.append(text)
+            return UserIsSpeaking(" ".join(self._segments))
+        if kind == "EndOfUtterance":
+            if not self._segments:
+                return None
+            text, self._segments = " ".join(self._segments), []
+            return NewTranscript(text)
         if kind == "Error":
             logger.error("speechmatics.error", type=message.get("type"),
                          reason=message.get("reason"))

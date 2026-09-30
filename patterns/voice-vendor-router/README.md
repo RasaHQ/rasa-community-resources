@@ -70,12 +70,31 @@ delegates to Rasa's own factories. `voicerouter/providers/` adds the rest.
 | **Vosk** | ASR | `voicerouter.providers.vosk.VoskASR` | **none — local** | **live-verified** |
 | **faster-whisper** | ASR | `voicerouter.providers.whisper.FasterWhisperASR` | **none — local** | **live-verified** |
 | Neuphonic NeuTTS | TTS | `voicerouter.providers.neuphonic.NeuTTSLocal` | **none — local** | model not run — see below |
+| **Neuphonic NeuTTS-2E, native (Metal)** | TTS | `voicerouter.providers.neutts_native.NeuTTSNative` | **none — local** | **live-verified** — see below |
 | **AWS Polly** | TTS | `voicerouter.providers.aws.PollyTTS` | AWS credential chain | shape-verified — no creds |
 | **AWS Transcribe** | ASR | `voicerouter.providers.aws.TranscribeASR` | AWS credential chain | shape-verified — no creds |
 | **Google Cloud TTS** | TTS | `voicerouter.providers.google.GoogleTTS` | Application Default Credentials | shape-verified — no creds |
 | **Google Cloud STT** | ASR | `voicerouter.providers.google.GoogleSTT` | Application Default Credentials | shape-verified — no creds |
 | Azure | ASR + TTS | `azure` *(built-in)* | `AZURE_SPEECH_API_KEY` | not exercised — no key |
 | Cartesia | TTS | `cartesia` *(built-in)* | `CARTESIA_API_KEY` | not exercised — no key |
+
+**Speechmatics ASR on the catalog pin.** Two fixes, both found live by the
+`banking-dispute` case build
+([`examples/mantle-voice-banking-dispute-claude`](../../examples/mantle-voice-banking-dispute-claude))
+on 2026-09-29:
+
+- The first version opened its socket with the legacy
+  `websockets.connect(..., extra_headers=...)`. rasa-pro 3.21.0.dev5 resolves
+  websockets 15.0.1, where that raises `TypeError` on every call, so the agent
+  never heard the caller. It now uses `websockets.asyncio.client.connect` with
+  `additional_headers`, as Rasa's own engines do. The AssemblyAI adapter
+  still has the legacy call (it is config-only, never run).
+- Speechmatics finalises a word or two at a time, and Rasa's voice channel
+  treats every `NewTranscript` as a whole user turn. One 10-second caller
+  turn reached the agent as 19 turns, each with a model call. Set
+  `end_of_utterance_silence_trigger` (seconds, 0 to 2, below `max_delay`) and
+  the adapter holds the segments until Speechmatics sends `EndOfUtterance`,
+  then sends one transcript. Unset, the behaviour is unchanged.
 
 **"Live-verified"** means audio was actually synthesised or transcribed through
 that adapter, in this repository, against the vendor's real API.
@@ -184,6 +203,17 @@ and another thing to be wrong, and the failure mode here is a slightly late turn
 rather than a wrong transcript. Adding another offline transcriber is a
 `transcribe()` method, not a rewrite.
 
+**faster-whisper on Apple silicon runs on the CPU.** CTranslate2 has no Metal
+or Core ML backend (`get_supported_compute_types` lists only `int8`,
+`int8_float32` and `float32`). The adapter takes `cpu_threads`, and
+`hotwords` for terms callers are expected to say; `model_id` may be a local
+folder, so a call never contacts Hugging Face. On an M4 Pro, replaying 48
+synthetic caller turns: `small.en` (int8, 8 threads) took 0.93 s at the median
+per turn and heard 15 of 23 medicine names; with a ten-word `hotwords` list,
+23 of 23, and its slowest turn fell from 4.6 s to 1.6 s. `large-v3-turbo`
+heard 19 of 23 without hotwords at 2.7 s a turn. Full table in the
+[refill-request case build](../../examples/mantle-voice-healthcare-refill-request-gpt-local/case-build/results/whisper-model-choice/results.json).
+
 Both install through one extra, which — unlike NeuTTS — resolves cleanly against
 Rasa's numpy pin:
 
@@ -270,6 +300,34 @@ dependency conflict then never has to be resolved at all, the model stays warm
 across restarts of the agent, and a crash in a research-grade stack cannot take
 the call with it. That is a small HTTP service plus a thin adapter, and it is
 the shape this should take before anyone runs it in production.
+
+### NeuTTS natively, in Rasa's own environment
+
+The numpy conflict is a property of the Python `neutts` package, not of
+NeuTTS. The GGUF backbone runs on llama.cpp and the decoder is an ONNX graph,
+so [`native/neutts/`](native/neutts/) builds both as native programs from
+pinned sources (Neuphonic's llama.cpp fork with Metal, and a small C++ decoder
+on ONNX Runtime) and checks the model files against their digests.
+`voicerouter.providers.neutts_native.NeuTTSNative` drives them from Rasa's own
+venv with no torch and no numpy:
+
+```yaml
+tts:
+  name: voicerouter.providers.neutts_native.NeuTTSNative
+  runtime_dir: patterns/voice-vendor-router/native/neutts/build
+  models_dir: patterns/voice-vendor-router/native/neutts/models
+  language_map: { en: { voice: sophie } }
+```
+
+It starts `llama-server` (loopback only) and the decoder once per Rasa
+process, keeps both loaded, streams speech codes from the server and decodes
+them in chunks while generation runs, so the first audio arrives after about
+30 codes. It spells numerals out before synthesis, because NeuTTS-2E does not
+read digits (a reference written as digits came out as babble in every take).
+Measured on an M4 Pro, warm: first audio 0.18 to 0.28 s, real-time factor
+about 0.18. It was run live in
+[`mantle-voice-healthcare-refill-request-gpt-local`](../../examples/mantle-voice-healthcare-refill-request-gpt-local/),
+which records the per-turn figures. Apple silicon only.
 
 ## Format conversion
 

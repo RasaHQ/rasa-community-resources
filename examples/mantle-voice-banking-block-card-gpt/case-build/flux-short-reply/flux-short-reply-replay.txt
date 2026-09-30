@@ -1,0 +1,98 @@
+2026-09-30 | cd examples/mantle-voice-banking-block-card-gpt && .venv/bin/python case-build/flux-short-reply/flux-short-reply-probe.py replay --frames case-build/flux-short-reply/flux-short-reply-frames.jsonl --out case-build/flux-short-reply/flux-short-reply-replay.txt   (rasa-pro 3.21.0.dev5, wheel sha256 e7f3adb7cdb35e504856ca3a5e9c574412e9a8359bd20ac0cb15503f9a86e02b; companion RasaHQ/rasa-community-resources examples/mantle-voice-banking-block-card-gpt; offline replay of the recorded Flux messages through the installed DeepgramASR.engine_event_to_asr_event; live capture started 2026-09-30T02:36:53+00:00)
+Flux URL built by Rasa's own engine: wss://api.deepgram.com/v2/listen?encoding=linear16&sample_rate=16000&model=flux-general-en&eot_threshold=0.7&eot_timeout_ms=5000
+frames 20 ms, lead silence 2.0 s, trailing silence 7.0 s, then CloseStream; messages after CloseStream are excluded from class and replay
+set phase-sweep (.venv/bin/python case-build/flux-short-reply/flux-short-reply-probe.py sweep --env <.env with DEEPGRAM_API_KEY> --out case-build/flux-short-reply/flux-short-reply-frames.jsonl --repeats 2): the bare WAV only, leading silence stepped by one 20 ms frame from 2.0 to 2.22 s (one 240 ms Flux audio window), 2 passes; everything else as above
+  nova-970bd2042e23.wav: 'Yes.' duration 0.412 s, speech_s 0.33, sha256 197430bc0ce2aeea6f34de86460ab412c892eaa13672e5d0082809c82364ab50
+  nova-3a547787b0b7.wav: "Yes, that's the one." duration 1.05 s, speech_s 0.94, sha256 1cda5d367fc304c036ad5d705ba250c33dca3085806170e732c1641670033a43
+
+attempt | set | lead silence s | wav text | class | transcripts in frames (before CloseStream) | EoT at ms (speech off at ms) | handler outputs | handler result | TurnInfo after CloseStream
+ 1 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2793.6 (2350.0) | - | None | -
+ 2 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2774.2 (2350.0) | - | None | -
+ 3 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4053.8 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+ 4 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2978.8 (2350.0) | - | None | -
+ 5 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2815.9 (2350.0) | - | None | -
+ 6 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4113.5 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+ 7 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2819.9 (2350.0) | - | None | -
+ 8 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2773.5 (2350.0) | - | None | -
+ 9 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4093.7 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+10 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2794.0 (2350.0) | - | None | -
+11 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2750.5 (2350.0) | - | None | -
+12 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4053.4 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+13 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2793.8 (2350.0) | - | None | -
+14 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2777.3 (2350.0) | - | None | -
+15 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4015.2 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+16 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2777.5 (2350.0) | - | None | -
+17 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2747.8 (2350.0) | - | None | -
+18 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4057.7 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+19 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2746.2 (2350.0) | - | None | -
+20 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2746.7 (2350.0) | - | None | -
+21 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4112.9 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+22 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2755.2 (2350.0) | - | None | -
+23 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2777.5 (2350.0) | - | None | -
+24 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4033.9 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+25 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2747.2 (2350.0) | - | None | -
+26 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2735.2 (2350.0) | - | None | -
+27 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4014.9 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+28 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2943.5 (2350.0) | - | None | -
+29 | main | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2816.1 (2350.0) | - | None | -
+30 | main | 2.0 | Yes, that's the one. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' Update[0]="Yes. That's" Update[0]="Yes. That's the one" Update[0]="Yes. That's the one." EndOfTurn[0]="Yes. That's the one." | 4434.3 (2960.0) | UserIsSpeaking('Yes.'), UserIsSpeaking("Yes. That's"), UserIsSpeaking("Yes. That's the one"), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), UserIsSpeaking("Yes. That's the one."), NewTranscript("Yes. That's the one.") | NewTranscript("Yes. That's the one.") | -
+31 | phase-sweep | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2747.7 (2350.0) | - | None | -
+32 | phase-sweep | 2.02 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yeah.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2947.5 (2370.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+33 | phase-sweep | 2.04 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2793.4 (2390.0) | - | None | -
+34 | phase-sweep | 2.06 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2793.3 (2410.0) | - | None | -
+35 | phase-sweep | 2.08 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2827.5 (2430.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+36 | phase-sweep | 2.1 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2876.6 (2450.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+37 | phase-sweep | 2.12 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2910.0 (2470.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+38 | phase-sweep | 2.14 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2900.2 (2490.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+39 | phase-sweep | 2.16 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2993.6 (2510.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+40 | phase-sweep | 2.18 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2953.5 (2530.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+41 | phase-sweep | 2.2 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2907.8 (2550.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+42 | phase-sweep | 2.22 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes,' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2907.7 (2570.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+43 | phase-sweep | 2.0 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2747.6 (2350.0) | - | None | -
+44 | phase-sweep | 2.02 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yeah.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2747.3 (2370.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+45 | phase-sweep | 2.04 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2767.5 (2390.0) | - | None | -
+46 | phase-sweep | 2.06 | Yes. | B SoT, EoT, no Update | StartOfTurn[0]='Yes.' EndOfTurn[0]='Yes.' | 2774.8 (2410.0) | - | None | -
+47 | phase-sweep | 2.08 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2874.2 (2430.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+48 | phase-sweep | 2.1 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2815.7 (2450.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+49 | phase-sweep | 2.12 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2828.1 (2470.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+50 | phase-sweep | 2.14 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2899.7 (2490.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+51 | phase-sweep | 2.16 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2993.0 (2510.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+52 | phase-sweep | 2.18 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2913.5 (2530.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+53 | phase-sweep | 2.2 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes.' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2956.6 (2550.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+54 | phase-sweep | 2.22 | Yes. | A SoT, Update(s), EoT | StartOfTurn[0]='Yes,' Update[0]='Yes.' EndOfTurn[0]='Yes.' | 2908.7 (2570.0) | UserIsSpeaking('Yes.'), NewTranscript('Yes.') | NewTranscript('Yes.') | -
+
+set main, 'Yes.': 20 attempts (leading silence 2.0-2.0 s)
+  B SoT, EoT, no Update: 20
+  handler None: 20; handler NewTranscript: 0
+  sequences without an Update transcript: 20; None set == no-Update set: True
+set main, "Yes, that's the one.": 10 attempts (leading silence 2.0-2.0 s)
+  A SoT, Update(s), EoT: 10
+  handler None: 0; handler NewTranscript: 10
+  sequences without an Update transcript: 0; None set == no-Update set: True
+set phase-sweep, 'Yes.': 24 attempts (leading silence 2.0-2.22 s)
+  A SoT, Update(s), EoT: 18
+  B SoT, EoT, no Update: 6
+  handler None: 6; handler NewTranscript: 18
+  sequences without an Update transcript: 6; None set == no-Update set: True
+
+phase-sweep by leading silence: handler results per pass
+  2.00 s: B->None, B->None
+  2.02 s: A->NewTranscript, A->NewTranscript
+  2.04 s: B->None, B->None
+  2.06 s: B->None, B->None
+  2.08 s: A->NewTranscript, A->NewTranscript
+  2.10 s: A->NewTranscript, A->NewTranscript
+  2.12 s: A->NewTranscript, A->NewTranscript
+  2.14 s: A->NewTranscript, A->NewTranscript
+  2.16 s: A->NewTranscript, A->NewTranscript
+  2.18 s: A->NewTranscript, A->NewTranscript
+  2.20 s: A->NewTranscript, A->NewTranscript
+  2.22 s: A->NewTranscript, A->NewTranscript
+
+all nova-970bd2042e23.wav ('Yes.') attempts, both sets: 44; no-Update sequences 26; handler None 26; None set == no-Update set: True
+all attempts, both WAVs and sets: 54; no-Update sequences 26; handler None 26; None set == no-Update set: True
+
+spend, set main: 289.0 s of audio sent (307.48 s connection wall time); ~0.031308 USD at the ledger's 0.0065/min, ~0.037088 USD at the regular 0.0077/min, ~0.03946 USD at 0.0077/min on wall time
+
+spend, set phase-sweep: 228.72 s of audio sent (243.43 s connection wall time); ~0.024778 USD at the ledger's 0.0065/min, ~0.029352 USD at the regular 0.0077/min, ~0.03124 USD at 0.0077/min on wall time
+spend, total: 517.72 s audio, ~0.0561 USD (ledger rate), ~0.0664 USD (regular rate), ~0.0707 USD (regular rate on wall time); cap 0.3 USD
