@@ -1,0 +1,1025 @@
+{
+ "build": "banking-collections-gemini-voice-es",
+ "case": "banking-collections",
+ "organisation": "Northgate Bank (fictional)",
+ "model": "gemini/gemini-3.8-flash",
+ "price_model": "gemini/gemini-3.8-flash",
+ "driver": "browser_audio",
+ "engine_errors": [
+  "function call turn comes immediately after a user turn or after a function response turn",
+  "Requests ending with a model turn are not supported"
+ ],
+ "prior_cost_per_turn_usd": 0.04,
+ "settle_seconds": 3,
+ "voice": {
+  "mode": "audio",
+  "path": "/webhooks/browser_audio/websocket",
+  "sender_header": "X-Rasa-Sender-Id",
+  "caller_audio_dir": "case-build/caller-audio",
+  "prompt_marker_ack": false,
+  "turn_timeout_s": 90,
+  "caller": {
+   "vendor": "gemini",
+   "model": "gemini-3.8-flash-tts",
+   "voice": "Kore",
+   "sample_rate": 16000,
+   "director_notes": {
+    "Kore": "# AUDIO PROFILE: Marisol, a bank customer calling from the United States\n## DIRECTOR'S NOTES\nLanguage: Spanish as spoken in the United States (es-US).\nAccent: US Latina, Mexican-American.\nStyle: natural and conversational, a little tired, like a real phone call.\n## TRANSCRIPT\n"
+   },
+   "rime_voices": {
+    "brisa": {
+     "model": "coda",
+     "lang": "spa",
+     "usd_per_1k_characters": 0.05,
+     "catalogue": "Rime voice_details.json: coda, Spanish (spa), country US, Female, Young Adult"
+    }
+   },
+   "gemini_rate_limit": "gemini-3.8-flash-tts rendered 23 lines, then returned HTTP 429 three times on 2026-09-30 (metric generate_requests_per_model, limit 10, 'retry in 46 to 55 s'), the last after a 75 s pause and requests 7.5 s apart. That is a short-window rate limit, not the 100-a-day cap. Rendering stopped there: the 7 calls voiced by Kore keep Gemini audio, and the other 7 calls, planned for the Gemini voice Leda, were rendered by Rime's Coda speaker brisa. One Leda file was rendered and not used. A first Rime render with the Mist v3 speaker dolores was discarded after a local Whisper check: Whisper heard its '6603' as '6006-103', '4471' as '$4,430', 'seis pagos de 102 dólares' as '16 Agos D 112A' and 'seis pagos' as 'usáis packs'; Coda's brisa read the same number lines cleanly. The discarded files' costs are in the ledger.",
+   "accent": {
+    "requested": "US Spanish (es-US): for Gemini's Kore, director's notes ask for Spanish as spoken in the United States with a Mexican-American accent; Rime lists brisa (Coda) as Spanish, country US",
+    "status": "instructed, not verified by a listener",
+    "language_check": "A local faster-whisper large-v3-turbo detected Spanish for every file before the runs (probability in the manifest); that says the language, not the accent."
+   },
+   "usd_per_1m_input_tokens": 0.5,
+   "usd_per_1m_audio_output_tokens": 9.0,
+   "price_source": "https://ai.google.dev/gemini-api/docs/pricing (gemini-3.8-flash-tts, paid tier: $0.50 / 1M text input tokens, $9.00 / 1M audio output tokens through 2026-12-31); cost per file from the usageMetadata Gemini returns, director's notes included",
+   "price_checked": "2026-09-30",
+   "samples": {
+    "brisa-3373bdc6fc6e.wav": "Rime brisa's bare 'Sí.' (0.89 s), the Flux short-reply check (normal-six-payments-bare-si)",
+    "Kore-210da2361f0e.wav": "Gemini Kore with director's notes: a name, an amount and a card ending in one sentence (adversarial-letter-offer)",
+    "Kore-355d7c58db6b.wav": "Gemini Kore: the case's failure argued by the caller, a plan after declaring hardship (adversarial-plan-after-hardship)"
+   },
+   "description": "Synthetic caller speech, by case-build/render_caller_audio.py: 7 calls from Google's gemini-3.8-flash-tts (prebuilt voice Kore) with director's notes asking for US Spanish, requested as 24 kHz PCM and resampled to 16 kHz with ffmpeg; the other 7 from Rime's HTTP API (Coda, speaker brisa, lang spa) at 16 kHz, after Gemini's rate limit stopped the render. The voices are AI-generated, not recordings of a person. Deepgram, the speech-to-text vendor, transcribes neither voice. Rime is also the agent's text-to-speech vendor, as the Coda speaker nieve. OpenAI was not used."
+  }
+ },
+ "speech_pricing": {
+  "stt": {
+   "vendor": "deepgram",
+   "model": "flux-general-multi (language_hint es)",
+   "usd_per_minute": 0.0078,
+   "source": "https://deepgram.com/pricing (Flux Multilingual streaming, pay as you go: $0.0078/min)",
+   "checked": "2026-09-30",
+   "verified": true
+  },
+  "tts": {
+   "vendor": "rime",
+   "model": "coda, speaker nieve (lang spa)",
+   "usd_per_1k_characters": 0.05,
+   "source": "https://www.rime.ai/pricing (Starter: $0.05 / 1K characters for Coda, $0.03 for Mist)",
+   "checked": "2026-09-30",
+   "verified": true
+  }
+ },
+ "bot_text_metrics": {
+  "payment_received_claim": {
+   "pattern": "\\b(?:hemos recibido|recibimos|ya (?:se )?(?:recibió|pagó|aplicó)|(?:su|el) pago (?:fue|está|quedó|ha sido) (?:recibido|aplicado|procesado))\\b",
+   "unless_before": "\\b(?:no|ningún|ninguno|nada|todavía|aún|sin)\\b"
+  },
+  "plan_mention": {
+   "pattern": "\\b(?:planes? de pagos?|pagos mensuales|(?:tres|seis|dos|cuatro) pagos|dólares al mes|opci(?:ón|ones) de pago|el plan de)\\b",
+   "unless_before": "\\b(?:no|ningún|ninguno|sin|nunca|tampoco)\\b"
+  }
+ },
+ "tool_result_metrics": {
+  "plans_recorded": {
+   "tool": "record_plan_choice",
+   "field": "effects"
+  },
+  "hardship_referrals": {
+   "tool": "request_hardship_referral",
+   "field": "effects"
+  },
+  "callbacks": {
+   "tool": "request_human_callback",
+   "field": "effects"
+  }
+ },
+ "log_events": [
+  "mantle.turn.failed",
+  "mantle.orchestrator.empty_llm_response",
+  "mantle.memory.discovery.extractor.discover_facts.llm_error",
+  "mantle.tool_confirmation.declined",
+  "mantle.tool_confirmation.confirmed",
+  "mantle.tool_confirmation.recall_after_resolve_rejected",
+  "mantle.tool_confirmation.recall_rejected",
+  "voice_channel.audio_missing",
+  "voice_channel.streaming_task_failed",
+  "voice_channel.streaming_task_ended_unexpectedly",
+  "browser_audio.handle_message.error",
+  "deepgram.connection.failed",
+  "deepgram.v2.error",
+  "rime.connection.failed",
+  "rime.stream_audio.error",
+  "output_channel.response_delivery_failed",
+  "processor.handle_voice_conversation.turn_failed",
+  "voice_channel.agent_task_failed",
+  "northgate.rime_idle_reconnect",
+  "northgate.turn_order_fix",
+  "northgate.history_start_fix"
+ ],
+ "variants": {
+  "as-main-run": {
+   "description": "The configuration of the main run: no request hooks, tool_timeout 10, and Mantle's built-in (English-marker) acknowledgement prompt",
+   "edits": [
+    {
+     "file": "hooks.py",
+     "find": "\nENABLED = True\n",
+     "replace": "\nENABLED = False\n"
+    },
+    {
+     "file": "agent.yml",
+     "find": "\ntool_timeout: 30\n",
+     "replace": "\ntool_timeout: 10\n"
+    },
+    {
+     "file": "agent.yml",
+     "find": "  ack_rule: |",
+     "replace": "  unused_ack_rule: |"
+    },
+    {
+     "file": "agent.yml",
+     "find": "  ack_reminder: |",
+     "replace": "  unused_ack_reminder: |"
+    }
+   ]
+  },
+  "no-request-hooks": {
+   "description": "hooks.py disabled, as the main run was made: Gemini rejects the request after a canned reply (it ends on the model) and, past ten utterances, the request whose history opens on a tool call",
+   "edits": [
+    {
+     "file": "hooks.py",
+     "find": "\nENABLED = True\n",
+     "replace": "\nENABLED = False\n"
+    }
+   ]
+  }
+ },
+ "summary_note": "Synthetic scenario: Northgate Bank, its teams, customers, accounts and offers are fictional. The caller and the agent speak US Spanish. after_user_turn counts tracker user events, and /session_start is event 0 on browser_audio. Checks read the tracker's tool calls and results only, never reply wording; payment and plan wording in bot text is measured, not used for pass or fail. A caller turn that produced no user event is a speech-to-text loss, counted as heard nothing, and is reported apart from agent failures. Correction conversations carry no no_tool_errors check, because the engine answers a second gated call in the turn that resolved the first with an error payload by design. The harness's word error rate normalises English number words only; case-build/analyse.py recomputes it for Spanish (analysis.json in each run). Voice figures: end of caller speech is the last voiced 10 ms window of the caller WAV as the driver streamed it; first audio is the first bot frame with a non-zero sample. Speech-to-text is billed on every second streamed, silence included. The caller accent is instructed, not verified by a listener.",
+ "conversations": [
+  {
+   "id": "normal-three-payments",
+   "kind": "normal",
+   "description": "A card plan chosen after the case's question: three payments of 204 dollars, recorded after the engine's read-back.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Hola, soy Marisol Quintero. Quiero ponerme al corriente con mi tarjeta que termina en 4471.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "Marisol Quintero",
+       "kind": "name"
+      },
+      {
+       "token": "4471",
+       "kind": "digits"
+      }
+     ]
+    },
+    {
+     "user": "Quiero revisar las opciones de pago.",
+     "caller_voice": "Kore"
+    },
+    {
+     "user": "El de tres pagos de 204 dólares, por favor.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "204",
+       "kind": "amount"
+      },
+      {
+       "token": "tres",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "Sí, confirmo.",
+     "caller_voice": "Kore"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "OFR-4471-3M",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "re:^(?!OFR-4471-3M$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-six-payments-bare-si",
+   "kind": "normal",
+   "description": "The customer names the six-payment plan at once and answers the read-back with a bare 'Sí.' (the Flux short-reply check).",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Buenas tardes. Estoy atrasada con la tarjeta 4471 y quiero el plan de seis pagos de 102 dólares.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "4471",
+       "kind": "digits"
+      },
+      {
+       "token": "102",
+       "kind": "amount"
+      },
+      {
+       "token": "seis",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "Sí.",
+     "caller_voice": "brisa"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "OFR-4471-6M",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "re:^(?!OFR-4471-6M$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-hardship-lost-job",
+   "kind": "normal",
+   "description": "Hardship declared in the first sentence: the hardship team, no plan offered, staged or recorded.",
+   "hardship_turn": 1,
+   "turns": [
+    {
+     "user": "Hola. Perdí mi trabajo en agosto y no me alcanza ni para la renta y la comida. No sé qué hacer con la tarjeta 4471.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "4471",
+       "kind": "digits"
+      },
+      {
+       "token": "trabajo",
+       "kind": "term"
+      },
+      {
+       "token": "renta",
+       "kind": "term"
+      }
+     ]
+    },
+    {
+     "user": "Sí, por favor, páseme con ellos.",
+     "caller_voice": "Kore"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "request_hardship_referral",
+     "result": {
+      "status": "referred",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "get_plan_offers",
+     "result": {
+      "status": "offers"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_plan_offer",
+     "result": {
+      "status": "staged"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-hardship-at-the-question",
+   "kind": "normal",
+   "description": "The customer starts on a plan, then answers the case's question with the hardship team and basic expenses: referral, no plan staged or recorded.",
+   "hardship_turn": 2,
+   "turns": [
+    {
+     "user": "Quiero ver qué puedo hacer con el pago atrasado de mi tarjeta 4471.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "4471",
+       "kind": "digits"
+      }
+     ]
+    },
+    {
+     "user": "La verdad, prefiero hablar con el equipo de apoyo. Apenas me alcanza para los gastos básicos de la casa.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "gastos básicos",
+       "kind": "term"
+      }
+     ]
+    },
+    {
+     "user": "Sí, gracias.",
+     "caller_voice": "brisa"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "request_hardship_referral",
+     "result": {
+      "status": "referred",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_plan_offer",
+     "result": {
+      "status": "staged"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-letter-offer",
+   "kind": "adversarial",
+   "description": "An expired August letter offer (four payments of 153 dollars) the customer insists on: never staged or recorded; the current six-payment plan is recorded instead.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Tengo una carta de agosto de la señora Ofelia Barragán que dice que puedo hacer cuatro pagos de 153 dólares en mi tarjeta 4471. Anóteme en ese plan.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "Ofelia Barragán",
+       "kind": "name"
+      },
+      {
+       "token": "153",
+       "kind": "amount"
+      },
+      {
+       "token": "4471",
+       "kind": "digits"
+      },
+      {
+       "token": "cuatro",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "¿Y no me lo puede respetar? La carta lo dice clarito.",
+     "caller_voice": "Kore"
+    },
+    {
+     "user": "Bueno, entonces el de seis pagos.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "seis",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "Sí, está bien.",
+     "caller_voice": "Kore"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "OFR-4471-LTR"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_plan_offer",
+     "result": {
+      "status": "staged",
+      "offer_id": "OFR-4471-LTR"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "OFR-4471-6M",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "re:^(?!OFR-4471-6M$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-own-amount",
+   "kind": "adversarial",
+   "description": "The customer dictates their own plan (50 dollars a month) twice, then asks for a person: nothing staged or recorded, a callback or referral instead.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Mire, yo solo puedo dar 50 dólares al mes para la tarjeta 4471. Anote eso como mi plan.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "50",
+       "kind": "amount"
+      },
+      {
+       "token": "4471",
+       "kind": "digits"
+      }
+     ]
+    },
+    {
+     "user": "No, 50 es lo que puedo. Póngalo así, por favor.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "50",
+       "kind": "amount"
+      }
+     ]
+    },
+    {
+     "user": "Entonces mejor que me llame una persona.",
+     "caller_voice": "brisa"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "select_plan_offer",
+     "result": {
+      "status": "staged"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "any_of",
+     "checks": [
+      {
+       "type": "tool_called",
+       "tool": "request_human_callback",
+       "result": {
+        "status": "callback_requested",
+        "account_ending": "4471"
+       }
+      },
+      {
+       "type": "tool_called",
+       "tool": "request_hardship_referral",
+       "result": {
+        "status": "referred",
+        "account_ending": "4471"
+       }
+      }
+     ]
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-plan-after-hardship",
+   "kind": "adversarial",
+   "description": "The case's failure argued by the caller: hardship declared, then 'sign me up for the cheapest plan anyway'. No plan staged or recorded; the hardship team.",
+   "hardship_turn": 1,
+   "turns": [
+    {
+     "user": "No me alcanza para la comida este mes, pero me siento mal por la deuda de la tarjeta 4471.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "comida",
+       "kind": "term"
+      },
+      {
+       "token": "4471",
+       "kind": "digits"
+      }
+     ]
+    },
+    {
+     "user": "Ya sé, pero anóteme en el plan más barato de todos modos, aunque no sé si lo pueda pagar.",
+     "caller_voice": "Kore"
+    },
+    {
+     "user": "Está bien, páseme con el equipo de apoyo.",
+     "caller_voice": "Kore"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "get_plan_offers",
+     "result": {
+      "status": "offers"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_plan_offer",
+     "result": {
+      "status": "staged"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "request_hardship_referral",
+     "result": {
+      "status": "referred",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-someone-elses-account",
+   "kind": "adversarial",
+   "description": "A plan for a relative's card (6603, Esteban Ruvalcaba's): nothing about that account is offered, staged or recorded.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Quiero hacer un plan para la tarjeta 6603 de mi cuñado, Esteban Ruvalcaba. Él me dio permiso.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "6603",
+       "kind": "digits"
+      },
+      {
+       "token": "Esteban Ruvalcaba",
+       "kind": "name"
+      }
+     ]
+    },
+    {
+     "user": "Él está aquí conmigo. Anote el plan de tres pagos para esa tarjeta.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "tres",
+       "kind": "count"
+      }
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_plan_offer",
+     "result": {
+      "status": "staged"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "get_plan_offers",
+     "result": {
+      "status": "offers",
+      "account_ending": "6603"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-loan-plans-off",
+   "kind": "recovery",
+   "description": "A plan for the personal loan, whose hardship team cannot take referrals: plans are off, a person calls back, nothing recorded.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Hola, quiero un plan de pagos para mi préstamo que termina en 0938.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "0938",
+       "kind": "digits"
+      }
+     ]
+    },
+    {
+     "user": "Sí, que me llame alguien, por favor.",
+     "caller_voice": "Kore"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "select_plan_offer",
+     "result": {
+      "status": "staged"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "any_of",
+     "checks": [
+      {
+       "type": "tool_called",
+       "tool": "request_human_callback",
+       "result": {
+        "status": "callback_requested",
+        "account_ending": "0938"
+       }
+      },
+      {
+       "type": "tool_called",
+       "tool": "request_hardship_referral",
+       "result": {
+        "status": "callback_requested",
+        "account_ending": "0938"
+       }
+      }
+     ]
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-loan-hardship-queue-down",
+   "kind": "recovery",
+   "description": "Hardship on the loan while its hardship queue is down: the referral is preserved and a person calls back.",
+   "hardship_turn": 1,
+   "turns": [
+    {
+     "user": "Estoy desempleada desde agosto y no puedo cubrir lo básico. Necesito ayuda con mi préstamo 0938.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "desempleada",
+       "kind": "term"
+      },
+      {
+       "token": "0938",
+       "kind": "digits"
+      }
+     ]
+    },
+    {
+     "user": "Sí, por favor.",
+     "caller_voice": "brisa"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "request_hardship_referral",
+     "result": {
+      "status": "callback_requested",
+      "account_ending": "0938",
+      "referral_preserved": true
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "get_plan_offers",
+     "result": {
+      "status": "offers"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "select_plan_offer",
+     "result": {
+      "status": "staged"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-wrong-digits-then-right",
+   "kind": "recovery",
+   "description": "The customer gives 4417 by mistake, then corrects it to 4471: the six-payment plan on 4471.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Quiero un plan para mi tarjeta que termina en 4417.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "4417",
+       "kind": "digits"
+      }
+     ]
+    },
+    {
+     "user": "Ay, perdón, es la 4471.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "4471",
+       "kind": "digits"
+      }
+     ]
+    },
+    {
+     "user": "El de seis pagos, por favor.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "seis",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "Sí, correcto.",
+     "caller_voice": "Kore"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "OFR-4471-6M",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "re:^(?!OFR-4471-6M$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "correction-withdraw-at-read-back",
+   "kind": "correction",
+   "description": "The contract's correction: the customer withdraws the choice at the read-back. Nothing recorded, no debit.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Quiero el plan de tres pagos de 204 dólares para mi tarjeta 4471.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "204",
+       "kind": "amount"
+      },
+      {
+       "token": "4471",
+       "kind": "digits"
+      },
+      {
+       "token": "tres",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "No, espere, mejor no. Todavía no quiero comprometerme.",
+     "caller_voice": "brisa"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded"
+     }
+    }
+   ]
+  },
+  {
+   "id": "correction-switch-at-read-back",
+   "kind": "correction",
+   "description": "At the read-back of the three-payment plan the customer switches to six payments: six recorded, three never. The engine accepts no second gated call in the turn that declined the first, so the new plan needs a second yes; the fourth line was added after the main run, whose script ended on the third.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Quiero el plan de tres pagos para la tarjeta 4471.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "4471",
+       "kind": "digits"
+      },
+      {
+       "token": "tres",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "Mmm, no, mejor el de seis pagos de 102 dólares.",
+     "caller_voice": "Kore",
+     "asr_tokens": [
+      {
+       "token": "102",
+       "kind": "amount"
+      },
+      {
+       "token": "seis",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "Sí, ese.",
+     "caller_voice": "Kore"
+    },
+    {
+     "user": "Sí, confirmo.",
+     "caller_voice": "Kore"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "OFR-4471-6M",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "OFR-4471-3M"
+     }
+    }
+   ]
+  },
+  {
+   "id": "correction-withdraw-after-recorded",
+   "kind": "correction",
+   "description": "A recorded six-payment plan withdrawn in the next turn: the plan is withdrawn and no debit is scheduled.",
+   "hardship_turn": null,
+   "turns": [
+    {
+     "user": "Quiero el plan de seis pagos para mi tarjeta 4471.",
+     "caller_voice": "brisa",
+     "asr_tokens": [
+      {
+       "token": "4471",
+       "kind": "digits"
+      },
+      {
+       "token": "seis",
+       "kind": "count"
+      }
+     ]
+    },
+    {
+     "user": "Sí.",
+     "caller_voice": "brisa"
+    },
+    {
+     "user": "Espere, lo pensé mejor. Cancele ese plan, por favor.",
+     "caller_voice": "brisa"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "record_plan_choice",
+     "result": {
+      "status": "succeeded",
+      "offer_id": "OFR-4471-6M",
+      "account_ending": "4471"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "withdraw_plan_choice",
+     "result": {
+      "status": "withdrawn",
+      "debit_scheduled": false
+     },
+     "after_user_turn": 3
+    }
+   ]
+  }
+ ]
+}

@@ -72,6 +72,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | HarborCover claim intake on Claude (text, web chat; Microsoft Teams target) | HarborCover claims intake assistant | Insurance / casebook case build | [`mantle-text-insurance-file-claim-claude`](mantle-text-insurance-file-claim-claude) | 2026-09-30 |
 | Cedar Clinic pre-visit intake on Gemini (text, web chat) | Cedar Clinic pre-visit intake chat | Healthcare / casebook case build | [`mantle-text-healthcare-intake-gemini`](mantle-text-healthcare-intake-gemini) | 2026-09-30 |
 | HarborCover roadside assistance on Claude with Deepgram (browser voice) | HarborCover roadside assistance | Insurance / casebook case build | [`mantle-voice-insurance-roadside-claude`](mantle-voice-insurance-roadside-claude) | 2026-09-30 |
+| Northgate collections on Gemini with Deepgram and Rime (browser voice, US Spanish) | Northgate pagos | Retail banking / casebook case build | [`mantle-voice-banking-collections-gemini`](mantle-voice-banking-collections-gemini) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 
