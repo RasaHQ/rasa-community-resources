@@ -1,0 +1,178 @@
+{
+  "slug": "reminder-deduplication",
+  "title": "Reminders without duplicate calls",
+  "organisation": "Cedar Clinic",
+  "action": "send an appointment reminder",
+  "failure": "A rescheduled appointment generated both the old reminder and the new one, sending the patient to the wrong time.",
+  "lesson": "Bind notification identity to the current appointment revision and distinguish delivery from patient confirmation.",
+  "receipt": "One reminder reference for the current appointment revision, with delivery state separate from attendance.",
+  "evidence": "Replay a reschedule between queue creation and delivery; the old revision must be suppressed.",
+  "recovery": "Pause reminders for the affected appointment and query its delivery ledger by revision. Reissue only the current unsent reminder.",
+  "owner": "appointment messaging owner",
+  "metric": "obsolete or duplicate reminders, divided by queued reminder attempts",
+  "question": "This is a reminder for the appointment time you selected. Would you like to confirm or change it?",
+  "correction": "The patient says the time is wrong; resolve the current booking before repeating or sending the reminder.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "appointment_revision_current",
+      "good": true,
+      "bad": false,
+      "reason": "obsolete_appointment",
+      "phase": "request"
+    },
+    {
+      "field": "reminder_not_sent",
+      "good": true,
+      "bad": false,
+      "reason": "duplicate_reminder",
+      "phase": "request"
+    },
+    {
+      "field": "recipient_channel_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "unconfirmed_contact_channel",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "appointment_revision_current": true,
+    "reminder_not_sent": true,
+    "recipient_channel_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "appointment_revision_current": true,
+        "reminder_not_sent": true,
+        "recipient_channel_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "appointment_revision_current-false",
+      "facts": {
+        "appointment_revision_current": false,
+        "reminder_not_sent": true,
+        "recipient_channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_appointment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "appointment_revision_current-missing",
+      "facts": {
+        "reminder_not_sent": true,
+        "recipient_channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_appointment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "appointment_revision_current-string",
+      "facts": {
+        "appointment_revision_current": "true",
+        "reminder_not_sent": true,
+        "recipient_channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "obsolete_appointment",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reminder_not_sent-false",
+      "facts": {
+        "appointment_revision_current": true,
+        "reminder_not_sent": false,
+        "recipient_channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "duplicate_reminder",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reminder_not_sent-missing",
+      "facts": {
+        "appointment_revision_current": true,
+        "recipient_channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "duplicate_reminder",
+        "effects": 0
+      }
+    },
+    {
+      "name": "reminder_not_sent-string",
+      "facts": {
+        "appointment_revision_current": true,
+        "reminder_not_sent": "true",
+        "recipient_channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "duplicate_reminder",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recipient_channel_confirmed-false",
+      "facts": {
+        "appointment_revision_current": true,
+        "reminder_not_sent": true,
+        "recipient_channel_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_contact_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recipient_channel_confirmed-missing",
+      "facts": {
+        "appointment_revision_current": true,
+        "reminder_not_sent": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_contact_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recipient_channel_confirmed-string",
+      "facts": {
+        "appointment_revision_current": true,
+        "reminder_not_sent": true,
+        "recipient_channel_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unconfirmed_contact_channel",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}
