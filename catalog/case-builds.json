@@ -7,7 +7,7 @@
     "revision": "15afa7c752f96e8c761c352ba67894c44c156600",
     "checkedAt": "2026-09-30T18:21:10Z"
   },
-  "count": 24,
+  "count": 27,
   "builds": [
     {
       "slug": "banking-loan-servicing",
@@ -207,6 +207,47 @@
         "Our own output guard told two passengers \"No seat is held\" right after a seat was held.",
         "With the tool sending the receipt, GPT-5.5 says it again.",
         "Regex guards on GPT-5.5 need the curly apostrophe."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "education-enrolment",
+      "path": "examples/mantle-text-education-enrolment-gpt",
+      "title": "Pine University enrolment and aid enquiries on GPT-5.5: a web-chat agent that never reads a receipt as an award",
+      "caseTitle": "Enrolment support without aid guarantees",
+      "organisation": "Pine University",
+      "industry": "Public sector & education",
+      "summary": "Record an enrolment or financial-aid enquiry for a signed-in applicant of Pine University, a fictional university, in web chat.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 17,
+        "total": 21,
+        "failed": 4,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.631601,
+      "recordedAt": "2026-09-30T18:12:58.538251+00:00",
+      "findings": [
+        "When the record answers the question, GPT-5.5 answers it and skips the gated tool.",
+        "The receipt fix held on GPT-5.5 too.",
+        "A correction at the question is answered in the same turn, then asked twice."
       ],
       "casebookUrl": null
     },
@@ -646,6 +687,88 @@
         "A correction given at a confirmation prompt is treated as a no, and the correction itself is dropped for that turn.",
         "The confirmation gate accepted a sentence meant as a retry.",
         "At `reasoning_effort: low`, GPT-5.5 chained hold and redeem 10 times in 12."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "utilities-budget-plan",
+      "path": "examples/mantle-text-utilities-budget-plan-gpt",
+      "title": "Amber Grid budget plans on GPT-5.5: an estimate that never touches the balance",
+      "caseTitle": "Budget plans with a hardship boundary",
+      "organisation": "Amber Grid",
+      "industry": "Utilities & energy",
+      "summary": "Explain or request a budget plan for a signed-in customer of Amber Grid, a fictional energy supplier, in web chat, or refer them to the hardship team.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 18,
+        "total": 20,
+        "failed": 2,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 2.425488,
+      "recordedAt": "2026-09-30T18:13:25.205602+00:00",
+      "findings": [
+        "A tool-result hook never sees a confirmed tool under its own name.",
+        "A correction at the question costs two confirmations.",
+        "Haggling still became a hardship referral."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "utilities-service-move",
+      "path": "examples/mantle-text-utilities-service-move-gpt",
+      "title": "Amber Grid home moves on GPT-5.5: the supply stays on until the day the customer said",
+      "caseTitle": "Service moves without premature closure",
+      "organisation": "Amber Grid",
+      "industry": "Utilities & energy",
+      "summary": "Schedule a move-out and move-in for a signed-in customer of Amber Grid, a fictional energy supplier, in web chat.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 21,
+        "total": 21,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.819296,
+      "recordedAt": "2026-09-30T18:13:48.127315+00:00",
+      "findings": [
+        "GPT-5.5 offered its own move-out day, and then passed it to the tool as the customer's words.",
+        "The tool's receipt reached the customer every time; GPT-5.5 alone would have missed 2 of 11.",
+        "Fact discovery did not fail on GPT-5.5."
       ],
       "casebookUrl": null
     },
