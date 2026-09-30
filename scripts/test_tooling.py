@@ -2022,6 +2022,95 @@ class TestCaseBuildPricing(unittest.TestCase):
         self.assertAlmostEqual(self.r.estimate_cost([{"text": "x" * 1000}], {"usd_per_1m_characters": 15.0}), 0.015)
 
 
+class TestCaseBuildCatalog(unittest.TestCase):
+    """catalog/case-builds.json and CATALOG.md stay complete and current.
+
+    Operators could not find the case builds among forty examples. The index
+    only helps while it lists every build and says what the build says, so a
+    new build directory, or an edit to a build's README or results, fails
+    here until `make catalog` is run.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import catalog_case_builds
+        cls.cat = catalog_case_builds
+        cls.committed = json.loads((_SCRIPTS.parent / "catalog" / "case-builds.json").read_text(encoding="utf-8"))
+
+    def test_every_case_build_directory_is_catalogued(self):
+        on_disk = {
+            f"examples/{p.name}" for p in (_SCRIPTS.parent / "examples").iterdir()
+            if p.is_dir() and self.cat.BUILD_RE.match(p.name)
+        }
+        listed = {b["path"] for b in self.committed["builds"]}
+        self.assertEqual(sorted(on_disk - listed), [], "case builds missing from catalog/case-builds.json")
+        self.assertEqual(sorted(listed - on_disk), [], "catalog lists builds that no longer exist")
+        self.assertEqual(self.committed["count"], len(listed))
+
+    def test_committed_catalog_is_fresh(self):
+        self.assertEqual(self.cat.stale(_SCRIPTS.parent), [],
+                         "run `make catalog` (python3 scripts/catalog_case_builds.py) and commit the result")
+
+    def test_main_run_is_read_from_either_readme_layout(self):
+        bold = "**Main run at default settings** (`2026-09-29-gpt-5.5-default/`, 24 calls,\n48 turns):"
+        table = "| Run | Calls |\n|---|---|\n| `2026-09-30-gpt-5.5-reasoning-low` (main) | 23 |"
+        self.assertEqual(self.cat.main_run_dir(bold), "2026-09-29-gpt-5.5-default")
+        self.assertEqual(self.cat.main_run_dir(table), "2026-09-30-gpt-5.5-reasoning-low")
+        self.assertIsNone(self.cat.main_run_dir("No runs were recorded."))
+
+    def test_findings_are_bold_leads_and_absent_section_is_empty(self):
+        readme = (
+            "## What we found\n\n"
+            "1. **Rasa drops some one-word replies.** A 0.33 s reply...\n"
+            "2. **GPT-5.5 chained hold and redeem 10 times in\n   12,** so the member saw one question.\n"
+            "3. **Fact discovery worked**: 23 calls.\n"
+            "4. **A fourth finding.** Not listed.\n\n## Layout\n"
+        )
+        self.assertEqual(self.cat.readme_findings(readme), [
+            "Rasa drops some one-word replies.",
+            "GPT-5.5 chained hold and redeem 10 times in 12.",
+            "Fact discovery worked.",
+        ])
+        self.assertEqual(self.cat.readme_findings("## What the live runs recorded\n\n1. **x**\n"), [])
+
+    def test_only_an_approved_and_due_article_gets_a_url(self):
+        site = {"source": {"checkedAt": "2026-09-30T12:00:00Z"}, "cases": {
+            "draft-case": {"articles": [{"id": "draft-case", "draft": True, "publishAt": "2026-09-01T09:00:00.000Z"}]},
+            "future-case": {"articles": [{"id": "future-case", "draft": False, "publishAt": "2026-10-01T09:00:00.000Z"}]},
+            "role-case": {"articles": [{"id": "role-case--conversation-designer", "draft": False,
+                                        "publishAt": "2026-09-18T09:00:00.000Z"}]},
+        }}
+        self.assertIsNone(self.cat.casebook_url("draft-case", site))
+        self.assertIsNone(self.cat.casebook_url("future-case", site))
+        self.assertIsNone(self.cat.casebook_url("unknown-case", site))
+        self.assertEqual(self.cat.casebook_url("role-case", site),
+                         "https://rasa.community/library/casebook/role-case--conversation-designer/")
+
+    def test_mini_yaml_reads_the_integrations_shape(self):
+        data = self.cat.mini_yaml(
+            "llm:\n  model_group: orchestrator  # comment\nmodel_groups:\n  - id: orchestrator\n"
+            "    models:\n      - provider: openai\n        model: gpt-5.5\n"
+            "agent:\n  persona: |\n    Two lines\n    of text.\n  language: es\n"
+        )
+        self.assertEqual(data["model_groups"][0]["models"][0]["model"], "gpt-5.5")
+        self.assertEqual(data["agent"]["language"], "es")
+        with self.assertRaises(ValueError):
+            self.cat.mini_yaml("a: {b: 1}\n")
+
+    def test_unknown_fields_are_null_not_guessed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            build = root / "examples" / "mantle-text-demo-case-gpt"
+            (build / "case-build").mkdir(parents=True)
+            (build / "README.md").write_text("# Demo\n\nNothing recorded yet.\n", encoding="utf-8")
+            entry = self.cat.build_entry(root, build, None, {})
+        self.assertEqual(entry["mode"], "text")
+        for field in ("slug", "organisation", "industry", "summary", "model", "channel",
+                      "result", "spendUsd", "recordedAt", "casebookUrl", "language"):
+            self.assertIsNone(entry[field], field)
+        self.assertEqual(entry["findings"], [])
+
+
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every
     # caller reads as a pass. That is not hypothetical: an edit once removed
