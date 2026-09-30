@@ -1,0 +1,1710 @@
+{
+ "schema": 1,
+ "build": "banking-advisor-appointment-claude-voice",
+ "case": "banking-advisor-appointment",
+ "project": "examples/mantle-voice-banking-advisor-appointment-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T06:21:48.655046+00:00",
+ "finished_at": "2026-09-30T06:28:00.561852+00:00",
+ "model_file": "20260930-072151-coal-stereo.tar.gz",
+ "train_seconds": 3.3,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 3,
+  "passed": 2,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 10,
+  "turn_latency_ms": {
+   "p50": 3459.7,
+   "p95": 30328.9,
+   "max": 30328.9,
+   "mean": 6082.4
+  },
+  "llm_calls": 41,
+  "llm_calls_per_turn": 4.1,
+  "side_channel_calls": 8,
+  "empty_completions": 0,
+  "failed_llm_calls": 10,
+  "failed_side_channel_calls": 8,
+  "engine_error_calls": 2,
+  "prompt_tokens": 154278,
+  "completion_tokens": 2749,
+  "reasoning_tokens": 691,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 6,
+  "bot_text_metrics": {
+   "reservation_claim": 2,
+   "advice_given": 0
+  },
+  "tool_result_metrics": {
+   "bookings": {
+    "attempts": 2,
+    "total": 2
+   },
+   "callbacks": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 1,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 8,
+   "mantle.tool_confirmation.declined": 1,
+   "mantle.tool_confirmation.confirmed": 2,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 0,
+   "deepgram.v2.error": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 1,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "northgate.rime_idle_reconnect": 5
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 10,
+   "audio_turns": 10,
+   "eos_to_first_audible_ms": {
+    "n": 9,
+    "p50": 3459.7,
+    "p95": 30328.9,
+    "max": 30328.9
+   },
+   "eos_to_first_audio_ms": {
+    "n": 9,
+    "p50": 3459.7,
+    "p95": 30328.9,
+    "max": 30328.9
+   },
+   "eos_to_first_marker_ms": {
+    "n": 9,
+    "p50": 3232.4,
+    "p95": 29696.5,
+    "max": 29696.5
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 9,
+     "p50": 2524.0,
+     "p95": 5985.8,
+     "max": 5985.8
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 9,
+     "p50": 217.5,
+     "p95": 798.8,
+     "max": 798.8
+    },
+    "tts_complete_latency_ms": {
+     "n": 9,
+     "p50": 1642.1,
+     "p95": 4990.5,
+     "max": 4990.5
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 9,
+    "user_perceived_latency_ms": {
+     "n": 9,
+     "p50": 2751.4,
+     "p95": 4772.0,
+     "max": 4772.0
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 4,
+     "p50": 1172.1,
+     "p95": 3013.0,
+     "max": 3013.0
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 7,
+     "p50": 1897.6,
+     "p95": 4575.5,
+     "max": 4575.5
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 7,
+     "p50": 2178.1,
+     "p95": 4966.0,
+     "max": 4966.0
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 10,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 10,
+    "turns_heard_nothing": 1,
+    "turns_split": 0,
+    "wer_mean": 0.169,
+    "wer_p50": 0.0,
+    "tokens": {
+     "term": {
+      "checked": 5,
+      "exact": 4,
+      "normalised": 4
+     },
+     "day": {
+      "checked": 4,
+      "exact": 3,
+      "normalised": 3
+     },
+     "time": {
+      "checked": 4,
+      "exact": 2,
+      "normalised": 4
+     },
+     "name": {
+      "checked": 1,
+      "exact": 0,
+      "normalised": 0
+     }
+    }
+   },
+   "stt_audio_seconds": 343.4,
+   "tts_characters": 2371,
+   "stt_usd": 0.037206,
+   "tts_usd": 0.11855,
+   "speech_cost_usd": 0.155756,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.491802,
+  "llm_cost_usd": 0.336046,
+  "speech_cost_usd": 0.155756,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 3.164373,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "normal-isa-video",
+   "kind": "normal",
+   "description": "Investments by video: the investment specialists, Thursday 11 am.",
+   "conversation_id": "banking-advisor-appointment-claude-voice-normal-isa-video-20260930T062148",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Could I have a video call with someone about my stocks and shares ISA?",
+     "latency_ms": 2205.5,
+     "bot": [
+      "Right, let me get that booking started for you.",
+      "The investment specialists have two video times. One is Thursday the 8th of October at 11 am, and the other is Friday the 9th of October at quarter to two. Which would you like?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.8,
+      "speech_off_epoch": 1790749327.132748,
+      "eos_to_first_marker_ms": 1988.0,
+      "eos_to_first_audio_ms": 2205.5,
+      "eos_to_first_audible_ms": 2205.5,
+      "end_markers": [
+       {
+        "at_ms": 2480.2,
+        "rasa_processing_latency_ms": 1087.233066558838,
+        "tts_first_byte_latency_ms": 217.45681762695312,
+        "tts_complete_latency_ms": 492.2199249267578
+       },
+       {
+        "at_ms": 8510.2,
+        "rasa_processing_latency_ms": 1087.233066558838,
+        "tts_first_byte_latency_ms": 215.78431129455566,
+        "tts_complete_latency_ms": 3430.804967880249
+       }
+      ],
+      "bot_audio_s": 13.39,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "I have a video call with someone about my stocks and shares ISA."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1304.6890000114217,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1067.6003750122618,
+         "llm_total_generation_ms": 1468.7077089911327,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Thursday at eleven works for me.",
+     "latency_ms": 3459.7,
+     "bot": [
+      "The Northgate investment specialists handles savings, ISA, investment and pension advice, by video call on Thursday 8 October at 11 am. I have held that time for you. Would that work for you?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.23,
+      "speech_off_epoch": 1790749346.769935,
+      "eos_to_first_marker_ms": 3232.4,
+      "eos_to_first_audio_ms": 3459.7,
+      "eos_to_first_audible_ms": 3459.7,
+      "end_markers": [
+       {
+        "at_ms": 6809.2,
+        "rasa_processing_latency_ms": 2524.044990539551,
+        "tts_first_byte_latency_ms": 227.3550033569336,
+        "tts_complete_latency_ms": 3576.9100189208984
+       }
+      ],
+      "bot_audio_s": 13.45,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "That's eight eleven works for me."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2751.3899589830544,
+        "llm_generation_before_first_output_ms": 2493.9176670159213,
+        "first_agent_response": {
+         "generated_by_llm": false
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, please.",
+     "latency_ms": 4771.3,
+     "bot": [
+      "You're booked, Eleanor. Your reference is A P T, seven six five, one four eight, for savings, ISA, investment and pension advice, by video call on Thursday the 8th of October at 11 am.",
+      "Is there anything else I can help you with?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.66,
+      "speech_off_epoch": 1790749365.0527031,
+      "eos_to_first_marker_ms": 4557.5,
+      "eos_to_first_audio_ms": 4771.3,
+      "eos_to_first_audible_ms": 4771.3,
+      "end_markers": [
+       {
+        "at_ms": 9227.8,
+        "rasa_processing_latency_ms": 4143.216848373413,
+        "tts_first_byte_latency_ms": 213.71889114379883,
+        "tts_complete_latency_ms": 4670.253038406372
+       },
+       {
+        "at_ms": 10430.8,
+        "rasa_processing_latency_ms": 4143.216848373413,
+        "tts_first_byte_latency_ms": 221.18568420410156,
+        "tts_complete_latency_ms": 1202.2809982299805
+       }
+      ],
+      "bot_audio_s": 22.92,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, please."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 4356.95445802412,
+        "llm_generation_before_first_output_ms": 1172.1045000012964,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2956.399999995483,
+         "llm_total_generation_ms": 3016.680417000316,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-INV-V0811",
+       "purpose": "investments",
+       "channel": "video"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "purpose": "re:^(?!investments$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_advisor_slots",
+     "arguments": {
+      "purpose": "stocks and shares ISA",
+      "channel": "video"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "proposed",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_slot",
+     "arguments": {
+      "slot_id": "SLT-INV-V0811",
+      "purpose": "stocks and shares ISA"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "held",
+     "result_reason": null
+    },
+    {
+     "tool": "book_appointment",
+     "arguments": {
+      "slot_id": "SLT-INV-V0811"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "book_appointment",
+     "arguments": {
+      "slot_id": "SLT-INV-V0811"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me get that booking started for you.",
+     "You're booked, Eleanor. Your reference is A P T, seven six five, one four eight, for savings, ISA, investment and pension advice, by video call on Thursday the 8th of October at 11 am."
+    ],
+    "reservation_claim": [
+     "You're booked, Eleanor. Your reference is A P T, seven six five, one four eight, for savings, ISA, investment and pension advice, by video call on Thursday the 8th of October at 11 am."
+    ],
+    "advice_given": [],
+    "bookings": {
+     "attempts": 1,
+     "total": 1
+    },
+    "callbacks": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "browser_audio.handle_message.error": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.agent_task_failed": 0,
+    "northgate.rime_idle_reconnect": 1,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.declined": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "deepgram.v2.error": 0,
+    "deepgram.connection.failed": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "rime.connection.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 3,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "browser_audio.handle_message.error": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.agent_task_failed": [],
+    "northgate.rime_idle_reconnect": [
+     {
+      "idle_s": 20.6,
+      "conversation_id": "banking-advisor-appointment-claude-voice-normal-isa-video-20260930T062148"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "book_appointment",
+      "conversation_id": "banking-advisor-appointment-claude-voice-normal-isa-video-20260930T062148"
+     }
+    ],
+    "mantle.tool_confirmation.declined": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "deepgram.v2.error": [],
+    "deepgram.connection.failed": [],
+    "voice_channel.audio_missing": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "rime.connection.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ9Des5S2d9WEhyC9rka\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-normal-isa-video-20260930T062148"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ9GUxMCjuHYQeBpZpcg\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-normal-isa-video-20260930T062148"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ9JMjL8Xc827Y6Uc1Vg\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-normal-isa-video-20260930T062148"
+     }
+    ],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 13,
+    "main_loop_calls": 10,
+    "side_channel_calls": 3,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 3,
+    "engine_error_calls": 0,
+    "prompt_tokens": 45368,
+    "completion_tokens": 643,
+    "reasoning_tokens": 31,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.097166,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1468.6,
+     1369.0,
+     1322.6,
+     275.2,
+     1439.0,
+     1052.1,
+     1171.1,
+     3016.5,
+     941.4,
+     267.6,
+     1867.4,
+     1359.7,
+     286.5
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 76.3,
+    "tts_characters": 809,
+    "call": {
+     "audio_seconds_sent": 76.3,
+     "call_seconds": 76.31,
+     "markers_acked": 71,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.09,
+     "session_end_turn_s": 3.59
+    },
+    "stt_usd": 0.008266,
+    "tts_usd": 0.04045,
+    "cost_usd": 0.048716,
+    "asr": [
+     {
+      "intended": "Could I have a video call with someone about my stocks and shares ISA?",
+      "heard": [
+       "I have a video call with someone about my stocks and shares ISA."
+      ],
+      "user_events": 1,
+      "wer": 0.071,
+      "tokens": [
+       {
+        "token": "ISA",
+        "kind": "term",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "video",
+        "kind": "term",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Thursday at eleven works for me.",
+      "heard": [
+       "That's eight eleven works for me."
+      ],
+      "user_events": 1,
+      "wer": 0.429,
+      "tokens": [
+       {
+        "token": "Thursday",
+        "kind": "day",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "11",
+        "kind": "time",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes, please.",
+      "heard": [
+       "Yes, please."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-advisor-appointment-claude-voice-normal-isa-video-20260930T062148",
+    "prompt": 45368,
+    "completion": 643,
+    "total": 46011,
+    "generations": 10,
+    "fetched_at": "2026-09-30T06:23:19.441277+00:00"
+   }
+  },
+  {
+   "id": "recovery-hold-lapsed",
+   "kind": "recovery",
+   "description": "The hold lapses before the booking goes through. Nothing is booked until the slot is held again and confirmed again.",
+   "conversation_id": "banking-advisor-appointment-claude-voice-recovery-hold-lapsed-20260930T062148",
+   "passed": false,
+   "outcome": "fail",
+   "error": "RuntimeError: no bot turn after caller turn (timeout)",
+   "turns": [
+    {
+     "user": "Can I book a video call about my ISA for Friday at a quarter to two?",
+     "latency_ms": 2542.2,
+     "bot": [
+      "Right, let me get that booking started for you.",
+      "Just to check, did you mean an ISA?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.05,
+      "speech_off_epoch": 1790749410.198357,
+      "eos_to_first_marker_ms": 2348.8,
+      "eos_to_first_audio_ms": 2542.2,
+      "eos_to_first_audible_ms": 2542.2,
+      "end_markers": [
+       {
+        "at_ms": 2814.7,
+        "rasa_processing_latency_ms": 1901.6621112823486,
+        "tts_first_byte_latency_ms": 193.35603713989258,
+        "tts_complete_latency_ms": 465.93594551086426
+       },
+       {
+        "at_ms": 8739.0,
+        "rasa_processing_latency_ms": 1901.6621112823486,
+        "tts_first_byte_latency_ms": 227.2939682006836,
+        "tts_complete_latency_ms": 1013.5049819946289
+       }
+      ],
+      "bot_audio_s": 3.55,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Can I book a video call about my ASA for Friday at a quarter to two?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2095.0245420099236,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1897.5814169971272,
+         "llm_total_generation_ms": 2178.1353330006823,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 30328.9,
+     "bot": [
+      "Are you still there? I'm ready to continue whenever you are.",
+      "I'm sorry, but something went wrong. Please try again."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.17,
+      "speech_off_epoch": 1790749421.599725,
+      "eos_to_first_marker_ms": 29696.5,
+      "eos_to_first_audio_ms": 30328.9,
+      "eos_to_first_audible_ms": 30328.9,
+      "end_markers": [
+       {
+        "at_ms": 31338.6,
+        "rasa_processing_latency_ms": 1901.6621112823486,
+        "tts_first_byte_latency_ms": 632.2739124298096,
+        "tts_complete_latency_ms": 1642.076015472412
+       },
+       {
+        "at_ms": 32876.1,
+        "rasa_processing_latency_ms": 1901.6621112823486,
+        "tts_first_byte_latency_ms": 193.5591697692871,
+        "tts_complete_latency_ms": 1194.3471431732178
+       }
+      ],
+      "bot_audio_s": 9.56,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1110.9010840009432,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1897.5814169971272,
+         "llm_total_generation_ms": 2178.1353330006823,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, please try again.",
+     "latency_ms": 1947.3,
+     "bot": [
+      "Okay, I'll look for video slots for your ISA on Friday.",
+      "Sorry, I need to check this with you directly. In your own words, what would you like the appointment to be about?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.03,
+      "speech_off_epoch": 1790749463.231127,
+      "eos_to_first_marker_ms": 1751.3,
+      "eos_to_first_audio_ms": 1947.3,
+      "eos_to_first_audible_ms": 1947.3,
+      "end_markers": [
+       {
+        "at_ms": 2353.2,
+        "rasa_processing_latency_ms": 1548.1669902801514,
+        "tts_first_byte_latency_ms": 196.31695747375488,
+        "tts_complete_latency_ms": 602.2090911865234
+       },
+       {
+        "at_ms": 5955.8,
+        "rasa_processing_latency_ms": 1548.1669902801514,
+        "tts_first_byte_latency_ms": 197.91197776794434,
+        "tts_complete_latency_ms": 1683.9747428894043
+       }
+      ],
+      "bot_audio_s": 7.71,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes. Please try again."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1744.4873329950497,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1539.2806669988204,
+         "llm_total_generation_ms": 2323.4089170000516,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "blocked",
+       "reason": "slot_not_held",
+       "detail": "hold_lapsed"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-INV-V0913",
+       "purpose": "investments",
+       "channel": "video"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_advisor_slots",
+     "arguments": {
+      "purpose": "ISA",
+      "channel": "video",
+      "day": "Friday",
+      "part_of_day": "afternoon"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "wrong_advisor_capability"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me get that booking started for you.",
+     "Okay, I'll look for video slots for your ISA on Friday."
+    ],
+    "reservation_claim": [],
+    "advice_given": [],
+    "bookings": {
+     "attempts": 0,
+     "total": 0
+    },
+    "callbacks": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "browser_audio.handle_message.error": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 1,
+    "voice_channel.agent_task_failed": 0,
+    "northgate.rime_idle_reconnect": 2,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "deepgram.v2.error": 0,
+    "deepgram.connection.failed": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "rime.connection.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "mantle.turn.failed": 1
+   },
+   "log_event_details": {
+    "browser_audio.handle_message.error": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-advisor-appointment-claude-voice-recovery-hold-lapsed-20260930T062148",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-banking-advisor-appointment/examples/mantle-voice-banking-advisor-appointment-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-banking-advisor-appointment/examples/mantle-voice-banking-advisor-appointment-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-banking-advisor-appointment/examples/mantle-voice-banking-advisor-appointment-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-banking-advisor-appointment/examples/mantle-voice-banking-advisor-appointment-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "northgate.rime_idle_reconnect": [
+     {
+      "idle_s": 32.4,
+      "conversation_id": "banking-advisor-appointment-claude-voice-recovery-hold-lapsed-20260930T062148"
+     },
+     {
+      "idle_s": 99.4,
+      "conversation_id": "banking-advisor-appointment-claude-voice-recovery-hold-lapsed-20260930T062148"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.tool_confirmation.declined": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "deepgram.v2.error": [],
+    "deepgram.connection.failed": [],
+    "voice_channel.audio_missing": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "rime.connection.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ9KyGXFcBmFxaz8UEce\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-recovery-hold-lapsed-20260930T062148"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ9X5HEQBmZprkTSQ6q6\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-recovery-hold-lapsed-20260930T062148"
+     }
+    ],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "banking-advisor-appointment-claude-voice-recovery-hold-lapsed-20260930T062148"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 4,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 2,
+    "prompt_tokens": 23437,
+    "completion_tokens": 849,
+    "reasoning_tokens": 510,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.055364,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2178.1,
+     5099.3,
+     267.1,
+     471.1,
+     335.8,
+     2323.5,
+     1735.5,
+     1310.0,
+     2045.4,
+     656.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 165.76,
+    "tts_characters": 510,
+    "call": {
+     "audio_seconds_sent": 165.76,
+     "call_seconds": 165.77,
+     "markers_acked": 46,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.09,
+     "session_end_turn_s": 4.07
+    },
+    "stt_usd": 0.017957,
+    "tts_usd": 0.0255,
+    "cost_usd": 0.043457,
+    "asr": [
+     {
+      "intended": "Can I book a video call about my ISA for Friday at a quarter to two?",
+      "heard": [
+       "Can I book a video call about my ASA for Friday at a quarter to two?"
+      ],
+      "user_events": 1,
+      "wer": 0.062,
+      "tokens": [
+       {
+        "token": "ISA",
+        "kind": "term",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "Friday",
+        "kind": "day",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "quarter to two",
+        "kind": "time",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes.",
+      "heard": [],
+      "user_events": 0,
+      "wer": 1.0,
+      "tokens": []
+     },
+     {
+      "intended": "Yes, please try again.",
+      "heard": [
+       "Yes. Please try again."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-advisor-appointment-claude-voice-recovery-hold-lapsed-20260930T062148",
+    "prompt": 23437,
+    "completion": 849,
+    "total": 24286,
+    "generations": 6,
+    "fetched_at": "2026-09-30T06:26:12.295437+00:00"
+   }
+  },
+  {
+   "id": "correction-step-free-branch-at-confirmation",
+   "kind": "correction",
+   "description": "The case's correction: at the read-back of a phone hold, the customer needs a step-free branch visit. The phone hold is released and a step-free branch booked.",
+   "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like a phone appointment about my mortgage, Thursday at half past two.",
+     "latency_ms": 5235.8,
+     "bot": [
+      "Right, let me get that booking started for you.",
+      "The Northgate mortgage team handles mortgage advice, by phone on Thursday 8 October at 2:30 pm. I have held that time for you. Would that work for you?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.09,
+      "speech_off_epoch": 1790749582.957231,
+      "eos_to_first_marker_ms": 5047.3,
+      "eos_to_first_audio_ms": 5235.8,
+      "eos_to_first_audible_ms": 5235.8,
+      "end_markers": [
+       {
+        "at_ms": 5504.2,
+        "rasa_processing_latency_ms": 4584.911108016968,
+        "tts_first_byte_latency_ms": 187.01791763305664,
+        "tts_complete_latency_ms": 457.385778427124
+       },
+       {
+        "at_ms": 14064.4,
+        "rasa_processing_latency_ms": 4584.911108016968,
+        "tts_first_byte_latency_ms": 293.5359477996826,
+        "tts_complete_latency_ms": 3154.2351245880127
+       }
+      ],
+      "bot_audio_s": 11.62,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "I'd like a phone appointment about my mortgage Thursday at half past two."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 4771.96174999699,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 4575.4826249904,
+         "llm_total_generation_ms": 4965.98116599489,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Actually, I'd rather come into a branch, and it needs to be step-free. I use a wheelchair.",
+     "latency_ms": null,
+     "bot": [
+      "No mortgage advisor has a step-free branch slot on Thursday afternoon. The nearest is Friday the 9th of October at 10 in the morning at the Ashcombe branch, which is step-free. I can also offer video on Wednesday the 7th at half past nine, or a callback. Which would you like?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.98,
+      "speech_off_epoch": 1790749610.4123738,
+      "eos_to_first_marker_ms": null,
+      "eos_to_first_audio_ms": null,
+      "eos_to_first_audible_ms": null,
+      "end_markers": [],
+      "bot_audio_s": 0.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Actually, I'd rather come into a branch, and it needs to be step free. I use a wheelchair."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    },
+    {
+     "user": "Friday at ten at Ashcombe is fine.",
+     "latency_ms": 16.1,
+     "bot": [
+      "A mortgage advisor at the Ashcombe branch handles mortgage advice, in person at the Ashcombe branch on Friday 9 October at 10 am. I have held that time for you. Would that work for you?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.37,
+      "speech_off_epoch": 1790749619.262749,
+      "eos_to_first_marker_ms": 159.0,
+      "eos_to_first_audio_ms": 16.1,
+      "eos_to_first_audible_ms": 16.1,
+      "end_markers": [
+       {
+        "at_ms": 2684.3,
+        "rasa_processing_latency_ms": 5985.823154449463,
+        "tts_first_byte_latency_ms": 758.8379383087158,
+        "tts_complete_latency_ms": 4781.445026397705
+       },
+       {
+        "at_ms": 3580.5,
+        "rasa_processing_latency_ms": 3028.2599925994873,
+        "tts_first_byte_latency_ms": 758.8379383087158,
+        "tts_complete_latency_ms": 4781.445026397705
+       },
+       {
+        "at_ms": 6993.1,
+        "rasa_processing_latency_ms": 3028.2599925994873,
+        "tts_first_byte_latency_ms": 224.40314292907715,
+        "tts_complete_latency_ms": 3412.3892784118652
+       }
+      ],
+      "bot_audio_s": 25.49,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Friday at ten at Ashcom is fine."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3252.851458004443,
+        "llm_generation_before_first_output_ms": 3013.0429590062704,
+        "first_agent_response": {
+         "generated_by_llm": false
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4234.4,
+     "bot": [
+      "Your appointment is booked, Eleanor. The reference is A P T, two one one, nine one zero, for mortgage advice, in person at the Ashcombe branch, on Friday the 9th of October at 10 am.",
+      "Is there anything else I can help you with?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.17,
+      "speech_off_epoch": 1790749649.3326151,
+      "eos_to_first_marker_ms": 4021.0,
+      "eos_to_first_audio_ms": 4234.4,
+      "eos_to_first_audible_ms": 4234.4,
+      "end_markers": [
+       {
+        "at_ms": 8425.9,
+        "rasa_processing_latency_ms": 2892.1186923980713,
+        "tts_first_byte_latency_ms": 798.8479137420654,
+        "tts_complete_latency_ms": 4990.469932556152
+       },
+       {
+        "at_ms": 9638.2,
+        "rasa_processing_latency_ms": 2892.1186923980713,
+        "tts_first_byte_latency_ms": 247.69210815429688,
+        "tts_complete_latency_ms": 1211.5559577941895
+       }
+      ],
+      "bot_audio_s": 20.04,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3690.9817080013454,
+        "llm_generation_before_first_output_ms": 1162.0552499953192,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1715.5139580136165,
+         "llm_total_generation_ms": 1738.017249997938,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "release_hold",
+      "result": {
+       "status": "released",
+       "slot_id": "SLT-MTG-P0814"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-ASH-M0910",
+       "purpose": "mortgage",
+       "channel": "branch"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-MTG-P0814"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-FRD-M0814"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_advisor_slots",
+     "arguments": {
+      "purpose": "mortgage",
+      "channel": "phone",
+      "day": "Thursday",
+      "part_of_day": "afternoon"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "proposed",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_slot",
+     "arguments": {
+      "slot_id": "SLT-MTG-P0814",
+      "purpose": "mortgage"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "held",
+     "result_reason": null
+    },
+    {
+     "tool": "book_appointment",
+     "arguments": {
+      "slot_id": "SLT-MTG-P0814"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "book_appointment",
+     "arguments": {
+      "slot_id": "SLT-MTG-P0814"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "release_hold",
+     "arguments": {
+      "slot_id": "SLT-MTG-P0814"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "released",
+     "result_reason": null
+    },
+    {
+     "tool": "find_advisor_slots",
+     "arguments": {
+      "purpose": "mortgage",
+      "channel": "branch",
+      "day": "Thursday",
+      "part_of_day": "afternoon"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "no_capable_slot",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_slot",
+     "arguments": {
+      "slot_id": "SLT-ASH-M0910",
+      "purpose": "mortgage"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "held",
+     "result_reason": null
+    },
+    {
+     "tool": "book_appointment",
+     "arguments": {
+      "slot_id": "SLT-ASH-M0910"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "book_appointment",
+     "arguments": {
+      "slot_id": "SLT-ASH-M0910"
+     },
+     "after_user_turn": 4,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me get that booking started for you.",
+     "Your appointment is booked, Eleanor. The reference is A P T, two one one, nine one zero, for mortgage advice, in person at the Ashcombe branch, on Friday the 9th of October at 10 am."
+    ],
+    "reservation_claim": [
+     "Your appointment is booked, Eleanor. The reference is A P T, two one one, nine one zero, for mortgage advice, in person at the Ashcombe branch, on Friday the 9th of October at 10 am."
+    ],
+    "advice_given": [],
+    "bookings": {
+     "attempts": 1,
+     "total": 1
+    },
+    "callbacks": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "browser_audio.handle_message.error": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.agent_task_failed": 0,
+    "northgate.rime_idle_reconnect": 2,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.declined": 1,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "deepgram.v2.error": 0,
+    "deepgram.connection.failed": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "rime.connection.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 3,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "browser_audio.handle_message.error": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.agent_task_failed": [],
+    "northgate.rime_idle_reconnect": [
+     {
+      "idle_s": 20.1,
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148"
+     },
+     {
+      "idle_s": 26.5,
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "book_appointment",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148"
+     }
+    ],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "book_appointment",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148"
+     }
+    ],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "deepgram.v2.error": [],
+    "deepgram.connection.failed": [],
+    "voice_channel.audio_missing": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "rime.connection.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ9ZAzq5oUJw93pwBrcr\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ9dPjfJXdVHYxb1fbQV\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ9f3WJFKGU3KkYMvP8L\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148"
+     }
+    ],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 18,
+    "main_loop_calls": 15,
+    "side_channel_calls": 3,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 3,
+    "engine_error_calls": 0,
+    "prompt_tokens": 85473,
+    "completion_tokens": 1257,
+    "reasoning_tokens": 150,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.183516,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     4965.8,
+     2050.7,
+     2040.9,
+     1361.4,
+     268.4,
+     1254.0,
+     1448.1,
+     1437.1,
+     1830.6,
+     1816.4,
+     1195.2,
+     1161.3,
+     1738.0,
+     1487.0,
+     284.5,
+     1447.2,
+     1504.7,
+     303.6
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 101.38,
+    "tts_characters": 1052,
+    "call": {
+     "audio_seconds_sent": 101.38,
+     "call_seconds": 101.4,
+     "markers_acked": 87,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.09,
+     "session_end_turn_s": 3.6
+    },
+    "stt_usd": 0.010983,
+    "tts_usd": 0.0526,
+    "cost_usd": 0.063583,
+    "asr": [
+     {
+      "intended": "I'd like a phone appointment about my mortgage, Thursday at half past two.",
+      "heard": [
+       "I'd like a phone appointment about my mortgage Thursday at half past two."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "mortgage",
+        "kind": "term",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Thursday",
+        "kind": "day",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "half past two",
+        "kind": "time",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Actually, I'd rather come into a branch, and it needs to be step-free. I use a wheelchair.",
+      "heard": [
+       "Actually, I'd rather come into a branch, and it needs to be step free. I use a wheelchair."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "wheelchair",
+        "kind": "term",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Friday at ten at Ashcombe is fine.",
+      "heard": [
+       "Friday at ten at Ashcom is fine."
+      ],
+      "user_events": 1,
+      "wer": 0.125,
+      "tokens": [
+       {
+        "token": "Friday",
+        "kind": "day",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "10",
+        "kind": "time",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "Ashcombe",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "Yes."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T062148",
+    "prompt": 85473,
+    "completion": 1257,
+    "total": 86730,
+    "generations": 15,
+    "fetched_at": "2026-09-30T06:28:00.303923+00:00"
+   }
+  }
+ ]
+}

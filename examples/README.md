@@ -67,6 +67,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Northgate loan payoff quotes on Claude (text, web chat) | Northgate loan servicing assistant | Retail banking / casebook case build | [`mantle-text-banking-loan-servicing-claude`](mantle-text-banking-loan-servicing-claude) | 2026-09-30 |
 | Willow Shop returns and exchanges on Claude (text, web chat) | Willow Shop returns and exchanges assistant | Retail / casebook case build | [`mantle-text-retail-return-claude`](mantle-text-retail-return-claude) | 2026-09-30 |
 | Orchard Works step-up authentication on Claude with Deepgram (browser voice) | Orchard Works IT service desk | Internal IT / casebook case build | [`mantle-voice-step-up-authentication-claude`](mantle-voice-step-up-authentication-claude) | 2026-09-30 |
+| Northgate advisor appointments on Claude with Deepgram and Rime (browser voice, en-GB caller) | Northgate Bank appointments | Retail banking / casebook case build | [`mantle-voice-banking-advisor-appointment-claude`](mantle-voice-banking-advisor-appointment-claude) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 
