@@ -1,0 +1,2128 @@
+{
+ "sender_id": "disruption-mode-gpt-text-recovery-stale-then-rehold-denver-20260930T170938",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.passenger_id": "HT-PAX-3308",
+  "project.passenger_first_name": "Ines",
+  "project.affected_trips": "Chicago HT-7Q4M2; Denver HT-9D2K8; Toronto HT-5X7P1; Washington HT-3H6W4; Miami HT-2L8N5",
+  "disruption_recovery.selected_option_id": "OPT-DEN-548",
+  "disruption_recovery.selected_option_summary": "HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)",
+  "disruption_recovery.selected_booking_ref": "HT-9D2K8",
+  "system.__discovered__": [
+   {
+    "key": "cancelled_denver_flight",
+    "value": "Customer's Denver flight is cancelled",
+    "description": "The customer is seeking rebooking options for a cancelled flight to Denver.",
+    "turn_idx": 1,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   }
+  ],
+  "system.pending_tool_confirmation": null
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "Yes.",
+  "message_id": "0e4e230c535d491b8c9d819143e69648",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790788496.8991191,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "23M0KB1O",
+   "skill_id": "disruption_recovery",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790788469.3726459,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788469.3729768,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788469.373004,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788469.372705,
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790788469.373021,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788469.373034,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"HNFVA1GQ\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"E65471GL\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788469.3732522,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788469.3732858,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "My Denver flight's cancelled. What can you get me tomorrow?",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "My Denver flight's cancelled. What can you get me tomorrow?",
+    "message_id": "fde3f52de5984454acc435d260a28439",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "fde3f52de5984454acc435d260a28439",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788469.3758779,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_session_passenger",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "E65471GL",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "project.passenger_id",
+   "value": "HT-PAX-3308",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788469.375901,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_session_passenger",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "E65471GL",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "project.passenger_id",
+   "value": "HT-PAX-3308",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788469.375981,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_session_passenger",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "E65471GL",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "project.passenger_first_name",
+   "value": "Ines",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788469.375995,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_session_passenger",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "E65471GL",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "project.passenger_first_name",
+   "value": "Ines",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788469.376069,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_session_passenger",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "E65471GL",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "project.affected_trips",
+   "value": "Chicago HT-7Q4M2; Denver HT-9D2K8; Toronto HT-5X7P1; Washington HT-3H6W4; Miami HT-2L8N5",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788469.376082,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_session_passenger",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "E65471GL",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "project.affected_trips",
+   "value": "Chicago HT-7Q4M2; Denver HT-9D2K8; Toronto HT-5X7P1; Washington HT-3H6W4; Miami HT-2L8N5",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788469.376276,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "load_session_passenger",
+   "arguments": {},
+   "result": "{\"ok\": true, \"first_name\": \"Ines\", \"affected_trips\": \"Chicago HT-7Q4M2; Denver HT-9D2K8; Toronto HT-5X7P1; Washington HT-3H6W4; Miami HT-2L8N5\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788469.3762932,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "load_session_passenger",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"first_name\": \"Ines\", \"affected_trips\": \"Chicago HT-7Q4M2; Denver HT-9D2K8; Toronto HT-5X7P1; Washington HT-3H6W4; Miami HT-2L8N5\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788469.3764548,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788469.377072,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "Hello Ines, this is Horizon Travel. The storm has cancelled flights from Boston. I can tell you what is happening, look for another flight, try to hold a seat for you, or put you in the recovery queue. Which trip is it about?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790788469.3778272,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790788469.377845,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790788469.377857,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788469.377867,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788469.378091,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788470.744168,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "flow_id": "disruption_recovery",
+   "skill_id": "disruption_recovery"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788470.7442229,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788469.3732858,
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "skill_id": "disruption_recovery"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788470.744241,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"23M0KB1O\", \"skill_id\": \"disruption_recovery\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788470.745213,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "disruption_recovery"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788470.745249,
+   "metadata": {
+    "tool_call_id": "call_n3BkM2mUceV1tX4g1x9EQYoa",
+    "tool_batch_id": "0-call_n3BkM2mUceV1tX4g1x9EQYoa",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "disruption_recovery"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788472.597307,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "Denver"
+     },
+     "position": 27,
+     "tool_call_id": "call_ZBXKZVDtvEs6syNgRJqv1PZ0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_id",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788472.597431,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "Denver"
+     },
+     "position": 28,
+     "tool_call_id": "call_ZBXKZVDtvEs6syNgRJqv1PZ0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_id",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788472.597573,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "Denver"
+     },
+     "position": 29,
+     "tool_call_id": "call_ZBXKZVDtvEs6syNgRJqv1PZ0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_summary",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788472.59761,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "Denver"
+     },
+     "position": 30,
+     "tool_call_id": "call_ZBXKZVDtvEs6syNgRJqv1PZ0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_summary",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788472.5977201,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "Denver"
+     },
+     "position": 31,
+     "tool_call_id": "call_ZBXKZVDtvEs6syNgRJqv1PZ0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_booking_ref",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788472.597746,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "Denver"
+     },
+     "position": 32,
+     "tool_call_id": "call_ZBXKZVDtvEs6syNgRJqv1PZ0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_booking_ref",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788472.599398,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "find_recovery_options",
+   "arguments": {
+    "booking": "Denver"
+   },
+   "result": "{\"status\": \"options\", \"booking_ref\": \"HT-9D2K8\", \"cancelled_flight\": \"HZ 540 Boston to Denver, 30 Sep 20:15\", \"incident_id\": \"HT-INC-0930\", \"incident_revision\": 4, \"read_at\": \"14:05 Boston time\", \"options\": [{\"option_id\": \"OPT-DEN-544\", \"flight\": \"HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop\", \"seats_shown\": 4}], \"seats_shown_is_not_a_hold\": true, \"note\": \"Seat counts lag the inventory during the disruption. A seat is the passenger's only when hold_recovery_option returns held, and even then it is a hold with an expiry, not a confirmed journey.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788472.5994601,
+   "metadata": {
+    "tool_call_id": "call_ZBXKZVDtvEs6syNgRJqv1PZ0",
+    "tool_batch_id": "1-call_ZBXKZVDtvEs6syNgRJqv1PZ0",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "find_recovery_options",
+   "arguments": {
+    "booking": "Denver"
+   },
+   "source": "local",
+   "result": "{\"status\": \"options\", \"booking_ref\": \"HT-9D2K8\", \"cancelled_flight\": \"HZ 540 Boston to Denver, 30 Sep 20:15\", \"incident_id\": \"HT-INC-0930\", \"incident_revision\": 4, \"read_at\": \"14:05 Boston time\", \"options\": [{\"option_id\": \"OPT-DEN-544\", \"flight\": \"HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop\", \"seats_shown\": 4}], \"seats_shown_is_not_a_hold\": true, \"note\": \"Seat counts lag the inventory during the disruption. A seat is the passenger's only when hold_recovery_option returns held, and even then it is a hold with an expiry, not a confirmed journey.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788476.1924748,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 3581.93470799597,
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "For your Denver booking HT-9D2K8, I found one recovery option for tomorrow:\n\n- OPT-DEN-544: HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop \u2014 4 seats shown\n\nThat seat count is only information and is not a hold. If you want this option, I can try to hold a seat for you.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788476.194824,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788477.9263911,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 37,
+     "tool_call_id": null
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "cancelled_denver_flight",
+     "value": "Customer's Denver flight is cancelled",
+     "description": "The customer is seeking rebooking options for a cancelled flight to Denver.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788477.926424,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 38,
+     "tool_call_id": null
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "cancelled_denver_flight",
+     "value": "Customer's Denver flight is cancelled",
+     "description": "The customer is seeking rebooking options for a cancelled flight to Denver.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788477.933853,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "The 8:30 please.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "The 8:30 please.",
+    "message_id": "601ca4de3e1e4820a042dd09e2b91e77",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "601ca4de3e1e4820a042dd09e2b91e77",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788479.521705,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 40,
+     "tool_call_id": "call_K9WBwyNKBbwEukQAYjACa9f0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_id",
+   "value": "OPT-DEN-544",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788479.521738,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 41,
+     "tool_call_id": "call_K9WBwyNKBbwEukQAYjACa9f0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_id",
+   "value": "OPT-DEN-544",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788479.521783,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 42,
+     "tool_call_id": "call_K9WBwyNKBbwEukQAYjACa9f0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_booking_ref",
+   "value": "HT-9D2K8",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788479.521794,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 43,
+     "tool_call_id": "call_K9WBwyNKBbwEukQAYjACa9f0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_booking_ref",
+   "value": "HT-9D2K8",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788479.5218308,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 44,
+     "tool_call_id": "call_K9WBwyNKBbwEukQAYjACa9f0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_summary",
+   "value": "HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop (booking HT-9D2K8)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788479.52184,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 45,
+     "tool_call_id": "call_K9WBwyNKBbwEukQAYjACa9f0"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_summary",
+   "value": "HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop (booking HT-9D2K8)",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788479.522323,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "select_option",
+   "arguments": {
+    "option_id": "OPT-DEN-544"
+   },
+   "result": "{\"status\": \"selected\", \"option_id\": \"OPT-DEN-544\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop\", \"incident_revision\": 4}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788479.522336,
+   "metadata": {
+    "tool_call_id": "call_K9WBwyNKBbwEukQAYjACa9f0",
+    "tool_batch_id": "0-call_K9WBwyNKBbwEukQAYjACa9f0",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "select_option",
+   "arguments": {
+    "option_id": "OPT-DEN-544"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"option_id\": \"OPT-DEN-544\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop\", \"incident_revision\": 4}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788481.3547158,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 48,
+     "tool_call_id": "call_OGkMzSBSFouGPlVSG0puUfX6"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "hold_recovery_option",
+    "tool_args": {
+     "option_id": "OPT-DEN-544"
+    },
+    "confirmation_ask": "Options are changing during the disruption. Shall I try to hold HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\n",
+    "utter_on_user_denial": null,
+    "skill_id": "disruption_recovery",
+    "frame_id": "23M0KB1O",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788481.3548439,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 49,
+     "tool_call_id": "call_OGkMzSBSFouGPlVSG0puUfX6"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "hold_recovery_option",
+    "tool_args": {
+     "option_id": "OPT-DEN-544"
+    },
+    "confirmation_ask": "Options are changing during the disruption. Shall I try to hold HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\n",
+    "utter_on_user_denial": null,
+    "skill_id": "disruption_recovery",
+    "frame_id": "23M0KB1O",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788481.3563688,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "option_id": "OPT-DEN-544"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Options are changing during the disruption. Shall I try to hold HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788481.356419,
+   "metadata": {
+    "tool_call_id": "call_OGkMzSBSFouGPlVSG0puUfX6",
+    "tool_batch_id": "1-call_OGkMzSBSFouGPlVSG0puUfX6",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "option_id": "OPT-DEN-544"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Options are changing during the disruption. Shall I try to hold HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788481.356724,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_hold",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "Options are changing during the disruption. Shall I try to hold HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788481.359293,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788481.378151,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "Yes.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes.",
+    "message_id": "1300449e665844d2a5b5b001c7769473",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "1300449e665844d2a5b5b001c7769473",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788482.982389,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 55,
+     "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790788482.9824588,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 56,
+     "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788482.982816,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 57,
+     "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_id",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788482.9828439,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 58,
+     "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_id",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788482.9829319,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 59,
+     "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_summary",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788482.98295,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 60,
+     "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_summary",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788482.983027,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 61,
+     "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_booking_ref",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788482.983043,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-544"
+     },
+     "position": 62,
+     "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_booking_ref",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788482.983082,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "No seat held: the disruption plan changed after these options were listed, so the list is out of date. I need to look again.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788482.984607,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "option_id": "OPT-DEN-544"
+   },
+   "result": "{\"status\": \"blocked\", \"reason\": \"stale_incident_state\", \"option_id\": \"OPT-DEN-544\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop\", \"facts\": {\"incident_revision_current\": false, \"recovery_channel_available\": true}, \"incident_revision\": 5, \"journey_confirmed\": false, \"effects\": 0, \"seat_held\": false, \"list_revision\": 4, \"next_step\": \"The incident changed after this list was read; the list is void. Call find_recovery_options again and let the passenger choose from the new list.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788482.984632,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "option_id": "OPT-DEN-544"
+   },
+   "source": "local",
+   "result": "{\"status\": \"blocked\", \"reason\": \"stale_incident_state\", \"option_id\": \"OPT-DEN-544\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop\", \"facts\": {\"incident_revision_current\": false, \"recovery_channel_available\": true}, \"incident_revision\": 5, \"journey_confirmed\": false, \"effects\": 0, \"seat_held\": false, \"list_revision\": 4, \"next_step\": \"The incident changed after this list was read; the list is void. Call find_recovery_options again and let the passenger choose from the new list.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788482.985472,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"status\": \"blocked\", \"reason\": \"stale_incident_state\", \"option_id\": \"OPT-DEN-544\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop\", \"facts\": {\"incident_revision_current\": false, \"recovery_channel_available\": true}, \"incident_revision\": 5, \"journey_confirmed\": false, \"effects\": 0, \"seat_held\": false, \"list_revision\": 4, \"next_step\": \"The incident changed after this list was read; the list is void. Call find_recovery_options again and let the passenger choose from the new list.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788482.985495,
+   "metadata": {
+    "tool_call_id": "call_dxvC4z9qpKCfL8G2lWMMygHu",
+    "tool_batch_id": "0-call_dxvC4z9qpKCfL8G2lWMMygHu",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"status\": \"blocked\", \"reason\": \"stale_incident_state\", \"option_id\": \"OPT-DEN-544\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop\", \"facts\": {\"incident_revision_current\": false, \"recovery_channel_available\": true}, \"incident_revision\": 5, \"journey_confirmed\": false, \"effects\": 0, \"seat_held\": false, \"list_revision\": 4, \"next_step\": \"The incident changed after this list was read; the list is void. Call find_recovery_options again and let the passenger choose from the new list.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788485.066688,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "HT-9D2K8"
+     },
+     "position": 68,
+     "tool_call_id": "call_cLIBPdgUsWpV6IrQmKsHW6Tl"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_id",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788485.0667362,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "HT-9D2K8"
+     },
+     "position": 69,
+     "tool_call_id": "call_cLIBPdgUsWpV6IrQmKsHW6Tl"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_id",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788485.066805,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "HT-9D2K8"
+     },
+     "position": 70,
+     "tool_call_id": "call_cLIBPdgUsWpV6IrQmKsHW6Tl"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_summary",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788485.066821,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "HT-9D2K8"
+     },
+     "position": 71,
+     "tool_call_id": "call_cLIBPdgUsWpV6IrQmKsHW6Tl"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_summary",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788485.0668778,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "HT-9D2K8"
+     },
+     "position": 72,
+     "tool_call_id": "call_cLIBPdgUsWpV6IrQmKsHW6Tl"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_booking_ref",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788485.06689,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "find_recovery_options",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "booking": "HT-9D2K8"
+     },
+     "position": 73,
+     "tool_call_id": "call_cLIBPdgUsWpV6IrQmKsHW6Tl"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_booking_ref",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788485.0676029,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "find_recovery_options",
+   "arguments": {
+    "booking": "HT-9D2K8"
+   },
+   "result": "{\"status\": \"options\", \"booking_ref\": \"HT-9D2K8\", \"cancelled_flight\": \"HZ 540 Boston to Denver, 30 Sep 20:15\", \"incident_id\": \"HT-INC-0930\", \"incident_revision\": 5, \"read_at\": \"14:05 Boston time\", \"options\": [{\"option_id\": \"OPT-DEN-548\", \"flight\": \"HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop\", \"seats_shown\": 2}, {\"option_id\": \"OPT-DEN-540\", \"flight\": \"HZ 540 Boston to Denver, Thu 2 Oct 20:15, nonstop\", \"seats_shown\": 9}], \"seats_shown_is_not_a_hold\": true, \"note\": \"Seat counts lag the inventory during the disruption. A seat is the passenger's only when hold_recovery_option returns held, and even then it is a hold with an expiry, not a confirmed journey.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788485.067625,
+   "metadata": {
+    "tool_call_id": "call_cLIBPdgUsWpV6IrQmKsHW6Tl",
+    "tool_batch_id": "1-call_cLIBPdgUsWpV6IrQmKsHW6Tl",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "find_recovery_options",
+   "arguments": {
+    "booking": "HT-9D2K8"
+   },
+   "source": "local",
+   "result": "{\"status\": \"options\", \"booking_ref\": \"HT-9D2K8\", \"cancelled_flight\": \"HZ 540 Boston to Denver, 30 Sep 20:15\", \"incident_id\": \"HT-INC-0930\", \"incident_revision\": 5, \"read_at\": \"14:05 Boston time\", \"options\": [{\"option_id\": \"OPT-DEN-548\", \"flight\": \"HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop\", \"seats_shown\": 2}, {\"option_id\": \"OPT-DEN-540\", \"flight\": \"HZ 540 Boston to Denver, Thu 2 Oct 20:15, nonstop\", \"seats_shown\": 9}], \"seats_shown_is_not_a_hold\": true, \"note\": \"Seat counts lag the inventory during the disruption. A seat is the passenger's only when hold_recovery_option returns held, and even then it is a hold with an expiry, not a confirmed journey.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788488.529801,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 3453.2123749959283,
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "That 8:30 option is no longer available from the current disruption list, so no seat was held.\n\nThe current Denver options are:\n\n- OPT-DEN-548: HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop \u2014 2 seats shown\n- OPT-DEN-540: HZ 540 Boston to Denver, Thu 2 Oct 20:15, nonstop \u2014 9 seats shown\n\nThese seat counts are not holds. Which option would you like me to try to hold?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788488.533113,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788488.557311,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "OK, what's there now then? I'll take the earliest one.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "OK, what's there now then? I'll take the earliest one.",
+    "message_id": "98165e27c722425fb88800f6fd19541d",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "98165e27c722425fb88800f6fd19541d",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788491.3448582,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "position": 79,
+     "tool_call_id": "call_8LowoBfKXRzdaqUoVp3P9g4m"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_id",
+   "value": "OPT-DEN-548",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788491.3449779,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "position": 80,
+     "tool_call_id": "call_8LowoBfKXRzdaqUoVp3P9g4m"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_id",
+   "value": "OPT-DEN-548",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788491.345145,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "position": 81,
+     "tool_call_id": "call_8LowoBfKXRzdaqUoVp3P9g4m"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_booking_ref",
+   "value": "HT-9D2K8",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788491.345182,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "position": 82,
+     "tool_call_id": "call_8LowoBfKXRzdaqUoVp3P9g4m"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_booking_ref",
+   "value": "HT-9D2K8",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788491.3453062,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "position": 83,
+     "tool_call_id": "call_8LowoBfKXRzdaqUoVp3P9g4m"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "disruption_recovery.selected_option_summary",
+   "value": "HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788491.345334,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_option",
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {
+      "option_id": "OPT-DEN-548"
+     },
+     "position": 84,
+     "tool_call_id": "call_8LowoBfKXRzdaqUoVp3P9g4m"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "disruption_recovery.selected_option_summary",
+   "value": "HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788491.346802,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "select_option",
+   "arguments": {
+    "option_id": "OPT-DEN-548"
+   },
+   "result": "{\"status\": \"selected\", \"option_id\": \"OPT-DEN-548\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop\", \"incident_revision\": 5}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788491.346849,
+   "metadata": {
+    "tool_call_id": "call_8LowoBfKXRzdaqUoVp3P9g4m",
+    "tool_batch_id": "0-call_8LowoBfKXRzdaqUoVp3P9g4m",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "select_option",
+   "arguments": {
+    "option_id": "OPT-DEN-548"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"option_id\": \"OPT-DEN-548\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop\", \"incident_revision\": 5}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788492.599204,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 87,
+     "tool_call_id": "call_QDEEQALpXqM1MHTg2H6qx6Kr"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "hold_recovery_option",
+    "tool_args": {
+     "option_id": "OPT-DEN-548"
+    },
+    "confirmation_ask": "Options are changing during the disruption. Shall I try to hold HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\n",
+    "utter_on_user_denial": null,
+    "skill_id": "disruption_recovery",
+    "frame_id": "23M0KB1O",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788492.599308,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 88,
+     "tool_call_id": "call_QDEEQALpXqM1MHTg2H6qx6Kr"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "hold_recovery_option",
+    "tool_args": {
+     "option_id": "OPT-DEN-548"
+    },
+    "confirmation_ask": "Options are changing during the disruption. Shall I try to hold HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\n",
+    "utter_on_user_denial": null,
+    "skill_id": "disruption_recovery",
+    "frame_id": "23M0KB1O",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788492.6003609,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "option_id": "OPT-DEN-548"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Options are changing during the disruption. Shall I try to hold HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788492.6004019,
+   "metadata": {
+    "tool_call_id": "call_QDEEQALpXqM1MHTg2H6qx6Kr",
+    "tool_batch_id": "1-call_QDEEQALpXqM1MHTg2H6qx6Kr",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "option_id": "OPT-DEN-548"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Options are changing during the disruption. Shall I try to hold HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788492.6006458,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_hold",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "Options are changing during the disruption. Shall I try to hold HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop (booking HT-9D2K8)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788492.603243,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788492.624358,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "Yes.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes.",
+    "message_id": "0e4e230c535d491b8c9d819143e69648",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "0e4e230c535d491b8c9d819143e69648",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788495.186553,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 94,
+     "tool_call_id": "call_keYR190IKFmbGN8yI3H42O6w"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790788495.1866162,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_recovery",
+     "step": "autonomous",
+     "frame_id": "23M0KB1O",
+     "arguments": {},
+     "position": 95,
+     "tool_call_id": "call_keYR190IKFmbGN8yI3H42O6w"
+    },
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788495.186923,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "Seat held: HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop, hold HT-HLD-403BBF, until 14:50 Boston time, 30 Sep. This is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788495.1885571,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "option_id": "OPT-DEN-548"
+   },
+   "result": "{\"status\": \"held\", \"reason\": \"verified_fixture_receipt\", \"option_id\": \"OPT-DEN-548\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop\", \"facts\": {\"incident_revision_current\": true, \"capacity_reserved\": true, \"recovery_channel_available\": true}, \"incident_revision\": 5, \"journey_confirmed\": false, \"hold_id\": \"HT-HLD-403BBF\", \"expires\": \"14:50 Boston time, 30 Sep\", \"effects\": 1, \"seat_held\": true, \"next_step\": \"Give the hold id and expiry. It is a hold, not a confirmed journey: to keep it the passenger accepts it in Manage booking before it expires.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788495.1885781,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "option_id": "OPT-DEN-548"
+   },
+   "source": "local",
+   "result": "{\"status\": \"held\", \"reason\": \"verified_fixture_receipt\", \"option_id\": \"OPT-DEN-548\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop\", \"facts\": {\"incident_revision_current\": true, \"capacity_reserved\": true, \"recovery_channel_available\": true}, \"incident_revision\": 5, \"journey_confirmed\": false, \"hold_id\": \"HT-HLD-403BBF\", \"expires\": \"14:50 Boston time, 30 Sep\", \"effects\": 1, \"seat_held\": true, \"next_step\": \"Give the hold id and expiry. It is a hold, not a confirmed journey: to keep it the passenger accepts it in Manage booking before it expires.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788495.189195,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"status\": \"held\", \"reason\": \"verified_fixture_receipt\", \"option_id\": \"OPT-DEN-548\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop\", \"facts\": {\"incident_revision_current\": true, \"capacity_reserved\": true, \"recovery_channel_available\": true}, \"incident_revision\": 5, \"journey_confirmed\": false, \"hold_id\": \"HT-HLD-403BBF\", \"expires\": \"14:50 Boston time, 30 Sep\", \"effects\": 1, \"seat_held\": true, \"next_step\": \"Give the hold id and expiry. It is a hold, not a confirmed journey: to keep it the passenger accepts it in Manage booking before it expires.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788495.189215,
+   "metadata": {
+    "tool_call_id": "call_keYR190IKFmbGN8yI3H42O6w",
+    "tool_batch_id": "0-call_keYR190IKFmbGN8yI3H42O6w",
+    "skill_id": "disruption_recovery",
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"status\": \"held\", \"reason\": \"verified_fixture_receipt\", \"option_id\": \"OPT-DEN-548\", \"booking_ref\": \"HT-9D2K8\", \"flight\": \"HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop\", \"facts\": {\"incident_revision_current\": true, \"capacity_reserved\": true, \"recovery_channel_available\": true}, \"incident_revision\": 5, \"journey_confirmed\": false, \"hold_id\": \"HT-HLD-403BBF\", \"expires\": \"14:50 Boston time, 30 Sep\", \"effects\": 1, \"seat_held\": true, \"next_step\": \"Give the hold id and expiry. It is a hold, not a confirmed journey: to keep it the passenger accepts it in Manage booking before it expires.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788496.898153,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 1703.1931670499034,
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   },
+   "text": "Seat held for HZ 548 Boston to Denver, Wed 1 Oct 16:05, nonstop.\n\nHold id: HT-HLD-403BBF. It expires at 14:50 Boston time, 30 Sep.\n\nThis is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788496.8991191,
+   "metadata": {
+    "model_id": "02b226e6ee814c2e8b2a0c54d9baab96",
+    "model_name": "20260930-180832-mature-stew.tar.gz",
+    "assistant_id": "horizon-disruption-gpt",
+    "session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+   }
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790788469.3726459,
+ "current_session_id": "86c627f9-a993-460b-8a59-4bd443e50710"
+}
