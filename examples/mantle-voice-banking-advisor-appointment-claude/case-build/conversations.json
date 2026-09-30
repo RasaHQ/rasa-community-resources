@@ -100,6 +100,16 @@
   }
  },
  "variants": {
+  "no-turn-order-hook": {
+   "description": "hooks.py disabled, as the main run and the rerun were made: a model call after a canned reply in the same turn (the silence check-in) ends on the assistant and Claude rejects it",
+   "edits": [
+    {
+     "file": "hooks.py",
+     "find": "\nENABLED = True\n",
+     "replace": "\nENABLED = False\n"
+    }
+   ]
+  },
   "rime-as-shipped": {
    "description": "Rasa's built-in Rime engine with no idle reconnect, as the estimate call ran",
    "edits": [
@@ -155,7 +165,8 @@
   "output_channel.response_delivery_failed",
   "processor.handle_voice_conversation.turn_failed",
   "voice_channel.agent_task_failed",
-  "northgate.rime_idle_reconnect"
+  "northgate.rime_idle_reconnect",
+  "northgate.turn_order_fix"
  ],
  "summary_note": "Synthetic scenario: Northgate Bank, its branches, teams, customer and slots are fictional. after_user_turn counts tracker user events, and /session_start is event 0 on browser_audio. Checks read the tracker's tool calls and results only, never reply wording; reservation and advice wording in bot text is measured, not used for pass or fail. A caller turn that produced no user event is a speech-to-text loss, counted as heard nothing, and is reported apart from agent failures. Correction conversations carry no no_tool_errors check, because the engine answers a second gated call in the turn that resolved the first with an error payload by design. Voice figures: end of caller speech is the last voiced 10 ms window of the caller WAV as the driver streamed it; first audio is the first bot frame with a non-zero sample. Speech-to-text is billed on every second streamed, silence included. The caller accent is Rime's catalogue label (British), not verified by a listener.",
  "conversations": [
