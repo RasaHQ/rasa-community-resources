@@ -87,7 +87,7 @@ class FictionalOrganisationTests(unittest.TestCase):
 
     def test_email_must_be_on_the_reserved_domain(self):
         data = hd.load_data()
-        data["employees"][ME]["email"] = "marisol.quint@orchardworks.com"
+        data["employees"][ME]["email"] = "marisol.quint@example.com"
         with self.assertRaises(hd.FictionalOrganisationError):
             hd.assert_fictional(data, self.contract)
         data = hd.load_data()
