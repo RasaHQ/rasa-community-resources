@@ -40,9 +40,11 @@ def main() -> int:
     parser.add_argument("--variant", help="apply the spec's named variant (file edits) for this run only")
     parser.add_argument("--rerender", metavar="RESULTS_JSON",
                         help="recompute outcomes and summary.md of a stored run; no model calls")
+    parser.add_argument("--recheck", action="store_true",
+                        help="with --rerender: re-evaluate the current spec's checks against the stored trackers")
     args = parser.parse_args()
     if args.rerender:
-        s = rerender(Path(args.rerender).resolve())["summary"]
+        s = rerender(Path(args.rerender).resolve(), recheck=args.recheck)["summary"]
         print(json.dumps({k: s[k] for k in ("passed", "failed", "provider_errors")}))
         return 0
 

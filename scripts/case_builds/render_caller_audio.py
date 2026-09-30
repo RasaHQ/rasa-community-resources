@@ -23,6 +23,11 @@ speech-to-text or text-to-speech. Supported sources:
   file's cost comes from the tokens OpenAI reported for it. The budget check
   before rendering has no usage yet, so it projects the output tokens from
   the characters (`estimate_audio_tokens_per_character`, default 4).
+- `deepgram`: Deepgram Aura (`/v1/speak`, `model` is the voice, for example
+  `aura-2-athena-en`), asked for raw 16-bit PCM at `voice.caller.sample_rate`
+  directly, so nothing is resampled. Billed per character
+  (`usd_per_1m_characters`); the characters are the ones Deepgram reports in
+  its `dg-char-count` response header, or the text length if it sends none.
 - `espeak-ng`: the local formant synthesiser, free and robotic.
 
 Every file is listed in `manifest.json` next to it with the exact text, the
@@ -43,6 +48,7 @@ import json
 import shutil
 import subprocess
 import sys
+import urllib.parse
 import urllib.request
 import wave
 from datetime import datetime, timezone
@@ -56,6 +62,8 @@ from voice_driver import turn_audio_name  # noqa: E402
 
 OPENAI_SPEECH_URL = "https://api.openai.com/v1/audio/speech"
 OPENAI_PCM_RATE = 24000
+DEEPGRAM_SPEAK_URL = "https://api.deepgram.com/v1/speak"
+BILLED_VENDORS = ("openai", "deepgram")
 
 
 def caller_lines(spec: dict) -> dict[str, dict]:
@@ -147,6 +155,24 @@ def render_openai(text: str, voice: str, caller: dict, env: dict) -> tuple[bytes
         return response.read(), {}
 
 
+def render_deepgram(text: str, voice: str, rate: int, out: Path, env: dict) -> int:
+    """Write Deepgram Aura speech as a WAV at *rate*; return the characters billed."""
+    query = urllib.parse.urlencode({"model": voice, "encoding": "linear16", "sample_rate": rate, "container": "none"})
+    request = urllib.request.Request(
+        f"{DEEPGRAM_SPEAK_URL}?{query}", data=json.dumps({"text": text}).encode(), method="POST",
+        headers={"Authorization": f"Token {env['DEEPGRAM_API_KEY']}", "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(request, timeout=60) as response:
+        pcm = response.read()
+        billed = response.headers.get("dg-char-count")
+    with wave.open(str(out), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(rate)
+        w.writeframes(pcm)
+    return int(billed) if billed and billed.isdigit() else len(text)
+
+
 def render_espeak(text: str, voice: str, out: Path, target_rate: int) -> None:
     raw = out.with_suffix(".espeak.wav")
     subprocess.run(["espeak-ng", "-v", voice, "-w", str(raw), text], check=True)
@@ -182,7 +208,7 @@ def main() -> int:
           + (" (projected from characters; billed from reported tokens)" if token_priced(caller) else ""))
     if args.dry_run or not todo:
         return 0
-    if caller["vendor"] == "openai":
+    if caller["vendor"] in BILLED_VENDORS:
         if estimate is None:
             print("no price in the spec; refusing to spend without one")
             return 2
@@ -209,6 +235,11 @@ def main() -> int:
                 elif per_char is not None:
                     rendered_cost += len(line["text"]) * per_char / 1e6
                 resample_to_wav(pcm, OPENAI_PCM_RATE, caller["sample_rate"], out)
+            elif caller["vendor"] == "deepgram":
+                billed_chars = render_deepgram(line["text"], line["voice"], caller["sample_rate"], out, env)
+                rendered_chars += billed_chars
+                rendered_cost += billed_chars * per_char / 1e6
+                usage = {"characters_billed": billed_chars}
             elif caller["vendor"] == "espeak-ng":
                 render_espeak(line["text"], line["voice"], out, caller["sample_rate"])
             else:
@@ -226,7 +257,10 @@ def main() -> int:
                 "sha256": hashlib.sha256(out.read_bytes()).hexdigest(),
                 "rendered_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 **({"usage": {k: usage.get(k) for k in ("input_tokens", "output_tokens")},
-                    "cost_usd": token_cost(usage, caller)} if usage else {}),
+                    "cost_usd": token_cost(usage, caller)} if usage and token_priced(caller) else {}),
+                **({"characters_billed": usage["characters_billed"],
+                    "cost_usd": round(usage["characters_billed"] * per_char / 1e6, 8)}
+                   if usage.get("characters_billed") is not None else {}),
             }
             print(f"rendered {name} ({duration:.2f} s)")
     finally:

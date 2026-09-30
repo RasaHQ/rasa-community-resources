@@ -22,6 +22,7 @@ import statistics
 import subprocess
 import sys
 import time
+import wave
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
@@ -272,8 +273,13 @@ class BrowserAudioDriver(Driver):
     channel = "browser_audio"
 
     def __init__(self, base_url: str, *, spec: Optional[dict] = None, project: Optional[Path] = None,
-                 mode: Optional[str] = None, **_: Any) -> None:
+                 mode: Optional[str] = None, raw_dir: Optional[Path] = None, **_: Any) -> None:
         voice = (spec or {}).get("voice", {})
+        # `voice.save_bot_audio: true` writes what the caller heard, per turn,
+        # to <raw run dir>/bot-audio/<conversation>-<turn>.wav (turn 0 is the
+        # greeting), for checking the agent's speech after the run.
+        self.bot_audio_dir = (raw_dir / "bot-audio") if raw_dir and voice.get("save_bot_audio") else None
+        self.turn_index = 0
         self.base_url = base_url
         self.ws_url = base_url.replace("http://", "ws://", 1) + voice.get(
             "path", "/webhooks/browser_audio/websocket")
@@ -296,9 +302,22 @@ class BrowserAudioDriver(Driver):
         self.call = voice_driver.BrowserAudioCall(
             self.ws_url, conversation_id, sender_header=self.sender_header,
             fetch_tracker=self._fetch_tracker, prompt_ack=self.prompt_ack,
-            turn_timeout_s=self.turn_timeout_s,
+            turn_timeout_s=self.turn_timeout_s, record_bot_audio=self.bot_audio_dir is not None,
         )
         self.greeting = self.call.open()
+        self.turn_index = 0
+        if self.bot_audio_dir is not None:
+            self._save_bot_audio(bytes(self.call.greeting.bot_pcm))
+
+    def _save_bot_audio(self, pcm: Optional[bytes]) -> None:
+        if self.bot_audio_dir is None or not pcm:
+            return
+        self.bot_audio_dir.mkdir(parents=True, exist_ok=True)
+        with wave.open(str(self.bot_audio_dir / f"{self.conversation_id}-{self.turn_index}.wav"), "wb") as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(self.call.rate)
+            w.writeframes(pcm)
 
     def send(self, turn: dict) -> TurnObservation:
         started_wall = time.time()
@@ -310,6 +329,8 @@ class BrowserAudioDriver(Driver):
             if rate != self.call.rate:
                 raise ValueError(f"{name} is {rate} Hz; the channel handshake asked for {self.call.rate} Hz")
             result = self.call.say(pcm=pcm)
+        self.turn_index += 1
+        self._save_bot_audio(result.get("bot_pcm"))
         if result["voice"]["ended_by"] in ("timeout", "closed") and not result["bot_messages"]:
             raise RuntimeError(f"no bot turn after caller turn ({result['voice']['ended_by']})")
         return TurnObservation(turn["user"], result["bot_messages"], result["latency_ms"], started_wall,
@@ -663,13 +684,7 @@ def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict
     (out_dir / "trackers").mkdir(parents=True, exist_ok=True)
     (out_dir / "trackers" / f"{conv['id']}.json").write_text(json.dumps(tracker, indent=1) + "\n")
 
-    checks = []
-    for check in conv["checks"]:
-        try:
-            passed, detail = evaluate_check(check, tracker)
-        except Exception as exc:
-            passed, detail = False, f"check error: {exc}"
-        checks.append({"check": check, "passed": passed, "detail": detail})
+    checks = run_checks(conv["checks"], tracker)
 
     bots = bot_events(tracker)
     metrics: dict[str, Any] = {
@@ -998,7 +1013,7 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
             raise ValueError("a variant changes the project, so it needs a fresh train")
         train_seconds = server.train() if train else None
         with server:
-            driver = driver_cls(server.base_url, spec=spec, project=project, mode=voice_mode)
+            driver = driver_cls(server.base_url, spec=spec, project=project, mode=voice_mode, raw_dir=raw_dir)
             for conv in conversations:
                 recent = [r["outcome"] for r in results[-2:]]
                 if len(recent) == 2 and set(recent) == {"provider_error"}:
@@ -1106,7 +1121,7 @@ def render_voice_summary(v: Optional[dict], spec: dict) -> list[str]:
         price = pricing.get(part) or {}
         if price:
             lines.append(f"- {part.upper()} price: {price.get('vendor')} {price.get('model')}, "
-                         f"{price.get('usd_per_minute') or price.get('usd_per_1k_characters')} USD per "
+                         f"{price['usd_per_minute'] if 'usd_per_minute' in price else price.get('usd_per_1k_characters')} USD per "
                          f"{'minute' if 'usd_per_minute' in price else '1,000 characters'}, from {price.get('source')} "
                          f"on {price.get('checked')}")
     return lines
@@ -1126,14 +1141,38 @@ def price_source_note(pricing: Optional[dict]) -> str:
 OUTCOME_LABELS = {"pass": "pass", "fail": "FAIL", "provider_error": "ERROR (provider)"}
 
 
-def rerender(results_path: Path) -> dict:
-    """Recompute outcomes and summary.md for a stored run, with no model calls."""
+def run_checks(checks: list[dict], tracker: dict) -> list[dict]:
+    out = []
+    for check in checks:
+        try:
+            passed, detail = evaluate_check(check, tracker)
+        except Exception as exc:
+            passed, detail = False, f"check error: {exc}"
+        out.append({"check": check, "passed": passed, "detail": detail})
+    return out
+
+
+def rerender(results_path: Path, recheck: bool = False) -> dict:
+    """Recompute outcomes and summary.md for a stored run, with no model calls.
+
+    With ``recheck``, each conversation's checks are replaced by the current
+    spec's checks, evaluated against its stored tracker (for a check that
+    was wrong, not a changed agent). The report records when and why.
+    """
     report = json.loads(results_path.read_text())
     project = REPO_ROOT / report["project"]
     spec = load_spec(project)
     convs = {c["id"]: c for c in spec["conversations"]}
     usage_rows = read_jsonl(results_path.parent / "usage.jsonl")
+    rechecked = []
     for r in report["conversations"]:
+        tracker_path = results_path.parent / "trackers" / f"{r['id']}.json"
+        if recheck and r["id"] in convs and tracker_path.is_file():
+            new_checks = run_checks(convs[r["id"]]["checks"], json.loads(tracker_path.read_text()))
+            if [c["check"] for c in new_checks] != [c["check"] for c in r["checks"]]:
+                rechecked.append(r["id"])
+            r["checks"] = new_checks
+            r["passed"] = r.get("error") is None and all(c["passed"] for c in new_checks)
         if usage_rows:
             # Calls that landed after the run attributed usage (for example a
             # model turn after a voice hangup) are in the stored log; recount.
@@ -1145,6 +1184,12 @@ def rerender(results_path: Path) -> dict:
             # them from the stored turns, tracker and call stats.
             r["voice"] = voice_report(spec, convs[r["id"]], r["turns"], json.loads(tracker_file.read_text()),
                                       r["voice"].get("call"))
+    if rechecked:
+        report.setdefault("rechecks", []).append({
+            "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "conversations": rechecked,
+            "note": "checks replaced by the current spec's and re-evaluated against the stored trackers; no model calls",
+        })
     report["summary"].update(aggregate(report["conversations"], spec))
     results_path.write_text(json.dumps(report, indent=1) + "\n")
     (results_path.parent / "summary.md").write_text(render_summary(report, spec))

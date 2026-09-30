@@ -117,7 +117,10 @@ Gemini API projects on a daily request quota need planning: one full
 31-conversation run of the pilot build made 214 model requests, and the
 project it ran on allowed 250 per model per day for `gemini-3.1-pro`.
 `--rerender <results.json>` recomputes outcomes and `summary.md` for a
-stored run without calling any model. Estimate first with `--only` on one
+stored run without calling any model. Add `--recheck` to replace each
+conversation's checks with the current spec's and evaluate them against the
+stored trackers, for a check that was wrong rather than an agent that
+changed; the report lists the rechecked conversations under `rechecks`. Estimate first with `--only` on one
 long conversation, then run the rest.
 
 ## Voice builds (`browser_audio`)
@@ -212,7 +215,9 @@ Voice spec keys:
 
 A turn is `{"user": "...", "asr_tokens": [{"token": "4417", "kind": "card_ending"}], "caller_voice": "onyx"}`.
 Its WAV is `<voice>-<sha256(voice|text)[:12]>.wav` in `caller_audio_dir`,
-rendered once by `render_caller_audio.py` (OpenAI TTS or local espeak-ng;
+rendered once by `render_caller_audio.py` (OpenAI TTS, Deepgram Aura
+(`"vendor": "deepgram"`, `"voice": "aura-2-athena-en"`, raw PCM at the
+fixture rate, priced per billed character) or local espeak-ng;
 `gpt-4o-mini-tts` takes `instructions`, for an accent, and is priced per
 token from the usage OpenAI reports for each file),
 listed in that folder's `manifest.json` with text, vendor, voice and SHA-256,
@@ -221,3 +226,31 @@ the build's own speech vendor. Rendering spend goes to the same ledger.
 
 `tool_result_metrics` sums a numeric field over one tool's results, for a
 case metric such as unselected cards changed per block attempt.
+
+`"save_bot_audio": true` in `voice` keeps what the driver's speaker received
+after each caller turn as `results/raw/<run>/bot-audio/<conversation>-<turn>.wav`
+(turn 0 is the greeting; audio that arrives while the caller is still
+talking is not recorded).
+
+## Local speech builds: what leaves the machine, and what the caller heard
+
+Two stdlib-only helpers for builds whose speech engines run locally:
+
+```bash
+python3 scripts/case_builds/call_monitor.py --out <run dir>/call-monitor.json &   # start before run_build.py
+<build>/.venv/bin/python scripts/case_builds/tts_intelligibility.py examples/<build> <label> \
+    --raw <build>/case-build/results/raw/<run tag> --model <faster-whisper model or folder>
+```
+
+- `call_monitor.py` waits for the agent process the harness starts and, until
+  it exits, lists the internet sockets of it and all its children with
+  `lsof` every 0.2 s, samples their CPU and memory (`ps`) and the GPU's
+  "Device Utilization %" (`ioreg`) once a second, and resolves every remote
+  address it saw. It cannot see a connection that opens and closes between
+  two samples, or DNS lookups (made by mDNSResponder). macOS only, no root.
+- `tts_intelligibility.py` transcribes the saved bot audio with a judge
+  model and compares it with the tracker's bot text, per turn and per call,
+  checks that each reference the agent spelled out ("R Q, nine three six
+  six") was heard digit for digit, and measures voiced seconds per character.
+  Local, no spend.
+

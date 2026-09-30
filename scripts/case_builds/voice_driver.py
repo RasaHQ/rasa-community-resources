@@ -386,6 +386,7 @@ class TurnTimes:
     interrupts: int = 0
     bot_audio_samples: int = 0
     last_server_frame: float = 0.0
+    bot_pcm: bytearray = field(default_factory=bytearray)
 
 
 class BrowserAudioCall:
@@ -403,8 +404,12 @@ class BrowserAudioCall:
         settle_s: float = 0.6,
         turn_timeout_s: float = 90.0,
         tracker_poll_s: float = 0.25,
+        record_bot_audio: bool = False,
     ) -> None:
         self.ws_url = ws_url
+        #: Keep every bot audio frame of each turn (TurnTimes.bot_pcm), so the
+        #: agent's speech can be checked afterwards; off by default.
+        self.record_bot_audio = record_bot_audio
         self.sender_id = sender_id
         self.sender_header = sender_header
         self.fetch_tracker = fetch_tracker
@@ -526,6 +531,8 @@ class BrowserAudioCall:
                 self.speaker.enqueue(pcm)
                 if after:
                     turn.bot_audio_samples += len(pcm) // 2
+                    if self.record_bot_audio:
+                        turn.bot_pcm += pcm
                     turn.first_audio = turn.first_audio or now
                     if turn.first_audible is None and has_sound(pcm):
                         turn.first_audible = now
@@ -611,6 +618,7 @@ class BrowserAudioCall:
                 "latency_breakdown": [(e.get("metadata") or {}).get("latency_breakdown") for e in new_ends],
             },
             "bot_messages": [{"text": e.get("text")} for e in new_bots],
+            "bot_pcm": bytes(turn.bot_pcm) if self.record_bot_audio else None,
         }
 
     def _wait_bot_turn(self, turn: TurnTimes, users_before: int, ends_before: int) -> tuple[str, Optional[dict]]:
