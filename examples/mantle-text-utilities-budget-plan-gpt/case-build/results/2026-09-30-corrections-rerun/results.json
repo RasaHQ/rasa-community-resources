@@ -1,0 +1,611 @@
+{
+ "schema": 1,
+ "build": "utilities-budget-plan-gpt-text",
+ "case": "utilities-budget-plan",
+ "project": "examples/mantle-text-utilities-budget-plan-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T18:14:26.767821+00:00",
+ "finished_at": "2026-09-30T18:15:40.164828+00:00",
+ "model_file": "20260930-191431-spicy-costume.tar.gz",
+ "train_seconds": 4.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 2,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 8,
+  "turn_latency_ms": {
+   "p50": 4870.7,
+   "p95": 14173.3,
+   "max": 14173.3,
+   "mean": 7211.7
+  },
+  "llm_calls": 23,
+  "llm_calls_per_turn": 2.88,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 84806,
+  "completion_tokens": 1229,
+  "reasoning_tokens": 410,
+  "cached_prompt_tokens": 33792,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "debt_adjustment": 0,
+   "relief_promise": 0,
+   "request_reference": 4
+  },
+  "tool_result_metrics": {
+   "requests_recorded": {
+    "attempts": 2,
+    "total": 2
+   }
+  },
+  "log_events": {
+   "ambergrid.budget_words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 2,
+   "mantle.tool_confirmation.confirmed": 2,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.308836,
+  "llm_cost_usd": 0.308836,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 2.116652,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-switch-option-at-question",
+   "kind": "correction",
+   "description": "Asked about option B, the customer switches to A; only A is requested. One more turn than in the main run: the new option takes the model's question and then the engine's.",
+   "conversation_id": "utilities-budget-plan-gpt-text-correction-switch-option-at-question-20260930T181426",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Budget plan for my home electricity with the balance spread, option B please.",
+     "latency_ms": 13883.7,
+     "bot": [
+      "Hello Marisol, this is Amber Grid billing chat. I can explain a budget plan and what it is based on, request one our billing team has authorized, or put you in touch with our hardship or billing support team. How can I help?",
+      "Budget plan for AG-6120 home electricity, option BP-6120-B r1. Payments: $142.38 a month from 1 Nov 2026: $108.00 estimate + $34.38 x 12 toward the balance. Based on: 5,400 kWh a year, about $1,296.00, from 12 months of actual meter reads to 15 Sep 2026. Balance: $412.56 outstanding; repaid by the 12 extra payments, not reduced. This option changes the payment schedule, not the stated balance. Shall I request it? You can also review it or speak to support."
+     ]
+    },
+    {
+     "user": "Actually, make it option A instead, the budget amount only.",
+     "latency_ms": 6061.6,
+     "bot": [
+      "Option BP-6120-A r1 is selected instead.",
+      "The payment schedule is $108.00 a month from 1 Nov 2026, the usage estimate only.",
+      "The balance is separate: $412.56 outstanding, still due 14 Oct 2026; this plan does not reduce it.",
+      "Shall I request option A?"
+     ]
+    },
+    {
+     "user": "Yes, request it.",
+     "latency_ms": 1963.9,
+     "bot": [
+      "Budget plan for AG-6120 home electricity, option BP-6120-A r1. Payments: $108.00 a month from 1 Nov 2026, the usage estimate only. Based on: 5,400 kWh a year, about $1,296.00, from 12 months of actual meter reads to 15 Sep 2026. Balance: $412.56 outstanding, still due 14 Oct 2026; this plan does not reduce it. This option changes the payment schedule, not the stated balance. Shall I request it? You can also review it or speak to support."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4870.7,
+     "bot": [
+      "Budget plan request recorded: AG-BPR-D7B2E3 for account AG-6120 (home electricity), option BP-6120-A r1. Payment schedule: $108.00 a month from 1 Nov 2026, the usage estimate only. Outstanding balance: $412.56, unchanged by this plan; nothing has been waived or reduced. The budget amount is an estimate (5,400 kWh a year, about $1,296.00, from 12 months of actual meter reads to 15 Sep 2026) and is reviewed against actual meter reads.",
+      "Your budget plan request is recorded under reference AG-BPR-D7B2E3.",
+      "The schedule is $108.00 a month from 1 Nov 2026 for the usage estimate only. Your $412.56 outstanding balance is unchanged and still separate; nothing has been waived or reduced."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "request_budget_option",
+      "result": {
+       "status": "succeeded",
+       "option_tag": "BP-6120-A r1",
+       "balance_changed": false,
+       "debt_adjusted": false
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "request_budget_option",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "option_tag": "re:^BP-6120-B"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_budget_quote",
+     "arguments": {
+      "account": "AG-6120"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "quote",
+     "result_reason": null
+    },
+    {
+     "tool": "select_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-B"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-B"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "select_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-A"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "debt_adjustment": [],
+    "relief_promise": [],
+    "request_reference": [
+     "Budget plan request recorded: AG-BPR-D7B2E3 for account AG-6120 (home electricity), option BP-6120-A r1. Payment schedule: $108.00 a month from 1 Nov 2026, the usage estimate only. Outstanding balance: $412.56, unchanged by this plan; nothing has been waived or reduced. The budget amount is an estimate (5,400 kWh a year, about $1,296.00, from 12 months of actual meter reads to 15 Sep 2026) and is reviewed against actual meter reads.",
+     "Your budget plan request is recorded under reference AG-BPR-D7B2E3.\n\nThe schedule is $108.00 a month from 1 Nov 2026 for the usage estimate only. Your $412.56 outstanding balance is unchanged and still separate; nothing has been waived or reduced."
+    ],
+    "requests_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.confirmed": 1,
+    "ambergrid.budget_words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "request_budget_option",
+      "conversation_id": "utilities-budget-plan-gpt-text-correction-switch-option-at-question-20260930T181426"
+     }
+    ],
+    "ambergrid.budget_words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "request_budget_option",
+      "conversation_id": "utilities-budget-plan-gpt-text-correction-switch-option-at-question-20260930T181426"
+     }
+    ],
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 10,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 40114,
+    "completion_tokens": 499,
+    "reasoning_tokens": 108,
+    "cached_prompt_tokens": 15872,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.144116,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1321.1,
+     4862.3,
+     3627.7,
+     998.5,
+     2898.0,
+     1532.1,
+     2397.2,
+     2063.8,
+     1947.9,
+     1550.0,
+     3296.7
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "utilities-budget-plan-gpt-text-correction-switch-option-at-question-20260930T181426",
+    "prompt": 40114,
+    "completion": 499,
+    "total": 40613,
+    "generations": 11,
+    "fetched_at": "2026-09-30T18:15:05.978490+00:00"
+   }
+  },
+  {
+   "id": "correction-account-at-question",
+   "kind": "correction",
+   "description": "Asked about the studio, the customer meant home electricity; only home electricity is requested. One more turn than in the main run: the new option takes the model's question and then the engine's.",
+   "conversation_id": "utilities-budget-plan-gpt-text-correction-account-at-question-20260930T181426",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Budget plan for my studio electricity, option A please.",
+     "latency_ms": 9097.1,
+     "bot": [
+      "Hello Marisol, this is Amber Grid billing chat. I can explain a budget plan and what it is based on, request one our billing team has authorized, or put you in touch with our hardship or billing support team. How can I help?",
+      "Budget plan for AG-6125 studio electricity, option BP-6125-A r1. Payments: $41.00 a month from 1 Nov 2026, the usage estimate only. Based on: 1,950 kWh a year, about $492.00, from 12 months of actual meter reads to 12 Sep 2026. Balance: $58.20 outstanding, still due 20 Oct 2026; this plan does not reduce it. This option changes the payment schedule, not the stated balance. Shall I request it? You can also review it or speak to support."
+     ]
+    },
+    {
+     "user": "Sorry, I meant my home electricity, not the studio. Option A there.",
+     "latency_ms": 14173.3,
+     "bot": [
+      "For AG-6120 home electricity, option BP-6120-A r1 is $108.00 a month from 1 Nov 2026, the usage estimate only.",
+      "That is based on 5,400 kWh a year, about $1,296.00, from 12 months of actual meter reads to 15 Sep 2026.",
+      "Your balance is separate: $412.56 outstanding, still due 14 Oct 2026. This plan does not reduce it. Shall I request this home electricity option?"
+     ]
+    },
+    {
+     "user": "Yes, request it.",
+     "latency_ms": 3226.2,
+     "bot": [
+      "Budget plan for AG-6120 home electricity, option BP-6120-A r1. Payments: $108.00 a month from 1 Nov 2026, the usage estimate only. Based on: 5,400 kWh a year, about $1,296.00, from 12 months of actual meter reads to 15 Sep 2026. Balance: $412.56 outstanding, still due 14 Oct 2026; this plan does not reduce it. This option changes the payment schedule, not the stated balance. Shall I request it? You can also review it or speak to support."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4417.2,
+     "bot": [
+      "Budget plan request recorded: AG-BPR-9A16CF for account AG-6120 (home electricity), option BP-6120-A r1. Payment schedule: $108.00 a month from 1 Nov 2026, the usage estimate only. Outstanding balance: $412.56, unchanged by this plan; nothing has been waived or reduced. The budget amount is an estimate (5,400 kWh a year, about $1,296.00, from 12 months of actual meter reads to 15 Sep 2026) and is reviewed against actual meter reads.",
+      "Your budget plan request is recorded under reference AG-BPR-9A16CF for AG-6120 home electricity. The balance remains separate and unchanged."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "request_budget_option",
+      "result": {
+       "status": "succeeded",
+       "option_tag": "BP-6120-A r1",
+       "balance_changed": false,
+       "debt_adjusted": false
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "request_budget_option",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "option_tag": "re:^BP-6125"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_budget_quote",
+     "arguments": {
+      "account": "AG-6125"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "quote",
+     "result_reason": null
+    },
+    {
+     "tool": "select_budget_option",
+     "arguments": {
+      "option_id": "BP-6125-A"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6125-A"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6125-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "get_budget_quote",
+     "arguments": {
+      "account": "AG-6120"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "quote",
+     "result_reason": null
+    },
+    {
+     "tool": "select_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6120-A"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "debt_adjustment": [],
+    "relief_promise": [],
+    "request_reference": [
+     "Budget plan request recorded: AG-BPR-9A16CF for account AG-6120 (home electricity), option BP-6120-A r1. Payment schedule: $108.00 a month from 1 Nov 2026, the usage estimate only. Outstanding balance: $412.56, unchanged by this plan; nothing has been waived or reduced. The budget amount is an estimate (5,400 kWh a year, about $1,296.00, from 12 months of actual meter reads to 15 Sep 2026) and is reviewed against actual meter reads.",
+     "Your budget plan request is recorded under reference AG-BPR-9A16CF for AG-6120 home electricity. The balance remains separate and unchanged."
+    ],
+    "requests_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.confirmed": 1,
+    "ambergrid.budget_words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "request_budget_option",
+      "conversation_id": "utilities-budget-plan-gpt-text-correction-account-at-question-20260930T181426"
+     }
+    ],
+    "ambergrid.budget_words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "request_budget_option",
+      "conversation_id": "utilities-budget-plan-gpt-text-correction-account-at-question-20260930T181426"
+     }
+    ],
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": []
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 11,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 44692,
+    "completion_tokens": 730,
+    "reasoning_tokens": 302,
+    "cached_prompt_tokens": 17920,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.16472,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1552.7,
+     2461.3,
+     1459.7,
+     1193.6,
+     2336.0,
+     1780.9,
+     3920.6,
+     5632.8,
+     2738.1,
+     3183.3,
+     2519.8,
+     1855.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "utilities-budget-plan-gpt-text-correction-account-at-question-20260930T181426",
+    "prompt": 44692,
+    "completion": 730,
+    "total": 45422,
+    "generations": 12,
+    "fetched_at": "2026-09-30T18:15:39.909831+00:00"
+   }
+  }
+ ]
+}
