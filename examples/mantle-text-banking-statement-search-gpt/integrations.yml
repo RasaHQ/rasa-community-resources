@@ -1,0 +1,40 @@
+# External integrations for the Northgate transaction-search agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa's OpenAI client sends
+# gpt-5.5-2026-04-23 through LiteLLM.
+#
+# reasoning_effort is set to low rather than Rasa's default for this model,
+# which is none (rasa/shared/utils/llm.py, _apply_default_reasoning_effort).
+# In the Northgate block-card build (examples/mantle-voice-banking-block-card-gpt),
+# at none GPT-5.5 twice wrote a tool call out as text that Mantle sent to the
+# caller, and twice announced an action and ended the turn without taking it;
+# at low, on the same nine calls, it did neither, for about 130 ms more to the
+# first token. This case turns on the agent running a new search when the
+# customer changes the range, not announcing one, so this build starts at low
+# like the other GPT case builds. The `reasoning-default` variant in
+# case-build/conversations.json removes this line.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true

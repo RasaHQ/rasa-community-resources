@@ -1,0 +1,877 @@
+{
+ "sender_id": "banking-statement-search-gpt-text-adversarial-bare-month-no-status-20260930T171305",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.customer_id": "NB-CUST-4810",
+  "project.customer_first_name": "Elena",
+  "project.account_names": "Everyday Checking 3301; Savings 7740; Rewards Card 5512",
+  "system.__discovered__": [
+   {
+    "key": "transaction_query_merchant_period",
+    "value": "Acme in March",
+    "description": "Customer wants to know what they paid the merchant Acme during March.",
+    "turn_idx": 1,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   }
+  ],
+  "transaction_search.last_search_ref": "NB-SRCH-EAC1A3FE",
+  "transaction_search.last_search_scope": "posted only, 1-31 Mar 2026, all your accounts, Acme Hardware",
+  "transaction_search.last_search_complete": "yes"
+ },
+ "latest_message": {
+  "intent": {
+   "confidence": 0.0,
+   "name": null
+  },
+  "entities": [],
+  "text": "March this year. Just the posted ones.",
+  "message_id": "ef93d21fdb75470d957b1813d9cd030c",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790788466.544907,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "XRPZ6T7O",
+   "skill_id": "transaction_search",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790788453.164244,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788453.164396,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788453.16441,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788453.164274,
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790788453.164418,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788453.164424,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"JH46NDZU\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"2I3E6WQJ\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788453.164505,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788453.164515,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "text": "What did I pay Acme in March?",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "What did I pay Acme in March?",
+    "message_id": "ccf5184abdcd41828b6771a26805df81",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "ccf5184abdcd41828b6771a26805df81",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788453.1656451,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "2I3E6WQJ",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "name": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788453.165656,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "2I3E6WQJ",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "key": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788453.165694,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "2I3E6WQJ",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "name": "project.customer_first_name",
+   "value": "Elena",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788453.1657002,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "2I3E6WQJ",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "key": "project.customer_first_name",
+   "value": "Elena",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788453.1657338,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "2I3E6WQJ",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "name": "project.account_names",
+   "value": "Everyday Checking 3301; Savings 7740; Rewards Card 5512",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788453.16574,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "2I3E6WQJ",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "key": "project.account_names",
+   "value": "Everyday Checking 3301; Savings 7740; Rewards Card 5512",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788453.16583,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": \"Everyday Checking 3301; Savings 7740; Rewards Card 5512\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788453.165837,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": \"Everyday Checking 3301; Savings 7740; Rewards Card 5512\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788453.1659122,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788453.166263,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "text": "Hello Elena, this is Northgate Bank. I can search your transactions by date, merchant and account, or read a statement. What would you like to find?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790788453.1666582,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790788453.166667,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790788453.166673,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788453.1666791,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788453.1667898,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788454.641304,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "flow_id": "transaction_search",
+   "skill_id": "transaction_search"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788454.641331,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788453.164515,
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "skill_id": "transaction_search"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788454.6413388,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"XRPZ6T7O\", \"skill_id\": \"transaction_search\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788454.6417038,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transaction_search"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788454.641716,
+   "metadata": {
+    "tool_call_id": "call_zHKtzhofYEsOKDaUGFbI65gK",
+    "tool_batch_id": "0-call_zHKtzhofYEsOKDaUGFbI65gK",
+    "skill_id": "transaction_search",
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transaction_search"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788456.5955808,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "tool_name": "search_transactions",
+   "arguments": {
+    "period": "March",
+    "statuses": "",
+    "merchant": "Acme"
+   },
+   "result": "{\"status\": \"blocked\", \"reason\": \"ambiguous_date_range\", \"facts\": {\"date_range_confirmed\": false, \"posting_status_explicit\": false}, \"detail\": {\"period\": {\"detail\": \"no_year\", \"candidates\": [\"1-31 March 2026\", \"1-31 March 2025\"]}, \"statuses\": \"not_said\"}, \"questions\": [\"Which period do you mean: 1-31 March 2026 or 1-31 March 2025?\", \"Do you mean posted transactions in that period, or also pending items? I will label the result scope.\"], \"effects\": 0, \"next_step\": \"Nothing was searched. Ask the caller the questions above in one message, in plain words. Do not pick a year, a date range or the statuses for them, and do not pass words they did not say. When they answer, call search_transactions again with their words.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788456.5956428,
+   "metadata": {
+    "tool_call_id": "call_roGjXmmPbJ4OB7GuN8OvOonr",
+    "tool_batch_id": "1-call_roGjXmmPbJ4OB7GuN8OvOonr",
+    "skill_id": "transaction_search",
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "tool_name": "search_transactions",
+   "arguments": {
+    "period": "March",
+    "statuses": "",
+    "merchant": "Acme"
+   },
+   "source": "local",
+   "result": "{\"status\": \"blocked\", \"reason\": \"ambiguous_date_range\", \"facts\": {\"date_range_confirmed\": false, \"posting_status_explicit\": false}, \"detail\": {\"period\": {\"detail\": \"no_year\", \"candidates\": [\"1-31 March 2026\", \"1-31 March 2025\"]}, \"statuses\": \"not_said\"}, \"questions\": [\"Which period do you mean: 1-31 March 2026 or 1-31 March 2025?\", \"Do you mean posted transactions in that period, or also pending items? I will label the result scope.\"], \"effects\": 0, \"next_step\": \"Nothing was searched. Ask the caller the questions above in one message, in plain words. Do not pick a year, a date range or the statuses for them, and do not pass words they did not say. When they answer, call search_transactions again with their words.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788458.145348,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 1540.5401659663767,
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "text": "Which period do you mean: 1\u201331 March 2026 or 1\u201331 March 2025? Also, do you mean posted transactions in that period, or also pending items?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788458.147455,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788460.958684,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "XRPZ6T7O",
+     "arguments": {},
+     "position": 31,
+     "tool_call_id": null
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "transaction_query_merchant_period",
+     "value": "Acme in March",
+     "description": "Customer wants to know what they paid the merchant Acme during March.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788460.9588091,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "XRPZ6T7O",
+     "arguments": {},
+     "position": 32,
+     "tool_call_id": null
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "transaction_query_merchant_period",
+     "value": "Acme in March",
+     "description": "Customer wants to know what they paid the merchant Acme during March.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788460.97359,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "text": "March this year. Just the posted ones.",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "March this year. Just the posted ones.",
+    "message_id": "ef93d21fdb75470d957b1813d9cd030c",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "ef93d21fdb75470d957b1813d9cd030c",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788463.086731,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "XRPZ6T7O",
+     "arguments": {
+      "period": "March this year",
+      "statuses": "posted",
+      "merchant": "Acme"
+     },
+     "position": 34,
+     "tool_call_id": "call_xyXEbNqndhOQSvUpIGR9yf16"
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "name": "transaction_search.last_search_ref",
+   "value": "NB-SRCH-EAC1A3FE",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788463.086839,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "XRPZ6T7O",
+     "arguments": {
+      "period": "March this year",
+      "statuses": "posted",
+      "merchant": "Acme"
+     },
+     "position": 35,
+     "tool_call_id": "call_xyXEbNqndhOQSvUpIGR9yf16"
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "key": "transaction_search.last_search_ref",
+   "value": "NB-SRCH-EAC1A3FE",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788463.086974,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "XRPZ6T7O",
+     "arguments": {
+      "period": "March this year",
+      "statuses": "posted",
+      "merchant": "Acme"
+     },
+     "position": 36,
+     "tool_call_id": "call_xyXEbNqndhOQSvUpIGR9yf16"
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "name": "transaction_search.last_search_scope",
+   "value": "posted only, 1-31 Mar 2026, all your accounts, Acme Hardware",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788463.087007,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "XRPZ6T7O",
+     "arguments": {
+      "period": "March this year",
+      "statuses": "posted",
+      "merchant": "Acme"
+     },
+     "position": 37,
+     "tool_call_id": "call_xyXEbNqndhOQSvUpIGR9yf16"
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "key": "transaction_search.last_search_scope",
+   "value": "posted only, 1-31 Mar 2026, all your accounts, Acme Hardware",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788463.0871181,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "XRPZ6T7O",
+     "arguments": {
+      "period": "March this year",
+      "statuses": "posted",
+      "merchant": "Acme"
+     },
+     "position": 38,
+     "tool_call_id": "call_xyXEbNqndhOQSvUpIGR9yf16"
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "name": "transaction_search.last_search_complete",
+   "value": "yes",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788463.087142,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "search_transactions",
+     "skill_id": "transaction_search",
+     "step": "autonomous",
+     "frame_id": "XRPZ6T7O",
+     "arguments": {
+      "period": "March this year",
+      "statuses": "posted",
+      "merchant": "Acme"
+     },
+     "position": 39,
+     "tool_call_id": "call_xyXEbNqndhOQSvUpIGR9yf16"
+    },
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "key": "transaction_search.last_search_complete",
+   "value": "yes",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788463.087203,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "text": "Search NB-SRCH-EAC1A3FE: posted transactions only at Acme Hardware, all your accounts, 1-31 March 2026 (Eastern time, by transaction date). Complete: yes, all 2 matching transactions read. Debits $168.58, credits $0.00. This is a search result, not a statement balance.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788463.0904682,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "tool_name": "search_transactions",
+   "arguments": {
+    "period": "March this year",
+    "statuses": "posted",
+    "merchant": "Acme"
+   },
+   "result": "{\"status\": \"complete\", \"reason\": \"all_pages_read\", \"search_ref\": \"NB-SRCH-EAC1A3FE\", \"range\": {\"start\": \"2026-03-01\", \"end\": \"2026-03-31\", \"label\": \"1-31 March 2026\", \"timezone\": \"Eastern time\", \"basis\": \"transaction date\"}, \"statuses\": [\"posted\"], \"status_label\": \"posted only\", \"account\": \"all your accounts\", \"merchant_filter\": \"Acme Hardware\", \"complete\": true, \"pages_read\": 1, \"count\": 2, \"transactions\": [{\"id\": \"TX-0008\", \"date\": \"2026-03-04\", \"merchant\": \"Acme Hardware\", \"amount\": \"$42.18\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0019\", \"date\": \"2026-03-19\", \"merchant\": \"Acme Hardware\", \"amount\": \"$126.40\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}], \"facts\": {\"date_range_confirmed\": true, \"posting_status_explicit\": true, \"result_scope_complete\": true}, \"effects\": 1, \"replay\": false, \"not_a_statement\": \"A search result, not a statement balance. Everyday Checking statements run 6 to 5 of the month; Savings statements run 1 to 31 of the month; Rewards Card statements run 13 to 12 of the month. Use get_statement for a statement.\", \"total_debits\": \"$168.58\", \"total_credits\": \"$0.00\", \"next_step\": \"The customer has been sent this search's reference, range, statuses and completeness. Answer their question from these transactions (a list or the totals). It is a search result for this range and these statuses, not a statement balance.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788463.090513,
+   "metadata": {
+    "tool_call_id": "call_xyXEbNqndhOQSvUpIGR9yf16",
+    "tool_batch_id": "0-call_xyXEbNqndhOQSvUpIGR9yf16",
+    "skill_id": "transaction_search",
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "tool_name": "search_transactions",
+   "arguments": {
+    "period": "March this year",
+    "statuses": "posted",
+    "merchant": "Acme"
+   },
+   "source": "local",
+   "result": "{\"status\": \"complete\", \"reason\": \"all_pages_read\", \"search_ref\": \"NB-SRCH-EAC1A3FE\", \"range\": {\"start\": \"2026-03-01\", \"end\": \"2026-03-31\", \"label\": \"1-31 March 2026\", \"timezone\": \"Eastern time\", \"basis\": \"transaction date\"}, \"statuses\": [\"posted\"], \"status_label\": \"posted only\", \"account\": \"all your accounts\", \"merchant_filter\": \"Acme Hardware\", \"complete\": true, \"pages_read\": 1, \"count\": 2, \"transactions\": [{\"id\": \"TX-0008\", \"date\": \"2026-03-04\", \"merchant\": \"Acme Hardware\", \"amount\": \"$42.18\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}, {\"id\": \"TX-0019\", \"date\": \"2026-03-19\", \"merchant\": \"Acme Hardware\", \"amount\": \"$126.40\", \"direction\": \"debit\", \"status\": \"posted\", \"account\": \"3301\"}], \"facts\": {\"date_range_confirmed\": true, \"posting_status_explicit\": true, \"result_scope_complete\": true}, \"effects\": 1, \"replay\": false, \"not_a_statement\": \"A search result, not a statement balance. Everyday Checking statements run 6 to 5 of the month; Savings statements run 1 to 31 of the month; Rewards Card statements run 13 to 12 of the month. Use get_statement for a statement.\", \"total_debits\": \"$168.58\", \"total_credits\": \"$0.00\", \"next_step\": \"The customer has been sent this search's reference, range, statuses and completeness. Answer their question from these transactions (a list or the totals). It is a search result for this range and these statuses, not a statement balance.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788466.542052,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 3440.3341250144877,
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   },
+   "text": "You paid Acme Hardware $168.58 in posted transactions in March 2026.\n\nThe two posted debits were:\n- Mar 4: $42.18 from Everyday Checking 3301\n- Mar 19: $126.40 from Everyday Checking 3301",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788466.544907,
+   "metadata": {
+    "model_id": "a4127596753b4f7380c426ae7b6484fd",
+    "model_name": "20260930-181307-graceful-olympics.tar.gz",
+    "assistant_id": "northgate-statement-search-gpt",
+    "session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+   }
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790788453.164244,
+ "current_session_id": "6bcdea67-2c72-4003-a990-04aa4d4ed79b"
+}
