@@ -779,10 +779,14 @@ def search_result(search: Search, replay: bool = False) -> dict:
     return result
 
 
-def _question(period_label: str, period_missing: bool, statuses_missing: bool, candidates: list[str]) -> list[str]:
+def _question(period_label: str, period_missing: bool, statuses_missing: bool, candidates: list[str],
+              future: bool = False) -> list[str]:
     questions = []
     if candidates:
         questions.append("Which period do you mean: " + " or ".join(candidates) + "?")
+    elif future:
+        questions.append(f"That period has not started yet (today is {day_label(TODAY)}), so there are no "
+                         "transactions in it. Which past dates do you mean?")
     elif period_missing:
         questions.append("Which dates do you mean? Please give the month and year, or the first and last day.")
     if statuses_missing:
@@ -831,7 +835,8 @@ def search_transactions(
             "reason": reason,
             "facts": facts,
             "detail": detail,
-            "questions": _question(label, not date_ok, not status_ok, candidates),
+            "questions": _question(label, not date_ok, not status_ok, candidates,
+                                   future=resolved.get("detail") == "future"),
             "effects": 0,
             "next_step": (
                 "Nothing was searched. Ask the caller the questions above in one message, in plain words. Do not pick a "

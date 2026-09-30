@@ -125,6 +125,15 @@ class PeriodTests(unittest.TestCase):
         self.assertIn("to date", result["label"])
         self.assertEqual(nb.resolve_period("May 2026")["detail"], "future")
 
+    def test_a_future_period_is_answered_as_future_not_as_missing(self):
+        # Live run 2026-09-30-gpt-5.5-low, adversarial-future-month: the tool asked for "the month and year"
+        # after the customer gave May 2026, and the model repeated it.
+        _, result = search(["How much will I spend at Alder Bay Grocers in May 2026? Posted only."], "May 2026",
+                           "Posted only", None, "Alder Bay Grocers")
+        self.assertEqual(result["status"], "blocked")
+        self.assertIn("has not started yet", result["questions"][0])
+        self.assertIn("2 April 2026", result["questions"][0])
+
     def test_unreadable_periods_are_not_guessed(self):
         for words in ("around the holidays", "3/4/2026", "recently", ""):
             with self.subTest(words=words):
