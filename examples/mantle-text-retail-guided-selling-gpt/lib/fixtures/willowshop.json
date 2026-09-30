@@ -1,0 +1,150 @@
+{
+  "organisation": "Willow Shop (fictional)",
+  "as_of": "2026-09-30T09:00:00+00:00",
+  "stock_freshness_hours": 6,
+  "categories": {
+    "charging_dock": {
+      "label": "charging dock",
+      "required_attributes": ["connector", "cradle_profile"],
+      "optional_attributes": {
+        "fits_with_case": {
+          "question": "Does it charge the phone with a case on?",
+          "required_when": "uses_case",
+          "required_value": true
+        }
+      }
+    },
+    "case": {"label": "phone case", "required_attributes": ["body_profile"], "optional_attributes": {}},
+    "cable": {"label": "charging cable", "required_attributes": ["connector"], "optional_attributes": {}},
+    "wireless_charger": {"label": "wireless charger", "required_attributes": ["wireless_standard"], "optional_attributes": {}},
+    "car_mount": {"label": "car mount", "required_attributes": ["grip_width_mm"], "optional_attributes": {}}
+  },
+  "devices": {
+    "DEV-L6": {
+      "name": "Lumen 6",
+      "aliases": ["lumen6"],
+      "attributes": {"connector": "usb-c", "cradle_profile": "L6-STD", "body_profile": "BP-L6", "wireless_standard": "none", "grip_width_mm": 71}
+    },
+    "DEV-L7": {
+      "name": "Lumen 7",
+      "aliases": ["lumen7"],
+      "attributes": {"connector": "usb-c", "cradle_profile": "L7-STD", "body_profile": "BP-L7", "wireless_standard": "qi2", "grip_width_mm": 72}
+    },
+    "DEV-L7P": {
+      "name": "Lumen 7 Pro",
+      "aliases": ["lumen7 pro", "lumen 7pro"],
+      "attributes": {"connector": "usb-c", "cradle_profile": "L7-STD", "body_profile": "BP-L7P", "wireless_standard": "qi2", "grip_width_mm": 77}
+    },
+    "DEV-L7L": {
+      "name": "Lumen 7 Lite",
+      "aliases": ["lumen7 lite", "lumen 7lite"],
+      "attributes": {"connector": "micro-usb", "cradle_profile": "L7-LITE", "body_profile": "BP-L7L", "wireless_standard": "none", "grip_width_mm": 70}
+    }
+  },
+  "products": {
+    "WS-DK-L7": {
+      "name": "Lumen 7 Charging Dock",
+      "category": "charging_dock",
+      "price_usd": 39.0,
+      "description": "Desk dock for the Lumen 7 family.",
+      "attributes": {
+        "connector": {"value": "usb-c", "source": {"id": "LUM-SS-DK7-B", "kind": "manufacturer spec sheet"}},
+        "cradle_profile": {"value": "L7-STD", "source": {"id": "LUM-SS-DK7-B", "kind": "manufacturer spec sheet"}},
+        "fits_with_case": {"value": null, "source": null}
+      },
+      "stock": {"quantity": 14, "observed_at": "2026-09-30T07:30:00+00:00"}
+    },
+    "WS-DK-L7L": {
+      "name": "Lumen 7 Lite Micro Dock",
+      "category": "charging_dock",
+      "price_usd": 29.0,
+      "description": "Compact micro-USB desk dock.",
+      "attributes": {
+        "connector": {"value": "micro-usb", "source": {"id": "LUM-SS-DK7L-A", "kind": "manufacturer spec sheet"}},
+        "cradle_profile": {"value": "L7-LITE", "source": {"id": "WS-FIT-0412", "kind": "Willow Shop fit test"}},
+        "fits_with_case": {"value": false, "source": {"id": "WS-FIT-0412", "kind": "Willow Shop fit test"}}
+      },
+      "stock": {"quantity": 6, "observed_at": "2026-09-30T08:10:00+00:00"}
+    },
+    "WS-CS-L7": {
+      "name": "Lumen 7 Everyday Case",
+      "category": "case",
+      "price_usd": 19.0,
+      "description": "Slim everyday case.",
+      "attributes": {
+        "body_profile": {"value": "BP-L7", "source": {"id": "LUM-SS-CS7-C", "kind": "manufacturer spec sheet"}}
+      },
+      "stock": {"quantity": 3, "observed_at": "2026-09-27T09:00:00+00:00"}
+    },
+    "WS-CS-L7P": {
+      "name": "Lumen 7 Pro Slim Case",
+      "category": "case",
+      "price_usd": 24.0,
+      "description": "Slim case with raised camera lip.",
+      "attributes": {
+        "body_profile": {"value": "BP-L7P", "source": {"id": "LUM-SS-CS7P-A", "kind": "manufacturer spec sheet"}}
+      },
+      "stock": {"quantity": 22, "observed_at": "2026-09-30T08:40:00+00:00"}
+    },
+    "WS-CS-L7-FOLIO": {
+      "name": "Lumen 7 Folio Case",
+      "category": "case",
+      "price_usd": 29.0,
+      "description": "Fits the whole Lumen 7 family. Vegan leather folio with card slots.",
+      "attributes": {
+        "body_profile": {"value": null, "source": null}
+      },
+      "stock": {"quantity": 9, "observed_at": "2026-09-30T08:00:00+00:00"}
+    },
+    "WS-CB-C2": {
+      "name": "Braided USB-C Cable 2 m",
+      "category": "cable",
+      "price_usd": 15.0,
+      "description": "USB-C to USB-C, 60 W.",
+      "attributes": {
+        "connector": {"value": "usb-c", "source": {"id": "WS-SS-CB-C2", "kind": "supplier spec sheet"}}
+      },
+      "stock": {"quantity": 40, "observed_at": "2026-09-30T08:55:00+00:00"}
+    },
+    "WS-CB-M1": {
+      "name": "Micro-USB Cable 1 m",
+      "category": "cable",
+      "price_usd": 9.0,
+      "description": "USB-A to micro-USB.",
+      "attributes": {
+        "connector": {"value": "micro-usb", "source": {"id": "WS-SS-CB-M1", "kind": "supplier spec sheet"}}
+      },
+      "stock": {"quantity": 12, "observed_at": "2026-09-30T08:55:00+00:00"}
+    },
+    "WS-WP-Q2": {
+      "name": "Willow Qi2 Wireless Pad",
+      "category": "wireless_charger",
+      "price_usd": 35.0,
+      "description": "15 W magnetic wireless charging pad.",
+      "attributes": {
+        "wireless_standard": {"value": "qi2", "source": {"id": "WS-SS-WP-Q2", "kind": "supplier spec sheet"}}
+      },
+      "stock": {"quantity": 11, "observed_at": "2026-09-30T06:20:00+00:00"}
+    },
+    "WS-CM-GRIP": {
+      "name": "GripMount Car Holder",
+      "category": "car_mount",
+      "price_usd": 27.0,
+      "description": "Spring grip that fits most Lumen phones.",
+      "attributes": {
+        "grip_width_mm": {"value": null, "source": null}
+      },
+      "stock": {"quantity": 18, "observed_at": "2026-09-30T08:30:00+00:00"}
+    },
+    "WS-CM-L7": {
+      "name": "Lumen Car Cradle 70-80",
+      "category": "car_mount",
+      "price_usd": 32.0,
+      "description": "Adjustable cradle for phones 70 to 80 mm wide.",
+      "attributes": {
+        "grip_width_mm": {"value": {"min": 70, "max": 80}, "source": {"id": "LUM-SS-CC78-A", "kind": "manufacturer spec sheet"}}
+      },
+      "stock": {"quantity": 5, "observed_at": "2026-09-29T15:00:00+00:00"}
+    }
+  }
+}

@@ -1,0 +1,490 @@
+{
+ "schema": 1,
+ "build": "retail-guided-selling-gpt-text",
+ "case": "retail-guided-selling",
+ "project": "examples/mantle-text-retail-guided-selling-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T02:57:20.169537+00:00",
+ "finished_at": "2026-09-30T02:58:29.809448+00:00",
+ "model_file": "20260930-035739-either-information.tar.gz",
+ "train_seconds": 20.6,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 2,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 9056.2,
+   "p95": 11003.2,
+   "max": 11003.2,
+   "mean": 9489.2
+  },
+  "llm_calls": 18,
+  "llm_calls_per_turn": 4.5,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 45579,
+  "completion_tokens": 1064,
+  "reasoning_tokens": 107,
+  "cached_prompt_tokens": 26624,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "fit_claim": 0
+  },
+  "tool_result_metrics": {},
+  "log_events": {
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.140007,
+  "llm_cost_usd": 0.140007,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.045069,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-device-change-dock",
+   "kind": "correction",
+   "description": "The contract's correction: the shopper changes the device model; the earlier result is discarded and the new model compared.",
+   "conversation_id": "retail-guided-selling-gpt-text-correction-device-change-dock-20260930T025720",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I need a charging dock for my Lumen 7.",
+     "latency_ms": 11003.2,
+     "bot": [
+      "Hi, this is the Willow Shop accessories assistant. Tell me which device you have and what you are looking for, and I will suggest something that fits.",
+      "I recommend the Lumen 7 Charging Dock for your Lumen 7. It is $39 and is currently in stock.",
+      "Fit is supported by the manufacturer spec sheet LUM-SS-DK7-B:\n- connector: requires usb-c, dock has usb-c\n- cradle profile: requires L7-STD, dock has L7-STD",
+      "Recommendation reference: WS-REC-20260930-EF8B0FCC.",
+      "One thing is unknown: whether it charges with a case on. If you use a case, I can ask a Willow Shop product specialist to confirm."
+     ]
+    },
+    {
+     "user": "Sorry, I misread the box. It's a Lumen 7 Lite.",
+     "latency_ms": 8636.2,
+     "bot": [
+      "For your Lumen 7 Lite, I recommend the Lumen 7 Lite Micro Dock. It is $29 and is currently in stock.",
+      "Fit is supported by:\n- connector: requires micro-usb, dock has micro-usb, from manufacturer spec sheet LUM-SS-DK7L-A\n- cradle profile: requires L7-LITE, dock has L7-LITE, from Willow Shop fit test WS-FIT-0412",
+      "Recommendation reference: WS-REC-20260930-1D7E5A62."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L7"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L7L"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "recommend_product",
+      "result": {
+       "status": "recommended",
+       "product_id": "WS-DK-L7"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "recommend_product",
+      "args": {
+       "product_id": "WS-DK-L7L"
+      },
+      "result": {
+       "status": "recommended"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "Lumen 7"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "search_catalogue",
+     "arguments": {
+      "category": "charging_dock"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "listed",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-DK-L7"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recommended",
+     "result_reason": null
+    },
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "Lumen 7 Lite"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "search_catalogue",
+     "arguments": {
+      "category": "charging_dock"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "listed",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-DK-L7L"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recommended",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "fit_claim": []
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 8,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 23020,
+    "completion_tokens": 545,
+    "reasoning_tokens": 30,
+    "cached_prompt_tokens": 12800,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.07385,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1938.3,
+     1507.1,
+     1748.6,
+     1998.6,
+     3347.5,
+     2030.2,
+     2099.9,
+     2450.9,
+     1741.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-guided-selling-gpt-text-correction-device-change-dock-20260930T025720",
+    "prompt": 23020,
+    "completion": 545,
+    "total": 23565,
+    "generations": 9,
+    "fetched_at": "2026-09-30T02:58:07.993695+00:00"
+   }
+  },
+  {
+   "id": "correction-pro-to-standard-case",
+   "kind": "correction",
+   "description": "Pro corrected to the standard phone: the Pro case must not carry over.",
+   "conversation_id": "retail-guided-selling-gpt-text-correction-pro-to-standard-case-20260930T025720",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "A case for my Lumen 7 Pro, please.",
+     "latency_ms": 9056.2,
+     "bot": [
+      "Hi, this is the Willow Shop accessories assistant. Tell me which device you have and what you are looking for, and I will suggest something that fits.",
+      "I recommend the Lumen 7 Pro Slim Case for your Lumen 7 Pro. It is $24 and currently in stock.",
+      "Fit is supported by the body_profile attribute: your phone requires BP-L7P, and the case catalogue value is BP-L7P, from manufacturer spec sheet LUM-SS-CS7P-A.",
+      "Recommendation reference: WS-REC-20260930-841FA564."
+     ]
+    },
+    {
+     "user": "Wait, it's actually the regular Lumen 7, not the Pro.",
+     "latency_ms": 9261.0,
+     "bot": [
+      "Thanks for the correction. The earlier Pro case result no longer applies.",
+      "For the Lumen 7 Everyday Case, I cannot confirm current stock right now. For the Lumen 7 Folio Case, the fit is unknown because the body_profile for your Lumen 7 requires BP-L7, but the catalogue does not have a sourced value confirming that attribute.",
+      "I can ask a product specialist to confirm whether the Folio Case fits your Lumen 7, or you can check back later on the Everyday Case stock."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L7P"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L7"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "recommend_product",
+      "result": {
+       "status": "recommended",
+       "product_id": "WS-CS-L7P"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "Lumen 7 Pro"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "search_catalogue",
+     "arguments": {
+      "category": "case"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "listed",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-CS-L7P"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recommended",
+     "result_reason": null
+    },
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "regular Lumen 7"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-CS-L7"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "availability_stale"
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-CS-L7-FOLIO"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "compatibility_unverified"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "fit_claim": []
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 8,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 22559,
+    "completion_tokens": 519,
+    "reasoning_tokens": 77,
+    "cached_prompt_tokens": 13824,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.066157,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     961.6,
+     2528.4,
+     1262.4,
+     2081.3,
+     2004.8,
+     4224.2,
+     1322.6,
+     1275.7,
+     2201.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-guided-selling-gpt-text-correction-pro-to-standard-case-20260930T025720",
+    "prompt": 22559,
+    "completion": 519,
+    "total": 23078,
+    "generations": 9,
+    "fetched_at": "2026-09-30T02:58:29.331634+00:00"
+   }
+  }
+ ]
+}
