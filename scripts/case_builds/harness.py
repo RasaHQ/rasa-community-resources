@@ -534,8 +534,9 @@ def read_jsonl(path: Path) -> list[dict]:
     return rows
 
 
-def usage_for(rows: list[dict], conversation_id: str) -> dict:
+def usage_for(rows: list[dict], conversation_id: str, engine_errors: Iterable[str] = ()) -> dict:
     calls = [r for r in rows if r.get("kind") == "llm_call" and r.get("sender_id") == conversation_id]
+    engine_res = [re.compile(p) for p in engine_errors]
     total = lambda key: sum((c.get(key) or 0) for c in calls)  # noqa: E731
     costs = [c.get("response_cost_usd") for c in calls]
     priced = all(isinstance(c, (int, float)) for c in costs)
@@ -548,6 +549,15 @@ def usage_for(rows: list[dict], conversation_id: str) -> dict:
         # Mantle logs and drops them; the caller's turn is unaffected.
         "failed_side_channel_calls": sum(
             not c.get("ok") and c.get("sender_source") != "turn_context" for c in calls
+        ),
+        # Failed calls inside the turn whose error matches the spec's
+        # `engine_errors`: a request the engine builds and the provider always
+        # rejects (for example Claude's "does not support assistant message
+        # prefill"). That is evidence about the agent, not an outage.
+        "engine_error_calls": sum(
+            not c.get("ok") and c.get("sender_source") == "turn_context"
+            and any(r.search(str(c.get("error") or "")) for r in engine_res)
+            for c in calls
         ),
         "prompt_tokens": total("prompt_tokens"),
         "completion_tokens": total("completion_tokens"),
@@ -645,7 +655,8 @@ def classify(error: Optional[str], checks: list[dict], usage: dict) -> str:
     discovery after the reply) is logged and dropped by Mantle without
     touching the turn, so it is counted in the summary instead.
     """
-    if (usage.get("failed_calls") or 0) - (usage.get("failed_side_channel_calls") or 0) > 0:
+    failed_in_turn = (usage.get("failed_calls") or 0) - (usage.get("failed_side_channel_calls") or 0)
+    if failed_in_turn - (usage.get("engine_error_calls") or 0) > 0:
         return "provider_error"
     if error is None and all(c["passed"] for c in checks):
         return "pass"
@@ -697,7 +708,7 @@ def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict
     for name, spec_metric in (spec.get("tool_result_metrics") or {}).items():
         metrics[name] = tool_result_metric(spec_metric, tracker)
     rows = read_jsonl(server.usage_log)
-    usage = usage_for(rows, conversation_id)
+    usage = usage_for(rows, conversation_id, spec.get("engine_errors", []))
     logs = log_events_for(server.server_log, conversation_id, spec.get("log_events", []))
     voice = voice_report(spec, conv, turns, tracker, getattr(driver, "call_stats", None)) \
         if driver.channel == "browser_audio" else None
@@ -919,6 +930,7 @@ def aggregate(results: list[dict], spec: dict) -> dict:
         "empty_completions": usage_total("empty_completions"),
         "failed_llm_calls": usage_total("failed_calls"),
         "failed_side_channel_calls": usage_total("failed_side_channel_calls"),
+        "engine_error_calls": usage_total("engine_error_calls"),
         "prompt_tokens": usage_total("prompt_tokens"),
         "completion_tokens": usage_total("completion_tokens"),
         "reasoning_tokens": usage_total("reasoning_tokens"),
@@ -1176,7 +1188,7 @@ def rerender(results_path: Path, recheck: bool = False) -> dict:
         if usage_rows:
             # Calls that landed after the run attributed usage (for example a
             # model turn after a voice hangup) are in the stored log; recount.
-            r["usage"] = usage_for(usage_rows, r["conversation_id"])
+            r["usage"] = usage_for(usage_rows, r["conversation_id"], spec.get("engine_errors", []))
         r["outcome"] = classify(r.get("error"), r["checks"], r["usage"])
         tracker_file = results_path.parent / "trackers" / f"{r['id']}.json"
         if r.get("voice") and r["id"] in convs and tracker_file.is_file():
@@ -1215,6 +1227,7 @@ def render_summary(report: dict, spec: dict) -> str:
         f"- LLM calls: {s['llm_calls']} ({s['llm_calls_per_turn']} per caller turn, "
         f"{s['side_channel_calls']} side-channel, {s['empty_completions']} empty completions"
         + (f", {s['failed_side_channel_calls']} failed side-channel calls" if s.get("failed_side_channel_calls") else "")
+        + (f", {s['engine_error_calls']} rejected in-turn calls matching engine_errors" if s.get("engine_error_calls") else "")
         + ")",
         f"- Tokens: {s['prompt_tokens']} prompt ({s['cached_prompt_tokens']} cached"
         + (f", {s['cache_creation_input_tokens']} written to cache" if s.get("cache_creation_input_tokens") else "")
