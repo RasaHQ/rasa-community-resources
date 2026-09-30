@@ -1,0 +1,383 @@
+{
+ "schema": 1,
+ "build": "retail-loyalty-gpt-text",
+ "case": "retail-loyalty",
+ "project": "examples/mantle-text-retail-loyalty-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T19:14:24.885778+00:00",
+ "finished_at": "2026-09-30T19:15:03.223656+00:00",
+ "model_file": "20260930-201427-booming-shack.tar.gz",
+ "train_seconds": 3.2,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 5,
+  "turn_latency_ms": {
+   "p50": 4367.8,
+   "p95": 10301.5,
+   "max": 10301.5,
+   "mean": 5472.8
+  },
+  "llm_calls": 12,
+  "llm_calls_per_turn": 2.4,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 38883,
+  "completion_tokens": 546,
+  "reasoning_tokens": 102,
+  "cached_prompt_tokens": 12288,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "change_reference": 1
+  },
+  "tool_result_metrics": {
+   "commands_sent": {
+    "attempts": 2,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "willowshop.words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 2,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.155499,
+  "llm_cost_usd": 0.155499,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "recovery-stale-revision",
+   "kind": "recovery",
+   "description": "Style Box is charged early while the chat is open. The first apply is blocked (benefit_loss_hidden); the new effect ships the paid October box, so the member switches to cancel now for the refund.",
+   "conversation_id": "retail-loyalty-gpt-text-recovery-stale-revision-20260930T191424",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Stop my Style Box renewing, I don't want the October box.",
+     "latency_ms": 10301.5,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "Please confirm this change to your Style Box (WS-SUB-3304): stop the renewal, not an immediate cancellation. It takes effect 2026-10-01 00:00 UTC. What changes for you: no charge on 2026-10-01; no October box; nothing refunded. (Change WS-SUB-3304 stop_renewal r4.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 7353.8,
+     "bot": [
+      "The effect changed while we were talking: the October Style Box was charged early on 2026-09-30.",
+      "Stopping the renewal now would take effect 2027-01-01 00:00 UTC. Your October box ships 2026-10-05, there is no charge on 2027-01-01, and there is no refund. Do you still want to stop the Style Box renewal?"
+     ]
+    },
+    {
+     "user": "Oh. Then I'd rather cancel it now and get the $60 back, if that stops the October box.",
+     "latency_ms": 4367.8,
+     "bot": [
+      "Cancelling now would take effect 2026-09-30 09:00 UTC. Your Style Box access ends today, the October box is cancelled, and $60.00 is refunded. Do you want me to cancel it now?"
+     ]
+    },
+    {
+     "user": "Yes, cancel it now.",
+     "latency_ms": 1583.7,
+     "bot": [
+      "Please confirm this change to your Style Box (WS-SUB-3304): cancel now, so access ends today. It takes effect 2026-09-30 09:00 UTC. What changes for you: ends today 2026-09-30; October box cancelled; $60.00 refunded. (Change WS-SUB-3304 cancel_now r5.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 3757.1,
+     "bot": [
+      "Subscription change recorded: WS-CHG-6AA34F for your Style Box (WS-SUB-3304). Cancelled now, effective 2026-09-30 09:00 UTC. What you keep: nothing from today; the October box is cancelled and $60.00 refunded. Refund: $60.00.",
+      "You're all set. Your Style Box has been cancelled now, and the October box cancellation and refund have been recorded."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "blocked",
+       "reason": "benefit_loss_hidden",
+       "subscription": "WS-SUB-3304"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3304",
+       "change_type": "cancel_now",
+       "change_tag": "WS-SUB-3304 cancel_now r5"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_tag": "re:r4$"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_type": "re:^(?!cancel_now$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "subscription": "re:^(?!WS-SUB-3304$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "blocked",
+     "result_reason": "benefit_loss_hidden"
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 4,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-6AA34F for your Style Box (WS-SUB-3304). Cancelled now, effective 2026-09-30 09:00 UTC. What you keep: nothing from today; the October box is cancelled and $60.00 refunded. Refund: $60.00."
+    ],
+    "commands_sent": {
+     "attempts": 2,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 2,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+   },
+   "log_event_details": {
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-recovery-stale-revision-20260930T191424"
+     },
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-recovery-stale-revision-20260930T191424"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": []
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 11,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 38883,
+    "completion_tokens": 546,
+    "reasoning_tokens": 102,
+    "cached_prompt_tokens": 12288,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.155499,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1910.0,
+     2754.9,
+     1862.0,
+     3441.7,
+     2083.0,
+     1919.7,
+     3295.8,
+     2448.9,
+     1893.4,
+     1565.5,
+     1066.5,
+     2665.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-recovery-stale-revision-20260930T191424",
+    "prompt": 38883,
+    "completion": 546,
+    "total": 39429,
+    "generations": 12,
+    "fetched_at": "2026-09-30T19:15:02.963099+00:00"
+   }
+  }
+ ]
+}

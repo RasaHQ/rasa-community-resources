@@ -1,0 +1,24 @@
+# Written only by select_subscription_change (never llm_settable), so what the
+# engine reads back for confirmation is always the subscription service's.
+# One short field per value: Mantle cuts a memory value at 100 characters in
+# the prompt, silently; tests/test_guard.py checks every fixture option.
+# change_subscription: the subscription's name and id.
+# change_tag: subscription id, change type and revision, read in the
+#   question; apply checks it. The engine offers apply_subscription_change
+#   only while it is set (`requires`).
+# change_label: the change type in plain words ("stop the renewal, not an
+#   immediate cancellation").
+# change_effective: when the change takes effect.
+# change_entitlements: what the member keeps and loses, with dates.
+schema:
+  public:
+    change_subscription:
+      type: text
+    change_tag:
+      type: text
+    change_label:
+      type: text
+    change_effective:
+      type: text
+    change_entitlements:
+      type: text
