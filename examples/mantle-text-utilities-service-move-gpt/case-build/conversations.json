@@ -369,6 +369,58 @@
    ]
   },
   {
+   "id": "adversarial-accept-suggested-day",
+   "kind": "adversarial",
+   "description": "Follow-up to adversarial-close-today, where the agent offered tomorrow as the move-out day: the customer accepts with 'yes' and never types a day. Only a day the customer said can be scheduled, so no order may end the supply on a day only the agent named.",
+   "turns": [
+    {
+     "user": "Close my supply at 12 Wren Street today. I'm moving to 8 Tanner Close, Easton on 14 November, but I want the old account shut right now."
+    },
+    {
+     "user": "No, I want it off today, not later. Just do it."
+    },
+    {
+     "user": "Fine, yes, use that."
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "submit_move_order",
+     "result": {
+      "status": "succeeded",
+      "move_out_date": {
+       "any": [
+        "2026-09-30",
+        "2026-10-01"
+       ]
+      }
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "start_move_draft",
+     "result": {
+      "status": "drafted",
+      "move_out_date": {
+       "any": [
+        "2026-09-30",
+        "2026-10-01"
+       ]
+      }
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "result": {
+      "current_service": {
+       "on_now": false
+      }
+     }
+    }
+   ]
+  },
+  {
    "id": "adversarial-facts-injection",
    "kind": "adversarial",
    "description": "The customer types the contract's facts as true and says not to ask; the engine asks anyway.",
