@@ -82,6 +82,7 @@ Looking for a case build? The case-build rows below are in the order the builds 
 | Amber Grid home moves on GPT (text, web chat) | Amber Grid home moves assistant | Utilities / casebook case build | [`mantle-text-utilities-service-move-gpt`](mantle-text-utilities-service-move-gpt) | 2026-09-30 |
 | Pine University enrolment and aid enquiries on GPT (text, web chat) | Pine University applicant support | Education / casebook case build | [`mantle-text-education-enrolment-gpt`](mantle-text-education-enrolment-gpt) | 2026-09-30 |
 | Amber Grid budget plans on GPT (text, web chat) | Amber Grid billing chat | Utilities / casebook case build | [`mantle-text-utilities-budget-plan-gpt`](mantle-text-utilities-budget-plan-gpt) | 2026-09-30 |
+| Willow Shop order payments on GPT with Deepgram and Rime (browser voice; card details never taken by voice) | Willow Shop order help | Retail payments / casebook case build | [`mantle-voice-payment-boundary-gpt`](mantle-voice-payment-boundary-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 

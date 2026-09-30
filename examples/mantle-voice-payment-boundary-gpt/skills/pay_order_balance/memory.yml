@@ -1,0 +1,19 @@
+# Written only by prepare_secure_payment (never llm_settable), so the order,
+# amount and channel the engine reads back for confirmation are always the
+# ones the payment tools checked. Each value is kept under 100 characters:
+# Mantle cuts longer memory values in the prompt without saying so
+# (tests/test_guard.py checks it). No value ever holds card data.
+# pay_order: the order the secure link is for, e.g. WS-10517; empty when none.
+# pay_channel: text or email, the approved channel the caller chose.
+# pay_order_label: the order and balance, read in the confirmation question.
+# pay_channel_label: where the link goes, read in the confirmation question.
+schema:
+  public:
+    pay_order:
+      type: text
+    pay_channel:
+      type: text
+    pay_order_label:
+      type: text
+    pay_channel_label:
+      type: text
