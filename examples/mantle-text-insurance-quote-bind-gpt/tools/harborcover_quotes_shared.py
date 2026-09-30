@@ -28,9 +28,6 @@ async def load_caller_profile(context: ToolContext = None) -> ToolResult:
     if context is not None and not context.memory.get("project.customer_id"):
         context.memory.set("project.customer_id", profile["customer_id"])
         context.memory.set("project.customer_first_name", profile["first_name"])
-        context.memory.set(
-            "project.saved_quotes",
-            "; ".join(f"{q['quote_id']} ({q['label']})" for q in profile["quotes"]),
-        )
+        context.memory.set("project.saved_quotes", hq.saved_quotes_line(profile["quotes"]))
     public = {k: v for k, v in profile.items() if k != "customer_id"}
     return ToolResult(llm_response={"ok": True, **public})

@@ -722,6 +722,22 @@ def underwriting_callback(svc: QuoteService, customer_id: Optional[str], quote_i
     return callback
 
 
+# Mantle cuts every memory value to 100 characters where the model reads it
+# (MAX_MEMORY_VALUE_LENGTH in rasa/mantle/prompts/memory_lines.py, for both the
+# prompt's memory section and @memory substitution in skill text), and says
+# only "... [truncated]". The first version listed each quote with its label,
+# 201 characters: the renters quote fell off the end, and the model told
+# customers they had no renters quote. Ids and products fit.
+MEMORY_VALUE_LIMIT = 100
+
+
+def saved_quotes_line(quotes: list[dict]) -> str:
+    line = "; ".join(f"{q['quote_id']} {q['product']}" for q in quotes)
+    if len(line) > MEMORY_VALUE_LIMIT:
+        raise ValueError("saved_quotes would be truncated in the model's prompt")
+    return line
+
+
 def caller_profile(svc: QuoteService, customer_id: str = DEMO_CUSTOMER_ID) -> dict:
     person = svc.data["customers"][customer_id]
     return {

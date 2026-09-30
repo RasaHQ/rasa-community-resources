@@ -99,6 +99,23 @@ class StateSeparationTests(unittest.TestCase):
         self.assertEqual(hq.get_quote(svc, ME, RN)["state"], "bound")
 
 
+class MemoryTests(unittest.TestCase):
+    def test_saved_quotes_fit_the_prompt_memory_cap(self):
+        """Mantle renders at most 100 characters of a memory value to the model."""
+        svc = hq.QuoteService()
+        line = hq.saved_quotes_line(hq.caller_profile(svc)["quotes"])
+        self.assertLessEqual(len(line), hq.MEMORY_VALUE_LIMIT)
+        for quote_id in ("HC-Q-AU-6121", "HC-Q-CD-5902", "HC-Q-RN-6120"):
+            self.assertIn(quote_id, line)
+
+    def test_engine_cap_is_what_the_limit_assumes(self):
+        try:
+            from rasa.mantle.prompts.memory_lines import MAX_MEMORY_VALUE_LENGTH
+        except ImportError as exc:
+            self.skipTest(f"rasa not importable: {exc}")
+        self.assertEqual(MAX_MEMORY_VALUE_LENGTH, hq.MEMORY_VALUE_LIMIT)
+
+
 class RequestRuleTests(unittest.TestCase):
     def test_an_estimate_reference_cannot_be_bound(self):
         svc = hq.QuoteService()
