@@ -1,6 +1,7 @@
 # The refill guard as a diff: from the guard-off baseline (the same tools and prompt, the model
 # passes the patient id and decides when the caller has confirmed) to this folder as shipped.
-# Apply to a guard-off copy with `patch -p1`. Measured by shared/spec/count_concerns.py --diff.
+# In a copy of this folder, `patch -R -E -p1 < guard.diff` gives the guard-off baseline. Measured by
+# shared/spec/count_concerns.py rasa --diff.
 diff -ruN a/memory.yml b/memory.yml
 --- a/memory.yml
 +++ b/memory.yml
@@ -74,7 +75,7 @@ diff -ruN a/skills/request_refill/skill.md b/skills/request_refill/skill.md
  ---
  
  Send one refill request, for one medicine already on the patient's record,
-@@ -26,11 +44,11 @@
+@@ -28,11 +46,12 @@
  3. If select_medication returns candidates, read them and ask which one. If
     it finds nothing, ask them to say the name again. If the medicine is not
     active or is controlled, follow its next_step: never send a request for it.
@@ -84,10 +85,11 @@ diff -ruN a/skills/request_refill/skill.md b/skills/request_refill/skill.md
 -   the caller wants the team to know. If the caller names a different
 -   medicine, do not send, and start again from step 2.
 +4. When select_medication returns selected, call @tool.send_refill_request
-+   with its record_id and anything the caller wants the team to know. The
-+   engine reads the recorded medicine back and asks the caller to confirm. If
-+   the caller names a different medicine, decline the confirmation and start
-+   again from step 2.
++   straight away, with its record_id and anything the caller wants the team
++   to know. Do not ask for confirmation yourself first: the engine reads the
++   recorded medicine back and asks the caller to confirm, and a question of
++   your own would make them confirm twice. If the caller names a different
++   medicine, decline the confirmation and start again from step 2.
  5. When send_refill_request returns succeeded, give the spoken_reference and
     say the request is awaiting prescribing team review.
  6. When it returns pending, say the request is not confirmed yet and call
