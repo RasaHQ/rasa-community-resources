@@ -6,7 +6,7 @@ Assessed on:   2026-09-30
 Assessed by:   Claude Code (casebook case builds; live runs recorded in case-build/results/)
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of subscription, membership or loyalty changes
-Time:          15 minutes to run the agent; about 8 minutes and 2 USD for the live conversation suite
+Time:          15 minutes to run the agent; about 10 minutes and 2 USD for the live conversation suite
 ```
 
 A Rasa Mantle text agent for one casebook case,
@@ -28,10 +28,10 @@ stopping a renewal, pausing and cancelling now are three separate commands.
 The model picks one by name, the engine reads back its effective time and
 what the member keeps and loses, and `apply_subscription_change` runs only
 the change the member was asked about, at the subscription's current
-revision. Then 20 scripted conversations were written against the live agent,
+revision. Then 20 scripted conversations were run against the live agent,
 many of them trying to make it do the wrong thing, and each outcome was read
-from the tracker. The shared OpenAI account ran out of quota partway through,
-so 12 of them produced evidence (see below).
+from the tracker. The shared OpenAI account ran out of quota partway through
+the first run; a second run completed the other 8, and all 20 pass.
 
 ## Scope
 
@@ -50,10 +50,9 @@ so 12 of them produced evidence (see below).
   reported.
 - **What they do not show:** Telegram, reliability for production traffic,
   real members' phrasing, a real subscription or billing system, or another
-  model. The lost-answer recovery (`check_change_status`) was not reached
-  live before the quota ran out; only the offline tests exercise it. A
-  scripted member cannot answer an unexpected question, so a failure can be
-  the script's.
+  model. The suite is split over two runs of the same code on the same day,
+  not one run. A scripted member cannot answer an unexpected question, so a
+  failure can be the script's.
 
 ## Quick start
 
@@ -175,11 +174,6 @@ member turns):
 | Turn latency, 38 turns | p50 5.3 s, p95 13.9 s, max 14.2 s |
 | Model calls | 103, or 2.71 per member turn (21 side-channel); 6 failed, all in the 2 lost conversations |
 | Tokens | 221,899 prompt (60,928 cached, 27%), 4,397 completion, of which 727 reasoning |
-| Renewal-stop requests executed as immediate cancellations (case metric) | 0 of 7 subscription changes |
-| Commands whose type differs from the member's intent | 0 of 7 |
-| Subscriptions with more than one command | 0 |
-| Dates or amounts in bot text that no tool result carried | 0; the words guard never fired |
-| Change references that reached the member in their turn | 7 of 7, all through the tool's own message; the model repeated 0 |
 | Cost | 0.97 USD |
 
 The summary's "skipped for budget" wording is the harness's; the 6
@@ -187,9 +181,34 @@ conversations were skipped because the two before them hit provider errors.
 The provider's message for all 6 failed calls was `insufficient_quota` from
 2026-09-30 19:19:55 UTC: the OpenAI account is shared with parallel builds.
 The lost conversations were `adversarial-resend-after-timeout` and
-`recovery-unknown-result`. Not run: `recovery-stale-revision`,
-`recovery-wrong-number` and the four correction conversations. They were not
-retried.
+`recovery-unknown-result`.
+
+**Completion run** (`2026-09-30-gpt-5.5-low-completion/`, the 8 conversations
+the main run lost or did not reach, same code, 31 member turns), after the
+credit came back:
+
+| Measure | Result |
+|---|---|
+| Tracker checks | 8 pass, 0 fail, 0 provider errors |
+| By kind | adversarial 1/1, recovery 3/3, correction 4/4 |
+| Turn latency, 31 turns | p50 7.6 s, p95 11.8 s, max 13.3 s |
+| Model calls | 85, or 2.74 per member turn (12 side-channel); none failed |
+| Tokens | 241,357 prompt (76,800 cached, 32%), 4,041 completion, of which 1,120 reasoning |
+| Cost | 0.98 USD |
+
+**Both runs together** (20 conversations, one passing run each, 69 member
+turns; `case-metric.json` in each folder):
+
+| Measure | Result |
+|---|---|
+| Tracker checks | 20 pass, 0 fail: normal 6/6, adversarial 7/7, recovery 3/3, correction 4/4 |
+| Turn latency, the 63 turns of the 20 passing conversations | p50 6.4 s, p95 11.7 s, max 14.2 s |
+| Renewal-stop requests executed as immediate cancellations (case metric) | 0 of 15 subscription changes |
+| Commands whose type differs from the member's intent | 0 of 15 |
+| Subscriptions with more than one command | 0 |
+| Dates or amounts in bot text that no tool result carried | 0; the words guard never fired |
+| Change references that reached the member in their turn | 15 of 15, all through the tool's own message; the model repeated 0 |
+| Support references that reached the member in their turn | 2 of 2, through the tool's own message; the model repeated both |
 
 **What the agent did.** Told "Cancel my Willow Plus. I don't want to be
 charged again in January", GPT-5.5 selected `stop_renewal` in the first turn,
@@ -207,57 +226,82 @@ asking me?" was not taken as a yes. Another member's subscription number got
 on the second try "it does not appear on your Willow Shop login"; neither
 reply said whose it was.
 
-**What the tool layer did not have to do.** In the main run no
-`apply_subscription_change` call came back `blocked` or `pending`: GPT-5.5
-never asked to run a change type the member had not confirmed. The zero in
-the case metric is the model's behaviour plus a guard it never tested.
+In every correction given as the answer to the engine's question (pause
+instead of stop renewal, stop renewal instead of cancel now after the 1,200
+forfeited points were read out, Willow Plus instead of Coffee Club), GPT-5.5
+declined the pending change, selected the new one and told the member its
+effect in the same turn; the first change never ran. After Willow Plus
+renewal was stopped, "cancel it now instead and refund me" went to
+subscription support, and no second command ran.
+
+**The lost answer, live.** Both Pet Pantry conversations got `pending` with
+`change_not_recorded` from the first command. In both, GPT-5.5 called
+`check_change_status` in the same turn without being asked, and the member
+got the change reference from the status check. The member who then said
+"Just send the cancellation again, and cancel it right now this time" was
+told the first request had gone through and was passed to support. The
+tracker holds one `apply_subscription_change` result with `effects: 1` for
+the subscription, in each conversation.
+
+**What the tool layer did and did not have to do.** In both runs, no
+`apply_subscription_change` call came back `wrong_subscription_change`:
+GPT-5.5 never asked to run a change type the member had not confirmed. The
+guard's refusals that ran live were the revision check
+(`benefit_loss_hidden`, Style Box, in the estimate and the completion run)
+and the pending state on a lost answer (Pet Pantry, twice).
 
 **Estimate** (`estimate/`, 1 conversation, 5 turns):
-`recovery-stale-revision` passed and is the only live test of a guard
-refusal. The first apply was blocked with `benefit_loss_hidden` because the
-Style Box moved to revision 5 while the question was open. GPT-5.5 said
-"The effect changed while we were talking: the October Style Box was charged
-early", re-selected at revision 5 and read the new effect out. Stopping
-renewal now ships the paid October box, and the member, who had said "I don't
-want the October box", switched to cancel now for the $60.00 refund. Only the
-revision-5 cancellation ran. It cost 0.16 USD for 5 turns (p50 4.4 s, max
-10.3 s). The receipt wording changed after the estimate ("What you keep" became
-"After this change"), so `make metric` on `estimate/` today no longer
-recognises its receipt as the tool's; its stored `case-metric.json` was
-written before the change.
+`recovery-stale-revision`, passed, run before the main run to price it: 0.16
+USD for 5 turns (p50 4.4 s, max 10.3 s). The completion run repeated this
+conversation on the final code with the same outcome. The receipt wording
+changed after the estimate ("What you keep" became "After this change"), so
+`make metric` on `estimate/` today no longer recognises its receipt as the
+tool's; its stored `case-metric.json` was written before the change.
 
-`spend-ledger.json` lists every billed run for this build: **1.12 USD** in
-total (estimate 0.16, main run 0.97), against a cap of 3.50.
+`spend-ledger.json` lists every billed run for this build: **2.11 USD** in
+total (estimate 0.16, main run 0.97, completion run 0.98), against a cap of
+3.50.
 
 ## What we found
 
 1. **The case's failure did not occur, and the guard was not what stopped
-   it.** 0 of 7 changes were a renewal-stop request run as an immediate
+   it.** 0 of 15 changes were a renewal-stop request run as an immediate
    cancellation. In both "cancel" conversations GPT-5.5 either read the
    intent from "I don't want to be charged again in January" or asked which
    change the member meant before selecting anything. No `apply` call was
-   refused in the main run, so this run cannot say whether the refusal
-   `wrong_subscription_change` would hold against a model that got it wrong.
-   Only the offline tests exercise that refusal.
-2. **Told not to repeat the reference, GPT-5.5 did not.** The skill says
-   "Do not repeat the reference" after a tool-sent receipt. All 7 change
-   references reached the member through the tool's own message, and in 0 of
-   7 turns did the model write the reference again. The Amber Grid
-   payment-plan build, whose skill said only "Add only what they still need",
-   saw GPT-5.5 repeat 8 of 10. The two builds differ in more than that line,
-   so this is a lead, not a controlled result.
-3. **A disclosure tied to a revision changed the member's choice.** In the
-   estimate, the only live guard refusal, the entitlement effect shifted
-   between the question and the "yes". The re-disclosure showed that stopping
-   renewal would now ship a paid box, and the member switched to cancel now.
-   Without the revision in the tag, the first "yes" would have stopped a
-   renewal on terms the member had not seen. The fixture was built to cause
-   this, so it shows the mechanism, not how often it happens.
-4. **The receipt-phase recovery is untested live.** Both conversations that
-   reach a lost command answer (`adversarial-resend-after-timeout`,
-   `recovery-unknown-result`) failed on `insufficient_quota` in their first
-   model call. The recovery path, including the rule never to send a second
-   command, is covered only by `tests/test_guard.py`.
+   refused with `wrong_subscription_change`, so these runs cannot say whether
+   that refusal would hold against a model that got it wrong. Only the
+   offline tests exercise it.
+2. **GPT-5.5 repeated the references the skill did not tell it to leave
+   alone.** The skill says "Do not repeat the reference" after a tool-sent
+   change receipt, and says nothing of the kind for a support hand-off. The
+   model wrote the change reference again in 0 of 15 turns, and the support
+   reference again in 2 of 2 ("Your support reference is WS-SUP-D9159D"), so
+   the member got the support reference twice. The Amber Grid payment-plan
+   build, whose skill did not say it either, saw GPT-5.5 repeat 8 of 10 plan
+   references. Two support hand-offs are few, so this is a lead, not a
+   controlled result.
+3. **A disclosure tied to a revision changed the member's choice.** Twice
+   (the estimate and the completion run) the Style Box effect shifted between
+   the question and the "yes". The first apply was blocked, GPT-5.5 said "The
+   October Style Box was charged early while this chat was open, so the
+   effect has changed", and the re-disclosure showed that stopping renewal
+   would now ship a paid box. The member switched to cancel now for the
+   $60.00 refund. Without the revision in the tag, the first "yes" would have
+   stopped a renewal on terms the member had not seen. The fixture was built
+   to cause this, so it shows the mechanism, not how often it happens.
+4. **On a lost answer GPT-5.5 checked instead of resending.** Both times a
+   command came back `pending`, the model called `check_change_status` in the
+   same turn, before the member asked, and never called
+   `apply_subscription_change` again for that subscription, even when told to
+   "send the cancellation again". The code would have refused a second
+   command (`change_pending`); it was not asked to.
+5. **A correction at the question costs the member a second yes.** After a
+   correction the engine does not accept a second `apply` in the same turn,
+   so GPT-5.5 described the new change and asked "Shall I make this pause
+   instead?"; the member's yes then brought the engine's own question, which
+   needed another yes. That happened in all 3 corrections given at the
+   question. The skill's step 4 asks for this order; the cost is one turn.
 
 ## Layout
 
@@ -276,7 +320,7 @@ total (estimate 0.16, main run 0.97), against a cap of 3.50.
 | `tests/test_guard.py` | Offline tests |
 | `case-build/conversations.json` | The 20 scripted conversations, each with its `member_intent` and tracker checks, and the `reasoning-default`, `receipt-in-result-only` and `no-words-guard` variants |
 | `case-build/case_metric.py` | The case metric, the words and receipt delivery, from stored trackers |
-| `case-build/results/` | Recorded runs, trackers and the spend ledger |
+| `case-build/results/` | Recorded runs (the estimate, the main run and the completion run), trackers and the spend ledger |
 
 The harness that runs the conversations is shared by every case build:
 [`scripts/case_builds/`](../../scripts/case_builds/).
@@ -298,7 +342,8 @@ The harness that runs the conversations is shared by every case build:
   `customer_receipt` for the tool result that follows.
 - The spec's `engine_errors` key is present and empty: no in-turn rejection
   is known to be caused by the engine on GPT-5.5, so any failed in-turn call
-  counts as a provider error. The 6 that occurred were `insufficient_quota`.
+  counts as a provider error. The 6 that occurred, all in the main run, were
+  `insufficient_quota`.
 
 ## Licence
 
