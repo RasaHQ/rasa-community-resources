@@ -123,6 +123,23 @@ class ServerTests(unittest.TestCase):
                 bots = [e["text"] for e in events if e["event"] == "bot"]
                 self.assertIn(refills.DECLINED_TEXT, bots)
 
+    def test_silence_check_in_after_the_timeout_once_playback_is_acknowledged(self):
+        cid = "test-call-3"
+        original = voice_loop.SILENCE_TIMEOUT_S
+        voice_loop.SILENCE_TIMEOUT_S = 0.6
+        try:
+            with TestClient(self.app) as client:
+                with client.websocket_connect(WS_PATH, headers={"X-Rasa-Sender-Id": cid}) as ws:
+                    ws.receive_text()
+                    for frame in read_until(ws, lambda f: "latency" in f):
+                        if "marker" in frame:
+                            ws.send_text(json.dumps({"marker": frame["marker"]}))
+                    events = self.wait_turn_end(client, cid, 2)
+                    bots = [e["text"] for e in events if e["event"] == "bot"]
+                    self.assertEqual(bots, [instructions.GREETING, voice_loop.SILENCE_PROMPT])
+        finally:
+            voice_loop.SILENCE_TIMEOUT_S = original
+
     def test_barge_in_is_off(self):
         self.assertFalse(voice_loop.INTERRUPTIONS_ENABLED)
         self.assertEqual(voice_loop.SILENCE_TIMEOUT_S, 30.0)

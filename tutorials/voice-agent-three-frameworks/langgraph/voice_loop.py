@@ -217,6 +217,8 @@ class Call:
         while True:
             text, at = await self.turns.get()
             self.busy = True
+            # Finish sending the previous turn first, so a question is on the wire before its answer is taken.
+            await self.out.join()
             self.turn_count += 1
             self.conv.add("user", text, ts=at)
             clock = TurnClock(at)
@@ -359,6 +361,8 @@ class Call:
                 raise
             except Exception as exc:
                 log.warning("%s: send failed: %s", self.id, exc)
+            finally:
+                self.out.task_done()
 
     async def _silence_watch(self) -> None:
         while True:
