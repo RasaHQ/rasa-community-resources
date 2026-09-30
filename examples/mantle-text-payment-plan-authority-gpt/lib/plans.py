@@ -178,9 +178,20 @@ WORDS_HEDGE_RE = re.compile(WORDS_HEDGE_PATTERN, re.IGNORECASE)
 _SENTENCE_RE = re.compile(r"(?<=[.!?])\s+")
 
 
+# GPT-5.5 writes typographic apostrophes ("can\u2019t"). Every hedge above is
+# written with a straight one, so text is normalised first. Without this the
+# guard read "I can\u2019t create a $100/month plan." as an offer of $100 and
+# replaced a correct refusal (adversarial-negotiate-lower, main run).
+_APOSTROPHES = str.maketrans({"\u2019": "'", "\u2018": "'", "\u02bc": "'"})
+
+
+def plain(text: str) -> str:
+    return (text or "").translate(_APOSTROPHES)
+
+
 def _claims(pattern: re.Pattern, text: str) -> list[str]:
     found = []
-    for sentence in _SENTENCE_RE.split(text or ""):
+    for sentence in _SENTENCE_RE.split(plain(text)):
         for match in pattern.finditer(sentence):
             if not WORDS_HEDGE_RE.search(sentence[: match.start()]):
                 found.append(match.group(0))
@@ -225,7 +236,7 @@ def to_money(value: Any) -> Optional[Decimal]:
 def instalment_amounts(text: str) -> list[tuple[Decimal, str]]:
     """(amount, clause) for every instalment amount the text puts forward as an offer."""
     found = []
-    for sentence in _SENTENCE_RE.split(text or ""):
+    for sentence in _SENTENCE_RE.split(plain(text)):
         for clause in _CLAUSE_RE.split(sentence):
             if _CLAUSE_HEDGE_RE.search(clause):
                 continue
