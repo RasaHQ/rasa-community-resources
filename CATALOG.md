@@ -81,7 +81,7 @@ Industries follow the rasa.community casebook.
 
 | Case | Organisation | Model | Mode | Voice stack | Result | Build | Article |
 |---|---|---|---|---|---|---|---|
-| Journey changes with linked services | Horizon Travel | GPT-5.5 | voice | Deepgram Flux + Rime | not recorded | [`mantle-voice-travel-booking-gpt`](examples/mantle-voice-travel-booking-gpt/) | not published yet |
+| Journey changes with linked services | Horizon Travel | GPT-5.5 | voice | Deepgram Flux + Rime | 11/16 | [`mantle-voice-travel-booking-gpt`](examples/mantle-voice-travel-booking-gpt/) | not published yet |
 | Rebooking during a mass disruption | Horizon Travel | GPT-5.5 | text | — | 20/20 | [`mantle-text-travel-mass-rebooking-gpt`](examples/mantle-text-travel-mass-rebooking-gpt/) | not published yet |
 | Rewards redemption with held inventory | Horizon Travel | GPT-5.5 | text | — | 16/21 | [`mantle-text-travel-redemption-gpt`](examples/mantle-text-travel-redemption-gpt/) | not published yet |
 
@@ -142,7 +142,7 @@ Industries follow the rasa.community casebook.
 ### GPT-5.5 + Deepgram Flux + Rime (voice)
 
 - [`mantle-voice-payment-boundary-gpt`](examples/mantle-voice-payment-boundary-gpt/): Payment capture boundaries, Willow Shop. Main run not recorded.
-- [`mantle-voice-travel-booking-gpt`](examples/mantle-voice-travel-booking-gpt/): Journey changes with linked services, Horizon Travel. Main run not recorded.
+- [`mantle-voice-travel-booking-gpt`](examples/mantle-voice-travel-booking-gpt/): Journey changes with linked services, Horizon Travel. Main run 11/16, recorded 2026-09-30.
 
 ### GPT-5.5 + faster-whisper + Neuphonic NeuTTS-2E (voice)
 
