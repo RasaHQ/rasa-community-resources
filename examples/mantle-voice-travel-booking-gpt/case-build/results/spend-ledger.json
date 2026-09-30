@@ -1,0 +1,93 @@
+{
+  "runs": [
+    {
+      "run": "20260930T191544",
+      "label": "caller audio (gemini gemini-3.8-flash-tts)",
+      "conversations": 0,
+      "cost_usd": 0.001764,
+      "by_vendor": {
+        "gemini_tts": 0.001764
+      },
+      "files": 1,
+      "tokens": {
+        "input_tokens": 17,
+        "output_tokens": 195
+      },
+      "stopped": "HTTP 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_requests_per_model_per_day, limit: 100, model: gemini-3.8-flash-tts\\nPlease retry in 4h44m15.764763683s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links",
+      "finished_at": "2026-09-30T19:15:44.231958+00:00"
+    },
+    {
+      "run": "20260930T191633",
+      "label": "caller audio (rime)",
+      "conversations": 0,
+      "cost_usd": 0.07278,
+      "by_vendor": {
+        "rime_caller_tts": 0.07278
+      },
+      "files": 44,
+      "tokens": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "finished_at": "2026-09-30T19:16:33.504457+00:00"
+    },
+    {
+      "run": "20260930T191742",
+      "label": "estimate",
+      "conversations": 1,
+      "cost_usd": 0.129061,
+      "by_vendor": {
+        "llm": 0.103419,
+        "speech": 0.025642
+      },
+      "finished_at": "2026-09-30T19:19:14.213298+00:00"
+    },
+    {
+      "run": "20260930T192002",
+      "label": "2026-09-30-stopped-openai-no-credit (call 1, as the harness recorded it)",
+      "conversations": 1,
+      "cost_usd": 0.022524,
+      "by_vendor": {
+        "llm": 0.010005,
+        "speech": 0.012519
+      },
+      "finished_at": "2026-09-30T19:21:22.199757+00:00",
+      "note": "Stopped: OpenAI returned 'You have no credits remaining' on 14 of 15 model calls. The tracker is in results/2026-09-30-stopped-openai-no-credit/. This entry is call 1 (normal-later-flight-same-day) as the harness measured it. Relabelled by hand: the harness wrote it under the run label 2026-09-30-gpt-5.5-low, which the later main run (20260930T194926) reused."
+    },
+    {
+      "run": "20260930T192002",
+      "label": "2026-09-30-stopped-openai-no-credit (call 2, interrupted by hand)",
+      "conversations": 1,
+      "cost_usd": 0.012762,
+      "by_vendor": {
+        "llm": 0.0,
+        "speech": 0.012762
+      },
+      "note": "normal-dublin-return-bare-yes, interrupted after all four of its model calls failed with 'You have no credits remaining' (priced at 0 by LiteLLM). The harness wrote no record for it, so speech is an upper bound: Deepgram on 35 s of call wall time (browser_audio connect 20:20:46 to session_ended 20:21:21 in server.log) at 0.0065 USD a minute, Rime on 299 characters (the greeting and four canned failure replies) at 0.03 USD per 1,000.",
+      "finished_at": "2026-09-30T19:21:30+00:00"
+    },
+    {
+      "run": "20260930T194926",
+      "label": "2026-09-30-gpt-5.5-low",
+      "conversations": 16,
+      "cost_usd": 2.645587,
+      "by_vendor": {
+        "llm": 2.200522,
+        "speech": 0.445065
+      },
+      "finished_at": "2026-09-30T20:10:45.681017+00:00"
+    },
+    {
+      "run": "20260930T201312",
+      "label": "2026-09-30-rerun-corrections-and-madrid",
+      "conversations": 3,
+      "cost_usd": 0.832914,
+      "by_vendor": {
+        "llm": 0.696156,
+        "speech": 0.136758
+      },
+      "finished_at": "2026-09-30T20:19:18.460346+00:00"
+    }
+  ],
+  "total_cost_usd": 3.717392
+}

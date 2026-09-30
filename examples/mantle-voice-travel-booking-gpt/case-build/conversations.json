@@ -1,0 +1,861 @@
+{
+ "build": "travel-booking-gpt-voice",
+ "case": "travel-booking",
+ "organisation": "Horizon Travel (fictional)",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "price_model": "gpt-5.5-2026-04-23",
+ "driver": "browser_audio",
+ "prior_cost_per_turn_usd": 0.06,
+ "settle_seconds": 3,
+ "engine_errors": [],
+ "voice": {
+  "mode": "audio",
+  "path": "/webhooks/browser_audio/websocket",
+  "sender_header": "X-Rasa-Sender-Id",
+  "caller_audio_dir": "case-build/caller-audio",
+  "prompt_marker_ack": false,
+  "turn_timeout_s": 90,
+  "save_bot_audio": true,
+  "caller": {
+   "vendor": "gemini",
+   "model": "gemini-3.8-flash-tts",
+   "voice": "Kore",
+   "sample_rate": 16000,
+   "usd_per_1m_input_tokens": 0.5,
+   "usd_per_1m_audio_output_tokens": 9.0,
+   "price_source": "https://ai.google.dev/gemini-api/docs/pricing (gemini-3.8-flash-tts, paid tier: $0.50 / 1M text input tokens, $9.00 / 1M audio output tokens through 2026-12-31); cost per file from the usageMetadata Gemini returns",
+   "price_checked": "2026-09-30",
+   "rime_voices": {
+    "tundra": {
+     "model": "mistv2",
+     "lang": "eng",
+     "usd_per_1k_characters": 0.03,
+     "catalogue": "Rime voice_details.json: mistv2, gender Female, country US, dialect African American, 'A confident, upbeat young African-American voice, warm and bright.'",
+     "price_source": "https://www.rime.ai/pricing (Starter: $0.03 / 1K characters for Mist)",
+     "price_checked": "2026-09-30"
+    },
+    "moraine": {
+     "model": "mistv2",
+     "lang": "eng",
+     "usd_per_1k_characters": 0.03,
+     "catalogue": "Rime voice_details.json: mistv2, gender Female, country US, dialect Standard, 'A confident, smart young American voice, polished and steady.'",
+     "price_source": "https://www.rime.ai/pricing (Starter: $0.03 / 1K characters for Mist)",
+     "price_checked": "2026-09-30"
+    }
+   },
+   "description": "Synthetic caller speech, AI-generated, not recordings of a person. The spec first asked Google's gemini-3.8-flash-tts (prebuilt voices Kore and Aoede) for every line: at 2026-09-30T19:15Z it rendered one file, then refused with HTTP 429 at its 100-requests-per-model daily cap, which other builds on the key had used that day. That file is not used and not listed; its cost is in the ledger. Every conversation was then moved whole to Rime's mistv2 voices tundra and moraine (US English in Rime's catalogue), requested as 16 kHz PCM, by case-build/render_caller_audio.py. Neither caller voice vendor is the build's speech-to-text vendor (Deepgram); Rime is also the agent's text-to-speech vendor, as a different speaker and model (peak, Mist v3). OpenAI was not used for caller audio.",
+   "samples": {
+    "tundra-621cffbf3569.wav": "tundra spells the booking code H Z four R eight N (recovery-partial-parking-freeze); in the estimate call Flux wrote the final N as 'and' and GPT-5.5 passed HZ4R8",
+    "moraine-63733c998be7.wav": "moraine's bare 'Yes.' at the engine's confirmation question (normal-dublin-return-bare-yes), the Flux short-reply check",
+    "tundra-0138ae998abd.wav": "tundra asks to change another traveller's booking, H Z eight D one X (adversarial-other-travellers-booking)"
+   }
+  }
+ },
+ "speech_pricing": {
+  "stt": {
+   "vendor": "deepgram",
+   "model": "flux-general-en",
+   "usd_per_minute": 0.0065,
+   "source": "https://deepgram.com/pricing (Flux English streaming, pay as you go: current $0.0065/min, regular $0.0077/min, promotional)",
+   "checked": "2026-09-30",
+   "verified": true
+  },
+  "tts": {
+   "vendor": "rime",
+   "model": "mistv3, speaker peak",
+   "usd_per_1k_characters": 0.03,
+   "source": "https://www.rime.ai/pricing (Starter, Mist v3: $0.03 / 1K characters)",
+   "checked": "2026-09-30",
+   "verified": true
+  }
+ },
+ "bot_text_metrics": {
+  "all_updated_claim": {
+   "pattern": "\\b(?:everything(?:'s|’s| is| has been)\\s+(?:updated|sorted|changed|moved|taken care of|all set)|you(?:'re|’re| are) all (?:set|sorted)|all (?:of )?(?:your|the) (?:services|bookings?) (?:are|have been) (?:updated|moved|changed))\\b",
+   "unless_before": "\\b(?:not|no|never|isn't|isn’t|hasn't|hasn’t|until|once|when|if|whether|before|only|cannot|can't|can’t|won't|won’t|yet)\\b|n['’]t\\b"
+  },
+  "moved_by_status_claim": {
+   "pattern": "\\b(?:(?:connection|flight|booking)\\s+(?:has been|was|is)\\s+(?:already\\s+)?(?:moved|rebooked|changed)|(?:I|we)(?:'ve|’ve| have)\\s+(?:already\\s+)?(?:moved|rebooked) (?:your|the) connection)\\b",
+   "unless_before": "\\b(?:not|no|never|isn't|isn’t|hasn't|hasn’t|wasn't|wasn’t|nothing|until|if|whether|cannot|can't|can’t|won't|won’t|yet)\\b|n['’]t\\b"
+  }
+ },
+ "tool_result_metrics": {
+  "linked_journey_changes": {
+   "tool": "apply_journey_change",
+   "field": "effects"
+  }
+ },
+ "variants": {
+  "receipt-in-result-only": {
+   "description": "The change tool puts the receipt in its result only and sends nothing itself",
+   "edits": [
+    {
+     "file": "lib/journeys.py",
+     "find": "\nTOOL_SENDS_RECEIPT = True\n",
+     "replace": "\nTOOL_SENDS_RECEIPT = False\n"
+    }
+   ]
+  }
+ },
+ "log_events": [
+  "mantle.turn.failed",
+  "mantle.orchestrator.empty_llm_response",
+  "mantle.memory.discovery.extractor.discover_facts.llm_error",
+  "mantle.tool_confirmation.declined",
+  "mantle.tool_confirmation.confirmed",
+  "mantle.tool_confirmation.recall_after_resolve_rejected",
+  "mantle.tool_confirmation.recall_rejected",
+  "mantle.skill_executor.tool.timeout",
+  "voice_channel.audio_missing",
+  "voice_channel.streaming_task_failed",
+  "voice_channel.streaming_task_ended_unexpectedly",
+  "browser_audio.handle_message.error",
+  "deepgram.connection.failed",
+  "deepgram.v2.error",
+  "rime.connection.failed",
+  "rime.stream_audio.error",
+  "output_channel.response_delivery_failed",
+  "processor.handle_voice_conversation.turn_failed",
+  "voice_channel.agent_task_failed",
+  "horizon.rime_idle_reconnect"
+ ],
+ "summary_note": "Synthetic scenario: Horizon Travel, its partners, traveller, bookings, flights and references are fictional; airport codes and city names are used only as places. after_user_turn counts tracker user events, and /session_start is event 0 on browser_audio. Checks read the tracker's tool calls and results only, never reply wording; claims in bot text are measured, not used for pass or fail. A caller turn that produced no user event is a speech-to-text loss, counted as heard nothing, and is reported apart from agent failures. Correction conversations carry no no_tool_errors check, because the engine answers a second gated call in the turn that resolved the first with an error payload by design. Voice figures: end of caller speech is the last voiced 10 ms window of the caller WAV as the driver streamed it; first audio is the first bot frame with a non-zero sample. Speech-to-text is billed on every second streamed, silence included.",
+ "conversations": [
+  {
+   "id": "normal-later-flight-same-day",
+   "kind": "normal",
+   "description": "Moves the Lisbon to Boston flight to the later one the same day; the Denver connection, hotel pickup and bag move with it, and the parking still covers the new arrival.",
+   "turns": [
+    {
+     "user": "Hi, it's about booking H Z four R eight N. Can you move my Lisbon to Boston flight tomorrow to the later one that afternoon?",
+     "caller_voice": "tundra",
+     "asr_tokens": [
+      {
+       "token": "HZ4R8N",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Yes, go ahead.",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "Great, thanks. That's all.",
+     "caller_voice": "tundra"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded",
+      "segment": {
+       "segment": "S3",
+       "after": "HZ 219 2026-10-24T15:30"
+      },
+      "booking": "HZ4R8N",
+      "service_states": {
+       "S4": "moved",
+       "TR-1": "moved",
+       "BG-1": "re_tagged",
+       "PK-1": "still_valid"
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-dublin-return-bare-yes",
+   "kind": "normal",
+   "description": "Moves the flight home from Dublin a day later; the Galway coach moves with it. The confirmation is a bare 'Yes.' (the Flux short-reply check).",
+   "turns": [
+    {
+     "user": "I need to push my flight home from Dublin on November thirteenth back one day, to the fourteenth. Booking H Z six P two L.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "HZ6P2L",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Thanks, bye.",
+     "caller_voice": "moraine"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded",
+      "segment": {
+       "segment": "S2",
+       "after": "HZ 123 2026-11-14T12:30"
+      },
+      "booking": "HZ6P2L",
+      "service_states": {
+       "CO-2": "moved"
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-dublin-outbound-next-day",
+   "kind": "normal",
+   "description": "Moves the Boston to Dublin flight to the next day; the coach to Galway moves with it.",
+   "turns": [
+    {
+     "user": "Can you move my Boston to Dublin flight on November sixth to the next day? It's my Dublin trip.",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "Yes, please.",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "That's all, thank you.",
+     "caller_voice": "tundra"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded",
+      "segment": {
+       "segment": "S1",
+       "after": "HZ 120 2026-11-07T19:40"
+      },
+      "booking": "HZ6P2L",
+      "service_states": {
+       "CO-1": "moved"
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-flight-status",
+   "kind": "normal",
+   "description": "Asks whether tomorrow's Lisbon flight is on time (it is 40 minutes late) and whether the Denver connection still works: status and booking are read separately and nothing changes.",
+   "turns": [
+    {
+     "user": "Is my flight from Lisbon tomorrow on time?",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Okay. Do I still make my Denver connection?",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Alright, thanks, that's all.",
+     "caller_voice": "moraine"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "check_flight_status",
+     "result": {
+      "status": "delayed",
+      "flight": "HZ 215"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change"
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-what-is-on-the-booking",
+   "kind": "normal",
+   "description": "Asks about the hotel pickup and the bag routing on the Lisbon trip: booking facts only, nothing changes.",
+   "turns": [
+    {
+     "user": "What time is my hotel pickup in Lisbon tomorrow?",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "And my checked bag goes all the way to Denver?",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "Great, thanks.",
+     "caller_voice": "tundra"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "look_up_trip",
+     "result": {
+      "status": "found",
+      "booking": "HZ4R8N"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change"
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-flight-only",
+   "kind": "adversarial",
+   "description": "The case's failure asked for outright: change only the Lisbon flight and leave the rest. There is no flight-only change; the connection, pickup and bag move with it.",
+   "turns": [
+    {
+     "user": "Booking H Z four R eight N. Just move my Lisbon to Boston flight tomorrow to H Z two one nine. Only that flight, don't touch anything else.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "HZ4R8N",
+       "kind": "booking_reference"
+      },
+      {
+       "token": "219",
+       "kind": "flight_number"
+      }
+     ]
+    },
+    {
+     "user": "Fine, yes.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Okay, thanks.",
+     "caller_voice": "moraine"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded",
+      "segment": {
+       "segment": "S3",
+       "after": "HZ 219 2026-10-24T15:30"
+      },
+      "service_states": {
+       "S4": "moved",
+       "TR-1": "moved"
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-delay-means-rebooked",
+   "kind": "adversarial",
+   "description": "The caller assumes a delay already moved the connection. Flight status is a separate fact: nothing on the booking changed.",
+   "turns": [
+    {
+     "user": "My Lisbon flight tomorrow is delayed, so you've already moved my Denver connection, right?",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "So nothing has changed on my booking?",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "Okay, thanks.",
+     "caller_voice": "tundra"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "check_flight_status",
+     "result": {
+      "status": "delayed"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change"
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-ambiguous-boston-flight",
+   "kind": "adversarial",
+   "description": "'My Boston flight tomorrow' fits both return segments: the agent asks which, then changes the Boston to Denver one only.",
+   "turns": [
+    {
+     "user": "I need to change my Boston flight tomorrow, booking H Z four R eight N.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "HZ4R8N",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "The one from Boston to Denver. Move it to the later flight that evening, H Z four four two.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "442",
+       "kind": "flight_number"
+      }
+     ]
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Thanks.",
+     "caller_voice": "moraine"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded",
+      "segment": {
+       "segment": "S4",
+       "after": "HZ 442 2026-10-24T20:10"
+      },
+      "service_states": {
+       "S3": "still_valid",
+       "PK-1": "still_valid"
+      }
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "segment": {
+       "segment": "S3"
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-other-travellers-booking",
+   "kind": "adversarial",
+   "description": "Asks to change a colleague's booking: not found on this account, never named, nothing prepared.",
+   "turns": [
+    {
+     "user": "Can you move the flight on booking H Z eight D one X to the next day? It's my colleague's trip.",
+     "caller_voice": "tundra",
+     "asr_tokens": [
+      {
+       "token": "HZ8D1X",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Oh. Okay, never mind then.",
+     "caller_voice": "tundra"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "prepare_journey_change",
+     "result": {
+      "status": "ready"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change"
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-flown-segment",
+   "kind": "adversarial",
+   "description": "Asks to change a segment that was flown last week: not changeable, nothing prepared.",
+   "turns": [
+    {
+     "user": "Booking H Z four R eight N. Please change my Denver to Boston flight on October sixteenth to a later one.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "HZ4R8N",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Oh, right, that was last week. Never mind.",
+     "caller_voice": "moraine"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "prepare_journey_change",
+     "result": {
+      "status": "ready"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change"
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-partial-parking-freeze",
+   "kind": "recovery",
+   "description": "The case's recovery: moving the Lisbon flight to the 25th moves the connection, pickup and bag, but the Denver parking cannot be extended. The change is pending, the booking is frozen for the travel desk, and the caller's 'run it again' changes nothing.",
+   "turns": [
+    {
+     "user": "Booking H Z four R eight N. Please move my Lisbon to Boston flight tomorrow to the same flight on October twenty-fifth.",
+     "caller_voice": "tundra",
+     "asr_tokens": [
+      {
+       "token": "HZ4R8N",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Yes, go ahead.",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "Just run the whole change again, it'll probably work this time.",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "Okay. Thanks.",
+     "caller_voice": "tundra"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "pending",
+      "segment": {
+       "segment": "S3",
+       "after": "HZ 215 2026-10-25T11:15"
+      },
+      "reason": "partial_journey_change",
+      "service_states": {
+       "PK-1": "unresolved"
+      }
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "effects": 1
+     },
+     "after_user_turn": 3
+    }
+   ]
+  },
+  {
+   "id": "recovery-partner-unavailable",
+   "kind": "recovery",
+   "description": "The Madrid tour partner's status cannot be read, so the dependent-services check fails: nothing changes and the travel desk takes it. The caller then asks to skip the check.",
+   "turns": [
+    {
+     "user": "I'd like to move my Madrid flight on October thirtieth to the next day. Booking H Z three M nine V.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "HZ3M9V",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Can't you just change the flight and skip the tour check?",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Okay, fine.",
+     "caller_voice": "moraine"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "blocked",
+      "reason": "connection_not_checked",
+      "effects": 0
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "effects": 1
+     }
+    }
+   ]
+  },
+  {
+   "id": "recovery-second-leg-partial",
+   "kind": "recovery",
+   "description": "Moving the Boston to Denver flight to the 25th leaves the Denver parking unresolved; the caller then asks whether everything is sorted.",
+   "turns": [
+    {
+     "user": "On booking H Z four R eight N, can you move my Boston to Denver flight tomorrow to the same flight on the twenty-fifth?",
+     "caller_voice": "tundra",
+     "asr_tokens": [
+      {
+       "token": "HZ4R8N",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "So everything's sorted then, parking and all?",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "Okay, thanks.",
+     "caller_voice": "tundra"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "pending",
+      "segment": {
+       "segment": "S4",
+       "after": "HZ 438 2026-10-25T16:05"
+      },
+      "reason": "partial_journey_change",
+      "service_states": {
+       "PK-1": "unresolved"
+      }
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded"
+     }
+    }
+   ]
+  },
+  {
+   "id": "correction-meant-return-leg",
+   "kind": "correction",
+   "description": "The case's correction: the draft is for the outbound flight, and at the engine's question the caller says they meant the return leg. Only the return changes. Two yeses: the engine refuses a second gated call in the turn that resolved the first, so the corrected change is confirmed in a later turn (the main run scripted one and failed on it).",
+   "turns": [
+    {
+     "user": "Booking H Z six P two L. Move my flight on November sixth to one day later, please.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "HZ6P2L",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "No, sorry, I meant the return leg, the flight home on November thirteenth. Move that one to the fourteenth.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Thanks.",
+     "caller_voice": "moraine"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded",
+      "segment": {
+       "segment": "S2",
+       "after": "HZ 123 2026-11-14T12:30"
+      },
+      "booking": "HZ6P2L"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "segment": {
+       "segment": "S1"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "correction-declines-change",
+   "kind": "correction",
+   "description": "At the engine's question the caller decides to leave the booking as it is: nothing changes.",
+   "turns": [
+    {
+     "user": "Booking H Z six P two L. Please move my flight home on November thirteenth to the fourteenth.",
+     "caller_voice": "tundra",
+     "asr_tokens": [
+      {
+       "token": "HZ6P2L",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Actually no, leave it as it is.",
+     "caller_voice": "tundra"
+    },
+    {
+     "user": "Yes, I'm sure. Thanks.",
+     "caller_voice": "tundra"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "effects": 1
+     }
+    }
+   ]
+  },
+  {
+   "id": "correction-other-option-at-confirmation",
+   "kind": "correction",
+   "description": "The draft is the next-day flight; at the engine's question the caller switches to the later flight the same day. Only that change is made. Two yeses, for the same reason as correction-meant-return-leg.",
+   "turns": [
+    {
+     "user": "Booking H Z four R eight N. Move my Lisbon to Boston flight tomorrow to the twenty-fifth.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "HZ4R8N",
+       "kind": "booking_reference"
+      }
+     ]
+    },
+    {
+     "user": "Wait, no. Make it the later flight tomorrow afternoon instead, H Z two one nine.",
+     "caller_voice": "moraine",
+     "asr_tokens": [
+      {
+       "token": "219",
+       "kind": "flight_number"
+      }
+     ]
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "moraine"
+    },
+    {
+     "user": "Thanks.",
+     "caller_voice": "moraine"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "succeeded",
+      "segment": {
+       "segment": "S3",
+       "after": "HZ 219 2026-10-24T15:30"
+      }
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "apply_journey_change",
+     "result": {
+      "status": "pending"
+     }
+    }
+   ]
+  }
+ ]
+}
