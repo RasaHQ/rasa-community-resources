@@ -1,5 +1,5 @@
 """Summarise the TurnInfo messages saved in flux-short-reply-frames.jsonl.
-Usage: python3 frames_turn_structure.py flux-short-reply-frames.jsonl
+Usage (from the project root): python3 case-build/flux-short-reply/frames_turn_structure.py case-build/flux-short-reply/flux-short-reply-frames.jsonl
 Messages after CloseStream are excluded, as in the replay. 'lost' = no Update with a transcript."""
 import collections, json, sys
 rows = [json.loads(l) for l in open(sys.argv[1])]
