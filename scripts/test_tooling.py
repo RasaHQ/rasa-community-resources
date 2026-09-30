@@ -1981,6 +1981,24 @@ class TestCaseBuildPricing(unittest.TestCase):
         rows.append({"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "turn_context"})
         self.assertEqual(self.h.classify(None, passed, self.h.usage_for(rows, "c")), "provider_error")
 
+    def test_an_engine_error_in_the_turn_is_judged_by_the_checks(self):
+        prefill = ('litellm.BadRequestError: AnthropicException - {"message":"This model does not support '
+                   'assistant message prefill. The conversation must end with a user message."}')
+        rows = [
+            {"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "turn_context", "error": prefill},
+            {"kind": "llm_call", "ok": True, "sender_id": "c", "sender_source": "turn_context", "response_cost_usd": 0.01},
+        ]
+        # Without the spec key, any failed in-turn call is a provider error (unchanged).
+        self.assertEqual(self.h.classify(None, [{"passed": True}], self.h.usage_for(rows, "c")), "provider_error")
+        usage = self.h.usage_for(rows, "c", ["does not support assistant message prefill"])
+        self.assertEqual(usage["engine_error_calls"], 1)
+        self.assertEqual(self.h.classify(None, [{"passed": True}], usage), "pass")
+        self.assertEqual(self.h.classify(None, [{"passed": False}], usage), "fail")
+        rows.append({"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "turn_context",
+                     "error": "RateLimitError: 429"})
+        usage = self.h.usage_for(rows, "c", ["does not support assistant message prefill"])
+        self.assertEqual(self.h.classify(None, [{"passed": True}], usage), "provider_error")
+
     def test_speech_sse_stream_yields_pcm_and_usage(self):
         lines = [
             b"data: " + json.dumps({"type": "speech.audio.delta", "audio": base64.b64encode(b"ab").decode()}).encode(),

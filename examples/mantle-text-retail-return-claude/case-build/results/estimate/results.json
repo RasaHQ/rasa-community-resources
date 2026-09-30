@@ -1,0 +1,355 @@
+{
+ "schema": 1,
+ "build": "retail-return-claude-text",
+ "case": "retail-return",
+ "project": "examples/mantle-text-retail-return-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T04:30:44.715459+00:00",
+ "finished_at": "2026-09-30T04:31:13.235867+00:00",
+ "model_file": "20260930-053047-mild-pointer.tar.gz",
+ "train_seconds": 3.6,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 4528.0,
+   "p95": 5774.7,
+   "max": 5774.7,
+   "mean": 3894.2
+  },
+  "llm_calls": 12,
+  "llm_calls_per_turn": 3.0,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 3,
+  "failed_side_channel_calls": 2,
+  "prompt_tokens": 41751,
+  "completion_tokens": 1078,
+  "reasoning_tokens": 454,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "refund_claim": 0
+  },
+  "tool_result_metrics": {
+   "labels_issued": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 1,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 1,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.094282,
+  "llm_cost_usd": 0.094282,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5,
+  "engine_error_calls": 1
+ },
+ "conversations": [
+  {
+   "id": "correction-return-to-exchange-at-confirmation",
+   "kind": "correction",
+   "description": "The contract's correction: a return, then an exchange at the confirmation question; availability is checked and the changed resolution reconfirmed.",
+   "conversation_id": "retail-return-claude-text-correction-return-to-exchange-at-confirmation-20260930T043044",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Return the linen shirt from WS-20611, please.",
+     "latency_ms": 634.7,
+     "bot": [
+      "Hi, this is Willow Shop returns and exchanges. Which item would you like to return or exchange?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Actually, can I exchange it for a size M instead?",
+     "latency_ms": 5774.7,
+     "bot": [
+      "Would you like to request an exchange for size M in blue for the Harbor Linen Shirt (blue, size L), order WS-20611? The next stage begins after this authorization."
+     ]
+    },
+    {
+     "user": "Yes, request the exchange for size M.",
+     "latency_ms": 4639.6,
+     "bot": [
+      "Is there anything else you need help with today?"
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4528.0,
+     "bot": [
+      "Your exchange request is authorized. Here are the details:",
+      "- RMA reference: WS-RMA-20260930-A44B\n- Label reference: LP-RTN-77211\n- Next step: Drop the shirt off with Larkspur Parcel using the prepaid label within 14 days.",
+      "A size M in blue is reserved for you. It ships only after our returns warehouse receives and inspects the returned shirt.",
+      "What else can I help you with?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "choose_resolution",
+      "after_user_turn": 1,
+      "result": {
+       "status": "recorded",
+       "resolution": "exchange",
+       "replacement_ref": "WS-SKU-HLS-BL-M"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": "succeeded",
+       "item_ref": "WS-20611-1",
+       "resolution": "exchange",
+       "refund_amount_usd": null,
+       "replacement": "size M in blue"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "resolution": "return"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "item_ref": "re:^(?!WS-20611-1$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_order_item",
+     "arguments": {
+      "item_description": "linen shirt",
+      "order_number": "WS-20611"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "choose_resolution",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "exchange",
+      "replacement": "size M in blue"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "exchange"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "exchange"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "refund_claim": [],
+    "labels_issued": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.turn.failed": 1,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-return-claude-text-correction-return-to-exchange-at-confirmation-20260930T043044"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "submit_return_request",
+      "conversation_id": "retail-return-claude-text-correction-return-to-exchange-at-confirmation-20260930T043044"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfYzjrKw2pVZBiTb5Jkdh\"}\n",
+      "conversation_id": "retail-return-claude-text-correction-return-to-exchange-at-confirmation-20260930T043044"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfYzkC74pQ9qmTcHd2UdK\"}\n",
+      "conversation_id": "retail-return-claude-text-correction-return-to-exchange-at-confirmation-20260930T043044"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 10,
+    "side_channel_calls": 2,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 1,
+    "prompt_tokens": 41751,
+    "completion_tokens": 1078,
+    "reasoning_tokens": 454,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.094282,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     378.9,
+     1021.4,
+     1794.9,
+     1407.6,
+     1237.5,
+     270.9,
+     1072.5,
+     1798.7,
+     1450.7,
+     285.3,
+     2307.8,
+     2200.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-return-claude-text-correction-return-to-exchange-at-confirmation-20260930T043044",
+    "prompt": 41751,
+    "completion": 1078,
+    "total": 42829,
+    "generations": 9,
+    "fetched_at": "2026-09-30T04:31:12.996847+00:00"
+   }
+  }
+ ]
+}

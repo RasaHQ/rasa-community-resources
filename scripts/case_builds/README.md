@@ -113,6 +113,13 @@ with a canned apology, so its checks say nothing about the agent. A failed
 side-channel call (fact discovery after the reply) does not touch the turn;
 it is counted as `failed_side_channel_calls` instead. After two
 provider-error conversations in a row the rest of the run is skipped.
+A spec may list `engine_errors`, regexes for an in-turn rejection the engine
+causes on every run rather than the provider's state (Claude's "does not
+support assistant message prefill" when Mantle's request ends on the agent's
+turn). A failed in-turn call that matches one is counted as
+`engine_error_calls` and the conversation is judged by its checks, since the
+customer really got Mantle's apology; any other failed in-turn call still
+makes it a provider error.
 Gemini API projects on a daily request quota need planning: one full
 31-conversation run of the pilot build made 214 model requests, and the
 project it ran on allowed 250 per model per day for `gemini-3.1-pro`.
