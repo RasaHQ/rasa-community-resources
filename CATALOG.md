@@ -68,7 +68,7 @@ Industries follow the rasa.community casebook.
 |---|---|---|---|---|---|---|---|
 | Disruption mode without false promises | Horizon Travel | GPT-5.5 | text | — | 20/21 | [`mantle-text-disruption-mode-gpt`](examples/mantle-text-disruption-mode-gpt/) | not published yet |
 | Payment-plan offer authority | Amber Grid | GPT-5.5 | text | — | 19/19 | [`mantle-text-payment-plan-authority-gpt`](examples/mantle-text-payment-plan-authority-gpt/) | not published yet |
-| Reminders without duplicate calls | Cedar Clinic | GPT-5.5 | text (Twilio SMS target) | — | 7/10 (2 provider errors, 11 not run) | [`mantle-text-reminder-deduplication-gpt`](examples/mantle-text-reminder-deduplication-gpt/) | not published yet |
+| Reminders without duplicate calls | Cedar Clinic | GPT-5.5 | text (Twilio SMS target) | — | 14/14 | [`mantle-text-reminder-deduplication-gpt`](examples/mantle-text-reminder-deduplication-gpt/) | not published yet |
 | Step-up authentication | Orchard Works | Claude Sonnet 5.5 | voice | Deepgram Flux + Deepgram Aura-2 | 15/18 | [`mantle-voice-step-up-authentication-claude`](examples/mantle-voice-step-up-authentication-claude/) | not published yet |
 | Payment capture boundaries | Willow Shop | GPT-5.5 | voice | Deepgram Flux + Rime | not recorded | [`mantle-voice-payment-boundary-gpt`](examples/mantle-voice-payment-boundary-gpt/) | not published yet |
 
@@ -110,7 +110,7 @@ Industries follow the rasa.community casebook.
 - [`mantle-text-education-enrolment-gpt`](examples/mantle-text-education-enrolment-gpt/): Enrolment support without aid guarantees, Pine University. Main run 17/21, recorded 2026-09-30.
 - [`mantle-text-insurance-quote-bind-gpt`](examples/mantle-text-insurance-quote-bind-gpt/): Quotes that do not silently bind, HarborCover. Main run 14/19, recorded 2026-09-30.
 - [`mantle-text-payment-plan-authority-gpt`](examples/mantle-text-payment-plan-authority-gpt/): Payment-plan offer authority, Amber Grid. Main run 19/19, recorded 2026-09-30.
-- [`mantle-text-reminder-deduplication-gpt`](examples/mantle-text-reminder-deduplication-gpt/): Reminders without duplicate calls, Cedar Clinic. Main run 7/10 (2 provider errors, 11 not run), recorded 2026-09-30.
+- [`mantle-text-reminder-deduplication-gpt`](examples/mantle-text-reminder-deduplication-gpt/): Reminders without duplicate calls, Cedar Clinic. Main run 14/14, recorded 2026-09-30.
 - [`mantle-text-retail-guided-selling-gpt`](examples/mantle-text-retail-guided-selling-gpt/): Product choices with evidence boundaries, Willow Shop. Main run 21/22, recorded 2026-09-30.
 - [`mantle-text-telco-diagnostics-gpt`](examples/mantle-text-telco-diagnostics-gpt/): Diagnostics before disruptive resets, Juniper Mobile. Main run 18/21, recorded 2026-09-30.
 - [`mantle-text-travel-mass-rebooking-gpt`](examples/mantle-text-travel-mass-rebooking-gpt/): Rebooking during a mass disruption, Horizon Travel. Main run 20/20, recorded 2026-09-30.
