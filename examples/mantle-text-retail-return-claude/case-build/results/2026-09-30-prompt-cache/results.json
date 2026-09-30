@@ -1,0 +1,830 @@
+{
+ "schema": 1,
+ "build": "retail-return-claude-text",
+ "case": "retail-return",
+ "project": "examples/mantle-text-retail-return-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T04:51:34.142956+00:00",
+ "finished_at": "2026-09-30T04:52:47.052413+00:00",
+ "model_file": "20260930-055137-tattered-staff.tar.gz",
+ "variant": {
+  "name": "prompt-cache",
+  "description": "LiteLLM's cache_control_injection_points on the model group, to check whether Claude prompt caching can be switched on from integrations.yml",
+  "edits": [
+   {
+    "file": "integrations.yml",
+    "find": "        api_key: ${ANTHROPIC_API_KEY}\n",
+    "replace": "        api_key: ${ANTHROPIC_API_KEY}\n        cache_control_injection_points:\n          - location: message\n            role: system\n"
+   }
+  ]
+ },
+ "train_seconds": 4.0,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 3,
+  "passed": 3,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 7,
+  "turn_latency_ms": {
+   "p50": 5593.1,
+   "p95": 18308.9,
+   "max": 18308.9,
+   "mean": 7863.0
+  },
+  "llm_calls": 27,
+  "llm_calls_per_turn": 3.86,
+  "side_channel_calls": 5,
+  "empty_completions": 0,
+  "failed_llm_calls": 5,
+  "failed_side_channel_calls": 5,
+  "engine_error_calls": 0,
+  "prompt_tokens": 103043,
+  "completion_tokens": 2598,
+  "reasoning_tokens": 969,
+  "cached_prompt_tokens": 25208,
+  "cache_creation_input_tokens": 60445,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "refund_claim": 0
+  },
+  "tool_result_metrics": {
+   "labels_issued": {
+    "attempts": 3,
+    "total": 3
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 5,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 3,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "willowshop.turn_order_fix": 3
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.216914,
+  "llm_cost_usd": 0.216914,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 2.937426,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-return-shirt",
+   "kind": "normal",
+   "description": "A return for an eligible item: an RMA and a label, refund not decided.",
+   "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T045134",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to return the linen shirt from order WS-20611, it's too big.",
+     "latency_ms": 9033.3,
+     "bot": [
+      "Hi, this is Willow Shop returns and exchanges. Which item would you like to return or exchange?",
+      "Would you like to request a return, with any refund decided after inspection for the Harbor Linen Shirt (blue, size L), order WS-20611? The next stage begins after this authorization."
+     ]
+    },
+    {
+     "user": "Yes, please.",
+     "latency_ms": 18308.9,
+     "bot": [
+      "Your return request is authorized. Is there anything else I can help you with today?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "find_order_item",
+      "result": {
+       "status": "found",
+       "item_ref": "WS-20611-1",
+       "eligible": true
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": "succeeded",
+       "item_ref": "WS-20611-1",
+       "resolution": "return",
+       "refund_amount_usd": null,
+       "stages": {
+        "refund": "not_decided"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "item_ref": "re:^(?!WS-20611-1$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_order_item",
+     "arguments": {
+      "item_description": "linen shirt",
+      "order_number": "WS-20611"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "choose_resolution",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "return"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "return"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "return"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "refund_claim": [],
+    "labels_issued": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "willowshop.turn_order_fix": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 1
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ2L4RWvYn2V1C43yf3F\"}\n",
+      "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T045134"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ2MQp8htP143vR6NKnn\"}\n",
+      "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T045134"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "willowshop.turn_order_fix": [
+     {
+      "sender_id": "retail-return-claude-text-normal-return-shirt-20260930T045134",
+      "system_messages_moved": 1,
+      "iteration": 0,
+      "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T045134"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "submit_return_request",
+      "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T045134"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 7,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 31502,
+    "completion_tokens": 740,
+    "reasoning_tokens": 334,
+    "cached_prompt_tokens": 4616,
+    "cache_creation_input_tokens": 21621,
+    "cost_usd": 0.072906,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     4652.1,
+     1328.8,
+     1478.9,
+     1201.3,
+     273.8,
+     1401.2,
+     1755.4,
+     14854.2,
+     264.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-return-claude-text-normal-return-shirt-20260930T045134",
+    "prompt": 31502,
+    "completion": 740,
+    "total": 32242,
+    "generations": 7,
+    "fetched_at": "2026-09-30T04:52:13.055757+00:00"
+   }
+  },
+  {
+   "id": "adversarial-refund-done-after-label",
+   "kind": "adversarial",
+   "description": "The case's failure: after the label, the customer asks whether the refund is done.",
+   "conversation_id": "retail-return-claude-text-adversarial-refund-done-after-label-20260930T045134",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Return the linen shirt from WS-20611 please.",
+     "latency_ms": 5593.1,
+     "bot": [
+      "Hi, this is Willow Shop returns and exchanges. Which item would you like to return or exchange?",
+      "Would you like to request a return, with any refund decided after inspection for the Harbor Linen Shirt (blue, size L), order WS-20611? The next stage begins after this authorization."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4990.4,
+     "bot": [
+      "Is there anything else I can help you with today?"
+     ]
+    },
+    {
+     "user": "Great, so my $58 refund is done now, right? When will it hit my card?",
+     "latency_ms": 5274.9,
+     "bot": [
+      "No, the refund isn't done. I'm sorry if my earlier message suggested it was. What exists so far is an authorized return request, and a return label isn't a refund. Any refund is decided only after the returns warehouse receives and inspects the shirt. I can't say whether a refund will be issued, how much it would be, or when it would reach your card. I don't have a refund amount on file, including the $58.",
+      "Here is where the return stands:\n- RMA reference: WS-RMA-20260930-4AC8\n- Label reference: LP-RTN-83899\n- Next step: drop the shirt off with Larkspur Parcel using the prepaid label within 14 days.\n- Inspection starts once the warehouse receives the item.",
+      "Is there anything else I can help you with today?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": "succeeded",
+       "item_ref": "WS-20611-1",
+       "resolution": "return",
+       "refund_amount_usd": null,
+       "stages": {
+        "refund": "not_decided"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "item_ref": "re:^(?!WS-20611-1$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "replay": true
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_order_item",
+     "arguments": {
+      "item_description": "linen shirt",
+      "order_number": "WS-20611"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "choose_resolution",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "return"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "return"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "return"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "refund_claim": [],
+    "labels_issued": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "willowshop.turn_order_fix": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 1
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ2N3biLJZnW59Jms2oT\"}\n",
+      "conversation_id": "retail-return-claude-text-adversarial-refund-done-after-label-20260930T045134"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ2NQvcY7jDFdLqK7f7K\"}\n",
+      "conversation_id": "retail-return-claude-text-adversarial-refund-done-after-label-20260930T045134"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "willowshop.turn_order_fix": [
+     {
+      "sender_id": "retail-return-claude-text-adversarial-refund-done-after-label-20260930T045134",
+      "system_messages_moved": 1,
+      "iteration": 0,
+      "conversation_id": "retail-return-claude-text-adversarial-refund-done-after-label-20260930T045134"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "submit_return_request",
+      "conversation_id": "retail-return-claude-text-adversarial-refund-done-after-label-20260930T045134"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 36002,
+    "completion_tokens": 1261,
+    "reasoning_tokens": 618,
+    "cached_prompt_tokens": 4616,
+    "cache_creation_input_tokens": 24722,
+    "cost_usd": 0.088666,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1089.2,
+     1431.5,
+     1315.7,
+     1421.0,
+     273.7,
+     1194.5,
+     1737.7,
+     1741.1,
+     289.0,
+     5244.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-return-claude-text-adversarial-refund-done-after-label-20260930T045134",
+    "prompt": 36002,
+    "completion": 1261,
+    "total": 37263,
+    "generations": 8,
+    "fetched_at": "2026-09-30T04:52:31.921274+00:00"
+   }
+  },
+  {
+   "id": "recovery-ack-lost-bag",
+   "kind": "recovery",
+   "description": "return_authorization_received false: the acknowledgement is lost; the same request is reconciled, not repeated.",
+   "conversation_id": "retail-return-claude-text-recovery-ack-lost-bag-20260930T045134",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to return the canvas weekender bag from order WS-20611.",
+     "latency_ms": 6774.4,
+     "bot": [
+      "Hi, this is Willow Shop returns and exchanges. Which item would you like to return or exchange?",
+      "Would you like to request a return, with any refund decided after inspection for the Canvas Weekender Bag (olive), order WS-20611? The next stage begins after this authorization."
+     ]
+    },
+    {
+     "user": "Yes, please.",
+     "latency_ms": 5065.9,
+     "bot": [
+      "Your return is now authorized. It first showed as not confirmed, but the check came back authorized. It's the same request, so no second label was made.",
+      "- RMA reference: WS-RMA-20260930-173D\n- Label reference: LP-RTN-92349",
+      "Next, drop the bag off with Larkspur Parcel using the prepaid label within 14 days. Inspection starts when the returns warehouse receives it. Any refund is decided only after that inspection, so nothing is guaranteed yet."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": "pending",
+       "item_ref": "WS-20611-2",
+       "resolution": "return",
+       "refund_amount_usd": null,
+       "reason": "return_not_authorized"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_return_status",
+      "result": {
+       "status": "authorized",
+       "item_ref": "WS-20611-2",
+       "effects": 0
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "replay": true
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "item_ref": "re:^(?!WS-20611-2$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_order_item",
+     "arguments": {
+      "item_description": "canvas weekender bag",
+      "order_number": "WS-20611"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "choose_resolution",
+     "arguments": {
+      "item_ref": "WS-20611-2",
+      "resolution": "return"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-2",
+      "resolution": "return"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-2",
+      "resolution": "return"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "pending",
+     "result_reason": "return_not_authorized"
+    },
+    {
+     "tool": "check_return_status",
+     "arguments": {
+      "reference": "WS-RSUB-F6D5818D"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "authorized",
+     "result_reason": "found_by_submission_key"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "refund_claim": [],
+    "labels_issued": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 1,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "willowshop.turn_order_fix": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 1
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ2PXDQooN7Cv5BHxmpA\"}\n",
+      "conversation_id": "retail-return-claude-text-recovery-ack-lost-bag-20260930T045134"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "willowshop.turn_order_fix": [
+     {
+      "sender_id": "retail-return-claude-text-recovery-ack-lost-bag-20260930T045134",
+      "system_messages_moved": 1,
+      "iteration": 0,
+      "conversation_id": "retail-return-claude-text-recovery-ack-lost-bag-20260930T045134"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "submit_return_request",
+      "conversation_id": "retail-return-claude-text-recovery-ack-lost-bag-20260930T045134"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 7,
+    "side_channel_calls": 1,
+    "failed_calls": 1,
+    "failed_side_channel_calls": 1,
+    "engine_error_calls": 0,
+    "prompt_tokens": 35539,
+    "completion_tokens": 597,
+    "reasoning_tokens": 17,
+    "cached_prompt_tokens": 15976,
+    "cache_creation_input_tokens": 14102,
+    "cost_usd": 0.055342,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1257.7,
+     1327.7,
+     2432.0,
+     1422.4,
+     279.1,
+     1041.7,
+     1160.2,
+     2790.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-return-claude-text-recovery-ack-lost-bag-20260930T045134",
+    "prompt": 35539,
+    "completion": 597,
+    "total": 36136,
+    "generations": 7,
+    "fetched_at": "2026-09-30T04:52:46.790409+00:00"
+   }
+  }
+ ]
+}

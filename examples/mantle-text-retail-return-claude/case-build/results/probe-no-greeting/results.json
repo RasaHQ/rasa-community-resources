@@ -1,0 +1,314 @@
+{
+ "schema": 1,
+ "build": "retail-return-claude-text",
+ "case": "retail-return",
+ "project": "examples/mantle-text-retail-return-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T04:35:05.360849+00:00",
+ "finished_at": "2026-09-30T04:35:25.311762+00:00",
+ "model_file": "20260930-053509-strong-burger.tar.gz",
+ "variant": {
+  "name": "no-greeting",
+  "description": "Session start binds the customer but sends no greeting, so the first main-loop request ends on the customer's message",
+  "edits": [
+   {
+    "file": "skills/default_session_start/skill.md",
+    "find": "  - id: greet\n    action: utter_greet\n",
+    "replace": ""
+   }
+  ]
+ },
+ "train_seconds": 4.6,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 0,
+  "failed": 0,
+  "provider_errors": 1,
+  "turns": 2,
+  "turn_latency_ms": {
+   "p50": 581.3,
+   "p95": 6970.4,
+   "max": 6970.4,
+   "mean": 3775.8
+  },
+  "llm_calls": 7,
+  "llm_calls_per_turn": 3.5,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 3,
+  "failed_side_channel_calls": 1,
+  "engine_error_calls": 1,
+  "prompt_tokens": 17263,
+  "completion_tokens": 351,
+  "reasoning_tokens": 53,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "refund_claim": 0
+  },
+  "tool_result_metrics": {
+   "labels_issued": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 2,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 1,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.038036,
+  "llm_cost_usd": 0.038036,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.094282,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-return-shirt",
+   "kind": "normal",
+   "description": "A return for an eligible item: an RMA and a label, refund not decided.",
+   "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T043505",
+   "passed": false,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to return the linen shirt from order WS-20611, it's too big.",
+     "latency_ms": 581.3,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again.",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, please.",
+     "latency_ms": 6970.4,
+     "bot": [
+      "Would you like to request a return, with any refund decided after inspection for the Harbor Linen Shirt (blue, size L), order WS-20611? The next stage begins after this authorization."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "find_order_item",
+      "result": {
+       "status": "found",
+       "item_ref": "WS-20611-1",
+       "eligible": true
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": "succeeded",
+       "item_ref": "WS-20611-1",
+       "resolution": "return",
+       "refund_amount_usd": null,
+       "stages": {
+        "refund": "not_decided"
+       }
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "item_ref": "re:^(?!WS-20611-1$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_order_item",
+     "arguments": {
+      "item_description": "linen shirt",
+      "order_number": "WS-20611"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "choose_resolution",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "return"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_return_request",
+     "arguments": {
+      "item_ref": "WS-20611-1",
+      "resolution": "return"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "refund_claim": [],
+    "labels_issued": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 2,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 1,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T043505"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T043505"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ157HdJgLLEnmoYhdzx\"}\n",
+      "conversation_id": "retail-return-claude-text-normal-return-shirt-20260930T043505"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": []
+   },
+   "usage": {
+    "llm_calls": 7,
+    "main_loop_calls": 6,
+    "side_channel_calls": 1,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 1,
+    "engine_error_calls": 1,
+    "prompt_tokens": 17263,
+    "completion_tokens": 351,
+    "reasoning_tokens": 53,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.038036,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     15.4,
+     494.6,
+     2359.2,
+     1838.5,
+     1287.5,
+     1193.8,
+     262.2
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-return-claude-text-normal-return-shirt-20260930T043505",
+    "prompt": 17263,
+    "completion": 351,
+    "total": 17614,
+    "generations": 4,
+    "fetched_at": "2026-09-30T04:35:25.059084+00:00"
+   }
+  }
+ ]
+}
