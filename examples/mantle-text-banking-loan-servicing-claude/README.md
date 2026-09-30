@@ -34,8 +34,8 @@ every web-chat conversation fails on Claude** unless a hook fixes the request.
 
 - **Synthetic scenario.** Northgate Bank, its customer Marisol Vance, her
   loans, quotes and balances are invented (`lib/fixtures/`), and
-  `lib/servicing.py` refuses to import a fixture that is not marked fictional
-  or that names a real lender.
+  `lib/servicing.py` refuses to import a fixture that is not marked fictional;
+  the repository lint rejects real institution names.
 - **One model, one day.** Every number in `case-build/results/` comes from
   `claude-sonnet-5-5` through Rasa 3.21.0.dev5 and LiteLLM 1.101.2, run on
   2026-09-30 with no reasoning or thinking setting (Rasa sets none for Claude).

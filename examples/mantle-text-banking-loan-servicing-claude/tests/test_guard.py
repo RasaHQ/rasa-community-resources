@@ -56,16 +56,13 @@ class FictionalOrganisationTests(unittest.TestCase):
         self.assertIn("fictional", data["note"].lower())
         self.assertEqual(nb.ORGANISATION, "Northgate Bank")
 
-    def test_the_guard_refuses_unmarked_or_real_names(self):
+    def test_the_guard_refuses_unmarked_data(self):
+        # Real institution names are caught repository-wide by lint_repo.py.
         data = nb.load_data()
         with self.assertRaises(nb.FictionalOrganisationError):
             nb.assert_fictional({**data, "organisation": "Northgate Bank"})
         with self.assertRaises(nb.FictionalOrganisationError):
             nb.assert_fictional({**data, "note": "Sample data."})
-        renamed = json.loads(json.dumps(data))
-        renamed["loans"]["NB-LN-5108"]["servicing_route"]["detail"] = "Transferred to Wells Fargo."
-        with self.assertRaises(nb.FictionalOrganisationError):
-            nb.assert_fictional(renamed)
 
 
 class LoanResolutionTests(unittest.TestCase):
