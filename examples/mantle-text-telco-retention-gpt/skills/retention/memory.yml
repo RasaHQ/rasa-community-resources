@@ -1,0 +1,24 @@
+# Written only by get_retention_offer and accept_retention_offer (never
+# llm_settable), so the offer the engine reads back is always the one the
+# catalogue authorizes. One short field per value: Mantle cuts a memory value
+# at 100 characters in the prompt, silently; tests/test_guard.py checks every
+# offer in the fixture.
+# offer_id: the catalogue id, read in the question; accept checks it.
+# offer_service: the service label ("mobile ending 4471").
+# offer_terms: the catalogue's terms, word for word.
+# offer_exit_note: "Your cancellation request JM-CXL-... stays open until you
+#   choose." or "Nothing changes unless you choose it."
+# offer_ready: "yes" while an authorized offer may be put to the customer; the
+#   engine offers accept_retention_offer only then (`requires` in skill.md).
+schema:
+  public:
+    offer_id:
+      type: text
+    offer_service:
+      type: text
+    offer_terms:
+      type: text
+    offer_exit_note:
+      type: text
+    offer_ready:
+      type: text
