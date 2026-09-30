@@ -1,0 +1,143 @@
+{
+  "runs": [
+    {
+      "run": "20260930T052043",
+      "label": "caller audio (gemini gemini-3.8-flash-tts)",
+      "conversations": 0,
+      "cost_usd": 0.025022,
+      "by_vendor": {
+        "gemini_tts": 0.025022
+      },
+      "files": 21,
+      "tokens": {
+        "input_tokens": 1913,
+        "output_tokens": 2674
+      },
+      "stopped": "HTTP 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_requests_per_model_per_day, limit: 100, model: gemini-3.8-flash-tts\\nPlease retry in 18h39m16.296870403s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"link",
+      "finished_at": "2026-09-30T05:20:43.772770+00:00"
+    },
+    {
+      "run": "20260930T053050",
+      "label": "caller audio (rime coda, mistv2)",
+      "conversations": 0,
+      "cost_usd": 0.1073,
+      "by_vendor": {
+        "rime_caller_tts": 0.1073
+      },
+      "by_model": {
+        "coda": 0.065,
+        "mistv2": 0.0423
+      },
+      "files": 47,
+      "characters": 2710,
+      "finished_at": "2026-09-30T05:30:50.502141+00:00"
+    },
+    {
+      "run": "20260930T053522",
+      "label": "caller audio (rime coda, mistv2)",
+      "conversations": 0,
+      "cost_usd": 0.01087,
+      "by_vendor": {
+        "rime_caller_tts": 0.01087
+      },
+      "by_model": {
+        "coda": 0.00655,
+        "mistv2": 0.00432
+      },
+      "files": 4,
+      "characters": 275,
+      "finished_at": "2026-09-30T05:35:22.988679+00:00"
+    },
+    {
+      "run": "20260930T0525-probes",
+      "label": "probes before the build (caller voice and Flux language)",
+      "conversations": 0,
+      "cost_usd": 0.027041,
+      "by_vendor": {
+        "gemini_tts": 0.004934,
+        "rime_caller_tts": 0.02123,
+        "deepgram": 0.000877
+      },
+      "detail": {
+        "gemini_tts": "4 billed gemini-3.8-flash-tts requests (131 input and 541 audio tokens from usageMetadata): an en-GB languageCode probe, an inline accent prefix (spoken aloud), director's notes (not spoken) and a made-up languageCode (accepted); a fifth request with a system instruction was refused with HTTP 400 and not billed",
+        "rime_caller_tts": "7 Rime HTTP requests to choose the caller voices: 216 characters on mistv2 (helen, carol) and 295 on coda (albion, fuzz), at the published 0.03 and 0.05 USD per 1,000 characters",
+        "deepgram": "8.1 s streamed to flux-general-en without language_hint; the same file with language_hint en-GB and with en was refused at connect (HTTP 400) before any audio"
+      },
+      "finished_at": "2026-09-30T05:36:32.916395+00:00"
+    },
+    {
+      "run": "20260930T053706",
+      "label": "estimate",
+      "conversations": 1,
+      "cost_usd": 0.136773,
+      "by_vendor": {
+        "llm": 0.091666,
+        "speech": 0.045107
+      },
+      "finished_at": "2026-09-30T05:39:30.264996+00:00"
+    },
+    {
+      "run": "20260930T054647",
+      "label": "estimate-idle-reconnect",
+      "conversations": 1,
+      "cost_usd": 0.262045,
+      "by_vendor": {
+        "llm": 0.183058,
+        "speech": 0.078987
+      },
+      "finished_at": "2026-09-30T05:48:59.476123+00:00"
+    },
+    {
+      "run": "20260930T055031",
+      "label": "2026-09-30-claude-sonnet-5.5",
+      "conversations": 15,
+      "cost_usd": 2.595292,
+      "by_vendor": {
+        "llm": 1.729724,
+        "speech": 0.865568
+      },
+      "finished_at": "2026-09-30T06:16:33.331873+00:00"
+    },
+    {
+      "run": "20260930T062047",
+      "label": "flux-language-en-gb",
+      "conversations": 1,
+      "cost_usd": 3e-05,
+      "by_vendor": {
+        "llm": 0,
+        "speech": 3e-05
+      },
+      "finished_at": "2026-09-30T06:21:31.183506+00:00"
+    },
+    {
+      "run": "20260930T062148",
+      "label": "2026-09-30-rerun-failed",
+      "conversations": 3,
+      "cost_usd": 0.491802,
+      "by_vendor": {
+        "llm": 0.336046,
+        "speech": 0.155756
+      },
+      "finished_at": "2026-09-30T06:28:00.561551+00:00"
+    },
+    {
+      "run": "20260930T063019",
+      "label": "2026-09-30-turn-order-hook-check",
+      "conversations": 0,
+      "cost_usd": 0,
+      "finished_at": "2026-09-30T06:30:28.614528+00:00"
+    },
+    {
+      "run": "20260930T0620-flux-yes-probes",
+      "label": "Flux short-reply probes (the two 'Yes.' WAVs streamed straight to flux-general-en)",
+      "conversations": 0,
+      "cost_usd": 0.009717,
+      "by_vendor": {
+        "deepgram": 0.009717
+      },
+      "detail": "89.7 s streamed: carol's 0.42 s 'Yes.' 6 times at stream start and 12 times behind 3.00 to 3.22 s of silence in 20 ms steps; albion's 0.97 s 'Yes.' 3 times at stream start",
+      "finished_at": "2026-09-30T06:30:52.390179+00:00"
+    }
+  ],
+  "total_cost_usd": 3.665892
+}

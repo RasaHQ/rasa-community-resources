@@ -1,0 +1,297 @@
+{
+ "schema": 1,
+ "build": "travel-redemption-gpt-text",
+ "case": "travel-redemption",
+ "project": "examples/mantle-text-travel-redemption-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T02:56:18.504629+00:00",
+ "finished_at": "2026-09-30T02:56:52.117849+00:00",
+ "model_file": "20260930-035628-vibrato-envelope.tar.gz",
+ "train_seconds": 10.7,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 2,
+  "turn_latency_ms": {
+   "p50": 3424.2,
+   "p95": 11498.5,
+   "max": 11498.5,
+   "mean": 7461.4
+  },
+  "llm_calls": 7,
+  "llm_calls_per_turn": 3.5,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 18755,
+  "completion_tokens": 283,
+  "reasoning_tokens": 21,
+  "cached_prompt_tokens": 6144,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "booked_claim": 0
+  },
+  "tool_result_metrics": {
+   "unmatched_points_booking": {
+    "attempts": 1,
+    "total": 0
+   },
+   "points_debits": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.074617,
+  "llm_cost_usd": 0.074617,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.141354,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-economy-lisbon",
+   "kind": "normal",
+   "description": "Member names the reward outright; it is held, the engine confirms points and reward, and the redemption reconciles.",
+   "conversation_id": "travel-redemption-gpt-text-normal-economy-lisbon-20260930T025618",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I want to redeem points for the economy award seat on HZ 214, Boston to Lisbon on 12 November.",
+     "latency_ms": 11498.5,
+     "bot": [
+      "Hello Mara, this is Horizon Rewards chat. I can check your points, find a reward flight or hotel stay, hold it and redeem it once you confirm, and look into an earlier redemption. What would you like to do?",
+      "Before I complete this: 42,000 points will come from account HR-204417 for one economy award seat on Horizon flight HZ 214, Boston (BOS) to Lisbon (LIS), 12 November 2026, held for you under HT-H-83D71. Shall I redeem it?"
+     ]
+    },
+    {
+     "user": "Yes, confirm it.",
+     "latency_ms": 3424.2,
+     "bot": [
+      "Done. Your redemption reference is HT-RD-1C7CF. 42,000 points were taken from account HR-204417, and your ticketed booking reference is HZE30C2."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "hold_reward",
+      "args": {
+       "option_id": "RW-LIS-1014"
+      },
+      "result": {
+       "status": "held",
+       "option_id": "RW-LIS-1014",
+       "rewards_account": "HR-204417"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "redeem_reward",
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "option_id": "RW-LIS-1014",
+       "rewards_account": "HR-204417",
+       "points": {
+        "state": "debited",
+        "amount": 42000
+       },
+       "booking": {
+        "state": "ticketed",
+        "booking_reference": "re:^HZ"
+       },
+       "effects": 1
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_reward",
+      "result": {
+       "status": "held",
+       "rewards_account": "re:^(?!HR-204417$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "redeem_reward",
+      "result": {
+       "effects": 1,
+       "rewards_account": "re:^(?!HR-204417$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_reward_options",
+     "arguments": {
+      "destination": "Lisbon",
+      "travel_date": "2026-11-12"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_reward",
+     "arguments": {
+      "option_id": "RW-LIS-1014",
+      "rewards_account": "HR-204417"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "held",
+     "result_reason": null
+    },
+    {
+     "tool": "redeem_reward",
+     "arguments": {
+      "hold_id": "HT-H-83D71"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "redeem_reward",
+     "arguments": {
+      "hold_id": "HT-H-83D71"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "booked_claim": [],
+    "unmatched_points_booking": {
+     "attempts": 1,
+     "total": 0
+    },
+    "points_debits": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 7,
+    "main_loop_calls": 6,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 18755,
+    "completion_tokens": 283,
+    "reasoning_tokens": 21,
+    "cached_prompt_tokens": 6144,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.074617,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2670.1,
+     2070.3,
+     1640.9,
+     2490.0,
+     2272.9,
+     1568.2,
+     1726.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-redemption-gpt-text-normal-economy-lisbon-20260930T025618",
+    "prompt": 18755,
+    "completion": 283,
+    "total": 19038,
+    "generations": 7,
+    "fetched_at": "2026-09-30T02:56:51.872461+00:00"
+   }
+  }
+ ]
+}

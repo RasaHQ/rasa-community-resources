@@ -1,0 +1,18 @@
+# Written only by hold_slot, release_hold and book_appointment (never
+# llm_settable), so the slot the engine reads back for confirmation is always
+# the one the scheduling service held. Each value is kept under 100
+# characters: Mantle cuts longer memory values in the prompt without saying so.
+# held_slot_id: slot held for this call; empty when nothing is held.
+# held_team_label: the team behind the held slot, read in the confirmation question.
+# held_purpose_label: the customer's stated purpose, read in the confirmation question.
+# held_slot_label: channel and time of the held slot, read in the confirmation question.
+schema:
+  public:
+    held_slot_id:
+      type: text
+    held_team_label:
+      type: text
+    held_purpose_label:
+      type: text
+    held_slot_label:
+      type: text

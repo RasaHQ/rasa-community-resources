@@ -1,0 +1,144 @@
+{
+  "_comment": "Invented HarborCover fixture. Every person, address, vehicle, quote, offer and price here is fictional.",
+  "as_of": "2026-09-30T12:00:00+00:00",
+  "offer_validity_days": 7,
+  "customers": {
+    "HC-CUST-5120": {"first_name": "Mateo", "last_name": "Lindqvist"},
+    "HC-CUST-6634": {"first_name": "Ines", "last_name": "Barros"}
+  },
+  "questions": {
+    "renters": ["address", "contents_value_usd", "prior_claims_3y", "dog_on_premises", "smoke_alarms", "start_date"],
+    "auto": ["vehicle", "annual_miles", "prior_claims_3y", "named_drivers", "garaging_address", "start_date"],
+    "condo": ["address", "contents_value_usd", "prior_claims_3y", "start_date"]
+  },
+  "question_labels": {
+    "address": "insured address",
+    "contents_value_usd": "contents value (USD)",
+    "prior_claims_3y": "claims in the last three years",
+    "dog_on_premises": "dog at the address",
+    "smoke_alarms": "working smoke alarms",
+    "start_date": "requested start date",
+    "vehicle": "vehicle",
+    "annual_miles": "miles driven a year",
+    "named_drivers": "named drivers",
+    "garaging_address": "where the vehicle is kept overnight"
+  },
+  "pricing": {
+    "renters": {"base": 14.0, "per_10k_contents": 2.5, "dog": 4.0, "no_smoke_alarms": 3.0, "per_prior_claim": 6.0},
+    "auto": {"base": 71.0, "per_10k_miles": 9.0, "per_extra_driver": 18.0, "per_prior_claim": 22.0},
+    "condo": {"base": 22.0, "per_10k_contents": 2.0, "per_prior_claim": 8.0}
+  },
+  "referral_threshold_prior_claims": 3,
+  "quotes": {
+    "HC-Q-RN-6120": {
+      "customer_id": "HC-CUST-5120",
+      "product": "renters",
+      "label": "renters insurance for 41 Alder Row, Apt 3B, Portmere",
+      "estimate": {
+        "reference": "HC-EST-40187",
+        "monthly_premium_range_usd": [18, 26],
+        "created_at": "2026-09-29T19:12:00+00:00",
+        "based_on": ["postcode", "contents value"]
+      },
+      "answers": {
+        "address": "41 Alder Row, Apt 3B, Portmere",
+        "contents_value_usd": "30000",
+        "prior_claims_3y": "0",
+        "dog_on_premises": "no",
+        "smoke_alarms": "yes",
+        "start_date": "2026-10-01"
+      },
+      "binding_service": "confirms"
+    },
+    "HC-Q-AU-6121": {
+      "customer_id": "HC-CUST-5120",
+      "product": "auto",
+      "label": "auto insurance for a 2019 Halden Metro hatchback",
+      "estimate": {
+        "reference": "HC-EST-40188",
+        "monthly_premium_range_usd": [84, 119],
+        "created_at": "2026-09-29T19:20:00+00:00",
+        "based_on": ["vehicle", "postcode"]
+      },
+      "answers": {
+        "vehicle": "2019 Halden Metro hatchback",
+        "annual_miles": "9000",
+        "prior_claims_3y": "0",
+        "named_drivers": "1",
+        "garaging_address": "41 Alder Row, Portmere",
+        "start_date": "2026-10-01"
+      },
+      "binding_service": "no_receipt"
+    },
+    "HC-Q-CD-5902": {
+      "customer_id": "HC-CUST-5120",
+      "product": "condo",
+      "label": "condo insurance for Unit 12, Kestrel Court, Portmere",
+      "estimate": {
+        "reference": "HC-EST-39650",
+        "monthly_premium_range_usd": [24, 33],
+        "created_at": "2026-09-15T10:02:00+00:00",
+        "based_on": ["postcode"]
+      },
+      "answers": {
+        "address": "Unit 12, Kestrel Court, Portmere",
+        "contents_value_usd": "20000",
+        "prior_claims_3y": "0",
+        "start_date": "2026-10-15"
+      },
+      "prior_offers": [
+        {
+          "offer_id": "HC-OFR-5902-1",
+          "version": 1,
+          "monthly_premium_usd": 26.0,
+          "issued_at": "2026-09-16T09:00:00+00:00",
+          "expires_at": "2026-09-23T09:00:00+00:00",
+          "answers": {
+            "address": "Unit 12, Kestrel Court, Portmere",
+            "contents_value_usd": "20000",
+            "prior_claims_3y": "0",
+            "start_date": "2026-10-15"
+          }
+        }
+      ],
+      "binding_service": "confirms"
+    },
+    "HC-Q-RN-5873": {
+      "customer_id": "HC-CUST-6634",
+      "product": "renters",
+      "label": "renters insurance for 9 Heron Lane, Portmere",
+      "estimate": {
+        "reference": "HC-EST-40102",
+        "monthly_premium_range_usd": [16, 22],
+        "created_at": "2026-09-28T08:40:00+00:00",
+        "based_on": ["postcode", "contents value"]
+      },
+      "answers": {
+        "address": "9 Heron Lane, Portmere",
+        "contents_value_usd": "15000",
+        "prior_claims_3y": "0",
+        "dog_on_premises": "no",
+        "smoke_alarms": "yes",
+        "start_date": "2026-10-05"
+      },
+      "prior_offers": [
+        {
+          "offer_id": "HC-OFR-5873-1",
+          "version": 1,
+          "monthly_premium_usd": 17.75,
+          "issued_at": "2026-09-29T08:00:00+00:00",
+          "expires_at": "2026-10-06T08:00:00+00:00",
+          "answers": {
+            "address": "9 Heron Lane, Portmere",
+            "contents_value_usd": "15000",
+            "prior_claims_3y": "0",
+            "dog_on_premises": "no",
+            "smoke_alarms": "yes",
+            "start_date": "2026-10-05"
+          }
+        }
+      ],
+      "binding_service": "confirms"
+    }
+  }
+}

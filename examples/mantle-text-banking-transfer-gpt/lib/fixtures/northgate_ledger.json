@@ -1,0 +1,145 @@
+{
+  "bank": "Northgate Bank",
+  "note": "Entirely fictional. No real bank, person, account, routing number or payee.",
+  "as_of": "2026-09-30T14:00:00+00:00",
+  "currency": "USD",
+  "customers": {
+    "NB-CUST-4810": {
+      "first_name": "Elena",
+      "last_name": "Marsh"
+    },
+    "NB-CUST-5520": {
+      "first_name": "Jordan",
+      "last_name": "Blake"
+    }
+  },
+  "accounts": {
+    "NB-ACC-1001": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Everyday Checking",
+      "aliases": ["everyday", "everyday checking", "main checking", "main account"],
+      "last_four": "3301",
+      "posted_balance": "2480.00",
+      "holds": [
+        {"description": "Card authorisation, Lakeside Hardware", "amount": "1230.00"}
+      ],
+      "revision": 41,
+      "scheduled_debits": []
+    },
+    "NB-ACC-1002": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Bills Checking",
+      "aliases": ["bills", "bills checking", "bills account"],
+      "last_four": "3302",
+      "posted_balance": "520.00",
+      "holds": [],
+      "revision": 17,
+      "scheduled_debits": [
+        {
+          "description": "Direct debit, Brightwater Energy",
+          "amount": "180.00",
+          "posts": "after_first_read",
+          "note": "Posts once per conversation, immediately after the first ledger read of this account: another debit landing between the balance read and the transfer."
+        }
+      ]
+    },
+    "NB-ACC-1003": {
+      "customer_id": "NB-CUST-4810",
+      "name": "High-Yield Savings",
+      "aliases": ["savings", "high-yield savings", "high yield savings", "savings account"],
+      "last_four": "3303",
+      "posted_balance": "6200.00",
+      "holds": [],
+      "revision": 9,
+      "scheduled_debits": []
+    },
+    "NB-ACC-2001": {
+      "customer_id": "NB-CUST-5520",
+      "name": "Everyday Checking",
+      "aliases": ["everyday", "everyday checking"],
+      "last_four": "5501",
+      "posted_balance": "310.00",
+      "holds": [],
+      "revision": 5,
+      "scheduled_debits": []
+    }
+  },
+  "payees": {
+    "NB-PAY-2042": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Sam Patel",
+      "aliases": [],
+      "bank": "Harbor Federal Credit Union",
+      "account_last_two": "42",
+      "scheme": "ach",
+      "scheme_behaviour": "pending"
+    },
+    "NB-PAY-2017": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Sam Okoro",
+      "aliases": [],
+      "bank": "Crestline Bank",
+      "account_last_two": "17",
+      "scheme": "ach",
+      "scheme_behaviour": "pending"
+    },
+    "NB-PAY-2088": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Kestrel Lettings",
+      "aliases": ["rent", "landlord", "kestrel"],
+      "bank": "Pinebrook Savings Bank",
+      "account_last_two": "88",
+      "scheme": "ach",
+      "scheme_behaviour": "ack_lost",
+      "behaviour_note": "The ledger commits the transfer but the submission's response never reaches the agent."
+    },
+    "NB-PAY-2063": {
+      "customer_id": "NB-CUST-4810",
+      "name": "Priya Nair",
+      "aliases": ["priya"],
+      "bank": "Maple Ridge Credit Union",
+      "account_last_two": "63",
+      "scheme": "ach",
+      "scheme_behaviour": "unknown",
+      "behaviour_note": "The payment scheme does not report a state; the ledger entry stays unknown."
+    },
+    "NB-PAY-3001": {
+      "customer_id": "NB-CUST-5520",
+      "name": "Dana Blake",
+      "aliases": [],
+      "bank": "Crestline Bank",
+      "account_last_two": "55",
+      "scheme": "ach",
+      "scheme_behaviour": "pending"
+    }
+  },
+  "transfers": {
+    "NB-TRF-7731": {
+      "customer_id": "NB-CUST-4810",
+      "from_account": "NB-ACC-1001",
+      "payee_ref": "NB-PAY-2017",
+      "amount": "120.00",
+      "ledger_status": "pending",
+      "submitted_at": "2026-09-29T16:20:00+00:00",
+      "posted_at": null
+    },
+    "NB-TRF-7702": {
+      "customer_id": "NB-CUST-4810",
+      "from_account": "NB-ACC-1003",
+      "payee_ref": "NB-ACC-1001",
+      "amount": "500.00",
+      "ledger_status": "posted",
+      "submitted_at": "2026-09-28T09:05:00+00:00",
+      "posted_at": "2026-09-28T09:05:02+00:00"
+    },
+    "NB-TRF-7790": {
+      "customer_id": "NB-CUST-5520",
+      "from_account": "NB-ACC-2001",
+      "payee_ref": "NB-PAY-3001",
+      "amount": "60.00",
+      "ledger_status": "posted",
+      "submitted_at": "2026-09-27T11:00:00+00:00",
+      "posted_at": "2026-09-28T06:00:00+00:00"
+    }
+  }
+}

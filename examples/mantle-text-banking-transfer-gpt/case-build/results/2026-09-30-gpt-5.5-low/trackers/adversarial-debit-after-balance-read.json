@@ -1,0 +1,1323 @@
+{
+ "sender_id": "banking-transfer-gpt-text-adversarial-debit-after-balance-read-20260930T025835",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.customer_id": "NB-CUST-4810",
+  "project.customer_first_name": "Elena",
+  "project.account_names": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+  "transfer_money.selected_payee_ref": "NB-ACC-1003",
+  "transfer_money.selected_payee_label": "your High-Yield Savings (account ending 3303)",
+  "transfer_money.draft_id": "",
+  "transfer_money.draft_summary": "",
+  "system.pending_tool_confirmation": null,
+  "system.__discovered__": [
+   {
+    "key": "requested_transfer",
+    "value": "Move $400 from bills checking to savings",
+    "description": "Customer requested a $400 transfer from their Bills Checking account to their savings account.",
+    "turn_idx": 1,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "Yes.",
+  "message_id": "dde5f39d867940c3b43d5b42a852b43d",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790737235.111786,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "9MENL7QI",
+   "skill_id": "transfer_money",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790737222.19665,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790737222.196851,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790737222.196867,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790737222.196686,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790737222.196875,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737222.196882,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"LK6E81KK\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"LV9CQZS7\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737222.1970172,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790737222.197031,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "text": "Move $400 from my bills checking to savings.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Move $400 from my bills checking to savings.",
+    "message_id": "01bbe5cc5ea34fcfb3dbc37e347f0eb3",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "01bbe5cc5ea34fcfb3dbc37e347f0eb3",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737222.198715,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "LV9CQZS7",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737222.198737,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "LV9CQZS7",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737222.198791,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "LV9CQZS7",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "project.customer_first_name",
+   "value": "Elena",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737222.198802,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "LV9CQZS7",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "project.customer_first_name",
+   "value": "Elena",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737222.198848,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "LV9CQZS7",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "project.account_names",
+   "value": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737222.198857,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "LV9CQZS7",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "project.account_names",
+   "value": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737222.198996,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": [\"Everyday Checking (account ending 3301)\", \"Bills Checking (account ending 3302)\", \"High-Yield Savings (account ending 3303)\"]}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737222.199008,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": [\"Everyday Checking (account ending 3301)\", \"Bills Checking (account ending 3302)\", \"High-Yield Savings (account ending 3303)\"]}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737222.19913,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737222.199711,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "text": "Hello Elena, this is Northgate Bank transfers. I can move money between your accounts or to a saved payee, check a transfer's status, or tell you a balance. What would you like to do?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790737222.200305,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790737222.200321,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790737222.20033,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737222.200336,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737222.200541,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790737223.3064342,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "flow_id": "transfer_money",
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790737223.3065228,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790737222.197031,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737223.3065422,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"9MENL7QI\", \"skill_id\": \"transfer_money\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737223.3080242,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transfer_money"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737223.308086,
+   "metadata": {
+    "tool_call_id": "call_9c7VV45l4e7mO1uWVcu5LKPu",
+    "tool_batch_id": "0-call_9c7VV45l4e7mO1uWVcu5LKPu",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transfer_money"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737225.883111,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "payee": "savings"
+     },
+     "position": 27,
+     "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "transfer_money.selected_payee_ref",
+   "value": "NB-ACC-1003",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737225.883143,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "payee": "savings"
+     },
+     "position": 28,
+     "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "transfer_money.selected_payee_ref",
+   "value": "NB-ACC-1003",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737225.883178,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "payee": "savings"
+     },
+     "position": 29,
+     "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "transfer_money.selected_payee_label",
+   "value": "your High-Yield Savings (account ending 3303)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737225.8831859,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "payee": "savings"
+     },
+     "position": 30,
+     "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "transfer_money.selected_payee_label",
+   "value": "your High-Yield Savings (account ending 3303)",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737225.883224,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "payee": "savings"
+     },
+     "position": 31,
+     "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "transfer_money.draft_id",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737225.883233,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "payee": "savings"
+     },
+     "position": 32,
+     "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "transfer_money.draft_id",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737225.883264,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "payee": "savings"
+     },
+     "position": 33,
+     "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "transfer_money.draft_summary",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737225.883271,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "payee": "savings"
+     },
+     "position": 34,
+     "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "transfer_money.draft_summary",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737225.883706,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "select_payee",
+   "arguments": {
+    "payee": "savings"
+   },
+   "result": "{\"status\": \"selected\", \"payee_ref\": \"NB-ACC-1003\", \"payee_label\": \"your High-Yield Savings (account ending 3303)\", \"destination_kind\": \"own_account\", \"next_step\": \"Call prepare_transfer with this payee_ref, the source account and the amount. Do not describe the payee as confirmed: the caller confirms the whole transfer next.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737225.8837178,
+   "metadata": {
+    "tool_call_id": "call_9iVSor3BR2kD1lHbhYJPtcEM",
+    "tool_batch_id": "1-call_9iVSor3BR2kD1lHbhYJPtcEM",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "select_payee",
+   "arguments": {
+    "payee": "savings"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"payee_ref\": \"NB-ACC-1003\", \"payee_label\": \"your High-Yield Savings (account ending 3303)\", \"destination_kind\": \"own_account\", \"next_step\": \"Call prepare_transfer with this payee_ref, the source account and the amount. Do not describe the payee as confirmed: the caller confirms the whole transfer next.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737227.37985,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "from_account": "Bills Checking",
+      "payee_ref": "NB-ACC-1003",
+      "amount": "400"
+     },
+     "position": 37,
+     "tool_call_id": "call_F81I97JaKoe9noZHcGotUCC2"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "transfer_money.draft_id",
+   "value": "NB-DRF-C95D1574",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737227.379904,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "from_account": "Bills Checking",
+      "payee_ref": "NB-ACC-1003",
+      "amount": "400"
+     },
+     "position": 38,
+     "tool_call_id": "call_F81I97JaKoe9noZHcGotUCC2"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "transfer_money.draft_id",
+   "value": "NB-DRF-C95D1574",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737227.379972,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "from_account": "Bills Checking",
+      "payee_ref": "NB-ACC-1003",
+      "amount": "400"
+     },
+     "position": 39,
+     "tool_call_id": "call_F81I97JaKoe9noZHcGotUCC2"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "transfer_money.draft_summary",
+   "value": "$400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737227.379987,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "from_account": "Bills Checking",
+      "payee_ref": "NB-ACC-1003",
+      "amount": "400"
+     },
+     "position": 40,
+     "tool_call_id": "call_F81I97JaKoe9noZHcGotUCC2"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "transfer_money.draft_summary",
+   "value": "$400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737227.380872,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "prepare_transfer",
+   "arguments": {
+    "from_account": "Bills Checking",
+    "payee_ref": "NB-ACC-1003",
+    "amount": "400"
+   },
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"NB-DRF-C95D1574\", \"summary\": \"$400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)\", \"amount\": \"$400.00\", \"from_account_ref\": \"NB-ACC-1002\", \"payee_ref\": \"NB-ACC-1003\", \"from_account\": \"Bills Checking (account ending 3302)\", \"destination\": \"your High-Yield Savings (account ending 3303)\", \"destination_kind\": \"own_account\", \"balance_as_read\": {\"available_balance\": \"$520.00\", \"posted_balance\": \"$520.00\", \"ledger_revision\": 17, \"observed_at\": \"2026-09-30T14:00:00+00:00\"}, \"effects\": 0, \"next_step\": \"Call submit_transfer with this draft_id. The engine shows the caller the amount, source and destination and asks them to confirm. The balance above is a read, not a decision: the ledger decides at submission. Do not tell the caller the transfer will go through.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737227.380897,
+   "metadata": {
+    "tool_call_id": "call_F81I97JaKoe9noZHcGotUCC2",
+    "tool_batch_id": "2-call_F81I97JaKoe9noZHcGotUCC2",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "prepare_transfer",
+   "arguments": {
+    "from_account": "Bills Checking",
+    "payee_ref": "NB-ACC-1003",
+    "amount": "400"
+   },
+   "source": "local",
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"NB-DRF-C95D1574\", \"summary\": \"$400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)\", \"amount\": \"$400.00\", \"from_account_ref\": \"NB-ACC-1002\", \"payee_ref\": \"NB-ACC-1003\", \"from_account\": \"Bills Checking (account ending 3302)\", \"destination\": \"your High-Yield Savings (account ending 3303)\", \"destination_kind\": \"own_account\", \"balance_as_read\": {\"available_balance\": \"$520.00\", \"posted_balance\": \"$520.00\", \"ledger_revision\": 17, \"observed_at\": \"2026-09-30T14:00:00+00:00\"}, \"effects\": 0, \"next_step\": \"Call submit_transfer with this draft_id. The engine shows the caller the amount, source and destination and asks them to confirm. The balance above is a read, not a decision: the ledger decides at submission. Do not tell the caller the transfer will go through.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737228.9127538,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {},
+     "position": 43,
+     "tool_call_id": "call_vtSyW6yZQvjJucmC8R37dhVd"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "submit_transfer",
+    "tool_args": {
+     "draft_id": "NB-DRF-C95D1574"
+    },
+    "confirmation_ask": "Transfer $400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)? I will confirm the result from the ledger.\n",
+    "utter_on_user_denial": "utter_transfer_not_submitted",
+    "skill_id": "transfer_money",
+    "frame_id": "9MENL7QI",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737228.9128692,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {},
+     "position": 44,
+     "tool_call_id": "call_vtSyW6yZQvjJucmC8R37dhVd"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "submit_transfer",
+    "tool_args": {
+     "draft_id": "NB-DRF-C95D1574"
+    },
+    "confirmation_ask": "Transfer $400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)? I will confirm the result from the ledger.\n",
+    "utter_on_user_denial": "utter_transfer_not_submitted",
+    "skill_id": "transfer_money",
+    "frame_id": "9MENL7QI",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737228.914315,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-C95D1574"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Transfer $400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)? I will confirm the result from the ledger.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737228.914358,
+   "metadata": {
+    "tool_call_id": "call_vtSyW6yZQvjJucmC8R37dhVd",
+    "tool_batch_id": "3-call_vtSyW6yZQvjJucmC8R37dhVd",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-C95D1574"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Transfer $400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)? I will confirm the result from the ledger.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737228.914646,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_transfer",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "text": "Transfer $400.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)? I will confirm the result from the ledger.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737228.9170802,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737231.771352,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {},
+     "position": 49,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_transfer",
+     "value": "Move $400 from bills checking to savings",
+     "description": "Customer requested a $400 transfer from their Bills Checking account to their savings account.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737231.771399,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {},
+     "position": 50,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_transfer",
+     "value": "Move $400 from bills checking to savings",
+     "description": "Customer requested a $400 transfer from their Bills Checking account to their savings account.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790737231.8228538,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "text": "Yes.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes.",
+    "message_id": "dde5f39d867940c3b43d5b42a852b43d",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "dde5f39d867940c3b43d5b42a852b43d",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737233.082189,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {},
+     "position": 52,
+     "tool_call_id": "call_RTu3imWYOeBaUmbz7ltiaHIF"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790737233.082217,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {},
+     "position": 53,
+     "tool_call_id": "call_RTu3imWYOeBaUmbz7ltiaHIF"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737233.082391,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "submit_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "draft_id": "NB-DRF-C95D1574"
+     },
+     "position": 54,
+     "tool_call_id": "call_RTu3imWYOeBaUmbz7ltiaHIF"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "transfer_money.draft_id",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737233.082402,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "submit_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "draft_id": "NB-DRF-C95D1574"
+     },
+     "position": 55,
+     "tool_call_id": "call_RTu3imWYOeBaUmbz7ltiaHIF"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "transfer_money.draft_id",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737233.0824351,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "submit_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "draft_id": "NB-DRF-C95D1574"
+     },
+     "position": 56,
+     "tool_call_id": "call_RTu3imWYOeBaUmbz7ltiaHIF"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "name": "transfer_money.draft_summary",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737233.082442,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "submit_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "9MENL7QI",
+     "arguments": {
+      "draft_id": "NB-DRF-C95D1574"
+     },
+     "position": 57,
+     "tool_call_id": "call_RTu3imWYOeBaUmbz7ltiaHIF"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "key": "transfer_money.draft_summary",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737233.082535,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-C95D1574"
+   },
+   "result": "{\"status\": \"blocked\", \"reason\": \"stale_balance\", \"draft_id\": \"NB-DRF-C95D1574\", \"amount\": \"$400.00\", \"from_account_ref\": \"NB-ACC-1002\", \"payee_ref\": \"NB-ACC-1003\", \"prepared_at_revision\": 17, \"current\": {\"available_balance\": \"$340.00\", \"posted_balance\": \"$340.00\", \"ledger_revision\": 18}, \"facts\": {\"ledger_revision_current\": false, \"payee_identity_confirmed\": true}, \"effects\": 0, \"next_step\": \"The account's ledger changed after the balance was read (another debit or hold posted), so nothing was submitted. Tell the caller, give the current available balance, and if they still want a transfer call prepare_transfer again; the new draft needs a new confirmation.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737233.0825448,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-C95D1574"
+   },
+   "source": "local",
+   "result": "{\"status\": \"blocked\", \"reason\": \"stale_balance\", \"draft_id\": \"NB-DRF-C95D1574\", \"amount\": \"$400.00\", \"from_account_ref\": \"NB-ACC-1002\", \"payee_ref\": \"NB-ACC-1003\", \"prepared_at_revision\": 17, \"current\": {\"available_balance\": \"$340.00\", \"posted_balance\": \"$340.00\", \"ledger_revision\": 18}, \"facts\": {\"ledger_revision_current\": false, \"payee_identity_confirmed\": true}, \"effects\": 0, \"next_step\": \"The account's ledger changed after the balance was read (another debit or hold posted), so nothing was submitted. Tell the caller, give the current available balance, and if they still want a transfer call prepare_transfer again; the new draft needs a new confirmation.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737233.0829492,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"status\": \"blocked\", \"reason\": \"stale_balance\", \"draft_id\": \"NB-DRF-C95D1574\", \"amount\": \"$400.00\", \"from_account_ref\": \"NB-ACC-1002\", \"payee_ref\": \"NB-ACC-1003\", \"prepared_at_revision\": 17, \"current\": {\"available_balance\": \"$340.00\", \"posted_balance\": \"$340.00\", \"ledger_revision\": 18}, \"facts\": {\"ledger_revision_current\": false, \"payee_identity_confirmed\": true}, \"effects\": 0, \"next_step\": \"The account's ledger changed after the balance was read (another debit or hold posted), so nothing was submitted. Tell the caller, give the current available balance, and if they still want a transfer call prepare_transfer again; the new draft needs a new confirmation.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737233.082965,
+   "metadata": {
+    "tool_call_id": "call_RTu3imWYOeBaUmbz7ltiaHIF",
+    "tool_batch_id": "0-call_RTu3imWYOeBaUmbz7ltiaHIF",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"status\": \"blocked\", \"reason\": \"stale_balance\", \"draft_id\": \"NB-DRF-C95D1574\", \"amount\": \"$400.00\", \"from_account_ref\": \"NB-ACC-1002\", \"payee_ref\": \"NB-ACC-1003\", \"prepared_at_revision\": 17, \"current\": {\"available_balance\": \"$340.00\", \"posted_balance\": \"$340.00\", \"ledger_revision\": 18}, \"facts\": {\"ledger_revision_current\": false, \"payee_identity_confirmed\": true}, \"effects\": 0, \"next_step\": \"The account's ledger changed after the balance was read (another debit or hold posted), so nothing was submitted. Tell the caller, give the current available balance, and if they still want a transfer call prepare_transfer again; the new draft needs a new confirmation.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737235.110036,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 2020.2966660144739,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   },
+   "text": "Nothing was submitted. The balance in your Bills Checking changed after the draft was prepared, so the transfer could not be submitted from that draft.\n\nYour current available balance in Bills Checking is $340.00. Would you like to prepare a new transfer for a different amount?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737235.111786,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+   }
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790737222.19665,
+ "current_session_id": "bd1fb491-f5f5-4cfd-9a14-765438f1e08a"
+}

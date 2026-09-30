@@ -1,0 +1,17 @@
+# Written only by select_payee and prepare_transfer (never llm_settable), so
+# the transfer the engine asks the caller to confirm is always the draft the
+# tool prepared for the payee the tool resolved.
+# selected_payee_ref: destination resolved from the caller's words.
+# selected_payee_label: its description, with the account ending.
+# draft_id: the current draft; cleared by a new selection or a refused submit.
+# draft_summary: amount, source and destination read in the confirmation.
+schema:
+  public:
+    selected_payee_ref:
+      type: text
+    selected_payee_label:
+      type: text
+    draft_id:
+      type: text
+    draft_summary:
+      type: text
