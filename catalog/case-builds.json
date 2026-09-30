@@ -7,7 +7,7 @@
     "revision": "15afa7c752f96e8c761c352ba67894c44c156600",
     "checkedAt": "2026-09-30T18:21:10Z"
   },
-  "count": 24,
+  "count": 28,
   "builds": [
     {
       "slug": "banking-loan-servicing",
@@ -207,6 +207,47 @@
         "Our own output guard told two passengers \"No seat is held\" right after a seat was held.",
         "With the tool sending the receipt, GPT-5.5 says it again.",
         "Regex guards on GPT-5.5 need the curly apostrophe."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "education-enrolment",
+      "path": "examples/mantle-text-education-enrolment-gpt",
+      "title": "Pine University enrolment and aid enquiries on GPT-5.5: a web-chat agent that never reads a receipt as an award",
+      "caseTitle": "Enrolment support without aid guarantees",
+      "organisation": "Pine University",
+      "industry": "Public sector & education",
+      "summary": "Record an enrolment or financial-aid enquiry for a signed-in applicant of Pine University, a fictional university, in web chat.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 17,
+        "total": 21,
+        "failed": 4,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.631601,
+      "recordedAt": "2026-09-30T18:12:58.538251+00:00",
+      "findings": [
+        "When the record answers the question, GPT-5.5 answers it and skips the gated tool.",
+        "The receipt fix held on GPT-5.5 too.",
+        "A correction at the question is answered in the same turn, then asked twice."
       ],
       "casebookUrl": null
     },
@@ -650,6 +691,88 @@
       "casebookUrl": null
     },
     {
+      "slug": "utilities-budget-plan",
+      "path": "examples/mantle-text-utilities-budget-plan-gpt",
+      "title": "Amber Grid budget plans on GPT-5.5: an estimate that never touches the balance",
+      "caseTitle": "Budget plans with a hardship boundary",
+      "organisation": "Amber Grid",
+      "industry": "Utilities & energy",
+      "summary": "Explain or request a budget plan for a signed-in customer of Amber Grid, a fictional energy supplier, in web chat, or refer them to the hardship team.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 18,
+        "total": 20,
+        "failed": 2,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 2.425488,
+      "recordedAt": "2026-09-30T18:13:25.205602+00:00",
+      "findings": [
+        "A tool-result hook never sees a confirmed tool under its own name.",
+        "A correction at the question costs two confirmations.",
+        "Haggling still became a hardship referral."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "utilities-service-move",
+      "path": "examples/mantle-text-utilities-service-move-gpt",
+      "title": "Amber Grid home moves on GPT-5.5: the supply stays on until the day the customer said",
+      "caseTitle": "Service moves without premature closure",
+      "organisation": "Amber Grid",
+      "industry": "Utilities & energy",
+      "summary": "Schedule a move-out and move-in for a signed-in customer of Amber Grid, a fictional energy supplier, in web chat.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 21,
+        "total": 21,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.819296,
+      "recordedAt": "2026-09-30T18:13:48.127315+00:00",
+      "findings": [
+        "GPT-5.5 offered its own move-out day, and then passed it to the tool as the customer's words.",
+        "The tool's receipt reached the customer every time; GPT-5.5 alone would have missed 2 of 11.",
+        "Fact discovery did not fail on GPT-5.5."
+      ],
+      "casebookUrl": null
+    },
+    {
       "slug": "banking-advisor-appointment",
       "path": "examples/mantle-voice-banking-advisor-appointment-claude",
       "title": "Northgate advisor appointments on Claude Sonnet 5.5 with Deepgram and Rime: a voice agent that won't book a mortgage question into a branch with no mortgage advisor",
@@ -970,6 +1093,53 @@
         "With the tools speaking their own outcomes, every receipt, refusal and desk reference was heard in its turn: 12 of 12.",
         "Prompt caching with a breakpoint on the system message cost more than it saved on this voice build.",
         "Names and places, not digits, are what Flux lost."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "voice-payment-boundary",
+      "path": "examples/mantle-voice-payment-boundary-gpt",
+      "title": "Willow Shop order payments on GPT-5.5 with Deepgram and Rime: a voice agent that never takes a card number by voice",
+      "caseTitle": "Payment capture boundaries",
+      "organisation": "Willow Shop",
+      "industry": "Shared primitives",
+      "summary": "Help a signed-in Willow Shop customer pay the balance on an order that is on hold, only through an approved payment channel.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "engines.deepgram_pci.DeepgramRedactingCardDetails",
+        "vendor": "Deepgram",
+        "model": "flux-general-en",
+        "label": "Deepgram Flux",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "engines.rime_idle.RimeTTSReconnectOnIdle",
+        "vendor": "Rime",
+        "model": "mistv3",
+        "voice": "lagoon",
+        "label": "Rime",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": null,
+      "spendUsd": 3.63924,
+      "recordedAt": null,
+      "findings": [
+        "On voice, a card number reaches four records before the model can refuse it, and one of them is Mantle's memory.",
+        "Mantle's `incoming_message` and `outgoing_text` hook points never run on rasa-pro 3.21.0.dev5.",
+        "On voice, the model's text after a tool-sent receipt can be cut off, while the tracker records all of it."
       ],
       "casebookUrl": null
     },
