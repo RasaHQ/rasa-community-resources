@@ -1,0 +1,106 @@
+{
+  "organisation": "HarborCover (fictional insurer)",
+  "note": "Invented fixture. Every person, policy, address, file and reference here is fictional.",
+  "as_of": "2026-09-30T10:00:00+00:00",
+  "session_customer_id": "HC-CUST-5120",
+  "customers": {
+    "HC-CUST-5120": {"first_name": "Delphine", "last_name": "Marsh"},
+    "HC-CUST-6408": {"first_name": "Callum", "last_name": "Frye"}
+  },
+  "policies": {
+    "HC-HO-552104": {
+      "customer_id": "HC-CUST-5120",
+      "line": "home",
+      "label": "home policy HC-HO-552104",
+      "insured": "14 Wrenfield Lane, Alder Bay",
+      "intake_service": "ok"
+    },
+    "HC-AU-778210": {
+      "customer_id": "HC-CUST-5120",
+      "line": "auto",
+      "label": "auto policy HC-AU-778210",
+      "insured": "hatchback, plate HCX 4471",
+      "intake_service": "ack_lost"
+    },
+    "HC-RD-330915": {
+      "customer_id": "HC-CUST-5120",
+      "line": "landlord",
+      "label": "landlord policy HC-RD-330915",
+      "insured": "Flat 2, 9 Tollgate Court, Alder Bay",
+      "intake_service": "unavailable"
+    },
+    "HC-HO-610233": {
+      "customer_id": "HC-CUST-6408",
+      "line": "home",
+      "label": "home policy HC-HO-610233",
+      "insured": "3 Marram Close, Alder Bay",
+      "intake_service": "ok"
+    }
+  },
+  "requirements": {
+    "damage_photos": "photos of the damage",
+    "repair_estimate": "repair estimate or invoice",
+    "proof_of_ownership": "proof of ownership",
+    "police_report": "police report copy"
+  },
+  "loss_types": {
+    "water_damage": {
+      "label": "water damage",
+      "lines": ["home", "landlord"],
+      "required": ["damage_photos", "repair_estimate"],
+      "aliases": ["water", "leak", "leaking", "burst pipe", "pipe", "flood", "flooding", "escape of water"]
+    },
+    "storm_damage": {
+      "label": "storm damage",
+      "lines": ["home", "landlord"],
+      "required": ["damage_photos", "repair_estimate"],
+      "aliases": ["storm", "wind", "gale", "hail", "weather"]
+    },
+    "accidental_damage": {
+      "label": "accidental damage",
+      "lines": ["home", "landlord"],
+      "required": ["damage_photos", "repair_estimate"],
+      "aliases": ["accidental", "accident", "broken", "impact", "fallen branch", "branch", "cracked", "crack", "glass", "window"]
+    },
+    "theft": {
+      "label": "theft",
+      "lines": ["home", "landlord"],
+      "required": ["proof_of_ownership", "police_report"],
+      "aliases": ["stolen", "burglary", "break in", "break-in", "robbery", "theft"]
+    },
+    "collision": {
+      "label": "collision",
+      "lines": ["auto"],
+      "required": ["damage_photos", "repair_estimate"],
+      "aliases": ["crash", "collision", "car accident", "hit", "bumper", "dent", "reversed", "rear ended", "rear-ended"]
+    }
+  },
+  "uploads": {
+    "leak-ceiling-1.jpg": {"satisfies": "damage_photos", "states": ["received"]},
+    "leak-ceiling-2.jpg": {"satisfies": "damage_photos", "states": ["received"]},
+    "plumber-invoice.pdf": {"satisfies": "repair_estimate", "states": ["received"]},
+    "fence-down.jpg": {"satisfies": "damage_photos", "states": ["received"]},
+    "fence-quote.pdf": {"satisfies": "repair_estimate", "states": ["failed"], "detail": "upload interrupted, 0 bytes stored"},
+    "police-report.pdf": {"satisfies": "police_report", "states": ["received"]},
+    "bike-receipt.pdf": {"satisfies": "proof_of_ownership", "states": ["processing", "received"], "detail": "virus scan finishes after the customer's next message"},
+    "window-crack.jpg": {"satisfies": "damage_photos", "states": ["received"]},
+    "glazier-quote.pdf": {"satisfies": "repair_estimate", "states": ["processing"], "detail": "virus scan queue, no result during the chat"},
+    "bumper-1.jpg": {"satisfies": "damage_photos", "states": ["received"]},
+    "bumper-2.jpg": {"satisfies": "damage_photos", "states": ["received"]},
+    "bodyshop-estimate.pdf": {"satisfies": "repair_estimate", "states": ["received"]},
+    "tollgate-ceiling.jpg": {"satisfies": "damage_photos", "states": ["received"]}
+  },
+  "existing_claims": {
+    "HC-CLI-40718": {
+      "customer_id": "HC-CUST-5120",
+      "policy_number": "HC-HO-552104",
+      "loss_type": "water_damage",
+      "loss_date": "2026-09-09",
+      "loss_summary": "Water heater in the utility room failed and leaked",
+      "filed_on": "2026-09-12",
+      "material_received": [{"requirement": "photos of the damage", "files": ["heater-leak.jpg"]}],
+      "follow_up_required": [{"requirement": "repair estimate or invoice", "why": "not provided"}],
+      "stage": "with a claims handler; coverage not decided"
+    }
+  }
+}

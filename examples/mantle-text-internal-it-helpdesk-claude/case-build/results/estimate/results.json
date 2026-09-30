@@ -1,0 +1,360 @@
+{
+ "schema": 1,
+ "build": "internal-it-helpdesk-claude-text",
+ "case": "internal-it-helpdesk",
+ "project": "examples/mantle-text-internal-it-helpdesk-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T06:52:07.242558+00:00",
+ "finished_at": "2026-09-30T06:52:34.284004+00:00",
+ "model_file": "20260930-075209-quadratic-arena.tar.gz",
+ "train_seconds": 3.3,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 3943.1,
+   "p95": 5793.3,
+   "max": 5793.3,
+   "mean": 3976.7
+  },
+  "llm_calls": 12,
+  "llm_calls_per_turn": 3.0,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 2,
+  "failed_side_channel_calls": 2,
+  "engine_error_calls": 0,
+  "prompt_tokens": 51583,
+  "completion_tokens": 886,
+  "reasoning_tokens": 337,
+  "cached_prompt_tokens": 9161,
+  "cache_creation_input_tokens": 31251,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "temporary_access_offer": 0
+  },
+  "tool_result_metrics": {
+   "access_changes": {
+    "attempts": 1,
+    "total": 1
+   },
+   "out_of_scope_changes": {
+    "attempts": 1,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+   "mantle.tool_confirmation.declined": 1,
+   "mantle.tool_confirmation.confirmed": 1,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "orchard.turn_order_fix": 1
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.111162,
+  "llm_cost_usd": 0.111162,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-system-switch-at-confirmation",
+   "kind": "correction",
+   "description": "At the confirmation question the employee switches to another system; only the new one is granted.",
+   "conversation_id": "internal-it-helpdesk-claude-text-correction-system-switch-at-confirmation-20260930T065207",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I need contributor access to the design library.",
+     "latency_ms": 3943.1,
+     "bot": [
+      "Hi Marisol, this is the Orchard Works IT helpdesk. I can record access requests, check a ticket, or point you to the identity desk. What do you need?",
+      "The owner has approved Design Library contributor until 2027-03-31 for your account on ticket IT-TKT-75891. Shall I add exactly that access now? Nothing else will change."
+     ]
+    },
+    {
+     "user": "Sorry, wrong one. I meant viewer on finance reporting, not the design library.",
+     "latency_ms": 4636.9,
+     "bot": [
+      "No problem. I cancelled the Design Library request, so nothing was added. I've recorded a new request for Finance Reporting viewer on ticket IT-TKT-28742. The Finance Systems owner has already approved it, with access until 2026-12-31. Do you want me to go ahead and add it?"
+     ]
+    },
+    {
+     "user": "Yes, that's right.",
+     "latency_ms": 1533.3,
+     "bot": [
+      "The owner has approved Finance Reporting viewer until 2026-12-31 for your account on ticket IT-TKT-28742. Shall I add exactly that access now? Nothing else will change."
+     ]
+    },
+    {
+     "user": "Yes, go ahead.",
+     "latency_ms": 5793.3,
+     "bot": [
+      "Is there anything else you need help with today?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "grant_access",
+      "result": {
+       "status": "succeeded",
+       "role_ref": "FIN-REPORTS-VIEW"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "*",
+      "result": {
+       "effects": 1,
+       "role_ref": "DESIGN-LIB-CONTRIB"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "*",
+      "result": {
+       "effects": 1,
+       "role_ref": "re:^(?!FIN-REPORTS-VIEW$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_employee",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "open_access_ticket",
+     "arguments": {
+      "role_description": "contributor access to the design library"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready_to_grant",
+     "result_reason": null
+    },
+    {
+     "tool": "grant_access",
+     "arguments": {
+      "ticket_ref": "IT-TKT-75891"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "grant_access",
+     "arguments": {
+      "ticket_ref": "IT-TKT-75891"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "open_access_ticket",
+     "arguments": {
+      "role_description": "viewer access to finance reporting"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "ready_to_grant",
+     "result_reason": null
+    },
+    {
+     "tool": "grant_access",
+     "arguments": {
+      "ticket_ref": "IT-TKT-28742"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "grant_access",
+     "arguments": {
+      "ticket_ref": "IT-TKT-28742"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "temporary_access_offer": [],
+    "access_changes": {
+     "attempts": 1,
+     "total": 1
+    },
+    "out_of_scope_changes": {
+     "attempts": 1,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.declined": 1,
+    "orchard.turn_order_fix": 1
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZBWphcrmNJpDpnSF5yw\"}\n",
+      "conversation_id": "internal-it-helpdesk-claude-text-correction-system-switch-at-confirmation-20260930T065207"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZBXhoRE8wYwbVcEYPNC\"}\n",
+      "conversation_id": "internal-it-helpdesk-claude-text-correction-system-switch-at-confirmation-20260930T065207"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "grant_access",
+      "conversation_id": "internal-it-helpdesk-claude-text-correction-system-switch-at-confirmation-20260930T065207"
+     }
+    ],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "grant_access",
+      "conversation_id": "internal-it-helpdesk-claude-text-correction-system-switch-at-confirmation-20260930T065207"
+     }
+    ],
+    "orchard.turn_order_fix": [
+     {
+      "sender_id": "internal-it-helpdesk-claude-text-correction-system-switch-at-confirmation-20260930T065207",
+      "system_messages_moved": 1,
+      "iteration": 0,
+      "conversation_id": "internal-it-helpdesk-claude-text-correction-system-switch-at-confirmation-20260930T065207"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 10,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 51583,
+    "completion_tokens": 886,
+    "reasoning_tokens": 337,
+    "cached_prompt_tokens": 9161,
+    "cache_creation_input_tokens": 31251,
+    "cost_usd": 0.111162,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1097.5,
+     1055.6,
+     1276.8,
+     258.4,
+     1669.4,
+     1129.4,
+     1817.3,
+     1519.7,
+     1194.4,
+     1932.0,
+     2376.6,
+     265.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "internal-it-helpdesk-claude-text-correction-system-switch-at-confirmation-20260930T065207",
+    "prompt": 51583,
+    "completion": 886,
+    "total": 52469,
+    "generations": 10,
+    "fetched_at": "2026-09-30T06:52:34.032187+00:00"
+   }
+  }
+ ]
+}
