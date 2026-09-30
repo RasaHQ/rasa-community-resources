@@ -70,6 +70,7 @@ delegates to Rasa's own factories. `voicerouter/providers/` adds the rest.
 | **Vosk** | ASR | `voicerouter.providers.vosk.VoskASR` | **none — local** | **live-verified** |
 | **faster-whisper** | ASR | `voicerouter.providers.whisper.FasterWhisperASR` | **none — local** | **live-verified** |
 | Neuphonic NeuTTS | TTS | `voicerouter.providers.neuphonic.NeuTTSLocal` | **none — local** | model not run — see below |
+| **Neuphonic NeuTTS-2E, native (Metal)** | TTS | `voicerouter.providers.neutts_native.NeuTTSNative` | **none — local** | **live-verified** — see below |
 | **AWS Polly** | TTS | `voicerouter.providers.aws.PollyTTS` | AWS credential chain | shape-verified — no creds |
 | **AWS Transcribe** | ASR | `voicerouter.providers.aws.TranscribeASR` | AWS credential chain | shape-verified — no creds |
 | **Google Cloud TTS** | TTS | `voicerouter.providers.google.GoogleTTS` | Application Default Credentials | shape-verified — no creds |
@@ -299,6 +300,34 @@ dependency conflict then never has to be resolved at all, the model stays warm
 across restarts of the agent, and a crash in a research-grade stack cannot take
 the call with it. That is a small HTTP service plus a thin adapter, and it is
 the shape this should take before anyone runs it in production.
+
+### NeuTTS natively, in Rasa's own environment
+
+The numpy conflict is a property of the Python `neutts` package, not of
+NeuTTS. The GGUF backbone runs on llama.cpp and the decoder is an ONNX graph,
+so [`native/neutts/`](native/neutts/) builds both as native programs from
+pinned sources (Neuphonic's llama.cpp fork with Metal, and a small C++ decoder
+on ONNX Runtime) and checks the model files against their digests.
+`voicerouter.providers.neutts_native.NeuTTSNative` drives them from Rasa's own
+venv with no torch and no numpy:
+
+```yaml
+tts:
+  name: voicerouter.providers.neutts_native.NeuTTSNative
+  runtime_dir: patterns/voice-vendor-router/native/neutts/build
+  models_dir: patterns/voice-vendor-router/native/neutts/models
+  language_map: { en: { voice: sophie } }
+```
+
+It starts `llama-server` (loopback only) and the decoder once per Rasa
+process, keeps both loaded, streams speech codes from the server and decodes
+them in chunks while generation runs, so the first audio arrives after about
+30 codes. It spells numerals out before synthesis, because NeuTTS-2E does not
+read digits (a reference written as digits came out as babble in every take).
+Measured on an M4 Pro, warm: first audio 0.18 to 0.28 s, real-time factor
+about 0.18. It was run live in
+[`mantle-voice-healthcare-refill-request-gpt-local`](../../examples/mantle-voice-healthcare-refill-request-gpt-local/),
+which records the per-turn figures. Apple silicon only.
 
 ## Format conversion
 

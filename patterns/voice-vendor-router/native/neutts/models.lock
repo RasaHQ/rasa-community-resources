@@ -1,0 +1,24 @@
+# NeuTTS-2E model pack: the files prepare_models.py accepts, by exact digest.
+# Both Hugging Face repositories are gated (accept the terms on each model page
+# and set HF_TOKEN to download). The speaker comes from the public NeuTTS repo.
+backbone.repo=neuphonic/neutts-2e-q4-gguf
+backbone.revision=021bd72d8eeff6f548e5c9209d03db6b6dff4939
+backbone.file=neutts-2e-Q4_0.gguf
+backbone.bytes=300693920
+backbone.sha256=ccc2a33941aa3787d232c608e9a60f6cd74a2d2af0e1e35afce0aedccef38b1d
+decoder.repo=neuphonic/neucodec-onnx-decoder-int8
+decoder.revision=d4b449d34211ffe3b5efc57fa464b37393f8ce7f
+decoder.file=model.onnx
+decoder.bytes=312292102
+decoder.sha256=3ddd9e56396e6029e0e948ac0255c89c803f981f23dcf4c154f50820bd74a6b3
+# Speaker "sophie", one of NeuTTS-2E's four fixed speakers. The codes are the
+# 175 NeuCodec frames in samples/sophie.pt, read without torch and written as
+# space-separated integers plus a newline; the text is samples/sophie.txt plus
+# a newline.
+speaker.name=sophie
+speaker.pt.url=https://raw.githubusercontent.com/neuphonic/neutts/ac69851f28fc63a487917e7c2e27f0d75c759cba/samples/sophie.pt
+speaker.pt.sha256=7f4f973f3873a4a1432f5b0ebd257b6337b5c1d6885b9bb7e0ec8abfefa83371
+speaker.txt.url=https://raw.githubusercontent.com/neuphonic/neutts/ac69851f28fc63a487917e7c2e27f0d75c759cba/samples/sophie.txt
+speaker.txt.sha256=038100f4a525f31e1cce00d32f11c5432109e8a553938b23ff451da03af57cfc
+speaker.codes.sha256=f6e163b9e4f96faed4a0150b86864b44c4c24c7f139da5f62f65e03d27a2e16e
+speaker.text.sha256=5af2031e932873d4f37f060def1d0da8c0aca5fd8848ef322796e46a78142e3b

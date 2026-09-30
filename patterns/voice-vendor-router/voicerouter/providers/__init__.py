@@ -8,6 +8,7 @@ factories. This package is for everything else.
           voicerouter.providers.elevenlabs.ElevenLabsTTS
           voicerouter.providers.speechmatics.SpeechmaticsTTS
           voicerouter.providers.neuphonic.NeuTTSLocal      (local, no API key)
+          voicerouter.providers.neutts_native.NeuTTSNative (local, Metal, no Python model stack)
           voicerouter.providers.aws.PollyTTS
           voicerouter.providers.google.GoogleTTS
 
@@ -50,6 +51,9 @@ CATALOGUE: tuple[VendorEntry, ...] = (
     VendorEntry("tts", "voicerouter.providers.neuphonic.NeuTTSLocal",
                 "(none — local)", False,
                 "on-device; needs the optional neutts package and a reference voice"),
+    VendorEntry("tts", "voicerouter.providers.neutts_native.NeuTTSNative",
+                "(none — local)", True,
+                "NeuTTS-2E on llama.cpp Metal plus a C++ decoder, built by native/neutts; Apple silicon"),
     VendorEntry("asr", "voicerouter.providers.vosk.VoskASR",
                 "(none — local)", True,
                 "Apache 2.0, ~68MB, natively streaming: emits real partials"),
