@@ -1,0 +1,380 @@
+{
+ "schema": 1,
+ "build": "banking-advisor-appointment-claude-voice",
+ "case": "banking-advisor-appointment",
+ "project": "examples/mantle-voice-banking-advisor-appointment-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T06:20:47.992818+00:00",
+ "finished_at": "2026-09-30T06:21:31.183757+00:00",
+ "model_file": "20260930-072052-charitable-riser.tar.gz",
+ "variant": {
+  "name": "flux-language-en-gb",
+  "description": "language: en-GB in the Flux language_map, so Rasa sends language_hint=en-GB to /v2/listen; a direct probe got HTTP 400 at connect for that parameter",
+  "edits": [
+   {
+    "file": "integrations.yml",
+    "find": "        en:\n          model: flux-general-en\n      eot_threshold: 0.7\n",
+    "replace": "        en:\n          model: flux-general-en\n          language: en-GB\n      eot_threshold: 0.7\n"
+   }
+  ]
+ },
+ "train_seconds": 5.5,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 0,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 0,
+  "turn_latency_ms": {
+   "p50": null,
+   "p95": null,
+   "max": null,
+   "mean": null
+  },
+  "llm_calls": 0,
+  "llm_calls_per_turn": null,
+  "side_channel_calls": 0,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "reasoning_tokens": 0,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "reservation_claim": 0,
+   "advice_given": 0
+  },
+  "tool_result_metrics": {
+   "bookings": {
+    "attempts": 0,
+    "total": 0
+   },
+   "callbacks": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 1,
+   "deepgram.v2.error": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 0,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "northgate.rime_idle_reconnect": 0
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 0,
+   "audio_turns": 0,
+   "eos_to_first_audible_ms": {
+    "n": 0,
+    "p50": null,
+    "p95": null,
+    "max": null
+   },
+   "eos_to_first_audio_ms": {
+    "n": 0,
+    "p50": null,
+    "p95": null,
+    "max": null
+   },
+   "eos_to_first_marker_ms": {
+    "n": 0,
+    "p50": null,
+    "p95": null,
+    "max": null
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "tts_complete_latency_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 0,
+    "user_perceived_latency_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 0,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 0,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": null,
+    "wer_p50": null,
+    "tokens": {}
+   },
+   "stt_audio_seconds": 0.3,
+   "tts_characters": 0,
+   "stt_usd": 3e-05,
+   "tts_usd": 0,
+   "speech_cost_usd": 3e-05,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 3e-05,
+  "llm_cost_usd": 0,
+  "speech_cost_usd": 3e-05,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 3.164343,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "normal-remortgage-phone",
+   "kind": "normal",
+   "description": "A mortgage question by phone: the mortgage team, Thursday 2:30 pm, booked after the engine's read-back.",
+   "conversation_id": "banking-advisor-appointment-claude-voice-normal-remortgage-phone-20260930T062047",
+   "passed": false,
+   "outcome": "fail",
+   "error": "RuntimeError: no bot turn after caller turn (closed)",
+   "turns": [],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-MTG-P0814",
+       "purpose": "mortgage",
+       "channel": "phone"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "purpose": "re:^(?!mortgage$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "reservation_claim": [],
+    "advice_given": [],
+    "bookings": {
+     "attempts": 0,
+     "total": 0
+    },
+    "callbacks": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "voice_channel.agent_task_failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "rime.connection.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.turn.failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "northgate.rime_idle_reconnect": 0,
+    "deepgram.connection.failed": 1,
+    "deepgram.v2.error": 0,
+    "voice_channel.audio_missing": 0,
+    "rime.stream_audio.error": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0
+   },
+   "log_event_details": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "voice_channel.agent_task_failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "output_channel.response_delivery_failed": [],
+    "rime.connection.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.turn.failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "northgate.rime_idle_reconnect": [],
+    "deepgram.connection.failed": [
+     {
+      "status_code": 400,
+      "error": "Connection to Deepgram failed.",
+      "url": "wss://api.deepgram.com/v2/listen?encoding=linear16&sample_rate=16000&model=flux-general-en&language_hint=en-GB&eot_threshold=0.7&eot_timeout_ms=5000",
+      "conversation_id": "banking-advisor-appointment-claude-voice-normal-remortgage-phone-20260930T062047"
+     }
+    ],
+    "deepgram.v2.error": [],
+    "voice_channel.audio_missing": [],
+    "rime.stream_audio.error": [],
+    "voice_channel.streaming_task_ended_unexpectedly": []
+   },
+   "usage": {
+    "llm_calls": 0,
+    "main_loop_calls": 0,
+    "side_channel_calls": 0,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": []
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 0.28,
+    "tts_characters": 0,
+    "call": {
+     "audio_seconds_sent": 0.28,
+     "call_seconds": 0.88,
+     "markers_acked": 0,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 0.0,
+     "session_end_turn_s": null
+    },
+    "stt_usd": 3e-05,
+    "tts_usd": 0.0,
+    "cost_usd": 3e-05,
+    "asr": []
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "banking-advisor-appointment-claude-voice-normal-remortgage-phone-20260930T062047",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T06:21:30.918703+00:00"
+   }
+  }
+ ]
+}

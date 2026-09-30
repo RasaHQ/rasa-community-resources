@@ -1,0 +1,655 @@
+{
+ "schema": 1,
+ "build": "banking-advisor-appointment-claude-voice",
+ "case": "banking-advisor-appointment",
+ "project": "examples/mantle-voice-banking-advisor-appointment-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T05:37:06.737323+00:00",
+ "finished_at": "2026-09-30T05:39:30.265224+00:00",
+ "model_file": "20260930-063736-horizontal-swatch.tar.gz",
+ "train_seconds": 30.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 0,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 2,
+  "turn_latency_ms": {
+   "p50": 1045.7,
+   "p95": 2087.6,
+   "max": 2087.6,
+   "mean": 1566.7
+  },
+  "llm_calls": 9,
+  "llm_calls_per_turn": 4.5,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 1,
+  "failed_side_channel_calls": 1,
+  "engine_error_calls": 0,
+  "prompt_tokens": 40753,
+  "completion_tokens": 1016,
+  "reasoning_tokens": 296,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 2,
+  "bot_text_metrics": {
+   "reservation_claim": 0,
+   "advice_given": 0
+  },
+  "tool_result_metrics": {
+   "bookings": {
+    "attempts": 0,
+    "total": 0
+   },
+   "callbacks": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 1,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 0,
+   "deepgram.v2.error": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 1,
+   "processor.handle_voice_conversation.turn_failed": 1,
+   "voice_channel.agent_task_failed": 1
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 2,
+   "audio_turns": 2,
+   "eos_to_first_audible_ms": {
+    "n": 2,
+    "p50": 1045.7,
+    "p95": 2087.6,
+    "max": 2087.6
+   },
+   "eos_to_first_audio_ms": {
+    "n": 2,
+    "p50": 1045.7,
+    "p95": 2087.6,
+    "max": 2087.6
+   },
+   "eos_to_first_marker_ms": {
+    "n": 2,
+    "p50": 833.0,
+    "p95": 1872.7,
+    "max": 1872.7
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 2,
+     "p50": 484.1,
+     "p95": 1202.8,
+     "max": 1202.8
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 2,
+     "p50": 212.5,
+     "p95": 215.1,
+     "max": 215.1
+    },
+    "tts_complete_latency_ms": {
+     "n": 2,
+     "p50": 487.5,
+     "p95": 1469.6,
+     "max": 1469.6
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 2,
+    "user_perceived_latency_ms": {
+     "n": 2,
+     "p50": 1417.7,
+     "p95": 1810.6,
+     "max": 1810.6
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 2,
+     "p50": 870.9,
+     "p95": 1590.7,
+     "max": 1590.7
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 2,
+     "p50": 1228.9,
+     "p95": 2561.7,
+     "max": 2561.7
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 2,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 2,
+    "turns_heard_nothing": 0,
+    "turns_split": 1,
+    "wer_mean": 0.026,
+    "wer_p50": 0.0,
+    "tokens": {
+     "term": {
+      "checked": 2,
+      "exact": 2,
+      "normalised": 2
+     },
+     "day": {
+      "checked": 1,
+      "exact": 1,
+      "normalised": 1
+     },
+     "time": {
+      "checked": 1,
+      "exact": 1,
+      "normalised": 1
+     }
+    }
+   },
+   "stt_audio_seconds": 75.8,
+   "tts_characters": 738,
+   "stt_usd": 0.008207,
+   "tts_usd": 0.0369,
+   "speech_cost_usd": 0.045107,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.136773,
+  "llm_cost_usd": 0.091666,
+  "speech_cost_usd": 0.045107,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.170233,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "correction-step-free-branch-at-confirmation",
+   "kind": "correction",
+   "description": "The case's correction: at the read-back of a phone hold, the customer needs a step-free branch visit. The phone hold is released and a step-free branch booked.",
+   "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T053706",
+   "passed": false,
+   "outcome": "fail",
+   "error": "RuntimeError: no bot turn after caller turn (closed)",
+   "turns": [
+    {
+     "user": "I'd like a phone appointment about my mortgage, Thursday at half past two.",
+     "latency_ms": 2087.6,
+     "bot": [
+      "Right, let me get that booking started for you.",
+      "The mortgage team has a phone appointment on Thursday the 8th of October at half past two. Would you like that one?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.09,
+      "speech_off_epoch": 1790746671.87515,
+      "eos_to_first_marker_ms": 1872.7,
+      "eos_to_first_audio_ms": 2087.6,
+      "eos_to_first_audible_ms": 2087.6,
+      "end_markers": [
+       {
+        "at_ms": 2360.1,
+        "rasa_processing_latency_ms": 1202.7628421783447,
+        "tts_first_byte_latency_ms": 215.05999565124512,
+        "tts_complete_latency_ms": 487.49470710754395
+       },
+       {
+        "at_ms": 7859.5,
+        "rasa_processing_latency_ms": 1202.7628421783447,
+        "tts_first_byte_latency_ms": 213.34505081176758,
+        "tts_complete_latency_ms": 2536.6740226745605
+       }
+      ],
+      "bot_audio_s": 9.79,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "I'd like a phone appointment about my mortgage Thursday at half past two."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1417.725250008516,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 870.8514999889303,
+         "llm_total_generation_ms": 1228.9281669945922,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Actually, I'd rather come into a branch, and it needs to be step-free. I use a wheelchair.",
+     "latency_ms": 1045.7,
+     "bot": [
+      "Okay, let me look for branch times for you.",
+      "No mortgage team has a step-free branch slot on Thursday afternoon. The closest is a mortgage advisor at the Ashcombe branch, which is step-free, on Friday the 9th of October at 10 in the morning. I can also offer a video call or the phone slot, or arrange a callback. Which would you like?",
+      "Thank you, Eleanor. The Ashcombe branch is step-free, so it will suit you. Would you like the Friday the 9th of October slot at 10 in the morning?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.98,
+      "speech_off_epoch": 1790746692.030438,
+      "eos_to_first_marker_ms": 833.0,
+      "eos_to_first_audio_ms": 1045.7,
+      "eos_to_first_audible_ms": 1045.7,
+      "end_markers": [
+       {
+        "at_ms": 2302.5,
+        "rasa_processing_latency_ms": 484.05981063842773,
+        "tts_first_byte_latency_ms": 212.54873275756836,
+        "tts_complete_latency_ms": 1469.566822052002
+       },
+       {
+        "at_ms": 8960.4,
+        "rasa_processing_latency_ms": 484.05981063842773,
+        "tts_first_byte_latency_ms": 248.460054397583,
+        "tts_complete_latency_ms": 5315.832138061523
+       },
+       {
+        "at_ms": 12110.4,
+        "rasa_processing_latency_ms": 484.05981063842773,
+        "tts_first_byte_latency_ms": 212.738037109375,
+        "tts_complete_latency_ms": 3148.7579345703125
+       }
+      ],
+      "bot_audio_s": 37.08,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Actually, I'd rather come into a branch, and it needs to be step free.",
+       "use a wheelchair."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1810.6066670152359,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1590.726666006958,
+         "llm_total_generation_ms": 2561.7322080070153,
+         "generated_by_llm": true
+        }
+       },
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "release_hold",
+      "result": {
+       "status": "released",
+       "slot_id": "SLT-MTG-P0814"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-ASH-M0910",
+       "purpose": "mortgage",
+       "channel": "branch"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-MTG-P0814"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "book_appointment",
+      "result": {
+       "status": "succeeded",
+       "slot_id": "SLT-FRD-M0814"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_advisor_slots",
+     "arguments": {
+      "purpose": "mortgage",
+      "channel": "phone",
+      "day": "Thursday",
+      "part_of_day": "afternoon"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "proposed",
+     "result_reason": null
+    },
+    {
+     "tool": "find_advisor_slots",
+     "arguments": {
+      "purpose": "mortgage",
+      "channel": "branch",
+      "day": "Thursday",
+      "part_of_day": "afternoon"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "no_capable_slot",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me get that booking started for you.",
+     "Okay, let me look for branch times for you."
+    ],
+    "reservation_claim": [],
+    "advice_given": [],
+    "bookings": {
+     "attempts": 0,
+     "total": 0
+    },
+    "callbacks": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 1,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "voice_channel.audio_missing": 0,
+    "deepgram.v2.error": 0,
+    "output_channel.response_delivery_failed": 1,
+    "voice_channel.agent_task_failed": 1,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "processor.handle_voice_conversation.turn_failed": 1,
+    "deepgram.connection.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "rime.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "browser_audio.handle_message.error": 0
+   },
+   "log_event_details": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZ5qwXxwYYR11Z3d4jGG\"}\n",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T053706"
+     }
+    ],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "voice_channel.audio_missing": [],
+    "deepgram.v2.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T053706",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-banking-advisor-appointment/examples/mantle-voice-banking-advisor-appointment-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-banking-advisor-appointment/examples/mantle-voice-banking-advisor-appointment-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-banking-advisor-appointment/examples/mantle-voice-banking-advisor-appointment-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-build-banking-advisor-appointment/examples/mantle-voice-banking-advisor-appointment-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "voice_channel.agent_task_failed": [
+     {
+      "event_info": "Agent task raised an exception before shutdown. SessionEnded may not have been processed.",
+      "call_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T053706",
+      "error": "WebSocket connection not established",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T053706"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "processor.handle_voice_conversation.turn_failed": [
+     {
+      "event_info": "An exception occurred processing a voice turn.",
+      "sender_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T053706",
+      "error": "TTSError('WebSocket connection not established')",
+      "conversation_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T053706"
+     }
+    ],
+    "deepgram.connection.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "rime.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "browser_audio.handle_message.error": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 8,
+    "side_channel_calls": 1,
+    "failed_calls": 1,
+    "failed_side_channel_calls": 1,
+    "engine_error_calls": 0,
+    "prompt_tokens": 40753,
+    "completion_tokens": 1016,
+    "reasoning_tokens": 296,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.091666,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1228.5,
+     1547.7,
+     1555.2,
+     287.7,
+     2561.7,
+     1843.3,
+     2345.1,
+     2207.8,
+     1636.1
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 75.76,
+    "tts_characters": 738,
+    "call": {
+     "audio_seconds_sent": 75.76,
+     "call_seconds": 75.77,
+     "markers_acked": 68,
+     "markers_unacked_at_close": 2,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.01,
+     "session_end_turn_s": null
+    },
+    "stt_usd": 0.008207,
+    "tts_usd": 0.0369,
+    "cost_usd": 0.045107,
+    "asr": [
+     {
+      "intended": "I'd like a phone appointment about my mortgage, Thursday at half past two.",
+      "heard": [
+       "I'd like a phone appointment about my mortgage Thursday at half past two."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "mortgage",
+        "kind": "term",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Thursday",
+        "kind": "day",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "half past two",
+        "kind": "time",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Actually, I'd rather come into a branch, and it needs to be step-free. I use a wheelchair.",
+      "heard": [
+       "Actually, I'd rather come into a branch, and it needs to be step free.",
+       "use a wheelchair."
+      ],
+      "user_events": 2,
+      "wer": 0.053,
+      "tokens": [
+       {
+        "token": "wheelchair",
+        "kind": "term",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-advisor-appointment-claude-voice-correction-step-free-branch-at-confirmation-20260930T053706",
+    "prompt": 40753,
+    "completion": 1016,
+    "total": 41769,
+    "generations": 8,
+    "fetched_at": "2026-09-30T05:39:30.004475+00:00"
+   }
+  }
+ ]
+}
