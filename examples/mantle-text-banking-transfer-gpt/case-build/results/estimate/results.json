@@ -1,0 +1,306 @@
+{
+ "schema": 1,
+ "build": "banking-transfer-gpt-text",
+ "case": "banking-transfer",
+ "project": "examples/mantle-text-banking-transfer-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T02:56:52.752627+00:00",
+ "finished_at": "2026-09-30T02:57:56.754664+00:00",
+ "model_file": "20260930-035645-leather-convolution.tar.gz",
+ "train_seconds": null,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 5741.6,
+   "p95": 13831.3,
+   "max": 13831.3,
+   "mean": 8907.8
+  },
+  "llm_calls": 13,
+  "llm_calls_per_turn": 3.25,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 38384,
+  "completion_tokens": 482,
+  "reasoning_tokens": 42,
+  "cached_prompt_tokens": 14336,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "posted_claim": 0
+  },
+  "tool_result_metrics": {
+   "transfer_effects": {
+    "attempts": 2,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "northgate.posted_claim_guard": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.141868,
+  "llm_cost_usd": 0.141868,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "recovery-stale-then-reconfirm",
+   "kind": "recovery",
+   "description": "The bills balance moves after the read; the caller still wants $300, which the current balance ($340) covers. It goes through against the current revision, after a fresh confirmation.",
+   "conversation_id": "banking-transfer-gpt-text-recovery-stale-then-reconfirm-20260930T025652",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Move $300 from my bills checking to savings.",
+     "latency_ms": 12197.7,
+     "bot": [
+      "Hello Elena, this is Northgate Bank transfers. I can move money between your accounts or to a saved payee, check a transfer's status, or tell you a balance. What would you like to do?",
+      "Transfer $300.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)? I will confirm the result from the ledger."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 5741.6,
+     "bot": [
+      "Nothing was submitted. The Bills Checking balance changed after the draft was prepared, so I couldn\u2019t use that confirmation. Your current available balance in Bills Checking is $340.00.",
+      "If you still want to move $300.00 to High-Yield Savings, I\u2019ll prepare it again and ask you to confirm."
+     ]
+    },
+    {
+     "user": "Yes, still move the $300 to savings.",
+     "latency_ms": 3860.5,
+     "bot": [
+      "Transfer $300.00 from your Bills Checking (account ending 3302) to your High-Yield Savings (account ending 3303)? I will confirm the result from the ledger."
+     ]
+    },
+    {
+     "user": "Yes, confirmed.",
+     "latency_ms": 13831.3,
+     "bot": [
+      "Can I help with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_transfer",
+      "result": {
+       "status": "submitted",
+       "payee_ref": "NB-ACC-1003",
+       "amount": "$300.00",
+       "from_account_ref": "NB-ACC-1002",
+       "ledger_status": "posted",
+       "balance_revision": 18
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_payee",
+     "arguments": {
+      "payee": "savings"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_transfer",
+     "arguments": {
+      "from_account": "Bills Checking",
+      "payee_ref": "NB-ACC-1003",
+      "amount": "300"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "draft_id": "NB-DRF-1E13ACD3"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "draft_id": "NB-DRF-1E13ACD3"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "blocked",
+     "result_reason": "stale_balance"
+    },
+    {
+     "tool": "prepare_transfer",
+     "arguments": {
+      "from_account": "Bills Checking",
+      "payee_ref": "NB-ACC-1003",
+      "amount": "300"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "draft_id": "NB-DRF-DA7C2349"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "draft_id": "NB-DRF-DA7C2349"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "submitted",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "posted_claim": [],
+    "transfer_effects": {
+     "attempts": 2,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "northgate.posted_claim_guard": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "northgate.posted_claim_guard": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 13,
+    "main_loop_calls": 11,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 38384,
+    "completion_tokens": 482,
+    "reasoning_tokens": 42,
+    "cached_prompt_tokens": 14336,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.141868,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2723.6,
+     2636.1,
+     1497.8,
+     1389.1,
+     1850.9,
+     3125.5,
+     2467.8,
+     1630.6,
+     2115.0,
+     1517.6,
+     1744.7,
+     9275.2,
+     1074.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-transfer-gpt-text-recovery-stale-then-reconfirm-20260930T025652",
+    "prompt": 38384,
+    "completion": 482,
+    "total": 38866,
+    "generations": 13,
+    "fetched_at": "2026-09-30T02:57:56.491410+00:00"
+   }
+  }
+ ]
+}
