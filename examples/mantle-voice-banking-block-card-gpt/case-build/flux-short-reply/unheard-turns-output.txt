@@ -1,0 +1,13 @@
+2026-09-30 | cd examples/mantle-voice-banking-block-card-gpt/case-build/results && python3 unheard_turns.py 2026-09-29-gpt-5.5-default/results.json 2026-09-29-gpt-5.5-reasoning-low/results.json 2026-09-29-gpt-5.5-default-verify-fix/results.json 2026-09-29-gpt-5.5-default-fix-rerun/results.json   (companion @3a4b810; run by source-intake; note that '*/results.json' in this directory also matches estimate/results.json, so name the four files)
+recovery-verification-retry turn 2: said 'Yes.', user events 0, wait 30,223 ms
+normal-block-then-asked-replacement turn 1: said 'Yes.', user events 0, wait 30,045 ms
+adversarial-lost-debit-two-debits turn 2: said 'Yes.', user events 0, wait 30,274 ms
+correction-other-card-at-confirmation turn 3: said 'Yes.', user events 0, wait 30,203 ms
+4 unheard turn(s)
+exit 1
+audio caller turns checked: 75
+
+with the estimate run added (glob */results.json):
+4 unheard turn(s)
+
+Note: the four runs hold 75 audio caller turns in total (48 + 23 + 3 + 1), matching the harness's turns_checked sum. The check flags exactly the four drops and nothing else, with or without the estimate run. It reads only results.json fields (extra.heard, latency_ms); it did not run any model or network call.
