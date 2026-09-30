@@ -1,0 +1,16 @@
+# Written only by present_payoff_quote (never llm_settable), one short field
+# per value: Mantle renders at most 100 characters of a memory value in the
+# prompt and in @memory substitution, and cuts the rest with no log line.
+# tests/test_guard.py fails if a value could outgrow that limit.
+# quote_ref: the presented quote; cleared by any blocked presentation.
+# quote_loan, quote_amount, quote_good_through: read in the confirmation.
+schema:
+  public:
+    quote_ref:
+      type: text
+    quote_loan:
+      type: text
+    quote_amount:
+      type: text
+    quote_good_through:
+      type: text

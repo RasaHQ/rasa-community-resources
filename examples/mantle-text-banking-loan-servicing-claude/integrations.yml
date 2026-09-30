@@ -1,0 +1,35 @@
+# External integrations for the Northgate loan-servicing agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa sends Claude Sonnet 5.5
+# through LiteLLM's Anthropic provider (DefaultLiteLLMClient; Rasa has no
+# dedicated Anthropic client). No reasoning or thinking setting is given:
+# Rasa sets a default reasoning_effort only for OpenAI-family models and
+# deliberately skips Claude on anthropic and bedrock
+# (rasa/shared/utils/llm.py, _is_claude_model_on_anthropic_or_bedrock), so the
+# model runs at its own API defaults. Rasa sends no prompt-caching markers
+# either; the `prompt-cache` variant in case-build/conversations.json adds
+# LiteLLM's cache_control_injection_points to this model entry (see README).
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: anthropic
+        model: claude-sonnet-5-5
+        api_key: ${ANTHROPIC_API_KEY}
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true
