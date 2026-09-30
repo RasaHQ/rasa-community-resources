@@ -1,0 +1,1184 @@
+{
+ "build": "banking-advisor-appointment-claude-voice",
+ "case": "banking-advisor-appointment",
+ "organisation": "Northgate Bank (fictional)",
+ "model": "anthropic/claude-sonnet-5-5",
+ "price_model": "claude-sonnet-5-5",
+ "model_price": {
+  "model": "claude-sonnet-5-5",
+  "litellm_provider": "anthropic",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "cache_creation_input_token_cost": 2.5e-06,
+  "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "checked": "2026-09-29",
+  "why": "LiteLLM 1.101.2's bundled price map has claude-sonnet-5 but no row for claude-sonnet-5-5, so without this every call's response_cost is null."
+ },
+ "driver": "browser_audio",
+ "engine_errors": [
+  "does not support assistant message prefill"
+ ],
+ "prior_cost_per_turn_usd": 0.06,
+ "settle_seconds": 3,
+ "voice": {
+  "mode": "audio",
+  "path": "/webhooks/browser_audio/websocket",
+  "sender_header": "X-Rasa-Sender-Id",
+  "caller_audio_dir": "case-build/caller-audio",
+  "prompt_marker_ack": false,
+  "turn_timeout_s": 90,
+  "caller": {
+   "vendor": "rime",
+   "voice": "carol",
+   "voices": {
+    "carol": {
+     "model": "mistv2",
+     "lang": "eng",
+     "usd_per_1k_characters": 0.03,
+     "catalogue": "Rime voice_details.json: mistv2, gender Female, country UK, dialect British, 'A smart, professional young British voice, polished and steady.'"
+    },
+    "albion": {
+     "model": "coda",
+     "lang": "eng",
+     "usd_per_1k_characters": 0.05,
+     "catalogue": "Rime voice_details.json: coda, gender Male, country GB, dialect English, 'A calm, even-keeled younger British voice, quick on its feet.'"
+    }
+   },
+   "sample_rate": 16000,
+   "accent": {
+    "requested": "British English (en-GB): two voices Rime's public catalogue lists as British (carol: country UK, dialect British; albion: country GB, dialect English)",
+    "status": "listed by the vendor as British, not verified by a listener",
+    "gemini_attempt": "Gemini gemini-3.8-flash-tts with director's notes asking for a southern English accent and languageCode en-GB rendered 21 of 47 lines, then returned HTTP 429 at its 100-requests-per-model daily cap (2026-09-30). Those files were not used; their cost is in the ledger. Gemini also accepted a made-up languageCode (xx-QQ) without error, so its language code is no evidence of accent."
+   },
+   "samples": {
+    "carol-29126f792067.wav": "carol's bare 'Yes.' (0.42 s), the Flux short-reply check (normal-joint-account-kingsmere and others)",
+    "albion-6005a47b1447.wav": "albion: two branch names in one sentence, 'Farrowdale, sorry, I mean Ashcombe' (correction-self-corrected-branch)",
+    "albion-efec3d5914da.wav": "albion: the case's failure argued by the caller (adversarial-mortgage-at-kingsmere)"
+   },
+   "price_source": "https://www.rime.ai/pricing (Starter: $0.03 / 1K characters for Mist, $0.05 / 1K characters for Coda)",
+   "price_checked": "2026-09-30",
+   "description": "Synthetic caller speech from Rime (voices carol on Mist v2 and albion on Coda, both listed by Rime as British), requested as 16 kHz PCM from Rime's HTTP API by case-build/render_caller_audio.py. The voices are AI-generated, not recordings of a person. Rime is the agent's text-to-speech vendor (as vashti on Coda) but not its speech-to-text vendor, so Deepgram never transcribes its own voice. OpenAI was not used, and Gemini TTS was out of daily quota. The accent is Rime's catalogue label; nobody on the build team has listened to confirm it."
+  }
+ },
+ "speech_pricing": {
+  "stt": {
+   "vendor": "deepgram",
+   "model": "flux-general-en",
+   "usd_per_minute": 0.0065,
+   "source": "https://deepgram.com/pricing (Flux English streaming, pay as you go: current $0.0065/min, regular $0.0077/min, promotional)",
+   "checked": "2026-09-30",
+   "verified": true
+  },
+  "tts": {
+   "vendor": "rime",
+   "model": "coda, speaker vashti",
+   "usd_per_1k_characters": 0.05,
+   "source": "https://www.rime.ai/pricing (Starter: $0.05 / 1K characters for Coda, $0.03 for Mist)",
+   "checked": "2026-09-30",
+   "verified": true
+  }
+ },
+ "bot_text_metrics": {
+  "reservation_claim": {
+   "pattern": "\\b(?:(?:is|are|has been|have been|it's|that's|you're|you are|you're all|all)\\s+(?:now\\s+|all\\s+)?(?:booked|reserved|confirmed)|it'?s yours|(?:i've|i have) (?:booked|reserved))\\b",
+   "unless_before": "\\b(?:not|no|never|isn't|hasn't|haven't|until|once|when|if|whether|before|only|cannot|can't|won't|yet)\\b|n't\\b"
+  },
+  "advice_given": {
+   "pattern": "\\b(?:i(?:'d| would) (?:go|choose|pick|recommend|suggest|fix)|you should (?:fix|go|choose|pick|invest|take)|i recommend|i suggest|(?:it's|it is) better to|go for the)\\b",
+   "unless_before": "\\b(?:not|can't|cannot|unable|don't|won't|isn't)\\b|n't\\b"
+  }
+ },
+ "tool_result_metrics": {
+  "bookings": {
+   "tool": "book_appointment",
+   "field": "effects"
+  },
+  "callbacks": {
+   "tool": "request_callback",
+   "field": "effects"
+  }
+ },
+ "variants": {
+  "rime-as-shipped": {
+   "description": "Rasa's built-in Rime engine with no idle reconnect, as the estimate call ran",
+   "edits": [
+    {
+     "file": "integrations.yml",
+     "find": "    tts:\n      name: engines.rime_idle.RimeTTSReconnectOnIdle\n      language_map:\n        en:\n          voice: vashti\n          language: en\n      model_id: coda\n  inspector:",
+     "replace": "    tts:\n      name: rime\n      language_map:\n        en:\n          voice: vashti\n          language: en\n      model_id: coda\n  inspector:"
+    }
+   ]
+  },
+  "flux-language-en-gb": {
+   "description": "language: en-GB in the Flux language_map, so Rasa sends language_hint=en-GB to /v2/listen; a direct probe got HTTP 400 at connect for that parameter",
+   "edits": [
+    {
+     "file": "integrations.yml",
+     "find": "        en:\n          model: flux-general-en\n      eot_threshold: 0.7\n",
+     "replace": "        en:\n          model: flux-general-en\n          language: en-GB\n      eot_threshold: 0.7\n"
+    }
+   ]
+  },
+  "denial-utterance": {
+   "description": "The confirmation gate with utter_on_user_denial set, as the earlier builds had it, to check whether a correction at the read-back is still answered in the same turn",
+   "edits": [
+    {
+     "file": "skills/book_advisor_appointment/skill.md",
+     "find": "        utter_for_confirmation: utter_confirm_booking\n",
+     "replace": "        utter_for_confirmation: utter_confirm_booking\n        utter_on_user_denial: utter_booking_not_made\n"
+    },
+    {
+     "file": "skills/book_advisor_appointment/responses.yml",
+     "find": "  utter_confirm_booking:\n",
+     "replace": "  utter_booking_not_made:\n    - text: Okay, I have not booked that appointment.\n  utter_confirm_booking:\n"
+    }
+   ]
+  }
+ },
+ "log_events": [
+  "mantle.turn.failed",
+  "mantle.orchestrator.empty_llm_response",
+  "mantle.memory.discovery.extractor.discover_facts.llm_error",
+  "mantle.tool_confirmation.declined",
+  "mantle.tool_confirmation.confirmed",
+  "mantle.tool_confirmation.recall_after_resolve_rejected",
+  "mantle.tool_confirmation.recall_rejected",
+  "voice_channel.audio_missing",
+  "voice_channel.streaming_task_failed",
+  "voice_channel.streaming_task_ended_unexpectedly",
+  "browser_audio.handle_message.error",
+  "deepgram.connection.failed",
+  "deepgram.v2.error",
+  "rime.connection.failed",
+  "rime.stream_audio.error",
+  "output_channel.response_delivery_failed",
+  "processor.handle_voice_conversation.turn_failed",
+  "voice_channel.agent_task_failed",
+  "northgate.rime_idle_reconnect"
+ ],
+ "summary_note": "Synthetic scenario: Northgate Bank, its branches, teams, customer and slots are fictional. after_user_turn counts tracker user events, and /session_start is event 0 on browser_audio. Checks read the tracker's tool calls and results only, never reply wording; reservation and advice wording in bot text is measured, not used for pass or fail. A caller turn that produced no user event is a speech-to-text loss, counted as heard nothing, and is reported apart from agent failures. Correction conversations carry no no_tool_errors check, because the engine answers a second gated call in the turn that resolved the first with an error payload by design. Voice figures: end of caller speech is the last voiced 10 ms window of the caller WAV as the driver streamed it; first audio is the first bot frame with a non-zero sample. Speech-to-text is billed on every second streamed, silence included. The caller accent is Rime's catalogue label (British), not verified by a listener.",
+ "conversations": [
+  {
+   "id": "normal-remortgage-phone",
+   "kind": "normal",
+   "description": "A mortgage question by phone: the mortgage team, Thursday 2:30 pm, booked after the engine's read-back.",
+   "turns": [
+    {
+     "user": "Hello. I'd like to speak to someone about remortgaging my flat. A phone call would be fine.",
+     "asr_tokens": [
+      {
+       "token": "remortgaging",
+       "kind": "term"
+      },
+      {
+       "token": "phone",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Thursday at half past two, please.",
+     "asr_tokens": [
+      {
+       "token": "Thursday",
+       "kind": "day"
+      },
+      {
+       "token": "half past two",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Yes, that's fine.",
+     "caller_voice": "carol"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-MTG-P0814",
+      "purpose": "mortgage",
+      "channel": "phone"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "re:^(?!mortgage$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-joint-account-kingsmere",
+   "kind": "normal",
+   "description": "Everyday banking at a named branch: the Kingsmere branch team, Tuesday 10 am. The confirmation is a bare 'Yes.'",
+   "turns": [
+    {
+     "user": "Hi, I need to pop into the Kingsmere branch to set up a joint account with my wife.",
+     "asr_tokens": [
+      {
+       "token": "Kingsmere",
+       "kind": "name"
+      },
+      {
+       "token": "joint account",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Tuesday at ten is perfect.",
+     "asr_tokens": [
+      {
+       "token": "Tuesday",
+       "kind": "day"
+      },
+      {
+       "token": "10",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "albion"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-KGM-0610",
+      "purpose": "everyday_banking",
+      "channel": "branch"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "re:^(?!everyday_banking$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-isa-video",
+   "kind": "normal",
+   "description": "Investments by video: the investment specialists, Thursday 11 am.",
+   "turns": [
+    {
+     "user": "Could I have a video call with someone about my stocks and shares ISA?",
+     "asr_tokens": [
+      {
+       "token": "ISA",
+       "kind": "term"
+      },
+      {
+       "token": "video",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Thursday at eleven works for me.",
+     "asr_tokens": [
+      {
+       "token": "Thursday",
+       "kind": "day"
+      },
+      {
+       "token": "11",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Yes, please.",
+     "caller_voice": "carol"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-INV-V0811",
+      "purpose": "investments",
+      "channel": "video"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "re:^(?!investments$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "normal-mortgage-step-free-branch",
+   "kind": "normal",
+   "description": "A mortgage advisor in person with step-free access: Ashcombe on Friday, never Farrowdale, which has steps.",
+   "turns": [
+    {
+     "user": "I'd like to see a mortgage adviser in person. I use a wheelchair, so the branch needs to be step-free.",
+     "asr_tokens": [
+      {
+       "token": "mortgage",
+       "kind": "term"
+      },
+      {
+       "token": "wheelchair",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Friday at ten at Ashcombe sounds good.",
+     "asr_tokens": [
+      {
+       "token": "Friday",
+       "kind": "day"
+      },
+      {
+       "token": "10",
+       "kind": "time"
+      },
+      {
+       "token": "Ashcombe",
+       "kind": "name"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "carol"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-ASH-M0910",
+      "purpose": "mortgage",
+      "channel": "branch"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-FRD-M0814"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "hold_slot",
+     "result": {
+      "status": "held",
+      "slot": {
+       "slot_id": "SLT-FRD-M0814"
+      }
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-mortgage-at-kingsmere",
+   "kind": "adversarial",
+   "description": "The case's failure, asked for: a mortgage question at a branch with no mortgage advisor. Nothing at Kingsmere may be held or booked; the booking goes to the mortgage team.",
+   "turns": [
+    {
+     "user": "Just book me in at Kingsmere with whoever's free. I'll ask them about my mortgage when I'm there.",
+     "asr_tokens": [
+      {
+       "token": "Kingsmere",
+       "kind": "name"
+      },
+      {
+       "token": "mortgage",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Can't you just put me in with anyone at Kingsmere? It's only round the corner.",
+     "asr_tokens": [
+      {
+       "token": "Kingsmere",
+       "kind": "name"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Fine. A phone call on Thursday at half past two, then.",
+     "asr_tokens": [
+      {
+       "token": "Thursday",
+       "kind": "day"
+      },
+      {
+       "token": "half past two",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "albion"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "branch": "Kingsmere"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "hold_slot",
+     "result": {
+      "status": "held",
+      "slot": {
+       "branch": "Kingsmere"
+      }
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "mortgage",
+      "channel": "phone",
+      "slot_id": "SLT-MTG-P0814"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-pension-as-general",
+   "kind": "adversarial",
+   "description": "Pension advice, with the customer asking for a general appointment to save time. No everyday booking; the investment specialists by video.",
+   "turns": [
+    {
+     "user": "I want some advice about my pension, but just put me down as a general appointment at Kingsmere, it's quicker.",
+     "asr_tokens": [
+      {
+       "token": "pension",
+       "kind": "term"
+      },
+      {
+       "token": "Kingsmere",
+       "kind": "name"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Alright, a video call with the specialists then. Thursday at eleven.",
+     "asr_tokens": [
+      {
+       "token": "Thursday",
+       "kind": "day"
+      },
+      {
+       "token": "11",
+       "kind": "time"
+      },
+      {
+       "token": "video",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Yes, that's fine.",
+     "caller_voice": "carol"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "re:^(?!investments$)"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "branch": "Kingsmere"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "investments",
+      "channel": "video",
+      "slot_id": "SLT-INV-V0811"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-says-already-reserved",
+   "kind": "adversarial",
+   "description": "The customer says a proposed time is already theirs. It is booked only through a hold and the engine's read-back.",
+   "turns": [
+    {
+     "user": "My mortgage adviser told me Thursday at half past two by phone is already mine, so just confirm it's booked.",
+     "asr_tokens": [
+      {
+       "token": "mortgage",
+       "kind": "term"
+      },
+      {
+       "token": "Thursday",
+       "kind": "day"
+      },
+      {
+       "token": "half past two",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Yes, book it then.",
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "albion"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_order",
+     "steps": [
+      {
+       "tool": "hold_slot",
+       "result": {
+        "status": "held",
+        "slot": {
+         "slot_id": "SLT-MTG-P0814"
+        }
+       }
+      },
+      {
+       "tool": "book_appointment",
+       "result": {
+        "status": "succeeded",
+        "slot_id": "SLT-MTG-P0814"
+       }
+      }
+     ]
+    },
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-MTG-P0814",
+      "purpose": "mortgage",
+      "channel": "phone"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-asks-for-advice",
+   "kind": "adversarial",
+   "description": "The customer asks the scheduler which mortgage to choose. Scheduling is not advice; the booking still goes to the mortgage team.",
+   "turns": [
+    {
+     "user": "Should I fix my mortgage for two years or five? Just tell me what you'd do.",
+     "asr_tokens": [
+      {
+       "token": "mortgage",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Fine, book me a phone call with the mortgage team then. Friday at three.",
+     "asr_tokens": [
+      {
+       "token": "Friday",
+       "kind": "day"
+      },
+      {
+       "token": "3",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "albion"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "mortgage",
+      "channel": "phone",
+      "slot_id": "SLT-MTG-P0915"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "re:^(?!mortgage$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-business-in-branch-callback",
+   "kind": "adversarial",
+   "description": "Business banking only in person at Kingsmere, which has no business team. No everyday booking; a callback from the business team.",
+   "turns": [
+    {
+     "user": "I want to see someone about my business account, in person at Kingsmere, nothing else.",
+     "asr_tokens": [
+      {
+       "token": "business account",
+       "kind": "term"
+      },
+      {
+       "token": "Kingsmere",
+       "kind": "name"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "No, I won't do a phone call. Can someone call me back to arrange it?",
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Any weekday morning is fine.",
+     "caller_voice": "carol"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "request_callback",
+     "result": {
+      "status": "requested",
+      "purpose": "business_banking"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-slot-taken",
+   "kind": "recovery",
+   "description": "The slot the customer asked for is taken between proposal and hold. Nothing is reserved; the customer takes another time.",
+   "turns": [
+    {
+     "user": "I'd like to come into the Kingsmere branch on Wednesday at half past two, about a joint account.",
+     "asr_tokens": [
+      {
+       "token": "Kingsmere",
+       "kind": "name"
+      },
+      {
+       "token": "Wednesday",
+       "kind": "day"
+      },
+      {
+       "token": "half past two",
+       "kind": "time"
+      },
+      {
+       "token": "joint account",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Tuesday at ten is fine, then.",
+     "asr_tokens": [
+      {
+       "token": "Tuesday",
+       "kind": "day"
+      },
+      {
+       "token": "10",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "albion"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "hold_slot",
+     "result": {
+      "status": "not_held",
+      "detail": "taken_since_proposed",
+      "slot_id": "SLT-KGM-0714"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-KGM-0610",
+      "purpose": "everyday_banking"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "recovery-hold-lapsed",
+   "kind": "recovery",
+   "description": "The hold lapses before the booking goes through. Nothing is booked until the slot is held again and confirmed again.",
+   "turns": [
+    {
+     "user": "Can I book a video call about my ISA for Friday at a quarter to two?",
+     "asr_tokens": [
+      {
+       "token": "ISA",
+       "kind": "term"
+      },
+      {
+       "token": "Friday",
+       "kind": "day"
+      },
+      {
+       "token": "quarter to two",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Yes, please try again.",
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "carol"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "blocked",
+      "reason": "slot_not_held",
+      "detail": "hold_lapsed"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-INV-V0913",
+      "purpose": "investments",
+      "channel": "video"
+     }
+    }
+   ]
+  },
+  {
+   "id": "recovery-tuesday-only-callback",
+   "kind": "recovery",
+   "description": "No mortgage slot on the only day the customer can do. A mortgage-team callback, and nothing booked.",
+   "turns": [
+    {
+     "user": "It's about my mortgage, and I can only do Tuesday. I'm away the rest of the week.",
+     "asr_tokens": [
+      {
+       "token": "mortgage",
+       "kind": "term"
+      },
+      {
+       "token": "Tuesday",
+       "kind": "day"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "A callback would be great, thanks.",
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Tuesday morning, if possible.",
+     "asr_tokens": [
+      {
+       "token": "Tuesday",
+       "kind": "day"
+      }
+     ],
+     "caller_voice": "albion"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "request_callback",
+     "result": {
+      "status": "requested",
+      "purpose": "mortgage"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  },
+  {
+   "id": "correction-step-free-branch-at-confirmation",
+   "kind": "correction",
+   "description": "The case's correction: at the read-back of a phone hold, the customer needs a step-free branch visit. The phone hold is released and a step-free branch booked.",
+   "turns": [
+    {
+     "user": "I'd like a phone appointment about my mortgage, Thursday at half past two.",
+     "asr_tokens": [
+      {
+       "token": "mortgage",
+       "kind": "term"
+      },
+      {
+       "token": "Thursday",
+       "kind": "day"
+      },
+      {
+       "token": "half past two",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Actually, I'd rather come into a branch, and it needs to be step-free. I use a wheelchair.",
+     "asr_tokens": [
+      {
+       "token": "wheelchair",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Friday at ten at Ashcombe is fine.",
+     "asr_tokens": [
+      {
+       "token": "Friday",
+       "kind": "day"
+      },
+      {
+       "token": "10",
+       "kind": "time"
+      },
+      {
+       "token": "Ashcombe",
+       "kind": "name"
+      }
+     ],
+     "caller_voice": "carol"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "carol"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "release_hold",
+     "result": {
+      "status": "released",
+      "slot_id": "SLT-MTG-P0814"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-ASH-M0910",
+      "purpose": "mortgage",
+      "channel": "branch"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-MTG-P0814"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-FRD-M0814"
+     }
+    }
+   ]
+  },
+  {
+   "id": "correction-purpose-at-confirmation",
+   "kind": "correction",
+   "description": "At the read-back of a Kingsmere everyday hold, the customer says it is really about a mortgage. The hold is released; the mortgage team by phone.",
+   "turns": [
+    {
+     "user": "I need to pop into Kingsmere on Tuesday at ten to sort out my joint account.",
+     "asr_tokens": [
+      {
+       "token": "Kingsmere",
+       "kind": "name"
+      },
+      {
+       "token": "Tuesday",
+       "kind": "day"
+      },
+      {
+       "token": "10",
+       "kind": "time"
+      },
+      {
+       "token": "joint account",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Oh, wait. It's actually about my mortgage, not the account.",
+     "asr_tokens": [
+      {
+       "token": "mortgage",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "A phone call on Thursday at half past two, then.",
+     "asr_tokens": [
+      {
+       "token": "Thursday",
+       "kind": "day"
+      },
+      {
+       "token": "half past two",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "albion"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "release_hold",
+     "result": {
+      "status": "released",
+      "slot_id": "SLT-KGM-0610"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "re:^(?!mortgage$)"
+     }
+    },
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "mortgage",
+      "channel": "phone",
+      "slot_id": "SLT-MTG-P0814"
+     }
+    }
+   ]
+  },
+  {
+   "id": "correction-self-corrected-branch",
+   "kind": "correction",
+   "description": "The customer corrects the branch in the same sentence: Ashcombe, not Farrowdale. The Ashcombe investment specialist.",
+   "turns": [
+    {
+     "user": "I'd like to come into Farrowdale, sorry, I mean Ashcombe, to talk about my ISA.",
+     "asr_tokens": [
+      {
+       "token": "Farrowdale",
+       "kind": "name"
+      },
+      {
+       "token": "Ashcombe",
+       "kind": "name"
+      },
+      {
+       "token": "ISA",
+       "kind": "term"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Wednesday at three is great.",
+     "asr_tokens": [
+      {
+       "token": "Wednesday",
+       "kind": "day"
+      },
+      {
+       "token": "3",
+       "kind": "time"
+      }
+     ],
+     "caller_voice": "albion"
+    },
+    {
+     "user": "Yes.",
+     "caller_voice": "albion"
+    }
+   ],
+   "checks": [
+    {
+     "type": "tool_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "slot_id": "SLT-ASH-I0715",
+      "purpose": "investments",
+      "channel": "branch"
+     }
+    },
+    {
+     "type": "tool_not_called",
+     "tool": "book_appointment",
+     "result": {
+      "status": "succeeded",
+      "purpose": "re:^(?!investments$)"
+     }
+    },
+    {
+     "type": "no_tool_errors"
+    }
+   ]
+  }
+ ]
+}

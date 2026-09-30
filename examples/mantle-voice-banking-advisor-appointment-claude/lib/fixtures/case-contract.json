@@ -1,0 +1,178 @@
+{
+  "slug": "banking-advisor-appointment",
+  "title": "Advisor bookings with the right purpose",
+  "organisation": "Northgate Bank",
+  "action": "reserve an advisor appointment",
+  "failure": "The system booked a branch visit for a question requiring a specialist who was not available at that branch.",
+  "lesson": "Route by appointment purpose and advisor capability before consuming a slot; scheduling does not itself provide financial advice.",
+  "receipt": "A booking reference naming meeting channel, purpose and confirmed slot.",
+  "evidence": "Match purpose-to-capability rules and the held slot with the final booking; distinguish a proposed time from a reservation.",
+  "recovery": "Release an unsuitable hold and offer a capable team or callback. Do not silently substitute a general appointment.",
+  "owner": "advisor scheduling owner",
+  "metric": "appointments routed to an incapable service, divided by booked advisor visits",
+  "question": "This team handles your stated request by phone at the available time. Would that work for you?",
+  "correction": "The customer needs an accessible branch visit; release the phone hold and search the required channel.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "purpose_matched",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_advisor_capability",
+      "phase": "request"
+    },
+    {
+      "field": "slot_held",
+      "good": true,
+      "bad": false,
+      "reason": "slot_not_held",
+      "phase": "request"
+    },
+    {
+      "field": "channel_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_meeting_channel",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "purpose_matched": true,
+    "slot_held": true,
+    "channel_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "purpose_matched": true,
+        "slot_held": true,
+        "channel_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "purpose_matched-false",
+      "facts": {
+        "purpose_matched": false,
+        "slot_held": true,
+        "channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_advisor_capability",
+        "effects": 0
+      }
+    },
+    {
+      "name": "purpose_matched-missing",
+      "facts": {
+        "slot_held": true,
+        "channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_advisor_capability",
+        "effects": 0
+      }
+    },
+    {
+      "name": "purpose_matched-string",
+      "facts": {
+        "purpose_matched": "true",
+        "slot_held": true,
+        "channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_advisor_capability",
+        "effects": 0
+      }
+    },
+    {
+      "name": "slot_held-false",
+      "facts": {
+        "purpose_matched": true,
+        "slot_held": false,
+        "channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "slot_not_held",
+        "effects": 0
+      }
+    },
+    {
+      "name": "slot_held-missing",
+      "facts": {
+        "purpose_matched": true,
+        "channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "slot_not_held",
+        "effects": 0
+      }
+    },
+    {
+      "name": "slot_held-string",
+      "facts": {
+        "purpose_matched": true,
+        "slot_held": "true",
+        "channel_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "slot_not_held",
+        "effects": 0
+      }
+    },
+    {
+      "name": "channel_confirmed-false",
+      "facts": {
+        "purpose_matched": true,
+        "slot_held": true,
+        "channel_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_meeting_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "channel_confirmed-missing",
+      "facts": {
+        "purpose_matched": true,
+        "slot_held": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_meeting_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "channel_confirmed-string",
+      "facts": {
+        "purpose_matched": true,
+        "slot_held": true,
+        "channel_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_meeting_channel",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}
