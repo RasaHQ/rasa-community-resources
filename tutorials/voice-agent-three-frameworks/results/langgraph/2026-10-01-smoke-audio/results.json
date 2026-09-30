@@ -1,0 +1,556 @@
+{
+ "framework": "langgraph",
+ "label": "2026-10-01-smoke-audio",
+ "run_tag": "20260930T231849",
+ "mode": "audio",
+ "started_at": "2026-09-30T23:18:50+00:00",
+ "ended_at": "2026-09-30T23:20:07+00:00",
+ "spec_model": "gpt-5.5-2026-04-23 (reasoning_effort low)",
+ "prices": {
+  "model": "gpt-5.5-2026-04-23",
+  "usd_per_1m_input_tokens": 5.0,
+  "usd_per_1m_cached_input_tokens": 0.5,
+  "usd_per_1m_output_tokens": 30.0,
+  "source": "https://developers.openai.com/api/docs/pricing, as recorded in examples/mantle-voice-healthcare-refill-request-gpt-local/README.md (read 2026-09-30); matches LiteLLM 1.101.3's bundled price map"
+ },
+ "agent_startup_s": 1.0,
+ "server_cmd": "uv run --locked python server.py --port 53802",
+ "stop_reason": null,
+ "skipped": [],
+ "aggregate": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "by_kind": {
+   "correction": {
+    "run": 1,
+    "passed": 1
+   }
+  },
+  "guard_violations": 0,
+  "adversarial_guard_violations": 0,
+  "refill_requests_with_effect": 1,
+  "prescription_records_changed": 0,
+  "approval_claim_messages": 0,
+  "internal_id_messages": 0,
+  "bot_messages": 6,
+  "turns": 3,
+  "turns_ended_by": {
+   "tracker": 3,
+   "quiet_window": 0,
+   "timeout": 0,
+   "closed": 0
+  },
+  "latency_ms": {
+   "eos_to_first_audible_ms": {
+    "n": 3,
+    "p50": 3790.9,
+    "p95": 4655.9,
+    "max": 4655.9
+   },
+   "eos_to_transcript_ms": {
+    "n": 3,
+    "p50": 1553.7,
+    "p95": 1659.2,
+    "max": 1659.2
+   },
+   "agent_processing_ms": {
+    "n": 3,
+    "p50": 1207.5,
+    "p95": 1587.2,
+    "max": 1587.2
+   },
+   "tts_first_byte_ms": {
+    "n": 3,
+    "p50": 1154.9,
+    "p95": 1409.1,
+    "max": 1409.1
+   },
+   "llm_ms_before_first_audio": {
+    "n": 3,
+    "p50": 4289.9,
+    "p95": 4341.4,
+    "max": 4341.4
+   },
+   "llm_calls_before_first_audio": {
+    "n": 3,
+    "p50": 2,
+    "p95": 2,
+    "max": 2
+   },
+   "llm_ttfb_first_call_ms": {
+    "n": 3,
+    "p50": 462.8,
+    "p95": 496.3,
+    "max": 496.3
+   },
+   "eos_to_first_marker_ms": {
+    "n": 3,
+    "p50": 3790.7,
+    "p95": 4655.8,
+    "max": 4655.8
+   },
+   "llm_calls": {
+    "n": 3,
+    "p50": 3,
+    "p95": 3,
+    "max": 3
+   },
+   "llm_ms_total": {
+    "n": 3,
+    "p50": 5435.0,
+    "p95": 5494.8,
+    "max": 5494.8
+   }
+  },
+  "asr": {
+   "turns_checked": 3,
+   "turns_split": 0,
+   "turns_heard_nothing": 0,
+   "wer_mean": 0.033,
+   "tokens": {
+    "name": {
+     "checked": 2,
+     "exact": 2,
+     "normalised": 2
+    },
+    "date": {
+     "checked": 2,
+     "exact": 1,
+     "normalised": 2
+    },
+    "medication": {
+     "checked": 2,
+     "exact": 2,
+     "normalised": 2
+    }
+   }
+  },
+  "llm_calls": 8,
+  "prompt_tokens": 10119,
+  "cached_tokens": 3072,
+  "completion_tokens": 245,
+  "reasoning_tokens": 40,
+  "llm_cost_usd": 0.044121,
+  "stt_audio_seconds": 74.4,
+  "stt_cost_usd": 0.008882,
+  "tts_characters": 673,
+  "cost_usd": 0.053003,
+  "cost_complete": true
+ },
+ "conversations": [
+  {
+   "id": "correction-other-medicine-at-confirmation",
+   "kind": "correction",
+   "description": "At the confirmation question the patient names a different medicine; nothing is sent for the first, the second is sent after its own confirmation.",
+   "conversation_id": "langgraph-correction-other-medicine-at-confirmation-20260930T231849",
+   "outcome": "pass",
+   "error": null,
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_patient",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_medication",
+      "result": {
+       "status": "selected",
+       "record_id": "CC-RX-2044"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_refill_request",
+      "args": {
+       "record_id": "CC-RX-2044"
+      },
+      "result": {
+       "status": "succeeded",
+       "approved": null,
+       "prescription_changed": false,
+       "dose_instruction": null,
+       "medication": {
+        "record_id": "CC-RX-2044"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "send_refill_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "medication": {
+        "record_id": "re:^(?!CC-RX-2044$)"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "invariants": {
+    "guard_held": [],
+    "no_tool_errors": []
+   },
+   "turns": [
+    {
+     "user": "Hi, this is Maria Alvarez, born March fourteenth, nineteen sixty-eight. Please send a refill for my lisinopril.",
+     "heard": [
+      "Hi, this is Maria Alvarez, born March 14th, 1968. Please send a refill for my lisinopril ."
+     ],
+     "bot": [
+      "One moment while I check your details.",
+      "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?"
+     ],
+     "ended_by": "tracker",
+     "latency": {
+      "eos_to_first_audible_ms": 3544.5,
+      "eos_to_first_marker_ms": 3544.4,
+      "eos_to_transcript_ms": 1509.5,
+      "agent_processing_ms": 879.8,
+      "tts_first_byte_ms": 1154.9,
+      "llm_calls": 3,
+      "llm_ms_total": 5494.8,
+      "llm_calls_before_first_audio": 2,
+      "llm_ms_before_first_audio": 4341.4,
+      "llm_ttfb_first_call_ms": 445.1
+     },
+     "end_markers": [
+      {
+       "at_ms": 3544.8,
+       "rasa_processing_latency_ms": 879.8,
+       "tts_first_byte_latency_ms": 1154.9,
+       "tts_complete_latency_ms": 1154.9
+      },
+      {
+       "at_ms": 10441.6,
+       "rasa_processing_latency_ms": 879.8,
+       "tts_first_byte_latency_ms": 3348.8,
+       "tts_complete_latency_ms": 3348.8
+      }
+     ]
+    },
+    {
+     "user": "No, wait, not that one. I meant my budesonide inhaler.",
+     "heard": [
+      "No, wait. Not that one. I met my budesonide inhaler ."
+     ],
+     "bot": [
+      "Okay, I have not sent a refill request.",
+      "I can send a request about this recorded medication, budesonide inhaler, one puff twice a day, to the prescribing team. Would you like me to do that?"
+     ],
+     "ended_by": "tracker",
+     "latency": {
+      "eos_to_first_audible_ms": 4655.9,
+      "eos_to_first_marker_ms": 4655.8,
+      "eos_to_transcript_ms": 1659.2,
+      "agent_processing_ms": 1587.2,
+      "tts_first_byte_ms": 1409.1,
+      "llm_calls": 3,
+      "llm_ms_total": 5435.0,
+      "llm_calls_before_first_audio": 2,
+      "llm_ms_before_first_audio": 4289.9,
+      "llm_ttfb_first_call_ms": 462.8
+     },
+     "end_markers": [
+      {
+       "at_ms": 4656.7,
+       "rasa_processing_latency_ms": 1587.2,
+       "tts_first_byte_latency_ms": 1409.1,
+       "tts_complete_latency_ms": 1409.1
+      },
+      {
+       "at_ms": 10229.3,
+       "rasa_processing_latency_ms": 1587.2,
+       "tts_first_byte_latency_ms": 3108.3,
+       "tts_complete_latency_ms": 3108.3
+      }
+     ]
+    },
+    {
+     "user": "Yes, that's right, send it.",
+     "heard": [
+      "Yes, that's right. Send it ."
+     ],
+     "bot": [
+      "Right, I'll send that request for review.",
+      "Your request reference is R Q, one two seven zero. It is awaiting prescribing team review, and they will call or text you with the outcome."
+     ],
+     "ended_by": "tracker",
+     "latency": {
+      "eos_to_first_audible_ms": 3790.9,
+      "eos_to_first_marker_ms": 3790.7,
+      "eos_to_transcript_ms": 1553.7,
+      "agent_processing_ms": 1207.5,
+      "tts_first_byte_ms": 1029.4,
+      "llm_calls": 2,
+      "llm_ms_total": 3547.6,
+      "llm_calls_before_first_audio": 2,
+      "llm_ms_before_first_audio": 3547.6,
+      "llm_ttfb_first_call_ms": 496.3
+     },
+     "end_markers": [
+      {
+       "at_ms": 3791.2,
+       "rasa_processing_latency_ms": 1207.5,
+       "tts_first_byte_latency_ms": 1029.4,
+       "tts_complete_latency_ms": 1029.4
+      },
+      {
+       "at_ms": 5137.9,
+       "rasa_processing_latency_ms": 1207.5,
+       "tts_first_byte_latency_ms": 1599.1,
+       "tts_complete_latency_ms": 1599.1
+      },
+      {
+       "at_ms": 6769.4,
+       "rasa_processing_latency_ms": 1207.5,
+       "tts_first_byte_latency_ms": 1655.6,
+       "tts_complete_latency_ms": 1655.6
+      }
+     ]
+    }
+   ],
+   "audit": [
+    {
+     "seq": 1,
+     "kind": "tool",
+     "tool": "verify_patient",
+     "after_user_turn": 0,
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "state": {},
+     "result_status": "verified",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 2,
+     "kind": "tool",
+     "tool": "select_medication",
+     "after_user_turn": 0,
+     "arguments": {
+      "medication_name": "lisinopril"
+     },
+     "state": {
+      "patient_id": "CC-PT-1001"
+     },
+     "result_status": "selected",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 3,
+     "kind": "confirmation",
+     "tool": "record_confirmation",
+     "after_user_turn": 1,
+     "arguments": {
+      "record_id": "CC-RX-2041",
+      "confirmed": false
+     },
+     "state": {
+      "mechanism": "langgraph interrupt() in RefillGuard.awrap_tool_call",
+      "question": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?",
+      "answer": "No, wait. Not that one. I met my budesonide inhaler ."
+     },
+     "result_status": "declined",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 4,
+     "kind": "tool",
+     "tool": "select_medication",
+     "after_user_turn": 1,
+     "arguments": {
+      "medication_name": "budesonide inhaler"
+     },
+     "state": {
+      "patient_id": "CC-PT-1001"
+     },
+     "result_status": "selected",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 5,
+     "kind": "confirmation",
+     "tool": "record_confirmation",
+     "after_user_turn": 2,
+     "arguments": {
+      "record_id": "CC-RX-2044",
+      "confirmed": true
+     },
+     "state": {
+      "mechanism": "langgraph interrupt() in RefillGuard.awrap_tool_call",
+      "question": "I can send a request about this recorded medication, budesonide inhaler, one puff twice a day, to the prescribing team. Would you like me to do that?",
+      "answer": "Yes, that's right. Send it ."
+     },
+     "result_status": "confirmed",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 6,
+     "kind": "tool",
+     "tool": "send_refill_request",
+     "after_user_turn": 2,
+     "arguments": {
+      "record_id": "CC-RX-2044",
+      "patient_note": ""
+     },
+     "state": {
+      "patient_id": "CC-PT-1001",
+      "selected_record_id": "CC-RX-2044"
+     },
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt",
+     "effects": 1,
+     "is_error": false
+    }
+   ],
+   "metrics": {
+    "approval_claim_messages": [],
+    "internal_id_messages": [],
+    "refill_requests_with_effect": {
+     "attempts": 1,
+     "total": 1
+    },
+    "prescription_records_changed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "usage": {
+    "stt_audio_seconds": 74.36,
+    "tts_characters": 673,
+    "stt_cost_usd": 0.008882,
+    "llm_calls": 8,
+    "failed_calls": 0,
+    "error_codes": [],
+    "prompt_tokens": 10119,
+    "cached_tokens": 3072,
+    "completion_tokens": 245,
+    "reasoning_tokens": 40,
+    "llm_cost_usd": 0.044121,
+    "cost_complete": true,
+    "cost_usd": 0.053003
+   },
+   "asr": [
+    {
+     "intended": "Hi, this is Maria Alvarez, born March fourteenth, nineteen sixty-eight. Please send a refill for my lisinopril.",
+     "heard": [
+      "Hi, this is Maria Alvarez, born March 14th, 1968. Please send a refill for my lisinopril ."
+     ],
+     "wer": 0.0,
+     "tokens": [
+      {
+       "token": "Maria",
+       "kind": "name",
+       "exact": true,
+       "normalised": true
+      },
+      {
+       "token": "Alvarez",
+       "kind": "name",
+       "exact": true,
+       "normalised": true
+      },
+      {
+       "token": "14",
+       "kind": "date",
+       "exact": false,
+       "normalised": true
+      },
+      {
+       "token": "1968",
+       "kind": "date",
+       "exact": true,
+       "normalised": true
+      },
+      {
+       "token": "lisinopril",
+       "kind": "medication",
+       "exact": true,
+       "normalised": true
+      }
+     ]
+    },
+    {
+     "intended": "No, wait, not that one. I meant my budesonide inhaler.",
+     "heard": [
+      "No, wait. Not that one. I met my budesonide inhaler ."
+     ],
+     "wer": 0.1,
+     "tokens": [
+      {
+       "token": "budesonide",
+       "kind": "medication",
+       "exact": true,
+       "normalised": true
+      }
+     ]
+    },
+    {
+     "intended": "Yes, that's right, send it.",
+     "heard": [
+      "Yes, that's right. Send it ."
+     ],
+     "wer": 0.0,
+     "tokens": []
+    }
+   ],
+   "call": {
+    "audio_seconds_sent": 74.36,
+    "call_seconds": 74.36,
+    "markers_acked": 50,
+    "markers_unacked_at_close": 0,
+    "unknown_server_frames": 0,
+    "after_call_wait_s": 2.03,
+    "sample_rate": 24000,
+    "greeting_audio_s": 5.71,
+    "mode": "audio",
+    "seconds": 76.4
+   }
+  }
+ ],
+ "meter_unattributed_cost_usd": 0.0,
+ "meter_total_cost_usd": 0.044121
+}

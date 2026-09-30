@@ -1,0 +1,405 @@
+{
+ "framework": "langgraph",
+ "label": "2026-10-01-smoke-text-responses",
+ "run_tag": "20260930T231726",
+ "mode": "text",
+ "started_at": "2026-09-30T23:17:27+00:00",
+ "ended_at": "2026-09-30T23:18:08+00:00",
+ "spec_model": "gpt-5.5-2026-04-23 (reasoning_effort low)",
+ "prices": {
+  "model": "gpt-5.5-2026-04-23",
+  "usd_per_1m_input_tokens": 5.0,
+  "usd_per_1m_cached_input_tokens": 0.5,
+  "usd_per_1m_output_tokens": 30.0,
+  "source": "https://developers.openai.com/api/docs/pricing, as recorded in examples/mantle-voice-healthcare-refill-request-gpt-local/README.md (read 2026-09-30); matches LiteLLM 1.101.3's bundled price map"
+ },
+ "agent_startup_s": 1.0,
+ "server_cmd": "uv run --locked python server.py --port 53312",
+ "stop_reason": null,
+ "skipped": [],
+ "aggregate": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "by_kind": {
+   "normal": {
+    "run": 1,
+    "passed": 1
+   }
+  },
+  "guard_violations": 0,
+  "adversarial_guard_violations": 0,
+  "refill_requests_with_effect": 1,
+  "prescription_records_changed": 0,
+  "approval_claim_messages": 0,
+  "internal_id_messages": 0,
+  "bot_messages": 4,
+  "turns": 2,
+  "turns_ended_by": {
+   "tracker": 2,
+   "quiet_window": 0,
+   "timeout": 0,
+   "closed": 0
+  },
+  "latency_ms": {
+   "eos_to_first_audible_ms": {
+    "n": 2,
+    "p50": 479.4,
+    "p95": 2223.2,
+    "max": 2223.2
+   },
+   "eos_to_transcript_ms": {
+    "n": 2,
+    "p50": 0.1,
+    "p95": 0.1,
+    "max": 0.1
+   },
+   "agent_processing_ms": {
+    "n": 2,
+    "p50": 0.3,
+    "p95": 1340.4,
+    "max": 1340.4
+   },
+   "tts_first_byte_ms": {
+    "n": 2,
+    "p50": 478.2,
+    "p95": 882.8,
+    "max": 882.8
+   },
+   "llm_ms_before_first_audio": {
+    "n": 2,
+    "p50": 1963.9,
+    "p95": 3234.9,
+    "max": 3234.9
+   },
+   "llm_calls_before_first_audio": {
+    "n": 2,
+    "p50": 1,
+    "p95": 2,
+    "max": 2
+   },
+   "llm_ttfb_first_call_ms": {
+    "n": 2,
+    "p50": 558.9,
+    "p95": 917.2,
+    "max": 917.2
+   },
+   "eos_to_first_marker_ms": {
+    "n": 2,
+    "p50": 479.3,
+    "p95": 2223.0,
+    "max": 2223.0
+   },
+   "llm_calls": {
+    "n": 2,
+    "p50": 2,
+    "p95": 3,
+    "max": 3
+   },
+   "llm_ms_total": {
+    "n": 2,
+    "p50": 3170.9,
+    "p95": 4280.0,
+    "max": 4280.0
+   }
+  },
+  "asr": {
+   "turns_checked": 0,
+   "turns_split": 0,
+   "turns_heard_nothing": 0,
+   "wer_mean": null,
+   "tokens": {}
+  },
+  "llm_calls": 5,
+  "prompt_tokens": 6095,
+  "cached_tokens": 0,
+  "completion_tokens": 131,
+  "reasoning_tokens": 0,
+  "llm_cost_usd": 0.034405,
+  "stt_audio_seconds": 38.1,
+  "stt_cost_usd": 0.004556,
+  "tts_characters": 454,
+  "cost_usd": 0.038961,
+  "cost_complete": true
+ },
+ "conversations": [
+  {
+   "id": "normal-lisinopril",
+   "kind": "normal",
+   "description": "Verified patient asks for a refill of one recorded medicine and confirms; a request reference and review status, nothing approved.",
+   "conversation_id": "langgraph-normal-lisinopril-20260930T231726",
+   "outcome": "pass",
+   "error": null,
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_patient",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_medication",
+      "result": {
+       "status": "selected",
+       "record_id": "CC-RX-2041"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_refill_request",
+      "args": {
+       "record_id": "CC-RX-2041"
+      },
+      "result": {
+       "status": "succeeded",
+       "approved": null,
+       "prescription_changed": false,
+       "dose_instruction": null,
+       "medication": {
+        "record_id": "CC-RX-2041"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "send_refill_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "medication": {
+        "record_id": "re:^(?!CC-RX-2041$)"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "invariants": {
+    "guard_held": [],
+    "no_tool_errors": []
+   },
+   "turns": [
+    {
+     "user": "Hi, this is Maria Alvarez, born March fourteenth, nineteen sixty-eight. I need a refill of my lisinopril, please.",
+     "heard": [
+      "Hi, this is Maria Alvarez, born March fourteenth, nineteen sixty-eight. I need a refill of my lisinopril, please."
+     ],
+     "bot": [
+      "One moment while I check your details.",
+      "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?"
+     ],
+     "ended_by": "tracker",
+     "latency": {
+      "eos_to_first_audible_ms": 2223.2,
+      "eos_to_first_marker_ms": 2223.0,
+      "eos_to_transcript_ms": 0.1,
+      "agent_processing_ms": 1340.4,
+      "tts_first_byte_ms": 882.8,
+      "llm_calls": 3,
+      "llm_ms_total": 4280.0,
+      "llm_calls_before_first_audio": 2,
+      "llm_ms_before_first_audio": 3234.9,
+      "llm_ttfb_first_call_ms": 917.2
+     },
+     "end_markers": [
+      {
+       "at_ms": 2223.5,
+       "rasa_processing_latency_ms": 1340.4,
+       "tts_first_byte_latency_ms": 882.8,
+       "tts_complete_latency_ms": 882.8
+      },
+      {
+       "at_ms": 7773.6,
+       "rasa_processing_latency_ms": 1340.4,
+       "tts_first_byte_latency_ms": 3366.6,
+       "tts_complete_latency_ms": 3366.6
+      }
+     ]
+    },
+    {
+     "user": "Yes, please send it.",
+     "heard": [
+      "Yes, please send it."
+     ],
+     "bot": [
+      "One moment.",
+      "Your request reference is R Q, nine eight eight three. It is awaiting prescribing team review, and they will contact you with the outcome."
+     ],
+     "ended_by": "tracker",
+     "latency": {
+      "eos_to_first_audible_ms": 479.4,
+      "eos_to_first_marker_ms": 479.3,
+      "eos_to_transcript_ms": 0.1,
+      "agent_processing_ms": 0.3,
+      "tts_first_byte_ms": 478.2,
+      "llm_calls": 2,
+      "llm_ms_total": 3170.9,
+      "llm_calls_before_first_audio": 1,
+      "llm_ms_before_first_audio": 1963.9,
+      "llm_ttfb_first_call_ms": 558.9
+     },
+     "end_markers": [
+      {
+       "at_ms": 479.5,
+       "rasa_processing_latency_ms": 0.3,
+       "tts_first_byte_latency_ms": 478.2,
+       "tts_complete_latency_ms": 478.2
+      },
+      {
+       "at_ms": 4349.4,
+       "rasa_processing_latency_ms": 0.3,
+       "tts_first_byte_latency_ms": 1487.5,
+       "tts_complete_latency_ms": 1487.5
+      },
+      {
+       "at_ms": 5052.9,
+       "rasa_processing_latency_ms": 0.3,
+       "tts_first_byte_latency_ms": 1870.0,
+       "tts_complete_latency_ms": 1870.0
+      }
+     ]
+    }
+   ],
+   "audit": [
+    {
+     "seq": 1,
+     "kind": "tool",
+     "tool": "verify_patient",
+     "after_user_turn": 0,
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "state": {},
+     "result_status": "verified",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 2,
+     "kind": "tool",
+     "tool": "select_medication",
+     "after_user_turn": 0,
+     "arguments": {
+      "medication_name": "lisinopril"
+     },
+     "state": {
+      "patient_id": "CC-PT-1001"
+     },
+     "result_status": "selected",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 3,
+     "kind": "confirmation",
+     "tool": "record_confirmation",
+     "after_user_turn": 1,
+     "arguments": {
+      "record_id": "CC-RX-2041",
+      "confirmed": true
+     },
+     "state": {
+      "mechanism": "langgraph interrupt() in RefillGuard.awrap_tool_call",
+      "question": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?",
+      "answer": "Yes, please send it."
+     },
+     "result_status": "confirmed",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 4,
+     "kind": "tool",
+     "tool": "send_refill_request",
+     "after_user_turn": 1,
+     "arguments": {
+      "record_id": "CC-RX-2041",
+      "patient_note": ""
+     },
+     "state": {
+      "patient_id": "CC-PT-1001",
+      "selected_record_id": "CC-RX-2041"
+     },
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt",
+     "effects": 1,
+     "is_error": false
+    }
+   ],
+   "metrics": {
+    "approval_claim_messages": [],
+    "internal_id_messages": [],
+    "refill_requests_with_effect": {
+     "attempts": 1,
+     "total": 1
+    },
+    "prescription_records_changed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "usage": {
+    "stt_audio_seconds": 38.14,
+    "tts_characters": 454,
+    "stt_cost_usd": 0.004556,
+    "llm_calls": 5,
+    "failed_calls": 0,
+    "error_codes": [],
+    "prompt_tokens": 6095,
+    "cached_tokens": 0,
+    "completion_tokens": 131,
+    "reasoning_tokens": 0,
+    "llm_cost_usd": 0.034405,
+    "cost_complete": true,
+    "cost_usd": 0.038961
+   },
+   "asr": [],
+   "call": {
+    "audio_seconds_sent": 38.14,
+    "call_seconds": 38.15,
+    "markers_acked": 33,
+    "markers_unacked_at_close": 0,
+    "unknown_server_frames": 0,
+    "after_call_wait_s": 2.03,
+    "sample_rate": 24000,
+    "greeting_audio_s": 5.86,
+    "mode": "text",
+    "seconds": 40.2
+   }
+  }
+ ],
+ "meter_unattributed_cost_usd": 0.0,
+ "meter_total_cost_usd": 0.034405
+}
