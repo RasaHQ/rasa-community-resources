@@ -1,0 +1,324 @@
+# The refill guard as a diff: from the guard-off baseline (the same tools and prompt, the model
+# passes the patient id and decides when the caller has confirmed) to this folder as shipped.
+# In a copy of this folder, `patch -R -E -p1 < guard.diff` gives the guard-off baseline. Measured by
+# shared/spec/count_concerns.py strands --diff.
+diff -ruN a/agent.py b/agent.py
+--- a/agent.py	2026-10-01 00:44:20
++++ b/agent.py	2026-10-01 00:44:20
+@@ -16,8 +16,9 @@
+   conversation id reaches the tools through ``invocation_state``.
+ - ``Conversation.turn(text)``: one caller turn as a stream of things to say.
+ 
+-Guard-off baseline: nothing is enforced outside the prompt. The model passes
+-the patient id, and the send tool records the confirmation itself.
++The regions marked refill-guard are the state only tools write (the verified
++patient, the selected entry) and the interrupt/resume half of the guard; the
++decision half is ``guard.py``.
+ """
+ 
+ from __future__ import annotations
+@@ -35,70 +36,83 @@
+ from strands.tools.executors import SequentialToolExecutor
+ from strands.types.tools import ToolContext
+ 
++from guard import RefillGuard
++
+ # The same snapshot and effort as the other two versions. Reasoning models
+ # reject any temperature but the default (HTTP 400, checked 2026-10-01), so
+ # none is set. On the Responses API the effort is the `reasoning` object.
+ MODEL_ID = os.environ.get("CEDAR_MODEL", "gpt-5.5-2026-04-23")
+ MODEL_PARAMS = {"reasoning": {"effort": "low"}}
+ 
+-SYSTEM_PROMPT = instructions.system_prompt(instructions.PROCEDURE.replace(
+-    """4. When select_medication returns selected, call send_refill_request straight
+-   away, with its record_id and anything the caller wants the team to know.
+-   Do not ask for confirmation yourself first: the recorded medicine is read
+-   back and the caller is asked to confirm once, as part of sending, and a
+-   question of your own would make them confirm twice. If the caller names a
+-   different medicine, do not send, and start again from step 2.""",
+-    """4. When select_medication returns selected, read its confirmation_question
+-   to the caller. Only when the caller says yes, call send_refill_request with
+-   its record_id, the patient_id and anything the caller wants the team to
+-   know. If the caller names a different medicine, do not send, and start
+-   again from step 2."""))
+-PATIENT_ID = {"type": "string", "description": "The patient_id verify_patient returned."}
++SYSTEM_PROMPT = instructions.system_prompt()
+ 
+ 
+ def _schema(name: str) -> dict:
+-    schema = clinic.json_schema(name)["parameters"]
+-    if name != "verify_patient":
+-        schema = {**schema, "properties": {"patient_id": PATIENT_ID, **schema["properties"]},
+-                  "required": ["patient_id", *schema["required"]]}
+-    return {"json": schema}
++    return {"json": clinic.json_schema(name)["parameters"]}
+ 
+ 
+ def _conversation_id(ctx: ToolContext) -> str:
+     return str(ctx.invocation_state.get("conversation_id") or "offline")
+ 
+ 
++def _state(ctx: ToolContext, key: str) -> Optional[str]:
++    return ctx.agent.state.get(key) or None
++
++
+ @tool(name="verify_patient", description=TOOL_SPECS["verify_patient"]["description"],
+       inputSchema=_schema("verify_patient"), context=True)
+ def verify_patient(full_name: str, date_of_birth: str, tool_context: ToolContext) -> dict:
+-    return clinic.verify_patient(_conversation_id(tool_context), full_name, date_of_birth)
++    result = clinic.verify_patient(_conversation_id(tool_context), full_name, date_of_birth)
++    # concern-begin: refill-guard
++    # The patient id goes to agent.state, which no model tool can write, and
++    # only this tool writes it. Write-once: a call verified as one patient
++    # cannot become another.
++    if result["status"] == "verified":
++        known = _state(tool_context, "patient_id")
++        if not known:
++            tool_context.agent.state.set("patient_id", result["patient_id"])
++        elif known != result["patient_id"]:
++            return {"status": "not_verified", "reason": "already_verified_as_another_patient",
++                    "next_step": "This call is verified for a different patient. Do not act for this one."}
++    # concern-end
++    return clinic.for_model(result)
+ 
+ 
+ @tool(name="select_medication", description=TOOL_SPECS["select_medication"]["description"],
+       inputSchema=_schema("select_medication"), context=True)
+-def select_medication(patient_id: str, medication_name: str, tool_context: ToolContext) -> dict:
+-    return clinic.select_medication(_conversation_id(tool_context), patient_id, medication_name)
++def select_medication(medication_name: str, tool_context: ToolContext) -> dict:
++    result = clinic.select_medication(_conversation_id(tool_context), _state(tool_context, "patient_id"),
++                                      medication_name)
++    # concern-begin: refill-guard
++    # A new selection always replaces the old one, so the guard reads back and
++    # gates on the entry selected last.
++    tool_context.agent.state.set("selected_record_id", result.get("record_id", ""))
++    tool_context.agent.state.set("selected_medication_label", result.get("medication_label", ""))
++    # concern-end
++    return result
+ 
+ 
+ @tool(name="send_refill_request", description=TOOL_SPECS["send_refill_request"]["description"],
+       inputSchema=_schema("send_refill_request"), context=True)
+-def send_refill_request(patient_id: str, record_id: str, tool_context: ToolContext, patient_note: str = "") -> dict:
+-    conversation_id = _conversation_id(tool_context)
+-    # The model asked the caller (or said it did); nothing checks.
+-    clinic.record_confirmation(conversation_id, record_id, True, mechanism="none: the model decided")
+-    return clinic.send_refill_request(conversation_id, patient_id, record_id, record_id, patient_note)
++def send_refill_request(record_id: str, tool_context: ToolContext, patient_note: str = "") -> dict:
++    # Runs only after guard.py's Confirm intervention was answered yes on a
++    # later caller turn; the confirmation is recorded there.
++    return clinic.send_refill_request(_conversation_id(tool_context), _state(tool_context, "patient_id"),
++                                      _state(tool_context, "selected_record_id"), record_id, patient_note)
+ 
+ 
+ @tool(name="check_request_status", description=TOOL_SPECS["check_request_status"]["description"],
+       inputSchema=_schema("check_request_status"), context=True)
+-def check_request_status(patient_id: str, submission_key: str, tool_context: ToolContext) -> dict:
+-    return clinic.check_request_status(_conversation_id(tool_context), patient_id, submission_key)
++def check_request_status(submission_key: str, tool_context: ToolContext) -> dict:
++    return clinic.check_request_status(_conversation_id(tool_context), _state(tool_context, "patient_id"),
++                                       submission_key)
+ 
+ 
+ @tool(name="route_clinical_question", description=TOOL_SPECS["route_clinical_question"]["description"],
+       inputSchema=_schema("route_clinical_question"), context=True)
+-def route_clinical_question(patient_id: str, question: str, tool_context: ToolContext, record_id: str = "") -> dict:
+-    return clinic.route_clinical_question(_conversation_id(tool_context), patient_id, question, record_id or None)
++def route_clinical_question(question: str, tool_context: ToolContext, record_id: str = "") -> dict:
++    return clinic.route_clinical_question(_conversation_id(tool_context), _state(tool_context, "patient_id"),
++                                          question, record_id or None)
+ 
+ 
+ TOOLS = [verify_patient, select_medication, send_refill_request, check_request_status, route_clinical_question]
+@@ -125,10 +139,11 @@
+ 
+ 
+ class Conversation:
+-    """One caller's conversation: a Strands Agent."""
++    """One caller's conversation: a Strands Agent and its pending confirmation."""
+ 
+     def __init__(self, conversation_id: str, model: Any = None) -> None:
+         self.conversation_id = conversation_id
++        self.guard = RefillGuard(conversation_id)
+         self.agent = Agent(
+             model=model if model is not None else build_model(),
+             tools=list(TOOLS),
+@@ -138,13 +153,25 @@
+             # One tool at a time, in the model's order: select_medication reads
+             # the patient id verify_patient writes in the same batch.
+             tool_executor=SequentialToolExecutor(),
++            interventions=[self.guard],
+             callback_handler=None,
+             agent_id=_agent_id(conversation_id),
+         )
++        # concern-begin: refill-guard
++        self.pending: list = []
++        # concern-end
+ 
+     async def turn(self, text: str) -> AsyncIterator[Say]:
+         """One caller turn: stream what to say, in order."""
+         prompt: Any = text
++        # concern-begin: refill-guard
++        # A pending Confirm interrupt is answered with the caller's words from
++        # this turn, the only way it is ever resumed; guard.py decides.
++        if self.pending:
++            prompt = [{"interruptResponse": {"interruptId": i.id, "response": {"answer": text}}}
++                      for i in self.pending]
++            self.pending = []
++        # concern-end
+         tool_names: dict[str, str] = {}
+         buffered: list[str] = []
+         result = None
+@@ -167,11 +194,22 @@
+                     for r in results:
+                         name = tool_names.get(r.get("toolUseId")) or self._tool_name(r.get("toolUseId"))
+                         cancelled = r.get("status") == "error"
++                        # concern-begin: refill-guard
++                        if name == "send_refill_request" and self.guard.declined_on(r):
++                            yield Say("fixed", clinic.DECLINED_TEXT, "declined")
++                        # concern-end
+                         yield Say("tools", name, "cancelled" if cancelled else "ok")
+             elif "result" in event:
+                 result = event["result"]
+         if buffered:
+             yield Say("end", "".join(buffered))
++        # concern-begin: refill-guard
++        if result is not None and result.stop_reason == "interrupt":
++            self.pending = list(result.interrupts)
++            for interrupt in self.pending:
++                # The Confirm prompt: cedar_clinic's read-back question, verbatim.
++                yield Say("fixed", str(interrupt.reason), "confirmation")
++        # concern-end
+ 
+     def _tool_name(self, tool_use_id: Any) -> str:
+         """The tool a result belongs to, from the history (a resumed call's toolUse is from an earlier turn)."""
+diff -ruN a/guard.py b/guard.py
+--- a/guard.py	1970-01-01 01:00:00
++++ b/guard.py	2026-10-01 00:44:20
+@@ -0,0 +1,125 @@
++# concern: refill-guard
++"""The refill guard as a Strands intervention handler.
++
++Strands' interventions (strandsagents.com/docs/user-guide/sdk/agents/interventions/)
++return typed decisions before a tool runs. ``RefillGuard.before_tool_call``
++answers every ``send_refill_request`` call:
++
++- ``Deny`` when no patient was verified, no medication is selected, or the
++  call names another entry than the one ``select_medication`` wrote to
++  ``agent.state``. The model sees the reason; nothing runs. Fails closed.
++- ``Confirm`` otherwise, with ``cedar_clinic``'s read-back question as the
++  prompt. With no response given, Confirm raises a Strands interrupt: the
++  agent stops with ``stop_reason == "interrupt"``, the voice loop speaks the
++  prompt, and the agent is resumed only with the caller's words from their
++  next turn (``agent.Conversation.turn``). ``evaluate`` then judges those
++  words, records the answer with the clinic and lets the tool run only on a
++  yes. A no cancels the call (``CONFIRMATION_FAILED``).
++
++``after_tool_call`` adds the caller's answer to the tool result: a resumed
++agent gets interrupt responses, not a user message, so this is how the model
++learns what the caller said at the confirmation (for example, another
++medicine's name).
++
++``on_error`` is ``deny``: if the handler raises, the send is blocked.
++"""
++
++from __future__ import annotations
++
++import re
++from typing import Any, Optional
++
++from cedar_clinic import refills
++from cedar_clinic import tools as clinic
++from strands.interventions import Confirm, Deny, InterventionHandler, Proceed, Transform
++
++MECHANISM = "strands Confirm intervention (interrupt, resumed with the caller's next turn)"
++
++_AFFIRM_START = re.compile(
++    r"^(yes|yeah|yep|yup|sure|ok|okay|fine|alright|all right|correct|right|absolutely|definitely|please( do| send)?|go ahead|"
++    r"that's (right|correct|the one|it)|that is (right|correct)|send it|do it)\b")
++_NEGATION = re.compile(r"\b(no|nope|not|don't|dont|do not|wait|cancel|stop|instead|wrong|hold on|never mind)\b")
++_LATER_NEGATION = re.compile(r"\b(don't send|do not send|not that|wait|cancel|instead|wrong|hold on|never mind)\b")
++_DRUG_NAMES = sorted({str(m["name"]).lower() for m in refills.load_data()["medications"].values()})
++
++
++def caller_said_yes(answer: Any, medication_label: str) -> bool:
++    """Whether the caller's words approve the read-back. Anything unclear is a no.
++
++    Yes only when the first clause starts with an affirmative and has no
++    negation, no later clause retracts it, and no other recorded medicine is
++    named.
++    """
++    text = str(answer or "").lower().replace("’", "'").strip()
++    if not text:
++        return False
++    first = re.split(r"[.,!?;]", text, maxsplit=1)[0].strip()
++    if not _AFFIRM_START.search(first) or _NEGATION.search(first) or _LATER_NEGATION.search(text):
++        return False
++    label = medication_label.lower()
++    return not any(re.search(rf"\b{re.escape(name)}\b", text) and name not in label for name in _DRUG_NAMES)
++
++
++def _answer(response: Any) -> str:
++    return str(response.get("answer", "")) if isinstance(response, dict) else str(response or "")
++
++
++class RefillGuard(InterventionHandler):
++    name = "refill-guard"
++
++    def __init__(self, conversation_id: str) -> None:
++        self.conversation_id = conversation_id
++        #: toolUseId -> (answer, confirmed) for the confirmations evaluated.
++        self.answers: dict[str, tuple[str, bool]] = {}
++
++    @property
++    def on_error(self) -> str:
++        return "deny"
++
++    def before_tool_call(self, event: Any):
++        if event.tool_use["name"] != "send_refill_request":
++            return Proceed()
++        state = event.agent.state
++        patient: Optional[str] = state.get("patient_id")
++        selected: Optional[str] = state.get("selected_record_id")
++        label: str = state.get("selected_medication_label") or ""
++        record_id = str((event.tool_use.get("input") or {}).get("record_id") or "").strip().upper()
++        if not patient:
++            return Deny(reason="The caller is not verified. Call verify_patient first. Nothing was sent.")
++        if not selected:
++            return Deny(reason="No medication is selected. Call select_medication first. Nothing was sent.")
++        if record_id != selected:
++            return Deny(reason=f"Only the medication select_medication returned can be sent: record_id {selected}. "
++                               "Nothing was sent.")
++        question = clinic.confirmation_question(label)
++        tool_use_id = str(event.tool_use.get("toolUseId"))
++
++        def evaluate(response: Any) -> bool:
++            answer = _answer(response)
++            confirmed = caller_said_yes(answer, label)
++            clinic.record_confirmation(self.conversation_id, record_id, confirmed, mechanism=MECHANISM,
++                                       question=question, answer=answer)
++            self.answers[tool_use_id] = (answer, confirmed)
++            return confirmed
++
++        return Confirm(prompt=question, evaluate=evaluate)
++
++    def after_tool_call(self, event: Any):
++        tool_use_id = str(event.tool_use.get("toolUseId"))
++        if event.tool_use["name"] != "send_refill_request" or tool_use_id not in self.answers:
++            return Proceed()
++        answer, confirmed = self.answers[tool_use_id]
++
++        def add_answer(e: Any) -> None:
++            note = f'The caller answered the read-back question: "{answer}".'
++            if not confirmed:
++                note += (f' Nothing was sent, and the caller has been told: "{clinic.DECLINED_TEXT}" If they named '
++                         "a different medicine, call select_medication for it.")
++            e.result["content"] = list(e.result.get("content") or []) + [{"text": note}]
++
++        return Transform(apply=add_answer)
++
++    def declined_on(self, tool_result: dict) -> bool:
++        """Whether this send_refill_request result is a declined confirmation."""
++        answer = self.answers.get(str(tool_result.get("toolUseId")))
++        return answer is not None and not answer[1]
