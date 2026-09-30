@@ -214,7 +214,7 @@ async def probe(args) -> None:
     spent_audio = spent_wall = 0.0
     with out.open("w" if args.mode == "probe" else "a") as fh:
         if args.mode == "probe":
-            fh.write(json.dumps({"receipt_header": header(" ".join(["flux-short-reply-probe.py"] + sys.argv[1:2] + ["--env <site .env>", "--out", out.name]))}) + "\n")
+            fh.write(json.dumps({"receipt_header": header(" ".join([".venv/bin/python", sys.argv[0]] + sys.argv[1:2] + ["--env <.env with DEEPGRAM_API_KEY>", "--out", args.out]))}) + "\n")
             fh.write(json.dumps({"kind": "config", "url": url, "channel": "browser_audio",
                                  "frame_ms": FRAME_MS, "lead_silence_s": LEAD_S, "trail_silence_s": TRAIL_S,
                                  "drain_after_close_stream_s": DRAIN_S,
@@ -222,7 +222,7 @@ async def probe(args) -> None:
                                  "cap_usd": args.cap,
                                  "wavs": {k: {kk: vv for kk, vv in v.items() if kk != "pcm"} for k, v in wavs.items()}}) + "\n")
         else:
-            fh.write(json.dumps({"kind": "sweep_config", "command": " ".join(["flux-short-reply-probe.py", "sweep", "--env <site .env>", "--out", out.name, "--repeats", str(args.repeats)]),
+            fh.write(json.dumps({"kind": "sweep_config", "command": " ".join([".venv/bin/python", sys.argv[0], "sweep", "--env <.env with DEEPGRAM_API_KEY>", "--out", args.out, "--repeats", str(args.repeats)]),
                                  "date": dt.date.today().isoformat(), "url": url,
                                  "lead_silence_s": sorted({l for _, l in plan}), "repeats": args.repeats,
                                  "cap_usd_including_earlier_sets": args.cap}) + "\n")
