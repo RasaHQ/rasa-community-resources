@@ -333,6 +333,18 @@ class OutputHookTests(unittest.TestCase):
         self.assertIn(got["reference"], replaced.text)
         self.assertIn("pending", replaced.text)
 
+    def test_confirmed_transfer_seen_under_resolve_tool_confirmation(self):
+        # A confirmed gated tool reaches the hook as resolve_tool_confirmation.
+        sender = "confirmed"
+        got = Flow(sender).send("Sam Patel", "everyday", "75")
+        self.tool(sender, "resolve_tool_confirmation", got)
+        replaced = None
+        for _ in range(self.hooks.MAX_CONSECUTIVE_RETRIES):
+            with self.assertRaises(self.Retry):
+                self.respond(sender, "All done, the $75 has gone through to Sam.")
+        replaced = self.respond(sender, "It went through.")
+        self.assertIn(got["reference"], replaced.text)
+
     def test_posted_own_transfer_may_be_called_posted(self):
         sender = "posted"
         self.tool(sender, "submit_transfer", Flow(sender).send("my everyday checking", "savings", "300"))
