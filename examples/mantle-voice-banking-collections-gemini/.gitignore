@@ -1,0 +1,18 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.rasa/
+models/
+logs/
+# The root .gitignore drops every results/ folder; recorded case-build runs are
+# evidence and are committed. Server logs and raw usage stay local.
+!case-build/results/
+case-build/results/raw/
+# Caller WAVs stay out of git except three samples; case-build/caller-audio/
+# manifest.json lists every file's text and SHA-256, and
+# case-build/render_caller_audio.py regenerates the rest.
+case-build/caller-audio/*.wav
+!case-build/caller-audio/brisa-3373bdc6fc6e.wav
+!case-build/caller-audio/Kore-210da2361f0e.wav
+!case-build/caller-audio/Kore-355d7c58db6b.wav

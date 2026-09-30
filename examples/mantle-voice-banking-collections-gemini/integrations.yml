@@ -1,0 +1,80 @@
+# External integrations for the Northgate collections voice agent (US Spanish).
+#
+# The orchestrator LLM is a model-group reference, set up as in the Willow Shop
+# order-status build (mantle-voice-retail-order-status-gemini): provider
+# gemini, no reasoning setting. Rasa has no dedicated Gemini client: any
+# provider other than openai, azure or self-hosted goes to LiteLLM, which
+# calls the Gemini API as `gemini/<model>`. Rasa adds a default
+# reasoning_effort only for OpenAI-family models, so the model runs at its own
+# API default.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: gemini
+        model: gemini-3.8-flash
+        api_key: ${GEMINI_API_KEY}
+
+# Mantle reads channels from here, never from credentials.yml. The agent's
+# language is `es` (agent.yml), so both engines read their `es` entries.
+channels:
+  browser_audio:
+    server_url: localhost
+    # 16 kHz 16-bit PCM both ways. Deepgram Flux takes linear16 at the stream's
+    # rate, Rime returns PCM at the rate asked for, and the caller fixtures are
+    # recorded at this rate.
+    sample_rate: 16000
+    # The harness names each call, so the tracker, usage and logs join on one id.
+    # Trusted local transports only: any client can pick any conversation id.
+    external_sender_id_header: X-Rasa-Sender-Id
+    silence_timeout: 30
+    interruptions:
+      enabled: false
+    # Deepgram Flux, a Rasa built-in. flux-general-en does not transcribe
+    # Spanish; flux-general-multi does, and it is the one Flux model that
+    # accepts the language_hint Rasa sends when `language` is set (the
+    # Northgate advisor build found flux-general-en refuses it). The end-of-turn
+    # settings are the Northgate block-card build's.
+    asr:
+      name: deepgram
+      language_map:
+        es:
+          model: flux-general-multi
+          language: es
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    # Rime, through Rasa's built-in engine with one change: the websocket is
+    # reopened after 20 s idle (engines/rime_idle.py, from the Northgate
+    # advisor build, where Rime's socket died after about 30 s idle and took
+    # the call with it). `voice` becomes Rime's `speaker`, `language` its
+    # `lang`. Coda with the speaker nieve, which Rime's catalogue lists as
+    # Spanish, country US. The Mist v3 Spanish speaker sofia was the first
+    # choice; a local Whisper check of two agent lines through it heard "Hará
+    # su tarjeto" and "El Giruno Plan", and Coda read the same lines cleanly
+    # (see README).
+    tts:
+      name: engines.rime_idle.RimeTTSReconnectOnIdle
+      language_map:
+        es:
+          voice: nieve
+          language: spa
+      model_id: coda
+  inspector:
+    enabled: true
+    interruptions:
+      enabled: false
+    asr:
+      name: deepgram
+      language_map:
+        es:
+          model: flux-general-multi
+          language: es
+    tts:
+      name: engines.rime_idle.RimeTTSReconnectOnIdle
+      language_map:
+        es:
+          voice: nieve
+          language: spa
+      model_id: coda
