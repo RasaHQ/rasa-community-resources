@@ -60,6 +60,7 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Northgate transfers on GPT (text) | Northgate Bank transfers assistant | Retail banking / casebook case build | [`mantle-text-banking-transfer-gpt`](mantle-text-banking-transfer-gpt) | 2026-09-30 |
 | Northgate risk step-up on GPT (text, web chat) | Northgate payments assistant | Retail banking / casebook case build | [`mantle-text-banking-risk-step-up-gpt`](mantle-text-banking-risk-step-up-gpt) | 2026-09-30 |
 | HarborCover quote and bind on GPT (text) | HarborCover quotes assistant | Insurance / casebook case build | [`mantle-text-insurance-quote-bind-gpt`](mantle-text-insurance-quote-bind-gpt) | 2026-09-30 |
+| Juniper Mobile connectivity recovery on GPT (text) | Juniper Mobile connection support | Telecom / casebook case build | [`mantle-text-telco-diagnostics-gpt`](mantle-text-telco-diagnostics-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 
