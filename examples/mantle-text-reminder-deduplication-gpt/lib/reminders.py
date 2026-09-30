@@ -782,12 +782,40 @@ def classify_reply(text: Any) -> str:
     return "confirm" if confirm else "unclear"
 
 
+def find_reminder(service: ReminderService, patient_id: str, reference: Any) -> tuple[Optional[Entry], dict]:
+    """The reminder a reply is about, from its reference or from the appointment in the patient's words.
+
+    Patients answering by text do not quote reminder references, so the
+    appointment's words are enough (found in this build's first run, where
+    the model asked the patient for the "CC-RMD" code). Words that name an
+    earlier version's time find that version's reminder, so a yes to it is
+    still refused as obsolete; otherwise the current version's reminder.
+    """
+    entry = service.by_ref(reference)
+    if entry is not None and service.appointments[entry.appointment_id]["patient_id"] == patient_id:
+        return entry, {}
+    if re.search(r"\bCC-RMD-", plain(reference), re.IGNORECASE):
+        return None, {"status": "not_found", "reason": "no_such_reminder", "reference": normalise_id(reference),
+                      "effects": 0,
+                      "next_step": "There is no such reminder on this patient's record. Use list_appointments."}
+    appointment_id, named, blocked = resolve_appointment(service, patient_id, reference)
+    if appointment_id is None:
+        return None, blocked
+    revision = named if named else service.current(appointment_id)["revision"]
+    entry = service.ledger.get((appointment_id, revision))
+    if entry is None or entry.state == "new":
+        return None, {"status": "not_found", "reason": "no_reminder_for_this_version", "appointment_id": appointment_id,
+                      "effects": 0, "current_time_words": long_when(service.current(appointment_id)["starts"]),
+                      "next_step": ("No reminder was sent for this appointment's current time, so there is no reply to "
+                                    "record. Tell the patient the current time; send a reminder only if they ask.")}
+    return entry, {}
+
+
 def record_reply(service: ReminderService, patient_id: str, conversation: Conversation, reference: Any) -> dict:
     """Record the patient's answer to a delivered reminder. Attendance only; delivery is not touched."""
-    entry = service.by_ref(reference)
-    if entry is None or service.appointments[entry.appointment_id]["patient_id"] != patient_id:
-        return {"status": "not_found", "reason": "no_such_reminder", "reference": normalise_id(reference),
-                "effects": 0, "next_step": "There is no such reminder on this patient's record. Use list_appointments."}
+    entry, missing = find_reminder(service, patient_id, reference)
+    if entry is None:
+        return missing
     appointment_id = entry.appointment_id
     cur = service.current(appointment_id)
     base = {"reminder_ref": entry.ref, "appointment_id": appointment_id, "appointment": service.label(appointment_id),

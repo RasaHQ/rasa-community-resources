@@ -375,6 +375,23 @@ class AttendanceTests(unittest.TestCase):
             self.assertEqual(cc.classify_reply(text), "change", text)
         self.assertEqual(cc.classify_reply("hmm"), "unclear")
 
+    def test_a_reply_finds_its_reminder_from_the_appointment_words(self):
+        """The patient does not have to quote a reference (normal-physio-confirm-existing, first run)."""
+        svc = cc.ReminderService()
+        conv = thread("I got your reminder for physio on Monday at 11. Yes, I'll be there.")
+        out = cc.record_reply(svc, ME, conv, "physio on Monday at 11")
+        self.assertEqual((out["status"], out["reminder_ref"]), ("confirmed", cc.reminder_ref(PHYSIO, 1)))
+        # Words naming the follow-up's earlier time find that version's reminder, which is still refused.
+        old = cc.record_reply(svc, ME, thread("Yes to my Tuesday 9:30 follow-up."), "follow-up on Tuesday 6 October at 9:30")
+        self.assertEqual((old["reason"], old["reminder_revision"]), ("obsolete_appointment", 1))
+        # The follow-up's current version has no reminder yet: nothing to record.
+        none = cc.record_reply(svc, ME, thread("Yes, I'll be at my follow-up."), "my follow-up with Dr Marr")
+        self.assertEqual((none["status"], none["reason"]), ("not_found", "no_reminder_for_this_version"))
+        self.assertEqual(svc.booking_view(FOLLOW_UP)["attendance"], "not confirmed")
+        # A reference that is not on record is still not found, and another patient's appointment too.
+        self.assertEqual(cc.record_reply(svc, ME, conv, "CC-RMD-000000")["reason"], "no_such_reminder")
+        self.assertEqual(cc.record_reply(svc, ME, conv, "CC-APT-9150")["status"], "not_found")
+
     def test_an_earlier_delivered_reminder_can_be_confirmed_in_a_new_thread(self):
         svc = cc.ReminderService()
         ref = cc.reminder_ref(PHYSIO, 1)

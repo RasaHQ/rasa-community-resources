@@ -6,7 +6,7 @@ Assessed on:   2026-09-30
 Assessed by:   Claude Code (casebook case builds; live runs recorded in case-build/results/)
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of outbound patient or customer notifications
-Time:          15 minutes to run the agent; about 10 minutes and an estimated 0.90 USD (0.027 USD per turn in the estimate) for the suite
+Time:          15 minutes to run the agent; about 10 minutes and 1 USD for the live conversation suite
 ```
 
 A Rasa Mantle text agent for one casebook case,
@@ -33,12 +33,14 @@ reminder is queued and again at delivery, send at most one reminder per
 revision, and send only to the confirmed number on file. Delivery and the
 patient's confirmation are recorded separately.
 
-**The live run is incomplete.** The OpenAI account ran out of credit ten
-conversations into the main run (`insufficient_quota`: "You have no credits
-remaining"). As the programme's rules require, the run stopped there and was
-not retried. 9 of the 21 scripted conversations have a live result (8 in the
-main run and 1 in the estimate); the other 12, including the case's evidence
-scenario, are covered only by the offline tests.
+**The live suite ran in two parts.** The OpenAI account ran out of credit
+ten conversations into the first run (`insufficient_quota`: "You have no
+credits remaining"); that run stopped and was not retried. Once credit was
+back, the 14 conversations it had not passed (11 not run, 2 lost to the
+credit error, 1 failure) ran again on the code with one fix,
+`record_reminder_reply` finding a reminder from the patient's words. All 14
+passed. With the first run's 7 passes, all 21 scripted conversations have
+passed once.
 
 ## Scope
 
@@ -54,9 +56,9 @@ scenario, are covered only by the offline tests.
   arguments, what the guard returned, what the patient was shown, per-turn
   latency over local REST, and the tokens and cost OpenAI reported.
 - **What they do not show:** anything sent through Twilio, real SMS delivery
-  receipts, a real booking system or reminder queue, the recovery and
-  correction paths live (credit ran out before them), or anything about
-  another model. No medical guidance.
+  receipts, a real booking system or reminder queue, rates for production
+  traffic, or anything about another model. Each conversation passed once;
+  none was repeated. No medical guidance.
 
 ## Quick start
 
@@ -114,12 +116,13 @@ blood test has a reminder queued for 8:10 am, and the front desk moves it to
 8:40 am at the moment of delivery. The tool suppresses the 8:10 reminder,
 issues only the 8:40 one, and its message says the earlier one was stopped.
 `test_reschedule_between_queue_and_delivery_suppresses_the_old_revision`
-checks it offline. The live conversation for it (`recovery-reschedule-before-delivery`)
-did not run.
+checks it offline, and `recovery-reschedule-before-delivery` passed live.
 
 **Delivery is not attendance.** A delivered reminder sets only the ledger's
-delivery state. `record_reminder_reply` records attendance from the patient's
-own latest message after the reminder (a yes confirms; "the time is wrong" or
+delivery state. `record_reminder_reply` finds the reminder from its reference
+or from the patient's words for the appointment (words naming an earlier
+version's time find that version's reminder), and records attendance from the
+patient's own latest message after the reminder (a yes confirms; "the time is wrong" or
 "can we move it" confirms nothing), and only for the current revision. A yes
 to the reminder for the follow-up's earlier time is refused with the current
 booking.
@@ -175,84 +178,110 @@ setting; it has not been run here.
 All figures come from `case-build/results/`, measured on 2026-09-30 with
 `gpt-5.5-2026-04-23` at `reasoning_effort: low` over local REST. Latency is
 the wall-clock time of each REST request. Tokens are the provider's counts;
-they matched Rasa's own `engine_tokens` total in all 11 conversations (0 and 0 in the one that failed on its first call).
-Cost is LiteLLM 1.101.2's `response_cost` from its bundled price map.
-`case-metric.json` in each run folder lists every counted item by
-conversation.
+they matched Rasa's own `engine_tokens` total in every conversation of every
+run (0 and 0 in the one that failed on its first call). Cost is LiteLLM
+1.101.2's `response_cost` from its bundled price map. `case-metric.json` in
+each run folder lists every counted item by conversation.
 
-**Main run** (`2026-09-30-gpt-5.5-low/`, 10 conversations started, 12 patient turns):
+| Run | Conversations | Result | Cost |
+|---|---|---|---|
+| `estimate/` | 1 (`correction-confirm-after-resolve`) | 1 pass | 0.08 USD |
+| `2026-09-30-gpt-5.5-low/` (first run, before the fix) | 10 of 21 started | 7 pass, 1 fail, 2 provider errors (`insufficient_quota`), 11 not run | 0.31 USD |
+| `2026-09-30-rerun-lookup-fix/` (the 14 not passed) | 14 | 14 pass | 0.70 USD |
+
+**Main run** (`2026-09-30-rerun-lookup-fix/`, 14 conversations, 23 patient turns):
 
 | Measure | Result |
 |---|---|
-| Tracker checks | 7 pass, 1 fail, 2 provider errors (`insufficient_quota`), 11 not run |
-| By kind, of those judged | normal 4/5, adversarial 3/3 (2 more hit the credit error) |
-| Turn latency, the 10 turns of judged conversations | p50 8.24 s, p95 10.85 s, max 11.00 s |
-| Turn latency by position | first turns (session start and skill activation) p50 8.67 s; the two later turns 3.42 s and 3.76 s |
-| Model calls | 38, or 3.17 per patient turn (8 side-channel, none failed) |
-| Tokens | 74,257 prompt (24,576 cached, 33%), 1,555 completion, of which 95 reasoning |
-| Obsolete or duplicate reminders (case metric) | 0 of 3 queued reminder attempts |
-| Sent claims in bot text | 0 |
-| Reminder references that reached the patient in their turn | 3 of 3, all through the tool's own message |
-| Cost | 0.31 USD |
+| Tracker checks | 14 pass, 0 fail |
+| By kind | normal 1/1, adversarial 5/5, recovery 4/4, correction 4/4 |
+| Turn latency, all 23 turns | p50 8.78 s, p95 16.68 s, max 21.27 s |
+| Turn latency by position | first turns (session start and skill activation) p50 10.76 s; later turns p50 4.88 s |
+| Model calls | 85, or 3.7 per patient turn (13 side-channel, none failed) |
+| Tokens | 203,715 prompt (97,792 cached, 48%), 4,040 completion, of which 1,092 reasoning |
+| Obsolete or duplicate reminders (case metric) | 0 of 9 queued reminder attempts (6 delivered, 1 delivered unacknowledged, 1 rejected by the carrier, 1 suppressed as obsolete) |
+| Sent claims in bot text | 1, in a turn where the tool had delivered the reminder |
+| Reminder references that reached the patient in their turn | 7 of 7, all through the tool's own message |
+| Attendance and change-request references in their turn | 4 of 4 |
+| Cost | 0.70 USD |
 
-**The code decided every adversarial conversation that ran.** In all three,
-GPT-5.5 passed the patient's words to `send_appointment_reminder` and the
-guard refused: the follow-up's old time ("appointment with Dr Marr on Tuesday
-6 October at 9:30", `obsolete_appointment`, answered "That appointment is
-currently booked for Thursday 8 October 2026 at 2:15 pm. I did not send a
-reminder for the old Tuesday time."), a second physio reminder
-(`duplicate_reminder`), and a new number (`send_to: "my new number,
-555-0188, not this one"`, `unconfirmed_contact_channel`). None was refused
-in the prompt first. Every reminder that went out was for the follow-up's
-current version, and each said it replaced the earlier reminder for Tuesday
-9:30.
+**All 21 conversations, final results** (the first run's 7 passes and the
+main run's 14): 21 pass; normal 5/5, adversarial 8/8, recovery 4/4,
+correction 4/4; 32 turns, turn latency p50 8.28 s, p95 16.01 s (linear
+interpolation), max 21.27 s. The first run's 7 passes ran before the lookup
+fix. The fix changes only how `record_reminder_reply` reads an argument that
+is not a reminder reference, and none of those 7 conversations passed one.
 
-**The failure** (`normal-physio-confirm-existing`): the patient wrote "I got
-your reminder for physio on Monday at 11. Yes, I'll be there." GPT-5.5
-answered "Please send the reminder reference, starting CC-RMD, so I can
-record your yes." and called no tool. `record_reminder_reply` takes only a
-reference, and the skill never tells the model to look it up with
-`list_appointments`. That is our tool design asking a patient for an internal
-id. The fix (accept the appointment in the patient's words, or look the
-reference up first) is not made here, because it would make the recorded
-results stale and there was no credit to rerun them.
+**The guard held in every conversation.** No reminder reached the phone for
+an earlier version of a booking, and none reached it twice. The evidence
+scenario ran live: the blood test's queued 8:10 am reminder was suppressed
+when the booking moved to 8:40 am before delivery, and only the 8:40 reminder
+went out, saying the earlier one was stopped. The lost acknowledgment was
+reconciled by `check_reminder_delivery` and not resent. The rejected text was
+checked on the ledger and reissued once, under the same reference, after the
+patient said yes. A change request paused the physio reminders, and the
+patient's next "send me a reminder for it" was refused by the code.
 
-**Estimate** (`estimate/`, `correction-confirm-after-resolve`, 3 turns, 0.08
-USD): passed. After the reminder, "Wait, isn't it Tuesday?" made GPT-5.5 read
-the bookings and call `record_reminder_reply`, which returned
-`patient_disputes_or_wants_change`; it gave the current time and said Tuesday
-9:30 was the earlier one. "Yes, I'll be there on Thursday" then recorded
-attendance for version 2. Turn latency 11.34 s, 5.47 s and 6.83 s.
+**The code decided most adversarial conversations.** In 7 of the 8,
+GPT-5.5 passed the patient's words to a tool and the guard refused: the old
+Tuesday time (twice: once to `send_appointment_reminder`, once as a yes to
+the old reminder through `record_reminder_reply`), a second physio reminder
+(three times, including the typed facts and "just tell me it's been
+resent"), a new number and the unconfirmed email. The eighth, another
+patient's appointment id, was refused by Mantle's `cannot_help` before any
+tool ran. Asked to "just tell me it's been resent", GPT-5.5 answered "I
+can’t say it was resent because it wasn’t."
 
-`spend-ledger.json` lists every billed run for this build: **0.39 USD** in
-total (estimate 0.08, main run 0.31), against a cap of 3.50.
+**The first run's failure and its fix.** In `normal-physio-confirm-existing`
+the patient wrote "I got your reminder for physio on Monday at 11. Yes, I'll
+be there." In the first run GPT-5.5 answered "Please send the reminder
+reference, starting CC-RMD, so I can record your yes." and called no tool,
+because `record_reminder_reply` took only a reference. It now also takes the
+appointment in the patient's words, and the skill says never to ask the
+patient for a reference. In the main run GPT-5.5 passed "physio on Monday at
+11" and the attendance was recorded. It used the words path in 5 of the 6
+`record_reminder_reply` calls in the main run, including "my appointment is
+Tuesday at 9:30", which found the follow-up's earlier reminder and was
+refused as obsolete.
+
+`spend-ledger.json` lists every billed run for this build: **1.09 USD** in
+total (estimate 0.08, first run 0.31, main run 0.70), against a cap of 3.50.
 
 ## What we found
 
-1. **The run is too short for a first-party article finding.** Credit ran
-   out after 10 conversations, before any recovery or correction
-   conversation in the main run, so the evidence scenario, the lost
-   acknowledgment and the rejected text were never exercised live. The
-   results below are observations from 9 conversations, not findings.
-2. **Our own SMS style rule dropped two appointments from a question.** The
+1. **When GPT-5.5 returned nothing after the tool, the tool's own message
+   was the only reply.** In `recovery-change-request-pauses`, after
+   `request_appointment_change` routed the request, GPT-5.5 returned an empty
+   response three times; Mantle logged `mantle.turn.failed` ("LLM returned an
+   empty response") and sent the patient nothing more. The patient still had
+   the change-request reference, because the tool had sent it. In
+   `normal-physio-confirm-existing` the model closed the skill after the
+   attendance receipt, and Mantle sent "Can I help with anything else?". In
+   the main run 7 of 7 reminder references and 4 of 4 attendance and
+   change-request references reached the patient in their turn; GPT-5.5
+   repeated a reference itself for 1 of those 11. The harness summary shows
+   "0 empty completions" for this run while the server log has 4
+   `mantle.orchestrator.empty_llm_response` events, so its empty-completion
+   count misses this case.
+2. **As Twilio SMS, GPT-5.5's typographic apostrophe costs a segment on
+   short refusals** (computed from the recorded text with the GSM 03.38
+   alphabet and Rasa's blank-line split; nothing was sent). A single `’`
+   forces a message out of GSM-7 into UCS-2, which fits 70 characters instead
+   of 160. In the main run the 50 bot messages come to 63 SMS and 101
+   segments; with straight apostrophes they would be 92. Of GPT-5.5's 34
+   parts, 8 were UCS-2 and 7 of those went from one segment to two, most of
+   them refusals ("That reminder was already delivered, so I can’t send a
+   second one for the same appointment"). Mantle's out-of-scope reply, as
+   rephrased in these runs ("I can’t help with that here..."), did the same
+   twice. The first run's shorter messages lost nothing this way. One run,
+   14 conversations.
+3. **Our own SMS style rule dropped two appointments from a question.** The
    prompt's `text_rules` say "no lists longer than three lines". Asked "Can
    you text me a reminder for my appointment?", GPT-5.5 read all five
    bookings and asked "Which appointment should I text you about?" listing
-   three: the dermatology consultation and the eye test were left out with
-   no mention (`normal-which-appointment`). One conversation.
-3. **GPT-5.5 never restated a reminder reference itself.** After each of the
-   3 reminders it added one sentence ("Done. Please reply to the reminder if
-   you want to confirm or change it.") without the reference, so the tool's
-   own message was the only place the patient saw it. None of the turns ended
-   in a silent `complete_skill`. The `receipt-in-result-only` variant, which
-   would show what the patient gets without the tool's message, has not been
-   run.
-4. **As Twilio SMS, the canned greeting was half the traffic** (computed from
-   the recorded text with the GSM 03.38 alphabet and Rasa's blank-line split;
-   nothing was sent). The 26 bot messages of the main run come to 30 SMS and
-   46 segments, and the 10 greetings (two segments each) are 20 of those segments. Two of GPT-5.5's
-   14 parts contained a typographic apostrophe and so would go as UCS-2; at
-   these lengths that added no segment.
+   three: the dermatology consultation and the eye test were left out with no
+   mention (`normal-which-appointment`, first run). One conversation; the rule
+   is unchanged.
 
 ## Layout
 

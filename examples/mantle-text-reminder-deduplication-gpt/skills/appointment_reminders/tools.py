@@ -91,7 +91,8 @@ async def send_appointment_reminder(appointment: str, send_to: Optional[str] = N
 
 @tool(
     description=(
-        "Record the patient's answer to a delivered reminder. The tool reads the answer from the patient's own "
+        "Record the patient's answer to a delivered reminder, found by its reference or by the appointment in the "
+        "patient's words; never ask the patient for a reference. The tool reads the answer from the patient's own "
         "latest message: a yes records attendance for the current version of the booking only; a change or a "
         "dispute records nothing. Delivery and attendance are kept separate."
     )
@@ -100,7 +101,8 @@ async def record_reminder_reply(reminder_reference: str, context: ToolContext = 
     """Record the patient's reply to a reminder.
 
     Args:
-        reminder_reference: The reminder reference, for example CC-RMD-E333CD, from a tool result.
+        reminder_reference: The reminder reference from a tool result, for example CC-RMD-E333CD, or if you have
+            none, the appointment as the patient named it, for example physio on Monday at 11.
     """
     service = _service()
     result = cc.record_reply(service, _patient(context), _conversation(context), reminder_reference)
