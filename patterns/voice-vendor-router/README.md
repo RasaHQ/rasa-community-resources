@@ -202,6 +202,17 @@ and another thing to be wrong, and the failure mode here is a slightly late turn
 rather than a wrong transcript. Adding another offline transcriber is a
 `transcribe()` method, not a rewrite.
 
+**faster-whisper on Apple silicon runs on the CPU.** CTranslate2 has no Metal
+or Core ML backend (`get_supported_compute_types` lists only `int8`,
+`int8_float32` and `float32`). The adapter takes `cpu_threads`, and
+`hotwords` for terms callers are expected to say; `model_id` may be a local
+folder, so a call never contacts Hugging Face. On an M4 Pro, replaying 48
+synthetic caller turns: `small.en` (int8, 8 threads) took 0.93 s at the median
+per turn and heard 15 of 23 medicine names; with a ten-word `hotwords` list,
+23 of 23, and its slowest turn fell from 4.6 s to 1.6 s. `large-v3-turbo`
+heard 19 of 23 without hotwords at 2.7 s a turn. Full table in the
+[refill-request case build](../../examples/mantle-voice-healthcare-refill-request-gpt-local/case-build/results/whisper-model-choice/results.json).
+
 Both install through one extra, which — unlike NeuTTS — resolves cleanly against
 Rasa's numpy pin:
 
