@@ -1,0 +1,365 @@
+{
+ "schema": 1,
+ "build": "banking-risk-step-up-gpt-text",
+ "case": "banking-risk-step-up",
+ "project": "examples/mantle-text-banking-risk-step-up-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T02:52:06.267581+00:00",
+ "finished_at": "2026-09-30T02:55:43.148396+00:00",
+ "model_file": "20260930-035422-devout-krait.tar.gz",
+ "train_seconds": 137.4,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 5,
+  "turn_latency_ms": {
+   "p50": 9249.2,
+   "p95": 15006.0,
+   "max": 15006.0,
+   "mean": 8641.4
+  },
+  "llm_calls": 16,
+  "llm_calls_per_turn": 3.2,
+  "side_channel_calls": 3,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 42949,
+  "completion_tokens": 554,
+  "reasoning_tokens": 51,
+  "cached_prompt_tokens": 23040,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "sent_claim": 2
+  },
+  "tool_result_metrics": {
+   "transfers_sent": {
+    "attempts": 1,
+    "total": 1
+   },
+   "foreign_authorization_effects": {
+    "attempts": 1,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.127685,
+  "llm_cost_usd": 0.127685,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-balance-then-changed-payee",
+   "kind": "normal",
+   "description": "The case's own sequence done right: a balance enquiry, then a transfer to a payee whose bank details changed 50 minutes ago, which is re-evaluated and stepped up.",
+   "conversation_id": "banking-risk-step-up-gpt-text-normal-balance-then-changed-payee-20260930T025206",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "What's my current account balance?",
+     "latency_ms": 9762.0,
+     "bot": [
+      "Hello Ruth, this is the Northgate payments assistant. I can tell you a balance and send money to your saved payees or between your accounts. What would you like to do?",
+      "Your everyday current account balance is \u00a33,240.15, read at 14:00 on 30 September 2026."
+     ]
+    },
+    {
+     "user": "OK. Now pay Harbour Lettings \u00a3950 for the rent from my current account.",
+     "latency_ms": 9249.2,
+     "bot": [
+      "This transfer needs an additional verification step. Would you like to continue or speak with the team?"
+     ]
+    },
+    {
+     "user": "Continue, send the code.",
+     "latency_ms": 3788.0,
+     "bot": [
+      "A one-time code has been sent to your registered phone ending 0917 for this transfer. Please type the code here."
+     ]
+    },
+    {
+     "user": "482915",
+     "latency_ms": 5401.8,
+     "bot": [
+      "The transfer was sent: \u00a3950.00 to Harbour Lettings. Your decision reference is NB-DEC-61F86997."
+     ]
+    },
+    {
+     "user": "Yes, go ahead.",
+     "latency_ms": 15006.0,
+     "bot": [
+      "You were partway through a balance enquiry. Would you like to carry on from where you left off, or should I drop it?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "get_balance",
+      "result": {
+       "status": "answered",
+       "account": "NB-ACC-3101"
+      },
+      "after_user_turn": 0
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "assess_transfer",
+      "result": {
+       "status": "assessed",
+       "destination_id": "NB-PAY-02",
+       "amount": 950,
+       "required_level": 2
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "assess_transfer",
+        "result": {
+         "status": "assessed",
+         "destination_id": "NB-PAY-02",
+         "amount": 950,
+         "required_level": 2
+        }
+       },
+       {
+        "tool": "start_step_up",
+        "result": {
+         "status": "challenge_sent",
+         "destination_id": "NB-PAY-02"
+        }
+       },
+       {
+        "tool": "submit_step_up_code",
+        "result": {
+         "status": "verified",
+         "destination_id": "NB-PAY-02",
+         "amount": 950
+        }
+       },
+       {
+        "tool": "submit_transfer",
+        "result": {
+         "status": "succeeded",
+         "destination_id": "NB-PAY-02",
+         "amount": 950,
+         "verification_level": 2
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "calls occurred in order"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_transfer",
+      "result": {
+       "status": "succeeded",
+       "verification_level": 1
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_balance",
+     "arguments": {
+      "account": "everyday current account"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    },
+    {
+     "tool": "assess_transfer",
+     "arguments": {
+      "from_account": "everyday current account",
+      "destination": "Harbour Lettings",
+      "amount": "\u00a3950"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "assessed",
+     "result_reason": null
+    },
+    {
+     "tool": "start_step_up",
+     "arguments": {
+      "assessment_ref": "NB-RA-44CCD000"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "challenge_sent",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_step_up_code",
+     "arguments": {
+      "assessment_ref": "NB-RA-44CCD000",
+      "code": "482915"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "assessment_ref": "NB-RA-44CCD000",
+      "from_account": "everyday current account",
+      "destination": "Harbour Lettings",
+      "amount": "\u00a3950"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "activate",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "sent_claim": [
+     "A one-time code has been sent to your registered phone ending 0917 for this transfer. Please type the code here.",
+     "The transfer was sent: \u00a3950.00 to Harbour Lettings. Your decision reference is NB-DEC-61F86997."
+    ],
+    "transfers_sent": {
+     "attempts": 1,
+     "total": 1
+    },
+    "foreign_authorization_effects": {
+     "attempts": 1,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 16,
+    "main_loop_calls": 13,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 42949,
+    "completion_tokens": 554,
+    "reasoning_tokens": 51,
+    "cached_prompt_tokens": 23040,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.127685,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1735.2,
+     1779.4,
+     1452.3,
+     2354.8,
+     2175.4,
+     3132.4,
+     1270.6,
+     2430.3,
+     2109.4,
+     1483.9,
+     1501.1,
+     1527.0,
+     2094.8,
+     1997.5,
+     11061.0,
+     1808.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-risk-step-up-gpt-text-normal-balance-then-changed-payee-20260930T025206",
+    "prompt": 42949,
+    "completion": 554,
+    "total": 43503,
+    "generations": 16,
+    "fetched_at": "2026-09-30T02:55:42.740721+00:00"
+   }
+  }
+ ]
+}
