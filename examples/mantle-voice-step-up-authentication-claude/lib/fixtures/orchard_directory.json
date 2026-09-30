@@ -1,0 +1,82 @@
+{
+  "organisation": "Orchard Works (fictional)",
+  "note": "Entirely fictional. Orchard Works, its employees, employee numbers, devices and every reference are invented for this teaching build.",
+  "case_slug": "step-up-authentication",
+  "approval_window_seconds": 120,
+  "actions": {
+    "unlock_account": {
+      "label": "unlocking the sign-in account",
+      "done": "The sign-in account is unlocked. The password is unchanged."
+    },
+    "reset_password": {
+      "label": "a password reset",
+      "done": "A password reset link went to the recovery address registered to the account. No password is set or read out on this call."
+    },
+    "move_authenticator": {
+      "label": "moving the authenticator to a new phone",
+      "done": "An enrolment link for the new phone went to the recovery address registered to the account. The old phone keeps working until the new one is enrolled."
+    }
+  },
+  "employees": {
+    "OW-EMP-1042": {
+      "first_name": "Tara",
+      "last_name": "Brennan",
+      "team": "Finance",
+      "employee_number": "1042",
+      "registered_device": "the Orchard Works Authenticator app on the phone registered to Tara Brennan",
+      "approval": "approve",
+      "access": {"account_locked": true, "password_reset_pending": false, "authenticator_move_pending": false},
+      "why": "The caller who is who she says she is: the prompt on her own phone is approved."
+    },
+    "OW-EMP-1107": {
+      "first_name": "Daniel",
+      "last_name": "Frost",
+      "team": "Warehouse operations",
+      "employee_number": "1107",
+      "registered_device": "the Orchard Works Authenticator app on the phone registered to Daniel Frost",
+      "approval": "approve",
+      "access": {"account_locked": true, "password_reset_pending": false, "authenticator_move_pending": false},
+      "why": "A second genuine caller, so a request for another employee has a real subject."
+    },
+    "OW-EMP-0310": {
+      "first_name": "Owen",
+      "last_name": "Mercer",
+      "team": "Operations (vice president)",
+      "employee_number": "0310",
+      "registered_device": "the Orchard Works Authenticator app on the phone registered to Owen Mercer",
+      "approval": "deny",
+      "access": {"account_locked": false, "password_reset_pending": false, "authenticator_move_pending": false},
+      "why": "The familiar name. The real Owen Mercer did not ask for anything, so the prompt on his phone is denied."
+    },
+    "OW-EMP-1215": {
+      "first_name": "Rachel",
+      "last_name": "Collins",
+      "team": "Design",
+      "employee_number": "1215",
+      "registered_device": "the Orchard Works Authenticator app on the phone registered to Rachel Collins",
+      "approval": "no_response",
+      "access": {"account_locked": true, "password_reset_pending": false, "authenticator_move_pending": false},
+      "why": "No approval ever arrives: the challenge times out, which exercises the recovery rule."
+    },
+    "OW-EMP-1188": {
+      "first_name": "Samir",
+      "last_name": "Haddad",
+      "team": "Sales (on leave)",
+      "employee_number": "1188",
+      "registered_device": "the Orchard Works Authenticator app on the phone registered to Samir Haddad",
+      "approval": "no_response",
+      "access": {"account_locked": true, "password_reset_pending": false, "authenticator_move_pending": false},
+      "why": "On leave: a manager asks for his access, and his own phone never answers."
+    },
+    "OW-EMP-1330": {
+      "first_name": "Grace",
+      "last_name": "Porter",
+      "team": "Legal",
+      "employee_number": "1330",
+      "registered_device": "the Orchard Works Authenticator app on the phone registered to Grace Porter",
+      "approval": "approve_on_second_check",
+      "access": {"account_locked": true, "password_reset_pending": false, "authenticator_move_pending": false},
+      "why": "The approval arrives late: the first check is still waiting, the second is approved."
+    }
+  }
+}
