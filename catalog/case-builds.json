@@ -1,0 +1,1085 @@
+{
+  "schema": 1,
+  "generatedBy": "scripts/catalog_case_builds.py",
+  "casebookSnapshot": {
+    "repository": "RasaHQ/rasa-community",
+    "ref": "origin/main",
+    "revision": "15afa7c752f96e8c761c352ba67894c44c156600",
+    "checkedAt": "2026-09-30T18:21:10Z"
+  },
+  "count": 24,
+  "builds": [
+    {
+      "slug": "banking-loan-servicing",
+      "path": "examples/mantle-text-banking-loan-servicing-claude",
+      "title": "Northgate loan payoff quotes on Claude Sonnet 5.5: a web-chat agent that never quotes yesterday",
+      "caseTitle": "Loan servicing with dated quotes",
+      "organisation": "Northgate Bank",
+      "industry": "Banking & fintech",
+      "summary": "Present an authoritative payoff quote to a signed-in customer of Northgate Bank, a fictional bank, in web chat.",
+      "model": {
+        "id": "claude-sonnet-5-5",
+        "provider": "anthropic",
+        "vendor": "Anthropic",
+        "name": "Claude Sonnet 5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-claude-sonnet-5.5/",
+        "passed": 20,
+        "total": 21,
+        "failed": 1,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.65782,
+      "recordedAt": "2026-09-30T04:41:14.135648+00:00",
+      "findings": [
+        "On Claude, every web-chat conversation's first turn fails.",
+        "A correction at the confirmation step is dropped, again.",
+        "The tool ran and the customer was told nothing."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "banking-risk-step-up",
+      "path": "examples/mantle-text-banking-risk-step-up-gpt",
+      "title": "Northgate risk step-up on GPT-5.5: signing in to web chat doesn't authorise a transfer",
+      "caseTitle": "Risk-triggered verification changes",
+      "organisation": "Northgate Bank",
+      "industry": "Banking & fintech",
+      "summary": "Raise the verification requirement for a request at Northgate Bank, a fictional bank.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-reasoning-low/",
+        "passed": 6,
+        "total": 8,
+        "failed": 0,
+        "providerErrors": 2,
+        "notRun": 13
+      },
+      "spendUsd": 1.400242,
+      "recordedAt": "2026-09-30T03:05:49.213372+00:00",
+      "findings": [],
+      "casebookUrl": null
+    },
+    {
+      "slug": "banking-statement-search",
+      "path": "examples/mantle-text-banking-statement-search-gpt",
+      "title": "Northgate transaction search on GPT-5.5: every answer says its range, its statuses and whether it is complete",
+      "caseTitle": "Transaction search with bounded answers",
+      "organisation": "Northgate Bank",
+      "industry": "Banking & fintech",
+      "summary": "Return a transaction-search result to a signed-in customer of Northgate Bank, a fictional bank, in web chat.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 21,
+        "total": 21,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.46886,
+      "recordedAt": "2026-09-30T17:18:38.286032+00:00",
+      "findings": [
+        "GPT-5.5 answered every search but never gave the search reference.",
+        "Requests to relabel became new searches.",
+        "Our own blocked result gave the wrong question."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "banking-transfer",
+      "path": "examples/mantle-text-banking-transfer-gpt",
+      "title": "Northgate transfers on GPT-5.5: a web-chat agent the ledger decides for",
+      "caseTitle": "Transfers with authoritative balances",
+      "organisation": "Northgate Bank",
+      "industry": "Banking & fintech",
+      "summary": "Submit an account transfer for a signed-in customer of Northgate Bank, a fictional bank, in web chat.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 18,
+        "total": 21,
+        "failed": 2,
+        "providerErrors": 1,
+        "notRun": 0
+      },
+      "spendUsd": 2.233955,
+      "recordedAt": "2026-09-30T03:05:42.750734+00:00",
+      "findings": [
+        "Completing the skill swallowed the receipt.",
+        "A correction at the confirmation step costs the caller a turn.",
+        "\"Send it to him instead\" became a second transfer."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "disruption-mode",
+      "path": "examples/mantle-text-disruption-mode-gpt",
+      "title": "Horizon Travel disruption mode on GPT-5.5: a seat is promised only as a hold",
+      "caseTitle": "Disruption mode without false promises",
+      "organisation": "Horizon Travel",
+      "industry": "Shared primitives",
+      "summary": "Offer help to a signed-in passenger of Horizon Travel, a fictional travel company, while a storm cancels flights from its Boston hub.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 20,
+        "total": 21,
+        "failed": 1,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 2.544851,
+      "recordedAt": "2026-09-30T17:18:45.313652+00:00",
+      "findings": [
+        "Our own output guard told two passengers \"No seat is held\" right after a seat was held.",
+        "With the tool sending the receipt, GPT-5.5 says it again.",
+        "Regex guards on GPT-5.5 need the curly apostrophe."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "healthcare-intake",
+      "path": "examples/mantle-text-healthcare-intake-gemini",
+      "title": "Cedar Clinic pre-visit intake on Gemini: an eligibility check is not a promise of payment",
+      "caseTitle": "Pre-visit intake with uncertain eligibility",
+      "organisation": "Cedar Clinic",
+      "industry": "Healthcare providers",
+      "summary": "Record the administrative details for a signed-in patient's upcoming visit at Cedar Clinic, a fictional clinic, and check their insurance eligibility with the payer, without ever telling them the visit will be paid for.",
+      "model": {
+        "id": "gemini-3.1-pro-preview",
+        "provider": "gemini",
+        "vendor": "Google",
+        "name": "Gemini 3.1 Pro Preview"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gemini-3.1-pro-preview/",
+        "passed": 15,
+        "total": 15,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.838332,
+      "recordedAt": "2026-09-30T15:46:32.832874+00:00",
+      "findings": [
+        "Gemini's reasoning reached the patient, with Mantle's system reminder in it.",
+        "Mantle's fact discovery returns nothing on Gemini 3.1 Pro, silently.",
+        "The tool's receipt made the reference certain; Gemini added to it."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "insurance-file-claim",
+      "path": "examples/mantle-text-insurance-file-claim-claude",
+      "title": "HarborCover claim intake on Claude Sonnet 5.5: the tool sends the claim reference itself",
+      "caseTitle": "Claim intake with a submission receipt",
+      "organisation": "HarborCover",
+      "industry": "Insurance",
+      "summary": "Take a first report of a loss from a signed-in policyholder of HarborCover, a fictional insurer, and submit it as a claim.",
+      "model": {
+        "id": "claude-sonnet-5-5",
+        "provider": "anthropic",
+        "vendor": "Anthropic",
+        "name": "Claude Sonnet 5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": "Microsoft Teams",
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-claude-sonnet-5.5/",
+        "passed": 19,
+        "total": 20,
+        "failed": 1,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 2.404397,
+      "recordedAt": "2026-09-30T07:07:36.577978+00:00",
+      "findings": [
+        "When the tool sends the receipt, the customer gets it; when the model is left to, it mostly does not.",
+        "With the turn-order hook, Claude still leaves some first messages unanswered.",
+        "Claude's planning notes reached the customer."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "insurance-policy-status",
+      "path": "examples/mantle-text-insurance-policy-status-gemini",
+      "title": "HarborCover policy status on Gemini: an agent that won't read \"active\" as \"covered\"",
+      "caseTitle": "Policy status without coverage promises",
+      "organisation": "HarborCover",
+      "industry": "Insurance",
+      "summary": "Answer a policy or claim-status enquiry for HarborCover, a fictional insurer, without letting an active policy flag decide whether a particular loss is covered.",
+      "model": {
+        "id": "gemini-3.1-pro-preview",
+        "provider": "gemini",
+        "vendor": "Google",
+        "name": "Gemini 3.1 Pro Preview"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-29-gemini-3.1-pro-preview/",
+        "passed": 28,
+        "total": 31,
+        "failed": 3,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 2.16989,
+      "recordedAt": "2026-09-29T20:41:36.438078+00:00",
+      "findings": [],
+      "casebookUrl": null
+    },
+    {
+      "slug": "insurance-quote-bind",
+      "path": "examples/mantle-text-insurance-quote-bind-gpt",
+      "title": "HarborCover quote and bind on GPT-5.5: an agent that won't call an estimate cover",
+      "caseTitle": "Quotes that do not silently bind",
+      "organisation": "HarborCover",
+      "industry": "Insurance",
+      "summary": "Take a signed-in HarborCover customer from a saved quote to an underwritten offer, and bind it only after they confirm both the answers and the bind.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-reasoning-low/",
+        "passed": 14,
+        "total": 19,
+        "failed": 5,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.748019,
+      "recordedAt": "2026-09-30T03:02:52.182429+00:00",
+      "findings": [],
+      "casebookUrl": null
+    },
+    {
+      "slug": "internal-it-helpdesk",
+      "path": "examples/mantle-text-internal-it-helpdesk-claude",
+      "title": "Orchard Works IT helpdesk on Claude Sonnet 5.5: access requests where urgency never stands in for the owner",
+      "caseTitle": "Helpdesk requests with least authority",
+      "organisation": "Orchard Works",
+      "industry": "Internal services",
+      "summary": "Process an access-support request from an employee of Orchard Works, a fictional company.",
+      "model": {
+        "id": "claude-sonnet-5-5",
+        "provider": "anthropic",
+        "vendor": "Anthropic",
+        "name": "Claude Sonnet 5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": "Slack",
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-claude-sonnet-5.5-turn-order-hook/",
+        "passed": 19,
+        "total": 20,
+        "failed": 1,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.18971,
+      "recordedAt": "2026-09-30T07:00:18.447228+00:00",
+      "findings": [
+        "Claude closed every confirmed grant without telling the employee what changed.",
+        "Rasa with Claude drops every web-chat employee's first message.",
+        "Prompt caching works from `integrations.yml`, and this build ships with it on."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "payment-plan-authority",
+      "path": "examples/mantle-text-payment-plan-authority-gpt",
+      "title": "Amber Grid payment plans on GPT-5.5: a web-chat agent that cannot make an offer",
+      "caseTitle": "Payment-plan offer authority",
+      "organisation": "Amber Grid",
+      "industry": "Shared primitives",
+      "summary": "Present a permitted payment-plan option to a signed-in customer of Amber Grid, a fictional energy supplier, in web chat.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-low/",
+        "passed": 19,
+        "total": 19,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 2.75411,
+      "recordedAt": "2026-09-30T17:19:02.817758+00:00",
+      "findings": [
+        "Left to the model, the plan reference never reached the customer.",
+        "Our words guard broke on a typographic apostrophe.",
+        "The hardship exit became the answer to haggling."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "retail-guided-selling",
+      "path": "examples/mantle-text-retail-guided-selling-gpt",
+      "title": "Willow Shop guided selling on GPT-5.5: an agent that won't read \"fits\" from a product name",
+      "caseTitle": "Product choices with evidence boundaries",
+      "organisation": "Willow Shop",
+      "industry": "Retail & e-commerce",
+      "summary": "Recommend an accessory that Willow Shop, a fictional retailer, has in stock and that fits the shopper's phone.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-reasoning-low/",
+        "passed": 21,
+        "total": 22,
+        "failed": 1,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 2.551315,
+      "recordedAt": "2026-09-30T02:56:11.340924+00:00",
+      "findings": [],
+      "casebookUrl": null
+    },
+    {
+      "slug": "retail-return",
+      "path": "examples/mantle-text-retail-return-claude",
+      "title": "Willow Shop returns on Claude Sonnet 5.5: a web-chat agent that never calls a return label a refund",
+      "caseTitle": "Returns with eligibility and receipt boundaries",
+      "organisation": "Willow Shop",
+      "industry": "Retail & e-commerce",
+      "summary": "Start a return or an exchange for an item a signed-in customer of Willow Shop, a fictional retailer, bought.",
+      "model": {
+        "id": "claude-sonnet-5-5",
+        "provider": "anthropic",
+        "vendor": "Anthropic",
+        "name": "Claude Sonnet 5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-claude-sonnet-5.5-turn-order-hook/",
+        "passed": 21,
+        "total": 22,
+        "failed": 1,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 3.15434,
+      "recordedAt": "2026-09-30T04:48:49.204735+00:00",
+      "findings": [
+        "Rasa with Claude drops every web-chat customer's first message.",
+        "Claude closed the skill without giving the receipt.",
+        "A denial response still drops the correction with Claude, but only from the reply."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "telco-diagnostics",
+      "path": "examples/mantle-text-telco-diagnostics-gpt",
+      "title": "Juniper Mobile connectivity recovery on GPT-5.5: no factory reset during an outage",
+      "caseTitle": "Diagnostics before disruptive resets",
+      "organisation": "Juniper Mobile",
+      "industry": "Telco & ISP",
+      "summary": "Run a selected connectivity recovery step for Juniper Mobile, a fictional network operator, without rebooting or wiping a customer's hub when the problem is an area outage.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-reasoning-low/",
+        "passed": 18,
+        "total": 21,
+        "failed": 3,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.630379,
+      "recordedAt": "2026-09-30T03:02:05.562993+00:00",
+      "findings": [
+        "A Mantle decline response ends the turn, and the customer's correction goes with it.",
+        "Mantle cuts each memory value to 100 characters in the prompt, and the agent treated the cut list as complete.",
+        "GPT-5.5 adds its own confirmation in front of the engine's."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "travel-mass-rebooking",
+      "path": "examples/mantle-text-travel-mass-rebooking-gpt",
+      "title": "Horizon Travel storm rebooking on GPT-5.5: an offer, a hold and a committed replacement",
+      "caseTitle": "Rebooking during a mass disruption",
+      "organisation": "Horizon Travel",
+      "industry": "Travel & hospitality",
+      "summary": "Reserve a recovery itinerary for a passenger of Horizon Travel, a fictional travel company, after a storm cancels their flight.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-reasoning-low/",
+        "passed": 20,
+        "total": 20,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 3.159439,
+      "recordedAt": "2026-09-30T17:19:02.918034+00:00",
+      "findings": [
+        "GPT-5.5 did not go silent after a commit in this build, so the tool-sent receipt doubled every receipt.",
+        "A correction at the confirmation was acted on in the same turn, 4 of 4.",
+        "Fact discovery worked on GPT-5.5."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "travel-redemption",
+      "path": "examples/mantle-text-travel-redemption-gpt",
+      "title": "Horizon Rewards redemption on GPT-5.5: points, a held seat and a booking that must agree",
+      "caseTitle": "Rewards redemption with held inventory",
+      "organisation": "Horizon Travel",
+      "industry": "Travel & hospitality",
+      "summary": "Redeem a permitted rewards option for Horizon Rewards, the loyalty programme of Horizon Travel, a fictional travel company.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "text",
+      "channel": "web chat",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": null,
+      "tts": null,
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-reasoning-low/",
+        "passed": 16,
+        "total": 21,
+        "failed": 5,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.555602,
+      "recordedAt": "2026-09-30T03:03:20.325747+00:00",
+      "findings": [
+        "A correction given at a confirmation prompt is treated as a no, and the correction itself is dropped for that turn.",
+        "The confirmation gate accepted a sentence meant as a retry.",
+        "At `reasoning_effort: low`, GPT-5.5 chained hold and redeem 10 times in 12."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "banking-advisor-appointment",
+      "path": "examples/mantle-voice-banking-advisor-appointment-claude",
+      "title": "Northgate advisor appointments on Claude Sonnet 5.5 with Deepgram and Rime: a voice agent that won't book a mortgage question into a branch with no mortgage advisor",
+      "caseTitle": "Advisor bookings with the right purpose",
+      "organisation": "Northgate Bank",
+      "industry": "Banking & fintech",
+      "summary": "Book an advisor appointment for a signed-in customer of Northgate Bank, a fictional UK bank, with a team that can handle what they asked about, on the channel they want.",
+      "model": {
+        "id": "claude-sonnet-5-5",
+        "provider": "anthropic",
+        "vendor": "Anthropic",
+        "name": "Claude Sonnet 5.5"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "flux-general-en",
+        "label": "Deepgram Flux",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "engines.rime_idle.RimeTTSReconnectOnIdle",
+        "vendor": "Rime",
+        "model": "coda",
+        "voice": "vashti",
+        "label": "Rime",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-claude-sonnet-5.5/",
+        "passed": 12,
+        "total": 15,
+        "failed": 3,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 3.665892,
+      "recordedAt": "2026-09-30T06:16:33.332785+00:00",
+      "findings": [
+        "Rasa's Rime engine lets the socket die after 30 seconds of silence, and the call goes with it.",
+        "The Claude prefill 400 does not hit the first voice turn, but it hits the silence timeout.",
+        "Telling Flux the caller is British breaks the call."
+      ],
+      "casebookUrl": "https://rasa.community/library/casebook/banking-advisor-appointment--conversation-designer/"
+    },
+    {
+      "slug": "banking-block-card",
+      "path": "examples/mantle-voice-banking-block-card-gpt",
+      "title": "Northgate block card on GPT-5.5 with Deepgram: a voice agent that blocks one card",
+      "caseTitle": "Blocking the intended card",
+      "organisation": "Northgate Bank",
+      "industry": "Banking & fintech",
+      "summary": "Block the one card a caller of Northgate Bank, a fictional bank, names and confirms.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "flux-general-en",
+        "label": "Deepgram Flux",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "aura-2-andromeda-en",
+        "voice": null,
+        "label": "Deepgram Aura-2",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-29-gpt-5.5-default/",
+        "passed": 17,
+        "total": 24,
+        "failed": 7,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 4.155177,
+      "recordedAt": "2026-09-29T21:43:44.442700+00:00",
+      "findings": [
+        "Rasa drops some one-word replies from Deepgram Flux.",
+        "At the default reasoning effort, GPT-5.5 sometimes speaks its tool calls.",
+        "A hangup costs a model turn."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "banking-collections",
+      "path": "examples/mantle-voice-banking-collections-gemini",
+      "title": "Northgate collections on Gemini with Deepgram and Rime, in US Spanish: a voice agent that records only permitted repayment plans",
+      "caseTitle": "Collections with a hardship exit",
+      "organisation": "Northgate Bank",
+      "industry": "Banking & fintech",
+      "summary": "Record a permitted repayment-plan choice for a signed-in customer of Northgate Bank, a fictional bank, or hand them to the hardship team.",
+      "model": {
+        "id": "gemini-3.8-flash",
+        "provider": "gemini",
+        "vendor": "Google",
+        "name": "Gemini 3.8 Flash"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "flux-general-multi",
+        "label": "Deepgram Flux multi",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "engines.rime_idle.RimeTTSReconnectOnIdle",
+        "vendor": "Rime",
+        "model": "coda",
+        "voice": "nieve",
+        "label": "Rime",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "es",
+        "variant": "US Spanish"
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gemini-3.8-flash/",
+        "passed": 12,
+        "total": 14,
+        "failed": 2,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 3.066418,
+      "recordedAt": "2026-09-30T16:26:04.468366+00:00",
+      "findings": [
+        "Past ten messages, every Gemini call in the conversation can fail.",
+        "Gemini rejects the request after a canned reply, as Claude does.",
+        "On voice, `ToolContext.send` holds the tool until the receipt has been spoken, and `tool_timeout` counts it."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "banking-dispute",
+      "path": "examples/mantle-voice-banking-dispute-claude",
+      "title": "Northgate dispute intake on Claude Sonnet 5.5 with Speechmatics and Rime: a voice agent that files a dispute and promises no refund",
+      "caseTitle": "Disputes without premature reimbursement",
+      "organisation": "Northgate Bank",
+      "industry": "Banking & fintech",
+      "summary": "Record a dispute for the one card charge a caller of Northgate Bank, a fictional bank, does not recognise.",
+      "model": {
+        "id": "claude-sonnet-5-5",
+        "provider": "anthropic",
+        "vendor": "Anthropic",
+        "name": "Claude Sonnet 5.5"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "voicerouter.providers.speechmatics.SpeechmaticsASR",
+        "vendor": "Speechmatics",
+        "model": null,
+        "label": "Speechmatics",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "rime",
+        "vendor": "Rime",
+        "model": "mistv3",
+        "voice": "ironwood",
+        "label": "Rime",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-29-claude-sonnet-5.5/",
+        "passed": 13,
+        "total": 20,
+        "failed": 7,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 3.935177,
+      "recordedAt": "2026-09-29T23:02:50.926317+00:00",
+      "findings": [
+        "The companion's Speechmatics adapter could not open a socket on the pinned Rasa.",
+        "Speechmatics plus Rasa turns one sentence into many turns.",
+        "Brand names, not digits, are what the accented caller loses."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "healthcare-refill-request",
+      "path": "examples/mantle-voice-healthcare-refill-request-gpt-local",
+      "title": "Cedar Clinic refill requests on GPT-5.5, speech on the Mac: a voice agent that never approves a prescription",
+      "caseTitle": "Refill requests without prescribing",
+      "organisation": "Cedar Clinic",
+      "industry": "Healthcare providers",
+      "summary": "Send a prescription-refill request for one medicine on a patient's record to the prescribing team of Cedar Clinic, a fictional clinic, for review.",
+      "model": {
+        "id": "gpt-5.5-2026-04-23",
+        "provider": "openai",
+        "vendor": "OpenAI",
+        "name": "GPT-5.5"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "self-hosted speech",
+      "asr": {
+        "engine": "voicerouter.providers.whisper.FasterWhisperASR",
+        "vendor": "faster-whisper",
+        "model": "small.en",
+        "label": "faster-whisper",
+        "selfHosted": true
+      },
+      "tts": {
+        "engine": "voicerouter.providers.neutts_native.NeuTTSNative",
+        "vendor": "Neuphonic NeuTTS-2E",
+        "model": null,
+        "voice": "sophie",
+        "label": "Neuphonic NeuTTS-2E",
+        "selfHosted": true
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gpt-5.5-reasoning-low/",
+        "passed": 17,
+        "total": 23,
+        "failed": 6,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 4.098938,
+      "recordedAt": "2026-09-30T00:56:17.102727+00:00",
+      "findings": [
+        "NeuTTS runs natively in Rasa's own environment.",
+        "NeuTTS-2E does not read numerals.",
+        "Rasa contacts Hugging Face at startup when the inspector channel is configured."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "insurance-roadside",
+      "path": "examples/mantle-voice-insurance-roadside-claude",
+      "title": "HarborCover roadside assistance on Claude with Deepgram: a voice agent that sends the tow truck to where the car is, not to the policy address",
+      "caseTitle": "Roadside dispatch with a confirmed location",
+      "organisation": "HarborCover",
+      "industry": "Insurance",
+      "summary": "Request roadside assistance from HarborCover, a fictional insurer.",
+      "model": {
+        "id": "claude-sonnet-5-5",
+        "provider": "anthropic",
+        "vendor": "Anthropic",
+        "name": "Claude Sonnet 5.5"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "flux-general-en",
+        "label": "Deepgram Flux",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "aura-2-andromeda-en",
+        "voice": null,
+        "label": "Deepgram Aura-2",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-claude-sonnet-5.5/",
+        "passed": 9,
+        "total": 16,
+        "failed": 5,
+        "providerErrors": 2,
+        "notRun": 0
+      },
+      "spendUsd": 2.39227,
+      "recordedAt": "2026-09-30T16:06:38.885910+00:00",
+      "findings": [
+        "With the tools speaking their own outcomes, every receipt, refusal and desk reference was heard in its turn: 12 of 12.",
+        "Prompt caching with a breakpoint on the system message cost more than it saved on this voice build.",
+        "Names and places, not digits, are what Flux lost."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "retail-order-status",
+      "path": "examples/mantle-voice-retail-order-status-gemini",
+      "title": "Willow Shop order status on Gemini with Deepgram and Rime: a voice agent that won't call a label a delivery",
+      "caseTitle": "Order status with a carrier timestamp",
+      "organisation": "Willow Shop",
+      "industry": "Retail & e-commerce",
+      "summary": "Tell a signed-in customer of Willow Shop, a fictional retailer, where one parcel of one order is.",
+      "model": {
+        "id": "gemini-3.8-flash",
+        "provider": "gemini",
+        "vendor": "Google",
+        "name": "Gemini 3.8 Flash"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "flux-general-en",
+        "label": "Deepgram Flux",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "rime",
+        "vendor": "Rime",
+        "model": "mistv3",
+        "voice": "lagoon",
+        "label": "Rime",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-gemini-3.8-flash-default/",
+        "passed": 19,
+        "total": 19,
+        "failed": 0,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 1.301057,
+      "recordedAt": "2026-09-30T03:57:12.971576+00:00",
+      "findings": [
+        "At its default thinking, Gemini 3.8 Flash keeps a voice caller waiting 8 seconds for the answer, behind acknowledgements.",
+        "`reasoning_effort: minimal` breaks every call on this model.",
+        "Mantle's fact discovery fails on Gemini 3.8 Flash on every call."
+      ],
+      "casebookUrl": null
+    },
+    {
+      "slug": "step-up-authentication",
+      "path": "examples/mantle-voice-step-up-authentication-claude",
+      "title": "Orchard Works step-up authentication on Claude with Deepgram: a voice agent that won't unlock an account for a familiar name",
+      "caseTitle": "Step-up authentication",
+      "organisation": "Orchard Works",
+      "industry": "Shared primitives",
+      "summary": "Authorize a sensitive tool request at the IT service desk of Orchard Works, a fictional company.",
+      "model": {
+        "id": "claude-sonnet-5-5",
+        "provider": "anthropic",
+        "vendor": "Anthropic",
+        "name": "Claude Sonnet 5.5"
+      },
+      "mode": "voice",
+      "channel": "browser audio",
+      "targetChannel": null,
+      "stack": "cloud",
+      "asr": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "flux-general-en",
+        "label": "Deepgram Flux",
+        "selfHosted": false
+      },
+      "tts": {
+        "engine": "deepgram",
+        "vendor": "Deepgram",
+        "model": "aura-2-andromeda-en",
+        "voice": null,
+        "label": "Deepgram Aura-2",
+        "selfHosted": false
+      },
+      "language": {
+        "code": "en",
+        "variant": null
+      },
+      "result": {
+        "run": "case-build/results/2026-09-30-claude-sonnet-5.5/",
+        "passed": 15,
+        "total": 18,
+        "failed": 3,
+        "providerErrors": 0,
+        "notRun": 0
+      },
+      "spendUsd": 3.53913,
+      "recordedAt": "2026-09-30T05:46:00.308521+00:00",
+      "findings": [
+        "On browser voice, Rasa with Claude has no first-turn prefill 400.",
+        "Claude's refusals go unspoken on voice.",
+        "Mantle's fact discovery fails on every call with Claude."
+      ],
+      "casebookUrl": null
+    }
+  ]
+}

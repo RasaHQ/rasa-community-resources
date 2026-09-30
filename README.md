@@ -6,9 +6,19 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 
 ---
 
+## Find it fast
+
+- **Case builds:** live agents, one per casebook case, grouped by industry and by model and voice stack in [`CATALOG.md`](CATALOG.md) (data: [`catalog/case-builds.json`](catalog/case-builds.json)).
+- **Patterns:** reusable parts in [`patterns/`](patterns/README.md), including the voice vendor router, [`patterns/voice-vendor-router`](patterns/voice-vendor-router/): ASR and TTS failover across Deepgram, Speechmatics, Rime, faster-whisper, NeuTTS and more.
+- **Tutorials:** step-by-step builds in [`tutorials/`](tutorials/README.md), including the [AI team casebook](tutorials/rasa-ai-team-casebook/) that the case builds implement.
+- **Finished example agents:** clone-and-run voice agents in [`examples/`](examples/README.md), starting with [`examples/mantle-voice-agent`](examples/mantle-voice-agent).
+- **Case-build harness:** [`scripts/case_builds/`](scripts/case_builds/), which runs a build's scripted conversations over web chat or browser audio and records results and spend.
+
+---
+
 ## Start here
 
-**New to Rasa Skills / Mantle voice agents.** Request a free [Developer Edition licence key](https://rasa.com/rasa-pro-developer-edition-license-key-request/), then clone and run the flagship Atlas travel agent:
+**New to Rasa Skills / Mantle voice agents.** Request a free [Developer Edition licence key](https://rasa.community/license/), then clone and run the flagship Atlas travel agent:
 
 1. [`examples/mantle-voice-agent`](examples/mantle-voice-agent) — finished agent you can run with `make install` → `make inspect`
 2. Hosted walkthrough: [Build a Voice AI Agent with Rasa Skills](https://rasa.community/library/tutorials/voice-ai-agent/)
@@ -49,6 +59,7 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 | Vela voice banking (Rime TTS) | Vela | Retail banking | [`examples/mantle-voice-rime-skills`](examples/mantle-voice-rime-skills) |
 | Vela voice banking (Speechmatics ASR) | Vela | Retail banking | [`examples/mantle-voice-speechmatics-skills`](examples/mantle-voice-speechmatics-skills) |
 | Atlas voice tutorial tree | Atlas | Horizon Travel | [`tutorials/rasa-voice-agent-tutorial`](tutorials/rasa-voice-agent-tutorial) |
+| Voice vendor router (ASR/TTS failover and vendor swapping) | — | Voice infrastructure | [`patterns/voice-vendor-router`](patterns/voice-vendor-router) |
 
 Full catalogs (including empty areas accepting contributions) live in each category README below.
 
@@ -110,7 +121,7 @@ Resources here typically assume:
 
 - Python 3.11 or later (see each resource’s `Verified with` line)
 - [uv](https://docs.astral.sh/uv/) for dependency management
-- A `RASA_LICENSE` key — the [Developer Edition](https://rasa.com/rasa-pro-developer-edition-license-key-request/) key is free
+- A `RASA_LICENSE` key — the [Developer Edition](https://rasa.community/license/) key is free
 - An LLM provider key, typically `OPENAI_API_KEY`
 - For voice examples: a `DEEPGRAM_API_KEY`
 

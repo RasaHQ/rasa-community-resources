@@ -43,6 +43,8 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 
 ## Catalog
 
+Looking for a case build? The case-build rows below are in the order the builds were added. [`CATALOG.md`](../CATALOG.md) groups them by industry and by model and voice stack, with each build's main-run result; [`catalog/case-builds.json`](../catalog/case-builds.json) has the same data for scripts.
+
 | Name | Persona | Domain | Path | Assessed on |
 |---|---|---|---|---|
 | Atlas voice travel | Atlas | Horizon Travel | [`mantle-voice-agent`](mantle-voice-agent) | 2026-08-13 |

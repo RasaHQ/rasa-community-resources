@@ -55,7 +55,7 @@ PRE      := $(shell $(LIST) --uv-prerelease-args 2>/dev/null)
 .DEFAULT_GOAL := help
 
 .PHONY: help check-uv list status outdated update migrate migrate-dry latest \
-        lint test-scripts validate ci validate-full \
+        lint test-scripts validate ci validate-full catalog \
         lock-all install-all check-all test-all verify-all clean-all \
         snapshots check-snapshots \
         _require-projects
@@ -117,6 +117,7 @@ help: ## Show this help message
 	@echo '  $(GREEN)make validate-full$(RESET)     ci + rasa train everywhere (needs RASA_LICENSE)'
 	@echo '  $(GREEN)make lint$(RESET)              Static checks only ($(GREEN)--json$(RESET) via scripts/lint_repo.py)'
 	@echo '  $(GREEN)make test-scripts$(RESET)      Unit-test the tooling'
+	@echo '  $(GREEN)make catalog$(RESET)           Rebuild CATALOG.md and catalog/case-builds.json'
 	@echo ''
 	@echo '$(YELLOW)▸ Two tiers (docs/SNAPSHOTS.md)$(RESET)'
 	@echo '  $(DIM)Maintained:$(RESET) examples/ tutorials/ patterns/ — one shared pin, migrated together'
@@ -208,6 +209,13 @@ lint: ## Static checks: versions, locks, skill prose, metadata, secrets
 
 test-scripts: ## Unit-test the migration/lint tooling
 	@$(UNITTESTS)
+
+# The case-build index. test_tooling.py fails `make validate` when it is stale.
+# SITE=<rasa.community checkout> also refreshes catalog/casebook-site.json
+# (industry and publication state) from that checkout's origin/main.
+SITE ?=
+catalog: ## Rebuild CATALOG.md and catalog/case-builds.json from the case builds
+	@$(PYTHON) $(SCRIPTS)/catalog_case_builds.py $(if $(SITE),--site $(SITE) --site-ref origin/main,)
 
 validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
 	@echo "$(MAGENTA)▸ tooling unit tests$(RESET)"
