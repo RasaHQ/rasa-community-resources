@@ -1,0 +1,178 @@
+{
+  "slug": "insurance-roadside",
+  "title": "Roadside dispatch with a confirmed location",
+  "organisation": "HarborCover",
+  "action": "request roadside assistance",
+  "failure": "The agent sent a provider to the registered home address instead of the vehicle\u2019s current location.",
+  "lesson": "Use the incident location and service suitability, then separate request acknowledgment from provider acceptance and arrival estimates.",
+  "receipt": "An assistance reference with provider acceptance state and a clearly sourced arrival estimate if one exists.",
+  "evidence": "Compare confirmed incident coordinates, vehicle constraints and dispatch acknowledgment; no estimate may be invented by the agent.",
+  "recovery": "If the provider declines, retain the incident reference while searching another suitable provider; do not claim help is already on the way.",
+  "owner": "assistance dispatch owner",
+  "metric": "dispatches using an unconfirmed incident location, divided by assistance requests",
+  "question": "Please confirm where the vehicle is now; that may differ from the address on the policy.",
+  "correction": "The driver changes the location; update the dispatch draft before requesting provider acceptance.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "incident_location_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_incident_location",
+      "phase": "request"
+    },
+    {
+      "field": "service_suitability_checked",
+      "good": true,
+      "bad": false,
+      "reason": "unsuitable_provider",
+      "phase": "request"
+    },
+    {
+      "field": "provider_acceptance_known",
+      "good": true,
+      "bad": false,
+      "reason": "provider_not_accepted",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "incident_location_confirmed": true,
+    "service_suitability_checked": true,
+    "provider_acceptance_known": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "incident_location_confirmed": true,
+        "service_suitability_checked": true,
+        "provider_acceptance_known": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "incident_location_confirmed-false",
+      "facts": {
+        "incident_location_confirmed": false,
+        "service_suitability_checked": true,
+        "provider_acceptance_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_incident_location",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_location_confirmed-missing",
+      "facts": {
+        "service_suitability_checked": true,
+        "provider_acceptance_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_incident_location",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_location_confirmed-string",
+      "facts": {
+        "incident_location_confirmed": "true",
+        "service_suitability_checked": true,
+        "provider_acceptance_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_incident_location",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_suitability_checked-false",
+      "facts": {
+        "incident_location_confirmed": true,
+        "service_suitability_checked": false,
+        "provider_acceptance_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsuitable_provider",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_suitability_checked-missing",
+      "facts": {
+        "incident_location_confirmed": true,
+        "provider_acceptance_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsuitable_provider",
+        "effects": 0
+      }
+    },
+    {
+      "name": "service_suitability_checked-string",
+      "facts": {
+        "incident_location_confirmed": true,
+        "service_suitability_checked": "true",
+        "provider_acceptance_known": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsuitable_provider",
+        "effects": 0
+      }
+    },
+    {
+      "name": "provider_acceptance_known-false",
+      "facts": {
+        "incident_location_confirmed": true,
+        "service_suitability_checked": true,
+        "provider_acceptance_known": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "provider_not_accepted",
+        "effects": 1
+      }
+    },
+    {
+      "name": "provider_acceptance_known-missing",
+      "facts": {
+        "incident_location_confirmed": true,
+        "service_suitability_checked": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "provider_not_accepted",
+        "effects": 1
+      }
+    },
+    {
+      "name": "provider_acceptance_known-string",
+      "facts": {
+        "incident_location_confirmed": true,
+        "service_suitability_checked": true,
+        "provider_acceptance_known": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "provider_not_accepted",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}
