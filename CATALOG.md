@@ -59,6 +59,7 @@ Industries follow the rasa.community casebook.
 | Case | Organisation | Model | Mode | Voice stack | Result | Build | Article |
 |---|---|---|---|---|---|---|---|
 | Product choices with evidence boundaries | Willow Shop | GPT-5.5 | text | — | 21/22 | [`mantle-text-retail-guided-selling-gpt`](examples/mantle-text-retail-guided-selling-gpt/) | not published yet |
+| Subscriptions without hidden entitlement loss | Willow Shop | GPT-5.5 | text (Telegram target) | — | 12/14 (2 provider errors, 6 not run) | [`mantle-text-retail-loyalty-gpt`](examples/mantle-text-retail-loyalty-gpt/) | not published yet |
 | Order status with a carrier timestamp | Willow Shop | Gemini 3.8 Flash | voice | Deepgram Flux + Rime | 19/19 | [`mantle-voice-retail-order-status-gemini`](examples/mantle-voice-retail-order-status-gemini/) | not published yet |
 | Returns with eligibility and receipt boundaries | Willow Shop | Claude Sonnet 5.5 | text | — | 21/22 | [`mantle-text-retail-return-claude`](examples/mantle-text-retail-return-claude/) | not published yet |
 
@@ -113,6 +114,7 @@ Industries follow the rasa.community casebook.
 - [`mantle-text-payment-plan-authority-gpt`](examples/mantle-text-payment-plan-authority-gpt/): Payment-plan offer authority, Amber Grid. Main run 19/19, recorded 2026-09-30.
 - [`mantle-text-reminder-deduplication-gpt`](examples/mantle-text-reminder-deduplication-gpt/): Reminders without duplicate calls, Cedar Clinic. Main run 14/14, recorded 2026-09-30.
 - [`mantle-text-retail-guided-selling-gpt`](examples/mantle-text-retail-guided-selling-gpt/): Product choices with evidence boundaries, Willow Shop. Main run 21/22, recorded 2026-09-30.
+- [`mantle-text-retail-loyalty-gpt`](examples/mantle-text-retail-loyalty-gpt/): Subscriptions without hidden entitlement loss, Willow Shop. Main run 12/14 (2 provider errors, 6 not run), recorded 2026-09-30.
 - [`mantle-text-telco-diagnostics-gpt`](examples/mantle-text-telco-diagnostics-gpt/): Diagnostics before disruptive resets, Juniper Mobile. Main run 18/21, recorded 2026-09-30.
 - [`mantle-text-telco-retention-gpt`](examples/mantle-text-telco-retention-gpt/): Retention that respects the exit, Juniper Mobile. Main run 16/16, recorded 2026-09-30.
 - [`mantle-text-travel-mass-rebooking-gpt`](examples/mantle-text-travel-mass-rebooking-gpt/): Rebooking during a mass disruption, Horizon Travel. Main run 20/20, recorded 2026-09-30.
