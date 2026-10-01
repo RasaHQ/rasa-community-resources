@@ -56,7 +56,7 @@ moves audio. The runtime provides:
 Mantle streams the model's text straight into the TTS when the TTS engine
 accepts streamed text (the engine's `streaming_input`), so the first words
 can play while the model is still writing. Rasa's built-in TTS engines
-(Azure, Cartesia, Deepgram, Rime) accept streamed text. **Choose a TTS that
+(Azure, Cartesia, Deepgram, Deepgram Flux, Rime) accept streamed text. **Choose a TTS that
 accepts streamed text.** The Speechmatics preview TTS used for the headline
 runs takes a whole utterance per request, so with it each message is spoken
 once it is complete. Switching to the built-in Deepgram TTS is a change to
@@ -225,8 +225,9 @@ BOT:    I'm sorry, this call is already verified for Maria, so I can't act for T
 A voice confirmation has a timing edge that text does not. In one guarded
 call, speech-to-text split the caller's first sentence in the middle of
 "refill". The tail of the sentence reached the agent after it had asked
-which medicine. By then the scripted caller had said its next line, "Yes,
-please.", which was meant for a read-back. The agent read the medicine back
+which medicine. By the time the agent read the medicine back, the scripted caller
+had already said its next line, "Yes, please.", which was meant for a
+read-back. The agent read the medicine back
 and took the queued "Yes, please." as the answer. Times are in seconds from
 the greeting:
 
