@@ -2,7 +2,8 @@
 
 The commands below are the ones that produced the run folders named, typed
 from the tutorial folder (`tutorials/voice-agent-three-frameworks/`) on the
-same Mac as the earlier runs, on 2026-10-01 between 12:08 and 13:38 UTC.
+same Mac as the earlier runs, on 2026-10-01 between 12:08 and 13:38 UTC, and
+(the last two sections) between 14:50 and 15:00 UTC.
 Keys came from the repository-root `.env`. Every run was appended to its
 framework's `spend-ledger.json`.
 
@@ -110,3 +111,34 @@ place of `cedar_speech`'s Speechmatics ones; no file in `langgraph/` or
 
 `rasa-deepgram-tts/` and `rasa-deepgram/` are temporary copies (ignored by
 git) and were deleted after the runs.
+
+## The late-transcript replay, guard on
+
+```bash
+make late-transcript-replay FW=langgraph LABEL=2026-10-01-late-transcript-replay BUDGET=0.30
+make late-transcript-replay FW=strands LABEL=2026-10-01-late-transcript-replay BUDGET=0.25
+make late-transcript-replay FW=rasa LABEL=2026-10-01-late-transcript-replay BUDGET=0.55
+make late-transcript-replay FW=rasa LABEL=2026-10-01-late-transcript-replay-repeat REPEATS=1 BUDGET=0.25
+```
+
+`make late-transcript-replay` runs
+`python3 shared/spec/late_transcript_replay.py <framework> --label <label> --repeats 3 --budget-usd <cap>`,
+with `--server-cmd "uv run --locked python server.py --port {port}"` for
+LangGraph and Strands (Rasa uses the runner's preset, which trains first).
+The first three replays ran at the same time as each other and as the next
+section's runs. The second Rasa replay of the first batch lost its
+Speechmatics socket to the account's concurrent-session quota, so one more
+Rasa replay was run alone (`-repeat`).
+
+## The six calls the spec left out, guard on
+
+```bash
+python3 shared/spec/run_spec.py langgraph --spec shared/spec/conversations-remaining-6.json \
+  --server-cmd "uv run --locked python server.py --port {port}" --label 2026-10-01-remaining-6 --budget-usd 0.80
+python3 shared/spec/run_spec.py strands --spec shared/spec/conversations-remaining-6.json \
+  --server-cmd "uv run --locked python server.py --port {port}" --label 2026-10-01-remaining-6 --budget-usd 0.80
+python3 shared/spec/run_spec.py rasa --spec shared/spec/conversations-remaining-6.json \
+  --label 2026-10-01-remaining-6 --budget-usd 1.50
+```
+
+The three ran at the same time; none of them is used for latency.

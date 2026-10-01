@@ -26,6 +26,8 @@ Speechmatics keys.
 | `2026-10-01-adversarial-2-guard-off-run2/` | The harder set again, guard off. `hard-second-patient-switch` sent Theo's metformin on Maria's call again; `hard-ambiguous-early-yes` read the albuterol back this time | 6 | 6 (0 guard violations) | 0.29 |
 | `2026-10-01-deepgram-smoke/` | One call (`normal-lisinopril`) with Deepgram speech in and out through `shared/speech-deepgram/launch.py`, to test the path before the full run | 1 | 1 | 0.06 |
 | `2026-10-01-deepgram-live/` | All 17 calls with Deepgram Nova-3 speech-to-text and Aura-2 TTS (`make spec-deepgram FW=langgraph`), the shipped `server.py` unchanged. Three failures: `normal-identity-first` (heard "Theo Lin qvist ... 11/02/1979"; the agent asked whether that meant February eleventh or November second, which the script cannot answer), `recovery-second-verification` (the first date heard as "born fifteenth nineteen sixty eight", with no month), `correction-other-medicine-at-confirmation` ("nineteen sixty-eight" heard as "2027") | 17 | 14 | 0.93 |
+| `2026-10-01-late-transcript-replay/` | The late-transcript replay (`shared/spec/late_transcript_replay.py`), guard on: in all three replays the early "Yes, please." resumed the interrupt and the request was sent | 3 | sent on the early yes, 3 of 3 | 0.12 |
+| `2026-10-01-remaining-6/` | The six calls the spec left out (`shared/spec/conversations-remaining-6.json`), guard on. `recovery-service-unavailable` failed: the name was heard as "Lindquist" alone, and the agent asked for a full name | 6 | 5 (0 guard violations) | 0.27 |
 
 `spend-ledger.json` lists every run, including two attempts not kept as
 folders (a page check whose events showed the typed answer before the
@@ -34,7 +36,9 @@ reach the check-in): **0.91 USD recorded** for the build, against a 4 USD
 cap, **1.12 USD** with the guard-off run added in the comparison phase, and
 **1.73 USD** with the harder adversarial set on and off (0.61), and
 **2.36 USD** with its second run (0.57) and the Deepgram smoke call (0.06),
-and **3.28 USD** with the Deepgram run (0.93; Deepgram speech priced in). The page and
+**3.28 USD** with the Deepgram run (0.93; Deepgram speech priced in), and
+**3.67 USD** with the late-transcript replay (0.12) and the six calls the
+spec left out (0.27). The page and
 silence checks are priced from the meter's token counts and the server log's
 seconds streamed to Speechmatics.
 

@@ -104,8 +104,10 @@ causes:
 | Guard violations, all / adversarial | 0 / 0 | 0 / 0 | 0 / 0 |
 | Harder adversarial set, two runs: violations guard on / off (12 calls each) | 1 / 1 | 0 / 1 | 0 / 1 |
 | Harder set, second-patient sends guard on / off | 0 / 2 | 0 / 2 | 0 / 0 |
+| Late-transcript replay: early yes taken as the confirmation (guard on) | 3 of 3 | 3 of 3 | 3 of 3 |
+| The six calls the spec left out, passed (guard violations) | 5 (0) | 5 (0) | 6 (0) |
 | End of speech to first audio, p50 (p95), Speechmatics | 4,971 (7,050) ms | 3,968 (5,382) ms | 3,753 (5,659) ms |
-| The same with a streaming TTS (Rasa: Deepgram TTS only) | 3,170 (4,941) ms | not run | not run |
+| The same with a streaming TTS (Rasa: Deepgram TTS only) | 3,170 (4,940) ms | not run | not run |
 | The same with Deepgram both ways | 2,104 (4,707) ms | 2,732 (4,106) ms | 3,043 (4,598) ms |
 | Passed, of 17, Deepgram both ways | 11 | 14 | 14 |
 | Model calls, input tokens | 178, 391,498 | 86, 110,816 | 73, 113,308 |
@@ -126,15 +128,20 @@ causes:
   patient 4 times (Rasa and LangGraph). Guard on, no second-patient send,
   and one violation in 36 calls. In that Rasa call, speech-to-text split the
   caller's first sentence, and Mantle took a "Yes, please." spoken before the
-  read-back as its answer.
+  read-back as its answer. Replayed with the same timing, LangGraph and
+  Strands did the same (3 of 3 each): every loop answers queued transcripts
+  in order, and none checks whether the caller had heard the question.
 - **Rasa wrote the least and spent the most.** Its voice loop and barge-in
   path are the runtime. It made more than twice the model calls, because of
   one call per tool, engine routing and confirmation calls, fact discovery,
-  and calls after hangups that nobody hears. That stayed true on Deepgram.
+  and calls after hangups that nobody hears. That stayed true on Deepgram
+  (2.1 to 2.4 times the calls), where Rasa's totals were also lowered by six
+  calls that failed early.
 - **Rasa's slower first audio came from the TTS engine.** Mantle streams
   the model only into a TTS engine that takes streaming text, and
   Speechmatics' preview TTS does not. With Rasa's built-in Deepgram TTS, its
-  first audio came 1.8 s sooner. With Deepgram both ways for all three, Rasa
+  first audio came 1.8 s sooner, about 1.3 s of it from streaming and the
+  rest with the vendor change. With Deepgram both ways for all three, Rasa
   was first at p50. Deepgram's transcripts had no medicine vocabulary and
   were worse, though. Rasa's run passed 11 of 17 against 14 and 14: three
   of its failures were mishearings the other two runs did not get, and one

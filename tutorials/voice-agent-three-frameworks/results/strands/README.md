@@ -20,14 +20,17 @@ audit log, which decides pass or fail), `llm-calls.jsonl` (the meter) and
 | `2026-10-01-adversarial-2-guard-off-run2/` | The harder set again, guard off. `hard-ambiguous-early-yes` failed with a guard violation: the albuterol was selected and sent in one turn, with no read-back | 6 | 5 (**1 guard violation**) | 0.29 |
 | `2026-10-01-deepgram-smoke/` | One call (`normal-lisinopril`) with Deepgram speech in and out through `shared/speech-deepgram/launch.py`, to test the path before the full run | 1 | 1 | 0.05 |
 | `2026-10-01-deepgram-live/` | All 17 calls with Deepgram Nova-3 speech-to-text and Aura-2 TTS (`make spec-deepgram FW=strands`), the shipped `server.py` unchanged. Three failures: `normal-identity-first` and `correction-different-dose` (the agent asked whether "11/02/1979" meant November second or February eleventh, which the script cannot answer), `recovery-second-verification` (as on Speechmatics: it asked for the name again) | 17 | 14 | 0.92 |
+| `2026-10-01-late-transcript-replay/` | The late-transcript replay (`shared/spec/late_transcript_replay.py`), guard on: in all three replays the early "Yes, please." answered the pending `Confirm` and the request was sent | 3 | sent on the early yes, 3 of 3 | 0.12 |
+| `2026-10-01-remaining-6/` | The six calls the spec left out (`shared/spec/conversations-remaining-6.json`), guard on; `short-reply-yes` passed on "Yes." | 6 | 6 (0 guard violations) | 0.29 |
 | `2026-10-01-web-page-check/` | The shared voice page in headless Chromium through `serve.py` (`check-page.json`), metered by hand | 1 | handshake, greeting, audio and text round trips all ok | 0.04 |
 
 `spend-ledger.json` lists every run, plus 0.08 USD of model calls made while
 building (checked through the same meter, not through the runner): 1.09 USD
 against the 4 USD cap for the build, and 1.64 USD in all with the harder
 adversarial set on and off (0.55), and 2.26 USD with its second run (0.57)
-and the Deepgram smoke call (0.05), and 3.18 USD with the Deepgram run (0.92;
-Deepgram speech priced in).
+and the Deepgram smoke call (0.05), 3.18 USD with the Deepgram run (0.92;
+Deepgram speech priced in), and 3.59 USD with the late-transcript replay
+(0.12) and the six calls the spec left out (0.29).
 
 ## The live run
 

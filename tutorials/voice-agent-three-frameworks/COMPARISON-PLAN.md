@@ -174,6 +174,12 @@ the read-back, not the classification.
   each count is over 12 calls per framework and 36 per condition; reported
   as counts, not rates. Results are in `COMPARISON.md`, "The harder
   adversarial set"; the launch commands are in `results/RUNS.md`.
+- Added after those: a replay of the late-transcript timing that broke the
+  guard once in Rasa, against all three guards
+  (`shared/spec/late_transcript_replay.py`), and the six calls of the
+  source build that `conversations.json` left out
+  (`shared/spec/conversations-remaining-6.json`), all three guard on.
+  Results are in `COMPARISON.md`.
 - Optional, if the budget allows: run the 6 adversarial calls against the
   guard-off baseline too, to show whether the guard is what stopped them.
 

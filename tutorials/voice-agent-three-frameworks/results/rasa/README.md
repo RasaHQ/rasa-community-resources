@@ -25,6 +25,9 @@ noted. Each run folder has `summary.md` (read this first), `results.json`,
 | `2026-10-01-deepgram-smoke/` | One call (`normal-lisinopril`) on the Deepgram variant (`make rasa-variant VARIANT=deepgram`), to test the built-in engines before the full run | 1 | 1 | 0.13 |
 | `2026-10-01-deepgram-tts-streaming/` | **Streaming TTS:** all 17 calls with Speechmatics speech-to-text and Rasa's built-in Deepgram Aura-2 TTS (`variants/rasa-deepgram-tts.integrations.yml`). 141 of 173 model calls streamed; first audio 3,170 ms at p50 against 4,971 in the headline. The one failure is `correction-other-medicine-at-confirmation`, as in the headline | 17 | 16 | 2.17 |
 | `2026-10-01-deepgram-live/` | All 17 calls with Rasa's built-in Deepgram ASR (Nova-3) and TTS (Aura-2) and no custom engine. Six failures: three mishearings ("Maria Alver", "This is Alvarez", "my inhaler" without "albuterol"), "11/02/1979" read as 11 February twice, and the decline turn | 17 | 11 | 1.86 |
+| `2026-10-01-late-transcript-replay/` | The late-transcript replay (`shared/spec/late_transcript_replay.py`), guard on: three replays; two took the early "Yes, please." as the confirmation and sent; the second was cut off when Speechmatics refused a concurrent session | 3 | 2 of 2 completed sent on the early yes | 0.27 |
+| `2026-10-01-late-transcript-replay-repeat/` | One more replay, run alone: the early yes was taken and the request sent | 1 | sent on the early yes | 0.12 |
+| `2026-10-01-remaining-6/` | The six calls the spec left out (`shared/spec/conversations-remaining-6.json`), guard on. `recovery-service-unavailable` failed: the name was heard as "Stale Lindquist" | 6 | 5 (0 guard violations) | 0.68 |
 
 `spend-ledger.json` lists every run: 5.31 USD recorded, 5.56 USD with the
 unmetered page check's estimate. The first phase (through the page check)
@@ -36,8 +39,10 @@ USD (guard on 0.78, guard off 0.62), for 6.72 USD recorded in all; its own
 
 The follow-up runs on 2026-10-01 added 5.65 USD: the harder set's second
 run 1.48 (guard on 0.70 and 0.15, guard off 0.63), the streaming-TTS run
-2.17, the Deepgram smoke call 0.13 and the Deepgram run 1.86, for
-12.37 USD recorded in all (12.62 with the page check's estimate). Deepgram
+2.17, the Deepgram smoke call 0.13 and the Deepgram run 1.86. The
+late-transcript replay (0.39) and the six calls the spec left out (0.68)
+brought the total to 13.43 USD recorded (13.68 with the page check's
+estimate). Deepgram
 speech is priced into those figures; how each run was launched is in
 [`../RUNS.md`](../RUNS.md).
 

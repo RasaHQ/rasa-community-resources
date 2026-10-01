@@ -168,7 +168,7 @@ split, every medicine name heard (17 of 17), names 29 of 30.
 **Model cost** is the meter's (token usage times OpenAI's published price for
 `gpt-5.5-2026-04-23`: 5.00 USD per million input tokens, 0.50 cached, 30.00
 output). LiteLLM's own cost, logged inside the agent, was identical in both
-full runs (1.887398 USD over 178 calls in the headline). Speech-to-text is
+Speechmatics full runs (1.887398 USD over 178 calls in the headline). Speech-to-text is
 priced at 0.43 USD per hour (Speechmatics realtime enhanced, as recorded by
 the Northgate dispute build on 2026-09-29); TTS is in free preview with no
 published price, so it is not priced.
