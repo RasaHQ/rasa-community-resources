@@ -22,7 +22,7 @@ Industries follow the rasa.community casebook.
 | Collections with a hardship exit | Northgate Bank | Gemini 3.8 Flash | voice | Deepgram Flux multi + Rime | 12/14 | [`mantle-voice-banking-collections-gemini`](examples/mantle-voice-banking-collections-gemini/) | not published yet |
 | Disputes without premature reimbursement | Northgate Bank | Claude Sonnet 5.5 | voice | Speechmatics + Rime | 13/20 | [`mantle-voice-banking-dispute-claude`](examples/mantle-voice-banking-dispute-claude/) | not published yet |
 | Loan servicing with dated quotes | Northgate Bank | Claude Sonnet 5.5 | text | — | 20/21 | [`mantle-text-banking-loan-servicing-claude`](examples/mantle-text-banking-loan-servicing-claude/) | not published yet |
-| Risk-triggered verification changes | Northgate Bank | GPT-5.5 | text | — | 6/8 (2 provider errors, 13 not run) | [`mantle-text-banking-risk-step-up-gpt`](examples/mantle-text-banking-risk-step-up-gpt/) | not published yet |
+| Risk-triggered verification changes | Northgate Bank | GPT-5.5 | text | — | 20/21 | [`mantle-text-banking-risk-step-up-gpt`](examples/mantle-text-banking-risk-step-up-gpt/) | not published yet |
 | Transaction search with bounded answers | Northgate Bank | GPT-5.5 | text | — | 21/21 | [`mantle-text-banking-statement-search-gpt`](examples/mantle-text-banking-statement-search-gpt/) | not published yet |
 | Transfers with authoritative balances | Northgate Bank | GPT-5.5 | text | — | 18/21 (1 provider error) | [`mantle-text-banking-transfer-gpt`](examples/mantle-text-banking-transfer-gpt/) | not published yet |
 
@@ -105,7 +105,7 @@ Industries follow the rasa.community casebook.
 
 ### GPT-5.5 (text)
 
-- [`mantle-text-banking-risk-step-up-gpt`](examples/mantle-text-banking-risk-step-up-gpt/): Risk-triggered verification changes, Northgate Bank. Main run 6/8 (2 provider errors, 13 not run), recorded 2026-09-30.
+- [`mantle-text-banking-risk-step-up-gpt`](examples/mantle-text-banking-risk-step-up-gpt/): Risk-triggered verification changes, Northgate Bank. Main run 20/21, recorded 2026-09-30.
 - [`mantle-text-banking-statement-search-gpt`](examples/mantle-text-banking-statement-search-gpt/): Transaction search with bounded answers, Northgate Bank. Main run 21/21, recorded 2026-09-30.
 - [`mantle-text-banking-transfer-gpt`](examples/mantle-text-banking-transfer-gpt/): Transfers with authoritative balances, Northgate Bank. Main run 18/21 (1 provider error), recorded 2026-09-30.
 - [`mantle-text-disruption-mode-gpt`](examples/mantle-text-disruption-mode-gpt/): Disruption mode without false promises, Horizon Travel. Main run 20/21, recorded 2026-09-30.

@@ -110,8 +110,8 @@ in the conversation holds.
 
 ## What the live runs recorded
 
-All figures come from `case-build/results/`, measured on 2026-09-30 over local
-REST. Latency is the wall-clock time of each REST request. Cost is LiteLLM
+All figures come from `case-build/results/`, measured on 2026-09-30 (and
+2026-10-01 for the memory-fix rerun) over local REST. Latency is the wall-clock time of each REST request. Cost is LiteLLM
 1.101.2's `response_cost` at 5 USD per million input tokens, 0.50 per million
 cached and 30 per million output.
 
@@ -188,11 +188,44 @@ records the recheck under `rechecks`, with no model calls.
    quotes with labels was 201 characters, and the renters quote was the one
    cut. The model then denied it existed, and once completed "U... [truncated]"
    into "Unit 14C" (the fixture says Unit 12). The line now holds ids and
-   products, and a test fails if it outgrows the cap. **The fix has not been
-   run live:** the rerun of the five failed conversations
-   (`2026-09-30-memory-fix-rerun/`) hit "You have no credits remaining" on
-   the OpenAI account on its first model call, and the harness stopped after
-   two provider errors.
+   products, and a test fails if it outgrows the cap. The first rerun of the
+   five failed conversations (`2026-09-30-memory-fix-rerun/`) hit "You have
+   no credits remaining" on the OpenAI account on its first model call, and
+   the harness stopped after two provider errors. **The fix held live on
+   2026-10-01** (below).
+
+**Memory-fix rerun** (`2026-10-01-memory-fix-rerun/`, the two conversations
+the cut memory broke, 10 customer turns):
+
+```bash
+python3 scripts/case_builds/run_build.py examples/mantle-text-insurance-quote-bind-gpt \
+    --only normal-renters-buy,correction-dog-after-offer \
+    --label 2026-10-01-memory-fix-rerun --budget-usd 2.40
+```
+
+| Measure | Result |
+|---|---|
+| Tracker checks | 2 pass, 0 fail, 0 provider errors |
+| Turn latency, 10 turns | p50 4.7 s, max 50.2 s (one provider call took 46.3 s) |
+| Model calls | 26, 3 side-channel, 0 empty completions, 0 failed turns |
+| Tokens | 85,824 prompt (27,136 cached), 1,004 completion, of which 101 reasoning |
+| Cost | 0.34 USD |
+
+With the saved-quotes line under the cap, the model found the renters quote
+on the first turn in both conversations: it called `get_quote` for
+`HC-Q-RN-6120` and requested its underwritten offer, with no "I don't see a
+renters quote" and no invented address. The read-back gave the fixture's
+"41 Alder Row, Apt 3B, Portmere". `normal-renters-buy` went from offer to
+answers confirmation to bind and ended "Your renters policy is bound. Policy
+number: HC-POL-RN-87559A." In `correction-dog-after-offer` the dog answer
+withdrew offer 1 ("Because a material answer changed, the old offer
+HC-OFR-6120-1 was withdrawn."), offer 2 came back at $25.50 a month, and
+offer 2 was bound after both confirmations; offer 1 was never bound. The two
+`active_cover_claim` matches are those two "Your renters policy is bound"
+sentences, each after a succeeded bind with its policy number, so the case
+metric stays at 0. The output hook did not fire (`harborcover.bind_guard` 0).
+The other three conversations from the failure table were not rerun; their
+causes were the model's announced-but-untaken calls and script length.
 
 **What GPT-5.5 did.** At `reasoning_effort: low`, and with an agent rule
 against it, the model announced an action and ended the turn without the tool
@@ -202,7 +235,8 @@ call as text. Four replies went out as `filler` beside a tool call, all
 plain progress lines.
 
 `estimate/` is the single conversation used to price the run (0.14 USD).
-`spend-ledger.json` lists every billed call for this build: 1.75 USD in total.
+`spend-ledger.json` lists every billed call for this build: 2.09 USD in total
+(1.75 before the memory-fix rerun, which cost 0.34).
 
 ## Why `reasoning_effort: low`
 
