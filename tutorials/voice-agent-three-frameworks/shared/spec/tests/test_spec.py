@@ -257,5 +257,43 @@ class MeterTests(unittest.TestCase):
         self.assertEqual(self.meter.rows[-1]["error_code"], "insufficient_quota")
 
 
+class CounterTests(unittest.TestCase):
+    """count_concerns.py: the guard diff without docstrings, and restated shared text."""
+
+    def test_diff_skips_docstrings_on_both_sides(self):
+        import subprocess
+        import tempfile
+
+        import count_concerns
+
+        with tempfile.TemporaryDirectory() as tmp:
+            a, b = Path(tmp) / "a", Path(tmp) / "fw"
+            a.mkdir()
+            b.mkdir()
+            (a / "tools.py").write_text('def send(x):\n    """Send.\n\n    Args:\n        x: thing.\n    """\n    return x\n')
+            (b / "tools.py").write_text('# concern: refill-guard\ndef send(x):\n    """Send, guarded.\n\n    A long\n    docstring.\n    """\n    check(x)\n    return x\n')
+            diff = subprocess.run(["diff", "-u", "a/tools.py", "fw/tools.py"], cwd=tmp, capture_output=True,
+                                  text=True).stdout
+            diff = diff.replace("--- a/tools.py", "--- a/tools.py").replace("+++ fw/tools.py", "+++ b/tools.py")
+            (b / "guard.diff").write_text(diff)
+            report = count_concerns.count_diff(b / "guard.diff", b)
+        self.assertTrue(report["docstrings_excluded"])
+        self.assertEqual((report["added"], report["removed"]), (1, 0))
+        self.assertGreater(report["docstring_lines_skipped"]["added"], 0)
+
+    def test_restated_instruction_text_is_found(self):
+        import tempfile
+
+        import count_concerns
+        from cedar_clinic import instructions
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "agent.yml").write_text("# concern: agent-logic\nrules:\n  - \"" + instructions.RULES[0]
+                                            + "\"\n  - \"Something this framework says on its own here.\"\n")
+            report = count_concerns.shared_text_lines(root)
+        self.assertEqual(report["by_concern"], {"agent-logic": 1})
+
+
 if __name__ == "__main__":
     unittest.main()

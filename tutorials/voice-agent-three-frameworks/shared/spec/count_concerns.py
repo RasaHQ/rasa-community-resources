@@ -223,38 +223,161 @@ def count_tree(root: Path) -> dict:
             "total": sum(v["total"] for v in summary.values())}
 
 
-def count_diff(diff: Path) -> dict:
-    """Added and removed lines of a unified diff, by the same line rule.
+def _hunk_start(header: str, side: str) -> int:
+    m = re.match(r"@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@", header)
+    return int(m.group(1) if side == "a" else m.group(2)) if m else 0
+
+
+def _baseline_copy(folder: Path, diff: Path) -> Optional[Path]:
+    """A temporary copy of the folder with the diff reversed (the guard-off side), or None."""
+    import shutil
+    import subprocess
+    import tempfile
+
+    tmp = Path(tempfile.mkdtemp(prefix="guard-off-"))
+    target = tmp / folder.name
+    shutil.copytree(folder, target, ignore=shutil.ignore_patterns(".venv", "models", ".rasa", "__pycache__"))
+    done = subprocess.run(["patch", "-R", "-E", "-s", "-p1", "-i", str(diff)], cwd=target,
+                          capture_output=True, text=True)
+    return target if done.returncode == 0 else None
+
+
+def count_diff(diff: Path, folder: Optional[Path] = None) -> dict:
+    """Added and removed lines of a unified diff, by the same line rule as the tree count.
 
     Blank lines and lines that are only a comment in their file's syntax do
     not count; in Markdown, frontmatter comments count as comments only when
-    they start with ``#`` (the diff cannot tell frontmatter from body, so a
-    Markdown heading would be skipped too; skill bodies here have none).
+    they start with ``#``. Python docstrings do not count either: when the
+    framework folder is given, the counter reads the shipped file for added
+    lines and a copy with the diff reversed (the guard-off baseline) for
+    removed lines, and skips lines inside a module, class or function
+    docstring on that side. Without the folder it cannot tell a docstring from
+    code, and says so (``docstrings_excluded: false``).
     """
-    added = removed = 0
+    baseline = _baseline_copy(folder, diff) if folder is not None else None
+    doc_cache: dict[tuple[str, str], set[int]] = {}
+
+    def docstrings(side: str, rel: str) -> set[int]:
+        key = (side, rel)
+        if key not in doc_cache:
+            root = folder if side == "b" else baseline
+            path = (root / rel) if root is not None else None
+            doc_cache[key] = _docstring_lines(path.read_text(encoding="utf-8")) \
+                if path is not None and path.suffix == ".py" and path.is_file() else set()
+        return doc_cache[key]
+
+    added = removed = docstring_added = docstring_removed = 0
     files: dict[str, dict[str, int]] = {}
     current = None
+    a_line = b_line = 0
     for line in diff.read_text(encoding="utf-8").splitlines():
         if line.startswith("+++ "):
             current = line[4:].split("\t")[0].removeprefix("b/")
             files.setdefault(current, {"added": 0, "removed": 0})
             continue
-        if line.startswith(("--- ", "diff ", "@@", "# ")) or current is None:
+        if line.startswith("@@"):
+            a_line, b_line = _hunk_start(line, "a"), _hunk_start(line, "b")
             continue
-        if not line or line[0] not in "+-":
+        if line.startswith(("--- ", "diff ", "# ")) or current is None:
             continue
+        if not line or line[0] not in "+- ":
+            continue
+        kind = line[0]
         body = line[1:].strip()
+        number = b_line if kind == "+" else a_line
+        if kind in " -":
+            a_line += 1
+        if kind in " +":
+            b_line += 1
+        if kind == " ":
+            continue
         path = Path(current)
         prefixes = _comment_prefixes(path)
         if not body or (prefixes and body.startswith(prefixes)) or (path.suffix == ".md" and body.startswith("#")):
             continue
-        if line[0] == "+":
+        if (folder is not None and baseline is not None
+                and number in docstrings("b" if kind == "+" else "a", current)):
+            if kind == "+":
+                docstring_added += 1
+            else:
+                docstring_removed += 1
+            continue
+        if kind == "+":
             added += 1
             files[current]["added"] += 1
         else:
             removed += 1
             files[current]["removed"] += 1
-    return {"diff": diff.name, "added": added, "removed": removed, "changed": added + removed, "files": files}
+    return {"diff": diff.name, "added": added, "removed": removed, "changed": added + removed,
+            "docstrings_excluded": baseline is not None,
+            "docstring_lines_skipped": {"added": docstring_added, "removed": docstring_removed},
+            "files": files}
+
+
+# ----------------------------------------------------------------------------
+# Shared prompt text restated in a framework's own files
+# ----------------------------------------------------------------------------
+
+
+def _shared_corpus() -> str:
+    """The shared instruction text, normalised: every string cedar_clinic.instructions exports."""
+    clinic = Path(__file__).resolve().parents[1] / "clinic"
+    if str(clinic) not in sys.path:
+        sys.path.insert(0, str(clinic))
+    from cedar_clinic import instructions, refills
+
+    parts = [instructions.PERSONA, *instructions.RULES, instructions.VOICE_RULES, instructions.GREETING,
+             instructions.PROCEDURE, refills.confirmation_question("{selected_medication_label}"),
+             refills.DECLINED_TEXT]
+    return _norm(" ".join(parts))
+
+
+def _norm(text: str) -> str:
+    text = text.replace("@tool.", "").replace("\u2019", "'")
+    return " ".join(re.sub(r"[^a-z0-9{}' ]+", " ", text.lower()).split())
+
+
+_YAML_SCAFFOLD_RE = re.compile(r"^(?:-\s*)?(?:[a-z_]+:\s*)?(?:[>|]-?)?\s*[\"']?|[\"']\s*$")
+
+
+def shared_text_lines(root: Path) -> dict:
+    """Counted lines whose text restates the shared instruction text, by concern.
+
+    A line counts as restated when, stripped of YAML list and key syntax and
+    quotes, it is at least four words long and appears word for word in the
+    text ``cedar_clinic.instructions`` exports (Mantle's ``@tool.`` prefix
+    ignored). A version that imports the text has none. Reported so agent
+    logic can be compared with and without instruction text.
+    """
+    corpus = _shared_corpus()
+    out: dict[str, int] = defaultdict(int)
+    files: dict[str, int] = {}
+    for path in counted_files(root):
+        if path.suffix not in {".md", ".yml", ".yaml", ".txt"}:
+            continue
+        default = file_concern(path, root)
+        if default in (None, "regions"):
+            default = _mapped_tag(path, root) or "untagged"
+        stack: list[str] = []
+        n = 0
+        for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = raw.strip()
+            if BEGIN_RE.search(line) and line.startswith(("#", "<!--")):
+                stack.append(BEGIN_RE.search(line).group(1))
+                continue
+            if END_RE.search(line) and line.startswith(("#", "<!--")):
+                if stack:
+                    stack.pop()
+                continue
+            if not line or line.startswith(("#", "<!--")):
+                continue
+            text = _norm(_YAML_SCAFFOLD_RE.sub("", line))
+            if len(text.split()) >= 4 and text in corpus:
+                out[stack[-1] if stack else default] += 1
+                n += 1
+        if n:
+            files[path.relative_to(root).as_posix()] = n
+    return {"by_concern": dict(out), "total": sum(out.values()), "files": files}
 
 
 def main() -> int:
@@ -262,14 +385,30 @@ def main() -> int:
     parser.add_argument("folder", help="framework folder, e.g. rasa, langgraph or strands")
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--diff", action="store_true", help="count the folder's guard.diff instead")
+    parser.add_argument("--shared-text", action="store_true",
+                        help="count lines that restate the shared instruction text, by concern")
     args = parser.parse_args()
-    if args.diff:
-        report = count_diff(Path(args.folder).resolve() / "guard.diff")
+    if args.shared_text:
+        report = shared_text_lines(Path(args.folder).resolve())
         if args.json:
             print(json.dumps(report, indent=2))
         else:
+            print(f"{args.folder}: {report['total']} counted lines restate cedar_clinic.instructions "
+                  f"{report['by_concern']}")
+            for name, n in report["files"].items():
+                print(f"  {name:<40} {n}")
+        return 0
+    if args.diff:
+        folder = Path(args.folder).resolve()
+        report = count_diff(folder / "guard.diff", folder)
+        if args.json:
+            print(json.dumps(report, indent=2))
+        else:
+            skipped = report["docstring_lines_skipped"]
             print(f"{args.folder}/guard.diff: +{report['added']} -{report['removed']} counted lines "
-                  f"({report['changed']} changed) in {len(report['files'])} files")
+                  f"({report['changed']} changed) in {len(report['files'])} files; docstrings "
+                  f"{'excluded' if report['docstrings_excluded'] else 'NOT excluded'} "
+                  f"(+{skipped['added']} -{skipped['removed']} skipped)")
             for name, n in report["files"].items():
                 print(f"  {name:<40} +{n['added']} -{n['removed']}")
         return 0

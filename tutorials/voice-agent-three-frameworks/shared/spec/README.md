@@ -13,7 +13,9 @@ python3 shared/spec/run_spec.py rasa --only normal-lisinopril --mode text   # on
 python3 shared/spec/run_spec.py langgraph --server-cmd "uv run python server.py --port {port}" --label <run>
 python3 -m unittest discover -s shared/spec/tests -v                        # offline tests of the checks and meter
 python3 shared/spec/count_concerns.py rasa                                   # lines per concern
-python3 shared/spec/count_concerns.py rasa --diff                            # lines in rasa/guard.diff
+python3 shared/spec/count_concerns.py rasa --diff                            # lines in rasa/guard.diff, docstrings excluded
+python3 shared/spec/count_concerns.py rasa --shared-text                     # lines that restate cedar_clinic.instructions
+python3 shared/spec/rasa_call_breakdown.py results/rasa/<run>                # where a Rasa run's model calls went
 ```
 
 Everything here is standard library and runs under a bare `python3`.
@@ -102,6 +104,19 @@ with a 1.5x margin and skips the call if the cap would be crossed. Spend is
 the meter's model cost plus Speechmatics speech-to-text, priced per second
 streamed from `speech_prices` in the spec. Speechmatics TTS is in preview
 with no published price; its characters are recorded and left unpriced.
+
+## Rasa-only diagnostics
+
+The Rasa preset starts the agent through
+[`rasa_call_purposes.py`](rasa_call_purposes.py), which attaches the
+case-build harness's LiteLLM usage logger and labels every model call with
+the Mantle function that made it (orchestrator iteration, response
+rephrasing, fact discovery, completion judge) in `call-purposes.jsonl`. It
+changes no request and writes no prompt or response content.
+[`rasa_call_breakdown.py`](rasa_call_breakdown.py) turns that file, the
+meter log and the trackers into a table by purpose, split into calls made
+during caller turns and calls made after the hangup. Both are test
+equipment and count for no framework.
 
 ## Output
 

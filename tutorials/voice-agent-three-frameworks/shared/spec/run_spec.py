@@ -72,9 +72,11 @@ SPEC_FILE = HERE / "conversations.json"
 PRESETS: dict[str, dict[str, Any]] = {
     "rasa": {
         "cwd": "rasa",
-        # usage_launcher attaches the case-build harness's LiteLLM usage
-        # logger, a Rasa-only cross-check on the meter's token counts.
-        "server_cmd": "uv run --locked python ../../../scripts/case_builds/usage_launcher.py run --enable-api "
+        # rasa_call_purposes.py attaches the case-build harness's LiteLLM
+        # usage logger (a Rasa-only cross-check on the meter's token counts)
+        # and labels each model call with the Mantle function that made it
+        # (call-purposes.jsonl). Neither changes a request.
+        "server_cmd": "uv run --locked python ../shared/spec/rasa_call_purposes.py run --enable-api "
                       "-p {port} -i 127.0.0.1",
         "train_cmd": "uv run --locked rasa train",
         "ready_path": "/status",
@@ -526,6 +528,7 @@ def main() -> int:
         audit_path.unlink()
     meter = LLMMeter(spec["prices"], log_path=out_dir / "llm-calls.jsonl").start()
     (out_dir / "llm-calls.jsonl").unlink(missing_ok=True)
+    (out_dir / "call-purposes.jsonl").unlink(missing_ok=True)
 
     agent: Optional[AgentProcess] = None
     startup_s = None
@@ -543,6 +546,7 @@ def main() -> int:
             "RASA_TELEMETRY_ENABLED": "false",
             "HF_HUB_OFFLINE": "1",
             "CASE_BUILD_USAGE_LOG": str(raw_dir / "litellm-usage.jsonl"),
+            "RASA_CALL_PURPOSES_LOG": str(out_dir / "call-purposes.jsonl"),
             "LITELLM_LOCAL_MODEL_COST_MAP": "True",
             **meter.env(),
         })
