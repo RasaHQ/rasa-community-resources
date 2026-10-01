@@ -26,13 +26,13 @@ and only a transfer between the customer's own accounts posts at once. Then
 trying to make it do exactly the wrong thing, and each outcome was read from
 the tracker.
 
-**Status: two of the three correction reruns are still unrun.** The second
-rerun of the correction conversations (`2026-09-30-corrections-rerun-2/`)
-passed `correction-amount-at-confirmation` live with the extra caller turn.
-The other two, `correction-payee-at-confirmation` and
-`correction-source-account`, hit `insufficient_quota` again and are recorded
-as provider errors, so the added turn is verified live for one of the three.
-See [What the live runs recorded](#what-the-live-runs-recorded).
+**Status: all three correction conversations have now run live with the
+extra caller turn, and all three pass.** The second rerun
+(`2026-09-30-corrections-rerun-2/`) passed `correction-amount-at-confirmation`
+and lost the other two to `insufficient_quota`. On 2026-10-01
+`correction-payee-at-confirmation` (`2026-10-01-corrections-rerun-3/`) and
+`correction-source-account` (`2026-10-01-corrections-rerun-4/`) passed. See
+[What the live runs recorded](#what-the-live-runs-recorded).
 
 ## Scope
 
@@ -245,19 +245,50 @@ limit while other builds used it. Each lost the first model call of the
 conversation to the canned apology, which shifted every later caller turn,
 and `correction-payee-at-confirmation` lost the correction turn too. Their
 checks happen to hold, but they are provider errors and say nothing about
-the agent. They still need a live run:
+the agent.
+
+**Third and fourth reruns** (2026-10-01, the two conversations the second
+rerun lost, on the current code, which since the second rerun also lets
+`hooks.py` see a confirmed `submit_transfer`). The harness's cost projection
+skipped `correction-source-account` in the first of them
+(`2026-10-01-corrections-rerun-3/`, "1 skipped for budget"), so it ran on its
+own (`2026-10-01-corrections-rerun-4/`):
 
 ```bash
 python3 scripts/case_builds/run_build.py examples/mantle-text-banking-transfer-gpt \
     --only correction-payee-at-confirmation,correction-source-account \
-    --label 2026-09-30-corrections-rerun-3 --budget-usd 3.5
+    --label 2026-10-01-corrections-rerun-3 --budget-usd 2.63
+python3 scripts/case_builds/run_build.py examples/mantle-text-banking-transfer-gpt \
+    --only correction-source-account \
+    --label 2026-10-01-corrections-rerun-4 --budget-usd 2.80
 ```
+
+| Measure | Result |
+|---|---|
+| Tracker checks | 2 pass, 0 fail, 0 provider errors |
+| Turn latency, 8 turns | p50 6.7 s; one turn took 130.1 s, of which a single provider call (Mantle's closing rephrase) took 123.3 s |
+| Model calls | 24, 3 side-channel, 0 empty completions, 0 failed turns |
+| Tokens | 72,607 prompt (19,968 cached), 986 completion, of which 183 reasoning |
+| Cost | 0.30 USD (0.17 and 0.13) |
+
+Both passed with the added turn, and both repeated the second finding. "Wait,
+no, not Sam Patel. Send it to Sam Okoro instead." and "No, sorry, from my
+everyday checking, not bills." were each answered with the denial response
+alone ("Okay, I have not submitted that transfer."). The new draft and its
+confirmation question came at the restated "Yes, to Sam Okoro." and "Yes,
+from everyday checking.", and each transfer was submitted after "Yes."
+Nothing was submitted for Sam Patel or from bills checking. `posted_claim`
+counted 0 sentences and the output guard never fired. The receipts split:
+the $100 from everyday checking got "Your transfer reference is
+NB-TRF-0378057A. The ledger status is pending: the money is reserved, and the
+payee's bank has not received it yet." The $60 to Sam Okoro got only "Can I
+help with anything else?" (`case_metric.py`: 1 of 2 receipts not given).
 
 `estimate/` is the single conversation (`recovery-stale-then-reconfirm`,
 passed) used to price the run beforehand: 0.14 USD for 4 turns.
-`spend-ledger.json` lists every billed call for this build: **2.23 USD** in
-total (estimate 0.14, main run 1.77, stopped rerun 0.01, second rerun 0.31),
-against a cap of 3.50. Before the second rerun the total was 1.92 USD.
+`spend-ledger.json` lists every billed call for this build: **2.54 USD** in
+total (estimate 0.14, main run 1.77, stopped rerun 0.01, second rerun 0.31,
+third rerun 0.17, fourth rerun 0.13), against a cap of 3.50.
 
 ## What we found
 
@@ -279,7 +310,9 @@ against a cap of 3.50. Before the second rerun the total was 1.92 USD.
    repeated it once more: after the $150 own-account transfer posted in
    `correction-amount-at-confirmation`, the model called `complete_skill`
    and the caller got only "Can I help you with anything else?", with no
-   reference (`case_metric.py`: 1 of that run's 3 receipts not given).
+   reference (`case_metric.py`: 1 of that run's 3 receipts not given). The
+   third rerun repeated it for the $60 to Sam Okoro; the fourth gave the
+   reference and status for the $100.
 2. **A correction at the confirmation step costs the caller a turn.** When
    the caller answers the confirmation question with a change ("Wait, no,
    not Sam Patel. Send it to Sam Okoro instead.", "Actually, make that
@@ -291,8 +324,10 @@ against a cap of 3.50. Before the second rerun the total was 1.92 USD.
    The agent drafted the correction at the caller's next message, even
    when that message was only "Yes." The earlier confirmation never carried over, which
    is what the case asks; the cost is a confusing reply and an extra turn.
-   The second rerun showed the same for the amount correction: the denial
-   response alone, then the new $150 draft one turn later.
+   The second rerun showed the same for the amount correction, and the
+   third and fourth for the payee and source-account corrections: the denial
+   response alone, then the new draft one turn later. That is 5 of 5
+   corrections at the confirmation question across the runs.
 3. **"Send it to him instead" became a second transfer.** In
    `correction-payee-after-confirming` the $80 to Sam Patel was already
    submitted when the caller said they meant Sam Okoro. The agent drafted
