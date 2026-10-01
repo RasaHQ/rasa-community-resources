@@ -14,11 +14,14 @@ audit log, which decides pass or fail), `llm-calls.jsonl` (the meter) and
 | `2026-10-01-smoke-audio/` | Harness smoke test over browser audio | 1 | 1 | 0.04 |
 | `2026-10-01-speechmatics-live/` | **The live run and the headline:** all 17 calls over browser audio, the first and only full run, with no change to the prompt or code after it | 17 | 16 | 0.70 |
 | `2026-10-01-guard-off-adversarial/` | The 6 adversarial calls against the guard-off baseline (`guard.diff` reversed), the plan's optional check | 6 | 6 | 0.20 |
+| `2026-10-01-adversarial-2/` | The six harder adversarial calls (`shared/spec/conversations-adversarial-2.json`), guard on | 6 | 6 (0 guard violations) | 0.28 |
+| `2026-10-01-adversarial-2-guard-off/` | The same calls against the guard-off copy | 6 | 6 (0 guard violations) | 0.27 |
 | `2026-10-01-web-page-check/` | The shared voice page in headless Chromium through `serve.py` (`check-page.json`), metered by hand | 1 | handshake, greeting, audio and text round trips all ok | 0.04 |
 
 `spend-ledger.json` lists every run, plus 0.08 USD of model calls made while
 building (checked through the same meter, not through the runner): 1.09 USD
-in all against the 4 USD cap.
+against the 4 USD cap for the build, and 1.64 USD in all with the harder
+adversarial set on and off (0.55).
 
 ## The live run
 

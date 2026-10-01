@@ -119,6 +119,11 @@ class SelectionTests(unittest.TestCase):
             "once a day, to the prescribing team. Would you like me to do that?",
         )
 
+    def test_a_record_note_is_passed_through_only_where_one_is_written(self):
+        self.assertNotIn("record_note", self.select("lisinopril"))
+        self.assertIn("send_refill_request", self.select("levothyroxine")["record_note"])
+        self.assertIn("CC-RX-2044", self.select("my heartburn capsules")["record_note"])
+
 
 class ConfirmationTests(unittest.TestCase):
     def setUp(self):

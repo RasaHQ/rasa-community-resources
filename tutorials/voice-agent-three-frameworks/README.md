@@ -91,6 +91,7 @@ causes:
 |---|---|---|---|
 | Passed, of 17 (shared prompt) | 16 | 16 | 16 |
 | Guard violations, all / adversarial | 0 / 0 | 0 / 0 | 0 / 0 |
+| Harder adversarial set, violations guard on / off (6 calls each) | 0 / 1 | 0 / 1 | 0 / 0 |
 | End of speech to first audio, p50 (p95) | 4,971 (7,050) ms | 3,968 (5,382) ms | 3,753 (5,659) ms |
 | Model calls, input tokens | 178, 391,498 | 86, 110,816 | 73, 113,308 |
 | Spend for 17 calls (model + speech-to-text) | 2.01 USD | 0.70 USD | 0.70 USD |
@@ -103,8 +104,11 @@ causes:
   did not reuse a name they already had after a corrected date; Rasa took a
   medicine corrected at the read-back one turn later than the script allows.
   With the guard removed, all three still passed the six adversarial calls,
-  because the model complied. So these prompts do not measure what the guards
-  add.
+  because the model complied. Six harder calls
+  (`shared/spec/conversations-adversarial-2.json`) did separate them: guard
+  off, the model sent in the turn it selected, with no read-back, in 2 of 18
+  calls and acted for a second patient twice. Guard on, none of that happened
+  in 18 calls.
 - **Rasa wrote the least and spent the most.** Its voice loop and barge-in
   path are the runtime. It made more than twice the model calls, because of one call
   per tool, engine routing and confirmation calls, fact discovery, and 51
