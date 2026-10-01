@@ -1,0 +1,83 @@
+# VARIANT of rasa/integrations.yml, not the shipped build. Selected by
+# `make rasa-variant VARIANT=deepgram` at the tutorial root, which copies rasa/ to
+# rasa-deepgram/ and puts this file there as integrations.yml. Only the
+# lines marked VARIANT differ from rasa/integrations.yml; everything else,
+# including the model block, is the same.
+#
+# External integrations for the Rasa Mantle version of the Cedar Clinic voice agent.
+#
+# concern-begin: agent-logic
+# The model, the same for all three versions: gpt-5.5-2026-04-23 at
+# reasoning_effort low, through Rasa's OpenAI client (LiteLLM underneath).
+# Rasa's default reasoning_effort for this model is none; the Northgate
+# block-card build saw GPT-5.5 speak tool calls aloud or announce an action
+# without taking it at none (4 of 24 calls) and not at low.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+# concern-end
+
+# concern-begin: voice-loop
+# The voice loop is Rasa's built-in browser_audio channel: WebSocket, handshake,
+# audio framing, playback markers, turn taking, TTS caching, silence check-ins.
+# Nothing in this folder moves audio. VARIANT: both engines are Rasa's
+# built-in Deepgram engines, so engines/speechmatics.py is not used and this
+# variant has no voice-adapter code of its own. The LangGraph and Strands
+# Deepgram variants make the same calls through shared/speech-deepgram.
+channels:
+  browser_audio:
+    server_url: localhost
+    # 24 kHz 16-bit PCM both ways: the shared caller fixtures are 24 kHz.
+    # VARIANT: Deepgram takes and returns linear16 at this rate.
+    sample_rate: 24000
+    # The shared spec runner names each call with this header so the clinic
+    # audit log, the tracker and the LLM meter join on one id. Trusted local
+    # transports only: any client can pick any conversation id.
+    external_sender_id_header: X-Rasa-Sender-Id
+    silence_timeout: 30
+    # Barge-in is off, as it is by default on this release (and beta when on).
+    interruptions:
+      enabled: false
+    # VARIANT: Rasa's built-in Deepgram ASR, Nova-3 streaming (/v1/listen), with
+    # the engine's defaults: endpointing 400 ms, smart_format, utterance_end_ms
+    # 1000. The built-in engine has no keyterm field, so there is no medicine
+    # vocabulary here (none in the LangGraph and Strands Deepgram variants either).
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          language: en
+          model: nova-3
+    # VARIANT: Rasa's built-in Deepgram Aura-2 TTS (WebSocket /v1/speak) in place
+    # of the Speechmatics engine. It reports streaming_input, so Mantle streams
+    # the model's text into it as it is generated. Voice: the engine's default.
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-thalia-en
+  inspector:
+    enabled: true
+    # The inspector turns interruptions on unless told otherwise, which makes
+    # Rasa load a barge-in model from Hugging Face at startup. Off, as above.
+    interruptions:
+      enabled: false
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          language: en
+          model: nova-3
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-thalia-en
+# concern-end
