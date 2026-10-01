@@ -1,0 +1,1656 @@
+{
+ "sender_id": "rasa-short-reply-no-20260930T235642",
+ "slots": {
+  "session_started_metadata": {
+   "call_id": "rasa-short-reply-no-20260930T235642",
+   "user_phone": "local",
+   "bot_phone": "local",
+   "user_name": null,
+   "user_host": null,
+   "bot_host": null,
+   "direction": null,
+   "stream_id": "rasa-short-reply-no-20260930T235642",
+   "language": null,
+   "extra": null
+  },
+  "consecutive_silence_timeouts": 0.0,
+  "project.verified_patient_id": "CC-PT-1001",
+  "project.patient_first_name": "Maria",
+  "request_refill.selected_record_id": "CC-RX-2043",
+  "request_refill.selected_medication_label": "albuterol inhaler, two puffs every four to six hours when needed",
+  "system.pending_tool_confirmation": null,
+  "system.__discovered__": [
+   {
+    "key": "full_name",
+    "value": "Maria Alvarez",
+    "description": "The caller stated their full name for the prescription refill request.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "date_of_birth",
+    "value": "1968-03-14",
+    "description": "The caller provided their date of birth for patient verification.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_refill_medication",
+    "value": "albuterol inhaler",
+    "description": "The caller asked for a refill request for their albuterol inhaler.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "declined_refill_request_confirmation",
+    "value": "declined",
+    "description": "The customer declined confirmation to send the albuterol inhaler refill request to the prescribing team, so the request was not sent.",
+    "turn_idx": 4,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": "request_refill",
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "confidence": 0.0,
+   "name": null
+  },
+  "entities": [],
+  "text": "/session_end",
+  "message_id": "c1ab028e286045c19f891ddecc784095",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790813744.50552,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "X2VHGI54",
+   "skill_id": "default_completed",
+   "frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "TIDPRID9",
+   "skill_id": "default_completed",
+   "block_id": "main",
+   "step_id": "ask_continue",
+   "frame_type": "regular",
+   "type": "ordered_block"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790813686.4549189,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   }
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813686.4552162,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": null,
+     "step": null,
+     "frame_id": null,
+     "arguments": {},
+     "position": 1,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "session_started_metadata",
+   "value": {
+    "call_id": "rasa-short-reply-no-20260930T235642",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-short-reply-no-20260930T235642",
+    "language": null,
+    "extra": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790813686.455845,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790813686.45589,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790813686.455034,
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790813686.455913,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790813686.455934,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"PO6BB0SF\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"AGDLYR8N\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"greet\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813686.45633,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790813686.456382,
+   "metadata": {
+    "call_id": "rasa-short-reply-no-20260930T235642",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-short-reply-no-20260930T235642",
+    "language": null,
+    "extra": null,
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "/session_start",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "/session_start",
+    "message_id": "dce7c7c24f2245769661387a53ea77ad",
+    "metadata": {
+     "user_host": null,
+     "direction": null,
+     "user_name": null,
+     "bot_phone": "local",
+     "bot_host": null,
+     "extra": null,
+     "user_phone": "local",
+     "language": null,
+     "stream_id": "rasa-short-reply-no-20260930T235642",
+     "call_id": "rasa-short-reply-no-20260930T235642"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "dce7c7c24f2245769661387a53ea77ad",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790813686.460713,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790813686.469098,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790813686.4691358,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790813686.469161,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790813686.469177,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790813686.469545,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790813702.339294,
+   "metadata": {
+    "call_id": "rasa-short-reply-no-20260930T235642",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-short-reply-no-20260930T235642",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Hi, this is Maria Alvarez, born March 14th, 1968. Could you send a refill request for my albuterol inhaler ?"
+    ],
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "Hi, this is Maria Alvarez, born March 14th, 1968. Could you send a refill request for my albuterol inhaler ?",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "Hi, this is Maria Alvarez, born March 14th, 1968. Could you send a refill request for my albuterol inhaler ?",
+    "message_id": "56109d3d68d24520a07424dcd0908100",
+    "metadata": {
+     "user_host": null,
+     "direction": null,
+     "user_name": null,
+     "merged_transcripts": [
+      "Hi, this is Maria Alvarez, born March 14th, 1968. Could you send a refill request for my albuterol inhaler ?"
+     ],
+     "bot_phone": "local",
+     "bot_host": null,
+     "extra": null,
+     "user_phone": "local",
+     "language": null,
+     "stream_id": "rasa-short-reply-no-20260930T235642",
+     "call_id": "rasa-short-reply-no-20260930T235642"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "56109d3d68d24520a07424dcd0908100",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790813704.5933812,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_total_time_ms": 2244.2644580150954,
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "Okay, I\u2019ll pull up your refill request now.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790813705.9270241,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "flow_id": "request_refill",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790813705.927124,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790813702.339294,
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790813705.9271638,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"5PAXTGSN\", \"skill_id\": \"request_refill\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790813705.928257,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790813705.928305,
+   "metadata": {
+    "tool_call_id": "call_R298anbiOCAvT8dzmKpIPSdE",
+    "tool_batch_id": "0-call_R298anbiOCAvT8dzmKpIPSdE",
+    "skill_id": "request_refill",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813707.7228742,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 21,
+     "tool_call_id": "call_hfkFmM4FItAEP3uWooGWIrSs"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "project.verified_patient_id",
+   "value": "CC-PT-1001",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813707.722993,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 22,
+     "tool_call_id": "call_hfkFmM4FItAEP3uWooGWIrSs"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "project.verified_patient_id",
+   "value": "CC-PT-1001",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813707.723146,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 23,
+     "tool_call_id": "call_hfkFmM4FItAEP3uWooGWIrSs"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "project.patient_first_name",
+   "value": "Maria",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813707.723191,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 24,
+     "tool_call_id": "call_hfkFmM4FItAEP3uWooGWIrSs"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "project.patient_first_name",
+   "value": "Maria",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790813707.724101,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Maria Alvarez",
+    "date_of_birth": "1968-03-14"
+   },
+   "result": "{\"status\": \"verified\", \"first_name\": \"Maria\", \"next_step\": \"Ask which recorded medication the caller wants a refill request for, if they have not said.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790813707.7241652,
+   "metadata": {
+    "tool_call_id": "call_hfkFmM4FItAEP3uWooGWIrSs",
+    "tool_batch_id": "1-call_hfkFmM4FItAEP3uWooGWIrSs",
+    "skill_id": "request_refill",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Maria Alvarez",
+    "date_of_birth": "1968-03-14"
+   },
+   "source": "local",
+   "result": "{\"status\": \"verified\", \"first_name\": \"Maria\", \"next_step\": \"Ask which recorded medication the caller wants a refill request for, if they have not said.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813709.456773,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {
+      "medication_name": "albuterol inhaler"
+     },
+     "position": 27,
+     "tool_call_id": "call_vNaKthOyzhmaWQ1GzcQBF53u"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "request_refill.selected_record_id",
+   "value": "CC-RX-2043",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813709.4568782,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {
+      "medication_name": "albuterol inhaler"
+     },
+     "position": 28,
+     "tool_call_id": "call_vNaKthOyzhmaWQ1GzcQBF53u"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "request_refill.selected_record_id",
+   "value": "CC-RX-2043",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813709.457002,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {
+      "medication_name": "albuterol inhaler"
+     },
+     "position": 29,
+     "tool_call_id": "call_vNaKthOyzhmaWQ1GzcQBF53u"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "request_refill.selected_medication_label",
+   "value": "albuterol inhaler, two puffs every four to six hours when needed",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813709.457039,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {
+      "medication_name": "albuterol inhaler"
+     },
+     "position": 30,
+     "tool_call_id": "call_vNaKthOyzhmaWQ1GzcQBF53u"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "request_refill.selected_medication_label",
+   "value": "albuterol inhaler, two puffs every four to six hours when needed",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790813709.457737,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "select_medication",
+   "arguments": {
+    "medication_name": "albuterol inhaler"
+   },
+   "result": "{\"status\": \"selected\", \"record_id\": \"CC-RX-2043\", \"medication_label\": \"albuterol inhaler, two puffs every four to six hours when needed\", \"confirmation_question\": \"I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\", \"next_step\": \"Call send_refill_request with this record_id. The recorded medication is read back and the caller is asked to confirm before anything is sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790813709.45778,
+   "metadata": {
+    "tool_call_id": "call_vNaKthOyzhmaWQ1GzcQBF53u",
+    "tool_batch_id": "2-call_vNaKthOyzhmaWQ1GzcQBF53u",
+    "skill_id": "request_refill",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "select_medication",
+   "arguments": {
+    "medication_name": "albuterol inhaler"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"record_id\": \"CC-RX-2043\", \"medication_label\": \"albuterol inhaler, two puffs every four to six hours when needed\", \"confirmation_question\": \"I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\", \"next_step\": \"Call send_refill_request with this record_id. The recorded medication is read back and the caller is asked to confirm before anything is sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813715.792038,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 33,
+     "tool_call_id": "call_LdSrwKcKroHNFLVkiA0BDsqx"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "send_refill_request",
+    "tool_args": {
+     "record_id": "CC-RX-2043"
+    },
+    "confirmation_ask": "I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\n",
+    "utter_on_user_denial": "utter_refill_request_not_sent",
+    "skill_id": "request_refill",
+    "frame_id": "5PAXTGSN",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813715.792159,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 34,
+     "tool_call_id": "call_LdSrwKcKroHNFLVkiA0BDsqx"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "send_refill_request",
+    "tool_args": {
+     "record_id": "CC-RX-2043"
+    },
+    "confirmation_ask": "I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\n",
+    "utter_on_user_denial": "utter_refill_request_not_sent",
+    "skill_id": "request_refill",
+    "frame_id": "5PAXTGSN",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790813715.792972,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2043"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790813715.7930229,
+   "metadata": {
+    "tool_call_id": "call_LdSrwKcKroHNFLVkiA0BDsqx",
+    "tool_batch_id": "3-call_LdSrwKcKroHNFLVkiA0BDsqx",
+    "skill_id": "request_refill",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2043"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790813715.793317,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_refill_request",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790813715.807627,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 3590.359332971275,
+     "first_agent_response": {
+      "llm_total_generation_ms": 2244.2644580150954,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813719.770236,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 39,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813719.770379,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 40,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813719.770545,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 41,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813719.770591,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 42,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813719.7707179,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 43,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_medication",
+     "value": "albuterol inhaler",
+     "description": "The caller asked for a refill request for their albuterol inhaler.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813719.7707572,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 44,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_medication",
+     "value": "albuterol inhaler",
+     "description": "The caller asked for a refill request for their albuterol inhaler.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790813728.240453,
+   "metadata": {
+    "call_id": "rasa-short-reply-no-20260930T235642",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-short-reply-no-20260930T235642",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "No."
+    ],
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "No.",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "No.",
+    "message_id": "1179f431f6ac448d8645e9c128079a35",
+    "metadata": {
+     "user_host": null,
+     "direction": null,
+     "user_name": null,
+     "merged_transcripts": [
+      "No."
+     ],
+     "bot_phone": "local",
+     "bot_host": null,
+     "extra": null,
+     "user_phone": "local",
+     "language": null,
+     "stream_id": "rasa-short-reply-no-20260930T235642",
+     "call_id": "rasa-short-reply-no-20260930T235642"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "1179f431f6ac448d8645e9c128079a35",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790813730.071865,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_total_time_ms": 1819.6966249961406,
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "Right, I won\u2019t send that request.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813731.295477,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 47,
+     "tool_call_id": "call_mOynNCOOOnNbUDPy6p4T8FcP"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790813731.295536,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "5PAXTGSN",
+     "arguments": {},
+     "position": 48,
+     "tool_call_id": "call_mOynNCOOOnNbUDPy6p4T8FcP"
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790813731.2958322,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2043"
+   },
+   "result": "{\"status\": \"declined\", \"message\": \"User declined confirmation for tool 'send_refill_request'; the call was cancelled.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790813731.295865,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "request_refill",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2043"
+   },
+   "source": "local",
+   "result": "{\"status\": \"declined\", \"message\": \"User declined confirmation for tool 'send_refill_request'; the call was cancelled.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790813731.297007,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": false
+   },
+   "result": "{\"status\": \"declined\", \"message\": \"User declined confirmation for tool 'send_refill_request'; the call was cancelled.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790813731.29706,
+   "metadata": {
+    "tool_call_id": "call_mOynNCOOOnNbUDPy6p4T8FcP",
+    "tool_batch_id": "0-call_mOynNCOOOnNbUDPy6p4T8FcP",
+    "skill_id": "request_refill",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": false
+   },
+   "source": "local",
+   "result": "{\"status\": \"declined\", \"message\": \"User declined confirmation for tool 'send_refill_request'; the call was cancelled.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790813731.2981,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_refill_request_not_sent",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "Okay, I have not sent a refill request.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790813731.307843,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 3067.2490000142716,
+     "first_agent_response": {
+      "llm_total_generation_ms": 1819.6966249961406,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790813738.167448,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "/session_end",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "/session_end",
+    "message_id": "c1ab028e286045c19f891ddecc784095",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "c1ab028e286045c19f891ddecc784095",
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790813740.0556512,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "flow_id": "request_refill",
+   "step_id": "autonomous",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790813740.055752,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790813740.0557818,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790813740.056284,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "flow_id": "default_completed__main"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790813740.05633,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790813738.167448,
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790813740.056353,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "skill_id": "default_completed",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790813740.056371,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"X2VHGI54\", \"skill_id\": \"default_completed\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"TIDPRID9\", \"skill_id\": \"default_completed\", \"block_id\": \"main\", \"step_id\": \"ask_continue\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790813740.056879,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790813740.0569222,
+   "metadata": {
+    "tool_call_id": "call_YT6RqCQZ9Zku25QP5PXwyLV4",
+    "tool_batch_id": "0-call_YT6RqCQZ9Zku25QP5PXwyLV4",
+    "skill_id": "default_completed",
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "source": "local",
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790813741.1179972,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_ask_wants_to_continue",
+    "llm_total_time_ms": 1054.6711669885553,
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "text": "Can I help with anything else?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790813741.138144,
+   "metadata": {
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790813744.505367,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "TIDPRID9",
+     "arguments": {},
+     "position": 67,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_medication",
+     "value": "albuterol inhaler",
+     "description": "The caller asked for a refill request for their albuterol inhaler.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "declined_refill_request_confirmation",
+     "value": "declined",
+     "description": "The customer declined confirmation to send the albuterol inhaler refill request to the prescribing team, so the request was not sent.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790813744.50552,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "TIDPRID9",
+     "arguments": {},
+     "position": 68,
+     "tool_call_id": null
+    },
+    "model_id": "a1cea7221559470384cabf938242f7d9",
+    "model_name": "20261001-005644-messy-playa.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_medication",
+     "value": "albuterol inhaler",
+     "description": "The caller asked for a refill request for their albuterol inhaler.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "declined_refill_request_confirmation",
+     "value": "declined",
+     "description": "The customer declined confirmation to send the albuterol inhaler refill request to the prescribing team, so the request was not sent.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  }
+ ],
+ "latest_input_channel": "browser_audio",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790813686.4549189,
+ "current_session_id": "cb55418a-5fd0-41e9-a6b0-2b01a0ebe35d"
+}

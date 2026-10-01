@@ -19,11 +19,13 @@ Speechmatics keys.
 | `2026-10-01-silence-check-in/` | A 50 s call with no caller speech, markers acknowledged as a player would (`silence-check-in.json`): the check-in was spoken 30 s after the greeting finished playing; no model call | 1 | check-in delivered | 0.005 |
 | `2026-10-01-speechmatics-live/` | **The live run and the headline:** all 17 calls over browser audio, first and only full run | 17 | 16 | 0.70 |
 | `2026-10-01-speechmatics-repeat-no-change/` | The one failed call again, with no change, to see whether it was speech-to-text | 1 | 0 | 0.04 |
+| `2026-10-01-guard-off-adversarial/` | Added in the comparison phase: the 6 adversarial calls against the guard-off baseline (`langgraph/guard.diff` reversed in a temporary copy). 6 passed, 0 guard violations: in the two calls that sent, the model read the question on the first turn and sent after the caller's yes. One message matched the approval pattern, a false positive ("I can't approve it, but I can send a request ...") | 6 | 6 | 0.21 |
 
 `spend-ledger.json` lists every run, including two attempts not kept as
 folders (a page check whose events showed the typed answer before the
 question, which led to a voice-loop change, and a silence call too short to
-reach the check-in): **0.91 USD recorded**, against a 4 USD cap. The page and
+reach the check-in): **0.91 USD recorded** for the build, against a 4 USD
+cap, and **1.12 USD** with the guard-off run added in the comparison phase. The page and
 silence checks are priced from the meter's token counts and the server log's
 seconds streamed to Speechmatics.
 
