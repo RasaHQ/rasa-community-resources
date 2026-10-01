@@ -32,7 +32,7 @@ run: ## Serve browser_audio at ws://localhost:5005/webhooks/browser_audio/websoc
 inspect: ## Talk to it in the Rasa Inspector
 	$(RASA) inspect
 
-spec: ## The shared spec over browser audio (billed: GPT-5.5 and Speechmatics; cap 4 USD across runs)
+spec: ## The shared spec over browser audio (billed: GPT-5.5 and Speechmatics; cap 4 USD per run)
 	python3 $(TUTORIAL)/shared/spec/run_spec.py rasa --budget-usd 4
 
 spec-text: ## The same calls as typed turns (skips speech-to-text; still billed)

@@ -257,6 +257,59 @@ class MeterTests(unittest.TestCase):
         self.assertEqual(self.meter.rows[-1]["error_code"], "insufficient_quota")
 
 
+class RunnerBudgetTests(unittest.TestCase):
+    """run_spec.py: the cap applies to the run, not to the ledger of earlier runs."""
+
+    def test_a_large_ledger_does_not_block_a_fresh_run(self):
+        import tempfile
+
+        import run_spec
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger = Path(tmp) / "spend-ledger.json"
+            run_spec.ledger_append(ledger, {"label": "earlier", "cost_usd": 6.7})
+            self.assertEqual(run_spec.ledger_total(ledger), 6.7)
+        # A fresh run under the Makefile's 4 USD cap places its first call.
+        self.assertIsNone(run_spec.budget_check(0.0, 0, 0.12, 4.0))
+
+    def test_the_run_stops_before_its_own_cap(self):
+        import run_spec
+
+        self.assertIsNone(run_spec.budget_check(1.0, 10, 0.12, 4.0))
+        reason = run_spec.budget_check(3.9, 30, 0.12, 4.0)
+        self.assertIn("this run", reason)
+
+    def test_priced_tts_is_counted(self):
+        import run_spec
+
+        spec = {"speech_prices": {"stt": {"usd_per_hour": 0.462}, "tts": {"usd_per_1k_characters": 0.03}}}
+        self.assertAlmostEqual(run_spec.tts_cost(spec, 2000), 0.06)
+        self.assertAlmostEqual(run_spec.speech_cost(spec, 3600), 0.462)
+        self.assertEqual(run_spec.tts_cost({"speech_prices": {"tts": {"usd_per_1k_characters": None}}}, 2000), 0.0)
+
+
+    def test_second_patient_sends_are_counted_from_the_audit_log(self):
+        import tempfile
+
+        import adversarial_tally
+
+        rows = [
+            {"conversation_id": "c1", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P1"}},
+            {"conversation_id": "c1", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P2"}},
+            {"conversation_id": "c1", "name": "send_refill_request", "args": {"patient_id": "P2"},
+             "result": {"status": "succeeded"}},
+            {"conversation_id": "c2", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P1"}},
+            {"conversation_id": "c2", "name": "send_refill_request", "state": {"patient_id": "P1"},
+             "result": {"status": "succeeded"}},
+            {"conversation_id": "c2", "name": "send_refill_request", "state": {"patient_id": "P2"},
+             "result": {"status": "blocked"}},
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            audit = Path(tmp) / "audit.jsonl"
+            audit.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+            self.assertEqual(adversarial_tally.second_patient_sends(audit), {"c1": 1})
+
+
 class CounterTests(unittest.TestCase):
     """count_concerns.py: the guard diff without docstrings, and restated shared text."""
 

@@ -27,8 +27,9 @@ runner polls to know when a bot turn has ended (Rasa: its tracker).
 
 Results go to ``results/<framework>/<label>/``: ``results.json``,
 ``summary.md``, ``audit.jsonl``, ``llm-calls.jsonl`` and ``events/``. The
-server log stays in ``raw/`` (not committed). Spend is capped across runs by
-``results/<framework>/spend-ledger.json``.
+server log stays in ``raw/`` (not committed). ``--budget-usd`` caps this run's
+spend; every run is appended to ``results/<framework>/spend-ledger.json``,
+which is the record across runs, not the cap.
 """
 
 from __future__ import annotations
@@ -149,9 +150,28 @@ class AgentProcess:
 
 
 def speech_cost(spec: dict, stt_seconds: float) -> float:
-    """Speech-to-text spend from the spec's price row. TTS has no published price and is left out."""
+    """Speech-to-text spend from the spec's price row (or ``--speech-prices``)."""
     rate = ((spec.get("speech_prices") or {}).get("stt") or {}).get("usd_per_hour")
     return round(stt_seconds / 3600 * rate, 6) if rate else 0.0
+
+
+def tts_cost(spec: dict, characters: int) -> float:
+    """Text-to-speech spend, when the price row has one. Speechmatics' preview TTS has none (0)."""
+    rate = ((spec.get("speech_prices") or {}).get("tts") or {}).get("usd_per_1k_characters")
+    return round(characters / 1000 * rate, 6) if rate else 0.0
+
+
+def budget_check(run_cost: float, calls_done: int, prior_per_call: float, budget_usd: float) -> Optional[str]:
+    """Why the next call would cross this run's cap, or None if it may run.
+
+    The cap is per run: ``run_cost`` is what this run has spent so far. The
+    framework's ledger is the record across runs and does not count against it,
+    so a reader's fresh run is not blocked by the spend recorded here.
+    """
+    per_call = (run_cost / calls_done) if calls_done else prior_per_call
+    if run_cost + 1.5 * per_call > budget_usd:
+        return f"budget: {run_cost:.3f} spent in this run, next call projected {1.5 * per_call:.3f}, cap {budget_usd}"
+    return None
 
 
 def wait_after_call(fetch, conversation_id: str, session_end_turn: bool, timeout: float = 30.0) -> Optional[float]:
@@ -283,6 +303,7 @@ def run_conversation(args, spec: dict, conv: dict, framework: str, run_tag: str,
         "stt_audio_seconds": round(stt_seconds, 2),
         "tts_characters": tts_characters,
         "stt_cost_usd": speech_cost(spec, stt_seconds),
+        "tts_cost_usd": tts_cost(spec, tts_characters),
         "llm_calls": len(rows),
         "failed_calls": len(llm_errors),
         "error_codes": sorted({str(r.get("error_code")) for r in llm_errors}),
@@ -293,7 +314,7 @@ def run_conversation(args, spec: dict, conv: dict, framework: str, run_tag: str,
         "llm_cost_usd": round(sum(r.get("cost_usd") or 0 for r in rows), 6),
         "cost_complete": all(r.get("cost_usd") is not None for r in rows if (r.get("status") or 0) < 400),
     }
-    usage["cost_usd"] = round(usage["llm_cost_usd"] + usage["stt_cost_usd"], 6)
+    usage["cost_usd"] = round(usage["llm_cost_usd"] + usage["stt_cost_usd"] + usage["tts_cost_usd"], 6)
     asr = []
     for spec_turn, observed in zip(conv["turns"], turns):
         if observed["voice"].get("mode") != "audio":
@@ -387,6 +408,7 @@ def aggregate(results: list[dict]) -> dict:
         "stt_audio_seconds": round(sum(r["usage"]["stt_audio_seconds"] for r in results), 1),
         "stt_cost_usd": round(sum(r["usage"]["stt_cost_usd"] for r in results), 6),
         "tts_characters": sum(r["usage"]["tts_characters"] for r in results),
+        "tts_cost_usd": round(sum(r["usage"].get("tts_cost_usd") or 0 for r in results), 6),
         "cost_usd": round(sum(r["usage"]["cost_usd"] for r in results), 6),
         "cost_complete": all(r["usage"]["cost_complete"] for r in results),
     }
@@ -398,6 +420,22 @@ def fmt(v: Any) -> str:
     if isinstance(v, float):
         return f"{v:,.0f}" if abs(v) >= 100 else f"{v:g}"
     return f"{v:,}" if isinstance(v, int) else str(v)
+
+
+def spend_line(report: dict) -> str:
+    a = report["aggregate"]
+    prices = report.get("speech_prices") or {}
+    stt = (prices.get("stt") or {}).get("vendor", "speechmatics").capitalize()
+    tts_row = prices.get("tts") or {}
+    tts = tts_row.get("vendor", "speechmatics").capitalize()
+    if a.get("tts_cost_usd"):
+        tts_part = (f" + {tts} text-to-speech {a['tts_cost_usd']:.4f} ({a['tts_characters']:,} characters of bot "
+                    f"text at {tts_row['usd_per_1k_characters']} USD per 1,000)")
+    else:
+        tts_part = (f"; {tts} text-to-speech {a['tts_characters']:,} characters, unpriced (preview, no published "
+                    "price)")
+    return (f"- Spend: {a['cost_usd']:.4f} USD = model {a['llm_cost_usd']:.4f} + {stt} speech-to-text "
+            f"{a['stt_cost_usd']:.4f} ({a['stt_audio_seconds']:,} s streamed){tts_part}")
 
 
 def render_summary(report: dict) -> str:
@@ -415,9 +453,7 @@ def render_summary(report: dict) -> str:
         f"- Refill requests with effect: {a['refill_requests_with_effect']}; prescription records changed: "
         f"{a['prescription_records_changed']}; bot messages with approval wording: {a['approval_claim_messages']} "
         f"of {a['bot_messages']}; bot messages reading out an internal id: {a['internal_id_messages']}",
-        f"- Spend: {a['cost_usd']:.4f} USD = model {a['llm_cost_usd']:.4f} + Speechmatics speech-to-text "
-        f"{a['stt_cost_usd']:.4f} ({a['stt_audio_seconds']:,} s streamed); text-to-speech "
-        f"{a['tts_characters']:,} characters, unpriced (preview, no published price)",
+        spend_line(report),
         f"- Model calls: {a['llm_calls']} "
         f"({a['prompt_tokens']:,} input tokens, {a['cached_tokens']:,} cached, {a['completion_tokens']:,} output, "
         f"{a['reasoning_tokens']:,} of them reasoning){'' if a['cost_complete'] else ' (incomplete: some calls unpriced)'}",
@@ -502,7 +538,10 @@ def main() -> int:
     parser.add_argument("--only", nargs="*", help="conversation ids to run")
     parser.add_argument("--mode", choices=("audio", "text"), default="audio",
                         help="audio streams the caller WAVs; text sends {\"text\"} frames (skips speech-to-text)")
-    parser.add_argument("--budget-usd", type=float, default=4.0, help="cap on this framework's ledger total")
+    parser.add_argument("--budget-usd", type=float, default=4.0,
+                        help="cap on this run's spend (model + priced speech); the ledger records every run")
+    parser.add_argument("--speech-prices", default=None,
+                        help="JSON file replacing the spec's speech_prices (another speech vendor's price rows)")
     parser.add_argument("--server-cmd", default=None, help="command that starts the agent; {port} is substituted")
     parser.add_argument("--server-cwd", default=None, help="folder to start it in (default: the framework folder)")
     parser.add_argument("--no-train", action="store_true", help="skip the preset's train command")
@@ -515,6 +554,8 @@ def main() -> int:
 
     preset = PRESETS[args.framework]
     spec = json.loads(Path(args.spec).read_text())
+    if args.speech_prices:
+        spec["speech_prices"] = json.loads(Path(args.speech_prices).read_text())["speech_prices"]
     convs = [c for c in spec["conversations"] if not args.only or c["id"] in args.only]
     if args.only and len(convs) != len(args.only):
         parser.error(f"unknown conversation id in {args.only}")
@@ -568,7 +609,6 @@ def main() -> int:
         return http_json(base_url + preset["events_path"].format(id=conversation_id), timeout=10)
 
     started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    prior = ledger_total(ledger)
     results: list[dict] = []
     skipped: list[dict] = []
     stop_reason = None
@@ -580,12 +620,11 @@ def main() -> int:
     signal.signal(signal.SIGTERM, stop)
     try:
         for conv in convs:
-            run_cost = meter.total_cost() + sum(r["usage"]["stt_cost_usd"] for r in results)
-            spent = prior + run_cost
-            per_call = (run_cost / len(results)) if results else spec["prior_cost_per_call_usd"]
-            if spent + 1.5 * per_call > args.budget_usd:
-                skipped.append({"id": conv["id"], "reason": f"budget: {spent:.3f} spent, next call projected "
-                                                            f"{1.5 * per_call:.3f}, cap {args.budget_usd}"})
+            run_cost = meter.total_cost() + sum(r["usage"]["stt_cost_usd"] + r["usage"]["tts_cost_usd"]
+                                                for r in results)
+            over = budget_check(run_cost, len(results), spec["prior_cost_per_call_usd"], args.budget_usd)
+            if over:
+                skipped.append({"id": conv["id"], "reason": over})
                 continue
             if stop_reason:
                 skipped.append({"id": conv["id"], "reason": stop_reason})
@@ -620,6 +659,8 @@ def main() -> int:
         "ended_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "spec_model": spec["model"],
         "prices": spec["prices"],
+        "speech_prices": spec.get("speech_prices"),
+        "budget_usd": args.budget_usd,
         "agent_startup_s": startup_s,
         "server_cmd": agent.cmd if agent else None,
         "stop_reason": stop_reason,
@@ -632,13 +673,20 @@ def main() -> int:
     (out_dir / "results.json").write_text(json.dumps(report, indent=1, default=str) + "\n")
     (out_dir / "summary.md").write_text(render_summary(report))
     stt_cost = round(sum(r["usage"]["stt_cost_usd"] for r in results), 6)
-    ledger_append(ledger, {"label": label, "run_tag": run_tag, "mode": args.mode, "spec": spec["spec"],
-                           "conversations": len(results), "cost_usd": round(meter.total_cost() + stt_cost, 6),
-                           "llm_cost_usd": meter.total_cost(), "stt_cost_usd": stt_cost,
-                           "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"})
+    tts_spend = round(sum(r["usage"]["tts_cost_usd"] for r in results), 6)
+    entry = {"label": label, "run_tag": run_tag, "mode": args.mode, "spec": spec["spec"],
+             "conversations": len(results), "cost_usd": round(meter.total_cost() + stt_cost + tts_spend, 6),
+             "llm_cost_usd": meter.total_cost(), "stt_cost_usd": stt_cost,
+             "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"}
+    if tts_spend:
+        entry["tts_cost_usd"] = tts_spend
+        entry["source"] += "; text-to-speech characters x price"
+    if args.speech_prices:
+        entry["speech_prices"] = Path(args.speech_prices).name
+    ledger_append(ledger, entry)
     a = report["aggregate"]
     print(f"\n{args.framework}: passed {a['passed']}/{a['conversations_run']}, guard violations "
-          f"{a['guard_violations']}, spend {meter.total_cost() + stt_cost:.4f} USD (ledger {ledger_total(ledger):.4f})")
+          f"{a['guard_violations']}, spend {entry['cost_usd']:.4f} USD (ledger, all runs: {ledger_total(ledger):.4f})")
     if stop_reason:
         print(f"stopped: {stop_reason}")
     print(f"results: {out_dir}")

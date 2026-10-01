@@ -19,6 +19,9 @@ python3 shared/spec/rasa_call_breakdown.py results/rasa/<run>                # w
 python3 shared/spec/run_spec.py strands --spec shared/spec/conversations-adversarial-2.json \
     --server-cmd "uv run --locked python server.py --port {port}" --label <run>  # the six harder adversarial calls
 python3 shared/spec/render_caller_audio.py shared/spec/conversations-adversarial-2.json --dry-run  # caller lines still to render
+python3 shared/spec/adversarial_tally.py results/rasa/2026-10-01-adversarial-2*   # violations and second-patient sends per run
+python3 shared/spec/run_spec.py langgraph --speech-prices shared/spec/speech-prices/deepgram.json \
+    --server-cmd "uv run --locked python ../shared/speech-deepgram/launch.py server.py --port {port}" --label <run>  # on Deepgram
 ```
 
 Everything here is standard library and runs under a bare `python3`.
@@ -125,13 +128,17 @@ conversation id passed to `cedar_clinic`, `latency` on end markers,
 
 ## Spend
 
-`--budget-usd` caps the framework's total in
-`results/<framework>/spend-ledger.json` across runs. Before each call the
-runner projects its cost from the run so far (or `prior_cost_per_call_usd`)
-with a 1.5x margin and skips the call if the cap would be crossed. Spend is
-the meter's model cost plus Speechmatics speech-to-text, priced per second
-streamed from `speech_prices` in the spec. Speechmatics TTS is in preview
-with no published price; its characters are recorded and left unpriced.
+`--budget-usd` caps this run's spend: before each call the runner projects
+its cost from the run so far (or `prior_cost_per_call_usd`) with a 1.5x
+margin and skips the call if the cap would be crossed. Every run is then
+appended to `results/<framework>/spend-ledger.json`, which is the record
+across runs; it does not count against the cap, so a reader's fresh run is
+not blocked by the spend recorded here. Spend is the meter's model cost plus
+speech-to-text, priced per second streamed from `speech_prices` in the spec.
+Speechmatics TTS is in preview with no published price; its characters are
+recorded and left unpriced. `--speech-prices <file>` replaces the price rows
+for the Deepgram variants ([`speech-prices/`](speech-prices/), with source
+and date), and then text-to-speech characters are priced too.
 
 ## Rasa-only diagnostics
 

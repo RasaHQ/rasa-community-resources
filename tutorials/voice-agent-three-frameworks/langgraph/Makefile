@@ -26,7 +26,7 @@ test: ## Offline tests: parity with the shared parts, the guard, the voice loop 
 run: ## Serve browser_audio at ws://localhost:5006/webhooks/browser_audio/websocket (keys from .env)
 	uv run --locked $(if $(ENV_FILE),--env-file $(ENV_FILE),) python server.py --port $(PORT)
 
-spec: ## The shared spec over browser audio (billed: GPT-5.5 and Speechmatics; cap 4 USD across runs)
+spec: ## The shared spec over browser audio (billed: GPT-5.5 and Speechmatics; cap 4 USD per run)
 	python3 $(TUTORIAL)/shared/spec/run_spec.py langgraph --server-cmd "$(SERVER) --port {port}" --budget-usd 4
 
 spec-text: ## The same calls as typed turns (skips speech-to-text; still billed)

@@ -28,7 +28,7 @@ run: ## Serve browser_audio at ws://localhost:5007/webhooks/browser_audio/websoc
 web: ## The shared voice page on http://127.0.0.1:8765/, relaying to :5007
 	python3 $(TUTORIAL)/shared/web/serve.py strands
 
-spec: ## The shared spec over browser audio (billed: GPT-5.5 and Speechmatics; cap 4 USD across runs)
+spec: ## The shared spec over browser audio (billed: GPT-5.5 and Speechmatics; cap 4 USD per run)
 	python3 $(TUTORIAL)/shared/spec/run_spec.py strands --server-cmd "$(SERVER) --port {port}" --budget-usd 4
 
 spec-text: ## The same calls as typed turns (skips speech-to-text; still billed)
