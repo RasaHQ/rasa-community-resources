@@ -15,7 +15,7 @@ python3 -m unittest discover -s shared/spec/tests -v                        # of
 python3 shared/spec/count_concerns.py rasa                                   # lines per concern
 python3 shared/spec/count_concerns.py rasa --diff                            # lines in rasa/guard.diff, docstrings excluded
 python3 shared/spec/count_concerns.py rasa --shared-text                     # lines that restate cedar_clinic.instructions
-python3 shared/spec/rasa_call_breakdown.py results/rasa/<run>                # where a Rasa run's model calls went
+python3 shared/spec/rasa_call_breakdown.py results/rasa/<run>                # a Rasa run's model calls by Mantle function
 python3 shared/spec/run_spec.py strands --spec shared/spec/conversations-adversarial-2.json \
     --server-cmd "uv run --locked python server.py --port {port}" --label <run>  # the six harder adversarial calls
 python3 shared/spec/render_caller_audio.py shared/spec/conversations-adversarial-2.json --dry-run  # caller lines still to render
@@ -164,13 +164,11 @@ and date), and then text-to-speech characters are priced too.
 The Rasa preset starts the agent through
 [`rasa_call_purposes.py`](rasa_call_purposes.py), which attaches the
 case-build harness's LiteLLM usage logger and labels every model call with
-the Mantle function that made it (orchestrator iteration, response
-rephrasing, fact discovery, completion judge) in `call-purposes.jsonl`. It
-changes no request and writes no prompt or response content.
+the Mantle function that made it in `call-purposes.jsonl`. It changes no
+request and writes no prompt or response content.
 [`rasa_call_breakdown.py`](rasa_call_breakdown.py) turns that file, the
-meter log and the trackers into a table by purpose, split into calls made
-during caller turns and calls made after the hangup. Both are test
-equipment and count for no framework.
+meter log and the trackers into a table of a run's model calls by Mantle
+function. Both are test equipment and count for no framework.
 
 ## Output
 

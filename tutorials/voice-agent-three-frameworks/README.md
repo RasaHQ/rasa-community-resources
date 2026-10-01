@@ -6,11 +6,11 @@ Assessed on:   2026-10-01
 Assessed by:   Claude Code (shared parts, three versions, comparison; live runs in results/)
 Verified with: rasa-pro 3.21.0.dev5; langgraph 1.2.12, langchain 1.4.3, langchain-openai 1.6.7; strands-agents 1.57.1; Python 3.12, uv, macOS 26.6.2
 Audience:      Engineers choosing a framework for a voice agent that must not take an unconfirmed action
-Time:          20 minutes to run the Rasa version and the voice page; about 40 minutes and under 4 USD for the live spec
+Time:          20 minutes to run the Rasa version and the voice page; about 40 minutes for the scripted calls (billed)
 ```
 
-The same voice agent, built three times on three frameworks, measured the
-same way. The agent is the Cedar Clinic prescription line: a caller asks for
+The same voice agent, built three times on three frameworks, so you can see
+what each one asks you to write. The agent is the Cedar Clinic prescription line: a caller asks for
 a refill, the agent verifies them, finds the medicine on their record, reads
 it back, and sends a request to the prescribing team for review. Cedar
 Clinic is fictional, and so are its patients and records.
@@ -19,18 +19,20 @@ The hard part is one guarantee: **no refill request without a verified
 patient and a medicine the caller confirmed.** The model is GPT-5.5
 (`gpt-5.5-2026-04-23`, `reasoning_effort: low`) in all three. Speech is
 Speechmatics in all three: realtime speech-to-text in, preview
-text-to-speech out, with identical vendor calls.
+text-to-speech out, with identical vendor calls. Deepgram variants, built
+into Rasa and added as a shared client for the other two, run the same
+calls without changing the shipped folders.
 
-All three versions are built and measured by the rules in
-[`COMPARISON-PLAN.md`](COMPARISON-PLAN.md); the side-by-side results are in
-[`COMPARISON.md`](COMPARISON.md).
+[`COMPARISON.md`](COMPARISON.md) walks through the three builds side by
+side; [`COMPARISON-PLAN.md`](COMPARISON-PLAN.md) has the rules all three
+follow.
 
 ## Layout
 
 ```text
 voice-agent-three-frameworks/
-  COMPARISON-PLAN.md   what is measured, and how, for all three
-  COMPARISON.md        the results side by side
+  COMPARISON-PLAN.md   the shared rules: what is held equal, how lines and calls are checked
+  COMPARISON.md        the three builds side by side
   shared/
     clinic/            cedar_clinic: records, rules, audited tool functions, instruction text (no framework)
     spec/              17 scripted calls with caller audio, the runner, the checks, the LLM meter, the line counter
@@ -66,7 +68,7 @@ a refill of my lisinopril." Then ask whether it is approved.
 ## Run the shared spec
 
 ```bash
-python3 shared/spec/run_spec.py rasa --label <run> --budget-usd 4    # billed: GPT-5.5 and Speechmatics; cap per run
+python3 shared/spec/run_spec.py rasa --label <run> --budget-usd 4    # billed: GPT-5.5 and speech; --budget-usd caps the run
 make test                                                            # offline tests of the shared parts
 make count                                                           # lines per concern, guard diffs
 ```
@@ -93,76 +95,39 @@ never from a framework's tracker: see [`shared/spec/README.md`](shared/spec/READ
 | [`shared/speech`](shared/speech/) | `cedar_speech.SpeechmaticsASR` (async: `send_audio`, `events()` of partial/final transcripts), `SpeechmaticsTTS.synthesize(text) -> 24 kHz PCM` | Same messages as the Rasa engines, checked by a test |
 | [`shared/web`](shared/web/) | `serve.py <framework>` serves the page and relays with the conversation id; `check_page.py` drives it headlessly | [`PROTOCOL.md`](shared/web/PROTOCOL.md) is the contract every server meets |
 
-## The results, side by side
+## The three builds at a glance
 
-From [`COMPARISON.md`](COMPARISON.md), which has the full tables and the
-causes:
+From [`COMPARISON.md`](COMPARISON.md):
 
-| | Rasa Mantle | LangGraph | Strands |
+| What you write | Rasa Mantle | LangGraph | Strands |
 |---|---|---|---|
-| Passed, of 17 (shared prompt) | 16 | 16 | 16 |
-| Guard violations, all / adversarial | 0 / 0 | 0 / 0 | 0 / 0 |
-| Harder adversarial set, two runs: violations guard on / off (12 calls each) | 1 / 1 | 0 / 1 | 0 / 1 |
-| Harder set, second-patient sends guard on / off | 0 / 2 | 0 / 2 | 0 / 0 |
-| Late-transcript replay: early yes taken as the confirmation (guard on) | 3 of 3 | 3 of 3 | 3 of 3 |
-| The six calls the spec left out, passed (guard violations) | 5 (0) | 5 (0) | 6 (0) |
-| Opt-in fix (consent only after the read-back played): counted lines / replay early yes taken | 92 / 0 of 3 | 29 / 0 of 3 | 22 / 0 of 3 |
-| Backchannel "Okay." / "Yeah." taken as consent, shipped / with the fix | 2 of 2 / 0 of 2 | 2 of 2 / 0 of 2 | 2 of 2 / 0 of 2 |
-| End of speech to first audio, p50 (p95), Speechmatics | 4,971 (7,050) ms | 3,968 (5,382) ms | 3,753 (5,659) ms |
-| The same with a streaming TTS (Rasa: Deepgram TTS only) | 3,170 (4,940) ms | not run | not run |
-| The same with Deepgram both ways | 2,104 (4,707) ms | 2,732 (4,106) ms | 3,043 (4,598) ms |
-| Passed, of 17, Deepgram both ways | 11 | 14 | 14 |
-| Model calls, input tokens | 178, 391,498 | 86, 110,816 | 73, 113,308 |
-| Spend for 17 calls (model + speech-to-text) | 2.01 USD | 0.70 USD | 0.70 USD |
-| Voice loop written (counted lines) | 58, YAML configuration | 315, code | 261, code |
-| Voice adapter: Speechmatics / Deepgram | 213 / 0 (built in) | 251 / 184 (shared) | 251 / 184 (shared) |
-| Agent logic (restated shared text left out) | 137 (94) | 64 | 115 |
-| Refill guard / guard diff from guard-off, docstrings excluded | 47 / 85 | 112 / 162 | 92 / 143 |
+| Voice loop | 58 lines of YAML configuration; the runtime runs the loop | 315 lines of Python | 261 lines of Python |
+| Speech adapter | Deepgram built in (no adapter, a 34-line loop config); Speechmatics as a custom engine (213 lines) | Shared clients: Speechmatics 251 lines, Deepgram 184 | The same shared clients |
+| Refill guard | A 7-line `tool_constraints` block enforced by the engine, with memory the model cannot set (47 counted lines in all) | Middleware and `interrupt()` with private graph state (112 lines) | An intervention handler with `Deny` and `Confirm` (92 lines) |
+| Read-back pause and resume | `requires_confirmation`: the engine pauses and speaks the question | `interrupt()`, resumed with `Command(resume=...)` | `Confirm` interrupt, resumed with an `interruptResponse` |
+| Fillers, silence check-in, playback markers, TTS cache | Runtime | Written in the loop | Written in the loop |
 
-- **Equal on outcomes.** Each version failed one call. LangGraph and Strands
-  did not reuse a name they already had after a corrected date; Rasa took a
-  medicine corrected at the read-back one turn later than the script allows.
-  With the guard removed, all three still passed the six adversarial calls,
-  because the model complied. Six harder calls
-  (`shared/spec/conversations-adversarial-2.json`), run twice, did separate
-  them. Guard off, the model sent in the turn it selected, with no
-  read-back, in 3 of 36 calls (once per framework), and sent for a second
-  patient 4 times (Rasa and LangGraph). Guard on, no second-patient send,
-  and one violation in 36 calls. In that Rasa call, speech-to-text split the
-  caller's first sentence, and Mantle took a "Yes, please." spoken before the
-  read-back as its answer. Replayed with the same timing, LangGraph and
-  Strands did the same (3 of 3 each): every loop answers queued transcripts
-  in order, and none checks whether the caller had heard the question. An
-  opt-in `fix.diff` per build closes it (0 of 3 each), and it also stops a
-  backchannel "Okay." from counting as consent; see
-  [`COMPARISON.md`](COMPARISON.md#the-fix-consent-only-after-the-read-back-has-played).
-- **Rasa wrote the least and spent the most.** Its voice loop and barge-in
-  path are the runtime. It made more than twice the model calls, because of
-  one call per tool, engine routing and confirmation calls, fact discovery,
-  and calls after hangups that nobody hears. That stayed true on Deepgram
-  (2.1 to 2.4 times the calls), where Rasa's totals were also lowered by six
-  calls that failed early.
-- **Rasa's slower first audio came from the TTS engine.** Mantle streams
-  the model only into a TTS engine that takes streaming text, and
-  Speechmatics' preview TTS does not. With Rasa's built-in Deepgram TTS, its
-  first audio came 1.8 s sooner, about 1.3 s of it from streaming and the
-  rest with the vendor change. With Deepgram both ways for all three, Rasa
-  was first at p50. Deepgram's transcripts had no medicine vocabulary and
-  were worse, though. Rasa's run passed 11 of 17 against 14 and 14: three
-  of its failures were mishearings the other two runs did not get, and one
-  was a date written as "11/02/1979" that its model read as 11 February.
+- **All three** passed 16 of the 17 scripted calls, and the guard held in
+  every one of them.
+- **Streaming:** Rasa streams the model's text into a TTS that accepts
+  streamed text, which its built-in engines do; pair it with one.
+- **Confirmation timing:** one lesson applies to all three. A caller's
+  "yes" spoken before the read-back has finished playing can, if its
+  transcript arrives late, be taken as the confirmation. Each build has an
+  opt-in `fix.diff` that counts consent only after the read-back has
+  played; see
+  [`COMPARISON.md`](COMPARISON.md#confirmation-timing-a-voice-design-lesson-for-all-three).
 
-## Where the comparison lives
+## Where to read more
 
-- [`COMPARISON.md`](COMPARISON.md): the side-by-side results, where Rasa's
-  model calls go, the unfairness in each direction, and what each framework
-  made easy and what it made you write.
-- [`COMPARISON-PLAN.md`](COMPARISON-PLAN.md): the six measures (pass counts,
-  latency breakdown, code per concern, the guard diff, adversarial calls
-  against the guard, voice plumbing written) and the behaviour checklist.
+- [`COMPARISON.md`](COMPARISON.md): the voice loop, speech engines, state
+  and guard, the read-back confirmation, the timing lesson with each fix,
+  and how to run each build.
+- [`COMPARISON-PLAN.md`](COMPARISON-PLAN.md): what is held equal and the
+  line-counting rule.
 - [`rasa/README.md`](rasa/README.md), [`langgraph/README.md`](langgraph/README.md),
-  [`strands/README.md`](strands/README.md): each version, its guard, how to
-  run it and its figures.
+  [`strands/README.md`](strands/README.md): each version, its guard and how
+  to run it.
 - [`results/`](results/): every recorded run, one folder per framework.
 
 ## Scope
@@ -171,7 +136,7 @@ causes:
   records are invented. Nothing here is medical advice.
 - **Synthetic callers.** The caller audio is AI-generated speech (Deepgram
   Aura-2), replayed byte for byte. No person's voice is recorded here.
-- **Not on-device.** Speech goes to Speechmatics and the model call to
-  OpenAI.
+- **Not on-device.** Speech goes to Speechmatics (or Deepgram in the
+  variants) and the model call to OpenAI.
 - **One model, one machine, one day.** A different model, release, vendor
   setting or day can behave differently.

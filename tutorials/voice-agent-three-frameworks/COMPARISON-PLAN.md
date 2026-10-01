@@ -12,13 +12,13 @@ this file, and a change to it applies to all three.
 
 | | Setting | Where it lives |
 |---|---|---|
-| Model | `gpt-5.5-2026-04-23`, `reasoning_effort: low`, through OpenAI | Rasa: `rasa/integrations.yml`. Record which OpenAI API each version calls (the meter logs the path; in Rasa's headline run, LiteLLM sent the orchestrator and fact-discovery calls to `/v1/responses` and the 19 response rephrasings to `/v1/chat/completions`, none streamed) |
+| Model | `gpt-5.5-2026-04-23`, `reasoning_effort: low`, through OpenAI | Rasa: `rasa/integrations.yml`. Record which OpenAI API each version calls (the meter logs the path of every call) |
 | Domain | `cedar_clinic`: records, matching, receipts, the contract's rules, the confirmation rule, the audit log | [`shared/clinic/`](shared/clinic/), installed unchanged |
 | Tools the model sees | The five in `cedar_clinic.tools.TOOL_SPECS`, names, descriptions and parameters verbatim | Same |
 | Instructions | `cedar_clinic.instructions`: `PERSONA`, `RULES`, `VOICE_RULES`, `GREETING` and the confirmation question verbatim; `PROCEDURE` reworded only to name the framework's own mechanism | Same |
 | Speech | Speechmatics realtime speech-to-text (EU, `enhanced`, `max_delay` 1.0, partials, `end_of_utterance_silence_trigger` 0.7, the medicine names as `additional_vocab`) and Speechmatics preview text-to-speech (voice `megan`, `wav_16000`), identical vendor calls | `shared/speech/cedar_speech/config.py`; Rasa's copy is checked against it by `rasa/tests/test_speech_parity.py` |
 | Wire | browser_audio at 24 kHz, the conversation id from `X-Rasa-Sender-Id`, latency fields on end markers, the events endpoint | [`shared/web/PROTOCOL.md`](shared/web/PROTOCOL.md) |
-| Barge-in | Off (Rasa's default on 3.21.0.dev5; beta when on). A version may add it, but the headline run is with it off | Rasa: `interruptions.enabled: false` |
+| Barge-in | Off for the recorded runs. A version may add it | Rasa: `interruptions.enabled: false` |
 | Calls | The 17 calls and caller WAVs in [`shared/spec/`](shared/spec/) | Same |
 | Judge | `shared/spec/run_spec.py`, reading the clinic's audit log | Same |
 | Spend cap | 4 USD per run (`--budget-usd`), model plus priced speech; every run is recorded in `results/<framework>/spend-ledger.json` | Same |
@@ -69,15 +69,14 @@ Report also whether the first audio of a turn is a filler (Rasa speaks
 fillers while a tool runs; a version without them reaches its first audio
 later for the same model time).
 
-Added after the first runs, to split the latency gap into vendor, streaming
-and framework: the 17 calls once more with Rasa's built-in Deepgram TTS and
-Speechmatics speech-to-text (`make spec-rasa-variant VARIANT=deepgram-tts`),
-and once more for all three with Deepgram for both directions (Rasa's
-built-in engines; `shared/speech-deepgram` behind `cedar_speech`'s interface
-for the other two). Neither changes a shipped folder. Deepgram usage is
-priced from its published rates (`shared/spec/speech-prices/`). Results are
-in `COMPARISON.md`, "Rasa with a streaming TTS" and "Deepgram in and out,
-all three".
+Added after the first runs: the 17 calls once more with Rasa's built-in
+Deepgram TTS, which accepts streamed text, and Speechmatics speech-to-text
+(`make spec-rasa-variant VARIANT=deepgram-tts`), and once more for all three
+with Deepgram for both directions (Rasa's built-in engines;
+`shared/speech-deepgram` behind `cedar_speech`'s interface for the other
+two). Neither changes a shipped folder. Deepgram usage is priced from its
+published rates (`shared/spec/speech-prices/`). The runs are in
+`results/<framework>/`.
 
 ### 3. Code per concern
 
@@ -168,14 +167,12 @@ the read-back, not the classification.
   one does, say so and count it as `agent-logic`.
 - Added after the first runs: six harder adversarial calls
   (`shared/spec/conversations-adversarial-2.json`), guard on and guard off
-  in all three, with their own 3 USD budget, because the first six could not
-  separate a guard from a compliant model. They were run twice per
-  framework per condition (the second time with another 3 USD budget), so
-  each count is over 12 calls per framework and 36 per condition; reported
-  as counts, not rates. Results are in `COMPARISON.md`, "The harder
-  adversarial set"; the launch commands are in `results/RUNS.md`.
-- Added after those: a replay of the late-transcript timing that broke the
-  guard once in Rasa, against all three guards
+  in all three, because the first six could not separate a guard from a
+  compliant model. They were run twice per framework per condition, so
+  each count is over 12 calls per framework; reported as counts, not
+  rates. The launch commands are in `results/RUNS.md`.
+- Added after those: a replay of a late-transcript timing seen once in the
+  harder calls, against all three guards
   (`shared/spec/late_transcript_replay.py`), and the six calls of the
   source build that `conversations.json` left out
   (`shared/spec/conversations-remaining-6.json`), all three guard on.
@@ -194,10 +191,10 @@ the read-back, not the classification.
 Two lines per version, by the rule in measure 3:
 
 1. **Voice adapter:** the Speechmatics ASR and TTS client code. None of the
-   three frameworks ships Speechmatics. Rasa 3.21.0.dev5's built-in engines
-   are Deepgram and Azure (ASR) and Azure, Cartesia, Deepgram and Rime (TTS),
-   so the Rasa version needs custom engine classes, loaded by dotted path
-   through `from_config_dict` (beta):
+   three frameworks ships Speechmatics. Rasa's built-in engines are Deepgram
+   and Azure (ASR) and Azure, Cartesia, Deepgram and Rime (TTS), so the Rasa
+   version loads Speechmatics as custom engine classes by dotted path
+   (`from_config_dict`):
    [`rasa/engines/speechmatics.py`](rasa/engines/speechmatics.py), a copy of
    the companion's live-tested `voicerouter` adapters. LangGraph and Strands
    use [`shared/speech/`](shared/speech/). The two should be roughly equal.
@@ -207,21 +204,21 @@ Two lines per version, by the rule in measure 3:
    the events endpoint, barge-in, silence check-ins, fillers while a tool
    runs. In Rasa this is the runtime, configured in
    `rasa/integrations.yml`, so its line is YAML only. In LangGraph and
-   Strands it has to be written.
+   Strands it is written in the version's own server.
 
 **Behaviour checklist**, filled in per version from its configuration and
 the recorded run (delivered / not delivered / not tested):
 
 | Behaviour | Rasa Mantle | LangGraph | Strands |
 |---|---|---|---|
-| Barge-in (caller interrupts the agent) | Available in the runtime; **off** (`interruptions.enabled: false`, the default on 3.21.0.dev5, beta when on); not tested | Not delivered: not implemented, off | Not delivered: not implemented |
+| Barge-in (caller interrupts the agent) | Available in the runtime; off for these runs (`interruptions.enabled: false`) | Not part of this loop | Not part of this loop |
 | Silence check-in (agent prompts after the caller says nothing) | Runtime: `silence_timeout: 30` with Mantle's `default_silence_timeout` skill; configured, not tested | Delivered (written); exercised in a separate live call | Delivered in code (written); not tested |
-| Fillers while a tool runs | Runtime: Mantle's, before tool calls; first audio of 35 of 39 turns (shared-prompt run) | Delivered (written); 30 of 39 | Delivered (written); 29 of 39 |
-| Turn-splitting handling | Adapter: held until Speechmatics' `EndOfUtterance`; 0 of 39 split | Same via `cedar_speech`; 0 of 39 | Same; 0 of 39 |
+| Fillers while a tool runs | Runtime: Mantle's, before tool calls | Delivered (written) | Delivered (written) |
+| Turn-splitting handling | Adapter: held until Speechmatics' `EndOfUtterance` | Same via `cedar_speech` | Same |
 | Playback markers and acknowledgements | Runtime | Delivered (written) | Delivered (written) |
 | Latency fields on end markers | Runtime | Delivered (written) | Delivered (written) |
-| Sentence chunking for TTS | Per bot message; model not streamed with this TTS engine | Streamed text cut at sentence ends | Streamed text cut at sentence ends |
-| TTS cache for repeated text | Runtime (`cache_size`, default 1000) | Not delivered | Not delivered |
+| Text to TTS | Streamed into a TTS that accepts streamed text; per bot message with a whole-utterance TTS | Streamed text cut at sentence ends | Streamed text cut at sentence ends |
+| TTS cache for repeated text | Runtime (`cache_size`, default 1000) | Not part of this loop | Not part of this loop |
 
 ## Reporting
 
@@ -230,17 +227,16 @@ and adds a row here and to the tutorial README:
 
 | | Rasa Mantle | LangGraph | Strands |
 |---|---|---|---|
-| Headline run | `2026-10-01-speechmatics-live-shared-prompt` (the first run, 12 of 17 on the earlier procedure, kept as history) | `2026-10-01-speechmatics-live` | `2026-10-01-speechmatics-live` |
+| Headline run | `2026-10-01-speechmatics-live-shared-prompt` (an earlier run on a previous wording of the procedure is kept as history) | `2026-10-01-speechmatics-live` | `2026-10-01-speechmatics-live` |
 | Passed (of 17) | 16 | 16 | 16 |
 | Guard violations (all / adversarial) | 0 / 0 | 0 / 0 | 0 / 0 |
 | Guard-off baseline, 6 adversarial calls | 6 passed, 0 violations | 6 passed, 0 violations | 6 passed, 0 violations |
-| End of speech to first audio, p50 / p95 | 4,971 / 7,050 ms | 3,968 / 5,382 ms | 3,753 / 5,659 ms |
-| Model calls (input tokens) | 178 (391,498) | 86 (110,816) | 73 (113,308) |
 | Lines: agent-logic (shared text left out) / refill-guard / voice-adapter / voice-loop | 137 (94) / 47 / 213 / 58 | 64 (64) / 112 / 251 / 315 | 115 (115) / 92 / 251 / 261 |
 | Guard diff, docstrings excluded | 85 (+67 -18) | 162 (+132 -30) | 143 (+114 -29) |
-| Spend, USD (model + speech-to-text) | 2.01 | 0.70 | 0.70 |
 
-The side-by-side write-up is [`COMPARISON.md`](COMPARISON.md).
+The side-by-side write-up is [`COMPARISON.md`](COMPARISON.md). Latency,
+model calls and spend are in each run's `summary.md` and in
+`results/<framework>/spend-ledger.json`.
 
 No number goes into a table unless a file in `results/` or a command in
 this plan produced it.

@@ -6,7 +6,7 @@ Assessed on:   2026-10-01
 Assessed by:   Claude Code (three-framework tutorial; live runs in ../results/rasa/)
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv, macOS 26.6.2
 Audience:      Engineers comparing Rasa Mantle, LangGraph and Strands for a voice agent with a hard guarantee
-Time:          20 minutes to run; about 20 minutes and 2 USD for the live spec (17 calls)
+Time:          20 minutes to run; about 20 minutes for the scripted calls (17 calls, billed)
 ```
 
 The Rasa Mantle version of the Cedar Clinic prescription line, one of three
@@ -18,9 +18,12 @@ anything. Cedar Clinic is fictional.
 - **Model:** `gpt-5.5-2026-04-23`, `reasoning_effort: low`, through Rasa's
   OpenAI client.
 - **Speech:** Speechmatics realtime speech-to-text and Speechmatics preview
-  text-to-speech (voice `megan`). Rasa 3.21.0.dev5 ships neither, so both are
-  custom engine classes in [`engines/speechmatics.py`](engines/speechmatics.py),
-  a copy of the companion's live-tested `voicerouter` adapters.
+  text-to-speech (voice `megan`), loaded as custom engine classes by dotted
+  path from [`engines/speechmatics.py`](engines/speechmatics.py), a copy of
+  the companion's live-tested `voicerouter` adapters. With a vendor Rasa
+  ships, such as Deepgram, the engines are named in `integrations.yml` and
+  no adapter code is needed
+  ([`../variants/rasa-deepgram.integrations.yml`](../variants/rasa-deepgram.integrations.yml)).
 - **Voice loop:** Rasa's built-in `browser_audio` channel, configured in
   [`integrations.yml`](integrations.yml). Nothing here moves audio.
 - **Domain:** the shared [`cedar_clinic`](../shared/clinic/) package, the
@@ -29,7 +32,7 @@ anything. Cedar Clinic is fictional.
 ## Quick start
 
 ```bash
-make install     # rasa-pro 3.21.0.dev5 and cedar_clinic into .venv (uv sync --prerelease=allow --locked)
+make install     # rasa-pro and cedar_clinic into .venv (uv sync --prerelease=allow --locked)
 make env         # fill RASA_LICENSE, OPENAI_API_KEY, SPEECHMATICS_API_KEY
 make test        # offline
 make validate
@@ -74,10 +77,10 @@ docstrings excluded on both sides as for the other two versions, it is **67
 lines added and 18 removed** in 5 files
 (`python3 ../shared/spec/count_concerns.py . --diff`).
 
-**The fix, opt-in.** The guard binds consent to the order in which Mantle
-takes transcripts, not to whether the caller had heard the question: a
-"Yes, please." spoken before the read-back was taken as the answer
-(`../COMPARISON.md`). [`fix.diff`](fix.diff) adds a browser_audio
+**The fix, opt-in.** Like the other two builds, this one answers caller
+transcripts in the order they arrive, so a "Yes, please." spoken before
+the read-back has finished playing can be taken as the answer if its
+transcript arrives late (`../COMPARISON.md`). [`fix.diff`](fix.diff) adds a browser_audio
 subclass, loaded by dotted path from `integrations.yml`, that records when
 each utterance began and when each bot message finished playing. It also
 adds a check in `send_refill_request` that refuses an answer begun before
@@ -99,104 +102,42 @@ that are not only a comment, docstrings excluded;
 | voice-loop | 0 | 58 | 0 | 58 | the `channels` block of `integrations.yml` |
 | ops | 32 | 17 | 0 | 49 | `Makefile`, `pyproject.toml` |
 
-## What the live runs recorded
+## Streaming and the TTS
 
-All from [`../results/rasa/`](../results/rasa/), on one machine.
-
-| Run | Procedure | Calls | Passed | Guard violations | Spend USD |
-|---|---|---|---|---|---|
-| `2026-10-01-speechmatics-live-shared-prompt` (**the headline**) | shared, after the change | 17 | 16 | 0 | 2.01 (model 1.89, speech-to-text 0.12) |
-| `2026-09-30-speechmatics-live` (first run, history) | before the change | 17 | 12 | 0 | 1.84 |
-| `2026-09-30-speechmatics-rerun-after-prompt-fix` | after | 5 | 4 | 0 | 0.63 |
-| `2026-10-01-guard-off-adversarial` (guard-off baseline, the 6 adversarial calls) | after | 6 | 6 | 0 | 0.48 |
-| `2026-10-01-deepgram-tts-streaming` (variant: built-in Deepgram TTS, model streamed) | after | 17 | 16 | 0 | 2.17 (model 1.80, speech-to-text 0.11, TTS 0.26) |
-| `2026-10-01-deepgram-live` (variant: built-in Deepgram ASR and TTS) | after | 17 | 11 | 0 | 1.86 (model 1.51, speech-to-text 0.11, TTS 0.25) |
-
-**The headline run's one failure** is `correction-other-medicine-at-confirmation`,
-as in the first run. At the read-back the caller names another medicine;
-Mantle's decline path speaks "Okay, I have not sent a refill request." and
-ends the turn, and the budesonide is selected and read back on the next
-turn, which is one turn later than the script allows. Nothing wrong was
-sent. The LangGraph and Strands guards hand the caller's words back to the
-model in the same turn and passed it. This version passed
-`recovery-second-verification`, which both of them failed.
-
-**The first run's failures** were four calls where GPT-5.5 asked its own
-confirmation question before calling `send_refill_request` (so the caller
-had to confirm twice), or asked which medicine instead of selecting by
-description. They led to the shared procedure change
-("Tell the model not to ask its own confirmation question"), which all three
-versions' headline runs use.
-
-**Latency per caller turn**, headline run, p50 (p95), n=39:
-
-| Part | ms |
-|---|---|
-| End of caller speech to first bot audio | 4,971 (7,050) |
-| End of speech to transcript | 1,574 (1,750) |
-| Agent processing: final transcript to first bot message | 2,295 (3,731) |
-| of which the turn's first model call, not streamed | 2,193 (3,281) |
-| TTS first byte | 1,187 (2,482) |
-| Model calls per turn | 5 (7) |
-
-The model calls are not streamed because Mantle streams only into a TTS
-engine that accepts streaming text, and this Speechmatics engine takes one
-utterance per request. The first audio was a Mantle filler in 35 of 39
-turns.
-
-**With a streaming TTS.** The variant in
+Mantle streams the model's text into the TTS when the TTS engine accepts
+streamed text (its `streaming_input`). Rasa's built-in engines (Azure,
+Cartesia, Deepgram, Rime) do, so the first words can play while the model is
+still writing. The Speechmatics preview TTS used here takes one utterance
+per request, so each message is spoken once it is complete. To stream,
+change the `tts:` blocks to a built-in engine: the variant in
 [`../variants/rasa-deepgram-tts.integrations.yml`](../variants/rasa-deepgram-tts.integrations.yml)
-changes only the two `tts:` blocks to Rasa's built-in Deepgram engine, whose
-`streaming_input` is `True`. It is run with `make spec-rasa-variant
-VARIANT=deepgram-tts` from the tutorial folder, which copies this folder and
-leaves it unchanged. Mantle then streamed 141 of 173 model calls (all but
-fact discovery). End of speech to first audio fell from 4,971 to 3,170 ms at
-p50, agent processing from 2,295 to 965 ms and TTS first byte from 1,187 to
-274 ms. Speech-to-text was unchanged (1,632 ms). With Deepgram both ways
-(`VARIANT=deepgram`, no custom engine at all) it was 2,104 ms. See
-[`../COMPARISON.md`](../COMPARISON.md#rasa-with-a-streaming-tts).
+does that, and `make spec-rasa-variant VARIANT=deepgram-tts` from the
+tutorial folder runs the scripted calls on it without changing this folder.
 
-**Where the 178 model calls go**, labelled by the Mantle function that made
-each one (`../shared/spec/rasa_call_purposes.py`,
-`python3 ../shared/spec/rasa_call_breakdown.py ../results/rasa/2026-10-01-speechmatics-live-shared-prompt`):
+## Recorded runs
 
-| Purpose | During caller turns | After the hangup | USD |
-|---|---|---|---|
-| Orchestrator iteration | 108 | 17 | 1.49 |
-| Fact discovery (after a skill switch, off the reply path) | 17 | 17 | 0.28 |
-| Response rephrasing | 2 | 17 | 0.12 |
+The scripted calls are recorded in [`../results/rasa/`](../results/rasa/).
+On the headline run this version passed 16 of 17 calls, and the guard held
+in all of them. Two behaviours worth knowing from those calls:
 
-The model returned one tool call per orchestrator iteration. 49 of the 125
-iterations were engine tools (`activate` 17, `complete_skill` 14,
-`resolve_tool_confirmation` 13, `cancel_skill` 3, `cannot_help` 2), against
-51 for the clinic's tools. The 51 calls after hangups are Mantle's
-`/session_end` turn, which nobody hears. LangGraph made 86 calls and Strands
-73 for the same 17 calls; see [`../COMPARISON.md`](../COMPARISON.md).
+- **A caller who corrects only their date of birth** is verified with the
+  name already given: "Sorry, I meant March 14th, 1968." is followed by
+  the read-back.
+- **A caller who names another medicine at the read-back** gets the
+  decline ("Okay, I have not sent a refill request.") in that turn, and
+  the new medicine read back on the next turn.
 
-**Speech-to-text**, headline run: word error rate 0.009, no caller turn
-split, every medicine name heard (17 of 17), names 29 of 30.
-
-**Model cost** is the meter's (token usage times OpenAI's published price for
-`gpt-5.5-2026-04-23`: 5.00 USD per million input tokens, 0.50 cached, 30.00
-output). LiteLLM's own cost, logged inside the agent, was identical in both
-Speechmatics full runs (1.887398 USD over 178 calls in the headline). Speech-to-text is
-priced at 0.43 USD per hour (Speechmatics realtime enhanced, as recorded by
-the Northgate dispute build on 2026-09-29); TTS is in free preview with no
-published price, so it is not priced.
-
-**No tuned run.** This release has no setting to turn off fact discovery or
-the `/session_end` turn, and model streaming needs a TTS engine that accepts
-streaming text (a built-in one, as measured above, or custom code); see [`../COMPARISON.md`](../COMPARISON.md#why-there-is-no-tuned-rasa-run).
+`python3 ../shared/spec/rasa_call_breakdown.py <run>` lists a run's model
+calls by the Mantle function that made them.
 
 ## Voice behaviour
 
 | Behaviour | This build |
 |---|---|
-| Barge-in | Off: `interruptions.enabled: false` (the default on 3.21.0.dev5; beta when on) |
+| Barge-in | In the runtime; off for these runs (`interruptions.enabled: false`) |
 | Silence check-in | `silence_timeout: 30` with Mantle's built-in silence skill; not exercised by the spec |
-| Fillers while a tool runs | On (runtime default); first audio of 35 of 39 turns in the headline run |
-| Turn splitting | Speechmatics' `EndOfUtterance` joins segments in the engine; 0 of 39 turns split |
-| Work after the hangup | One `/session_end` turn: 3 model calls per call |
+| Fillers while a tool runs | On (runtime default) |
+| Turn splitting | Speechmatics' `EndOfUtterance` joins segments in the engine |
 | Playback markers, latency fields, TTS cache | Runtime |
 
 ## Also checked
@@ -213,6 +154,3 @@ streaming text (a built-in one, as measured above, or custom code); see [`../COM
 
 - Rasa warns "Unknown ASR config field(s) 'name' will be ignored" for a
   custom engine: the dotted path is read before the config model sees it.
-- A hangup costs one more model turn on `/session_end` ("Can I help with
-  anything else?"), heard by nobody; the runner waits for it so its cost
-  stays with the call.

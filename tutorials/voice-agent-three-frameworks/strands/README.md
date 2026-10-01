@@ -6,7 +6,7 @@ Assessed on:   2026-10-01
 Assessed by:   Claude Code (phase 2 of the three-framework tutorial; live runs in ../results/strands/)
 Verified with: strands-agents 1.57.1, openai 2.54.0, Python 3.12, uv, macOS 26.6.2
 Audience:      Engineers comparing Rasa Mantle, LangGraph and Strands for a voice agent with a hard guarantee
-Time:          10 minutes to run; about 20 minutes and under 1 USD for the live spec
+Time:          10 minutes to run; about 20 minutes for the scripted calls (billed)
 ```
 
 The AWS Strands Agents version of the Cedar Clinic prescription line, one of
@@ -66,11 +66,10 @@ params={"reasoning": {"effort": "low"}})`. Two things were checked live on
   gpt-5.5-2026-04-23 in /v1/chat/completions. To use function tools, use
   /v1/responses or set reasoning_effort to 'none'." So the Chat Completions
   path cannot hold the comparison's model setting, and this build calls
-  `/v1/responses`, streamed. The Rasa version also called `/v1/responses`
-  (through LiteLLM), not streamed.
+  `/v1/responses`, streamed.
 
-The openai SDK reads `OPENAI_BASE_URL`, so the spec runner's meter sees and
-prices every call.
+The openai SDK reads `OPENAI_BASE_URL`, so the spec runner's meter sees
+every call.
 
 ## The refill guard
 
@@ -91,10 +90,10 @@ decides (it calls `resolve_tool_confirmation`). Here `evaluate` is a fixed
 rule, `guard.caller_said_yes`: the first clause must start with an
 affirmative (yes, yeah, sure, okay, fine, go ahead, and similar) and hold no
 negation, no later clause may retract it ("wait", "don't send", "instead"),
-and no other recorded medicine may be named. Anything else is a no. That is
-stricter than Rasa's model judgment and costs no model call on the
-confirmation turn, but it can refuse a yes phrased in a way the rule does not
-know, and a real deployment would need more phrasings or a model classifier.
+and no other recorded medicine may be named. Anything else is a no. The rule
+makes no model call on the confirmation turn, and it refuses a yes phrased
+in a way it does not know, so a real deployment would add phrasings or a
+model classifier.
 The Strands docs show `evaluate` as the place for custom approval logic.
 
 **What the guard does not use.** `HumanInTheLoop` (the vended handler) would
@@ -116,9 +115,7 @@ By the plan's line rule (`python3 ../shared/spec/count_concerns.py . --diff`)
 it is **144 lines added and 32 removed, 176 changed**, in 2 files: `agent.py`
 +46 -32, `guard.py` +98 -0. The diff counter cannot tell a docstring from
 code, so 30 of the added lines and 3 of the removed ones are docstrings;
-without them it is +114 -29 (143). The Rasa guard diff, with docstrings
-excluded the same way, is 85 (+67 -18), mostly YAML, whose comments do not
-count.
+without them it is +114 -29 (143).
 
 **The fix, opt-in.** The guard binds consent to queue order: a "Yes,
 please." spoken before the read-back finished playing answers the pending
@@ -136,10 +133,10 @@ Strands' own voice feature is `BidiAgent`
 `strands.experimental.bidi`, holding a persistent connection to a realtime
 speech-to-speech model (Nova Sonic, OpenAI Realtime or Gemini Live). It has
 no provider that takes a transcript from one vendor and sends text to
-another's text-to-speech, so it cannot run Speechmatics in and out, and it
-could not hold the comparison's speech settings. `BidiModel` is a public
-abstract class, so a custom cascade provider is possible in principle, but it
-is undocumented. This build uses the plain `Agent` and writes the loop.
+another's text-to-speech, which this agent needs for Speechmatics in and
+out. `BidiModel` is a public abstract class, so a custom cascade provider
+is possible in principle. This build uses the plain `Agent` and writes the
+loop.
 
 [`server.py`](server.py) (Starlette and uvicorn, asyncio) implements
 [`../shared/web/PROTOCOL.md`](../shared/web/PROTOCOL.md):
@@ -149,7 +146,7 @@ is undocumented. This build uses the plain `Agent` and writes the loop.
   Speechmatics socket, `{"text"}` turns, marker acknowledgements.
 - **End of turn:** Speechmatics' `EndOfUtterance` after 0.7 s of silence, as
   in the Rasa engine; each final transcript is one `user` event and one agent
-  turn. A caller turn split in two would be answered twice, as Rasa does.
+  turn. A caller turn split in two is answered as two turns.
 - **Sentence chunking:** model text is streamed from `Agent.stream_async`,
   cut at sentence ends, and each sentence goes to TTS as soon as it is
   complete, while the model is still writing. Fixed messages (the greeting,
@@ -187,90 +184,22 @@ The prompt is `cedar_clinic.instructions.system_prompt()`, imported rather
 than restated, so the instruction text counts for nobody here; the Rasa
 version restates it in YAML and Markdown and counts it as agent logic.
 
-## What the live run recorded
+## Recorded runs
 
-All from [`../results/strands/`](../results/strands/), 2026-10-01, the same
-Mac as the Rasa runs.
+The scripted calls are recorded in [`../results/strands/`](../results/strands/).
+On the headline run this version passed 16 of 17 calls, and the guard held
+in all of them. Two behaviours worth knowing from those calls:
 
-| Run | Calls | Passed | Guard violations | Spend USD |
-|---|---|---|---|---|
-| `2026-10-01-speechmatics-live` (all 17 calls; the headline, and the only full run) | 17 | 16 | 0 | 0.70 (model 0.59, speech-to-text 0.10) |
-| `2026-10-01-guard-off-adversarial` (the 6 adversarial calls, guard off) | 6 | 6 | 0 | 0.20 |
-| `2026-10-01-deepgram-live` (all 17 calls on Deepgram speech in and out, through `../shared/speech-deepgram`; this folder unchanged) | 17 | 14 | 0 | 0.92 (model 0.56, speech-to-text 0.11, TTS 0.24) |
+- **A caller who names another medicine at the read-back** has it selected
+  and read back in the same turn: the `Transform` hands the model the
+  caller's words.
+- **A caller who corrects only their date of birth** is asked for the full
+  name again. GPT-5.5 follows the shared procedure's "ask once more for
+  both details" literally here.
 
-By kind: normal 4 of 4, adversarial 6 of 6, recovery 2 of 3, correction 4 of
-4. The failure, `recovery-second-verification`, is the agent's: after a
-wrong date the model asked for the full name again instead of reusing it,
-and the caller only gave the corrected date, so the patient was never
-verified. Nothing was sent. The prompt was not changed after the run, so
-there is no rerun. The details are in
-[`../results/strands/README.md`](../results/strands/README.md).
+## What the build involved
 
-**Latency per caller turn**, p50 (p95), n=39:
-
-| Part | ms |
-|---|---|
-| End of caller speech to first bot audio | 3,753 (5,659) |
-| End of speech to transcript | 1,450 (1,745) |
-| Agent processing: final transcript to the first sentence ready for TTS | 1,079 (1,595) |
-| TTS first byte (one sentence) | 1,098 (2,452) |
-| Model calls per turn | 2 (3) |
-
-The first audio was a filler in 29 of 39 turns.
-
-**Spend:** 0.6952 USD for the full run, 73 model calls, all to
-`/v1/responses`. 1.09 USD across everything in the ledger for the build,
-including 0.08 of model calls while building; 3.18 USD with the comparison's
-harder-set and Deepgram runs. On Deepgram the first audio came at 3,043 ms
-at p50 (3,753 on Speechmatics); see
-[`../COMPARISON.md`](../COMPARISON.md#deepgram-in-and-out-all-three).
-
-**Voice behaviour:** barge-in not delivered; silence check-in delivered in
-code, not tested; fillers, turn-splitting handling, markers, latency fields
-and sentence chunking delivered; no TTS cache. See the checklist in
-[`../results/strands/README.md`](../results/strands/README.md#voice-behaviour-checklist).
-
-## What makes the comparison uneven
-
-- **Prompt timing.** This run used the shared procedure after the Rasa
-  build's fix (call `send_refill_request` straight away, pass descriptions to
-  `select_medication`). The Rasa headline, 12 of 17, was before that fix; its
-  rerun of the five failures after the fix passed four. Rasa was then rerun
-  in full on the shared prompt: 16 of 17 in one run
-  ([`../COMPARISON.md`](../COMPARISON.md)).
-- **Who judges the yes.** Here a fixed rule decides whether the caller
-  confirmed; in Rasa the model does, with a model call. The rule saves a
-  model call and its latency on every confirmation turn, and fails closed on
-  phrasings it does not know. No spec call hit such a phrasing.
-- **The confirmation turn.** A caller who names another medicine at the
-  read-back has it selected and read back in the same turn here (the
-  guard hands the model their words); Rasa speaks the decline and takes the
-  new medicine a turn later, which is why Rasa failed
-  `correction-other-medicine-at-confirmation` and this build passed it.
-- **Streaming.** This build streams model text and speaks the first
-  sentence while the rest is written; the Rasa version's model calls were
-  not streamed. Its agent processing is measured to the first sentence, Rasa's
-  to the first whole message.
-- **Fillers** are fixed phrases after the tools here and Mantle's own
-  fillers before them there; both count as the first audio.
-- **Model calls and tokens.** 73 calls and 113,308 input tokens here against
-  173 and 358,692 for Rasa's first run (178 and 391,498 in its shared-prompt
-  rerun) over the same 39 turns: 2 calls per turn at the median here, 5
-  there, with a larger prompt per call. That is the framework layer, not the
-  task, and it is most of the cost difference (0.70 against 1.84 and 2.01
-  USD).
-- **Line counts.** The shared instruction text is imported here and restated
-  in the Rasa version; the guard diff here counts 30 docstring lines.
-- **What Rasa's runtime has that this loop does not:** a TTS cache, barge-in
-  (off in both headline runs) and a `/session_end` turn. This loop has been
-  run for one evening: two smoke calls, 23 spec calls and one page check.
-- **One run each, not at the same moment.** The Rasa run started at 22:27
-  UTC and this one at 23:19 UTC on 2026-09-30, and the LangGraph build was
-  running its own calls on the same keys at the time.
-
-## Where Strands was easy, and where it was hard
-
-**Easy.**
+**What Strands makes easy.**
 
 - **Tools.** `@tool(name=..., description=..., inputSchema=...)` takes the
   shared `TOOL_SPECS` verbatim, so the model sees exactly the other versions'
@@ -283,32 +212,25 @@ and sentence chunking delivered; no TTS cache. See the checklist in
   model (`tests/test_strands.py`).
 - **Streaming.** `Agent.stream_async` yields text deltas and completed
   messages, which is all the sentence chunker needs.
-- **Cost.** A thin prompt and one model call per step: 73 calls for 39 turns.
+- **A thin prompt** and one model call per step.
 
-**Hard.**
+**What you write.**
 
-- **Voice is yours to write.** Strands' voice agent is experimental and
-  speech-to-speech only, so there is nothing to plug Speechmatics into. The
-  protocol, turn taking, chunking, markers, latency fields, fillers and the
-  silence check-in are 261 lines in `server.py`, against 58 lines of YAML in
-  the Rasa version. Barge-in and a TTS cache would be more.
-- **The documented OpenAI path did not work with the comparison's model
-  setting.** The docs' example is `OpenAIModel`; with GPT-5.5, tools and
-  `reasoning_effort` together, Chat Completions refuses the request, and the
-  fix was the Responses model class.
-- **Resuming an interrupt drops the caller's words.** A resumed agent may
-  only be given interrupt responses, so the model never sees what the caller
-  said at the confirmation unless you put it somewhere. Here the guard
-  appends it to the tool result with a `Transform`. Without that, "No, I
-  meant my budesonide" would be a bare cancellation.
-- **Deciding what a spoken answer means is on you.** Confirm's `evaluate`
-  gets whatever you resume with; the default accepts `y`, `yes` or `True`.
-  For speech you need a classifier: a rule (here) or a model call.
-- **Parallel tool calls race on state.** The default executor runs tools
-  concurrently, so `select_medication` could run before `verify_patient` had
-  written the patient id. `SequentialToolExecutor` fixes it, but nothing warns
-  you.
-- **Cancellation text is fixed.** A denied Confirm always reads
+- **The voice loop.** The protocol, turn taking, chunking, markers, latency
+  fields, fillers and the silence check-in are 261 lines in `server.py`.
+  Barge-in and a TTS cache would be further work.
+- **The model class.** With GPT-5.5, tools and `reasoning_effort` together,
+  use `OpenAIResponsesModel`; Chat Completions refuses that combination.
+- **The caller's words after a resume.** A resumed agent receives interrupt
+  responses, not a user message, so the guard appends the caller's words to
+  the tool result with a `Transform`. With it, "No, I meant my budesonide"
+  selects the budesonide.
+- **Judging a spoken answer.** Confirm's `evaluate` gets whatever you resume
+  with, and the default accepts `y`, `yes` or `True`. For speech you need a
+  classifier: a rule (here) or a model call.
+- **Tool order.** The default executor runs tools concurrently, so use
+  `SequentialToolExecutor` when one tool reads state another writes.
+- **Cancellation text.** A denied Confirm reads
   `CONFIRMATION_FAILED: <prompt>`, and a Deny `DENIED: <reason>`.
 
 ## Notes
