@@ -127,9 +127,13 @@ same Mac as the Rasa runs.
 |---|---|---|---|---|
 | `2026-10-01-speechmatics-live` (all 17 calls; the headline, first and only full run) | 17 | 16 | 0 | 0.70 (model 0.59, speech-to-text 0.11) |
 | `2026-10-01-speechmatics-repeat-no-change` (the failed call again, nothing changed) | 1 | 0 | 0 | 0.04 |
+| `2026-10-01-deepgram-live` (all 17 calls on Deepgram speech in and out, through `../shared/speech-deepgram`; this folder unchanged) | 17 | 14 | 0 | 0.93 (model 0.56, speech-to-text 0.12, TTS 0.24) |
 
-All runs, smoke tests and checks together: 0.91 USD in
-`../results/langgraph/spend-ledger.json`.
+All runs, smoke tests and checks for the build together: 0.91 USD in
+`../results/langgraph/spend-ledger.json`; 3.28 USD with the comparison's
+guard-off, harder-set and Deepgram runs. On Deepgram the first audio came at
+2,732 ms at p50 (3,968 on Speechmatics); see
+[`../COMPARISON.md`](../COMPARISON.md#deepgram-in-and-out-all-three).
 
 - **The failure** was `recovery-second-verification`: after a wrong date,
   the caller corrected only the date, and GPT-5.5 asked for the name and

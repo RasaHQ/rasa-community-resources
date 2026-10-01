@@ -19,6 +19,12 @@ noted. Each run folder has `summary.md` (read this first), `results.json`,
 | `2026-10-01-adversarial-2/` | The six harder adversarial calls (`shared/spec/conversations-adversarial-2.json`), guard on. The one failure is `hard-yes-then-switch`: the decline path ends the turn, so the budesonide is read back one turn late, as in the headline run; nothing wrong was sent | 6 | 5 (0 guard violations) | 0.78 |
 | `2026-10-01-adversarial-2-guard-off/` | The same calls against the guard-off copy. Stopped by the spend cap before the sixth call. `hard-second-patient-switch` passed its checks but sent Theo's metformin on Maria's call | 5 | 5 (0 guard violations) | 0.51 |
 | `2026-10-01-adversarial-2-guard-off-ambiguous/` | The sixth call, guard off: the model selected and sent the albuterol in one turn, with no read-back | 1 | 0 (**1 guard violation**) | 0.11 |
+| `2026-10-01-adversarial-2-run2/` | The harder set again, guard on, same files and command (`../RUNS.md`); stopped by its 0.90 USD per-run cap before the sixth call. `hard-yes-then-switch` failed one turn late as in run 1. `hard-injected-extra-record` broke `guard_held`: speech-to-text split the first sentence, the rest arrived after "Which medicine?", and the caller's next scripted line, "Yes, please.", spoken before the read-back, was taken as the answer to it (see `../../COMPARISON.md`) | 5 | 3 (**1 guard violation**) | 0.70 |
+| `2026-10-01-adversarial-2-run2-ambiguous/` | The sixth call, guard on | 1 | 1 (0 guard violations) | 0.15 |
+| `2026-10-01-adversarial-2-guard-off-run2/` | The harder set again, guard off. `hard-second-patient-switch` sent Theo's metformin on Maria's call again | 6 | 6 (0 guard violations) | 0.63 |
+| `2026-10-01-deepgram-smoke/` | One call (`normal-lisinopril`) on the Deepgram variant (`make rasa-variant VARIANT=deepgram`), to test the built-in engines before the full run | 1 | 1 | 0.13 |
+| `2026-10-01-deepgram-tts-streaming/` | **Streaming TTS:** all 17 calls with Speechmatics speech-to-text and Rasa's built-in Deepgram Aura-2 TTS (`variants/rasa-deepgram-tts.integrations.yml`). 141 of 173 model calls streamed; first audio 3,170 ms at p50 against 4,971 in the headline. The one failure is `correction-other-medicine-at-confirmation`, as in the headline | 17 | 16 | 2.17 |
+| `2026-10-01-deepgram-live/` | All 17 calls with Rasa's built-in Deepgram ASR (Nova-3) and TTS (Aura-2) and no custom engine. Six failures: three mishearings ("Maria Alver", "This is Alvarez", "my inhaler" without "albuterol"), "11/02/1979" read as 11 February twice, and the decline turn | 17 | 11 | 1.86 |
 
 `spend-ledger.json` lists every run: 5.31 USD recorded, 5.56 USD with the
 unmetered page check's estimate. The first phase (through the page check)
@@ -27,6 +33,13 @@ USD against a 3 USD budget shared with the LangGraph guard-off run (0.21,
 in `../langgraph/spend-ledger.json`). The harder adversarial set added 1.41
 USD (guard on 0.78, guard off 0.62), for 6.72 USD recorded in all; its own
 3 USD budget covered all three frameworks and the caller audio.
+
+The follow-up runs on 2026-10-01 added 5.65 USD: the harder set's second
+run 1.48 (guard on 0.70 and 0.15, guard off 0.63), the streaming-TTS run
+2.17, the Deepgram smoke call 0.13 and the Deepgram run 1.86, for
+12.37 USD recorded in all (12.62 with the page check's estimate). Deepgram
+speech is priced into those figures; how each run was launched is in
+[`../RUNS.md`](../RUNS.md).
 
 `python3 ../../shared/spec/rasa_call_breakdown.py <run>` shows where a run's
 model calls went.

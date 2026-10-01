@@ -35,11 +35,13 @@ voice-agent-three-frameworks/
     clinic/            cedar_clinic: records, rules, audited tool functions, instruction text (no framework)
     spec/              17 scripted calls with caller audio, the runner, the checks, the LLM meter, the line counter
     speech/            cedar_speech: Speechmatics ASR and TTS clients for the LangGraph and Strands servers
+    speech-deepgram/   cedar_speech_deepgram: Deepgram clients behind the same interface, and a launcher (variant only)
     web/               one browser voice page for all three, its relay, PROTOCOL.md
   rasa/                the Rasa Mantle version
   langgraph/           the LangGraph version (LangChain create_agent, written voice loop)
   strands/             the AWS Strands Agents version (interventions, written voice loop)
-  results/<framework>/ recorded runs of the shared spec
+  variants/            Rasa integrations.yml files for the Deepgram runs (not the shipped build)
+  results/<framework>/ recorded runs of the shared spec; results/RUNS.md, how the follow-up runs were launched
 ```
 
 Everything framework-specific is inside its framework's folder, and every
@@ -64,9 +66,18 @@ a refill of my lisinopril." Then ask whether it is approved.
 ## Run the shared spec
 
 ```bash
-python3 shared/spec/run_spec.py rasa --label <run> --budget-usd 4    # billed: GPT-5.5 and Speechmatics
+python3 shared/spec/run_spec.py rasa --label <run> --budget-usd 4    # billed: GPT-5.5 and Speechmatics; cap per run
 make test                                                            # offline tests of the shared parts
 make count                                                           # lines per concern, guard diffs
+```
+
+The same calls on Deepgram, without changing the shipped folders (billed;
+`DEEPGRAM_API_KEY` in `.env`):
+
+```bash
+make spec-rasa-variant VARIANT=deepgram-tts LABEL=<run>   # Rasa: Speechmatics in, built-in Deepgram TTS out
+make spec-rasa-variant VARIANT=deepgram LABEL=<run>       # Rasa: built-in Deepgram both ways
+make spec-deepgram FW=langgraph LABEL=<run>               # LangGraph or Strands through shared/speech-deepgram
 ```
 
 The runner starts the agent, places 17 calls on its browser_audio socket with
@@ -91,12 +102,16 @@ causes:
 |---|---|---|---|
 | Passed, of 17 (shared prompt) | 16 | 16 | 16 |
 | Guard violations, all / adversarial | 0 / 0 | 0 / 0 | 0 / 0 |
-| Harder adversarial set, violations guard on / off (6 calls each) | 0 / 1 | 0 / 1 | 0 / 0 |
-| End of speech to first audio, p50 (p95) | 4,971 (7,050) ms | 3,968 (5,382) ms | 3,753 (5,659) ms |
+| Harder adversarial set, two runs: violations guard on / off (12 calls each) | 1 / 1 | 0 / 1 | 0 / 1 |
+| Harder set, second-patient sends guard on / off | 0 / 2 | 0 / 2 | 0 / 0 |
+| End of speech to first audio, p50 (p95), Speechmatics | 4,971 (7,050) ms | 3,968 (5,382) ms | 3,753 (5,659) ms |
+| The same with a streaming TTS (Rasa: Deepgram TTS only) | 3,170 (4,941) ms | not run | not run |
+| The same with Deepgram both ways | 2,104 (4,707) ms | 2,732 (4,106) ms | 3,043 (4,598) ms |
+| Passed, of 17, Deepgram both ways | 11 | 14 | 14 |
 | Model calls, input tokens | 178, 391,498 | 86, 110,816 | 73, 113,308 |
 | Spend for 17 calls (model + speech-to-text) | 2.01 USD | 0.70 USD | 0.70 USD |
 | Voice loop written (counted lines) | 58, YAML configuration | 315, code | 261, code |
-| Voice adapter (Speechmatics) | 213 | 251 (shared) | 251 (shared) |
+| Voice adapter: Speechmatics / Deepgram | 213 / 0 (built in) | 251 / 184 (shared) | 251 / 184 (shared) |
 | Agent logic (restated shared text left out) | 137 (94) | 64 | 115 |
 | Refill guard / guard diff from guard-off, docstrings excluded | 47 / 85 | 112 / 162 | 92 / 143 |
 
@@ -105,16 +120,25 @@ causes:
   medicine corrected at the read-back one turn later than the script allows.
   With the guard removed, all three still passed the six adversarial calls,
   because the model complied. Six harder calls
-  (`shared/spec/conversations-adversarial-2.json`) did separate them: guard
-  off, the model sent in the turn it selected, with no read-back, in 2 of 18
-  calls and acted for a second patient twice. Guard on, none of that happened
-  in 18 calls.
+  (`shared/spec/conversations-adversarial-2.json`), run twice, did separate
+  them. Guard off, the model sent in the turn it selected, with no
+  read-back, in 3 of 36 calls (once per framework), and sent for a second
+  patient 4 times (Rasa and LangGraph). Guard on, no second-patient send,
+  and one violation in 36 calls. In that Rasa call, speech-to-text split the
+  caller's first sentence, and Mantle took a "Yes, please." spoken before the
+  read-back as its answer.
 - **Rasa wrote the least and spent the most.** Its voice loop and barge-in
-  path are the runtime. It made more than twice the model calls, because of one call
-  per tool, engine routing and confirmation calls, fact discovery, and 51
-  calls after hangups that nobody hears. Its first audio came about 1 s later,
-  because Mantle streams the model only into a streaming-text TTS engine and
-  Speechmatics' preview TTS is not one.
+  path are the runtime. It made more than twice the model calls, because of
+  one call per tool, engine routing and confirmation calls, fact discovery,
+  and calls after hangups that nobody hears. That stayed true on Deepgram.
+- **Rasa's slower first audio came from the TTS engine.** Mantle streams
+  the model only into a TTS engine that takes streaming text, and
+  Speechmatics' preview TTS does not. With Rasa's built-in Deepgram TTS, its
+  first audio came 1.8 s sooner. With Deepgram both ways for all three, Rasa
+  was first at p50. Deepgram's transcripts had no medicine vocabulary and
+  were worse, though. Rasa's run passed 11 of 17 against 14 and 14: three
+  of its failures were mishearings the other two runs did not get, and one
+  was a date written as "11/02/1979" that its model read as 11 February.
 
 ## Where the comparison lives
 

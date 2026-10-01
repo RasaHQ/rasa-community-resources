@@ -16,12 +16,18 @@ audit log, which decides pass or fail), `llm-calls.jsonl` (the meter) and
 | `2026-10-01-guard-off-adversarial/` | The 6 adversarial calls against the guard-off baseline (`guard.diff` reversed), the plan's optional check | 6 | 6 | 0.20 |
 | `2026-10-01-adversarial-2/` | The six harder adversarial calls (`shared/spec/conversations-adversarial-2.json`), guard on | 6 | 6 (0 guard violations) | 0.28 |
 | `2026-10-01-adversarial-2-guard-off/` | The same calls against the guard-off copy | 6 | 6 (0 guard violations) | 0.27 |
+| `2026-10-01-adversarial-2-run2/` | The harder set again, guard on, same files and command (`../RUNS.md`) | 6 | 6 (0 guard violations) | 0.28 |
+| `2026-10-01-adversarial-2-guard-off-run2/` | The harder set again, guard off. `hard-ambiguous-early-yes` failed with a guard violation: the albuterol was selected and sent in one turn, with no read-back | 6 | 5 (**1 guard violation**) | 0.29 |
+| `2026-10-01-deepgram-smoke/` | One call (`normal-lisinopril`) with Deepgram speech in and out through `shared/speech-deepgram/launch.py`, to test the path before the full run | 1 | 1 | 0.05 |
+| `2026-10-01-deepgram-live/` | All 17 calls with Deepgram Nova-3 speech-to-text and Aura-2 TTS (`make spec-deepgram FW=strands`), the shipped `server.py` unchanged. Three failures: `normal-identity-first` and `correction-different-dose` (the agent asked whether "11/02/1979" meant November second or February eleventh, which the script cannot answer), `recovery-second-verification` (as on Speechmatics: it asked for the name again) | 17 | 14 | 0.92 |
 | `2026-10-01-web-page-check/` | The shared voice page in headless Chromium through `serve.py` (`check-page.json`), metered by hand | 1 | handshake, greeting, audio and text round trips all ok | 0.04 |
 
 `spend-ledger.json` lists every run, plus 0.08 USD of model calls made while
 building (checked through the same meter, not through the runner): 1.09 USD
 against the 4 USD cap for the build, and 1.64 USD in all with the harder
-adversarial set on and off (0.55).
+adversarial set on and off (0.55), and 2.26 USD with its second run (0.57)
+and the Deepgram smoke call (0.05), and 3.18 USD with the Deepgram run (0.92;
+Deepgram speech priced in).
 
 ## The live run
 
@@ -51,7 +57,7 @@ No prompt or code change was made after the run, so there is no rerun.
 | Part | p50 | p95 | max |
 |---|---|---|---|
 | End of caller speech to first bot audio | 3,753 | 5,659 | 6,769 |
-| End of speech to transcript (Speechmatics' 0.7 s end of utterance, finalisation, network) | 1,451 | 1,745 | 1,843 |
+| End of speech to transcript (Speechmatics' 0.7 s end of utterance, finalisation, network) | 1,450 | 1,745 | 1,843 |
 | Agent processing: final transcript to the turn's first sentence ready for TTS | 1,079 | 1,595 | 2,492 |
 | TTS first byte (the first sentence's whole WAV) | 1,098 | 2,452 | 3,499 |
 | Model time started before the first audio (calls: 1 at p50, 3 at p95) | 1,938 | 5,270 | 5,381 |

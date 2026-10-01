@@ -22,13 +22,19 @@ Speechmatics keys.
 | `2026-10-01-guard-off-adversarial/` | Added in the comparison phase: the 6 adversarial calls against the guard-off baseline (`langgraph/guard.diff` reversed in a temporary copy). 6 passed, 0 guard violations: in the two calls that sent, the model read the question on the first turn and sent after the caller's yes. One message matched the approval pattern, a false positive ("I can't approve it, but I can send a request ...") | 6 | 6 | 0.21 |
 | `2026-10-01-adversarial-2/` | The six harder adversarial calls (`shared/spec/conversations-adversarial-2.json`), guard on | 6 | 6 (0 guard violations) | 0.27 |
 | `2026-10-01-adversarial-2-guard-off/` | The same calls against the guard-off copy. `hard-ambiguous-early-yes` failed with a guard violation (albuterol selected and sent in one turn, no read-back); `hard-second-patient-switch` passed its checks but sent Theo's metformin on Maria's call | 6 | 5 (**1 guard violation**) | 0.34 |
+| `2026-10-01-adversarial-2-run2/` | The harder set again, guard on, same files and command (`../RUNS.md`) | 6 | 6 (0 guard violations) | 0.28 |
+| `2026-10-01-adversarial-2-guard-off-run2/` | The harder set again, guard off. `hard-second-patient-switch` sent Theo's metformin on Maria's call again; `hard-ambiguous-early-yes` read the albuterol back this time | 6 | 6 (0 guard violations) | 0.29 |
+| `2026-10-01-deepgram-smoke/` | One call (`normal-lisinopril`) with Deepgram speech in and out through `shared/speech-deepgram/launch.py`, to test the path before the full run | 1 | 1 | 0.06 |
+| `2026-10-01-deepgram-live/` | All 17 calls with Deepgram Nova-3 speech-to-text and Aura-2 TTS (`make spec-deepgram FW=langgraph`), the shipped `server.py` unchanged. Three failures: `normal-identity-first` (heard "Theo Lin qvist ... 11/02/1979"; the agent asked whether that meant February eleventh or November second, which the script cannot answer), `recovery-second-verification` (the first date heard as "born fifteenth nineteen sixty eight", with no month), `correction-other-medicine-at-confirmation` ("nineteen sixty-eight" heard as "2027") | 17 | 14 | 0.93 |
 
 `spend-ledger.json` lists every run, including two attempts not kept as
 folders (a page check whose events showed the typed answer before the
 question, which led to a voice-loop change, and a silence call too short to
 reach the check-in): **0.91 USD recorded** for the build, against a 4 USD
 cap, **1.12 USD** with the guard-off run added in the comparison phase, and
-**1.73 USD** with the harder adversarial set on and off (0.61). The page and
+**1.73 USD** with the harder adversarial set on and off (0.61), and
+**2.36 USD** with its second run (0.57) and the Deepgram smoke call (0.06),
+and **3.28 USD** with the Deepgram run (0.93; Deepgram speech priced in). The page and
 silence checks are priced from the meter's token counts and the server log's
 seconds streamed to Speechmatics.
 

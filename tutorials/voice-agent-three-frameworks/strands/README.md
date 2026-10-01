@@ -188,6 +188,7 @@ Mac as the Rasa runs.
 |---|---|---|---|---|
 | `2026-10-01-speechmatics-live` (all 17 calls; the headline, and the only full run) | 17 | 16 | 0 | 0.70 (model 0.59, speech-to-text 0.10) |
 | `2026-10-01-guard-off-adversarial` (the 6 adversarial calls, guard off) | 6 | 6 | 0 | 0.20 |
+| `2026-10-01-deepgram-live` (all 17 calls on Deepgram speech in and out, through `../shared/speech-deepgram`; this folder unchanged) | 17 | 14 | 0 | 0.92 (model 0.56, speech-to-text 0.11, TTS 0.24) |
 
 By kind: normal 4 of 4, adversarial 6 of 6, recovery 2 of 3, correction 4 of
 4. The failure, `recovery-second-verification`, is the agent's: after a
@@ -202,7 +203,7 @@ there is no rerun. The details are in
 | Part | ms |
 |---|---|
 | End of caller speech to first bot audio | 3,753 (5,659) |
-| End of speech to transcript | 1,451 (1,745) |
+| End of speech to transcript | 1,450 (1,745) |
 | Agent processing: final transcript to the first sentence ready for TTS | 1,079 (1,595) |
 | TTS first byte (one sentence) | 1,098 (2,452) |
 | Model calls per turn | 2 (3) |
@@ -210,8 +211,11 @@ there is no rerun. The details are in
 The first audio was a filler in 29 of 39 turns.
 
 **Spend:** 0.6952 USD for the full run, 73 model calls, all to
-`/v1/responses`. 1.09 USD across everything in the ledger, including 0.08 of
-model calls while building.
+`/v1/responses`. 1.09 USD across everything in the ledger for the build,
+including 0.08 of model calls while building; 3.18 USD with the comparison's
+harder-set and Deepgram runs. On Deepgram the first audio came at 3,043 ms
+at p50 (3,753 on Speechmatics); see
+[`../COMPARISON.md`](../COMPARISON.md#deepgram-in-and-out-all-three).
 
 **Voice behaviour:** barge-in not delivered; silence check-in delivered in
 code, not tested; fillers, turn-splitting handling, markers, latency fields

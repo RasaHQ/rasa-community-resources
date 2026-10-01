@@ -98,6 +98,8 @@ All from [`../results/rasa/`](../results/rasa/), on one machine.
 | `2026-09-30-speechmatics-live` (first run, history) | before the change | 17 | 12 | 0 | 1.84 |
 | `2026-09-30-speechmatics-rerun-after-prompt-fix` | after | 5 | 4 | 0 | 0.63 |
 | `2026-10-01-guard-off-adversarial` (guard-off baseline, the 6 adversarial calls) | after | 6 | 6 | 0 | 0.48 |
+| `2026-10-01-deepgram-tts-streaming` (variant: built-in Deepgram TTS, model streamed) | after | 17 | 16 | 0 | 2.17 (model 1.80, speech-to-text 0.11, TTS 0.26) |
+| `2026-10-01-deepgram-live` (variant: built-in Deepgram ASR and TTS) | after | 17 | 11 | 0 | 1.86 (model 1.51, speech-to-text 0.11, TTS 0.25) |
 
 **The headline run's one failure** is `correction-other-medicine-at-confirmation`,
 as in the first run. At the read-back the caller names another medicine;
@@ -131,6 +133,18 @@ engine that accepts streaming text, and this Speechmatics engine takes one
 utterance per request. The first audio was a Mantle filler in 35 of 39
 turns.
 
+**With a streaming TTS.** The variant in
+[`../variants/rasa-deepgram-tts.integrations.yml`](../variants/rasa-deepgram-tts.integrations.yml)
+changes only the two `tts:` blocks to Rasa's built-in Deepgram engine, whose
+`streaming_input` is `True`. It is run with `make spec-rasa-variant
+VARIANT=deepgram-tts` from the tutorial folder, which copies this folder and
+leaves it unchanged. Mantle then streamed 141 of 173 model calls (all but
+fact discovery). End of speech to first audio fell from 4,971 to 3,170 ms at
+p50, agent processing from 2,295 to 965 ms and TTS first byte from 1,187 to
+274 ms. Speech-to-text was unchanged (1,632 ms). With Deepgram both ways
+(`VARIANT=deepgram`, no custom engine at all) it was 2,104 ms. See
+[`../COMPARISON.md`](../COMPARISON.md#rasa-with-a-streaming-tts).
+
 **Where the 178 model calls go**, labelled by the Mantle function that made
 each one (`../shared/spec/rasa_call_purposes.py`,
 `python3 ../shared/spec/rasa_call_breakdown.py ../results/rasa/2026-10-01-speechmatics-live-shared-prompt`):
@@ -161,7 +175,7 @@ published price, so it is not priced.
 
 **No tuned run.** This release has no setting to turn off fact discovery or
 the `/session_end` turn, and model streaming needs a TTS engine that accepts
-streaming text; see [`../COMPARISON.md`](../COMPARISON.md#why-there-is-no-tuned-rasa-run).
+streaming text (a built-in one, as measured above, or custom code); see [`../COMPARISON.md`](../COMPARISON.md#why-there-is-no-tuned-rasa-run).
 
 ## Voice behaviour
 

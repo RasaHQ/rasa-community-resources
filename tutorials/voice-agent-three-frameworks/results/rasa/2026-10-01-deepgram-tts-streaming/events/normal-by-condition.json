@@ -1,0 +1,1662 @@
+{
+ "sender_id": "rasa-normal-by-condition-20261001T123157",
+ "slots": {
+  "session_started_metadata": {
+   "call_id": "rasa-normal-by-condition-20261001T123157",
+   "user_phone": "local",
+   "bot_phone": "local",
+   "user_name": null,
+   "user_host": null,
+   "bot_host": null,
+   "direction": null,
+   "stream_id": "rasa-normal-by-condition-20261001T123157",
+   "language": null,
+   "extra": null
+  },
+  "consecutive_silence_timeouts": 0.0,
+  "project.verified_patient_id": "CC-PT-1001",
+  "project.patient_first_name": "Maria",
+  "request_refill.selected_record_id": "CC-RX-2041",
+  "request_refill.selected_medication_label": "lisinopril ten milligram tablets, one tablet once a day",
+  "system.pending_tool_confirmation": null,
+  "system.__discovered__": [
+   {
+    "key": "full_name",
+    "value": "Maria Alvarez",
+    "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "date_of_birth",
+    "value": "1968-03-14",
+    "description": "The caller stated their date of birth for patient verification.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_refill_type",
+    "value": "blood pressure pills",
+    "description": "The caller said they need a refill of their blood pressure medication.",
+    "turn_idx": 2,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "confirmed_lisinopril_refill_request",
+    "value": "Yes, that's the one. Please send it.",
+    "description": "Customer confirmed the selected recorded blood pressure medication and asked for the refill request to be submitted.",
+    "turn_idx": 4,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": "request_refill",
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "/session_end",
+  "message_id": "5131ac7151354a24800b8333257605e5",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790858154.848614,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "0Y47TDDV",
+   "skill_id": "default_completed",
+   "frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "P8YUR813",
+   "skill_id": "default_completed",
+   "block_id": "main",
+   "step_id": "ask_continue",
+   "frame_type": "regular",
+   "type": "ordered_block"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790858096.634269,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   }
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858096.63467,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": null,
+     "step": null,
+     "frame_id": null,
+     "arguments": {},
+     "position": 1,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "session_started_metadata",
+   "value": {
+    "call_id": "rasa-normal-by-condition-20261001T123157",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-normal-by-condition-20261001T123157",
+    "language": null,
+    "extra": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790858096.635079,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790858096.6351008,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790858096.6344829,
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790858096.635116,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790858096.635129,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"PUIUT0Y3\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"1CJLW7YQ\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"greet\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858096.6353421,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790858096.635363,
+   "metadata": {
+    "call_id": "rasa-normal-by-condition-20261001T123157",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-normal-by-condition-20261001T123157",
+    "language": null,
+    "extra": null,
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "/session_start",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "/session_start",
+    "message_id": "7fb6e70151fe413e96d2085f92a8dd25",
+    "metadata": {
+     "call_id": "rasa-normal-by-condition-20261001T123157",
+     "user_phone": "local",
+     "bot_host": null,
+     "stream_id": "rasa-normal-by-condition-20261001T123157",
+     "user_host": null,
+     "direction": null,
+     "language": null,
+     "user_name": null,
+     "extra": null,
+     "bot_phone": "local"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "7fb6e70151fe413e96d2085f92a8dd25",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790858096.638664,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790858096.649353,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790858096.6493921,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790858096.649411,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790858096.6494322,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790858096.649838,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790858112.9776561,
+   "metadata": {
+    "call_id": "rasa-normal-by-condition-20261001T123157",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-normal-by-condition-20261001T123157",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Hi. This is Maria Alvarez, born March 14th, 1968. I need a refill of my blood pressure pills."
+    ],
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "Hi. This is Maria Alvarez, born March 14th, 1968. I need a refill of my blood pressure pills.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Hi. This is Maria Alvarez, born March 14th, 1968. I need a refill of my blood pressure pills.",
+    "message_id": "1fe7b9109e1f49559a868c694c2b670b",
+    "metadata": {
+     "call_id": "rasa-normal-by-condition-20261001T123157",
+     "user_phone": "local",
+     "bot_host": null,
+     "stream_id": "rasa-normal-by-condition-20261001T123157",
+     "user_host": null,
+     "direction": null,
+     "language": null,
+     "merged_transcripts": [
+      "Hi. This is Maria Alvarez, born March 14th, 1968. I need a refill of my blood pressure pills."
+     ],
+     "user_name": null,
+     "extra": null,
+     "bot_phone": "local"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "1fe7b9109e1f49559a868c694c2b670b",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790858115.603771,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_time_to_first_token_ms": 916.6454580008576,
+    "llm_total_time_ms": 2620.258332999583,
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "Okay, I\u2019ll bring up your refill request now.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790858115.605782,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "flow_id": "request_refill",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790858115.60583,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790858112.9776561,
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790858115.6058528,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"3NWVGFOA\", \"skill_id\": \"request_refill\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790858115.606272,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790858115.606307,
+   "metadata": {
+    "tool_call_id": "call_cbbxMg7PK1kuv1Id6kYF8zBr",
+    "tool_batch_id": "0-call_cbbxMg7PK1kuv1Id6kYF8zBr",
+    "skill_id": "request_refill",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858117.782145,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 21,
+     "tool_call_id": "call_TPYz8C107sXAsU3Z5cpFvnud"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "project.verified_patient_id",
+   "value": "CC-PT-1001",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858117.7822258,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 22,
+     "tool_call_id": "call_TPYz8C107sXAsU3Z5cpFvnud"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "project.verified_patient_id",
+   "value": "CC-PT-1001",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858117.782315,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 23,
+     "tool_call_id": "call_TPYz8C107sXAsU3Z5cpFvnud"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "project.patient_first_name",
+   "value": "Maria",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858117.782336,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 24,
+     "tool_call_id": "call_TPYz8C107sXAsU3Z5cpFvnud"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "project.patient_first_name",
+   "value": "Maria",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790858117.7828438,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Maria Alvarez",
+    "date_of_birth": "1968-03-14"
+   },
+   "result": "{\"status\": \"verified\", \"first_name\": \"Maria\", \"next_step\": \"Ask which recorded medication the caller wants a refill request for, if they have not said.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790858117.782874,
+   "metadata": {
+    "tool_call_id": "call_TPYz8C107sXAsU3Z5cpFvnud",
+    "tool_batch_id": "1-call_TPYz8C107sXAsU3Z5cpFvnud",
+    "skill_id": "request_refill",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Maria Alvarez",
+    "date_of_birth": "1968-03-14"
+   },
+   "source": "local",
+   "result": "{\"status\": \"verified\", \"first_name\": \"Maria\", \"next_step\": \"Ask which recorded medication the caller wants a refill request for, if they have not said.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858118.882918,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {
+      "medication_name": "blood pressure pills"
+     },
+     "position": 27,
+     "tool_call_id": "call_VppHcIYiIEY5ZNWsgnlZv3jx"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "request_refill.selected_record_id",
+   "value": "CC-RX-2041",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858118.8830311,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {
+      "medication_name": "blood pressure pills"
+     },
+     "position": 28,
+     "tool_call_id": "call_VppHcIYiIEY5ZNWsgnlZv3jx"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "request_refill.selected_record_id",
+   "value": "CC-RX-2041",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858118.88324,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {
+      "medication_name": "blood pressure pills"
+     },
+     "position": 29,
+     "tool_call_id": "call_VppHcIYiIEY5ZNWsgnlZv3jx"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "request_refill.selected_medication_label",
+   "value": "lisinopril ten milligram tablets, one tablet once a day",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858118.8832798,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {
+      "medication_name": "blood pressure pills"
+     },
+     "position": 30,
+     "tool_call_id": "call_VppHcIYiIEY5ZNWsgnlZv3jx"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "request_refill.selected_medication_label",
+   "value": "lisinopril ten milligram tablets, one tablet once a day",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790858118.884186,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "select_medication",
+   "arguments": {
+    "medication_name": "blood pressure pills"
+   },
+   "result": "{\"status\": \"selected\", \"record_id\": \"CC-RX-2041\", \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"confirmation_question\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\", \"next_step\": \"Call send_refill_request with this record_id. The recorded medication is read back and the caller is asked to confirm before anything is sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790858118.884237,
+   "metadata": {
+    "tool_call_id": "call_VppHcIYiIEY5ZNWsgnlZv3jx",
+    "tool_batch_id": "2-call_VppHcIYiIEY5ZNWsgnlZv3jx",
+    "skill_id": "request_refill",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "select_medication",
+   "arguments": {
+    "medication_name": "blood pressure pills"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"record_id\": \"CC-RX-2041\", \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"confirmation_question\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\", \"next_step\": \"Call send_refill_request with this record_id. The recorded medication is read back and the caller is asked to confirm before anything is sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858120.202388,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 33,
+     "tool_call_id": "call_nAWY6b9jsBERyPwEsAqtzkS7"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "send_refill_request",
+    "tool_args": {
+     "record_id": "CC-RX-2041"
+    },
+    "confirmation_ask": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+    "utter_on_user_denial": "utter_refill_request_not_sent",
+    "skill_id": "request_refill",
+    "frame_id": "3NWVGFOA",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858120.2024782,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 34,
+     "tool_call_id": "call_nAWY6b9jsBERyPwEsAqtzkS7"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "send_refill_request",
+    "tool_args": {
+     "record_id": "CC-RX-2041"
+    },
+    "confirmation_ask": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+    "utter_on_user_denial": "utter_refill_request_not_sent",
+    "skill_id": "request_refill",
+    "frame_id": "3NWVGFOA",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790858120.2033138,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790858120.2033951,
+   "metadata": {
+    "tool_call_id": "call_nAWY6b9jsBERyPwEsAqtzkS7",
+    "tool_batch_id": "3-call_nAWY6b9jsBERyPwEsAqtzkS7",
+    "skill_id": "request_refill",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790858120.2036831,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_refill_request",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790858120.221674,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 1055.2084579994698,
+     "first_agent_response": {
+      "llm_time_to_first_token_ms": 916.6454580008576,
+      "llm_total_generation_ms": 2620.258332999583,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858123.341524,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 39,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858123.341603,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 40,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858123.3416672,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 41,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller stated their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858123.341682,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 42,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller stated their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858123.34173,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 43,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller stated their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_type",
+     "value": "blood pressure pills",
+     "description": "The caller said they need a refill of their blood pressure medication.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858123.341745,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 44,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller stated their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_type",
+     "value": "blood pressure pills",
+     "description": "The caller said they need a refill of their blood pressure medication.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790858135.623393,
+   "metadata": {
+    "call_id": "rasa-normal-by-condition-20261001T123157",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-normal-by-condition-20261001T123157",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Yes, that's the one. Please send it ."
+    ],
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "Yes, that's the one. Please send it .",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes, that's the one. Please send it .",
+    "message_id": "a351fcd91e6748fc864377231290efcf",
+    "metadata": {
+     "call_id": "rasa-normal-by-condition-20261001T123157",
+     "user_phone": "local",
+     "bot_host": null,
+     "stream_id": "rasa-normal-by-condition-20261001T123157",
+     "user_host": null,
+     "direction": null,
+     "language": null,
+     "merged_transcripts": [
+      "Yes, that's the one. Please send it ."
+     ],
+     "user_name": null,
+     "extra": null,
+     "bot_phone": "local"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "a351fcd91e6748fc864377231290efcf",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790858137.023693,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_time_to_first_token_ms": 868.1591249987832,
+    "llm_total_time_ms": 1389.973084000303,
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "Right, I\u2019ll submit that request for review.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858137.02781,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 47,
+     "tool_call_id": "call_o1uxxALp49N7fH4fAKDJgiPL"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790858137.02791,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "3NWVGFOA",
+     "arguments": {},
+     "position": 48,
+     "tool_call_id": "call_o1uxxALp49N7fH4fAKDJgiPL"
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790858137.029388,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"submission_key\": \"CC-SUB-9769DFC1\", \"request_reference\": \"RQ-7401\", \"spoken_reference\": \"R Q, seven four zero one\", \"review_status\": \"awaiting prescribing team review\", \"medication\": {\"record_id\": \"CC-RX-2041\", \"name\": \"lisinopril\", \"strength\": \"10 mg\", \"form\": \"tablet\", \"sig\": \"one tablet once a day\"}, \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"approved\": null, \"prescription_changed\": false, \"dose_instruction\": null, \"effects\": 1, \"replay\": false, \"facts\": {\"patient_identity_verified\": true, \"recorded_medication_selected\": true, \"caller_confirmed_medication\": true, \"review_request_acknowledged\": true}, \"review_window\": \"The prescribing team reviews refill requests within two business days and calls or texts the patient with the outcome.\", \"next_step\": \"Give the spoken_reference and say the request is awaiting prescribing team review. It is a request, not an approval or a renewal: never say it is approved, renewed, refilled, sent to a pharmacy or ready.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790858137.029423,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "request_refill",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "source": "local",
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"submission_key\": \"CC-SUB-9769DFC1\", \"request_reference\": \"RQ-7401\", \"spoken_reference\": \"R Q, seven four zero one\", \"review_status\": \"awaiting prescribing team review\", \"medication\": {\"record_id\": \"CC-RX-2041\", \"name\": \"lisinopril\", \"strength\": \"10 mg\", \"form\": \"tablet\", \"sig\": \"one tablet once a day\"}, \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"approved\": null, \"prescription_changed\": false, \"dose_instruction\": null, \"effects\": 1, \"replay\": false, \"facts\": {\"patient_identity_verified\": true, \"recorded_medication_selected\": true, \"caller_confirmed_medication\": true, \"review_request_acknowledged\": true}, \"review_window\": \"The prescribing team reviews refill requests within two business days and calls or texts the patient with the outcome.\", \"next_step\": \"Give the spoken_reference and say the request is awaiting prescribing team review. It is a request, not an approval or a renewal: never say it is approved, renewed, refilled, sent to a pharmacy or ready.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790858137.029724,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"submission_key\": \"CC-SUB-9769DFC1\", \"request_reference\": \"RQ-7401\", \"spoken_reference\": \"R Q, seven four zero one\", \"review_status\": \"awaiting prescribing team review\", \"medication\": {\"record_id\": \"CC-RX-2041\", \"name\": \"lisinopril\", \"strength\": \"10 mg\", \"form\": \"tablet\", \"sig\": \"one tablet once a day\"}, \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"approved\": null, \"prescription_changed\": false, \"dose_instruction\": null, \"effects\": 1, \"replay\": false, \"facts\": {\"patient_identity_verified\": true, \"recorded_medication_selected\": true, \"caller_confirmed_medication\": true, \"review_request_acknowledged\": true}, \"review_window\": \"The prescribing team reviews refill requests within two business days and calls or texts the patient with the outcome.\", \"next_step\": \"Give the spoken_reference and say the request is awaiting prescribing team review. It is a request, not an approval or a renewal: never say it is approved, renewed, refilled, sent to a pharmacy or ready.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790858137.0297441,
+   "metadata": {
+    "tool_call_id": "call_o1uxxALp49N7fH4fAKDJgiPL",
+    "tool_batch_id": "0-call_o1uxxALp49N7fH4fAKDJgiPL",
+    "skill_id": "request_refill",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"submission_key\": \"CC-SUB-9769DFC1\", \"request_reference\": \"RQ-7401\", \"spoken_reference\": \"R Q, seven four zero one\", \"review_status\": \"awaiting prescribing team review\", \"medication\": {\"record_id\": \"CC-RX-2041\", \"name\": \"lisinopril\", \"strength\": \"10 mg\", \"form\": \"tablet\", \"sig\": \"one tablet once a day\"}, \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"approved\": null, \"prescription_changed\": false, \"dose_instruction\": null, \"effects\": 1, \"replay\": false, \"facts\": {\"patient_identity_verified\": true, \"recorded_medication_selected\": true, \"caller_confirmed_medication\": true, \"review_request_acknowledged\": true}, \"review_window\": \"The prescribing team reviews refill requests within two business days and calls or texts the patient with the outcome.\", \"next_step\": \"Give the spoken_reference and say the request is awaiting prescribing team review. It is a request, not an approval or a renewal: never say it is approved, renewed, refilled, sent to a pharmacy or ready.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790858138.071378,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_time_to_first_token_ms": 708.3838329999708,
+    "llm_total_time_ms": 1034.0534160004609,
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "Your request reference is R Q, seven four zero one. It is awaiting prescribing team review.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790858138.074102,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 1542.6607919998787,
+     "first_agent_response": {
+      "llm_time_to_first_token_ms": 868.1591249987832,
+      "llm_total_generation_ms": 1389.973084000303,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790858147.284331,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "/session_end",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "/session_end",
+    "message_id": "5131ac7151354a24800b8333257605e5",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "5131ac7151354a24800b8333257605e5",
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790858150.068136,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "flow_id": "request_refill",
+   "step_id": "autonomous",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790858150.068264,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790858150.068289,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790858150.068717,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "flow_id": "default_completed__main"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790858150.0687401,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790858147.284331,
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790858150.068757,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "skill_id": "default_completed",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790858150.06877,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"0Y47TDDV\", \"skill_id\": \"default_completed\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"P8YUR813\", \"skill_id\": \"default_completed\", \"block_id\": \"main\", \"step_id\": \"ask_continue\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790858150.069288,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790858150.06932,
+   "metadata": {
+    "tool_call_id": "call_CT6NNspLrkbGejJr4Do6zJAi",
+    "tool_batch_id": "0-call_CT6NNspLrkbGejJr4Do6zJAi",
+    "skill_id": "default_completed",
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "source": "local",
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790858150.9719949,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_ask_wants_to_continue",
+    "llm_time_to_first_token_ms": 838.0300419994455,
+    "llm_total_time_ms": 895.4221250005503,
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "text": "Can I help with anything else?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790858150.974942,
+   "metadata": {
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790858154.848554,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "P8YUR813",
+     "arguments": {},
+     "position": 67,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller stated their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_type",
+     "value": "blood pressure pills",
+     "description": "The caller said they need a refill of their blood pressure medication.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "confirmed_lisinopril_refill_request",
+     "value": "Yes, that's the one. Please send it.",
+     "description": "Customer confirmed the selected recorded blood pressure medication and asked for the refill request to be submitted.",
+     "turn_idx": 4,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790858154.848614,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "P8YUR813",
+     "arguments": {},
+     "position": 68,
+     "tool_call_id": null
+    },
+    "model_id": "9505d412d1d6407494739f0a343fee27",
+    "model_name": "20261001-133248-worried-mileage.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for the Cedar Clinic prescription refill request.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller stated their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_type",
+     "value": "blood pressure pills",
+     "description": "The caller said they need a refill of their blood pressure medication.",
+     "turn_idx": 2,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "confirmed_lisinopril_refill_request",
+     "value": "Yes, that's the one. Please send it.",
+     "description": "Customer confirmed the selected recorded blood pressure medication and asked for the refill request to be submitted.",
+     "turn_idx": 4,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  }
+ ],
+ "latest_input_channel": "browser_audio",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790858096.634269,
+ "current_session_id": "c0eee0c0-ef49-4d36-9d33-bd752dd6eb8f"
+}

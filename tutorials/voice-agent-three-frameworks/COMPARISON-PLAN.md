@@ -12,7 +12,7 @@ this file, and a change to it applies to all three.
 
 | | Setting | Where it lives |
 |---|---|---|
-| Model | `gpt-5.5-2026-04-23`, `reasoning_effort: low`, through OpenAI | Rasa: `rasa/integrations.yml`. Record which OpenAI API each version calls (the meter logs the path; Rasa's LiteLLM client called `/v1/responses`, not streamed) |
+| Model | `gpt-5.5-2026-04-23`, `reasoning_effort: low`, through OpenAI | Rasa: `rasa/integrations.yml`. Record which OpenAI API each version calls (the meter logs the path; in Rasa's headline run, LiteLLM sent the orchestrator and fact-discovery calls to `/v1/responses` and the 19 response rephrasings to `/v1/chat/completions`, none streamed) |
 | Domain | `cedar_clinic`: records, matching, receipts, the contract's rules, the confirmation rule, the audit log | [`shared/clinic/`](shared/clinic/), installed unchanged |
 | Tools the model sees | The five in `cedar_clinic.tools.TOOL_SPECS`, names, descriptions and parameters verbatim | Same |
 | Instructions | `cedar_clinic.instructions`: `PERSONA`, `RULES`, `VOICE_RULES`, `GREETING` and the confirmation question verbatim; `PROCEDURE` reworded only to name the framework's own mechanism | Same |
@@ -21,7 +21,7 @@ this file, and a change to it applies to all three.
 | Barge-in | Off (Rasa's default on 3.21.0.dev5; beta when on). A version may add it, but the headline run is with it off | Rasa: `interruptions.enabled: false` |
 | Calls | The 17 calls and caller WAVs in [`shared/spec/`](shared/spec/) | Same |
 | Judge | `shared/spec/run_spec.py`, reading the clinic's audit log | Same |
-| Spend cap | 4 USD per framework for the live run, model plus Speechmatics, in `results/<framework>/spend-ledger.json` | Same |
+| Spend cap | 4 USD per run (`--budget-usd`), model plus priced speech; every run is recorded in `results/<framework>/spend-ledger.json` | Same |
 
 Library versions to pin for the other two (checked 2026-09-30): langgraph
 1.2.12, langchain 1.4.3 (`create_agent`; `create_react_agent` is
@@ -68,6 +68,16 @@ by a server field whose definition PROTOCOL.md fixes:
 Report also whether the first audio of a turn is a filler (Rasa speaks
 fillers while a tool runs; a version without them reaches its first audio
 later for the same model time).
+
+Added after the first runs, to split the latency gap into vendor, streaming
+and framework: the 17 calls once more with Rasa's built-in Deepgram TTS and
+Speechmatics speech-to-text (`make spec-rasa-variant VARIANT=deepgram-tts`),
+and once more for all three with Deepgram for both directions (Rasa's
+built-in engines; `shared/speech-deepgram` behind `cedar_speech`'s interface
+for the other two). Neither changes a shipped folder. Deepgram usage is
+priced from its published rates (`shared/spec/speech-prices/`). Results are
+in `COMPARISON.md`, "Rasa with a streaming TTS" and "Deepgram in and out,
+all three".
 
 ### 3. Code per concern
 
@@ -159,8 +169,11 @@ the read-back, not the classification.
 - Added after the first runs: six harder adversarial calls
   (`shared/spec/conversations-adversarial-2.json`), guard on and guard off
   in all three, with their own 3 USD budget, because the first six could not
-  separate a guard from a compliant model. Results are in `COMPARISON.md`,
-  "The harder adversarial set".
+  separate a guard from a compliant model. They were run twice per
+  framework per condition (the second time with another 3 USD budget), so
+  each count is over 12 calls per framework and 36 per condition; reported
+  as counts, not rates. Results are in `COMPARISON.md`, "The harder
+  adversarial set"; the launch commands are in `results/RUNS.md`.
 - Optional, if the budget allows: run the 6 adversarial calls against the
   guard-off baseline too, to show whether the guard is what stopped them.
 

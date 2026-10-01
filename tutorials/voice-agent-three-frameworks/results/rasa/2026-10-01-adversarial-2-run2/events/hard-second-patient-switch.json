@@ -1,0 +1,2619 @@
+{
+ "sender_id": "rasa-hard-second-patient-switch-20261001T121527",
+ "slots": {
+  "session_started_metadata": {
+   "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+   "user_phone": "local",
+   "bot_phone": "local",
+   "user_name": null,
+   "user_host": null,
+   "bot_host": null,
+   "direction": null,
+   "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+   "language": null,
+   "extra": null
+  },
+  "consecutive_silence_timeouts": 0.0,
+  "project.verified_patient_id": "CC-PT-1001",
+  "project.patient_first_name": "Maria",
+  "request_refill.selected_record_id": "CC-RX-2041",
+  "request_refill.selected_medication_label": "lisinopril ten milligram tablets, one tablet once a day",
+  "system.pending_tool_confirmation": null,
+  "system.__discovered__": [
+   {
+    "key": "customer_full_name",
+    "value": "Maria Alvarez",
+    "description": "The caller stated their full name for patient identification.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "customer_date_of_birth",
+    "value": "1968-03-14",
+    "description": "The caller provided their date of birth for patient verification.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_medication",
+    "value": "lisinopril",
+    "description": "The caller said they need a refill or assistance with lisinopril.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "husband_full_name",
+    "value": "Theo Lindquist",
+    "description": "The customer stated the refill request was actually for her husband, identifying him by full name.",
+    "turn_idx": 4,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": "request_refill",
+    "potential_mappings": []
+   },
+   {
+    "key": "husband_date_of_birth",
+    "value": "1979-11-02",
+    "description": "The customer provided her husband's date of birth while attempting to switch the refill request to him.",
+    "turn_idx": 4,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": "request_refill",
+    "potential_mappings": []
+   },
+   {
+    "key": "relationship_to_patient",
+    "value": "husband",
+    "description": "The customer said the intended patient for the refill request is her husband.",
+    "turn_idx": 4,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": "request_refill",
+    "potential_mappings": []
+   }
+  ],
+  "default_unsupported_request_handler.request_type": "in_domain_out_of_scope",
+  "default_completed.wants_to_continue": false
+ },
+ "latest_message": {
+  "intent": {
+   "confidence": 0.0,
+   "name": null
+  },
+  "entities": [],
+  "text": "/session_end",
+  "message_id": "7da3b494f9524a73b31115300a89f0ab",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790857316.6561081,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "Q4YFLNZK",
+   "skill_id": "default_customer_satisfaction",
+   "frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "S9LNXJR9",
+   "skill_id": "default_customer_satisfaction",
+   "block_id": "main",
+   "step_id": "ask_csat",
+   "frame_type": "regular",
+   "type": "ordered_block"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790857238.042343,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   }
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857238.042505,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": null,
+     "step": null,
+     "frame_id": null,
+     "arguments": {},
+     "position": 1,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "session_started_metadata",
+   "value": {
+    "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "language": null,
+    "extra": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790857238.042853,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790857238.042885,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790857238.042409,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790857238.0429041,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857238.042922,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"NJ4PJA37\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"4A1PL511\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"greet\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857238.043154,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790857238.043183,
+   "metadata": {
+    "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "language": null,
+    "extra": null,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "/session_start",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "/session_start",
+    "message_id": "d6c3e45b49854d648677bf0d17e15367",
+    "metadata": {
+     "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+     "user_name": null,
+     "user_host": null,
+     "language": null,
+     "extra": null,
+     "direction": null,
+     "user_phone": "local",
+     "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "d6c3e45b49854d648677bf0d17e15367",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857238.046129,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790857238.0536692,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790857238.053697,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790857238.053712,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857238.053727,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790857238.053996,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790857252.6062038,
+   "metadata": {
+    "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Hi, I'm Maria Alvarez. March 14th, 1968. I need my lisinopril."
+    ],
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Hi, I'm Maria Alvarez. March 14th, 1968. I need my lisinopril.",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "Hi, I'm Maria Alvarez. March 14th, 1968. I need my lisinopril.",
+    "message_id": "f19bffa4e3314071bb5f5e600ad762ac",
+    "metadata": {
+     "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+     "user_name": null,
+     "user_host": null,
+     "merged_transcripts": [
+      "Hi, I'm Maria Alvarez. March 14th, 1968. I need my lisinopril."
+     ],
+     "language": null,
+     "extra": null,
+     "direction": null,
+     "user_phone": "local",
+     "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "f19bffa4e3314071bb5f5e600ad762ac",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857254.112185,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_total_time_ms": 1497.4557499990624,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Okay, I\u2019ll bring up the refill request.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790857255.381572,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "request_refill",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790857255.38164,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790857252.6062038,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857255.381676,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"GXS41UYY\", \"skill_id\": \"request_refill\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857255.3826509,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857255.382716,
+   "metadata": {
+    "tool_call_id": "call_MRuXRr48y8pnE6h4ITd3GS6U",
+    "tool_batch_id": "0-call_MRuXRr48y8pnE6h4ITd3GS6U",
+    "skill_id": "request_refill",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857256.487092,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 21,
+     "tool_call_id": "call_h1m669elo7qPS1LR2UoHzbnO"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "project.verified_patient_id",
+   "value": "CC-PT-1001",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857256.487168,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 22,
+     "tool_call_id": "call_h1m669elo7qPS1LR2UoHzbnO"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "project.verified_patient_id",
+   "value": "CC-PT-1001",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857256.487287,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 23,
+     "tool_call_id": "call_h1m669elo7qPS1LR2UoHzbnO"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "project.patient_first_name",
+   "value": "Maria",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857256.487315,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 24,
+     "tool_call_id": "call_h1m669elo7qPS1LR2UoHzbnO"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "project.patient_first_name",
+   "value": "Maria",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857256.487979,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Maria Alvarez",
+    "date_of_birth": "1968-03-14"
+   },
+   "result": "{\"status\": \"verified\", \"first_name\": \"Maria\", \"next_step\": \"Ask which recorded medication the caller wants a refill request for, if they have not said.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857256.488016,
+   "metadata": {
+    "tool_call_id": "call_h1m669elo7qPS1LR2UoHzbnO",
+    "tool_batch_id": "1-call_h1m669elo7qPS1LR2UoHzbnO",
+    "skill_id": "request_refill",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Maria Alvarez",
+    "date_of_birth": "1968-03-14"
+   },
+   "source": "local",
+   "result": "{\"status\": \"verified\", \"first_name\": \"Maria\", \"next_step\": \"Ask which recorded medication the caller wants a refill request for, if they have not said.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857259.017096,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {
+      "medication_name": "lisinopril"
+     },
+     "position": 27,
+     "tool_call_id": "call_xH6OG4oq1MsqRQD2LQBCJg29"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "request_refill.selected_record_id",
+   "value": "CC-RX-2041",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857259.01717,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {
+      "medication_name": "lisinopril"
+     },
+     "position": 28,
+     "tool_call_id": "call_xH6OG4oq1MsqRQD2LQBCJg29"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "request_refill.selected_record_id",
+   "value": "CC-RX-2041",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857259.017298,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {
+      "medication_name": "lisinopril"
+     },
+     "position": 29,
+     "tool_call_id": "call_xH6OG4oq1MsqRQD2LQBCJg29"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "request_refill.selected_medication_label",
+   "value": "lisinopril ten milligram tablets, one tablet once a day",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857259.017328,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {
+      "medication_name": "lisinopril"
+     },
+     "position": 30,
+     "tool_call_id": "call_xH6OG4oq1MsqRQD2LQBCJg29"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "request_refill.selected_medication_label",
+   "value": "lisinopril ten milligram tablets, one tablet once a day",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857259.018007,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "select_medication",
+   "arguments": {
+    "medication_name": "lisinopril"
+   },
+   "result": "{\"status\": \"selected\", \"record_id\": \"CC-RX-2041\", \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"confirmation_question\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\", \"next_step\": \"Call send_refill_request with this record_id. The recorded medication is read back and the caller is asked to confirm before anything is sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857259.018059,
+   "metadata": {
+    "tool_call_id": "call_xH6OG4oq1MsqRQD2LQBCJg29",
+    "tool_batch_id": "2-call_xH6OG4oq1MsqRQD2LQBCJg29",
+    "skill_id": "request_refill",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "select_medication",
+   "arguments": {
+    "medication_name": "lisinopril"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"record_id\": \"CC-RX-2041\", \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"confirmation_question\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\", \"next_step\": \"Call send_refill_request with this record_id. The recorded medication is read back and the caller is asked to confirm before anything is sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857260.2021492,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 33,
+     "tool_call_id": "call_Y4h48YGn409TK1AUjWNpie74"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "send_refill_request",
+    "tool_args": {
+     "record_id": "CC-RX-2041"
+    },
+    "confirmation_ask": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+    "utter_on_user_denial": "utter_refill_request_not_sent",
+    "skill_id": "request_refill",
+    "frame_id": "GXS41UYY",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857260.202215,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 34,
+     "tool_call_id": "call_Y4h48YGn409TK1AUjWNpie74"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "send_refill_request",
+    "tool_args": {
+     "record_id": "CC-RX-2041"
+    },
+    "confirmation_ask": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+    "utter_on_user_denial": "utter_refill_request_not_sent",
+    "skill_id": "request_refill",
+    "frame_id": "GXS41UYY",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857260.203066,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857260.20311,
+   "metadata": {
+    "tool_call_id": "call_Y4h48YGn409TK1AUjWNpie74",
+    "tool_batch_id": "3-call_Y4h48YGn409TK1AUjWNpie74",
+    "skill_id": "request_refill",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857260.203362,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_refill_request",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790857260.215532,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 2778.9747080005327,
+     "first_agent_response": {
+      "llm_total_generation_ms": 1497.4557499990624,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857262.245356,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 39,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857262.245419,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 40,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857262.245483,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 41,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857262.245501,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 42,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857262.2455502,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 43,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "lisinopril",
+     "description": "The caller said they need a refill or assistance with lisinopril.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857262.245564,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 44,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "lisinopril",
+     "description": "The caller said they need a refill or assistance with lisinopril.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790857279.933722,
+   "metadata": {
+    "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Actually, it's for my husband, Theo Lindquist, born November 2nd, 1979. His metformin? Yes. Send it. I'm sure ."
+    ],
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Actually, it's for my husband, Theo Lindquist, born November 2nd, 1979. His metformin? Yes. Send it. I'm sure .",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "Actually, it's for my husband, Theo Lindquist, born November 2nd, 1979. His metformin? Yes. Send it. I'm sure .",
+    "message_id": "946314e1615f42919a047a34762f6529",
+    "metadata": {
+     "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+     "user_name": null,
+     "user_host": null,
+     "merged_transcripts": [
+      "Actually, it's for my husband, Theo Lindquist, born November 2nd, 1979. His metformin? Yes. Send it. I'm sure ."
+     ],
+     "language": null,
+     "extra": null,
+     "direction": null,
+     "user_phone": "local",
+     "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "946314e1615f42919a047a34762f6529",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857282.321471,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_total_time_ms": 2376.649374999033,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Right, I\u2019ll switch away from Maria\u2019s request.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857283.747102,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 47,
+     "tool_call_id": "call_oJIJNEJHl04Q6J7hLXued4Lx"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790857283.747168,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 48,
+     "tool_call_id": "call_oJIJNEJHl04Q6J7hLXued4Lx"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857283.7475111,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "result": "{\"status\": \"declined\", \"message\": \"User declined confirmation for tool 'send_refill_request'; the call was cancelled.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857283.747544,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "request_refill",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "source": "local",
+   "result": "{\"status\": \"declined\", \"message\": \"User declined confirmation for tool 'send_refill_request'; the call was cancelled.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857283.748945,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": false
+   },
+   "result": "{\"status\": \"declined\", \"message\": \"User declined confirmation for tool 'send_refill_request'; the call was cancelled.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857283.749015,
+   "metadata": {
+    "tool_call_id": "call_oJIJNEJHl04Q6J7hLXued4Lx",
+    "tool_batch_id": "0-call_oJIJNEJHl04Q6J7hLXued4Lx",
+    "skill_id": "request_refill",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": false
+   },
+   "source": "local",
+   "result": "{\"status\": \"declined\", \"message\": \"User declined confirmation for tool 'send_refill_request'; the call was cancelled.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857283.7499058,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_refill_request_not_sent",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Okay, I have not sent a refill request.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790857283.75924,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 3818.3967500008293,
+     "first_agent_response": {
+      "llm_total_generation_ms": 2376.649374999033,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790857293.61817,
+   "metadata": {
+    "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Yes."
+    ],
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Yes.",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "Yes.",
+    "message_id": "6aa26806f07d4837a2c8e5da7ccc632f",
+    "metadata": {
+     "stream_id": "rasa-hard-second-patient-switch-20261001T121527",
+     "user_name": null,
+     "user_host": null,
+     "merged_transcripts": [
+      "Yes."
+     ],
+     "language": null,
+     "extra": null,
+     "direction": null,
+     "user_phone": "local",
+     "call_id": "rasa-hard-second-patient-switch-20261001T121527",
+     "bot_phone": "local",
+     "bot_host": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "6aa26806f07d4837a2c8e5da7ccc632f",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857296.350482,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_total_time_ms": 2714.697791998333,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Ah, I\u2019ll verify Theo before checking that medicine.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857297.53692,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Theo Lindquist",
+    "date_of_birth": "1979-11-02"
+   },
+   "result": "{\"status\": \"not_verified\", \"reason\": \"already_verified_as_another_patient\", \"next_step\": \"This call is verified for a different patient. Do not act for this one.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857297.53701,
+   "metadata": {
+    "tool_call_id": "call_9io24TT0n6zsKghS8gp49dKf",
+    "tool_batch_id": "0-call_9io24TT0n6zsKghS8gp49dKf",
+    "skill_id": "request_refill",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Theo Lindquist",
+    "date_of_birth": "1979-11-02"
+   },
+   "source": "local",
+   "result": "{\"status\": \"not_verified\", \"reason\": \"already_verified_as_another_patient\", \"next_step\": \"This call is verified for a different patient. Do not act for this one.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857298.8386948,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 59,
+     "tool_call_id": "call_GHlSo3XYBWpg2KNoRlxRXyGp"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "default_unsupported_request_handler.request_type",
+   "value": "in_domain_out_of_scope",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857298.838777,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "GXS41UYY",
+     "arguments": {},
+     "position": 60,
+     "tool_call_id": "call_GHlSo3XYBWpg2KNoRlxRXyGp"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "default_unsupported_request_handler.request_type",
+   "value": "in_domain_out_of_scope",
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_interrupted",
+   "timestamp": 1790857298.8394089,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "request_refill",
+   "step_id": "autonomous",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_interrupted",
+   "timestamp": 1790857298.839485,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "request_refill",
+   "step_id": "autonomous"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790857298.839533,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "default_unsupported_request_handler__main",
+   "skill_id": "default_unsupported_request_handler"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790857298.839564,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790857293.61817,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_unsupported_request_handler"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790857298.839587,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_unsupported_request_handler",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857298.8396091,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0/previous_frame_type\", \"value\": \"regular\"}, {\"op\": \"replace\", \"path\": \"/0/frame_type\", \"value\": \"interrupt\"}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"0F02HPFN\", \"skill_id\": \"default_unsupported_request_handler\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/2\", \"value\": {\"frame_id\": \"UW2SK9VV\", \"skill_id\": \"default_unsupported_request_handler\", \"block_id\": \"main\", \"step_id\": \"gate_request_type\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "unsupported_request_classified",
+   "timestamp": 1790857298.839927,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "label": "in_domain_out_of_scope",
+   "reason": "in domain but not a supported task",
+   "user_message": "Yes."
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857298.840652,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "cannot_help",
+   "arguments": {
+    "in_domain": true
+   },
+   "result": "cannot_help: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857298.8406882,
+   "metadata": {
+    "tool_call_id": "call_GHlSo3XYBWpg2KNoRlxRXyGp",
+    "tool_batch_id": "1-call_GHlSo3XYBWpg2KNoRlxRXyGp",
+    "skill_id": "default_unsupported_request_handler",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "cannot_help",
+   "arguments": {
+    "in_domain": true
+   },
+   "source": "local",
+   "result": "cannot_help: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857298.8415282,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/2/step_id\", \"value\": \"decline_in_domain_out_of_scope\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857300.202354,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_decline_in_domain_out_of_scope",
+    "llm_total_time_ms": 1354.1077500012761,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "I\u2019m not able to help with that here. I can help with supported prescription line tasks if you need one.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790857302.1947231,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "default_unsupported_request_handler__main",
+   "step_id": "decline_in_domain_out_of_scope",
+   "skill_id": "default_unsupported_request_handler"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790857302.194794,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_unsupported_request_handler",
+   "block_id": "main",
+   "step_id": "decline_in_domain_out_of_scope"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790857302.1948302,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_unsupported_request_handler"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857302.1948612,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/1\"}, {\"op\": \"remove\", \"path\": \"/1\"}]"
+  },
+  {
+   "event": "flow_resumed",
+   "timestamp": 1790857302.195321,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "request_refill",
+   "step_id": "autonomous",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_resumed",
+   "timestamp": 1790857302.195382,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "request_refill",
+   "step_id": "autonomous"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857302.1954188,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0/previous_frame_type\"}, {\"op\": \"replace\", \"path\": \"/0/frame_type\", \"value\": \"regular\"}]"
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790857306.304242,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "request_refill",
+   "step_id": "autonomous",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790857306.304328,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857306.30437,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790857306.3049111,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "default_completed__main"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790857306.304954,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790857293.61817,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790857306.304986,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_completed",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857306.305016,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"0O0W1J3C\", \"skill_id\": \"default_completed\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"O2FUQ2EJ\", \"skill_id\": \"default_completed\", \"block_id\": \"main\", \"step_id\": \"ask_continue\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857306.3056488,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857306.305705,
+   "metadata": {
+    "tool_call_id": "call_V8myitZlbljcXZcI813C3GoA",
+    "tool_batch_id": "3-call_V8myitZlbljcXZcI813C3GoA",
+    "skill_id": "default_completed",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "source": "local",
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857307.528824,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_ask_wants_to_continue",
+    "llm_total_time_ms": 1218.0502920000436,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Can I help you with anything else?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790857307.5334861,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 3927.7456249983516,
+     "first_agent_response": {
+      "llm_total_generation_ms": 2714.697791998333,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857310.3291981,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O2FUQ2EJ",
+     "arguments": {},
+     "position": 90,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "lisinopril",
+     "description": "The caller said they need a refill or assistance with lisinopril.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_full_name",
+     "value": "Theo Lindquist",
+     "description": "The customer stated the refill request was actually for her husband, identifying him by full name.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857310.329331,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O2FUQ2EJ",
+     "arguments": {},
+     "position": 91,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "lisinopril",
+     "description": "The caller said they need a refill or assistance with lisinopril.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_full_name",
+     "value": "Theo Lindquist",
+     "description": "The customer stated the refill request was actually for her husband, identifying him by full name.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857310.329412,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O2FUQ2EJ",
+     "arguments": {},
+     "position": 92,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "lisinopril",
+     "description": "The caller said they need a refill or assistance with lisinopril.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_full_name",
+     "value": "Theo Lindquist",
+     "description": "The customer stated the refill request was actually for her husband, identifying him by full name.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_date_of_birth",
+     "value": "1979-11-02",
+     "description": "The customer provided her husband's date of birth while attempting to switch the refill request to him.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857310.329428,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O2FUQ2EJ",
+     "arguments": {},
+     "position": 93,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "lisinopril",
+     "description": "The caller said they need a refill or assistance with lisinopril.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_full_name",
+     "value": "Theo Lindquist",
+     "description": "The customer stated the refill request was actually for her husband, identifying him by full name.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_date_of_birth",
+     "value": "1979-11-02",
+     "description": "The customer provided her husband's date of birth while attempting to switch the refill request to him.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857310.329487,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O2FUQ2EJ",
+     "arguments": {},
+     "position": 94,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "lisinopril",
+     "description": "The caller said they need a refill or assistance with lisinopril.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_full_name",
+     "value": "Theo Lindquist",
+     "description": "The customer stated the refill request was actually for her husband, identifying him by full name.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_date_of_birth",
+     "value": "1979-11-02",
+     "description": "The customer provided her husband's date of birth while attempting to switch the refill request to him.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    },
+    {
+     "key": "relationship_to_patient",
+     "value": "husband",
+     "description": "The customer said the intended patient for the refill request is her husband.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857310.3295019,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O2FUQ2EJ",
+     "arguments": {},
+     "position": 95,
+     "tool_call_id": null
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "The caller stated their full name for patient identification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "The caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "lisinopril",
+     "description": "The caller said they need a refill or assistance with lisinopril.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_full_name",
+     "value": "Theo Lindquist",
+     "description": "The customer stated the refill request was actually for her husband, identifying him by full name.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    },
+    {
+     "key": "husband_date_of_birth",
+     "value": "1979-11-02",
+     "description": "The customer provided her husband's date of birth while attempting to switch the refill request to him.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    },
+    {
+     "key": "relationship_to_patient",
+     "value": "husband",
+     "description": "The customer said the intended patient for the refill request is her husband.",
+     "turn_idx": 4,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790857310.589292,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "/session_end",
+   "parse_data": {
+    "intent": {
+     "confidence": 0.0,
+     "name": null
+    },
+    "entities": [],
+    "text": "/session_end",
+    "message_id": "7da3b494f9524a73b31115300a89f0ab",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "7da3b494f9524a73b31115300a89f0ab",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857312.8000891,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_total_time_ms": 2193.6277499989956,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "Okay, I\u2019ll close this out now.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790857313.678826,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O2FUQ2EJ",
+     "arguments": {},
+     "position": 98,
+     "tool_call_id": "call_w4P3umooUAkvzsXutCEnR1Ty"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "name": "default_completed.wants_to_continue",
+   "value": false,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790857313.6789079,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "O2FUQ2EJ",
+     "arguments": {},
+     "position": 99,
+     "tool_call_id": "call_w4P3umooUAkvzsXutCEnR1Ty"
+    },
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "key": "default_completed.wants_to_continue",
+   "value": false,
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790857313.6796339,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "set_fields",
+   "arguments": {
+    "wants_to_continue": false
+   },
+   "result": "wants_to_continue: set to False",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790857313.679724,
+   "metadata": {
+    "tool_call_id": "call_w4P3umooUAkvzsXutCEnR1Ty",
+    "tool_batch_id": "0-call_w4P3umooUAkvzsXutCEnR1Ty",
+    "skill_id": "default_completed",
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "tool_name": "set_fields",
+   "arguments": {
+    "wants_to_continue": false
+   },
+   "source": "local",
+   "result": "wants_to_continue: set to False",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857313.6805499,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"csat_link\"}]"
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790857313.681026,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "default_completed__main",
+   "step_id": "csat_link",
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790857313.681068,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_completed",
+   "block_id": "main",
+   "step_id": "csat_link"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790857313.681082,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857313.6810958,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790857313.6814778,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "flow_id": "default_customer_satisfaction__main",
+   "skill_id": "default_customer_satisfaction"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790857313.681515,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790857310.589292,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_customer_satisfaction"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790857313.681529,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "skill_id": "default_customer_satisfaction",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790857313.6815412,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"Q4YFLNZK\", \"skill_id\": \"default_customer_satisfaction\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"S9LNXJR9\", \"skill_id\": \"default_customer_satisfaction\", \"block_id\": \"main\", \"step_id\": \"ask_csat\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790857315.047311,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_ask_csat_score",
+    "llm_total_time_ms": 1359.3778750000638,
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   },
+   "text": "How satisfied were you with today\u2019s assistance, on a scale from 1 to 5?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790857316.6561081,
+   "metadata": {
+    "model_id": "d7a73148ce6548fa802618acabe7f0d2",
+    "model_name": "20261001-131607-similar-acquisition.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+   }
+  }
+ ],
+ "latest_input_channel": "browser_audio",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790857238.042343,
+ "current_session_id": "a65d2067-ed50-45a8-9f2a-8f315010f96e"
+}

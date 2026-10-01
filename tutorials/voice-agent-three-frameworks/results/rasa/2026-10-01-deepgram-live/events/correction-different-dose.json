@@ -1,0 +1,1800 @@
+{
+ "sender_id": "rasa-correction-different-dose-20261001T125014",
+ "slots": {
+  "session_started_metadata": {
+   "call_id": "rasa-correction-different-dose-20261001T125014",
+   "user_phone": "local",
+   "bot_phone": "local",
+   "user_name": null,
+   "user_host": null,
+   "bot_host": null,
+   "direction": null,
+   "stream_id": "rasa-correction-different-dose-20261001T125014",
+   "language": null,
+   "extra": null
+  },
+  "consecutive_silence_timeouts": 0.0,
+  "system.__discovered__": [
+   {
+    "key": "customer_name",
+    "value": "Theo Lindquist",
+    "description": "Customer stated their full name while requesting a prescription refill.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "date_of_birth",
+    "value": "11/02/1979",
+    "description": "Customer stated their date of birth for identity verification.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_medication",
+    "value": "metformin",
+    "description": "Customer requested a refill for metformin.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_dose",
+    "value": "1000 milligrams",
+    "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "current_usage",
+    "value": "two a day",
+    "description": "Customer stated they have been taking metformin twice daily.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_record_dose",
+    "value": "dose on my record",
+    "description": "Customer asked to send the refill request using the dose currently on their record rather than only the higher dose mentioned earlier.",
+    "turn_idx": 5,
+    "confidence": 0.92,
+    "pii": false,
+    "captured_by_skill": "request_refill",
+    "potential_mappings": []
+   },
+   {
+    "key": "doctor_consult_higher_dose",
+    "value": "ask the doctor about the higher dose",
+    "description": "Customer requested that the doctor be asked about increasing to the higher metformin dose.",
+    "turn_idx": 5,
+    "confidence": 0.94,
+    "pii": false,
+    "captured_by_skill": "request_refill",
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "/session_end",
+  "message_id": "eeb7e4d12af04521a0691c5cfdc048fd",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790859885.474721,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "220B4VFS",
+   "skill_id": "default_completed",
+   "frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "Y4LNG8ZM",
+   "skill_id": "default_completed",
+   "block_id": "main",
+   "step_id": "ask_continue",
+   "frame_type": "regular",
+   "type": "ordered_block"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790859825.752568,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   }
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790859825.7530298,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": null,
+     "step": null,
+     "frame_id": null,
+     "arguments": {},
+     "position": 1,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "key": "session_started_metadata",
+   "value": {
+    "call_id": "rasa-correction-different-dose-20261001T125014",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-correction-different-dose-20261001T125014",
+    "language": null,
+    "extra": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790859825.753696,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790859825.753776,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790859825.752693,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790859825.753867,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790859825.753906,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"O9B6PKOF\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"4GW2D9OS\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"greet\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790859825.754441,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790859825.7545128,
+   "metadata": {
+    "call_id": "rasa-correction-different-dose-20261001T125014",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-correction-different-dose-20261001T125014",
+    "language": null,
+    "extra": null,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "/session_start",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "/session_start",
+    "message_id": "195aa9643dc348f99efc7d7b5ed3604d",
+    "metadata": {
+     "bot_phone": "local",
+     "user_phone": "local",
+     "direction": null,
+     "extra": null,
+     "user_host": null,
+     "language": null,
+     "user_name": null,
+     "bot_host": null,
+     "call_id": "rasa-correction-different-dose-20261001T125014",
+     "stream_id": "rasa-correction-different-dose-20261001T125014"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "195aa9643dc348f99efc7d7b5ed3604d",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790859825.760708,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790859825.7703428,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790859825.770377,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790859825.7703931,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790859825.770407,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790859825.7707882,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790859846.265748,
+   "metadata": {
+    "call_id": "rasa-correction-different-dose-20261001T125014",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-correction-different-dose-20261001T125014",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Hello. My name is Theo Lindquist, data of birth, 11/02/1979. Send a refill for my metformin, but make it one thousand milligrams. I've been taking two a day."
+    ],
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "Hello. My name is Theo Lindquist, data of birth, 11/02/1979. Send a refill for my metformin, but make it one thousand milligrams. I've been taking two a day.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Hello. My name is Theo Lindquist, data of birth, 11/02/1979. Send a refill for my metformin, but make it one thousand milligrams. I've been taking two a day.",
+    "message_id": "1c73d623f261463abfb838f3f3929598",
+    "metadata": {
+     "bot_phone": "local",
+     "user_phone": "local",
+     "direction": null,
+     "extra": null,
+     "user_host": null,
+     "language": null,
+     "user_name": null,
+     "bot_host": null,
+     "merged_transcripts": [
+      "Hello. My name is Theo Lindquist, data of birth, 11/02/1979. Send a refill for my metformin, but make it one thousand milligrams. I've been taking two a day."
+     ],
+     "call_id": "rasa-correction-different-dose-20261001T125014",
+     "stream_id": "rasa-correction-different-dose-20261001T125014"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "1c73d623f261463abfb838f3f3929598",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790859847.769313,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_time_to_first_token_ms": 1013.1745409998985,
+    "llm_total_time_ms": 1495.1954579992162,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "Right, I\u2019ll check your details first.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790859847.7721028,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "flow_id": "request_refill",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790859847.772154,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790859846.265748,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790859847.772182,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"LQC22MSI\", \"skill_id\": \"request_refill\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790859847.772628,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790859847.772662,
+   "metadata": {
+    "tool_call_id": "call_eg4ojWZc1lgy1FpEX3EBVtrk",
+    "tool_batch_id": "0-call_eg4ojWZc1lgy1FpEX3EBVtrk",
+    "skill_id": "request_refill",
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790859849.467849,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Theo Lindquist",
+    "date_of_birth": "1979-02-11"
+   },
+   "result": "{\"status\": \"not_verified\", \"reason\": \"patient_not_verified\", \"next_step\": \"Say the details did not match a patient record and ask the caller to repeat their full name and date of birth. Do not look up or request anything.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790859849.467927,
+   "metadata": {
+    "tool_call_id": "call_XMa5cE4itiquqyoWe9eF2wru",
+    "tool_batch_id": "1-call_XMa5cE4itiquqyoWe9eF2wru",
+    "skill_id": "request_refill",
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Theo Lindquist",
+    "date_of_birth": "1979-02-11"
+   },
+   "source": "local",
+   "result": "{\"status\": \"not_verified\", \"reason\": \"patient_not_verified\", \"next_step\": \"Say the details did not match a patient record and ask the caller to repeat their full name and date of birth. Do not look up or request anything.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790859850.551129,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_time_to_first_token_ms": 743.3407080006873,
+    "llm_total_time_ms": 1076.0987080011546,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "Those details did not match a patient record. Please repeat your full name and date of birth.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790859850.5529559,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 1166.9112920008047,
+     "first_agent_response": {
+      "llm_time_to_first_token_ms": 1013.1745409998985,
+      "llm_total_generation_ms": 1495.1954579992162,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790859853.982914,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 25,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790859853.983021,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 26,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790859853.98321,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 27,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790859853.983277,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 28,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790859853.983422,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 29,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790859853.983464,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 30,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790859853.983582,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 31,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_dose",
+     "value": "1000 milligrams",
+     "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790859853.983617,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 32,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_dose",
+     "value": "1000 milligrams",
+     "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790859853.9837298,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 33,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_dose",
+     "value": "1000 milligrams",
+     "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "current_usage",
+     "value": "two a day",
+     "description": "Customer stated they have been taking metformin twice daily.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790859853.983764,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "LQC22MSI",
+     "arguments": {},
+     "position": 34,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_dose",
+     "value": "1000 milligrams",
+     "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "current_usage",
+     "value": "two a day",
+     "description": "Customer stated they have been taking metformin twice daily.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790859864.56034,
+   "metadata": {
+    "call_id": "rasa-correction-different-dose-20261001T125014",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-correction-different-dose-20261001T125014",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Fine. Send the request for the dose on my record and ask the doctor about the higher dose."
+    ],
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "Fine. Send the request for the dose on my record and ask the doctor about the higher dose.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Fine. Send the request for the dose on my record and ask the doctor about the higher dose.",
+    "message_id": "3d1f046526f048fab194930f2e4d5303",
+    "metadata": {
+     "bot_phone": "local",
+     "user_phone": "local",
+     "direction": null,
+     "extra": null,
+     "user_host": null,
+     "language": null,
+     "user_name": null,
+     "bot_host": null,
+     "merged_transcripts": [
+      "Fine. Send the request for the dose on my record and ask the doctor about the higher dose."
+     ],
+     "call_id": "rasa-correction-different-dose-20261001T125014",
+     "stream_id": "rasa-correction-different-dose-20261001T125014"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "3d1f046526f048fab194930f2e4d5303",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790859866.591904,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_time_to_first_token_ms": 817.5045419993694,
+    "llm_total_time_ms": 2023.1883750002453,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "I still need to verify you first. Please repeat your full name and date of birth.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790859866.594792,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 1055.6566249997559,
+     "first_agent_response": {
+      "llm_time_to_first_token_ms": 817.5045419993694,
+      "llm_total_generation_ms": 2023.1883750002453,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790859873.428792,
+   "metadata": {
+    "call_id": "rasa-correction-different-dose-20261001T125014",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "rasa-correction-different-dose-20261001T125014",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "Yes. Send it."
+    ],
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "Yes. Send it.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes. Send it.",
+    "message_id": "fc8a6547961449f9b280e7f738fa368a",
+    "metadata": {
+     "bot_phone": "local",
+     "user_phone": "local",
+     "direction": null,
+     "extra": null,
+     "user_host": null,
+     "language": null,
+     "user_name": null,
+     "bot_host": null,
+     "merged_transcripts": [
+      "Yes. Send it."
+     ],
+     "call_id": "rasa-correction-different-dose-20261001T125014",
+     "stream_id": "rasa-correction-different-dose-20261001T125014"
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "fc8a6547961449f9b280e7f738fa368a",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790859874.840846,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_time_to_first_token_ms": 718.5260000005655,
+    "llm_total_time_ms": 1403.6635000011302,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "I cannot look up or request medicine until you are verified. Please tell me your full name and date of birth again.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790859874.8432372,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 1057.4828749995504,
+     "first_agent_response": {
+      "llm_time_to_first_token_ms": 718.5260000005655,
+      "llm_total_generation_ms": 1403.6635000011302,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790859880.726196,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "/session_end",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "/session_end",
+    "message_id": "eeb7e4d12af04521a0691c5cfdc048fd",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "eeb7e4d12af04521a0691c5cfdc048fd",
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_cancelled",
+   "timestamp": 1790859881.8952498,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "flow_id": "request_refill",
+   "step_id": "autonomous",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_cancelled",
+   "timestamp": 1790859881.895336,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "skill_id": "request_refill",
+   "step_id": "autonomous"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790859881.895377,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790859881.895947,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "flow_id": "default_completed__main"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790859881.895995,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790859880.726196,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790859881.89604,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "skill_id": "default_completed",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790859881.896075,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"220B4VFS\", \"skill_id\": \"default_completed\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"Y4LNG8ZM\", \"skill_id\": \"default_completed\", \"block_id\": \"main\", \"step_id\": \"ask_continue\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790859881.89676,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "tool_name": "cancel_skill",
+   "arguments": {},
+   "result": "cancel_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790859881.896812,
+   "metadata": {
+    "tool_call_id": "call_szJapdrVsKls6p8O8KR2I1Em",
+    "tool_batch_id": "0-call_szJapdrVsKls6p8O8KR2I1Em",
+    "skill_id": "default_completed",
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "tool_name": "cancel_skill",
+   "arguments": {},
+   "source": "local",
+   "result": "cancel_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790859882.89396,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_ask_wants_to_continue",
+    "llm_time_to_first_token_ms": 922.7140000002692,
+    "llm_total_time_ms": 990.265709000596,
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "text": "Can I help you with anything else?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790859882.8974621,
+   "metadata": {
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790859885.474396,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "Y4LNG8ZM",
+     "arguments": {},
+     "position": 53,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_dose",
+     "value": "1000 milligrams",
+     "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "current_usage",
+     "value": "two a day",
+     "description": "Customer stated they have been taking metformin twice daily.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_record_dose",
+     "value": "dose on my record",
+     "description": "Customer asked to send the refill request using the dose currently on their record rather than only the higher dose mentioned earlier.",
+     "turn_idx": 5,
+     "confidence": 0.92,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790859885.474497,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "Y4LNG8ZM",
+     "arguments": {},
+     "position": 54,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_dose",
+     "value": "1000 milligrams",
+     "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "current_usage",
+     "value": "two a day",
+     "description": "Customer stated they have been taking metformin twice daily.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_record_dose",
+     "value": "dose on my record",
+     "description": "Customer asked to send the refill request using the dose currently on their record rather than only the higher dose mentioned earlier.",
+     "turn_idx": 5,
+     "confidence": 0.92,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790859885.474675,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "Y4LNG8ZM",
+     "arguments": {},
+     "position": 55,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_dose",
+     "value": "1000 milligrams",
+     "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "current_usage",
+     "value": "two a day",
+     "description": "Customer stated they have been taking metformin twice daily.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_record_dose",
+     "value": "dose on my record",
+     "description": "Customer asked to send the refill request using the dose currently on their record rather than only the higher dose mentioned earlier.",
+     "turn_idx": 5,
+     "confidence": 0.92,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    },
+    {
+     "key": "doctor_consult_higher_dose",
+     "value": "ask the doctor about the higher dose",
+     "description": "Customer requested that the doctor be asked about increasing to the higher metformin dose.",
+     "turn_idx": 5,
+     "confidence": 0.94,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790859885.474721,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "Y4LNG8ZM",
+     "arguments": {},
+     "position": 56,
+     "tool_call_id": null
+    },
+    "model_id": "81551a11a95d4d6dbd36d9139cbb8f8b",
+    "model_name": "20261001-135103-inclusive-antagonist.tar.gz",
+    "assistant_id": "cedar-refill-three-frameworks-rasa",
+    "session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_name",
+     "value": "Theo Lindquist",
+     "description": "Customer stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "date_of_birth",
+     "value": "11/02/1979",
+     "description": "Customer stated their date of birth for identity verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_medication",
+     "value": "metformin",
+     "description": "Customer requested a refill for metformin.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_dose",
+     "value": "1000 milligrams",
+     "description": "Customer asked for the metformin refill to be for 1000 mg tablets/dose.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "current_usage",
+     "value": "two a day",
+     "description": "Customer stated they have been taking metformin twice daily.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_record_dose",
+     "value": "dose on my record",
+     "description": "Customer asked to send the refill request using the dose currently on their record rather than only the higher dose mentioned earlier.",
+     "turn_idx": 5,
+     "confidence": 0.92,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    },
+    {
+     "key": "doctor_consult_higher_dose",
+     "value": "ask the doctor about the higher dose",
+     "description": "Customer requested that the doctor be asked about increasing to the higher metformin dose.",
+     "turn_idx": 5,
+     "confidence": 0.94,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  }
+ ],
+ "latest_input_channel": "browser_audio",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790859825.752568,
+ "current_session_id": "d505e7fc-1e73-4e54-8e6b-b9cdbd1260ea"
+}
