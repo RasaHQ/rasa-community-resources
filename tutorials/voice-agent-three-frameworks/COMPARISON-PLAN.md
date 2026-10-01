@@ -180,6 +180,12 @@ the read-back, not the classification.
   source build that `conversations.json` left out
   (`shared/spec/conversations-remaining-6.json`), all three guard on.
   Results are in `COMPARISON.md`.
+- Added last: an opt-in fix per build (`<framework>/fix.diff`: consent only
+  if the answer began after the read-back finished playing), counted by the
+  line rule with tests left out (`count_concerns.py <framework> --diff-file
+  fix.diff`), replayed and run live; and replays of backchannels and of the
+  early yes with two inhalers, fix off and on. Results are in
+  `COMPARISON.md`.
 - Optional, if the budget allows: run the 6 adversarial calls against the
   guard-off baseline too, to show whether the guard is what stopped them.
 

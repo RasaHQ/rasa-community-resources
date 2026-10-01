@@ -104,6 +104,15 @@ it is **161 lines added and 32 removed** in 3 files: `guard.py` +110,
 docstring from code; without the docstring lines it adds (29) and removes
 (2), it is +132 -30.
 
+**The fix, opt-in.** The guard binds consent to queue order: a "Yes,
+please." spoken before the read-back finished playing resumes the
+interrupt (`../COMPARISON.md`). [`fix.diff`](fix.diff) carries each
+utterance's start on the turn queue, watches the turn's playback markers
+until they are acknowledged, and speaks the question again instead of
+resuming when the answer began earlier. Apply it with
+`make fix-copy FW=langgraph` from the tutorial folder. It is 29 counted
+lines, not part of the figures above.
+
 ## Code per concern
 
 Every counted file declares its concern. By the plan's rule (non-blank lines

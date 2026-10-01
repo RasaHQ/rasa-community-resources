@@ -3,7 +3,8 @@
 The commands below are the ones that produced the run folders named, typed
 from the tutorial folder (`tutorials/voice-agent-three-frameworks/`) on the
 same Mac as the earlier runs, on 2026-10-01 between 12:08 and 13:38 UTC, and
-(the last two sections) between 14:50 and 15:00 UTC.
+(the next two sections) between 14:50 and 15:00 UTC, and (the last three)
+between 15:33 and 15:53 UTC.
 Keys came from the repository-root `.env`. Every run was appended to its
 framework's `spend-ledger.json`.
 
@@ -142,3 +143,61 @@ python3 shared/spec/run_spec.py rasa --spec shared/spec/conversations-remaining-
 ```
 
 The three ran at the same time; none of them is used for latency.
+
+## The fix: consent only after the read-back has played
+
+The fixed copies, made once and used by every run below (each run of a
+Rasa copy trains it first, as the preset does):
+
+```bash
+make fix-copy FW=rasa         # rasa-fix/      = rasa/      + rasa/fix.diff
+make fix-copy FW=langgraph    # langgraph-fix/ = langgraph/ + langgraph/fix.diff
+make fix-copy FW=strands      # strands-fix/   = strands/   + strands/fix.diff
+```
+
+(The copies were first written by hand and `fix.diff` generated from them;
+`make fix-copy` reproduces them byte for byte. The Rasa copy's two
+`consent_timing.verdict` log calls were added after the late-transcript and
+backchannel runs below, before the two-inhaler runs.)
+
+The late-transcript replay against the fixed copies:
+
+```bash
+make late-transcript-replay FW=rasa CWD=rasa-fix LABEL=2026-10-01-late-transcript-replay-fix BUDGET=0.40
+make late-transcript-replay FW=rasa CWD=rasa-fix LABEL=2026-10-01-late-transcript-replay-fix-3 REPEATS=1 BUDGET=0.25
+make late-transcript-replay FW=langgraph CWD=langgraph-fix LABEL=2026-10-01-late-transcript-replay-fix BUDGET=0.30
+make late-transcript-replay FW=strands CWD=strands-fix LABEL=2026-10-01-late-transcript-replay-fix BUDGET=0.30
+```
+
+The first LangGraph and Strands attempts used `BUDGET=0.20`, below the
+runner's projection for a first call (0.15 x 1.5), so they placed no call;
+their empty ledger rows and folders were removed. The Rasa run at 0.40
+placed two replays, and `-fix-3` the third.
+
+Live calls on the fixed copies, headline condition:
+
+```bash
+python3 shared/spec/run_spec.py rasa --server-cwd rasa-fix \
+  --only normal-lisinopril adversarial-approve-now adversarial-skip-confirmation \
+  --label 2026-10-01-fix-sanity --budget-usd 0.40
+python3 shared/spec/run_spec.py rasa --server-cwd rasa-fix --no-train \
+  --spec shared/spec/conversations-remaining-6.json --only short-reply-yes \
+  --label 2026-10-01-fix-sanity-short-reply --budget-usd 0.20
+# and for langgraph and strands, with --server-cwd <framework>-fix,
+# --server-cmd "uv run --locked python server.py --port {port}" and --budget-usd 0.25 / 0.20
+```
+
+## Backchannel and two-inhaler replays, fix off and on
+
+```bash
+for fw in rasa langgraph strands; do
+  for sc in backchannel-filler backchannel-readback wrong-entry-inhaler wrong-entry-blue; do
+    make late-transcript-replay FW=$fw SCENARIO=$sc LABEL=2026-10-01-$sc REPEATS=1 BUDGET=0.24
+    make late-transcript-replay FW=$fw CWD=$fw-fix SCENARIO=$sc LABEL=2026-10-01-$sc-fix REPEATS=1 BUDGET=0.24
+  done
+done
+```
+
+They ran as four batches (backchannel shipped, backchannel fixed,
+two-inhaler shipped, two-inhaler fixed), each with the three frameworks at
+once. The `*-fix/` copies are ignored by git and were deleted afterwards.

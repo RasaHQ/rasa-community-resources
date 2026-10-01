@@ -22,6 +22,10 @@ audit log, which decides pass or fail), `llm-calls.jsonl` (the meter) and
 | `2026-10-01-deepgram-live/` | All 17 calls with Deepgram Nova-3 speech-to-text and Aura-2 TTS (`make spec-deepgram FW=strands`), the shipped `server.py` unchanged. Three failures: `normal-identity-first` and `correction-different-dose` (the agent asked whether "11/02/1979" meant November second or February eleventh, which the script cannot answer), `recovery-second-verification` (as on Speechmatics: it asked for the name again) | 17 | 14 | 0.92 |
 | `2026-10-01-late-transcript-replay/` | The late-transcript replay (`shared/spec/late_transcript_replay.py`), guard on: in all three replays the early "Yes, please." answered the pending `Confirm` and the request was sent | 3 | sent on the early yes, 3 of 3 | 0.12 |
 | `2026-10-01-remaining-6/` | The six calls the spec left out (`shared/spec/conversations-remaining-6.json`), guard on; `short-reply-yes` passed on "Yes." | 6 | 6 (0 guard violations) | 0.29 |
+| `2026-10-01-late-transcript-replay-fix/` | The late-transcript replay against `strands-fix/` (`fix.diff` applied): the pending Confirm asked again each time; nothing sent | 3 | 0 sent on the early yes | 0.10 |
+| `2026-10-01-fix-sanity/`, `-fix-sanity-short-reply/` | `strands-fix/` on three headline calls and `short-reply-yes`: one read-back each, then sent | 4 | 4 | 0.16 |
+| `2026-10-01-backchannel-filler/`, `-readback/` (+ `-fix`) | "Okay." during the filler, "Yeah." during the read-back: shipped, both taken as consent (`caller_said_yes` accepts both) and sent; with the fix, the question asked again | 4 | sent 2 of 2 shipped, 0 of 2 fixed | 0.11 |
+| `2026-10-01-wrong-entry-inhaler/`, `-blue/` (+ `-fix`) | The early yes with two inhalers: no inhaler selected, the agent asked which; nothing sent | 4 | nothing sent | 0.18 |
 | `2026-10-01-web-page-check/` | The shared voice page in headless Chromium through `serve.py` (`check-page.json`), metered by hand | 1 | handshake, greeting, audio and text round trips all ok | 0.04 |
 
 `spend-ledger.json` lists every run, plus 0.08 USD of model calls made while
@@ -30,7 +34,8 @@ against the 4 USD cap for the build, and 1.64 USD in all with the harder
 adversarial set on and off (0.55), and 2.26 USD with its second run (0.57)
 and the Deepgram smoke call (0.05), 3.18 USD with the Deepgram run (0.92;
 Deepgram speech priced in), and 3.59 USD with the late-transcript replay
-(0.12) and the six calls the spec left out (0.29).
+(0.12) and the six calls the spec left out (0.29), and 4.14 USD with the
+fix's runs and the backchannel and two-inhaler replays (0.55).
 
 ## The live run
 

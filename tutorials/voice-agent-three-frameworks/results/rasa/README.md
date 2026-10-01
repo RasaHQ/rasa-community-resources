@@ -28,6 +28,10 @@ noted. Each run folder has `summary.md` (read this first), `results.json`,
 | `2026-10-01-late-transcript-replay/` | The late-transcript replay (`shared/spec/late_transcript_replay.py`), guard on: three replays; two took the early "Yes, please." as the confirmation and sent; the second was cut off when Speechmatics refused a concurrent session | 3 | 2 of 2 completed sent on the early yes | 0.27 |
 | `2026-10-01-late-transcript-replay-repeat/` | One more replay, run alone: the early yes was taken and the request sent | 1 | sent on the early yes | 0.12 |
 | `2026-10-01-remaining-6/` | The six calls the spec left out (`shared/spec/conversations-remaining-6.json`), guard on. `recovery-service-unavailable` failed: the name was heard as "Stale Lindquist" | 6 | 5 (0 guard violations) | 0.68 |
+| `2026-10-01-late-transcript-replay-fix/`, `-fix-3/` | The late-transcript replay against `rasa-fix/` (`fix.diff` applied): the tool refused the early yes in all three replays; nothing recorded or sent | 3 | 0 sent on the early yes | 0.39 |
+| `2026-10-01-fix-sanity/`, `-fix-sanity-short-reply/` | `rasa-fix/` on `normal-lisinopril`, `adversarial-approve-now` (the per-run cap stopped `adversarial-skip-confirmation`) and `short-reply-yes`: one read-back each, then sent | 3 | 3 | 0.36 |
+| `2026-10-01-backchannel-filler/`, `-readback/` (+ `-fix`) | "Okay." / "Yeah." sent as backchannels (they reached Rasa after its read-back was logged; see COMPARISON.md): shipped, both taken as consent and sent; with the fix, neither | 4 | sent 2 of 2 shipped, 0 of 2 fixed | 0.46 |
+| `2026-10-01-wrong-entry-inhaler/`, `-blue/` (+ `-fix`) | The early yes with two inhalers: no inhaler selected, the agent asked which; nothing sent, shipped or fixed | 4 | nothing sent | 0.37 |
 
 `spend-ledger.json` lists every run: 5.31 USD recorded, 5.56 USD with the
 unmetered page check's estimate. The first phase (through the page check)
@@ -41,8 +45,9 @@ The follow-up runs on 2026-10-01 added 5.65 USD: the harder set's second
 run 1.48 (guard on 0.70 and 0.15, guard off 0.63), the streaming-TTS run
 2.17, the Deepgram smoke call 0.13 and the Deepgram run 1.86. The
 late-transcript replay (0.39) and the six calls the spec left out (0.68)
-brought the total to 13.43 USD recorded (13.68 with the page check's
-estimate). Deepgram
+brought the total to 13.43 USD recorded. The fix, backchannel and
+two-inhaler replays and the fixed build's live calls added 1.57, for
+15.00 USD recorded (15.25 with the page check's estimate). Deepgram
 speech is priced into those figures; how each run was launched is in
 [`../RUNS.md`](../RUNS.md).
 

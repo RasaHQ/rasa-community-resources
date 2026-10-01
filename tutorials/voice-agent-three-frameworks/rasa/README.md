@@ -74,6 +74,17 @@ docstrings excluded on both sides as for the other two versions, it is **67
 lines added and 18 removed** in 5 files
 (`python3 ../shared/spec/count_concerns.py . --diff`).
 
+**The fix, opt-in.** The guard binds consent to the order in which Mantle
+takes transcripts, not to whether the caller had heard the question: a
+"Yes, please." spoken before the read-back was taken as the answer
+(`../COMPARISON.md`). [`fix.diff`](fix.diff) adds a browser_audio
+subclass, loaded by dotted path from `integrations.yml`, that records when
+each utterance began and when each bot message finished playing. It also
+adds a check in `send_refill_request` that refuses an answer begun before
+the read-back finished playing. No change to `rasa-pro`. Apply it with
+`make fix-copy FW=rasa` from the tutorial folder. It is 92 counted lines,
+not part of the figures above.
+
 ## Code per concern
 
 Every counted file declares its concern. By the plan's rule (non-blank lines

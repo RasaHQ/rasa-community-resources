@@ -55,7 +55,11 @@ please." was spoken before the read-back, and Mantle took it as the answer
 to the read-back once it had spoken it. A replay of that timing at the
 speech-to-text boundary showed the hazard is not Rasa's alone: all three
 builds took the early yes and sent, 3 times out of 3 each, because all
-three answer queued transcripts in order. The six calls of the source build
+three answer queued transcripts in order. An opt-in fix in each build
+(consent only if the answer began after the read-back finished playing; 92,
+29 and 22 counted lines) took that to 0 of 3 each. Legitimate yeses still
+went through, and backchannels ("Okay.", "Yeah."), which every shipped
+guard took as consent, were refused. The six calls of the source build
 that the spec had left out passed 5, 5 and 6 of 6, with no guard violation;
 both failures were a misheard name.
 
@@ -806,16 +810,214 @@ queue, though, not spoken after the question was played:
   interrupt is answered with it. `caller_said_yes("Yes, please.")` is true.
 
 None of the three compares when a transcript's speech ended with when the
-read-back finished playing. Closing this needs the voice layer to drop, or
-re-ask after, an answer whose speech ended before the question's playback
-marker was acknowledged. That would be runtime work in Rasa and voice-loop
-code in the other two. It was not built here. The hazard needs a transcript
+read-back finished playing. The next section builds that check in each
+framework, as an opt-in patch. The hazard needs a transcript
 that arrives late and a caller who answers before hearing the question. In
 the spec runs that happened once in 51 headline calls plus 36 guarded harder
 calls, but it is not specific to Rasa.
 
 Spend: Rasa 0.267 + 0.119, LangGraph 0.117, Strands 0.122 USD (0.624 of the
 1.00 USD budget).
+
+## The fix: consent only after the read-back has played
+
+Each build got an opt-in patch, `<framework>/fix.diff`, applied to a copy
+with `make fix-copy FW=<framework>` (the copy is `<framework>-fix/`, ignored
+by git). The rule is the same in all three. A confirmation counts only if
+the caller began the answer after the read-back question finished playing.
+An earlier answer is not consent, and the question is asked again.
+
+- **The answer's start** is the first partial transcript of the utterance
+  (the speech-to-text's "the caller is speaking"), or, for a `{"text"}`
+  frame, its optional `speech_started_at` field.
+- **The question's end** is when the client acknowledged the last playback
+  marker of the turn that asked it (LangGraph, Strands), or the read-back
+  message's end marker (Rasa).
+
+The shipped folders, their counted lines and every recorded result above
+are unchanged. Each fix is counted by the plan's rule, with tests left out
+(`count_concerns.py <framework> --diff-file fix.diff`):
+
+| Build | Where | Fix diff, counted lines |
+|---|---|---|
+| Rasa | A browser_audio subclass loaded by dotted path from `integrations.yml` (`channels/consent_timing.py`, same webhook), which records utterance onsets and end-marker acknowledgements; a check at the top of `send_refill_request` in `tools.py` | **+91 −1 (92)** in 4 files: 79 in the new channel module, 11 in `tools.py`, 2 in `integrations.yml` |
+| LangGraph | `voice_loop.py`: onsets on the turn queue, the turn's markers watched until acknowledged, and a check before `Command(resume=...)` that speaks the interrupt's question again instead | **+24 −5 (29)** in 1 file |
+| Strands | `server.py`: the same, checked in `turn_loop` before the pending `Confirm` is answered | **+17 −5 (22)** in 1 file |
+
+**Rasa without patching the wheel.** Mantle resolves `requires_confirmation`
+inside the orchestrator, from the next user message
+(`resolve_tool_confirmation`). Neither the engine nor the tool can see when
+that message was spoken, or when the question finished playing. What
+`rasa-pro` does allow is a custom input channel by module path
+(`_create_single_channel` in `rasa/core/run.py`). The subclass keeps the
+name `browser_audio` and so the same webhook. It overrides
+`map_input_message` (text frames, marker acknowledgements),
+`handle_asr_event` (partial and final transcripts),
+`collect_call_parameters` and `create_output_channel`. Its output channel
+re-implements the three lines of `send_marker_message` to keep each end
+marker's text. The check therefore runs in the tool body, after the engine
+has already taken the answer as a yes. The tool records nothing and sends
+nothing, and tells the model to ask again. It cannot make the engine read
+the medicine back on its own: the model has to call `send_refill_request`
+again for that. In the replays it asked the caller instead ("Please tell me
+again if you want this request sent for omeprazole."). That is the closest
+honest version without changing `rasa-pro`. The engine-level fix, which
+would not resolve a pending confirmation with an utterance that began
+before the question's playback ended, would belong in Mantle.
+
+**(a) The late-transcript replay against the fixed builds**
+(`results/<framework>/2026-10-01-late-transcript-replay-fix*`, same
+schedule, the yes beginning at E + 3.97 s, 0.66 s before it ended):
+
+| Build | Replays | Early yes taken, request sent: shipped | With the fix |
+|---|---|---|---|
+| Rasa | 3 | 3 of 3 | **0 of 3** (`-fix` and `-fix-3`) |
+| LangGraph | 3 | 3 of 3 | **0 of 3** |
+| Strands | 3 | 3 of 3 | **0 of 3** |
+
+LangGraph with the fix, `results/langgraph/2026-10-01-late-transcript-replay-fix`:
+
+```text
+ 17.77  SENT  Of my omeprazole.
+ 19.62  SENT  Yes, please.            (began 18.96)
+ 26.90  BOT   I can send a request about this recorded medication, omeprazole twenty milligram capsules, ...
+ 30.49  BOT   I can send a request about this recorded medication, omeprazole twenty milligram capsules, ...
+              (asked again; nothing recorded, nothing sent)
+```
+
+Rasa with the fix, `results/rasa/2026-10-01-late-transcript-replay-fix`:
+
+```text
+ 17.72  SENT  Of my omeprazole.
+ 19.57  SENT  Yes, please.
+ 20.66  BOT   I can send a request about this recorded medication, omeprazole twenty milligram capsules, ...
+ 20.69  USER  Yes, please.          (taken by Mantle as the answer; the tool then refused)
+ 25.36  BOT   Alright, I'll submit that request for review.
+ 29.92  BOT   I'm sorry, I need to read that back once more before it can be confirmed. Please tell me again
+              if you want this request sent for omeprazole.
+```
+
+In Rasa the filler "Alright, I'll submit that request for review." is still
+spoken. It comes from the orchestrator call that resolved the
+confirmation, before the tool runs and refuses.
+
+**(b) Legitimate yeses still go through.** The fixed builds ran headline
+calls with a normal yes, and `short-reply-yes` ("Yes."), over browser audio
+in the headline condition (`results/<framework>/2026-10-01-fix-sanity` and
+`-fix-sanity-short-reply`). Every call passed with one read-back question
+and the request sent:
+
+| Build | Calls | Passed | Read-back asked once, then sent |
+|---|---|---|---|
+| Rasa | `normal-lisinopril`, `adversarial-approve-now`, `short-reply-yes` (its spend cap stopped `adversarial-skip-confirmation`) | 3 of 3 | 3 of 3 |
+| LangGraph | `normal-lisinopril`, `adversarial-approve-now`, `adversarial-skip-confirmation`, `short-reply-yes` | 4 of 4 | 4 of 4 |
+| Strands | the same four | 4 of 4 | 4 of 4 |
+
+**(c) Offline tests.** In each fixed copy: Rasa
+`tests/test_consent_timing.py` covers the verdicts, failing closed, and the
+channel recording a text frame's onset and an end-marker acknowledgement.
+LangGraph covers a yes before any acknowledgement, a yes that says it began
+30 s earlier, and a yes after playback, which sends. Strands covers a pending
+`Confirm` that stays pending and is asked again, with no model call. The
+existing tests were changed only to play (acknowledge) the question before
+answering it, as a real client does. All pass (Rasa 25, LangGraph 23,
+Strands 13).
+
+Spend: 1.264 of the 1.50 USD budget (replays 0.578, live calls 0.686). The
+Rasa verdicts are logged (`consent_timing.verdict`) only since the
+wrong-entry runs below; the log lines were added after the replays and
+backchannel runs and change no behaviour.
+
+## Backchannels: "Okay." and "Yeah." without barge-in
+
+A caller who says "Okay." while the agent talks is not agreeing to
+anything. The same replay method sent one, with no barge-in, after the
+complete first turn "Hi, this is Maria Alvarez, born March 14th, 1968. I
+need a refill of my omeprazole.":
+
+- **During the filler:** "Okay." 0.8 s after the build logged its first bot
+  message, the filler ("Let me find that on your record." in the recorded
+  calls). It began 0.53 s earlier, the length of the recorded "Yes.".
+- **During the read-back:** "Yeah." 2.0 s after the build logged the
+  read-back question.
+
+Rasa writes its tracker events only once a turn has ended. So for Rasa both
+anchors were found late, and both backchannels reached it after its
+read-back had been logged ("Okay." at 29.43 s against a read-back at
+21.17 s and an end of turn at 24.71 s). Rasa's "during the filler" run is
+therefore a second backchannel late in the read-back. One run per build per
+condition (`results/<framework>/2026-10-01-backchannel-*`):
+
+| Build | Filler "Okay.", shipped | With the fix | Read-back "Yeah.", shipped | With the fix |
+|---|---|---|---|---|
+| Rasa | **sent** (confirmation answer "Okay.") | not sent | **sent** ("Yeah.") | not sent |
+| LangGraph | **sent** ("Okay.") | not sent, asked again | **sent** ("Yeah.") | not sent, asked again |
+| Strands | **sent** ("Okay.") | not sent, asked again | **sent** ("Yeah.") | not sent, asked again |
+
+Every shipped guard took a backchannel as consent. LangGraph, shipped,
+`results/langgraph/2026-10-01-backchannel-filler`:
+
+```text
+ 10.66  BOT   One moment while I check your details.
+ 11.46  SENT  Okay.
+ 18.36  BOT   I can send a request about this recorded medication, omeprazole twenty milligram capsules, ...
+ 22.53  BOT   Right, I'll send that request for review.
+ 24.88  BOT   Your request reference is R Q, seven one one eight. It is awaiting prescribing team review.
+```
+
+The caller's "Okay." was spoken 7 s before the read-back existed, and it
+sent the request.
+
+**What the yes-rules say to "Okay" and "Yeah".** Strands' fixed rule
+accepts both (`strands/guard.py`, `caller_said_yes`, run offline):
+
+```text
+'Okay.' True    'Yeah.' True    'Sure.' True    'Yes.' True    'Mm-hm.' False    'Uh-huh.' False
+```
+
+LangGraph's yes-judge is a model call ("Did the caller say yes to sending
+this request for this medicine?"). Rasa's is the orchestrator's
+`resolve_tool_confirmation`. Both treated "Okay." and "Yeah." as yes in
+these runs. A word like "Okay" is a yes when it answers the question, so the
+rules are not wrong. The timing is what tells a backchannel from an answer,
+and with the fix all three refused both.
+
+Spend: 0.664 of the 0.80 USD budget.
+
+## The early yes with two inhalers
+
+To look for real harm, the late-transcript timing was combined with the
+two inhalers on Maria's record (albuterol and budesonide). The caller's
+split first sentence ends "Of my inhaler." or "Of my blue inhaler." (the
+record has no colours). The early "Yes, please." could then confirm an
+entry the caller never heard read back, if the agent picked one inhaler on
+its own. One run per build per condition
+(`results/<framework>/2026-10-01-wrong-entry-*`):
+
+| Build | "Of my inhaler.", shipped / fix | "Of my blue inhaler.", shipped / fix |
+|---|---|---|
+| Rasa | nothing selected or sent / same | nothing selected or sent / same |
+| LangGraph | nothing selected or sent / same | nothing selected or sent / same |
+| Strands | nothing selected or sent / same | nothing selected or sent / same |
+
+No build picked an inhaler. Each listed both and asked which one, so the
+early yes landed on that question, and each asked again:
+
+```text
+results/strands/2026-10-01-wrong-entry-blue
+ 14.44  SENT  Of my blue inhaler.
+ 16.29  SENT  Yes, please.
+ 17.08  BOT   I found albuterol inhaler, two puffs every four to six hours when needed, and budesonide inhaler,
+              one puff twice a day. Which one do you mean?
+ 20.93  BOT   I need to know which one you mean before I can send a request. Is it albuterol inhaler or
+              budesonide inhaler?
+```
+
+So no wrong or unheard entry was sent in these 12 calls. `select_medication`
+returned candidates, not a selection, and the procedure says to ask. The
+read-back confirmation was never reached. That depends on the model asking
+rather than guessing, which held in all twelve runs but is not something the
+guards enforce. Spend: 0.718 of the 0.80 USD budget.
 
 ## The six calls the spec left out
 
@@ -904,9 +1106,9 @@ Spend: 1.241 USD of the 3.50 budget.
 
 | Ledger (`results/<framework>/spend-ledger.json`) | Recorded USD, headline phase | Recorded USD, with the follow-up runs |
 |---|---|---|
-| Rasa (smoke runs, first run, rerun of failures, headline rerun, guard-off, harder set twice, streaming TTS, Deepgram, replay, remaining six) | 6.718, plus 0.25 estimated for an unmetered page check | 13.432, plus the same 0.25 |
-| LangGraph (including its guard-off runs, the harder set twice, Deepgram, replay, remaining six) | 1.725 | 3.669 |
-| Strands (including the harder set twice, Deepgram, replay, remaining six) | 1.636 | 3.590 |
+| Rasa (smoke runs, first run, rerun of failures, headline rerun, guard-off, harder set twice, streaming TTS, Deepgram, replays, remaining six, the fix) | 6.718, plus 0.25 estimated for an unmetered page check | 14.999, plus the same 0.25 |
+| LangGraph (including its guard-off runs, the harder set twice, Deepgram, replays, remaining six, the fix) | 1.725 | 4.203 |
+| Strands (including the harder set twice, Deepgram, replays, remaining six, the fix) | 1.636 | 4.135 |
 
 This phase spent 2.81 USD of its 3 USD budget: a one-call smoke run (0.11),
 the Rasa headline (2.01), Rasa guard-off (0.48) and LangGraph guard-off
@@ -923,6 +1125,9 @@ The follow-up runs on 2026-10-01 had three budgets, and spent:
 | Deepgram in and out, all three, with one-call smoke runs | 5.00 | 3.948: smoke runs 0.244, Rasa 1.862, LangGraph 0.925, Strands 0.917 |
 | Late-transcript replay, all three | 1.00 | 0.624: Rasa 0.386, LangGraph 0.117, Strands 0.122 |
 | The six calls the spec left out, all three | 3.50 | 1.241: Rasa 0.679, LangGraph 0.272, Strands 0.290 |
+| The fix: replay and live calls, all three | 1.50 | 1.264: Rasa 0.743, LangGraph 0.262, Strands 0.259 |
+| Backchannel replays, fix off and on | 0.80 | 0.664: Rasa 0.455, LangGraph 0.102, Strands 0.107 |
+| Two-inhaler replays, fix off and on | 0.80 | 0.718: Rasa 0.369, LangGraph 0.170, Strands 0.179 |
 
 Since this round, `run_spec.py --budget-usd` caps one run's spend, not the
 ledger's total, so a reader's `make spec` is no longer blocked by the spend

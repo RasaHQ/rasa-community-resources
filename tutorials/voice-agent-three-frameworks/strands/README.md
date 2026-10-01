@@ -120,6 +120,14 @@ without them it is +114 -29 (143). The Rasa guard diff, with docstrings
 excluded the same way, is 85 (+67 -18), mostly YAML, whose comments do not
 count.
 
+**The fix, opt-in.** The guard binds consent to queue order: a "Yes,
+please." spoken before the read-back finished playing answers the pending
+`Confirm` (`../COMPARISON.md`). [`fix.diff`](fix.diff) carries each
+utterance's start on the turn queue and asks the pending question again
+when the answer began before the turn that asked it finished playing.
+Apply it with `make fix-copy FW=strands` from the tutorial folder. It is 22
+counted lines, not part of the figures above.
+
 ## The voice loop
 
 Strands' own voice feature is `BidiAgent`

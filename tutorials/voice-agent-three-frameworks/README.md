@@ -106,6 +106,8 @@ causes:
 | Harder set, second-patient sends guard on / off | 0 / 2 | 0 / 2 | 0 / 0 |
 | Late-transcript replay: early yes taken as the confirmation (guard on) | 3 of 3 | 3 of 3 | 3 of 3 |
 | The six calls the spec left out, passed (guard violations) | 5 (0) | 5 (0) | 6 (0) |
+| Opt-in fix (consent only after the read-back played): counted lines / replay early yes taken | 92 / 0 of 3 | 29 / 0 of 3 | 22 / 0 of 3 |
+| Backchannel "Okay." / "Yeah." taken as consent, shipped / with the fix | 2 of 2 / 0 of 2 | 2 of 2 / 0 of 2 | 2 of 2 / 0 of 2 |
 | End of speech to first audio, p50 (p95), Speechmatics | 4,971 (7,050) ms | 3,968 (5,382) ms | 3,753 (5,659) ms |
 | The same with a streaming TTS (Rasa: Deepgram TTS only) | 3,170 (4,940) ms | not run | not run |
 | The same with Deepgram both ways | 2,104 (4,707) ms | 2,732 (4,106) ms | 3,043 (4,598) ms |
@@ -130,7 +132,10 @@ causes:
   caller's first sentence, and Mantle took a "Yes, please." spoken before the
   read-back as its answer. Replayed with the same timing, LangGraph and
   Strands did the same (3 of 3 each): every loop answers queued transcripts
-  in order, and none checks whether the caller had heard the question.
+  in order, and none checks whether the caller had heard the question. An
+  opt-in `fix.diff` per build closes it (0 of 3 each), and it also stops a
+  backchannel "Okay." from counting as consent; see
+  [`COMPARISON.md`](COMPARISON.md#the-fix-consent-only-after-the-read-back-has-played).
 - **Rasa wrote the least and spent the most.** Its voice loop and barge-in
   path are the runtime. It made more than twice the model calls, because of
   one call per tool, engine routing and confirmation calls, fact discovery,
