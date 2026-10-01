@@ -228,8 +228,8 @@ def _hunk_start(header: str, side: str) -> int:
     return int(m.group(1) if side == "a" else m.group(2)) if m else 0
 
 
-def _baseline_copy(folder: Path, diff: Path) -> Optional[Path]:
-    """A temporary copy of the folder with the diff reversed (the guard-off side), or None."""
+def _baseline_copy(folder: Path, diff: Path, reverse: bool = True) -> Optional[Path]:
+    """A temporary copy of the folder with the diff reversed (the guard-off side), or applied, or None."""
     import shutil
     import subprocess
     import tempfile
@@ -237,12 +237,22 @@ def _baseline_copy(folder: Path, diff: Path) -> Optional[Path]:
     tmp = Path(tempfile.mkdtemp(prefix="guard-off-"))
     target = tmp / folder.name
     shutil.copytree(folder, target, ignore=shutil.ignore_patterns(".venv", "models", ".rasa", "__pycache__"))
-    done = subprocess.run(["patch", "-R", "-E", "-s", "-p1", "-i", str(diff)], cwd=target,
-                          capture_output=True, text=True)
+    done = subprocess.run(["patch", *(["-R"] if reverse else []), "-E", "-s", "-p1", "-i", str(diff)],
+                          cwd=target, capture_output=True, text=True)
     return target if done.returncode == 0 else None
 
 
-def count_diff(diff: Path, folder: Optional[Path] = None) -> dict:
+def is_counted(rel: str) -> bool:
+    """Whether a file at this path inside a framework folder is counted (the rule in counted_files)."""
+    path = Path(rel)
+    if SKIP_DIRS & set(path.parts[:-1]) or path.name in SKIP_NAMES or path.name.startswith(".env"):
+        return False
+    if path.name.endswith(SKIP_SUFFIXES) or path.name.startswith("test_") or path.name.endswith("_test.py"):
+        return False
+    return kind_of(path) is not None
+
+
+def count_diff(diff: Path, folder: Optional[Path] = None, applied: bool = True) -> dict:
     """Added and removed lines of a unified diff, by the same line rule as the tree count.
 
     Blank lines and lines that are only a comment in their file's syntax do
@@ -253,8 +263,18 @@ def count_diff(diff: Path, folder: Optional[Path] = None) -> dict:
     removed lines, and skips lines inside a module, class or function
     docstring on that side. Without the folder it cannot tell a docstring from
     code, and says so (``docstrings_excluded: false``).
+
+    ``applied=False`` is for a diff not yet applied to the folder (``fix.diff``):
+    the folder is then the "a" side and a copy with the diff applied the "b"
+    side. Files the tree count skips (tests, documentation) are skipped here too
+    and listed in ``files_not_counted``.
     """
-    baseline = _baseline_copy(folder, diff) if folder is not None else None
+    if folder is not None and not applied:
+        a_side, b_side = folder, _baseline_copy(folder, diff, reverse=False)
+        folder, baseline = b_side, a_side
+    else:
+        baseline = _baseline_copy(folder, diff) if folder is not None else None
+    not_counted: list[str] = []
     doc_cache: dict[tuple[str, str], set[int]] = {}
 
     def docstrings(side: str, rel: str) -> set[int]:
@@ -273,6 +293,10 @@ def count_diff(diff: Path, folder: Optional[Path] = None) -> dict:
     for line in diff.read_text(encoding="utf-8").splitlines():
         if line.startswith("+++ "):
             current = line[4:].split("\t")[0].removeprefix("b/")
+            if not is_counted(current):
+                not_counted.append(current)
+                current = None
+                continue
             files.setdefault(current, {"added": 0, "removed": 0})
             continue
         if line.startswith("@@"):
@@ -311,7 +335,7 @@ def count_diff(diff: Path, folder: Optional[Path] = None) -> dict:
     return {"diff": diff.name, "added": added, "removed": removed, "changed": added + removed,
             "docstrings_excluded": baseline is not None,
             "docstring_lines_skipped": {"added": docstring_added, "removed": docstring_removed},
-            "files": files}
+            "files": files, "files_not_counted": not_counted}
 
 
 # ----------------------------------------------------------------------------
@@ -385,6 +409,8 @@ def main() -> int:
     parser.add_argument("folder", help="framework folder, e.g. rasa, langgraph or strands")
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--diff", action="store_true", help="count the folder's guard.diff instead")
+    parser.add_argument("--diff-file", default=None,
+                        help="count this diff in the folder instead, not yet applied (e.g. fix.diff)")
     parser.add_argument("--shared-text", action="store_true",
                         help="count lines that restate the shared instruction text, by concern")
     args = parser.parse_args()
@@ -398,14 +424,15 @@ def main() -> int:
             for name, n in report["files"].items():
                 print(f"  {name:<40} {n}")
         return 0
-    if args.diff:
+    if args.diff or args.diff_file:
         folder = Path(args.folder).resolve()
-        report = count_diff(folder / "guard.diff", folder)
+        name = args.diff_file or "guard.diff"
+        report = count_diff(folder / name, folder, applied=not args.diff_file)
         if args.json:
             print(json.dumps(report, indent=2))
         else:
             skipped = report["docstring_lines_skipped"]
-            print(f"{args.folder}/guard.diff: +{report['added']} -{report['removed']} counted lines "
+            print(f"{args.folder}/{name}: +{report['added']} -{report['removed']} counted lines "
                   f"({report['changed']} changed) in {len(report['files'])} files; docstrings "
                   f"{'excluded' if report['docstrings_excluded'] else 'NOT excluded'} "
                   f"(+{skipped['added']} -{skipped['removed']} skipped)")

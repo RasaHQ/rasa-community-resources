@@ -2,7 +2,7 @@
 # Shared parts in shared/; one folder per framework. See README.md and COMPARISON-PLAN.md.
 
 .DEFAULT_GOAL := help
-.PHONY: help test test-clinic test-spec test-speech test-speech-deepgram speech-live web count rasa-variant spec-rasa-variant spec-deepgram late-transcript-replay
+.PHONY: help test test-clinic test-spec test-speech test-speech-deepgram speech-live web count rasa-variant spec-rasa-variant spec-deepgram late-transcript-replay fix-copy
 
 help: ## Show targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-12s %s\n", $$1, $$2}'
@@ -52,9 +52,16 @@ spec-deepgram: ## The 17 calls on FW=langgraph|strands with Deepgram speech in a
 		--speech-prices shared/spec/speech-prices/deepgram.json --label $(LABEL) --budget-usd $(BUDGET)
 
 REPEATS ?= 3
-late-transcript-replay: ## Replay the split-transcript timing against FW=rasa|langgraph|strands, guard on (billed; LABEL=, REPEATS=, BUDGET=)
-	python3 shared/spec/late_transcript_replay.py $(FW) --label $(LABEL) --repeats $(REPEATS) --budget-usd $(BUDGET) \
+SCENARIO ?= late-transcript
+late-transcript-replay: ## Replay a timing (SCENARIO=late-transcript|backchannel-filler|backchannel-readback|wrong-entry-inhaler|wrong-entry-blue) against FW=, guard on; CWD=<fw>-fix for the fix (billed; LABEL=, REPEATS=, BUDGET=)
+	python3 shared/spec/late_transcript_replay.py $(FW) --scenario $(SCENARIO) --label $(LABEL) --repeats $(REPEATS) \
+		--budget-usd $(BUDGET) $(if $(CWD),--server-cwd $(CWD)) \
 		$(if $(filter rasa,$(FW)),,--server-cmd "uv run --locked python server.py --port {port}")
+
+fix-copy: ## Copy FW=rasa|langgraph|strands to <fw>-fix/ and apply its fix.diff (consent only after the read-back has played)
+	rm -rf $(FW)-fix
+	rsync -a --exclude .venv --exclude models --exclude .rasa --exclude __pycache__ --exclude '.env' $(FW)/ $(FW)-fix/
+	cd $(FW)-fix && patch -p1 -s < fix.diff
 
 count: ## Lines per concern for every framework folder present, and each guard diff
 	@for fw in rasa langgraph strands; do \
@@ -62,4 +69,5 @@ count: ## Lines per concern for every framework folder present, and each guard d
 		test -f $$fw/guard.diff && python3 shared/spec/count_concerns.py $$fw --diff; fi; done
 	@python3 shared/spec/count_concerns.py shared/speech
 	@python3 shared/spec/count_concerns.py shared/speech-deepgram
+	@for fw in rasa langgraph strands; do test -f $$fw/fix.diff && python3 shared/spec/count_concerns.py $$fw --diff-file fix.diff; done; true
 	@for v in deepgram-tts deepgram; do test -d rasa-$$v && python3 shared/spec/count_concerns.py rasa-$$v; done; true

@@ -361,6 +361,31 @@ class LateTranscriptReplayTests(unittest.TestCase):
         self.assertEqual(verdict["guard_violations"], [])
 
 
+class ReplayScenarioTests(unittest.TestCase):
+    def test_every_scenario_carries_onsets_and_known_anchors(self):
+        import late_transcript_replay as replay
+
+        for name, (first, then) in replay.SCENARIOS.items():
+            self.assertTrue(first, name)
+            for text, anchor, offset, length in then:
+                self.assertIn(anchor, {"turn_end", "first_bot", "read_back"}, name)
+                self.assertGreater(replay.spoken_length(text, length), 0)
+        # The recorded yes ended 4.63 s after turn 1 ended and lasted 0.66 s: it began at E + 3.97 s.
+        late = replay.SCENARIOS["late-transcript"][1][-1]
+        self.assertAlmostEqual(late[2] - replay.spoken_length(late[0], late[3]), 3.97)
+
+    def test_the_read_back_anchor_finds_the_question(self):
+        import late_transcript_replay as replay
+
+        doc = {"events": [{"event": "bot", "timestamp": 5.0, "text": "One moment."},
+                          {"event": "bot", "timestamp": 7.0, "text": "... Would you like me to do that?"},
+                          {"event": "bot_turn_ended", "timestamp": 8.0}]}
+        self.assertEqual(replay.anchor_time(doc, "first_bot", 1.0), 5.0)
+        self.assertEqual(replay.anchor_time(doc, "read_back", 1.0), 7.0)
+        self.assertEqual(replay.anchor_time(doc, "turn_end", 1.0), 8.0)
+        self.assertIsNone(replay.anchor_time(doc, "turn_end", 9.0))
+
+
 class CounterTests(unittest.TestCase):
     """count_concerns.py: the guard diff without docstrings, and restated shared text."""
 
@@ -384,6 +409,27 @@ class CounterTests(unittest.TestCase):
         self.assertTrue(report["docstrings_excluded"])
         self.assertEqual((report["added"], report["removed"]), (1, 0))
         self.assertGreater(report["docstring_lines_skipped"]["added"], 0)
+
+    def test_an_unapplied_diff_is_counted_without_its_tests(self):
+        import subprocess
+        import tempfile
+
+        import count_concerns
+
+        with tempfile.TemporaryDirectory() as tmp:
+            a, b = Path(tmp) / "fw", Path(tmp) / "fw-fix"
+            (a / "tests").mkdir(parents=True)
+            (a / "loop.py").write_text("# concern: voice-loop\nx = 1\n")
+            (a / "tests" / "test_loop.py").write_text("y = 1\n")
+            subprocess.run(["cp", "-R", str(a), str(b)], check=True)
+            (b / "loop.py").write_text("# concern: voice-loop\nx = 1\n# the fix\nz = 2\n")
+            (b / "tests" / "test_loop.py").write_text("y = 1\nw = 3\n")
+            diff = subprocess.run(["diff", "-ruN", "fw", "fw-fix"], cwd=tmp, capture_output=True, text=True).stdout
+            diff = diff.replace("--- fw/", "--- a/").replace("+++ fw-fix/", "+++ b/")
+            (a / "fix.diff").write_text(diff)
+            report = count_concerns.count_diff(a / "fix.diff", a, applied=False)
+        self.assertEqual((report["added"], report["removed"]), (1, 0))
+        self.assertEqual(report["files_not_counted"], ["tests/test_loop.py"])
 
     def test_restated_instruction_text_is_found(self):
         import tempfile

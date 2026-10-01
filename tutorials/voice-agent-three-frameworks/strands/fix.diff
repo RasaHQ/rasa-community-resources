@@ -1,0 +1,137 @@
+# The fix (opt-in, not the shipped build): a confirmation counts only if the caller began the answer after
+# the read-back finished playing. Apply to a copy of this folder: `patch -p1 < fix.diff`
+# (make fix-copy FW=strands). Measured by shared/spec/count_concerns.py strands --diff-file fix.diff.
+diff -ruN a/server.py b/server.py
+--- a/server.py
++++ b/server.py
+@@ -111,6 +111,12 @@
+         self.played_at: Optional[float] = None  # when the agent's last turn finished playing
+         self.last_speech = time.monotonic()
+         self.busy = False
++        # concern-begin: refill-guard
++        # The fix: when the caller began each utterance, and when the agent's last turn finished
++        # playing, so a confirmation is refused when the answer began before the question was heard.
++        self.utterance_onset: Optional[float] = None
++        self.turn_played_at: Optional[float] = None
++        # concern-end
+ 
+     async def send(self, frame: dict) -> None:
+         if not self.open:
+@@ -163,28 +169,36 @@
+                     log(self.cid, "speech-to-text send failed:", exc)
+                     self.asr = None
+             elif frame.get("text"):
+-                self.caller_turn(str(frame["text"]))
++                self.caller_turn(str(frame["text"]), frame.get("speech_started_at"))
+             elif "marker" in frame:
+                 if self.unacked.pop(str(frame["marker"]), False):
+                     self.played_at = time.monotonic()
++                    # concern-begin: refill-guard
++                    self.turn_played_at = time.time()
++                    # concern-end
+ 
+     async def asr_loop(self) -> None:
+         try:
+             async for event in self.asr.events():
+                 self.last_speech = time.monotonic()
++                # concern-begin: refill-guard
++                if not event.final and self.utterance_onset is None:
++                    self.utterance_onset = event.at
++                # concern-end
+                 if event.final:
+-                    self.caller_turn(event.text)
++                    onset, self.utterance_onset = self.utterance_onset or event.at, None
++                    self.caller_turn(event.text, onset)
+         except asyncio.CancelledError:
+             raise
+         except Exception as exc:
+             log(self.cid, "speech-to-text stopped:", exc)
+ 
+-    def caller_turn(self, text: str) -> None:
++    def caller_turn(self, text: str, onset: Optional[float] = None) -> None:
+         """A final transcript (or typed turn): log the user event now, answer it in order."""
+         add_event(self.cid, "user", text=text)
+         self.last_speech = time.monotonic()
+         self.played_at = None
+-        self.turns.put_nowait((text, time.monotonic()))
++        self.turns.put_nowait((text, time.monotonic(), float(onset or time.time())))
+ 
+     # -- turns --------------------------------------------------------------------
+ 
+@@ -194,8 +208,17 @@
+             item = await self.turns.get()
+             if item is None:
+                 return
+-            text, heard_at = item
++            text, heard_at, onset = item
+             log(self.cid, "caller:", text)
++            # concern-begin: refill-guard
++            # The fix: an answer that began before the question finished playing is not consent;
++            # the pending Confirm is asked again instead of being answered with it.
++            pending = cedar.conversation(self.cid).pending
++            if pending and (self.turn_played_at is None or onset < self.turn_played_at):
++                log(self.cid, "answer began before the question finished playing; asking again")
++                await self.bot_turn([("fixed", str(i.reason), "confirmation") for i in pending], heard_at, None)
++                continue
++            # concern-end
+             try:
+                 await self.bot_turn(None, heard_at, text)
+             except Exception as exc:
+@@ -205,6 +228,9 @@
+     async def bot_turn(self, fixed: Optional[list], heard_at: float, text: Optional[str]) -> None:
+         """Run the agent on one caller turn (or speak fixed messages) and speak the result."""
+         self.busy = True
++        # concern-begin: refill-guard
++        self.turn_played_at = None
++        # concern-end
+         speech: asyncio.Queue = asyncio.Queue()
+         turn = {"heard_at": heard_at, "first_ready": None, "spoken": 0}
+         speaker = asyncio.create_task(self.speaker(speech, turn))
+diff -ruN a/tests/test_strands.py b/tests/test_strands.py
+--- a/tests/test_strands.py
++++ b/tests/test_strands.py
+@@ -211,6 +211,44 @@
+         self.assertTrue(any("audio" in f for f in frames))
+         self.assertEqual(client.get("/conversations/nobody/events").json(), {"events": []})
+ 
++    def test_an_answer_before_the_question_has_played_is_asked_again(self):
++        # The fix: a pending Confirm is not answered with a turn that began before the question
++        # finished playing; the question is spoken again and the interrupt stays pending.
++        import time
++        from types import SimpleNamespace
++
++        from starlette.testclient import TestClient
++
++        import server
++
++        refills.reset_services()
++        cid = "proto-early-yes"
++        conv = cedar.Conversation(cid, model=ScriptedModel([]))
++        conv.pending = [SimpleNamespace(id="i-1", reason="Would you like me to do that?")]
++        cedar.CONVERSATIONS[cid] = conv
++
++        async def no_asr(self):
++            raise RuntimeError("offline")
++
++        with mock.patch.object(server, "TTS", FakeTTS()), mock.patch.object(server.SpeechmaticsASR, "open", no_asr):
++            client = TestClient(server.app)
++            with client.websocket_connect(server.WS_PATH, headers={"X-Rasa-Sender-Id": cid}) as ws:
++                ws.receive_json()
++                self.until_turn_end(client, ws, cid, 1)          # greeting, not yet played
++                ws.send_text(json.dumps({"text": "Yes, please."}))
++                frames = self.until_turn_end(client, ws, cid, 2)
++                for f in frames:
++                    if "marker" in f:
++                        ws.send_text(json.dumps({"marker": f["marker"]}))
++                time.sleep(0.2)
++                ws.send_text(json.dumps({"text": "Yes.", "speech_started_at": time.time() - 30}))
++                self.until_turn_end(client, ws, cid, 3)
++            events = client.get(f"/conversations/{cid}/events").json()["events"]
++        bots = [e["text"] for e in events if e["event"] == "bot"]
++        self.assertEqual(bots[1:], ["Would you like me to do that?", "Would you like me to do that?"])
++        self.assertEqual(len(conv.pending), 1)
++        self.assertEqual(conv.agent.model.calls, 0)
++
+     @staticmethod
+     def until_turn_end(client, ws, cid: str, ends: int) -> list[dict]:
+         import time
