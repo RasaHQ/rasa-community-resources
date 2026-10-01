@@ -65,11 +65,16 @@ class Root:
     name: str
     depth: int
     snapshot: bool
+    # A resource folder with no pyproject.toml of its own may hold its Rasa
+    # project one level down (`tutorials/<resource>/rasa/`), next to non-Rasa
+    # siblings built for comparison. Only a folder without its own project
+    # qualifies, so an example's nested tutorial/snippets copy stays skipped.
+    nested: bool = False
 
 
 CATALOG_ROOTS = (
     Root("examples", 2, snapshot=False),
-    Root("tutorials", 2, snapshot=False),
+    Root("tutorials", 2, snapshot=False, nested=True),
     Root("patterns", 2, snapshot=False),
     # Contributed work is maintained too. An example pinned to a release the
     # catalog has moved off is one nobody clones — being current is most of
@@ -485,8 +490,15 @@ def discover_projects(scope: str = "catalog") -> list[Project]:
         for pyproject in sorted(base.rglob("pyproject.toml")):
             # Depth pins the resource level for this root, which is what skips
             # nested copies such as an example's own tutorial/snippets tree.
-            if len(pyproject.relative_to(base).parts) != root.depth:
-                continue
+            depth = len(pyproject.relative_to(base).parts)
+            if depth != root.depth:
+                if not (root.nested and depth == root.depth + 1):
+                    continue
+                resource = pyproject.parent.parent
+                if (resource / "pyproject.toml").is_file():
+                    continue
+                if any(part.startswith(".") for part in pyproject.relative_to(base).parts):
+                    continue
             if _declares_rasa_pro(pyproject):
                 projects.append(Project(pyproject.parent, snapshot=root.snapshot))
     return projects

@@ -1,0 +1,26 @@
+# concern: ops
+[project]
+name = "voice-agent-three-frameworks-langgraph"
+version = "0.1.0"
+description = "Cedar Clinic refill-request voice agent on LangGraph (LangChain create_agent), one of three builds of the same agent: GPT-5.5, Speechmatics speech in and out, the refill guard as middleware with interrupt()"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "langgraph==1.2.12",
+    "langchain==1.4.3",
+    "langchain-openai==1.6.7",
+    # The voice loop: an asyncio HTTP and WebSocket server.
+    "starlette>=0.47",
+    "uvicorn>=0.35",
+    # The shared Cedar Clinic domain and the shared Speechmatics clients, the
+    # same packages the Strands version installs.
+    "cedar-clinic",
+    "cedar-speech",
+]
+
+[tool.uv.sources]
+cedar-clinic = { path = "../shared/clinic", editable = true }
+cedar-speech = { path = "../shared/speech", editable = true }
+
+[tool.uv]
+package = false

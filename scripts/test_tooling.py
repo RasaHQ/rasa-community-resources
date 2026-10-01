@@ -1068,6 +1068,18 @@ class TestTierDiscovery(unittest.TestCase):
         with self.assertRaises(ValueError):
             rasa_projects.discover_projects("everything")
 
+    def test_a_tutorial_may_hold_its_rasa_project_one_level_down(self):
+        # tutorials/voice-agent-three-frameworks/ keeps the Rasa version in
+        # rasa/ beside non-Rasa builds of the same agent, and has no
+        # pyproject.toml of its own.
+        with FakeRepo() as repo:
+            repo.project("tutorials/multi/rasa")
+            repo.project("tutorials/single")
+            repo.project("tutorials/single/tutorial/snippets")
+            repo.project("examples/agent/nested")
+            found = sorted(p.rel for p in rasa_projects.discover_projects())
+        self.assertEqual(found, ["tutorials/multi/rasa", "tutorials/single"])
+
 
 class TestVersionConsistencyTiers(unittest.TestCase):
     """The shared pin governs everything maintained, and stops at `heroes/`."""

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cedar Clinic voice</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #f7f7f5; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6b66; --line: #deded8;
+    --accent: #5a2ea6; --caller: #eef3ff; --agent: #f4efff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151514; --panel: #1f1f1d; --ink: #ededea; --muted: #a3a39d; --line: #34342f;
+            --accent: #b394ff; --caller: #1d2638; --agent: #2a2140; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 20px 16px 40px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 16px; font-size: 13px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;
+           margin-bottom: 12px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  input[type=text] { flex: 1; min-width: 200px; padding: 8px 10px; border: 1px solid var(--line);
+                     border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit; }
+  button { padding: 8px 14px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent);
+           color: #fff; font: inherit; cursor: pointer; }
+  button.secondary { background: transparent; color: var(--accent); }
+  label { font-size: 13px; color: var(--muted); }
+  #transcript { height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  #transcript div { padding: 6px 10px; border-radius: 6px; max-width: 85%; }
+  #transcript .user { background: var(--caller); align-self: flex-end; }
+  #transcript .bot { background: var(--agent); align-self: flex-start; }
+  #stats, #mode { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  #log { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); max-height: 140px;
+         overflow-y: auto; }
+  #state { font-weight: 600; }
+  #speaking { color: var(--accent); font-size: 13px; }
+  meter { width: 120px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Cedar Clinic prescription line</h1>
+  <p class="sub">One page for the Rasa, LangGraph and Strands versions of the same voice agent. Cedar Clinic is
+    fictional. The page speaks the browser_audio protocol; the agent hears and speaks through Speechmatics.</p>
+
+  <div class="panel">
+    <div class="row">
+      <input id="wsurl" type="text" value="ws://localhost:5005/webhooks/browser_audio/websocket"
+             aria-label="WebSocket URL">
+      <button id="connect">Call</button>
+      <button id="hangup" class="secondary">Hang up</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <span id="state">not connected</span>
+      <label><input id="usemic" type="checkbox" checked> microphone</label>
+      <label><input id="halfduplex" type="checkbox" checked> mute the microphone while the agent speaks</label>
+      <meter id="level" min="0" max="1" value="0" aria-label="microphone level"></meter>
+      <span id="speaking"></span>
+    </div>
+    <div id="mode" style="margin-top:6px"></div>
+  </div>
+
+  <div class="panel">
+    <div id="transcript" aria-live="polite"></div>
+    <div class="row" style="margin-top:8px">
+      <input id="text" type="text" placeholder="Or type what the caller says" aria-label="Typed input">
+      <button id="send" class="secondary">Send text</button>
+    </div>
+  </div>
+
+  <div class="panel"><div id="stats"></div></div>
+  <div class="panel"><div id="log"></div></div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

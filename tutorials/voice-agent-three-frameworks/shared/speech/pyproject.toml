@@ -1,0 +1,21 @@
+# concern: ops
+[project]
+name = "cedar-speech"
+version = "0.1.0"
+description = "Speechmatics realtime speech-to-text and text-to-speech clients for the Cedar Clinic voice agents, making the same vendor calls as the Rasa version's engines. No framework imports."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # The asyncio client with additional_headers, as Rasa's engines use it.
+    "websockets>=15",
+    "aiohttp>=3.9",
+    # audioop left the standard library in 3.13; this is the same module.
+    "audioop-lts>=0.2.1; python_version >= '3.13'",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cedar_speech"]

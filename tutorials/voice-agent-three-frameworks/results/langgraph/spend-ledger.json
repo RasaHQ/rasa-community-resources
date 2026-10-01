@@ -1,0 +1,105 @@
+{
+  "runs": [
+    {
+      "label": "2026-10-01-smoke-text",
+      "run_tag": "20260930T231641",
+      "mode": "text",
+      "conversations": 1,
+      "cost_usd": 0.002398,
+      "llm_cost_usd": 0,
+      "stt_cost_usd": 0.002398,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-smoke-text-responses",
+      "run_tag": "20260930T231726",
+      "mode": "text",
+      "conversations": 1,
+      "cost_usd": 0.038961,
+      "llm_cost_usd": 0.034405,
+      "stt_cost_usd": 0.004556,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-smoke-audio",
+      "run_tag": "20260930T231849",
+      "mode": "audio",
+      "conversations": 1,
+      "cost_usd": 0.053003,
+      "llm_cost_usd": 0.044121,
+      "stt_cost_usd": 0.008882,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-web-page-check (first attempt, not kept)",
+      "mode": "browser page, headless Chromium",
+      "conversations": 1,
+      "llm_cost_usd": 0.034605,
+      "stt_cost_usd": 0.004025,
+      "note": "The shared page through serve.py, metered by llm_meter.py run beside the server (scratch script). Its events showed the typed answer logged before the question's audio had been sent; the loop was changed to finish sending a turn before taking the next, and the check was run again. Speech-to-text seconds from the server log (33.7 s).",
+      "cost_usd": 0.03863,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds (server log) x spec price"
+    },
+    {
+      "label": "2026-10-01-web-page-check",
+      "mode": "browser page, headless Chromium",
+      "conversations": 1,
+      "llm_cost_usd": 0.027748,
+      "stt_cost_usd": 0.004121,
+      "note": "The kept page check (check-page.json), metered by llm_meter.py; speech-to-text seconds from the server log (34.5 s).",
+      "cost_usd": 0.031869,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds (server log) x spec price"
+    },
+    {
+      "label": "2026-10-01-silence-check-in (38 s attempt)",
+      "mode": "audio, silence only",
+      "conversations": 1,
+      "llm_cost_usd": 0.0,
+      "stt_cost_usd": 0.004133,
+      "note": "Too short to reach 30 s after the greeting finished playing; no check-in. Speech-to-text only (34.6 s).",
+      "cost_usd": 0.004133,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds (server log) x spec price"
+    },
+    {
+      "label": "2026-10-01-silence-check-in",
+      "mode": "audio, silence only",
+      "conversations": 1,
+      "llm_cost_usd": 0.0,
+      "stt_cost_usd": 0.005447,
+      "note": "50 s of silence; the check-in was spoken 30 s after the greeting's playback was acknowledged. No model call (meter: 0). Speech-to-text only (45.6 s).",
+      "cost_usd": 0.005447,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds (server log) x spec price"
+    },
+    {
+      "label": "2026-10-01-speechmatics-live",
+      "run_tag": "20260930T232815",
+      "mode": "audio",
+      "conversations": 17,
+      "cost_usd": 0.699337,
+      "llm_cost_usd": 0.587596,
+      "stt_cost_usd": 0.111741,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-speechmatics-repeat-no-change",
+      "run_tag": "20260930T234449",
+      "mode": "audio",
+      "conversations": 1,
+      "cost_usd": 0.035446,
+      "llm_cost_usd": 0.02955,
+      "stt_cost_usd": 0.005896,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    },
+    {
+      "label": "2026-10-01-guard-off-adversarial",
+      "run_tag": "20261001T002448",
+      "mode": "audio",
+      "conversations": 6,
+      "cost_usd": 0.207719,
+      "llm_cost_usd": 0.17097,
+      "stt_cost_usd": 0.036749,
+      "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"
+    }
+  ],
+  "total_cost_usd": 1.116943
+}
