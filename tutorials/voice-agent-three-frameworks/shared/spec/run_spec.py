@@ -497,6 +497,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("framework", choices=sorted(PRESETS))
     parser.add_argument("--label", default=None, help="results folder name (default: timestamp)")
+    parser.add_argument("--spec", default=str(SPEC_FILE),
+                        help="conversation spec file (default: conversations.json, the 17 headline calls)")
     parser.add_argument("--only", nargs="*", help="conversation ids to run")
     parser.add_argument("--mode", choices=("audio", "text"), default="audio",
                         help="audio streams the caller WAVs; text sends {\"text\"} frames (skips speech-to-text)")
@@ -512,7 +514,7 @@ def main() -> int:
     args = parser.parse_args()
 
     preset = PRESETS[args.framework]
-    spec = json.loads(SPEC_FILE.read_text())
+    spec = json.loads(Path(args.spec).read_text())
     convs = [c for c in spec["conversations"] if not args.only or c["id"] in args.only]
     if args.only and len(convs) != len(args.only):
         parser.error(f"unknown conversation id in {args.only}")
@@ -613,6 +615,7 @@ def main() -> int:
         "label": label,
         "run_tag": run_tag,
         "mode": args.mode,
+        "spec": spec["spec"],
         "started_at": started_at,
         "ended_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "spec_model": spec["model"],
@@ -629,7 +632,7 @@ def main() -> int:
     (out_dir / "results.json").write_text(json.dumps(report, indent=1, default=str) + "\n")
     (out_dir / "summary.md").write_text(render_summary(report))
     stt_cost = round(sum(r["usage"]["stt_cost_usd"] for r in results), 6)
-    ledger_append(ledger, {"label": label, "run_tag": run_tag, "mode": args.mode,
+    ledger_append(ledger, {"label": label, "run_tag": run_tag, "mode": args.mode, "spec": spec["spec"],
                            "conversations": len(results), "cost_usd": round(meter.total_cost() + stt_cost, 6),
                            "llm_cost_usd": meter.total_cost(), "stt_cost_usd": stt_cost,
                            "source": "llm_meter.py token usage x spec prices; speech-to-text seconds x spec price"})

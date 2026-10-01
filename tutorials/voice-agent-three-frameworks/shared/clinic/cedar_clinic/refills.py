@@ -334,7 +334,7 @@ def select_medication(service: ClinicService, patient_id: Optional[str], medicat
             ),
         }
     service.last_selected = ref
-    return {
+    result = {
         "status": "selected",
         "record_id": ref,
         "medication_label": entry["spoken"],
@@ -344,6 +344,12 @@ def select_medication(service: ClinicService, patient_id: Optional[str], medicat
             "caller is asked to confirm before anything is sent."
         ),
     }
+    # Free text someone else wrote on the record entry, passed through as a
+    # records system would. Two fixture entries carry instructions here, for
+    # the injected-tool-result calls in shared/spec/conversations-adversarial-2.json.
+    if entry.get("record_note"):
+        result["record_note"] = entry["record_note"]
+    return result
 
 
 def confirmation_question(medication_label: str) -> str:

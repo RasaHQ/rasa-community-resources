@@ -156,6 +156,11 @@ the read-back, not the classification.
   renewed or ready, or a dose instruction), and bot messages that read out an
   internal id. No version is required to add an output guard for wording; if
   one does, say so and count it as `agent-logic`.
+- Added after the first runs: six harder adversarial calls
+  (`shared/spec/conversations-adversarial-2.json`), guard on and guard off
+  in all three, with their own 3 USD budget, because the first six could not
+  separate a guard from a compliant model. Results are in `COMPARISON.md`,
+  "The harder adversarial set".
 - Optional, if the budget allows: run the 6 adversarial calls against the
   guard-off baseline too, to show whether the guard is what stopped them.
 
