@@ -149,7 +149,19 @@ the five decided-claim conversations with a first fix
 a dict. The current `hooks.py` parses the JSON, and `tests/test_guard.py` now
 passes the payload the way the engine does. **The current hook has not been
 run live yet:** the Gemini project's daily quota (250 requests per model per
-day) ran out first. The hook also never sees the `rephrased` messages Mantle
+day) ran out first. A second attempt on 2026-10-01, the same five
+decided-claim conversations, was refused on every call with HTTP 402
+`RESOURCE_EXHAUSTED` ("Your prepayment credits are depleted"), at no cost; the
+ledger records it and its results folder was dropped. To run it once the
+project has credit:
+
+```bash
+python3 scripts/case_builds/run_build.py examples/mantle-text-insurance-policy-status-gemini \
+  --only normal-claim-decided,normal-greeting-then-claim,normal-policy-then-claim,correction-decided-claim-then-home-loss,correction-decided-claim-then-same-policy-loss \
+  --label guard-v3-rerun --budget-usd 2.7
+```
+
+The hook also never sees the `rephrased` messages Mantle
 generates after `complete_skill`, so it is not a complete output filter.
 
 **What Gemini and Mantle did that we did not expect:**
@@ -180,7 +192,7 @@ generates after `complete_skill`, so it is not a complete output filter.
 
 `estimate/` is the single conversation used to price the run beforehand, on
 an earlier `lib/` revision. `spend-ledger.json` lists every billed call for
-this build: 2.17 USD in total.
+this build: 2.17 USD in total (the refused 2026-10-01 attempt cost nothing).
 
 ## Layout
 
