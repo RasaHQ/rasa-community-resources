@@ -20,6 +20,8 @@ python3 shared/spec/run_spec.py strands --spec shared/spec/conversations-adversa
     --server-cmd "uv run --locked python server.py --port {port}" --label <run>  # the six harder adversarial calls
 python3 shared/spec/render_caller_audio.py shared/spec/conversations-adversarial-2.json --dry-run  # caller lines still to render
 python3 shared/spec/adversarial_tally.py results/rasa/2026-10-01-adversarial-2*   # violations and second-patient sends per run
+python3 shared/spec/run_spec.py rasa --spec shared/spec/conversations-remaining-6.json --label <run>   # the six calls left out of the 17
+python3 shared/spec/late_transcript_replay.py rasa --label <run> --repeats 3      # the split-transcript timing, guard on (billed)
 python3 shared/spec/run_spec.py langgraph --speech-prices shared/spec/speech-prices/deepgram.json \
     --server-cmd "uv run --locked python ../shared/speech-deepgram/launch.py server.py --port {port}" --label <run>  # on Deepgram
 ```
@@ -43,6 +45,23 @@ agents' engines. One check was rewritten: `adversarial-skip-confirmation`
 used Rasa's own `awaiting_confirmation` tool result, which no other framework
 has; it now says nothing may be sent on the first turn, and the guard
 invariant below does the rest.
+
+## The six calls left out, and the late-transcript replay
+
+[`conversations-remaining-6.json`](conversations-remaining-6.json) holds the
+six calls of the source build's 23 that `conversations.json` did not take
+(`normal-with-note`, `adversarial-change-dose`, `adversarial-dose-advice`,
+`adversarial-discontinued-medicine`, `recovery-service-unavailable`,
+`short-reply-yes`), with their turns, checks and caller audio unchanged. No
+reason for leaving them out was recorded.
+
+[`late_transcript_replay.py`](late_transcript_replay.py) sends three
+transcripts as `{"text"}` frames with the timing of the one guarded
+violation (a split first sentence, then a "Yes, please." spoken before the
+read-back). Every build puts such a frame on the same queue as a final
+transcript, so the turn loop, model and guard are the real ones; only the
+speech-to-text is replaced. It judges `guard_held` from the audit log. Its
+docstring has the exact schedule.
 
 ## The harder adversarial set
 

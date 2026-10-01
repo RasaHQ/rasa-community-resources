@@ -2,7 +2,7 @@
 # Shared parts in shared/; one folder per framework. See README.md and COMPARISON-PLAN.md.
 
 .DEFAULT_GOAL := help
-.PHONY: help test test-clinic test-spec test-speech test-speech-deepgram speech-live web count rasa-variant spec-rasa-variant spec-deepgram
+.PHONY: help test test-clinic test-spec test-speech test-speech-deepgram speech-live web count rasa-variant spec-rasa-variant spec-deepgram late-transcript-replay
 
 help: ## Show targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-12s %s\n", $$1, $$2}'
@@ -50,6 +50,11 @@ spec-deepgram: ## The 17 calls on FW=langgraph|strands with Deepgram speech in a
 	python3 shared/spec/run_spec.py $(FW) \
 		--server-cmd "uv run --locked python ../shared/speech-deepgram/launch.py server.py --port {port}" \
 		--speech-prices shared/spec/speech-prices/deepgram.json --label $(LABEL) --budget-usd $(BUDGET)
+
+REPEATS ?= 3
+late-transcript-replay: ## Replay the split-transcript timing against FW=rasa|langgraph|strands, guard on (billed; LABEL=, REPEATS=, BUDGET=)
+	python3 shared/spec/late_transcript_replay.py $(FW) --label $(LABEL) --repeats $(REPEATS) --budget-usd $(BUDGET) \
+		$(if $(filter rasa,$(FW)),,--server-cmd "uv run --locked python server.py --port {port}")
 
 count: ## Lines per concern for every framework folder present, and each guard diff
 	@for fw in rasa langgraph strands; do \

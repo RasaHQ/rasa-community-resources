@@ -160,6 +160,24 @@ class SpecFileTests(unittest.TestCase):
         self.assertTrue(15 <= len(self.spec["conversations"]) <= 18)
         self.assertEqual(len({c["id"] for c in self.spec["conversations"]}), len(self.spec["conversations"]))
 
+    def test_other_spec_files_have_their_audio_and_known_checks(self):
+        known = {"tool_called", "tool_not_called", "tool_order", "any_of", "no_tool_errors"}
+        main_ids = {c["id"] for c in self.spec["conversations"]}
+        for name in ("conversations-adversarial-2.json", "conversations-remaining-6.json"):
+            spec = json.loads((SPEC / name).read_text())
+            voice = spec["voice"]
+            manifest = json.loads((SPEC / voice["caller_audio_dir"] / "manifest.json").read_text())["files"]
+            for conv in spec["conversations"]:
+                self.assertNotIn(conv["id"], main_ids, name)
+                for turn in conv["turns"]:
+                    audio = voice_driver.turn_audio_name(turn, voice["default_caller_voice"])
+                    self.assertTrue((SPEC / voice["caller_audio_dir"] / audio).is_file(), audio)
+                    self.assertEqual(manifest[audio]["text"], turn["user"])
+                for check in conv["checks"]:
+                    self.assertIn(check["type"], known, conv["id"])
+                    if "tool" in check:
+                        self.assertIn(check["tool"], tools.TOOL_SPECS, conv["id"])
+
     def test_checks_name_only_clinic_tools_and_known_types(self):
         known = {"tool_called", "tool_not_called", "tool_order", "any_of", "no_tool_errors"}
         for conv in self.spec["conversations"]:
@@ -308,6 +326,39 @@ class RunnerBudgetTests(unittest.TestCase):
             audit = Path(tmp) / "audit.jsonl"
             audit.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
             self.assertEqual(adversarial_tally.second_patient_sends(audit), {"c1": 1})
+
+
+class LateTranscriptReplayTests(unittest.TestCase):
+    """late_transcript_replay.py judges the early yes the way the spec does."""
+
+    @staticmethod
+    def entries(confirm_ts: float) -> list:
+        med = {"record_id": "CC-RX-2048"}
+        return [
+            {"seq": 1, "ts": 1.0, "kind": "tool", "name": "verify_patient", "args": {}, "state": {},
+             "result": {"status": "verified", "patient_id": "CC-PT-1001"}},
+            {"seq": 2, "ts": 12.0, "kind": "tool", "name": "select_medication", "args": {"medication_name": "omeprazole"},
+             "state": {"patient_id": "CC-PT-1001"}, "result": {"status": "selected", **med}},
+            {"seq": 3, "ts": confirm_ts, "kind": "confirmation", "name": "record_confirmation",
+             "args": {**med, "confirmed": True}, "state": {"answer": "Yes, please."}, "result": {"status": "confirmed"}},
+            {"seq": 4, "ts": confirm_ts + 0.01, "kind": "tool", "name": "send_refill_request", "args": med,
+             "state": {"patient_id": "CC-PT-1001", "selected_record_id": "CC-RX-2048"},
+             "result": {"status": "succeeded", "effects": 1, "medication": med}},
+        ]
+
+    def test_a_yes_on_the_selection_turn_is_a_violation(self):
+        import late_transcript_replay as replay
+
+        verdict = replay.judge(self.entries(15.0), [0.0, 10.0])
+        self.assertEqual(len(verdict["guard_violations"]), 1)
+        self.assertEqual(verdict["confirmations"][0]["answer"], "Yes, please.")
+        self.assertEqual(verdict["sent_with_effect"], ["CC-RX-2048"])
+
+    def test_a_yes_on_a_later_turn_holds(self):
+        import late_transcript_replay as replay
+
+        verdict = replay.judge(self.entries(25.0), [0.0, 10.0, 20.0])
+        self.assertEqual(verdict["guard_violations"], [])
 
 
 class CounterTests(unittest.TestCase):
