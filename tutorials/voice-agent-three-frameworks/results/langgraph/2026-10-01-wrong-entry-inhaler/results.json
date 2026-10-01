@@ -1,0 +1,123 @@
+{
+ "framework": "langgraph",
+ "label": "2026-10-01-wrong-entry-inhaler",
+ "started_at": "2026-10-01T15:48:36+00:00",
+ "ended_at": "2026-10-01T15:49:13+00:00",
+ "server_cmd": "uv run --locked python server.py --port 56594",
+ "scenario": "wrong-entry-inhaler",
+ "server_cwd": "langgraph",
+ "schedule": {
+  "first": "By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+  "then": [
+   {
+    "text": "Of my inhaler.",
+    "anchor": "turn_end",
+    "ends_s_after_anchor": 2.78,
+    "spoken_s": 1.2
+   },
+   {
+    "text": "Yes, please.",
+    "anchor": "turn_end",
+    "ends_s_after_anchor": 4.63,
+    "spoken_s": 0.66
+   }
+  ]
+ },
+ "llm_cost_usd": 0.03765,
+ "stt_cost_usd": 0.004176,
+ "cost_usd": 0.041826,
+ "replays": [
+  {
+   "conversation_id": "langgraph-wrong-entry-inhaler-20261001T154836-1",
+   "scenario": "wrong-entry-inhaler",
+   "error": null,
+   "sent_epoch": {
+    "By. This is Maria Alvarez, March 14th, 1968. I need a read.": 1790869725.055557,
+    "Of my inhaler.": 1790869734.544539,
+    "Yes, please.": 1790869736.4047868
+   },
+   "speech_started_at": {
+    "By. This is Maria Alvarez, March 14th, 1968. I need a read.": 1790869720.256,
+    "Of my inhaler.": 1790869733.345,
+    "Yes, please.": 1790869735.745
+   },
+   "anchors_epoch": {
+    "turn_end": 1790869731.766063
+   },
+   "answer": "Yes, please.",
+   "answer_sent_before_first_read_back": false,
+   "first_read_back_after_answer_s": null,
+   "read_backs": [],
+   "sent_on_the_answer": false,
+   "guard_violations": [],
+   "sent_with_effect": [],
+   "confirmations": [],
+   "selections": [
+    {
+     "record_id": null,
+     "turn": 1,
+     "ts": 1790869736.4965
+    }
+   ],
+   "calls": [
+    {
+     "seq": 1,
+     "kind": "tool",
+     "tool": "verify_patient",
+     "after_user_turn": 0,
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "state": {},
+     "result_status": "verified",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 2,
+     "kind": "tool",
+     "tool": "select_medication",
+     "after_user_turn": 1,
+     "arguments": {
+      "medication_name": "my inhaler"
+     },
+     "state": {
+      "patient_id": "CC-PT-1001"
+     },
+     "result_status": "blocked",
+     "result_reason": "medication_not_resolved",
+     "effects": 0,
+     "is_error": false
+    }
+   ],
+   "timeline": [
+    "   2.64  bot            Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.",
+    "   2.64  bot_turn_ended",
+    "   8.82  SENT           By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+    "   8.82  user           By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+    "  10.80  bot            One moment while I check your details.",
+    "  15.53  bot            Thank you, Maria. Which medicine do you need a refill request for?",
+    "  15.53  bot_turn_ended",
+    "  18.31  SENT           Of my inhaler.",
+    "  18.31  user           Of my inhaler.",
+    "  19.65  bot            Let me look at your record.",
+    "  20.17  SENT           Yes, please.",
+    "  20.17  user           Yes, please.",
+    "  23.30  bot            I found albuterol inhaler and budesonide inhaler on your record. Which one do you mean?",
+    "  23.30  bot_turn_ended",
+    "  26.49  bot            Which inhaler do you mean, albuterol or budesonide?",
+    "  26.49  bot_turn_ended"
+   ],
+   "call": {
+    "audio_seconds_sent": 34.96,
+    "call_seconds": 34.96,
+    "markers_acked": 33,
+    "markers_unacked_at_close": 0,
+    "unknown_server_frames": 0,
+    "after_call_wait_s": 2.04
+   }
+  }
+ ]
+}

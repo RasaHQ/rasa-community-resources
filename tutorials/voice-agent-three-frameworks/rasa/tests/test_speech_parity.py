@@ -123,5 +123,95 @@ class MessageParityTests(unittest.TestCase):
         self.assertEqual(ours, shared_audio.wav_to_pcm(wav, 16000, 24000))
 
 
+class DeepgramVariantTests(unittest.TestCase):
+    """The speech variants in ../variants/ and shared/speech-deepgram make the same Deepgram calls.
+
+    Not the shipped build: these files are only used through `make rasa-variant`.
+    """
+
+    def setUp(self):
+        self._saved = os.environ.get("DEEPGRAM_API_KEY")
+        os.environ["DEEPGRAM_API_KEY"] = "test-key"
+        sys.path.insert(0, str(TUTORIAL / "shared" / "speech-deepgram"))
+
+    def tearDown(self):
+        if self._saved is None:
+            os.environ.pop("DEEPGRAM_API_KEY", None)
+        else:
+            os.environ["DEEPGRAM_API_KEY"] = self._saved
+
+    @staticmethod
+    def variant(name: str) -> dict:
+        return yaml.safe_load((TUTORIAL / "variants" / f"rasa-{name}.integrations.yml").read_text())
+
+    def test_variants_differ_from_the_build_only_in_speech_engines(self):
+        shipped = yaml.safe_load((PROJECT / "integrations.yml").read_text())
+        for name, changed in (("deepgram-tts", {"tts"}), ("deepgram", {"asr", "tts"})):
+            variant = self.variant(name)
+            self.assertEqual(variant["model_groups"], shipped["model_groups"])
+            for ch in ("browser_audio", "inspector"):
+                a, b = shipped["channels"][ch], variant["channels"][ch]
+                self.assertEqual({k: v for k, v in a.items() if k not in changed},
+                                 {k: v for k, v in b.items() if k not in changed}, (name, ch))
+                for key in changed:
+                    self.assertEqual(b[key]["name"], "deepgram", (name, ch, key))
+            if name == "deepgram-tts":
+                self.assertEqual(variant["channels"]["browser_audio"]["asr"], shipped["channels"]["browser_audio"]["asr"])
+
+    def test_builtin_deepgram_tts_streams_text_input(self):
+        from rasa.core.channels.voice_stream.tts.deepgram import DeepgramTTS
+
+        from cedar_speech_deepgram import config as dg
+
+        cfg = dict(self.variant("deepgram-tts")["channels"]["browser_audio"]["tts"])
+        cfg.pop("name")
+        tts = DeepgramTTS.from_config_dict(cfg, L16_24KHZ, "en")
+        self.assertTrue(tts.streaming_input)
+        url = tts.get_websocket_url(tts.config)
+        self.assertEqual(url.split("?")[0], dg.TTS_ENDPOINT)
+        self.assertEqual(dict(p.split("=") for p in url.split("?")[1].split("&")),
+                         {k: str(v) for k, v in dg.tts_query().items()})
+
+    def test_builtin_deepgram_asr_query_matches_the_shared_client(self):
+        from rasa.core.channels.voice_stream.asr.deepgram import DeepgramASR
+
+        from cedar_speech_deepgram import config as dg
+
+        cfg = dict(self.variant("deepgram")["channels"]["browser_audio"]["asr"])
+        cfg.pop("name")
+        asr = DeepgramASR.from_config_dict(cfg, L16_24KHZ, "en")
+        self.assertEqual(asr._get_api_url().rstrip("?"), dg.ASR_ENDPOINT)
+        self.assertEqual(dict(p.split("=") for p in asr._get_query_params().split("&")),
+                         {k: str(v) for k, v in dg.asr_query().items()})
+
+    def test_builtin_and_shared_readers_join_turns_identically(self):
+        from rasa.core.channels.voice_stream.asr.deepgram import DeepgramASR
+
+        from cedar_speech_deepgram.asr import ResultsReader
+
+        cfg = dict(self.variant("deepgram")["channels"]["browser_audio"]["asr"])
+        cfg.pop("name")
+        asr = DeepgramASR.from_config_dict(cfg, L16_24KHZ, "en")
+        reader = ResultsReader()
+
+        def res(text, is_final, speech_final=False):
+            return json.dumps({"type": "Results", "is_final": is_final, "speech_final": speech_final,
+                               "channel": {"alternatives": [{"transcript": text}]}})
+
+        frames = [res("I'm Maria", False), res("I'm Maria Alvarez,", True), res("born March", False),
+                  res("born March 14th, 1968.", True, True), res("", True, True), res("Yes.", True),
+                  json.dumps({"type": "UtteranceEnd"}), json.dumps({"type": "SpeechStarted"})]
+        for frame in frames:
+            ours = reader.read(frame)
+            theirs = asr.engine_event_to_asr_event(frame)
+            if theirs is None:
+                self.assertIsNone(ours, frame)
+            elif isinstance(theirs, NewTranscript):
+                self.assertEqual(ours, ("final", theirs.text), frame)
+            else:
+                self.assertIsInstance(theirs, UserIsSpeaking)
+                self.assertEqual(ours, ("partial", theirs.text), frame)
+
+
 if __name__ == "__main__":
     unittest.main()

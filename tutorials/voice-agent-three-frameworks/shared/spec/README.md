@@ -15,10 +15,15 @@ python3 -m unittest discover -s shared/spec/tests -v                        # of
 python3 shared/spec/count_concerns.py rasa                                   # lines per concern
 python3 shared/spec/count_concerns.py rasa --diff                            # lines in rasa/guard.diff, docstrings excluded
 python3 shared/spec/count_concerns.py rasa --shared-text                     # lines that restate cedar_clinic.instructions
-python3 shared/spec/rasa_call_breakdown.py results/rasa/<run>                # where a Rasa run's model calls went
+python3 shared/spec/rasa_call_breakdown.py results/rasa/<run>                # a Rasa run's model calls by Mantle function
 python3 shared/spec/run_spec.py strands --spec shared/spec/conversations-adversarial-2.json \
     --server-cmd "uv run --locked python server.py --port {port}" --label <run>  # the six harder adversarial calls
 python3 shared/spec/render_caller_audio.py shared/spec/conversations-adversarial-2.json --dry-run  # caller lines still to render
+python3 shared/spec/adversarial_tally.py results/rasa/2026-10-01-adversarial-2*   # violations and second-patient sends per run
+python3 shared/spec/run_spec.py rasa --spec shared/spec/conversations-remaining-6.json --label <run>   # the six calls left out of the 17
+python3 shared/spec/late_transcript_replay.py rasa --label <run> --repeats 3      # the split-transcript timing, guard on (billed)
+python3 shared/spec/run_spec.py langgraph --speech-prices shared/spec/speech-prices/deepgram.json \
+    --server-cmd "uv run --locked python ../shared/speech-deepgram/launch.py server.py --port {port}" --label <run>  # on Deepgram
 ```
 
 Everything here is standard library and runs under a bare `python3`.
@@ -40,6 +45,23 @@ agents' engines. One check was rewritten: `adversarial-skip-confirmation`
 used Rasa's own `awaiting_confirmation` tool result, which no other framework
 has; it now says nothing may be sent on the first turn, and the guard
 invariant below does the rest.
+
+## The six calls left out, and the late-transcript replay
+
+[`conversations-remaining-6.json`](conversations-remaining-6.json) holds the
+six calls of the source build's 23 that `conversations.json` did not take
+(`normal-with-note`, `adversarial-change-dose`, `adversarial-dose-advice`,
+`adversarial-discontinued-medicine`, `recovery-service-unavailable`,
+`short-reply-yes`), with their turns, checks and caller audio unchanged. No
+reason for leaving them out was recorded.
+
+[`late_transcript_replay.py`](late_transcript_replay.py) sends three
+transcripts as `{"text"}` frames with the timing of the one guarded
+violation (a split first sentence, then a "Yes, please." spoken before the
+read-back). Every build puts such a frame on the same queue as a final
+transcript, so the turn loop, model and guard are the real ones; only the
+speech-to-text is replaced. It judges `guard_held` from the audit log. Its
+docstring has the exact schedule.
 
 ## The harder adversarial set
 
@@ -125,26 +147,28 @@ conversation id passed to `cedar_clinic`, `latency` on end markers,
 
 ## Spend
 
-`--budget-usd` caps the framework's total in
-`results/<framework>/spend-ledger.json` across runs. Before each call the
-runner projects its cost from the run so far (or `prior_cost_per_call_usd`)
-with a 1.5x margin and skips the call if the cap would be crossed. Spend is
-the meter's model cost plus Speechmatics speech-to-text, priced per second
-streamed from `speech_prices` in the spec. Speechmatics TTS is in preview
-with no published price; its characters are recorded and left unpriced.
+`--budget-usd` caps this run's spend: before each call the runner projects
+its cost from the run so far (or `prior_cost_per_call_usd`) with a 1.5x
+margin and skips the call if the cap would be crossed. Every run is then
+appended to `results/<framework>/spend-ledger.json`, which is the record
+across runs; it does not count against the cap, so a reader's fresh run is
+not blocked by the spend recorded here. Spend is the meter's model cost plus
+speech-to-text, priced per second streamed from `speech_prices` in the spec.
+Speechmatics TTS is in preview with no published price; its characters are
+recorded and left unpriced. `--speech-prices <file>` replaces the price rows
+for the Deepgram variants ([`speech-prices/`](speech-prices/), with source
+and date), and then text-to-speech characters are priced too.
 
 ## Rasa-only diagnostics
 
 The Rasa preset starts the agent through
 [`rasa_call_purposes.py`](rasa_call_purposes.py), which attaches the
 case-build harness's LiteLLM usage logger and labels every model call with
-the Mantle function that made it (orchestrator iteration, response
-rephrasing, fact discovery, completion judge) in `call-purposes.jsonl`. It
-changes no request and writes no prompt or response content.
+the Mantle function that made it in `call-purposes.jsonl`. It changes no
+request and writes no prompt or response content.
 [`rasa_call_breakdown.py`](rasa_call_breakdown.py) turns that file, the
-meter log and the trackers into a table by purpose, split into calls made
-during caller turns and calls made after the hangup. Both are test
-equipment and count for no framework.
+meter log and the trackers into a table of a run's model calls by Mantle
+function. Both are test equipment and count for no framework.
 
 ## Output
 

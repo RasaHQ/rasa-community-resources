@@ -1,0 +1,330 @@
+# The fix (opt-in, not the shipped build): a confirmation counts only if the caller began the answer after
+# the read-back finished playing. Apply to a copy of this folder: `patch -p1 < fix.diff`
+# (make fix-copy FW=rasa). Measured by shared/spec/count_concerns.py rasa --diff-file fix.diff.
+diff -ruN a/channels/__init__.py b/channels/__init__.py
+--- a/channels/__init__.py
++++ b/channels/__init__.py
+@@ -0,0 +1 @@
++# concern: refill-guard
+diff -ruN a/channels/consent_timing.py b/channels/consent_timing.py
+--- a/channels/consent_timing.py
++++ b/channels/consent_timing.py
+@@ -0,0 +1,126 @@
++# concern: refill-guard
++"""Consent after playback (the fix): when the caller spoke, and when the read-back finished playing.
++
++Rasa's requires_confirmation resolves the pending confirmation with the next
++user message Mantle takes from the call's input queue, whenever it was spoken
++(rasa/core/channels/voice_stream/voice_channel.py puts final transcripts and
++{"text"} frames on that queue). This channel is browser_audio with two
++records added, per conversation:
++
++- each caller utterance's onset: the first partial transcript of the
++  utterance (UserIsSpeaking), or for a {"text"} frame its
++  ``speech_started_at`` field, else the time it arrived;
++- each bot message's playback end: the time the client acknowledged the
++  message's end marker.
++
++send_refill_request (skills/request_refill/tools.py) reads them through
++``answer_heard_after_question`` and refuses to send when the answer began
++before the read-back had finished playing. Nothing in the wheel is patched;
++the channel is loaded by dotted path from integrations.yml and keeps the
++name ``browser_audio``, so its webhook is the same.
++"""
++
++from __future__ import annotations
++
++import json
++import re
++import time
++from typing import Any, Dict, Optional
++
++import structlog
++
++from rasa.core.channels.voice_stream.asr.asr_event import NewTranscript, UserIsSpeaking
++from rasa.core.channels.voice_stream.browser_audio import BrowserAudioInputChannel, BrowserAudioOutputChannel
++from rasa.core.channels.voice_stream.voice_channel import MarkerInput, MarkerType
++
++logger = structlog.get_logger(__name__)
++
++#: conversation id -> {"utterances": [(text, onset)], "markers": {id: text}, "played": [(text, at)]}
++CALLS: Dict[str, Dict[str, Any]] = {}
++
++
++def _norm(text: Optional[str]) -> str:
++    return re.sub(r"\s+", " ", str(text or "")).strip().lower()
++
++
++def _call(conversation_id: str) -> Dict[str, Any]:
++    return CALLS.setdefault(conversation_id, {"utterances": [], "markers": {}, "played": [], "onset": None})
++
++
++def answer_heard_after_question(conversation_id: str, answer: Optional[str], question: Optional[str]) -> dict:
++    """Whether the caller's answer began after the read-back question finished playing."""
++    call = CALLS.get(conversation_id)
++    if call is None:
++        return {"ok": False, "reason": "no_timing_for_this_call"}
++    onsets = [at for text, at in call["utterances"] if _norm(text) == _norm(answer)]
++    played = [at for text, at in call["played"] if _norm(question) and _norm(question) in _norm(text)]
++    if not onsets:
++        return {"ok": False, "reason": "answer_onset_unknown"}
++    if not played:
++        logger.info("consent_timing.verdict", conversation_id=conversation_id, answer=answer, ok=False,
++                    reason="read_back_not_played_yet", answer_onset=onsets[-1])
++        return {"ok": False, "reason": "read_back_not_played_yet", "answer_onset": onsets[-1]}
++    ok = onsets[-1] >= played[-1]
++    verdict = {"ok": ok, "reason": None if ok else "answer_began_before_read_back_finished",
++               "answer_onset": onsets[-1], "read_back_played": played[-1]}
++    logger.info("consent_timing.verdict", conversation_id=conversation_id, answer=answer, **verdict)
++    return verdict
++
++
++class ConsentTimedOutputChannel(BrowserAudioOutputChannel):
++    async def send_marker_message(self, marker_input: MarkerInput) -> None:
++        # As VoiceOutputChannel.send_marker_message, with the marker id kept for the message's text.
++        marker_message = self.create_marker_message(marker_input)
++        if marker_input.marker_type == MarkerType.END:
++            _call(marker_input.recipient_id)["markers"][marker_message.message_id] = self._bot_text_for_markers()
++        await self._send_marker_message_via_websocket(marker_message.message_id, marker_message.message)
++        await self._notify_marker_sent(marker_input, marker_message.message_id)
++
++
++class ConsentTimedBrowserAudio(BrowserAudioInputChannel):
++    """browser_audio, recording utterance onsets and when each bot message finished playing."""
++
++    @classmethod
++    def name(cls) -> str:
++        return "browser_audio"
++
++    def __init__(self, *args: Any, **kwargs: Any) -> None:
++        super().__init__(*args, **kwargs)
++        self._call_of_socket: Dict[int, str] = {}
++
++    async def collect_call_parameters(self, channel_websocket: Any, request: Any = None) -> Any:
++        params = await super().collect_call_parameters(channel_websocket, request)
++        if params is not None:
++            self._call_of_socket[id(channel_websocket)] = params.call_id
++            CALLS.pop(params.call_id, None)
++        return params
++
++    async def map_input_message(self, message: Any, ws: Any) -> Any:
++        cid = self._call_of_socket.get(id(ws))
++        if cid is not None:
++            try:
++                data = json.loads(message)
++            except ValueError:
++                data = {}
++            if isinstance(data.get("text"), str) and data["text"]:
++                onset = data.get("speech_started_at")
++                _call(cid)["utterances"].append((data["text"], float(onset) if onset else time.time()))
++            elif "marker" in data:
++                call = _call(cid)
++                text = call["markers"].pop(str(data["marker"]), None)
++                if text is not None:
++                    call["played"].append((text, time.time()))
++        return await super().map_input_message(message, ws)
++
++    async def handle_asr_event(self, asr_event: Any, input_queue: Any, call_parameters: Any) -> None:
++        call = _call(call_parameters.call_id)
++        if isinstance(asr_event, UserIsSpeaking) and call["onset"] is None:
++            call["onset"] = time.time()
++        elif isinstance(asr_event, NewTranscript) and asr_event.text:
++            call["utterances"].append((asr_event.text, call["onset"] or time.time()))
++            call["onset"] = None
++        await super().handle_asr_event(asr_event, input_queue, call_parameters)
++
++    def create_output_channel(self, voice_websocket: Any, tts_engine: Any) -> Any:
++        return ConsentTimedOutputChannel(voice_websocket=voice_websocket, audio_format=self.audio_format,
++                                         tts_engine=tts_engine, tts_cache=self.tts_cache)
+diff -ruN a/integrations.yml b/integrations.yml
+--- a/integrations.yml
++++ b/integrations.yml
+@@ -26,7 +26,9 @@
+ # classes in engines/speechmatics.py (the voice adapter). The LangGraph and
+ # Strands versions make the same Speechmatics calls through shared/speech.
+ channels:
+-  browser_audio:
++  # The fix: browser_audio with utterance onsets and playback ends recorded for the
++  # refill guard (channels/consent_timing.py), loaded by dotted path; same webhook.
++  channels.consent_timing.ConsentTimedBrowserAudio:
+     server_url: localhost
+     # 24 kHz 16-bit PCM both ways: the shared caller fixtures are 24 kHz, and
+     # Speechmatics realtime takes raw pcm_s16le at the stream's rate. The TTS
+diff -ruN a/skills/request_refill/tools.py b/skills/request_refill/tools.py
+--- a/skills/request_refill/tools.py
++++ b/skills/request_refill/tools.py
+@@ -102,6 +102,21 @@
+     # clinic, with the caller's words from this turn.
+     turn = _turn()
+     label = _get(context, "selected_medication_label") or ""
++    # The fix: the answer counts only if the caller began it after the read-back finished
++    # playing (channels/consent_timing.py). Otherwise nothing is recorded or sent, and the
++    # model is told to ask again, which makes the engine read the medicine back again.
++    from channels.consent_timing import answer_heard_after_question
++
++    timing = answer_heard_after_question(
++        conversation_id, turn.turn.text if turn is not None else None,
++        clinic.confirmation_question(label) if label else None)
++    if not timing["ok"]:
++        return ToolResult(llm_response={
++            "status": "not_sent",
++            "reason": timing["reason"],
++            "next_step": "The caller's answer was spoken before the read-back finished playing, so it is "
++                         "not a confirmation. Call send_refill_request again to read the medicine back again.",
++        })
+     clinic.record_confirmation(
+         conversation_id, record_id, True,
+         mechanism="rasa mantle requires_confirmation",
+diff -ruN a/tests/test_consent_timing.py b/tests/test_consent_timing.py
+--- a/tests/test_consent_timing.py
++++ b/tests/test_consent_timing.py
+@@ -0,0 +1,73 @@
++"""The fix, offline: consent counts only if the answer began after the read-back finished playing."""
++
++from __future__ import annotations
++
++import asyncio
++import json
++import os
++import sys
++import time
++import unittest
++from pathlib import Path
++
++PROJECT = Path(__file__).resolve().parent.parent
++sys.path.insert(0, str(PROJECT))
++
++from cedar_clinic import refills  # noqa: E402
++
++from channels import consent_timing  # noqa: E402
++
++QUESTION = refills.confirmation_question("omeprazole twenty milligram capsules, one capsule before breakfast")
++
++
++class TimingTests(unittest.TestCase):
++    def setUp(self):
++        consent_timing.CALLS.clear()
++
++    def test_an_answer_begun_before_the_read_back_finished_is_refused(self):
++        call = consent_timing._call("c1")
++        call["utterances"].append(("Yes, please.", 100.0))
++        call["played"].append((QUESTION + "\n", 103.0))
++        verdict = consent_timing.answer_heard_after_question("c1", "Yes, please.", QUESTION)
++        self.assertFalse(verdict["ok"])
++        self.assertEqual(verdict["reason"], "answer_began_before_read_back_finished")
++
++    def test_an_answer_begun_after_it_counts(self):
++        call = consent_timing._call("c1")
++        call["played"].append((QUESTION, 103.0))
++        call["utterances"].append(("Yes, please.", 104.0))
++        self.assertTrue(consent_timing.answer_heard_after_question("c1", "Yes, please.", QUESTION)["ok"])
++
++    def test_unknown_timing_fails_closed(self):
++        self.assertFalse(consent_timing.answer_heard_after_question("nobody", "Yes.", QUESTION)["ok"])
++        consent_timing._call("c2")["utterances"].append(("Yes.", 1.0))
++        self.assertEqual(consent_timing.answer_heard_after_question("c2", "Yes.", QUESTION)["reason"],
++                         "read_back_not_played_yet")
++
++    def test_the_channel_records_text_onsets_and_end_marker_acks(self):
++        os.environ.setdefault("SPEECHMATICS_API_KEY", "test-key")
++        import yaml
++        from rasa.core.run import _create_single_channel
++
++        name = "channels.consent_timing.ConsentTimedBrowserAudio"
++        creds = yaml.safe_load((PROJECT / "integrations.yml").read_text())["channels"][name]
++        channel = _create_single_channel(name, creds)
++        self.assertEqual(channel.name(), "browser_audio")
++        ws = object()
++        channel._call_of_socket[id(ws)] = "c3"
++        consent_timing._call("c3")["markers"]["m-end"] = QUESTION
++
++        async def run():
++            await channel.map_input_message(json.dumps({"text": "Yes, please.", "speech_started_at": 50.0}), ws)
++            await channel.map_input_message(json.dumps({"marker": "m-end"}), ws)
++
++        asyncio.run(run())
++        call = consent_timing.CALLS["c3"]
++        self.assertEqual(call["utterances"], [("Yes, please.", 50.0)])
++        self.assertEqual(call["played"][0][0], QUESTION)
++        self.assertLess(abs(call["played"][0][1] - time.time()), 5)
++        self.assertFalse(consent_timing.answer_heard_after_question("c3", "Yes, please.", QUESTION)["ok"])
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff -ruN a/tests/test_parity.py b/tests/test_parity.py
+--- a/tests/test_parity.py
++++ b/tests/test_parity.py
+@@ -25,7 +25,16 @@
+ 
+ TOOLS_PY = PROJECT / "skills" / "request_refill" / "tools.py"
+ 
++def _integrations() -> dict:
++    """integrations.yml, with the fix's timed browser_audio channel under its plain name."""
++    data = yaml.safe_load((PROJECT / "integrations.yml").read_text())
++    timed = data["channels"].pop("channels.consent_timing.ConsentTimedBrowserAudio", None)
++    if timed is not None:
++        data["channels"] = {"browser_audio": timed, **data["channels"]}
++    return data
+ 
++
++
+ def _squash(text: str) -> str:
+     return " ".join(str(text).split())
+ 
+@@ -102,7 +111,7 @@
+             self.assertFalse(settable(yaml.safe_load(path.read_text())), path)
+ 
+     def test_barge_in_is_off_on_both_voice_channels(self):
+-        channels = yaml.safe_load((PROJECT / "integrations.yml").read_text())["channels"]
++        channels = _integrations()["channels"]
+         for name in ("browser_audio", "inspector"):
+             self.assertFalse(channels[name]["interruptions"]["enabled"], name)
+ 
+diff -ruN a/tests/test_speech_parity.py b/tests/test_speech_parity.py
+--- a/tests/test_speech_parity.py
++++ b/tests/test_speech_parity.py
+@@ -31,7 +31,16 @@
+ from rasa.core.channels.voice_stream.asr.asr_event import NewTranscript, UserIsSpeaking  # noqa: E402
+ from rasa.core.channels.voice_stream.audio_bytes import L16_24KHZ  # noqa: E402
+ 
++def _integrations() -> dict:
++    """integrations.yml, with the fix's timed browser_audio channel under its plain name."""
++    data = yaml.safe_load((PROJECT / "integrations.yml").read_text())
++    timed = data["channels"].pop("channels.consent_timing.ConsentTimedBrowserAudio", None)
++    if timed is not None:
++        data["channels"] = {"browser_audio": timed, **data["channels"]}
++    return data
+ 
++
++
+ _SAVED_KEY = None
+ 
+ 
+@@ -50,7 +59,7 @@
+ 
+ 
+ def channel() -> dict:
+-    return yaml.safe_load((PROJECT / "integrations.yml").read_text())["channels"]["browser_audio"]
++    return _integrations()["channels"]["browser_audio"]
+ 
+ 
+ class SettingsTests(unittest.TestCase):
+@@ -71,7 +80,7 @@
+         self.assertEqual(tts["language_map"]["en"]["voice"], shared_config.TTS_VOICE)
+ 
+     def test_inspector_uses_the_same_engines(self):
+-        channels = yaml.safe_load((PROJECT / "integrations.yml").read_text())["channels"]
++        channels = _integrations()["channels"]
+         self.assertEqual(channels["inspector"]["asr"], channels["browser_audio"]["asr"])
+         self.assertEqual(channels["inspector"]["tts"], channels["browser_audio"]["tts"])
+ 
+@@ -145,7 +154,7 @@
+         return yaml.safe_load((TUTORIAL / "variants" / f"rasa-{name}.integrations.yml").read_text())
+ 
+     def test_variants_differ_from_the_build_only_in_speech_engines(self):
+-        shipped = yaml.safe_load((PROJECT / "integrations.yml").read_text())
++        shipped = _integrations()
+         for name, changed in (("deepgram-tts", {"tts"}), ("deepgram", {"asr", "tts"})):
+             variant = self.variant(name)
+             self.assertEqual(variant["model_groups"], shipped["model_groups"])

@@ -71,6 +71,8 @@ class _SSEUsage:
         self.buffer = b""
         self.usage: dict = {}
         self.model: Optional[str] = None
+        #: The stream's end is in: ``[DONE]`` (Chat Completions) or a final Responses event.
+        self.done = False
 
     def feed(self, chunk: bytes) -> None:
         self.buffer += chunk
@@ -81,6 +83,7 @@ class _SSEUsage:
                 continue
             data = line[5:].strip()
             if data == b"[DONE]":
+                self.done = True
                 continue
             try:
                 event = json.loads(data)
@@ -88,6 +91,8 @@ class _SSEUsage:
                 continue
             if not isinstance(event, dict):
                 continue
+            if event.get("type") in ("response.completed", "response.failed", "response.incomplete"):
+                self.done = True
             # Responses API: the usage is on the completed response.
             source = event.get("response") if isinstance(event.get("response"), dict) else event
             found = usage_from(source)
@@ -190,6 +195,20 @@ class LLMMeter:
                      "stream": stream, "injected_include_usage": injected}
         connection = http.client.HTTPSConnection if self._upstream_https else http.client.HTTPConnection
         upstream = connection(self._upstream_host, self._upstream_port, timeout=180)
+        recorded = False
+
+        def finish(first_byte: Optional[float]) -> None:
+            # Recorded before the client's last bytes go out: a client that has the whole
+            # response must find its row (the runner reads the rows as soon as a call ends).
+            nonlocal recorded
+            ended = time.time()
+            row["ttfb_ms"] = round(((first_byte or ended) - started) * 1000, 1)
+            row["duration_ms"] = round((ended - started) * 1000, 1)
+            row["ts_end"] = round(ended, 6)
+            row["cost_usd"] = cost_usd(row.get("usage") or {}, self.prices)
+            self._record(row)
+            recorded = True
+
         try:
             upstream.request(method, handler.path, body=raw or None, headers=headers)
             response = upstream.getresponse()
@@ -210,19 +229,22 @@ class LLMMeter:
                         break
                     first_byte = first_byte or time.time()
                     sse.feed(chunk)
+                    if sse.done:
+                        # The usage is in: record before the stream's last bytes reach the client.
+                        row["usage"] = sse.usage
+                        row["model"] = sse.model or model
+                        finish(first_byte)
                     handler.wfile.write(f"{len(chunk):x}\r\n".encode() + chunk + b"\r\n")
                     handler.wfile.flush()
+                if not recorded:
+                    row["usage"] = sse.usage
+                    row["model"] = sse.model or model
+                    finish(first_byte)
                 handler.wfile.write(b"0\r\n\r\n")
                 handler.wfile.flush()
-                row["usage"] = sse.usage
-                row["model"] = sse.model or model
             else:
                 payload = response.read()
                 first_byte = time.time()
-                handler.send_header("Content-Length", str(len(payload)))
-                handler.end_headers()
-                handler.wfile.write(payload)
-                handler.wfile.flush()
                 try:
                     parsed = json.loads(payload) if payload else None
                 except ValueError:
@@ -232,11 +254,11 @@ class LLMMeter:
                     row["model"] = parsed.get("model") or model
                     if response.status >= 400 and isinstance(parsed.get("error"), dict):
                         row["error_code"] = parsed["error"].get("code") or parsed["error"].get("type")
-            ended = time.time()
-            row["ttfb_ms"] = round(((first_byte or ended) - started) * 1000, 1)
-            row["duration_ms"] = round((ended - started) * 1000, 1)
-            row["ts_end"] = round(ended, 6)
-            row["cost_usd"] = cost_usd(row.get("usage") or {}, self.prices)
+                finish(first_byte)
+                handler.send_header("Content-Length", str(len(payload)))
+                handler.end_headers()
+                handler.wfile.write(payload)
+                handler.wfile.flush()
         except Exception as exc:  # recorded, then surfaced to the client as a 502
             row.update({"status": 502, "error_code": f"meter: {type(exc).__name__}", "ts_end": round(time.time(), 6),
                         "duration_ms": round((time.time() - started) * 1000, 1), "cost_usd": None})
@@ -252,4 +274,5 @@ class LLMMeter:
                 pass
         finally:
             upstream.close()
-            self._record(row)
+            if not recorded:
+                self._record(row)

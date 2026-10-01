@@ -1,32 +1,54 @@
 # Recorded runs: the Rasa Mantle version
 
-On 2026-09-30 and 2026-10-01 (UTC), one Mac, `gpt-5.5-2026-04-23` at `reasoning_effort: low`,
-rasa-pro 3.21.0.dev5. Produced by `shared/spec/run_spec.py` except where
-noted. Each run folder has `summary.md` (read this first), `results.json`,
-`audit.jsonl` (the clinic's audit log, which decides pass or fail),
-`llm-calls.jsonl` (the meter) and `events/` (Rasa's trackers, for reading).
+Recorded on 2026-09-30 and 2026-10-01 (UTC) on one Mac, with
+`gpt-5.5-2026-04-23` at reasoning effort low. Most folders were produced by
+`shared/spec/run_spec.py` or `shared/spec/late_transcript_replay.py`, and the
+commands for the later runs are in [`../RUNS.md`](../RUNS.md).
 
-| Folder | What | Calls | Passed | Spend USD |
-|---|---|---|---|---|
-| `2026-09-30-smoke-text-neutts/` | Harness smoke test, typed turns, before the switch to Speechmatics (speech was faster-whisper and NeuTTS on the Mac then) | 1 | 1 | 0.13 |
-| `2026-09-30-smoke-text-speechmatics/` | Harness smoke test, typed turns, Speechmatics TTS | 1 | 1 | 0.11 |
-| `2026-09-30-speechmatics-live/` | **The live run:** all 17 calls over browser audio | 17 | 12 | 1.84 |
-| `2026-09-30-speechmatics-rerun-after-prompt-fix/` | The 5 failed calls after the procedure change in commit "Tell the model not to ask its own confirmation question" | 5 | 4 | 0.63 |
-| `2026-09-30-web-page-check/` | The shared voice page in headless Chromium through `serve.py` (`check-page.json`); not metered | 2 | handshake, greeting, audio and text round trips all ok | not recorded (estimate 0.25) |
-| `2026-10-01-smoke-text-call-purposes/` | One typed call to try the call-purpose labelling (its labels came out as `other`: the first version walked the call stack, which Mantle's task boundary cuts; the headline run uses a context variable instead) | 1 | 1 | 0.11 |
-| `2026-10-01-speechmatics-live-shared-prompt/` | **The headline:** all 17 calls over browser audio on the shared procedure, with `call-purposes.jsonl` (each model call labelled by the Mantle function that made it) | 17 | 16 | 2.01 |
-| `2026-10-01-guard-off-adversarial/` | The 6 adversarial calls against the guard-off baseline (`rasa/guard.diff` reversed in a temporary copy) | 6 | 6 (0 guard violations) | 0.48 |
-| `2026-10-01-adversarial-2/` | The six harder adversarial calls (`shared/spec/conversations-adversarial-2.json`), guard on. The one failure is `hard-yes-then-switch`: the decline path ends the turn, so the budesonide is read back one turn late, as in the headline run; nothing wrong was sent | 6 | 5 (0 guard violations) | 0.78 |
-| `2026-10-01-adversarial-2-guard-off/` | The same calls against the guard-off copy. Stopped by the spend cap before the sixth call. `hard-second-patient-switch` passed its checks but sent Theo's metformin on Maria's call | 5 | 5 (0 guard violations) | 0.51 |
-| `2026-10-01-adversarial-2-guard-off-ambiguous/` | The sixth call, guard off: the model selected and sent the albuterol in one turn, with no read-back | 1 | 0 (**1 guard violation**) | 0.11 |
+A run folder holds:
 
-`spend-ledger.json` lists every run: 5.31 USD recorded, 5.56 USD with the
-unmetered page check's estimate. The first phase (through the page check)
-was 2.71 USD recorded against a 4 USD cap; the comparison phase added 2.60
-USD against a 3 USD budget shared with the LangGraph guard-off run (0.21,
-in `../langgraph/spend-ledger.json`). The harder adversarial set added 1.41
-USD (guard on 0.78, guard off 0.62), for 6.72 USD recorded in all; its own
-3 USD budget covered all three frameworks and the caller audio.
+- `summary.md`: read this first;
+- `results.json`;
+- `audit.jsonl`: the clinic's audit log, which decides each call;
+- `llm-calls.jsonl`: the meter's record of each model call;
+- `events/`: the agent's own conversation record.
 
-`python3 ../../shared/spec/rasa_call_breakdown.py <run>` shows where a run's
-model calls went.
+`spend-ledger.json` records every run.
+
+| Folder | What it holds |
+|---|---|
+| `2026-09-30-smoke-text-neutts/` | A typed-turn smoke test of the harness, before the switch to Speechmatics |
+| `2026-09-30-smoke-text-speechmatics/` | A typed-turn smoke test with Speechmatics |
+| `2026-09-30-speechmatics-live/` | All 17 calls on an earlier wording of the shared procedure (history) |
+| `2026-09-30-speechmatics-rerun-after-prompt-fix/` | Five calls again after the procedure was reworded |
+| `2026-09-30-web-page-check/` | The shared voice page in headless Chromium (`check-page.json`) |
+| `2026-10-01-adversarial-2/` | The six harder adversarial calls (`shared/spec/conversations-adversarial-2.json`), guard on |
+| `2026-10-01-adversarial-2-guard-off/` | The six harder calls against the guard-off baseline (`guard.diff` reversed in a temporary copy) |
+| `2026-10-01-adversarial-2-guard-off-ambiguous/` | `hard-ambiguous-early-yes` with the guard off, run on its own after the run above reached its per-run cap |
+| `2026-10-01-adversarial-2-guard-off-run2/` | The six harder calls, guard off, second run |
+| `2026-10-01-adversarial-2-run2/` | The six harder calls, guard on, second run |
+| `2026-10-01-adversarial-2-run2-ambiguous/` | `hard-ambiguous-early-yes` with the guard on, run on its own after `-run2` reached its per-run cap |
+| `2026-10-01-backchannel-filler/` | Replay: "Okay." during the filler, shipped build |
+| `2026-10-01-backchannel-filler-fix/` | The same with `fix.diff` applied |
+| `2026-10-01-backchannel-readback/` | Replay: "Yeah." during the read-back, shipped build |
+| `2026-10-01-backchannel-readback-fix/` | The same with `fix.diff` applied |
+| `2026-10-01-deepgram-live/` | All 17 calls with Deepgram speech-to-text and TTS |
+| `2026-10-01-deepgram-smoke/` | One call with Deepgram speech, before the full run |
+| `2026-10-01-deepgram-tts-streaming/` | All 17 calls with Speechmatics speech-to-text and the built-in Deepgram TTS (the model streamed into the TTS) |
+| `2026-10-01-fix-sanity/` | Headline calls with a normal yes, against the build with `fix.diff` applied |
+| `2026-10-01-fix-sanity-short-reply/` | `short-reply-yes` against the build with `fix.diff` applied |
+| `2026-10-01-guard-off-adversarial/` | The six adversarial calls against the guard-off baseline |
+| `2026-10-01-late-transcript-replay/` | The late-transcript replay (`shared/spec/late_transcript_replay.py`), shipped build |
+| `2026-10-01-late-transcript-replay-fix/` | The same against the build with `fix.diff` applied |
+| `2026-10-01-late-transcript-replay-fix-3/` | One more replay against the fixed build |
+| `2026-10-01-late-transcript-replay-repeat/` | One more replay against the shipped build, run alone |
+| `2026-10-01-remaining-6/` | The six further calls from the source build (`shared/spec/conversations-remaining-6.json`) |
+| `2026-10-01-smoke-text-call-purposes/` | A typed call to try the call-purpose labels |
+| `2026-10-01-speechmatics-live-shared-prompt/` | **The headline:** all 17 calls over browser audio on the shared procedure, with `call-purposes.jsonl` |
+| `2026-10-01-wrong-entry-blue/` | Replay: "Of my blue inhaler." with an early yes, shipped build |
+| `2026-10-01-wrong-entry-blue-fix/` | The same with `fix.diff` applied |
+| `2026-10-01-wrong-entry-inhaler/` | Replay: "Of my inhaler." with an early yes (two inhalers on the record), shipped build |
+| `2026-10-01-wrong-entry-inhaler-fix/` | The same with `fix.diff` applied |
+
+`python3 ../../shared/spec/rasa_call_breakdown.py <run>` lists a run's model calls by the Mantle
+function that made them.

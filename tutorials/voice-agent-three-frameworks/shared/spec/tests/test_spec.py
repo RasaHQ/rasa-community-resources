@@ -160,6 +160,24 @@ class SpecFileTests(unittest.TestCase):
         self.assertTrue(15 <= len(self.spec["conversations"]) <= 18)
         self.assertEqual(len({c["id"] for c in self.spec["conversations"]}), len(self.spec["conversations"]))
 
+    def test_other_spec_files_have_their_audio_and_known_checks(self):
+        known = {"tool_called", "tool_not_called", "tool_order", "any_of", "no_tool_errors"}
+        main_ids = {c["id"] for c in self.spec["conversations"]}
+        for name in ("conversations-adversarial-2.json", "conversations-remaining-6.json"):
+            spec = json.loads((SPEC / name).read_text())
+            voice = spec["voice"]
+            manifest = json.loads((SPEC / voice["caller_audio_dir"] / "manifest.json").read_text())["files"]
+            for conv in spec["conversations"]:
+                self.assertNotIn(conv["id"], main_ids, name)
+                for turn in conv["turns"]:
+                    audio = voice_driver.turn_audio_name(turn, voice["default_caller_voice"])
+                    self.assertTrue((SPEC / voice["caller_audio_dir"] / audio).is_file(), audio)
+                    self.assertEqual(manifest[audio]["text"], turn["user"])
+                for check in conv["checks"]:
+                    self.assertIn(check["type"], known, conv["id"])
+                    if "tool" in check:
+                        self.assertIn(check["tool"], tools.TOOL_SPECS, conv["id"])
+
     def test_checks_name_only_clinic_tools_and_known_types(self):
         known = {"tool_called", "tool_not_called", "tool_order", "any_of", "no_tool_errors"}
         for conv in self.spec["conversations"]:
@@ -257,6 +275,117 @@ class MeterTests(unittest.TestCase):
         self.assertEqual(self.meter.rows[-1]["error_code"], "insufficient_quota")
 
 
+class RunnerBudgetTests(unittest.TestCase):
+    """run_spec.py: the cap applies to the run, not to the ledger of earlier runs."""
+
+    def test_a_large_ledger_does_not_block_a_fresh_run(self):
+        import tempfile
+
+        import run_spec
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger = Path(tmp) / "spend-ledger.json"
+            run_spec.ledger_append(ledger, {"label": "earlier", "cost_usd": 6.7})
+            self.assertEqual(run_spec.ledger_total(ledger), 6.7)
+        # A fresh run under the Makefile's 4 USD cap places its first call.
+        self.assertIsNone(run_spec.budget_check(0.0, 0, 0.12, 4.0))
+
+    def test_the_run_stops_before_its_own_cap(self):
+        import run_spec
+
+        self.assertIsNone(run_spec.budget_check(1.0, 10, 0.12, 4.0))
+        reason = run_spec.budget_check(3.9, 30, 0.12, 4.0)
+        self.assertIn("this run", reason)
+
+    def test_priced_tts_is_counted(self):
+        import run_spec
+
+        spec = {"speech_prices": {"stt": {"usd_per_hour": 0.462}, "tts": {"usd_per_1k_characters": 0.03}}}
+        self.assertAlmostEqual(run_spec.tts_cost(spec, 2000), 0.06)
+        self.assertAlmostEqual(run_spec.speech_cost(spec, 3600), 0.462)
+        self.assertEqual(run_spec.tts_cost({"speech_prices": {"tts": {"usd_per_1k_characters": None}}}, 2000), 0.0)
+
+
+    def test_second_patient_sends_are_counted_from_the_audit_log(self):
+        import tempfile
+
+        import adversarial_tally
+
+        rows = [
+            {"conversation_id": "c1", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P1"}},
+            {"conversation_id": "c1", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P2"}},
+            {"conversation_id": "c1", "name": "send_refill_request", "args": {"patient_id": "P2"},
+             "result": {"status": "succeeded"}},
+            {"conversation_id": "c2", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P1"}},
+            {"conversation_id": "c2", "name": "send_refill_request", "state": {"patient_id": "P1"},
+             "result": {"status": "succeeded"}},
+            {"conversation_id": "c2", "name": "send_refill_request", "state": {"patient_id": "P2"},
+             "result": {"status": "blocked"}},
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            audit = Path(tmp) / "audit.jsonl"
+            audit.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+            self.assertEqual(adversarial_tally.second_patient_sends(audit), {"c1": 1})
+
+
+class LateTranscriptReplayTests(unittest.TestCase):
+    """late_transcript_replay.py judges the early yes the way the spec does."""
+
+    @staticmethod
+    def entries(confirm_ts: float) -> list:
+        med = {"record_id": "CC-RX-2048"}
+        return [
+            {"seq": 1, "ts": 1.0, "kind": "tool", "name": "verify_patient", "args": {}, "state": {},
+             "result": {"status": "verified", "patient_id": "CC-PT-1001"}},
+            {"seq": 2, "ts": 12.0, "kind": "tool", "name": "select_medication", "args": {"medication_name": "omeprazole"},
+             "state": {"patient_id": "CC-PT-1001"}, "result": {"status": "selected", **med}},
+            {"seq": 3, "ts": confirm_ts, "kind": "confirmation", "name": "record_confirmation",
+             "args": {**med, "confirmed": True}, "state": {"answer": "Yes, please."}, "result": {"status": "confirmed"}},
+            {"seq": 4, "ts": confirm_ts + 0.01, "kind": "tool", "name": "send_refill_request", "args": med,
+             "state": {"patient_id": "CC-PT-1001", "selected_record_id": "CC-RX-2048"},
+             "result": {"status": "succeeded", "effects": 1, "medication": med}},
+        ]
+
+    def test_a_yes_on_the_selection_turn_is_a_violation(self):
+        import late_transcript_replay as replay
+
+        verdict = replay.judge(self.entries(15.0), [0.0, 10.0])
+        self.assertEqual(len(verdict["guard_violations"]), 1)
+        self.assertEqual(verdict["confirmations"][0]["answer"], "Yes, please.")
+        self.assertEqual(verdict["sent_with_effect"], ["CC-RX-2048"])
+
+    def test_a_yes_on_a_later_turn_holds(self):
+        import late_transcript_replay as replay
+
+        verdict = replay.judge(self.entries(25.0), [0.0, 10.0, 20.0])
+        self.assertEqual(verdict["guard_violations"], [])
+
+
+class ReplayScenarioTests(unittest.TestCase):
+    def test_every_scenario_carries_onsets_and_known_anchors(self):
+        import late_transcript_replay as replay
+
+        for name, (first, then) in replay.SCENARIOS.items():
+            self.assertTrue(first, name)
+            for text, anchor, offset, length in then:
+                self.assertIn(anchor, {"turn_end", "first_bot", "read_back"}, name)
+                self.assertGreater(replay.spoken_length(text, length), 0)
+        # The recorded yes ended 4.63 s after turn 1 ended and lasted 0.66 s: it began at E + 3.97 s.
+        late = replay.SCENARIOS["late-transcript"][1][-1]
+        self.assertAlmostEqual(late[2] - replay.spoken_length(late[0], late[3]), 3.97)
+
+    def test_the_read_back_anchor_finds_the_question(self):
+        import late_transcript_replay as replay
+
+        doc = {"events": [{"event": "bot", "timestamp": 5.0, "text": "One moment."},
+                          {"event": "bot", "timestamp": 7.0, "text": "... Would you like me to do that?"},
+                          {"event": "bot_turn_ended", "timestamp": 8.0}]}
+        self.assertEqual(replay.anchor_time(doc, "first_bot", 1.0), 5.0)
+        self.assertEqual(replay.anchor_time(doc, "read_back", 1.0), 7.0)
+        self.assertEqual(replay.anchor_time(doc, "turn_end", 1.0), 8.0)
+        self.assertIsNone(replay.anchor_time(doc, "turn_end", 9.0))
+
+
 class CounterTests(unittest.TestCase):
     """count_concerns.py: the guard diff without docstrings, and restated shared text."""
 
@@ -280,6 +409,27 @@ class CounterTests(unittest.TestCase):
         self.assertTrue(report["docstrings_excluded"])
         self.assertEqual((report["added"], report["removed"]), (1, 0))
         self.assertGreater(report["docstring_lines_skipped"]["added"], 0)
+
+    def test_an_unapplied_diff_is_counted_without_its_tests(self):
+        import subprocess
+        import tempfile
+
+        import count_concerns
+
+        with tempfile.TemporaryDirectory() as tmp:
+            a, b = Path(tmp) / "fw", Path(tmp) / "fw-fix"
+            (a / "tests").mkdir(parents=True)
+            (a / "loop.py").write_text("# concern: voice-loop\nx = 1\n")
+            (a / "tests" / "test_loop.py").write_text("y = 1\n")
+            subprocess.run(["cp", "-R", str(a), str(b)], check=True)
+            (b / "loop.py").write_text("# concern: voice-loop\nx = 1\n# the fix\nz = 2\n")
+            (b / "tests" / "test_loop.py").write_text("y = 1\nw = 3\n")
+            diff = subprocess.run(["diff", "-ruN", "fw", "fw-fix"], cwd=tmp, capture_output=True, text=True).stdout
+            diff = diff.replace("--- fw/", "--- a/").replace("+++ fw-fix/", "+++ b/")
+            (a / "fix.diff").write_text(diff)
+            report = count_concerns.count_diff(a / "fix.diff", a, applied=False)
+        self.assertEqual((report["added"], report["removed"]), (1, 0))
+        self.assertEqual(report["files_not_counted"], ["tests/test_loop.py"])
 
     def test_restated_instruction_text_is_found(self):
         import tempfile

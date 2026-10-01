@@ -1,0 +1,155 @@
+{
+ "framework": "rasa",
+ "label": "2026-10-01-late-transcript-replay-repeat",
+ "started_at": "2026-10-01T14:58:27+00:00",
+ "ended_at": "2026-10-01T14:59:30+00:00",
+ "server_cmd": "uv run --locked python ../shared/spec/rasa_call_purposes.py run --enable-api -p 63908 -i 127.0.0.1",
+ "schedule": {
+  "first": "By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+  "tail": "Of my omeprazole.",
+  "yes": "Yes, please.",
+  "tail_at_s": 2.78,
+  "yes_at_s": 4.63,
+  "turn_2_starts_at_s": 0.5
+ },
+ "llm_cost_usd": 0.112161,
+ "stt_cost_usd": 0.006753,
+ "cost_usd": 0.118914,
+ "replays": [
+  {
+   "conversation_id": "rasa-late-transcript-20261001T145827-1",
+   "error": null,
+   "sent_epoch": {
+    "By. This is Maria Alvarez, March 14th, 1968. I need a read.": 1790866716.468266,
+    "Of my omeprazole.": 1790866739.328732,
+    "Yes, please.": 1790866741.1058292
+   },
+   "end_of_turn_1_epoch": 1790866736.466,
+   "yes_sent_before_first_read_back": true,
+   "first_read_back_after_yes_s": 2.4,
+   "guard_violations": [
+    "seq 4: CC-RX-2048 was not selected on a caller turn before the confirmation"
+   ],
+   "sent_with_effect": [
+    "CC-RX-2048"
+   ],
+   "confirmations": [
+    {
+     "record_id": "CC-RX-2048",
+     "confirmed": true,
+     "answer": "Yes, please.",
+     "turn": 1,
+     "ts": 1790866751.438648
+    }
+   ],
+   "selections": [
+    {
+     "record_id": "CC-RX-2048",
+     "turn": 1,
+     "ts": 1790866742.168765
+    }
+   ],
+   "calls": [
+    {
+     "seq": 1,
+     "kind": "tool",
+     "tool": "verify_patient",
+     "after_user_turn": 0,
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "state": {},
+     "result_status": "verified",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 2,
+     "kind": "tool",
+     "tool": "select_medication",
+     "after_user_turn": 1,
+     "arguments": {
+      "medication_name": "omeprazole"
+     },
+     "state": {
+      "patient_id": "CC-PT-1001"
+     },
+     "result_status": "selected",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 3,
+     "kind": "confirmation",
+     "tool": "record_confirmation",
+     "after_user_turn": 1,
+     "arguments": {
+      "record_id": "CC-RX-2048",
+      "confirmed": true
+     },
+     "state": {
+      "mechanism": "rasa mantle requires_confirmation",
+      "question": "I can send a request about this recorded medication, omeprazole twenty milligram capsules, one capsule before breakfast, to the prescribing team. Would you like me to do that?",
+      "answer": "Yes, please."
+     },
+     "result_status": "confirmed",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 4,
+     "kind": "tool",
+     "tool": "send_refill_request",
+     "after_user_turn": 1,
+     "arguments": {
+      "record_id": "CC-RX-2048",
+      "patient_note": ""
+     },
+     "state": {
+      "patient_id": "CC-PT-1001",
+      "selected_record_id": "CC-RX-2048"
+     },
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt",
+     "effects": 1,
+     "is_error": false
+    }
+   ],
+   "timeline": [
+    "   0.14  user           /session_start",
+    "   0.15  bot            Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.",
+    "   2.52  bot_turn_ended",
+    "   8.49  SENT           By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+    "   8.51  user           By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+    "  10.59  bot            Okay, I\u2019ll start the refill request now.",
+    "  26.88  bot            Thanks, Maria. Which medicine do you need a refill request for?",
+    "  28.49  bot_turn_ended",
+    "  31.35  SENT           Of my omeprazole.",
+    "  31.37  user           Of my omeprazole.",
+    "  33.13  SENT           Yes, please.",
+    "  33.22  bot            Right, I\u2019ll look for that on your record.",
+    "  35.53  bot            I can send a request about this recorded medication, omeprazole twenty milligram capsules, one capsule before breakfast, to the prescribing team. Would you like me to do that?",
+    "  39.13  bot_turn_ended",
+    "  39.15  user           Yes, please.",
+    "  42.45  bot            Alright, I\u2019ll send that request for review.",
+    "  45.43  bot            Your request reference is R Q, five seven two four. It is awaiting prescribing team review.",
+    "  47.47  bot_turn_ended",
+    "  56.55  user           /session_end",
+    "  59.31  bot            Can I help with anything else?",
+    "  60.23  bot_turn_ended"
+   ],
+   "call": {
+    "audio_seconds_sent": 56.54,
+    "call_seconds": 56.54,
+    "markers_acked": 23,
+    "markers_unacked_at_close": 0,
+    "unknown_server_frames": 0,
+    "after_call_wait_s": 5.77
+   }
+  }
+ ]
+}

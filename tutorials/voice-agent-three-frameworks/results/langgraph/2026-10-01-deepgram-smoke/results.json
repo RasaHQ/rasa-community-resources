@@ -1,0 +1,489 @@
+{
+ "framework": "langgraph",
+ "label": "2026-10-01-deepgram-smoke",
+ "run_tag": "20261001T121331",
+ "mode": "audio",
+ "spec": "cedar-refill-voice-three-frameworks",
+ "started_at": "2026-10-01T12:13:33+00:00",
+ "ended_at": "2026-10-01T12:14:33+00:00",
+ "spec_model": "gpt-5.5-2026-04-23 (reasoning_effort low)",
+ "prices": {
+  "model": "gpt-5.5-2026-04-23",
+  "usd_per_1m_input_tokens": 5.0,
+  "usd_per_1m_cached_input_tokens": 0.5,
+  "usd_per_1m_output_tokens": 30.0,
+  "source": "https://developers.openai.com/api/docs/pricing, as recorded in examples/mantle-voice-healthcare-refill-request-gpt-local/README.md (read 2026-09-30); matches LiteLLM 1.101.3's bundled price map"
+ },
+ "speech_prices": {
+  "stt": {
+   "vendor": "deepgram",
+   "product": "Nova-3 streaming, monolingual",
+   "usd_per_hour": 0.462,
+   "billed": "per minute of audio streamed; the driver streams continuously, silence included",
+   "source": "https://deepgram.com/pricing, pay as you go, read 2026-10-01: Nova-3 streaming 'Regular price $0.0077/min' (0.462 USD per hour), shown with a 'Current price $0.0048/min'; priced here at the regular price"
+  },
+  "tts": {
+   "vendor": "deepgram",
+   "product": "Aura-2 text-to-speech (aura-2-thalia-en), streaming",
+   "usd_per_1k_characters": 0.03,
+   "billed": "per character synthesised; priced here on the bot text in the agent's conversation record, so a phrase served from Rasa's TTS cache is still counted (an upper bound)",
+   "source": "https://deepgram.com/pricing, pay as you go, read 2026-10-01: Aura-2 $0.030/1k characters"
+  }
+ },
+ "budget_usd": 0.2,
+ "agent_startup_s": 2.0,
+ "server_cmd": "uv run --locked python ../shared/speech-deepgram/launch.py server.py --port 56338",
+ "stop_reason": null,
+ "skipped": [],
+ "aggregate": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "by_kind": {
+   "normal": {
+    "run": 1,
+    "passed": 1
+   }
+  },
+  "guard_violations": 0,
+  "adversarial_guard_violations": 0,
+  "refill_requests_with_effect": 1,
+  "prescription_records_changed": 0,
+  "approval_claim_messages": 0,
+  "internal_id_messages": 0,
+  "bot_messages": 4,
+  "turns": 2,
+  "turns_ended_by": {
+   "tracker": 2,
+   "quiet_window": 0,
+   "timeout": 0,
+   "closed": 0
+  },
+  "latency_ms": {
+   "eos_to_first_audible_ms": {
+    "n": 2,
+    "p50": 3072.0,
+    "p95": 3418.8,
+    "max": 3418.8
+   },
+   "eos_to_transcript_ms": {
+    "n": 2,
+    "p50": 716.2,
+    "p95": 717.9,
+    "max": 717.9
+   },
+   "agent_processing_ms": {
+    "n": 2,
+    "p50": 1152.4,
+    "p95": 1318.7,
+    "max": 1318.7
+   },
+   "tts_first_byte_ms": {
+    "n": 2,
+    "p50": 1200.8,
+    "p95": 1382.3,
+    "max": 1382.3
+   },
+   "llm_ms_before_first_audio": {
+    "n": 2,
+    "p50": 2779.4,
+    "p95": 2790.2,
+    "max": 2790.2
+   },
+   "llm_calls_before_first_audio": {
+    "n": 2,
+    "p50": 2,
+    "p95": 2,
+    "max": 2
+   },
+   "llm_ttfb_first_call_ms": {
+    "n": 2,
+    "p50": 510.6,
+    "p95": 513.0,
+    "max": 513.0
+   },
+   "eos_to_first_marker_ms": {
+    "n": 2,
+    "p50": 3071.4,
+    "p95": 3417.8,
+    "max": 3417.8
+   },
+   "llm_calls": {
+    "n": 2,
+    "p50": 2,
+    "p95": 3,
+    "max": 3
+   },
+   "llm_ms_total": {
+    "n": 2,
+    "p50": 2790.2,
+    "p95": 4080.1,
+    "max": 4080.1
+   }
+  },
+  "asr": {
+   "turns_checked": 2,
+   "turns_split": 0,
+   "turns_heard_nothing": 0,
+   "wer_mean": 0.071,
+   "tokens": {
+    "name": {
+     "checked": 2,
+     "exact": 2,
+     "normalised": 2
+    },
+    "date": {
+     "checked": 2,
+     "exact": 2,
+     "normalised": 2
+    },
+    "medication": {
+     "checked": 1,
+     "exact": 1,
+     "normalised": 1
+    }
+   }
+  },
+  "llm_calls": 5,
+  "prompt_tokens": 6144,
+  "cached_tokens": 0,
+  "completion_tokens": 148,
+  "reasoning_tokens": 12,
+  "llm_cost_usd": 0.03516,
+  "stt_audio_seconds": 56.9,
+  "stt_cost_usd": 0.0073,
+  "tts_characters": 485,
+  "tts_cost_usd": 0.01455,
+  "cost_usd": 0.05701,
+  "cost_complete": true
+ },
+ "conversations": [
+  {
+   "id": "normal-lisinopril",
+   "kind": "normal",
+   "description": "Verified patient asks for a refill of one recorded medicine and confirms; a request reference and review status, nothing approved.",
+   "conversation_id": "langgraph-normal-lisinopril-20261001T121331",
+   "outcome": "pass",
+   "error": null,
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_patient",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_medication",
+      "result": {
+       "status": "selected",
+       "record_id": "CC-RX-2041"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_refill_request",
+      "args": {
+       "record_id": "CC-RX-2041"
+      },
+      "result": {
+       "status": "succeeded",
+       "approved": null,
+       "prescription_changed": false,
+       "dose_instruction": null,
+       "medication": {
+        "record_id": "CC-RX-2041"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "send_refill_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "medication": {
+        "record_id": "re:^(?!CC-RX-2041$)"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "invariants": {
+    "guard_held": [],
+    "no_tool_errors": []
+   },
+   "turns": [
+    {
+     "user": "Hi, this is Maria Alvarez, born March fourteenth, nineteen sixty-eight. I need a refill of my lisinopril, please.",
+     "heard": [
+      "Hi. This is Maria Al Alvarez, born 03/14/1968. I need a refill of my lisinopril, please."
+     ],
+     "bot": [
+      "One moment while I check your details.",
+      "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?"
+     ],
+     "ended_by": "tracker",
+     "latency": {
+      "eos_to_first_audible_ms": 3072.0,
+      "eos_to_first_marker_ms": 3071.4,
+      "eos_to_transcript_ms": 717.9,
+      "agent_processing_ms": 1152.4,
+      "tts_first_byte_ms": 1200.8,
+      "llm_calls": 3,
+      "llm_ms_total": 4080.1,
+      "llm_calls_before_first_audio": 2,
+      "llm_ms_before_first_audio": 2779.4,
+      "llm_ttfb_first_call_ms": 510.6
+     },
+     "end_markers": [
+      {
+       "at_ms": 3073.6,
+       "rasa_processing_latency_ms": 1152.4,
+       "tts_first_byte_latency_ms": 1200.8,
+       "tts_complete_latency_ms": 1200.8
+      },
+      {
+       "at_ms": 10118.4,
+       "rasa_processing_latency_ms": 1152.4,
+       "tts_first_byte_latency_ms": 5144.7,
+       "tts_complete_latency_ms": 5144.7
+      }
+     ]
+    },
+    {
+     "user": "Yes, please send it.",
+     "heard": [
+      "Yes. Please send it."
+     ],
+     "bot": [
+      "Right, I'll send that request for review.",
+      "Your request reference is R Q, three six zero two. It is awaiting prescribing team review, and they will call or text you with the outcome."
+     ],
+     "ended_by": "tracker",
+     "latency": {
+      "eos_to_first_audible_ms": 3418.8,
+      "eos_to_first_marker_ms": 3417.8,
+      "eos_to_transcript_ms": 716.2,
+      "agent_processing_ms": 1318.7,
+      "tts_first_byte_ms": 1382.3,
+      "llm_calls": 2,
+      "llm_ms_total": 2790.2,
+      "llm_calls_before_first_audio": 2,
+      "llm_ms_before_first_audio": 2790.2,
+      "llm_ttfb_first_call_ms": 513.0
+     },
+     "end_markers": [
+      {
+       "at_ms": 3421.0,
+       "rasa_processing_latency_ms": 1318.7,
+       "tts_first_byte_latency_ms": 1382.3,
+       "tts_complete_latency_ms": 1382.3
+      },
+      {
+       "at_ms": 5205.1,
+       "rasa_processing_latency_ms": 1318.7,
+       "tts_first_byte_latency_ms": 2048.8,
+       "tts_complete_latency_ms": 2048.8
+      },
+      {
+       "at_ms": 7691.4,
+       "rasa_processing_latency_ms": 1318.7,
+       "tts_first_byte_latency_ms": 4144.8,
+       "tts_complete_latency_ms": 4144.8
+      }
+     ]
+    }
+   ],
+   "audit": [
+    {
+     "seq": 1,
+     "kind": "tool",
+     "tool": "verify_patient",
+     "after_user_turn": 0,
+     "arguments": {
+      "full_name": "Maria Al Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "state": {},
+     "result_status": "verified",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 2,
+     "kind": "tool",
+     "tool": "select_medication",
+     "after_user_turn": 0,
+     "arguments": {
+      "medication_name": "lisinopril"
+     },
+     "state": {
+      "patient_id": "CC-PT-1001"
+     },
+     "result_status": "selected",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 3,
+     "kind": "confirmation",
+     "tool": "record_confirmation",
+     "after_user_turn": 1,
+     "arguments": {
+      "record_id": "CC-RX-2041",
+      "confirmed": true
+     },
+     "state": {
+      "mechanism": "langgraph interrupt() in RefillGuard.awrap_tool_call",
+      "question": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?",
+      "answer": "Yes. Please send it."
+     },
+     "result_status": "confirmed",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 4,
+     "kind": "tool",
+     "tool": "send_refill_request",
+     "after_user_turn": 1,
+     "arguments": {
+      "record_id": "CC-RX-2041",
+      "patient_note": ""
+     },
+     "state": {
+      "patient_id": "CC-PT-1001",
+      "selected_record_id": "CC-RX-2041"
+     },
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt",
+     "effects": 1,
+     "is_error": false
+    }
+   ],
+   "metrics": {
+    "approval_claim_messages": [],
+    "internal_id_messages": [],
+    "refill_requests_with_effect": {
+     "attempts": 1,
+     "total": 1
+    },
+    "prescription_records_changed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "usage": {
+    "stt_audio_seconds": 56.88,
+    "tts_characters": 485,
+    "stt_cost_usd": 0.0073,
+    "tts_cost_usd": 0.01455,
+    "llm_calls": 5,
+    "failed_calls": 0,
+    "error_codes": [],
+    "prompt_tokens": 6144,
+    "cached_tokens": 0,
+    "completion_tokens": 148,
+    "reasoning_tokens": 12,
+    "llm_cost_usd": 0.03516,
+    "cost_complete": true,
+    "cost_usd": 0.05701
+   },
+   "asr": [
+    {
+     "intended": "Hi, this is Maria Alvarez, born March fourteenth, nineteen sixty-eight. I need a refill of my lisinopril, please.",
+     "heard": [
+      "Hi. This is Maria Al Alvarez, born 03/14/1968. I need a refill of my lisinopril, please."
+     ],
+     "wer": 0.143,
+     "tokens": [
+      {
+       "token": "Maria",
+       "kind": "name",
+       "exact": true,
+       "normalised": true
+      },
+      {
+       "token": "Alvarez",
+       "kind": "name",
+       "exact": true,
+       "normalised": true
+      },
+      {
+       "token": "14",
+       "kind": "date",
+       "exact": true,
+       "normalised": true
+      },
+      {
+       "token": "1968",
+       "kind": "date",
+       "exact": true,
+       "normalised": true
+      },
+      {
+       "token": "lisinopril",
+       "kind": "medication",
+       "exact": true,
+       "normalised": true
+      }
+     ]
+    },
+    {
+     "intended": "Yes, please send it.",
+     "heard": [
+      "Yes. Please send it."
+     ],
+     "wer": 0.0,
+     "tokens": []
+    }
+   ],
+   "call": {
+    "audio_seconds_sent": 56.88,
+    "call_seconds": 56.88,
+    "markers_acked": 40,
+    "markers_unacked_at_close": 0,
+    "unknown_server_frames": 0,
+    "after_call_wait_s": 2.03,
+    "sample_rate": 24000,
+    "greeting_audio_s": 6.08,
+    "mode": "audio",
+    "seconds": 58.9
+   }
+  }
+ ],
+ "meter_unattributed_cost_usd": 0.0,
+ "meter_total_cost_usd": 0.03516
+}
