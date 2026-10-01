@@ -96,6 +96,13 @@ other versions should add the same test.
 | `voice-loop` | Everything else that moves audio or manages the call (measure 6) |
 | `ops` | Packaging and run targets (`pyproject.toml`, `Makefile`, launch scripts) |
 
+**Shared instruction text.** A version may import the prompt from
+`cedar_clinic.instructions` (counted for nobody) or restate it in its own
+files (counted in its concern). So agent logic is reported both ways:
+as counted, and with the lines that restate the shared text left out
+(`count_concerns.py <framework> --shared-text`: a line of at least four words
+that appears word for word in the exported text).
+
 **Shared code.** `shared/clinic` is identical for all three and is not
 counted for any of them. `shared/speech` is the vendor adapter for LangGraph
 and Strands only (Rasa has its own), so its count is added to the
@@ -123,7 +130,9 @@ library's rule is satisfied by the model's own call.
 diff from its guard-off baseline to the shipped folder (applies with
 `patch -p1` to a guard-off copy), and reports
 `count_concerns.py <framework> --diff`: added and removed lines by the line
-rule above, per file. Say which framework mechanism the guard uses, and
+rule above, per file, with docstrings excluded on both sides (the counter
+reads the shipped file for added lines and a copy with the diff reversed for
+removed lines). Say which framework mechanism the guard uses, and
 whether it is enforced at execution or only in the prompt. For Rasa it is
 enforced at execution: the `requires` tool gate (the send tool is hidden
 from the model and refused at dispatch until `select_medication` has written
@@ -175,14 +184,14 @@ the recorded run (delivered / not delivered / not tested):
 
 | Behaviour | Rasa Mantle | LangGraph | Strands |
 |---|---|---|---|
-| Barge-in (caller interrupts the agent) | Available in the runtime; **off** in this build (`interruptions.enabled: false`, the default on 3.21.0.dev5, beta when on); not tested | | |
-| Silence check-in (agent prompts after the caller says nothing) | Runtime: `silence_timeout: 30` on the channel with Mantle's built-in `default_silence_timeout` skill; configured, not exercised by the spec (no call is silent for 30 s) | | |
-| Fillers while a tool runs | Runtime: Mantle speaks a filler before tool calls (e.g. "Okay, I'll pull up your record now.", `mantle_response_source: filler` in the tracker); the first audio of 34 of 39 turns in the live run | | |
-| Turn-splitting handling (one caller turn arrives as several transcripts) | Adapter: held until Speechmatics' `EndOfUtterance`; if two user events do arrive, the runtime answers each; 0 of 39 turns split in the live run | | |
-| Playback markers and acknowledgements | Runtime | | |
-| Latency fields on end markers | Runtime | | |
-| Sentence chunking for TTS | Runtime: each bot message is synthesised separately; Speechmatics returns one WAV per message | | |
-| TTS cache for repeated text | Runtime (`cache_size`, default 1000) | | |
+| Barge-in (caller interrupts the agent) | Available in the runtime; **off** (`interruptions.enabled: false`, the default on 3.21.0.dev5, beta when on); not tested | Not delivered: not implemented, off | Not delivered: not implemented |
+| Silence check-in (agent prompts after the caller says nothing) | Runtime: `silence_timeout: 30` with Mantle's `default_silence_timeout` skill; configured, not tested | Delivered (written); exercised in a separate live call | Delivered in code (written); not tested |
+| Fillers while a tool runs | Runtime: Mantle's, before tool calls; first audio of 35 of 39 turns (shared-prompt run) | Delivered (written); 30 of 39 | Delivered (written); 29 of 39 |
+| Turn-splitting handling | Adapter: held until Speechmatics' `EndOfUtterance`; 0 of 39 split | Same via `cedar_speech`; 0 of 39 | Same; 0 of 39 |
+| Playback markers and acknowledgements | Runtime | Delivered (written) | Delivered (written) |
+| Latency fields on end markers | Runtime | Delivered (written) | Delivered (written) |
+| Sentence chunking for TTS | Per bot message; model not streamed with this TTS engine | Streamed text cut at sentence ends | Streamed text cut at sentence ends |
+| TTS cache for repeated text | Runtime (`cache_size`, default 1000) | Not delivered | Not delivered |
 
 ## Reporting
 
@@ -191,12 +200,17 @@ and adds a row here and to the tutorial README:
 
 | | Rasa Mantle | LangGraph | Strands |
 |---|---|---|---|
-| Passed (of 17), first full run | 12 (`2026-09-30-speechmatics-live`); the 5 failures rerun after a prompt change: 4 passed | | |
-| Guard violations (all / adversarial) | 0 / 0 (both runs) | | |
-| End of speech to first audio, p50 / p95 | 4,596 / 7,642 ms (n=39) | | |
-| Lines: agent-logic / refill-guard / voice-adapter / voice-loop | 137 / 47 / 213 / 58 | | (voice-adapter includes `shared/speech`: 251) |
-| Guard diff, counted lines changed | 89 (+67 -22) | | |
-| Spend, USD (model + speech-to-text) | 1.84 first run; 2.71 across all recorded runs | | |
+| Headline run | `2026-10-01-speechmatics-live-shared-prompt` (the first run, 12 of 17 on the earlier procedure, kept as history) | `2026-10-01-speechmatics-live` | `2026-10-01-speechmatics-live` |
+| Passed (of 17) | 16 | 16 | 16 |
+| Guard violations (all / adversarial) | 0 / 0 | 0 / 0 | 0 / 0 |
+| Guard-off baseline, 6 adversarial calls | 6 passed, 0 violations | 6 passed, 0 violations | 6 passed, 0 violations |
+| End of speech to first audio, p50 / p95 | 4,971 / 7,050 ms | 3,968 / 5,382 ms | 3,753 / 5,659 ms |
+| Model calls (input tokens) | 178 (391,498) | 86 (110,816) | 73 (113,308) |
+| Lines: agent-logic (shared text left out) / refill-guard / voice-adapter / voice-loop | 137 (94) / 47 / 213 / 58 | 64 (64) / 112 / 251 / 315 | 115 (115) / 92 / 251 / 261 |
+| Guard diff, docstrings excluded | 85 (+67 -18) | 162 (+132 -30) | 143 (+114 -29) |
+| Spend, USD (model + speech-to-text) | 2.01 | 0.70 | 0.70 |
+
+The side-by-side write-up is [`COMPARISON.md`](COMPARISON.md).
 
 No number goes into a table unless a file in `results/` or a command in
 this plan produced it.

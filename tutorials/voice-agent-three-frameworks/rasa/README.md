@@ -2,11 +2,11 @@
 
 ```text
 Author:        Rasa Community
-Assessed on:   2026-09-30
-Assessed by:   Claude Code (phase 1 of the three-framework tutorial; live runs in ../results/rasa/)
+Assessed on:   2026-10-01
+Assessed by:   Claude Code (three-framework tutorial; live runs in ../results/rasa/)
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv, macOS 26.6.2
 Audience:      Engineers comparing Rasa Mantle, LangGraph and Strands for a voice agent with a hard guarantee
-Time:          20 minutes to run; about 20 minutes and 2 USD for the live spec
+Time:          20 minutes to run; about 20 minutes and 2 USD for the live spec (17 calls)
 ```
 
 The Rasa Mantle version of the Cedar Clinic prescription line, one of three
@@ -69,8 +69,9 @@ fixed read-back and the later turn.
 baseline defined in [`../COMPARISON-PLAN.md`](../COMPARISON-PLAN.md) (the
 model passes the patient id and decides when the caller has confirmed). In a
 copy of this folder, `patch -R -E -p1 < guard.diff` gives that baseline,
-which still passes `validate_project`. By the plan's line rule it is **67
-lines added and 22 removed** in 5 files
+which still passes `validate_project`. By the plan's line rule, with
+docstrings excluded on both sides as for the other two versions, it is **67
+lines added and 18 removed** in 5 files
 (`python3 ../shared/spec/count_concerns.py . --diff`).
 
 ## Code per concern
@@ -81,67 +82,86 @@ that are not only a comment, docstrings excluded;
 
 | Concern | Code | Config | Prose | Total | Files |
 |---|---|---|---|---|---|
-| agent-logic | 46 | 59 | 32 | 137 | `agent.yml`, `responses.yml`, both skills, the model group in `integrations.yml`, `tools.py` |
-| refill-guard | 21 | 26 | 0 | 47 | memory files, the confirmation responses, the `tool_constraints` block, regions of `tools.py` |
+| agent-logic | 46 | 59 | 32 | 137 (94 without the 43 lines that restate `cedar_clinic.instructions`, which LangGraph and Strands import instead) | `agent.yml`, `responses.yml`, both skills, the model group in `integrations.yml`, `tools.py` |
+| refill-guard | 21 | 26 | 0 | 47 (44 without 3 restated lines) | memory files, the confirmation responses, the `tool_constraints` block, regions of `tools.py` |
 | voice-adapter | 213 | 0 | 0 | 213 | `engines/` (Speechmatics as Rasa engines) |
 | voice-loop | 0 | 58 | 0 | 58 | the `channels` block of `integrations.yml` |
 | ops | 32 | 17 | 0 | 49 | `Makefile`, `pyproject.toml` |
 
 ## What the live runs recorded
 
-All from [`../results/rasa/`](../results/rasa/), 2026-09-30, one machine.
+All from [`../results/rasa/`](../results/rasa/), on one machine.
 
-| Run | Calls | Passed | Guard violations | Spend USD |
-|---|---|---|---|---|
-| `2026-09-30-speechmatics-live` (all 17 calls) | 17 | 12 | 0 | 1.84 (model 1.73, speech-to-text 0.12) |
-| `2026-09-30-speechmatics-rerun-after-prompt-fix` (the 5 that failed) | 5 | 4 | 0 | 0.63 |
+| Run | Procedure | Calls | Passed | Guard violations | Spend USD |
+|---|---|---|---|---|---|
+| `2026-10-01-speechmatics-live-shared-prompt` (**the headline**) | shared, after the change | 17 | 16 | 0 | 2.01 (model 1.89, speech-to-text 0.12) |
+| `2026-09-30-speechmatics-live` (first run, history) | before the change | 17 | 12 | 0 | 1.84 |
+| `2026-09-30-speechmatics-rerun-after-prompt-fix` | after | 5 | 4 | 0 | 0.63 |
+| `2026-10-01-guard-off-adversarial` (guard-off baseline, the 6 adversarial calls) | after | 6 | 6 | 0 | 0.48 |
 
-**Why calls failed in the first run.** None sent anything unconfirmed, for an
-unverified caller, or for the wrong medicine.
+**The headline run's one failure** is `correction-other-medicine-at-confirmation`,
+as in the first run. At the read-back the caller names another medicine;
+Mantle's decline path speaks "Okay, I have not sent a refill request." and
+ends the turn, and the budesonide is selected and read back on the next
+turn, which is one turn later than the script allows. Nothing wrong was
+sent. The LangGraph and Strands guards hand the caller's words back to the
+model in the same turn and passed it. This version passed
+`recovery-second-verification`, which both of them failed.
 
-| Call | Cause | Whose |
-|---|---|---|
-| `normal-identity-first`, `adversarial-skip-confirmation`, `recovery-acknowledgement-lost` | GPT-5.5 asked the caller to confirm before calling `send_refill_request`; the engine then asked its own read-back question, so the caller had to confirm twice and the script ended first | agent logic (the prompt) |
-| `normal-by-condition` | Asked "Which blood pressure medicine?" instead of passing "my blood pressure pills" to `select_medication` | agent logic (the prompt) |
-| `correction-other-medicine-at-confirmation` | Correct behaviour, one turn later than the script allows: after a declined confirmation Mantle speaks the decline and takes the new medicine on the next turn (the Northgate dispute build saw the same) | the script and Mantle's decline path |
+**The first run's failures** were four calls where GPT-5.5 asked its own
+confirmation question before calling `send_refill_request` (so the caller
+had to confirm twice), or asked which medicine instead of selecting by
+description. They led to the shared procedure change
+("Tell the model not to ask its own confirmation question"), which all three
+versions' headline runs use.
 
-The shared procedure then told the model to call `send_refill_request`
-straight away and to pass descriptions to `select_medication`
-(commit "Tell the model not to ask its own confirmation question"). The
-rerun of the five passed the four prompt failures; the fifth failed the
-same way as before. The rerun did not repeat the other 12 calls, so there is
-no single 17-call figure after the change.
-
-**Latency per caller turn**, first run, p50 (p95), n=39:
+**Latency per caller turn**, headline run, p50 (p95), n=39:
 
 | Part | ms |
 |---|---|
-| End of caller speech to first bot audio | 4,596 (7,642) |
-| End of speech to transcript (Speechmatics' 0.7 s end of utterance, finalisation, network) | 1,541 (1,746) |
-| Agent processing: final transcript to first bot message | 1,912 (4,109) |
-| of which model time before the first audio (1 call at p50, 2 at p95) | 1,905 (4,090) |
-| TTS first byte (Speechmatics preview returns a whole WAV per message) | 1,236 (2,561) |
-| Model calls per turn | 5 (8) |
+| End of caller speech to first bot audio | 4,971 (7,050) |
+| End of speech to transcript | 1,574 (1,750) |
+| Agent processing: final transcript to first bot message | 2,295 (3,731) |
+| of which the turn's first model call, not streamed | 2,193 (3,281) |
+| TTS first byte | 1,187 (2,482) |
+| Model calls per turn | 5 (7) |
 
-In 34 of the 39 turns the first thing the caller heard was a Mantle filler
-("Okay, I'll pull up your record now.") spoken while a tool ran.
+The model calls are not streamed because Mantle streams only into a TTS
+engine that accepts streaming text, and this Speechmatics engine takes one
+utterance per request. The first audio was a Mantle filler in 35 of 39
+turns.
 
-**Speech-to-text**, 39 turns: word error rate 0.007, no caller turn split
-into two, every medicine name heard (17 of 17), names 29 of 30. Dates came
-back as digits ("March 14th, 1968"): 14 of 31 date tokens as written, 30 of
-31 after number normalisation.
+**Where the 178 model calls go**, labelled by the Mantle function that made
+each one (`../shared/spec/rasa_call_purposes.py`,
+`python3 ../shared/spec/rasa_call_breakdown.py ../results/rasa/2026-10-01-speechmatics-live-shared-prompt`):
 
-**Wording, reported only:** 1 of 74 bot messages matched the approval
-pattern, and it was a false positive: "Which blood pressure medicine do you
-need refilled?". No message read out an internal id.
+| Purpose | During caller turns | After the hangup | USD |
+|---|---|---|---|
+| Orchestrator iteration | 108 | 17 | 1.49 |
+| Fact discovery (after a skill switch, off the reply path) | 17 | 17 | 0.28 |
+| Response rephrasing | 2 | 17 | 0.12 |
+
+The model returned one tool call per orchestrator iteration. 49 of the 125
+iterations were engine tools (`activate` 17, `complete_skill` 14,
+`resolve_tool_confirmation` 13, `cancel_skill` 3, `cannot_help` 2), against
+51 for the clinic's tools. The 51 calls after hangups are Mantle's
+`/session_end` turn, which nobody hears. LangGraph made 86 calls and Strands
+73 for the same 17 calls; see [`../COMPARISON.md`](../COMPARISON.md).
+
+**Speech-to-text**, headline run: word error rate 0.009, no caller turn
+split, every medicine name heard (17 of 17), names 29 of 30.
 
 **Model cost** is the meter's (token usage times OpenAI's published price for
 `gpt-5.5-2026-04-23`: 5.00 USD per million input tokens, 0.50 cached, 30.00
-output). LiteLLM's own cost for the same run, logged inside the agent, was
-identical: 1.725828 USD over 173 calls. Speech-to-text is priced at 0.43 USD
-per hour (Speechmatics realtime enhanced, as recorded by the Northgate
-dispute build on 2026-09-29); TTS is in free preview with no published price,
-so its 8,866 characters are not priced.
+output). LiteLLM's own cost, logged inside the agent, was identical in both
+full runs (1.887398 USD over 178 calls in the headline). Speech-to-text is
+priced at 0.43 USD per hour (Speechmatics realtime enhanced, as recorded by
+the Northgate dispute build on 2026-09-29); TTS is in free preview with no
+published price, so it is not priced.
+
+**No tuned run.** This release has no setting to turn off fact discovery or
+the `/session_end` turn, and model streaming needs a TTS engine that accepts
+streaming text; see [`../COMPARISON.md`](../COMPARISON.md#why-there-is-no-tuned-rasa-run).
 
 ## Voice behaviour
 
@@ -149,8 +169,9 @@ so its 8,866 characters are not priced.
 |---|---|
 | Barge-in | Off: `interruptions.enabled: false` (the default on 3.21.0.dev5; beta when on) |
 | Silence check-in | `silence_timeout: 30` with Mantle's built-in silence skill; not exercised by the spec |
-| Fillers while a tool runs | On (runtime default), seen in 34 of 39 turns |
+| Fillers while a tool runs | On (runtime default); first audio of 35 of 39 turns in the headline run |
 | Turn splitting | Speechmatics' `EndOfUtterance` joins segments in the engine; 0 of 39 turns split |
+| Work after the hangup | One `/session_end` turn: 3 model calls per call |
 | Playback markers, latency fields, TTS cache | Runtime |
 
 ## Also checked

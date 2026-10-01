@@ -116,8 +116,9 @@ By the plan's line rule (`python3 ../shared/spec/count_concerns.py . --diff`)
 it is **144 lines added and 32 removed, 176 changed**, in 2 files: `agent.py`
 +46 -32, `guard.py` +98 -0. The diff counter cannot tell a docstring from
 code, so 30 of the added lines and 3 of the removed ones are docstrings;
-without them it is +114 -29 (143). The Rasa guard diff is 89 (+67 -22),
-mostly YAML, whose comments do not count.
+without them it is +114 -29 (143). The Rasa guard diff, with docstrings
+excluded the same way, is 85 (+67 -18), mostly YAML, whose comments do not
+count.
 
 ## The voice loop
 
@@ -222,8 +223,9 @@ and sentence chunking delivered; no TTS cache. See the checklist in
 - **Prompt timing.** This run used the shared procedure after the Rasa
   build's fix (call `send_refill_request` straight away, pass descriptions to
   `select_medication`). The Rasa headline, 12 of 17, was before that fix; its
-  rerun of the five failures after the fix passed four. Rasa's figure across
-  its two runs is also 16 of 17 calls passing, but not in one run.
+  rerun of the five failures after the fix passed four. Rasa was then rerun
+  in full on the shared prompt: 16 of 17 in one run
+  ([`../COMPARISON.md`](../COMPARISON.md)).
 - **Who judges the yes.** Here a fixed rule decides whether the caller
   confirmed; in Rasa the model does, with a model call. The rule saves a
   model call and its latency on every confirmation turn, and fails closed on
@@ -240,10 +242,11 @@ and sentence chunking delivered; no TTS cache. See the checklist in
 - **Fillers** are fixed phrases after the tools here and Mantle's own
   fillers before them there; both count as the first audio.
 - **Model calls and tokens.** 73 calls and 113,308 input tokens here against
-  173 and 358,692 for Rasa over the same 39 turns: 2 calls per turn at the
-  median here, 5 there, with a larger prompt per call. That is the framework
-  layer, not the task, and it is most of the cost difference (0.70 against
-  1.84 USD).
+  173 and 358,692 for Rasa's first run (178 and 391,498 in its shared-prompt
+  rerun) over the same 39 turns: 2 calls per turn at the median here, 5
+  there, with a larger prompt per call. That is the framework layer, not the
+  task, and it is most of the cost difference (0.70 against 1.84 and 2.01
+  USD).
 - **Line counts.** The shared instruction text is imported here and restated
   in the Rasa version; the guard diff here counts 30 docstring lines.
 - **What Rasa's runtime has that this loop does not:** a TTS cache, barge-in

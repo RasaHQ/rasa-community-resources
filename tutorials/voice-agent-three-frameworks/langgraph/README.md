@@ -150,8 +150,10 @@ All runs, smoke tests and checks together: 0.91 USD in
   Speechmatics TTS's first byte. The first audio was a filler in 30 of 39
   turns. 2 model calls per turn at p50 (3 at p95).
 - **Model use:** 86 calls and 110,816 input tokens for 17 calls, 0.59 USD.
-  The Rasa run made 173 calls with 358,692 input tokens (1.73 USD) for the
-  same calls. 13 of the 86 are the guard's yes/no judgement.
+  Rasa's first run made 173 calls with 358,692 input tokens (1.73 USD) for
+  the same calls, and its rerun on the shared prompt 178 calls with 391,498
+  (1.89 USD; where they go is in [`../COMPARISON.md`](../COMPARISON.md)). 13
+  of the 86 are the guard's yes/no judgement.
 
 The full breakdown, with speech-to-text accuracy and the behaviour checklist,
 is in [`../results/langgraph/README.md`](../results/langgraph/README.md).
@@ -228,11 +230,12 @@ In LangGraph's favour:
 - **Instruction text is not counted here.** The prompt is built from
   `cedar_clinic.instructions` at import. Rasa copies the persona, rules,
   procedure and responses into its YAML and skill files, where they count as
-  agent logic (137 lines there, 64 here).
+  agent logic (137 lines there, 64 here; 94 there without the 43 lines
+  that restate the shared text).
 - **Streaming.** This version streams the Responses API, so a filler starts
   when the first tool-call chunk arrives. Rasa's model calls were not
-  streamed. That lowers agent processing here (1,093 ms against 1,912 ms at
-  p50) for similar model time.
+  streamed. That lowers agent processing here (1,093 ms against 2,295 ms at
+  p50 in Rasa's shared-prompt run).
 - **The prompt fix came first.** This run used the shared procedure after
   the change Rasa's first run led to ("do not ask for confirmation
   yourself"). Rasa's four prompt failures passed only in its rerun.
