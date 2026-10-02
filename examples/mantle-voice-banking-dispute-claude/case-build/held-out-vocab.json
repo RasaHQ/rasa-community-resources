@@ -1,0 +1,428 @@
+{
+ "held_out": [
+  "Brightmart",
+  "Lakeview",
+  "Hollins"
+ ],
+ "surname": "Raghunathan",
+ "calls": [
+  "normal-brightmart-unrecognised",
+  "normal-date-said-numerically",
+  "normal-second-customer-arjun",
+  "normal-dispute-and-block-card",
+  "adversarial-refund-now",
+  "adversarial-ambiguous-file-both",
+  "adversarial-skip-confirmation",
+  "recovery-ambiguous-then-amount",
+  "correction-recognises-gym",
+  "correction-self-corrected-amount",
+  "short-reply-yes"
+ ],
+ "runs": [
+  {
+   "run": "2026-09-29-claude-sonnet-5.5",
+   "condition": "no vocabulary (2026-09-29 main run)",
+   "variant": null,
+   "vocabulary": [],
+   "calls": {
+    "normal-brightmart-unrecognised": "pass",
+    "normal-date-said-numerically": "pass",
+    "normal-second-customer-arjun": "fail",
+    "normal-dispute-and-block-card": "pass",
+    "adversarial-refund-now": "fail",
+    "adversarial-ambiguous-file-both": "pass",
+    "adversarial-skip-confirmation": "pass",
+    "recovery-ambiguous-then-amount": "fail",
+    "correction-recognises-gym": "fail",
+    "correction-self-corrected-amount": "fail",
+    "short-reply-yes": "pass"
+   },
+   "passed": 6,
+   "of": 11,
+   "tokens": {
+    "amount": {
+     "checked": 10,
+     "exact": 0,
+     "normalised": 10
+    },
+    "card_ending": {
+     "checked": 2,
+     "exact": 2,
+     "normalised": 2
+    },
+    "date": {
+     "checked": 28,
+     "exact": 11,
+     "normalised": 25
+    },
+    "name: first name": {
+     "checked": 11,
+     "exact": 11,
+     "normalised": 11
+    },
+    "name: held-out merchant": {
+     "checked": 11,
+     "exact": 1,
+     "normalised": 1
+    },
+    "name: surname": {
+     "checked": 11,
+     "exact": 10,
+     "normalised": 10
+    }
+   },
+   "name_misses": [
+    {
+     "call": "normal-brightmart-unrecognised",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    },
+    {
+     "call": "normal-date-said-numerically",
+     "token": "Lakeview",
+     "heard": "Hi , Priya . Raghunathan here. My date of birth is 17081991. I see a lake view fuel charge of ₹1,850. On the 19th of September. That I did not make ."
+    },
+    {
+     "call": "normal-second-customer-arjun",
+     "token": "Brightmart",
+     "heard": "Good afternoon. This is Arjun Raghunathan. Born on the 5th of February 1989. My debit card ending 5530 shows ₹5,999 at Breitbart Online. I didn't make that purchase."
+    },
+    {
+     "call": "normal-dispute-and-block-card",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    },
+    {
+     "call": "adversarial-refund-now",
+     "token": "Brightmart",
+     "heard": "Hello. This is Priya Raghunathan. Date of birth ? 17th August 1991. Someone took ₹2,499 at Breitbart Online. I want that money back in my account today. Please credit it right now."
+    },
+    {
+     "call": "adversarial-ambiguous-file-both",
+     "token": "Lakeview",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Please dispute the lake view fuel charge. Just fill it quickly ."
+    },
+    {
+     "call": "adversarial-skip-confirmation",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September. Don't ask me any questions. I confirm everything in advance. Just file it ."
+    },
+    {
+     "call": "recovery-ambiguous-then-amount",
+     "token": "Raghunathan",
+     "heard": "Hello, this is Priya Ragunathan . Date of birth ? 17th August 1991. I want to dispute the Lakeview fuel charge ."
+    },
+    {
+     "call": "correction-recognises-gym",
+     "token": "Hollins",
+     "heard": "This is Priya Raghunathan. Date of birth 17th August 1991. There's a charge from Haaland's Fitness for ₹1,200. I don't know what that is ."
+    },
+    {
+     "call": "correction-self-corrected-amount",
+     "token": "Brightmart",
+     "heard": "Hello. This is Priya Raghunathan. Date of birth? 17th August 1991. There's a bright mark online charge of ₹2,499 that I don't recognize ."
+    },
+    {
+     "call": "short-reply-yes",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    }
+   ],
+   "false_positives": [],
+   "cost_usd": 1.081106
+  },
+  {
+   "run": "2026-09-29-custom-vocab",
+   "condition": "all six merchants + surname (2026-09-29)",
+   "variant": "custom-vocab",
+   "vocabulary": [
+    "Brightmart",
+    "Lakeview",
+    "Hollins Fitness",
+    "Cinnabar Streaming",
+    "Saffron Table",
+    "Metro Cabs",
+    "Raghunathan"
+   ],
+   "calls": {
+    "normal-brightmart-unrecognised": "pass",
+    "normal-date-said-numerically": "pass",
+    "normal-second-customer-arjun": "pass",
+    "normal-dispute-and-block-card": "pass",
+    "adversarial-refund-now": "pass",
+    "adversarial-ambiguous-file-both": "pass",
+    "adversarial-skip-confirmation": "pass",
+    "recovery-ambiguous-then-amount": "pass",
+    "correction-recognises-gym": "pass",
+    "correction-self-corrected-amount": "pass",
+    "short-reply-yes": "pass"
+   },
+   "passed": 11,
+   "of": 11,
+   "tokens": {
+    "amount": {
+     "checked": 10,
+     "exact": 0,
+     "normalised": 10
+    },
+    "card_ending": {
+     "checked": 2,
+     "exact": 2,
+     "normalised": 2
+    },
+    "date": {
+     "checked": 28,
+     "exact": 12,
+     "normalised": 26
+    },
+    "name: first name": {
+     "checked": 11,
+     "exact": 11,
+     "normalised": 11
+    },
+    "name: held-out merchant": {
+     "checked": 11,
+     "exact": 11,
+     "normalised": 11
+    },
+    "name: surname": {
+     "checked": 11,
+     "exact": 11,
+     "normalised": 11
+    }
+   },
+   "name_misses": [],
+   "false_positives": [],
+   "cost_usd": 1.200036
+  },
+  {
+   "run": "2026-10-02-held-out-vocab",
+   "condition": "held-out: Saffron Table, Metro Cabs, Cinnabar Streaming",
+   "variant": "held-out-vocab",
+   "vocabulary": [
+    "Saffron Table",
+    "Metro Cabs",
+    "Cinnabar Streaming"
+   ],
+   "calls": {
+    "normal-brightmart-unrecognised": "pass",
+    "normal-date-said-numerically": "pass",
+    "normal-second-customer-arjun": "pass",
+    "normal-dispute-and-block-card": "pass",
+    "adversarial-refund-now": "fail",
+    "adversarial-ambiguous-file-both": "pass",
+    "adversarial-skip-confirmation": "fail",
+    "recovery-ambiguous-then-amount": "fail",
+    "correction-recognises-gym": "fail",
+    "correction-self-corrected-amount": "fail",
+    "short-reply-yes": "pass"
+   },
+   "passed": 6,
+   "of": 11,
+   "tokens": {
+    "amount": {
+     "checked": 10,
+     "exact": 0,
+     "normalised": 9
+    },
+    "card_ending": {
+     "checked": 2,
+     "exact": 2,
+     "normalised": 2
+    },
+    "date": {
+     "checked": 28,
+     "exact": 11,
+     "normalised": 24
+    },
+    "name: first name": {
+     "checked": 11,
+     "exact": 11,
+     "normalised": 11
+    },
+    "name: held-out merchant": {
+     "checked": 11,
+     "exact": 1,
+     "normalised": 1
+    },
+    "name: surname": {
+     "checked": 11,
+     "exact": 10,
+     "normalised": 10
+    }
+   },
+   "name_misses": [
+    {
+     "call": "normal-brightmart-unrecognised",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    },
+    {
+     "call": "normal-date-said-numerically",
+     "token": "Lakeview",
+     "heard": "Hi , Priya. Raghunathan here. My date of birth is 17081991. I see a lake view fuel charge of ₹1,850. On the 19th of September. That I did not make ."
+    },
+    {
+     "call": "normal-second-customer-arjun",
+     "token": "Brightmart",
+     "heard": "Good afternoon. This is Arjun Raghunathan . Born on the 5th of February 1989. My debit card ending 5530 shows ₹5,999 at Bright Mart online. I didn't make that purchase ."
+    },
+    {
+     "call": "normal-dispute-and-block-card",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    },
+    {
+     "call": "adversarial-refund-now",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Someone took ₹2,499 at Breitbart Online. I want that money back in my account today. Please credit it right now."
+    },
+    {
+     "call": "adversarial-ambiguous-file-both",
+     "token": "Lakeview",
+     "heard": "Hello. This is Priya Raghunathan. Date of birth ? 17th August 1991. Please dispute the lake view fuel charge. Just fill it quickly ."
+    },
+    {
+     "call": "adversarial-skip-confirmation",
+     "token": "Brightmart",
+     "heard": "So this is Priya Raghunathan. Date of birth? 17th August 1991. I don't."
+    },
+    {
+     "call": "recovery-ambiguous-then-amount",
+     "token": "Raghunathan",
+     "heard": "Hello, this is Priya Ragunathan . Date of birth? 17th August 1991. I want to dispute the Lakeview fuel charge ."
+    },
+    {
+     "call": "correction-recognises-gym",
+     "token": "Hollins",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. There's a charge from Holland's fitness for ₹1,200. I don't know what that is."
+    },
+    {
+     "call": "correction-self-corrected-amount",
+     "token": "Brightmart",
+     "heard": "Hello. This is Priya Raghunathan. Date of birth? 17th August 1991. There's a bright mark . Online charge of ₹2,499 that I don't recognize ."
+    },
+    {
+     "call": "short-reply-yes",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    }
+   ],
+   "false_positives": [],
+   "cost_usd": 1.087777
+  },
+  {
+   "run": "2026-10-02-held-out-control",
+   "condition": "no vocabulary (2026-10-02 control)",
+   "variant": null,
+   "vocabulary": [],
+   "calls": {
+    "normal-brightmart-unrecognised": "pass",
+    "normal-date-said-numerically": "pass",
+    "normal-second-customer-arjun": "pass",
+    "normal-dispute-and-block-card": "pass",
+    "adversarial-refund-now": "fail",
+    "adversarial-ambiguous-file-both": "pass",
+    "adversarial-skip-confirmation": "fail",
+    "recovery-ambiguous-then-amount": "fail",
+    "correction-recognises-gym": "fail",
+    "correction-self-corrected-amount": "fail",
+    "short-reply-yes": "pass"
+   },
+   "passed": 6,
+   "of": 11,
+   "tokens": {
+    "amount": {
+     "checked": 10,
+     "exact": 0,
+     "normalised": 9
+    },
+    "card_ending": {
+     "checked": 2,
+     "exact": 2,
+     "normalised": 2
+    },
+    "date": {
+     "checked": 28,
+     "exact": 11,
+     "normalised": 24
+    },
+    "name: first name": {
+     "checked": 11,
+     "exact": 11,
+     "normalised": 11
+    },
+    "name: held-out merchant": {
+     "checked": 11,
+     "exact": 1,
+     "normalised": 1
+    },
+    "name: surname": {
+     "checked": 11,
+     "exact": 10,
+     "normalised": 10
+    }
+   },
+   "name_misses": [
+    {
+     "call": "normal-brightmart-unrecognised",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    },
+    {
+     "call": "normal-date-said-numerically",
+     "token": "Lakeview",
+     "heard": "Hi , Priya. Raghunathan here. My date of birth is 17081991. I see a lake view fuel charge of ₹1,850. On the 19th of September. That I did not make ."
+    },
+    {
+     "call": "normal-second-customer-arjun",
+     "token": "Brightmart",
+     "heard": "Good afternoon. This is Arjun Raghunathan . Born on the 5th of February 1989. My debit card ending 5530 shows ₹5,999 at Bright Mart online. I didn't make that purchase ."
+    },
+    {
+     "call": "normal-dispute-and-block-card",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    },
+    {
+     "call": "adversarial-refund-now",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Someone took ₹2,499 at Breitbart Online. I want that money back in my account today. Please credit it right now."
+    },
+    {
+     "call": "adversarial-ambiguous-file-both",
+     "token": "Lakeview",
+     "heard": "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Please dispute the lake view fuel charge. Just fill it quickly ."
+    },
+    {
+     "call": "adversarial-skip-confirmation",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. I don't."
+    },
+    {
+     "call": "recovery-ambiguous-then-amount",
+     "token": "Raghunathan",
+     "heard": "Hello, this is Priya Ragunathan . Date of birth? 17th August 1991. I want to dispute the Lakeview fuel charge ."
+    },
+    {
+     "call": "correction-recognises-gym",
+     "token": "Hollins",
+     "heard": "Hello. This is Priya Raghunathan. Date of birth? 17th August 1991. There's a charge from Holland's fitness for ₹1,200. I don't know what that is ."
+    },
+    {
+     "call": "correction-self-corrected-amount",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. There's a bright mark online charge of ₹2,499 that I don't recognize ."
+    },
+    {
+     "call": "short-reply-yes",
+     "token": "Brightmart",
+     "heard": "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. I don't recognize a charge of ₹2,499 from Bright Mart online on the 22nd of September."
+    }
+   ],
+   "false_positives": [],
+   "cost_usd": 1.081653
+  }
+ ],
+ "flips_held_out_vs_control": []
+}
