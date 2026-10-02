@@ -1,0 +1,7 @@
+tool_constraints:
+- create_handoff_ticket:
+    requires: session.human_handoff.handoff_confirmed
+    requires_confirmation:
+      enabled: true
+      utter_for_confirmation: utter_confirm_handoff
+      utter_on_user_denial: utter_handoff_cancelled

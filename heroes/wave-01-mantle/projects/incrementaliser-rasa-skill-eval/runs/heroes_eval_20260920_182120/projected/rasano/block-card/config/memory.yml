@@ -1,0 +1,26 @@
+schema:
+  public:
+    block_reason:
+      type: categorical
+      description: Why the card is being blocked.
+      enum_values: [lost, stolen, fraud, damaged, expired, traveling, moving]
+      llm_settable: true
+    selected_card_id:
+      type: text
+      description: Full card number selected for blocking.
+      llm_settable: true
+    selected_card_label:
+      type: text
+      description: Masked card label shown to the customer.
+      llm_settable: true
+    cards_loaded:
+      type: bool
+    card_blocked:
+      type: bool
+    shipping_type:
+      type: categorical
+      description: Replacement shipping preference.
+      enum_values: [standard, express]
+      llm_settable: true
+    replacement_ordered:
+      type: bool
