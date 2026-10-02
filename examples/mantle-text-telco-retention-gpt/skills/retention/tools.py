@@ -75,7 +75,8 @@ async def record_cancellation_request(service: str, context: ToolContext = None)
     Args:
         service: The service to cancel as the customer named it, for example my mobile or the home fibre.
     """
-    result = jm.record_cancellation_request(_desk(), _customer(context), _conversation_id(), service)
+    result = jm.record_cancellation_request(_desk(), _customer(context), _conversation_id(), service,
+                                            _conversation(context))
     await _send_receipt(context, "record_cancellation_request", result)
     return ToolResult(llm_response=result)
 

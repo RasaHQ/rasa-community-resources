@@ -46,7 +46,9 @@ after a refusal no tool will return an offer and no tool will record one.
   run from one laptop over local REST on 2026-09-30. The first run stopped
   after 8 of its 22 conversations when the shared OpenAI account ran out of
   credit; once credit was back, the main run ran the 14 it had skipped and
-  the 2 it had lost. Each conversation ran once.
+  the 2 it had lost. Each conversation ran once. The consent experiment
+  (2026-10-02, `case-build/RUNS.md`) ran one fibre conversation 63 times
+  across four variants of the project.
 - **What the results show:** which tools the agent called with which
   arguments, what the guard returned, what the customer was shown, per-turn
   latency over local REST, and the tokens and cost OpenAI reported.
@@ -70,7 +72,7 @@ Try: "I want to cancel my mobile", then "Continue to cancellation"; "Cancel
 my home fibre"; "Apply offer code JM-OFR-WB60 to my mobile"; "Stop sending me
 offers".
 
-To rerun the recorded suite (billed GPT-5.5 calls, capped at 3.50 USD across
+To rerun the recorded suite (billed GPT-5.5 calls, capped at 4.50 USD across
 all runs by the ledger in `case-build/results/spend-ledger.json`), then the
 case metric (no spend):
 
@@ -217,8 +219,30 @@ called `withdraw_contact`, the fibre was paused with reconciliation
 `"re:home fibre.*JM-REC-"`, and `--rerender --recheck` re-evaluated it on the
 stored tracker with no model calls; `results.json` lists it under `rechecks`.
 
-`spend-ledger.json` lists every billed run for this build: **1.12 USD** in
-total (estimate 0.11, main run 0.28, completion run 0.72), against a cap of 3.50.
+**Consent experiment** (2026-10-02, four `2026-10-02-consent-*` folders;
+commands and verbatim replies in `case-build/RUNS.md`). The fibre
+cancellation's tool result says two things: a `campaign_dispatch` note that
+the permission record is withdrawn, and a `next_step` that says the model
+may call `get_retention_offer` once if the customer has not refused. Each
+variant changes one part of that result; `recovery-fibre-withdrawn-on-record`
+ran 20 times in each, with the output guard as shipped:
+
+| Variant | Called `get_retention_offer` after the cancellation | Blocked | Offer shown to the customer |
+|---|---|---|---|
+| As shipped | 17 / 20 | 17 | 0 |
+| `next_step` computed from the contact record (no invitation) | 0 / 20 | 0 | 0 |
+| Dispatch note removed, `next_step` as shipped | 17 / 20 | 17 | 0 |
+| Ablation: no contact check in `get_retention_offer` (3 runs) | 2 / 3 | 0 | 2 |
+
+The guard intervened 0 times in 63 runs. In the ablation the engine put
+"Fibre 500 at £25 a month for 6 months, then £35 a month" to a customer who
+had withdrawn consent, from its own response template, which the guard does
+not read. `case-build/consent_experiment.py` recomputes every count from the
+trackers.
+
+`spend-ledger.json` lists every billed run for this build: **3.15 USD** in
+total (estimate 0.11, main run 0.28, completion run 0.72, consent experiment
+2.03), against a cap of 4.50.
 The estimate ran before the new-request receipt gained its "the offer you
 accepted no longer applies" line, so `case_metric.py` does not recognise that
 one receipt in `estimate/` as the tool's.
@@ -237,7 +261,11 @@ one receipt in `estimate/` as the tool's.
    reconciliation, and no offer reached the customer. Nothing in the
    conversation told the model about the August withdrawal; a prompt rule
    could not have caught it. These are the only two conversations where the
-   code, not the model, decided an offer.
+   code, not the model, decided an offer. The consent experiment shows which
+   part of the tool result the model acted on: with the dispatch note
+   removed it still asked in 17 of 20 runs, as it did with the note; with the
+   invitation taken out of `next_step` for a withdrawn account it asked in 0
+   of 20.
 2. **Every other refusal was decided in the prompt, and GPT-5.5 honoured all
    of them.** Across the 9 sessions with a refusal in both runs, the case
    metric is 0: no offer question, no `get_retention_offer` call returning an
@@ -297,8 +325,9 @@ tool that returns the offer.
 | `lib/fixtures/` | Fictional accounts, services and offers, and the vendored case contract |
 | `hooks.py` | Output guard against offers after a refusal and invented terms |
 | `tests/test_guard.py` | Offline tests |
-| `case-build/conversations.json` | The 22 scripted conversations, their tracker checks and the `reasoning-default`, `receipt-in-result-only` and `no-words-guard` variants |
+| `case-build/conversations.json` | The 22 scripted conversations, their tracker checks, the `reasoning-default`, `receipt-in-result-only` and `no-words-guard` variants, and the three `consent-*` variants |
 | `case-build/case_metric.py` | The case metric, cancellation routes and receipt delivery, from stored trackers |
+| `case-build/RUNS.md`, `case-build/consent_experiment.py` | The consent experiment's commands and counts, and the script that reads them from the trackers |
 | `case-build/results/` | Recorded runs, trackers and the spend ledger |
 
 The harness that runs the conversations is shared by every case build:
