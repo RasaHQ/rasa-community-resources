@@ -70,22 +70,31 @@ EXIT_WORDS = "continue to cancellation"
 # to False.
 TOOL_SENDS_RECEIPT = True
 
-# Switches for the consent experiment (case-build/consent-experiment/). The
-# values here are the shipped behaviour; each `consent-*` variant in
-# case-build/conversations.json flips one for a run.
+# Switches for the consent experiment (case-build/RUNS.md). The values here
+# are the shipped behaviour. Each `consent-*` variant in
+# case-build/conversations.json sets them to what its 2026-10-02 run used, so
+# the runs still reproduce.
 #
 # NEXT_STEP_FROM_CONTACT: when True, record_cancellation_request computes its
-# next_step from contact_facts, so a service whose contact permission is not
-# current gets no invitation to call get_retention_offer
-# (`consent-next-step-from-contact`).
-NEXT_STEP_FROM_CONTACT = False
+# next_step from contact_facts. A service whose contact permission is not
+# current (withdrawn on record or in this chat, permission records that
+# disagree, a refusal or a declined offer) is told "make no offer: do not call
+# get_retention_offer"; any other service keeps the invitation to call it once.
+# When False, every recorded service gets that invitation, as the build
+# shipped before 2026-10-02. True is variant (b) of the consent experiment and
+# is now the shipped behaviour: on a withdrawn account the model called
+# get_retention_offer in 17 of 20 runs with the old line and in 0 of 20 with
+# this one. `consent-old-next-step` sets it False (variant (a)).
+NEXT_STEP_FROM_CONTACT = True
 # CANCELLATION_SHOWS_DISPATCH: when False, a campaign pause still happens but
 # record_cancellation_request leaves the campaign_dispatch note out of its
 # result (`consent-no-dispatch-note`).
 CANCELLATION_SHOWS_DISPATCH = True
-# OFFER_CHECKS_CONTACT: an ablation, never a configuration. When False,
-# get_retention_offer ignores contact_permission_current, to show the offer an
-# opted-out customer would be given (`consent-no-offer-contact-check`).
+# OFFER_CHECKS_CONTACT: get_retention_offer checks contact_permission_current
+# itself, whatever next_step said. It stays True: with it off
+# (`consent-no-offer-contact-check`, an ablation, never a configuration) the
+# engine put the fibre offer to a customer who had withdrawn consent, so this
+# check is what held, not the wording of next_step.
 OFFER_CHECKS_CONTACT = True
 
 # Skill memory keys the tools write (skills/retention/memory.yml).

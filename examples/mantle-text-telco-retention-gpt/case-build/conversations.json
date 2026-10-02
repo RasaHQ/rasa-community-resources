@@ -40,33 +40,53 @@
     }
    ]
   },
-  "consent-next-step-from-contact": {
-   "description": "Consent experiment (b): record_cancellation_request computes next_step from contact_facts, so a service whose contact permission is not current gets no invitation to call get_retention_offer",
+  "consent-old-next-step": {
+   "description": "Consent experiment (a), the build as shipped until 2026-10-02: record_cancellation_request's next_step invites one get_retention_offer call for every recorded service, whatever its contact permission",
    "edits": [
     {
      "file": "lib/retention.py",
-     "find": "\nNEXT_STEP_FROM_CONTACT = False\n",
+     "find": "\nNEXT_STEP_FROM_CONTACT = True\n",
+     "replace": "\nNEXT_STEP_FROM_CONTACT = False\n"
+    }
+   ]
+  },
+  "consent-next-step-from-contact": {
+   "description": "Consent experiment (b): record_cancellation_request computes next_step from contact_facts, so a service whose contact permission is not current gets no invitation to call get_retention_offer. Now the shipped behaviour; the edit only checks the default is in place",
+   "edits": [
+    {
+     "file": "lib/retention.py",
+     "find": "\nNEXT_STEP_FROM_CONTACT = True\n",
      "replace": "\nNEXT_STEP_FROM_CONTACT = True\n"
     }
    ]
   },
   "consent-no-dispatch-note": {
-   "description": "Consent experiment (c): the campaign is still paused, but record_cancellation_request leaves the campaign_dispatch note out of its result; next_step as shipped",
+   "description": "Consent experiment (c): the campaign is still paused, but record_cancellation_request leaves the campaign_dispatch note out of its result; next_step is the old line, as shipped on 2026-10-02",
    "edits": [
     {
      "file": "lib/retention.py",
      "find": "\nCANCELLATION_SHOWS_DISPATCH = True\n",
      "replace": "\nCANCELLATION_SHOWS_DISPATCH = False\n"
+    },
+    {
+     "file": "lib/retention.py",
+     "find": "\nNEXT_STEP_FROM_CONTACT = True\n",
+     "replace": "\nNEXT_STEP_FROM_CONTACT = False\n"
     }
    ]
   },
   "consent-no-offer-contact-check": {
-   "description": "Consent experiment (d), an ablation: get_retention_offer ignores contact_permission_current, to show the offer an opted-out customer would be given; every other result as shipped",
+   "description": "Consent experiment (d), an ablation: get_retention_offer ignores contact_permission_current, to show the offer an opted-out customer would be given; next_step is the old line and every other result as shipped on 2026-10-02",
    "edits": [
     {
      "file": "lib/retention.py",
      "find": "\nOFFER_CHECKS_CONTACT = True\n",
      "replace": "\nOFFER_CHECKS_CONTACT = False\n"
+    },
+    {
+     "file": "lib/retention.py",
+     "find": "\nNEXT_STEP_FROM_CONTACT = True\n",
+     "replace": "\nNEXT_STEP_FROM_CONTACT = False\n"
     }
    ]
   }

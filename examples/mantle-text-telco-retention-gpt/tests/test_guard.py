@@ -446,23 +446,50 @@ class ConsentSwitchTests(unittest.TestCase):
         setattr(jm, name, value)
         self.addCleanup(setattr, jm, name, original)
 
-    def test_shipped_defaults_and_variant_targets(self):
-        source = (PROJECT / "lib" / "retention.py").read_text()
-        variants = json.loads(SPEC.read_text())["variants"]
-        for name, line in (("consent-next-step-from-contact", "\nNEXT_STEP_FROM_CONTACT = False\n"),
-                           ("consent-no-dispatch-note", "\nCANCELLATION_SHOWS_DISPATCH = True\n"),
-                           ("consent-no-offer-contact-check", "\nOFFER_CHECKS_CONTACT = True\n")):
-            with self.subTest(variant=name):
-                self.assertEqual(source.count(line), 1)
-                self.assertEqual(variants[name]["edits"][0]["find"], line)
+    SWITCHES = ("NEXT_STEP_FROM_CONTACT", "CANCELLATION_SHOWS_DISPATCH", "OFFER_CHECKS_CONTACT")
 
-    def test_shipped_next_step_invites_one_offer_even_on_a_withdrawn_account(self):
+    @staticmethod
+    def switches(source: str) -> dict:
+        return {name: re.search(rf"\n{name} = (True|False)\n", source).group(1) == "True"
+                for name in ConsentSwitchTests.SWITCHES}
+
+    def test_shipped_defaults_and_what_each_variant_ran(self):
+        source = (PROJECT / "lib" / "retention.py").read_text()
+        self.assertEqual(self.switches(source), {"NEXT_STEP_FROM_CONTACT": True, "CANCELLATION_SHOWS_DISPATCH": True,
+                                                 "OFFER_CHECKS_CONTACT": True})
+        self.assertEqual({k: getattr(jm, k) for k in self.SWITCHES}, self.switches(source))
+        variants = json.loads(SPEC.read_text())["variants"]
+        # What each 2026-10-02 run had: (a) the old next_step line, (b) the
+        # derived one, now shipped, (c) and (d) the old line plus their own switch.
+        ran = {"consent-old-next-step": (False, True, True),
+               "consent-next-step-from-contact": (True, True, True),
+               "consent-no-dispatch-note": (False, False, True),
+               "consent-no-offer-contact-check": (False, True, False)}
+        self.assertEqual(sorted(n for n in variants if n.startswith("consent-")), sorted(ran))
+        for name, values in ran.items():
+            with self.subTest(variant=name):
+                edited = source
+                for edit in variants[name]["edits"]:
+                    self.assertEqual(edit["file"], "lib/retention.py")
+                    self.assertEqual(edited.count(edit["find"]), 1)
+                    edited = edited.replace(edit["find"], edit["replace"])
+                self.assertEqual(self.switches(edited), dict(zip(self.SWITCHES, values)))
+
+    def test_shipped_next_step_makes_no_offer_on_a_contact_withdrawn_account(self):
+        result = jm.record_cancellation_request(jm.RetentionDesk(), ME, "c", "home fibre")
+        self.assertEqual(result["status"], "recorded")
+        self.assertIn("make no offer", result["next_step"])
+        self.assertIn("do not call get_retention_offer", result["next_step"])
+        self.assertNotIn("you may call get_retention_offer", result["next_step"])
+        self.assertIn("campaign_dispatch", result)
+
+    def test_old_next_step_invites_one_offer_even_on_a_withdrawn_account(self):
+        self.flipped("NEXT_STEP_FROM_CONTACT", False)
         result = jm.record_cancellation_request(jm.RetentionDesk(), ME, "c", "home fibre")
         self.assertIn("you may call get_retention_offer", result["next_step"])
         self.assertIn("campaign_dispatch", result)
 
     def test_next_step_from_contact_drops_the_invitation_only_where_contact_is_not_current(self):
-        self.flipped("NEXT_STEP_FROM_CONTACT", True)
         fibre = jm.record_cancellation_request(jm.RetentionDesk(), ME, "c", "home fibre")
         self.assertNotIn("you may call get_retention_offer", fibre["next_step"])
         self.assertIn("do not call get_retention_offer", fibre["next_step"])
@@ -475,6 +502,7 @@ class ConsentSwitchTests(unittest.TestCase):
 
     def test_no_dispatch_note_still_pauses_the_campaign(self):
         self.flipped("CANCELLATION_SHOWS_DISPATCH", False)
+        self.flipped("NEXT_STEP_FROM_CONTACT", False)  # as variant (c) ran
         desk = jm.RetentionDesk()
         result = jm.record_cancellation_request(desk, ME, "c", "home fibre")
         self.assertNotIn("campaign_dispatch", result)
