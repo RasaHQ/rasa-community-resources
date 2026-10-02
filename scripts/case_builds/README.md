@@ -123,6 +123,11 @@ makes it a provider error.
 Gemini API projects on a daily request quota need planning: one full
 31-conversation run of the pilot build made 214 model requests, and the
 project it ran on allowed 250 per model per day for `gemini-3.1-pro`.
+`--repeat N` runs each selected conversation N times on one trained model
+and one server, as `<id>-r01` to `<id>-rNN`, each with its own conversation
+id, tracker and results row (`repeat_of` names the spec conversation), so a
+run can count how often one scripted conversation goes each way. With
+`--variant` it measures one change to the project the same way.
 `--rerender <results.json>` recomputes outcomes and `summary.md` for a
 stored run without calling any model. Add `--recheck` to replace each
 conversation's checks with the current spec's and evaluate them against the
