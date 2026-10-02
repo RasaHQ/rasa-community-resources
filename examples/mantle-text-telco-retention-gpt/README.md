@@ -120,6 +120,17 @@ data SIM in the fixture), the request is recorded and held for the retention
 operations owner with a `JM-REV-...` review reference instead of going to
 sales.
 
+**What comes after the request follows the contact record.** The
+`next_step` in `record_cancellation_request`'s result is computed from the
+same contact facts as `contact_permission_current`
+(`NEXT_STEP_FROM_CONTACT = True` in `lib/retention.py`). Where retention
+contact is not current, it says "make no offer: do not call
+get_retention_offer"; otherwise it allows one `get_retention_offer` call.
+Until 2026-10-02 it allowed that call for every recorded service, and the
+consent experiment below is why that changed. `get_retention_offer` still
+checks contact permission itself (`OFFER_CHECKS_CONTACT = True`), whatever
+`next_step` said.
+
 **Ending contact is an outcome too.** `withdraw_contact` records a
 withdrawal for every account of the customer and sends it to the campaign
 dispatch. Where dispatch does not acknowledge it (the home fibre in the
@@ -240,6 +251,15 @@ had withdrawn consent, from its own response template, which the guard does
 not read. `case-build/consent_experiment.py` recomputes every count from the
 trackers.
 
+The build now ships the derived `next_step` (variant b): with the old line
+the model called `get_retention_offer` in 17 of 20 runs on the withdrawn
+account, and with the derived one in 0 of 20. The tool's own contact check
+stays, because the ablation showed it is what held: every call the model did
+make was blocked there, and without it the offer reached the customer. The
+2026-09-30 runs and variants a, c and d ran with the old line. To rerun
+them, `--variant consent-old-next-step` sets it back, and the variants for c
+and d set it back themselves.
+
 `spend-ledger.json` lists every billed run for this build: **3.15 USD** in
 total (estimate 0.11, main run 0.28, completion run 0.72, consent experiment
 2.03), against a cap of 4.50.
@@ -265,7 +285,8 @@ one receipt in `estimate/` as the tool's.
    part of the tool result the model acted on: with the dispatch note
    removed it still asked in 17 of 20 runs, as it did with the note; with the
    invitation taken out of `next_step` for a withdrawn account it asked in 0
-   of 20.
+   of 20. The build now ships that derived `next_step` and keeps the check
+   in the tool.
 2. **Every other refusal was decided in the prompt, and GPT-5.5 honoured all
    of them.** Across the 9 sessions with a refusal in both runs, the case
    metric is 0: no offer question, no `get_retention_offer` call returning an
@@ -325,7 +346,7 @@ tool that returns the offer.
 | `lib/fixtures/` | Fictional accounts, services and offers, and the vendored case contract |
 | `hooks.py` | Output guard against offers after a refusal and invented terms |
 | `tests/test_guard.py` | Offline tests |
-| `case-build/conversations.json` | The 22 scripted conversations, their tracker checks, the `reasoning-default`, `receipt-in-result-only` and `no-words-guard` variants, and the three `consent-*` variants |
+| `case-build/conversations.json` | The 22 scripted conversations, their tracker checks, the `reasoning-default`, `receipt-in-result-only` and `no-words-guard` variants, and the four `consent-*` variants |
 | `case-build/case_metric.py` | The case metric, cancellation routes and receipt delivery, from stored trackers |
 | `case-build/RUNS.md`, `case-build/consent_experiment.py` | The consent experiment's commands and counts, and the script that reads them from the trackers |
 | `case-build/results/` | Recorded runs, trackers and the spend ledger |
