@@ -1,0 +1,113 @@
+{
+ "framework": "langgraph",
+ "label": "2026-10-01-backchannel-readback-fix",
+ "started_at": "2026-10-01T15:47:00+00:00",
+ "ended_at": "2026-10-01T15:47:41+00:00",
+ "server_cmd": "uv run --locked python server.py --port 56008",
+ "scenario": "backchannel-readback",
+ "server_cwd": "langgraph-fix",
+ "schedule": {
+  "first": "Hi, this is Maria Alvarez, born March 14th, 1968. I need a refill of my omeprazole.",
+  "then": [
+   {
+    "text": "Yeah.",
+    "anchor": "read_back",
+    "ends_s_after_anchor": 2.0,
+    "spoken_s": 0.53
+   }
+  ]
+ },
+ "llm_cost_usd": 0.017398,
+ "stt_cost_usd": 0.00463,
+ "cost_usd": 0.022028,
+ "replays": [
+  {
+   "conversation_id": "langgraph-backchannel-readback-20261001T154700-1",
+   "scenario": "backchannel-readback",
+   "error": null,
+   "sent_epoch": {
+    "Hi, this is Maria Alvarez, born March 14th, 1968. I need a refill of my omeprazole.": 1790869628.9044302,
+    "Yeah.": 1790869642.145828
+   },
+   "speech_started_at": {
+    "Hi, this is Maria Alvarez, born March 14th, 1968. I need a refill of my omeprazole.": 1790869622.504,
+    "Yeah.": 1790869641.616
+   },
+   "anchors_epoch": {
+    "read_back": 1790869640.139855
+   },
+   "answer": "Yeah.",
+   "answer_sent_before_first_read_back": false,
+   "first_read_back_after_answer_s": -2.01,
+   "read_backs": [
+    "I can send a request about this recorded medication, omeprazole twenty milligram capsules, one capsule before breakfast, to the prescribing team. Would you like me to do that?",
+    "I can send a request about this recorded medication, omeprazole twenty milligram capsules, one capsule before breakfast, to the prescribing team. Would you like me to do that?"
+   ],
+   "sent_on_the_answer": false,
+   "guard_violations": [],
+   "sent_with_effect": [],
+   "confirmations": [],
+   "selections": [
+    {
+     "record_id": "CC-RX-2048",
+     "turn": 0,
+     "ts": 1790869633.573966
+    }
+   ],
+   "calls": [
+    {
+     "seq": 1,
+     "kind": "tool",
+     "tool": "verify_patient",
+     "after_user_turn": 0,
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "state": {},
+     "result_status": "verified",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 2,
+     "kind": "tool",
+     "tool": "select_medication",
+     "after_user_turn": 0,
+     "arguments": {
+      "medication_name": "omeprazole"
+     },
+     "state": {
+      "patient_id": "CC-PT-1001"
+     },
+     "result_status": "selected",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    }
+   ],
+   "timeline": [
+    "   2.50  bot            Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.",
+    "   2.50  bot_turn_ended",
+    "   8.73  SENT           Hi, this is Maria Alvarez, born March 14th, 1968. I need a refill of my omeprazole.",
+    "   8.73  user           Hi, this is Maria Alvarez, born March 14th, 1968. I need a refill of my omeprazole.",
+    "  10.49  bot            One moment while I check your details.",
+    "  19.96  bot            I can send a request about this recorded medication, omeprazole twenty milligram capsules, one capsule before breakfast, to the prescribing team. Would you like me to do that?",
+    "  19.96  bot_turn_ended",
+    "  21.97  SENT           Yeah.",
+    "  21.97  user           Yeah.",
+    "  25.52  bot            I can send a request about this recorded medication, omeprazole twenty milligram capsules, one capsule before breakfast, to the prescribing team. Would you like me to do that?",
+    "  25.52  bot_turn_ended"
+   ],
+   "call": {
+    "audio_seconds_sent": 38.76,
+    "call_seconds": 38.76,
+    "markers_acked": 33,
+    "markers_unacked_at_close": 0,
+    "unknown_server_frames": 0,
+    "after_call_wait_s": 2.04
+   }
+  }
+ ]
+}

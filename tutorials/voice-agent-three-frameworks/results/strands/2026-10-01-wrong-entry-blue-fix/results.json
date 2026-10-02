@@ -1,0 +1,123 @@
+{
+ "framework": "strands",
+ "label": "2026-10-01-wrong-entry-blue-fix",
+ "started_at": "2026-10-01T15:51:13+00:00",
+ "ended_at": "2026-10-01T15:51:48+00:00",
+ "server_cmd": "uv run --locked python server.py --port 58140",
+ "scenario": "wrong-entry-blue",
+ "server_cwd": "strands-fix",
+ "schedule": {
+  "first": "By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+  "then": [
+   {
+    "text": "Of my blue inhaler.",
+    "anchor": "turn_end",
+    "ends_s_after_anchor": 2.78,
+    "spoken_s": 1.6
+   },
+   {
+    "text": "Yes, please.",
+    "anchor": "turn_end",
+    "ends_s_after_anchor": 4.63,
+    "spoken_s": 0.66
+   }
+  ]
+ },
+ "llm_cost_usd": 0.04179,
+ "stt_cost_usd": 0.003887,
+ "cost_usd": 0.045677,
+ "replays": [
+  {
+   "conversation_id": "strands-wrong-entry-blue-20261001T155113-1",
+   "scenario": "wrong-entry-blue",
+   "error": null,
+   "sent_epoch": {
+    "By. This is Maria Alvarez, March 14th, 1968. I need a read.": 1790869880.599757,
+    "Of my blue inhaler.": 1790869887.412643,
+    "Yes, please.": 1790869889.264826
+   },
+   "speech_started_at": {
+    "By. This is Maria Alvarez, March 14th, 1968. I need a read.": 1790869875.8,
+    "Of my blue inhaler.": 1790869885.813,
+    "Yes, please.": 1790869888.605
+   },
+   "anchors_epoch": {
+    "turn_end": 1790869884.6248178
+   },
+   "answer": "Yes, please.",
+   "answer_sent_before_first_read_back": false,
+   "first_read_back_after_answer_s": null,
+   "read_backs": [],
+   "sent_on_the_answer": false,
+   "guard_violations": [],
+   "sent_with_effect": [],
+   "confirmations": [],
+   "selections": [
+    {
+     "record_id": null,
+     "turn": 1,
+     "ts": 1790869888.34633
+    }
+   ],
+   "calls": [
+    {
+     "seq": 1,
+     "kind": "tool",
+     "tool": "verify_patient",
+     "after_user_turn": 0,
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "state": {},
+     "result_status": "verified",
+     "result_reason": null,
+     "effects": null,
+     "is_error": false
+    },
+    {
+     "seq": 2,
+     "kind": "tool",
+     "tool": "select_medication",
+     "after_user_turn": 1,
+     "arguments": {
+      "medication_name": "my blue inhaler"
+     },
+     "state": {
+      "patient_id": "CC-PT-1001"
+     },
+     "result_status": "blocked",
+     "result_reason": "medication_not_resolved",
+     "effects": 0,
+     "is_error": false
+    }
+   ],
+   "timeline": [
+    "   0.01  bot            Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.",
+    "   1.93  bot_turn_ended",
+    "   7.10  SENT           By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+    "   7.10  user           By. This is Maria Alvarez, March 14th, 1968. I need a read.",
+    "   8.99  bot            Thanks, one moment while I check.",
+    "   9.88  bot            Thanks, Maria. Which medicine do you need a refill request for?",
+    "  11.12  bot_turn_ended",
+    "  13.91  SENT           Of my blue inhaler.",
+    "  13.91  user           Of my blue inhaler.",
+    "  14.84  bot            Let me find that on your record.",
+    "  15.76  SENT           Yes, please.",
+    "  15.76  user           Yes, please.",
+    "  16.02  bot            I found albuterol inhaler, two puffs every four to six hours when needed, and budesonide inhaler, one puff twice a day. Which one do you mean?",
+    "  18.93  bot_turn_ended",
+    "  19.95  bot            I need to know which one you mean. Is it the albuterol inhaler or the budesonide inhaler?",
+    "  21.28  bot_turn_ended"
+   ],
+   "call": {
+    "audio_seconds_sent": 32.54,
+    "call_seconds": 32.54,
+    "markers_acked": 35,
+    "markers_unacked_at_close": 0,
+    "unknown_server_frames": 0,
+    "after_call_wait_s": 2.03
+   }
+  }
+ ]
+}
