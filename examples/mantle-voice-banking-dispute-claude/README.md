@@ -40,7 +40,8 @@ outcome is read from the tracker.
 - **One model, one day.** Every number in `case-build/results/` comes from
   `claude-sonnet-5-5` through Rasa 3.21.0.dev5 and LiteLLM 1.101.2, with
   Speechmatics realtime (`enhanced`, EU endpoint) and Rime `mistv3`
-  (`ironwood`), run from one laptop on 2026-09-29. A different model,
+  (`ironwood`), run from one laptop on 2026-09-29, plus the held-out
+  vocabulary runs on 2026-10-02 (`case-build/RUNS.md`). A different model,
   release, network or day can behave differently.
 - **What the results show:** which tools the agent called with which
   arguments, what the guard returned, what speech-to-text heard, the latency
@@ -66,7 +67,7 @@ Try: "I'm Priya Raghunathan, born seventeenth August nineteen ninety-one. I
 don't recognise a Lakeview Fuel charge." It asks which one: there are two.
 
 To rerun the recorded calls (billed Claude, Speechmatics and Rime, capped at
-4.50 USD across all runs by `case-build/results/spend-ledger.json`):
+8.50 USD across all runs by `case-build/results/spend-ledger.json`):
 
 ```bash
 make conversations   # spoken caller audio
@@ -281,6 +282,27 @@ needs the names in advance: a bank could list its merchants, but a caller's
 surname is known only after verification, and Rasa's config is fixed per
 channel, not per call.
 
+**A held-out vocabulary** (2026-10-02, `2026-10-02-held-out-vocab/` and
+`2026-10-02-held-out-control/`; the split, commands and verbatim
+transcripts are in `case-build/RUNS.md`). The ledger's six merchants were
+split by transaction id. The vocabulary (`--variant held-out-vocab`) lists
+the last three, Saffron Table, Metro Cabs and Cinnabar Streaming, and no
+surname. It ran on the same 11 calls, whose merchants are all in the first
+half (Brightmart Online, Lakeview Fuel, Hollins Fitness), and the same calls
+ran again with no vocabulary as a same-day control:
+
+| | held-out vocabulary | no vocabulary (control) |
+|---|---|---|
+| Passed | 6/11 | 6/11, the same calls |
+| Held-out merchants heard as written | 1/11 | 1/11 |
+| Surname heard as written | 10/11 | 10/11 |
+| Vocabulary words in a transcript where the caller said something else | 0 | n/a |
+
+No call changed outcome and no checked token changed. "Breitbart Online",
+"Bright Mart online", "lake view fuel" and "Holland's fitness" came back as
+in the control. On these calls the 2026-09-29 gain came from listing the
+names the callers said.
+
 **Decline rerun** (`2026-09-29-decline-rerun/`): the two calls that crashed,
 run again with no change. Neither crashed. One passed; the other failed on
 "bright mark" again.
@@ -306,7 +328,9 @@ run again with no change. Neither crashed. One passed; the other failed on
    dates and card endings reached the tools intact in every turn. Names were
    47 of 58 as written, and five calls failed on a misheard name,
    "Breitbart" for "Brightmart" twice. A seven-entry custom vocabulary
-   turned 6 of 11 passes into 11 of 11.
+   turned 6 of 11 passes into 11 of 11. A vocabulary of the other three
+   merchants, run on the same 11 calls, left them at 6 of 11, the same as
+   a same-day run with none.
 4. **Mantle's fact discovery never works with Claude Sonnet 5.5.** All 63
    discovery calls across the main and custom-vocab runs came back HTTP 400:
    "This model does not support assistant message prefill. The conversation
@@ -356,10 +380,10 @@ tts_engine`, and `RoutedASR` has no `__aenter__`, so the call ends with
 protocol" before the greeting. The router's own contract check reports no
 findings for either, and `RoutedTTS` lacks `__aenter__` too.
 
-`spend-ledger.json` lists every billed call for this build: 3.94 USD in
-total (Anthropic 2.84, Speechmatics 0.29, Rime 0.70, OpenAI caller audio
-0.11), including the probes before the build, the as-shipped estimate and
-both variants.
+`spend-ledger.json` lists every billed call for this build: 6.10 USD in
+total (Anthropic 4.44, Speechmatics 0.47, Rime 1.10, OpenAI caller audio
+0.11), including the probes before the build, the as-shipped estimate, the
+variants and the two held-out vocabulary runs (2.17).
 
 ## Layout
 
@@ -373,7 +397,8 @@ both variants.
 | `lib/disputes.py` | Ledger, case service and guard, no Rasa imports |
 | `lib/fixtures/` | Fictional data and the vendored case contract |
 | `tests/test_guard.py` | Offline tests |
-| `case-build/conversations.json` | The 20 scripted calls, their tracker checks, prices, and the `routed-asr` and `custom-vocab` variants |
+| `case-build/conversations.json` | The 20 scripted calls, their tracker checks, prices, and the `routed-asr`, `custom-vocab` and `held-out-vocab` variants |
+| `case-build/RUNS.md`, `case-build/held_out_vocab.py` | The held-out vocabulary runs' split, commands and counts, and the script that reads them from the results |
 | `case-build/caller-audio/` | Caller WAVs and their manifest |
 | `case-build/results/` | Recorded runs, trackers and the spend ledger |
 

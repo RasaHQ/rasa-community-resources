@@ -34,6 +34,16 @@
      "replace": "      end_of_utterance_silence_trigger: 0.7\n      additional_vocab:\n        - content: Brightmart\n          sounds_like: [bright mart]\n        - content: Lakeview\n          sounds_like: [lake view]\n        - content: Hollins Fitness\n        - content: Cinnabar Streaming\n        - content: Saffron Table\n        - content: Metro Cabs\n        - content: Raghunathan\n          sounds_like: [raghu nathan]\n    # Rime, a Rasa built-in"
     }
    ]
+  },
+  "held-out-vocab": {
+   "description": "Speechmatics additional_vocab with half of the ledger's merchant names (Saffron Table, Metro Cabs, Cinnabar Streaming: the last three merchants by transaction id) and no surname, run on calls whose merchants are in the other half (Brightmart Online, Lakeview Fuel, Hollins Fitness), to test whether a vocabulary helps names it does not list",
+   "edits": [
+    {
+     "file": "integrations.yml",
+     "find": "      end_of_utterance_silence_trigger: 0.7\n    # Rime, a Rasa built-in",
+     "replace": "      end_of_utterance_silence_trigger: 0.7\n      additional_vocab:\n        - content: Saffron Table\n        - content: Metro Cabs\n        - content: Cinnabar Streaming\n    # Rime, a Rasa built-in"
+    }
+   ]
   }
  },
  "driver": "browser_audio",

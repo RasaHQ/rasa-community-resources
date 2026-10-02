@@ -33,13 +33,13 @@ run: ## Serve the browser_audio WebSocket (and the API) on port 5005
 	$(RASA) run --enable-api
 
 caller-audio: ## Render missing caller WAVs with OpenAI gpt-4o-mini-tts, Indian English accent instructed (billed per token)
-	python3 $(REPO)/scripts/case_builds/render_caller_audio.py $(BUILD) --budget-usd 4.5
+	python3 $(REPO)/scripts/case_builds/render_caller_audio.py $(BUILD) --budget-usd 8.5
 
-conversations: ## Live voice run of every scripted call (billed Claude, Speechmatics and Rime; cap 4.50 USD)
-	python3 $(REPO)/scripts/case_builds/run_build.py $(BUILD) --budget-usd 4.5
+conversations: ## Live voice run of every scripted call (billed Claude, Speechmatics and Rime; cap 8.50 USD)
+	python3 $(REPO)/scripts/case_builds/run_build.py $(BUILD) --budget-usd 8.5
 
 dry-run: ## Same calls with {"text"} frames: skips speech-to-text, still bills Claude and Rime
-	python3 $(REPO)/scripts/case_builds/run_build.py $(BUILD) --budget-usd 4.5 --voice-mode text --label dry-run
+	python3 $(REPO)/scripts/case_builds/run_build.py $(BUILD) --budget-usd 8.5 --voice-mode text --label dry-run
 
 clean: ## Remove models and caches
 	rm -rf models .rasa

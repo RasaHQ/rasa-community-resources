@@ -35,8 +35,8 @@ inspect: ## Chat with the agent in the Inspector
 run: ## Serve REST and socket.io web chat on port 5005
 	$(RASA) run --enable-api
 
-conversations: ## Live run of all scripted conversations (billed GPT-5.5 calls; cap 3.50 USD)
-	python3 $(REPO)/scripts/case_builds/run_build.py $(BUILD) --budget-usd 3.5
+conversations: ## Live run of all scripted conversations (billed GPT-5.5 calls; cap 4.50 USD)
+	python3 $(REPO)/scripts/case_builds/run_build.py $(BUILD) --budget-usd 4.5
 
 metric: ## Case metric and receipt delivery for a recorded run: make metric RUN=<label>
 	python3 case-build/case_metric.py case-build/results/$(RUN)

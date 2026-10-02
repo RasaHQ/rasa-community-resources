@@ -3,6 +3,7 @@
 
     python3 scripts/case_builds/run_build.py examples/<build> --budget-usd 4
     python3 scripts/case_builds/run_build.py examples/<build> --only normal-policy-active --label estimate
+    python3 scripts/case_builds/run_build.py examples/<build> --only <id> --repeat 20 --variant <name> --label <label>
 
 Trains the project, starts `rasa run --enable-api` through the usage launcher,
 drives every conversation in <build>/case-build/conversations.json, and writes
@@ -38,6 +39,8 @@ def main() -> int:
                         help="voice builds: stream the caller WAVs (audio) or send {\"text\"} frames "
                              "that skip speech-to-text (text, a cheaper dry run); default from the spec")
     parser.add_argument("--variant", help="apply the spec's named variant (file edits) for this run only")
+    parser.add_argument("--repeat", type=int, default=1,
+                        help="run each selected conversation N times, as <id>-r01 ... (one train, one server)")
     parser.add_argument("--rerender", metavar="RESULTS_JSON",
                         help="recompute outcomes and summary.md of a stored run; no model calls")
     parser.add_argument("--recheck", action="store_true",
@@ -65,6 +68,7 @@ def main() -> int:
         label=args.label,
         voice_mode=args.voice_mode,
         variant=args.variant,
+        repeat=args.repeat,
     )
     s = report["summary"]
     print(json.dumps({k: s[k] for k in ("conversations_run", "passed", "failed", "turn_latency_ms",

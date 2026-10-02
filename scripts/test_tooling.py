@@ -1634,6 +1634,14 @@ class TestCaseBuildHarness(unittest.TestCase):
                 self.h.ProjectVariant(project, bad, "low").__enter__()
             self.assertIsNone(self.h.ProjectVariant(project, spec, None).__enter__())
 
+    def test_repeat_gives_each_run_its_own_id(self):
+        convs = [{"id": "a", "turns": []}, {"id": "b", "turns": []}]
+        self.assertIs(self.h.expand_repeats(convs, 1), convs)
+        out = self.h.expand_repeats(convs, 2)
+        self.assertEqual([c["id"] for c in out], ["a-r01", "a-r02", "b-r01", "b-r02"])
+        self.assertEqual({c["repeat_of"] for c in out}, {"a", "b"})
+        self.assertNotIn("repeat_of", convs[0])
+
     def test_ledger_total_accumulates(self):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp)

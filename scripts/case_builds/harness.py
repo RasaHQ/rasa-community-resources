@@ -715,6 +715,7 @@ def run_conversation(server: AgentServer, driver: Driver, spec: dict, conv: dict
     return {
         "id": conv["id"],
         "kind": conv.get("kind"),
+        **({"repeat_of": conv["repeat_of"]} if conv.get("repeat_of") else {}),
         "description": conv.get("description"),
         "conversation_id": conversation_id,
         "passed": error is None and all(c["passed"] for c in checks),
@@ -994,12 +995,32 @@ class ProjectVariant:
         self.originals = {}
 
 
+def expand_repeats(conversations: list[dict], repeat: int) -> list[dict]:
+    """Each conversation `repeat` times, as `<id>-r01`, `<id>-r02`, ... (unchanged when repeat is 1).
+
+    Every repeat is its own conversation id, tracker file and results row, so
+    a run can count how often one scripted conversation goes each way. The
+    copy keeps its spec id in `repeat_of`.
+    """
+    if repeat <= 1:
+        return conversations
+    return [
+        {**conv, "id": f"{conv['id']}-r{i:02d}", "repeat_of": conv["id"]}
+        for conv in conversations for i in range(1, repeat + 1)
+    ]
+
+
 def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: float,
              train: bool = True, out_root: Optional[Path] = None, label: Optional[str] = None,
-             voice_mode: Optional[str] = None, variant: Optional[str] = None) -> dict:
+             voice_mode: Optional[str] = None, variant: Optional[str] = None, repeat: int = 1) -> dict:
     project = project.resolve()
     spec = load_spec(project)
     conversations = [c for c in spec["conversations"] if not only or c["id"] in only]
+    if only:
+        missing = sorted(set(only) - {c["id"] for c in conversations})
+        if missing:
+            raise ValueError(f"--only names no conversation in the spec: {', '.join(missing)}")
+    conversations = expand_repeats(conversations, repeat)
     started = datetime.now(timezone.utc)
     run_tag = started.strftime("%Y%m%dT%H%M%S")
     out_dir = (out_root or project / SPEC_DIR / "results") / (label or run_tag)
@@ -1081,6 +1102,7 @@ def run_spec(project: Path, *, only: Optional[list[str]] = None, budget_usd: flo
         "finished_at": finished.isoformat(),
         "model_file": getattr(server, "model_file", None),
         **({"variant": variant_info} if variant_info else {}),
+        **({"repeat": repeat} if repeat > 1 else {}),
         "train_seconds": round(train_seconds, 1) if train_seconds else None,
         "pricing": pricing,
         "summary": {
@@ -1178,9 +1200,10 @@ def rerender(results_path: Path, recheck: bool = False) -> dict:
     usage_rows = read_jsonl(results_path.parent / "usage.jsonl")
     rechecked = []
     for r in report["conversations"]:
+        spec_id = r.get("repeat_of") or r["id"]
         tracker_path = results_path.parent / "trackers" / f"{r['id']}.json"
-        if recheck and r["id"] in convs and tracker_path.is_file():
-            new_checks = run_checks(convs[r["id"]]["checks"], json.loads(tracker_path.read_text()))
+        if recheck and spec_id in convs and tracker_path.is_file():
+            new_checks = run_checks(convs[spec_id]["checks"], json.loads(tracker_path.read_text()))
             if [c["check"] for c in new_checks] != [c["check"] for c in r["checks"]]:
                 rechecked.append(r["id"])
             r["checks"] = new_checks
@@ -1191,10 +1214,10 @@ def rerender(results_path: Path, recheck: bool = False) -> dict:
             r["usage"] = usage_for(usage_rows, r["conversation_id"], spec.get("engine_errors", []))
         r["outcome"] = classify(r.get("error"), r["checks"], r["usage"])
         tracker_file = results_path.parent / "trackers" / f"{r['id']}.json"
-        if r.get("voice") and r["id"] in convs and tracker_file.is_file():
+        if r.get("voice") and spec_id in convs and tracker_file.is_file():
             # Speech-to-text checks and speech cost are derived data: recompute
             # them from the stored turns, tracker and call stats.
-            r["voice"] = voice_report(spec, convs[r["id"]], r["turns"], json.loads(tracker_file.read_text()),
+            r["voice"] = voice_report(spec, convs[spec_id], r["turns"], json.loads(tracker_file.read_text()),
                                       r["voice"].get("call"))
     if rechecked:
         report.setdefault("rechecks", []).append({

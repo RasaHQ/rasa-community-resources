@@ -70,6 +70,24 @@ EXIT_WORDS = "continue to cancellation"
 # to False.
 TOOL_SENDS_RECEIPT = True
 
+# Switches for the consent experiment (case-build/consent-experiment/). The
+# values here are the shipped behaviour; each `consent-*` variant in
+# case-build/conversations.json flips one for a run.
+#
+# NEXT_STEP_FROM_CONTACT: when True, record_cancellation_request computes its
+# next_step from contact_facts, so a service whose contact permission is not
+# current gets no invitation to call get_retention_offer
+# (`consent-next-step-from-contact`).
+NEXT_STEP_FROM_CONTACT = False
+# CANCELLATION_SHOWS_DISPATCH: when False, a campaign pause still happens but
+# record_cancellation_request leaves the campaign_dispatch note out of its
+# result (`consent-no-dispatch-note`).
+CANCELLATION_SHOWS_DISPATCH = True
+# OFFER_CHECKS_CONTACT: an ablation, never a configuration. When False,
+# get_retention_offer ignores contact_permission_current, to show the offer an
+# opted-out customer would be given (`consent-no-offer-contact-check`).
+OFFER_CHECKS_CONTACT = True
+
 # Skill memory keys the tools write (skills/retention/memory.yml).
 MEMORY_KEYS = ("offer_id", "offer_service", "offer_terms", "offer_exit_note", "offer_ready")
 
@@ -578,7 +596,8 @@ def _pause_if_records_disagree(desk: RetentionDesk, account_id: str, conversatio
             "why": "the permission record says withdrawn but the campaign dispatch list still had the account"}
 
 
-def record_cancellation_request(desk: RetentionDesk, customer_id: str, conversation_id: str, words: Any) -> dict:
+def record_cancellation_request(desk: RetentionDesk, customer_id: str, conversation_id: str, words: Any,
+                                conversation: Optional[Conversation] = None) -> dict:
     """Independent intake: always recorded for the customer's own service. It is a request, not the closure."""
     sid, problem = resolve_service(desk, customer_id, words)
     if sid is None:
@@ -615,13 +634,18 @@ def record_cancellation_request(desk: RetentionDesk, customer_id: str, conversat
         record["next_step"] = ("Recorded, but this service's cancellation route points to a sales queue, so it is held "
                                f"for the {REVIEW_OWNER} instead. The customer has been sent the reference. Make no offer "
                                "for this service.")
+    elif NEXT_STEP_FROM_CONTACT and not contact_facts(desk, conversation or Conversation(), sid)[0]:
+        record["next_step"] = ("Recorded. The customer has been sent the reference. It is a request, not the closure: "
+                               "never say the service or account is cancelled or closed. Retention contact is not "
+                               "permitted for this service, so make no offer: do not call get_retention_offer, mention "
+                               "no price or discount and do not ask whether they want to hear one.")
     else:
         record["next_step"] = ("Recorded. The customer has been sent the reference. It is a request, not the closure: "
                                "never say the service or account is cancelled or closed. If they have not refused offers "
                                "you may call get_retention_offer once for this service; if they have, offer nothing.")
     desk.cancellations[sid] = {k: v for k, v in record.items() if k not in ("replay", "effects", "next_step")}
     paused = _pause_if_records_disagree(desk, desk.services[sid]["account"], conversation_id)
-    if paused:
+    if paused and CANCELLATION_SHOWS_DISPATCH:
         record["campaign_dispatch"] = paused
     return record
 
@@ -651,6 +675,8 @@ def get_retention_offer(desk: RetentionDesk, customer_id: str, conversation: Con
                     "next_step": "The customer already accepted this offer. Make no other offer."}, _clear()
     oid, why = desk.offer_for(sid)
     facts, detail = request_facts(desk, customer_id, conversation, sid, oid or "")
+    if not OFFER_CHECKS_CONTACT:
+        facts["contact_permission_current"], detail["contact"] = True, "not_checked_ablation"
     if oid is None:
         facts["offer_terms_authorized"], detail["terms"] = False, why
     reason = evaluate(facts, "request")

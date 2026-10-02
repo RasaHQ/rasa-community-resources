@@ -438,6 +438,60 @@ class ReceiptTests(unittest.TestCase):
         self.assertIn("\nTOOL_SENDS_RECEIPT = True\n", (PROJECT / "lib" / "retention.py").read_text())
 
 
+class ConsentSwitchTests(unittest.TestCase):
+    """The consent experiment's switches: shipped defaults, and what each one changes when flipped."""
+
+    def flipped(self, name, value):
+        original = getattr(jm, name)
+        setattr(jm, name, value)
+        self.addCleanup(setattr, jm, name, original)
+
+    def test_shipped_defaults_and_variant_targets(self):
+        source = (PROJECT / "lib" / "retention.py").read_text()
+        variants = json.loads(SPEC.read_text())["variants"]
+        for name, line in (("consent-next-step-from-contact", "\nNEXT_STEP_FROM_CONTACT = False\n"),
+                           ("consent-no-dispatch-note", "\nCANCELLATION_SHOWS_DISPATCH = True\n"),
+                           ("consent-no-offer-contact-check", "\nOFFER_CHECKS_CONTACT = True\n")):
+            with self.subTest(variant=name):
+                self.assertEqual(source.count(line), 1)
+                self.assertEqual(variants[name]["edits"][0]["find"], line)
+
+    def test_shipped_next_step_invites_one_offer_even_on_a_withdrawn_account(self):
+        result = jm.record_cancellation_request(jm.RetentionDesk(), ME, "c", "home fibre")
+        self.assertIn("you may call get_retention_offer", result["next_step"])
+        self.assertIn("campaign_dispatch", result)
+
+    def test_next_step_from_contact_drops_the_invitation_only_where_contact_is_not_current(self):
+        self.flipped("NEXT_STEP_FROM_CONTACT", True)
+        fibre = jm.record_cancellation_request(jm.RetentionDesk(), ME, "c", "home fibre")
+        self.assertNotIn("you may call get_retention_offer", fibre["next_step"])
+        self.assertIn("do not call get_retention_offer", fibre["next_step"])
+        self.assertIn("campaign_dispatch", fibre)
+        mobile = jm.record_cancellation_request(jm.RetentionDesk(), ME, "c", "my mobile", said("Cancel my mobile"))
+        self.assertIn("you may call get_retention_offer", mobile["next_step"])
+        refused = jm.record_cancellation_request(jm.RetentionDesk(), ME, "c", "my mobile",
+                                                 said("Cancel my mobile, no more offers"))
+        self.assertIn("do not call get_retention_offer", refused["next_step"])
+
+    def test_no_dispatch_note_still_pauses_the_campaign(self):
+        self.flipped("CANCELLATION_SHOWS_DISPATCH", False)
+        desk = jm.RetentionDesk()
+        result = jm.record_cancellation_request(desk, ME, "c", "home fibre")
+        self.assertNotIn("campaign_dispatch", result)
+        self.assertEqual(desk.campaign["JM-ACC-5502"], "paused")
+        self.assertIn("you may call get_retention_offer", result["next_step"])
+        offer, _ = jm.get_retention_offer(desk, ME, said("Cancel my home fibre"), "c", "home fibre")
+        self.assertEqual((offer["status"], offer["reason"]), ("blocked", "contact_withdrawn"))
+
+    def test_ablation_without_the_contact_check_returns_the_fibre_offer(self):
+        self.flipped("OFFER_CHECKS_CONTACT", False)
+        desk = jm.RetentionDesk()
+        jm.record_cancellation_request(desk, ME, "c", "home fibre")
+        offer, memory = jm.get_retention_offer(desk, ME, said("Cancel my home fibre"), "c", "home fibre")
+        self.assertEqual((offer["status"], offer["offer_id"]), ("offer", "JM-OFR-F6"))
+        self.assertEqual(memory["offer_ready"], "yes")
+
+
 class SpecTests(unittest.TestCase):
     def setUp(self):
         self.spec = json.loads(SPEC.read_text())
