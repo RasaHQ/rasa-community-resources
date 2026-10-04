@@ -14,6 +14,17 @@ spec.loader.exec_module(workspace)
 
 
 class WorkspaceTests(unittest.TestCase):
+    def test_retirement_receipts_are_not_application_source(self):
+        path=Path(__file__).resolve().parents[1]/'tutorials/voice-agent-three-frameworks/shared/spec/count_concerns.py'
+        spec=importlib.util.spec_from_file_location('tutorial_counter',path)
+        counter=importlib.util.module_from_spec(spec);spec.loader.exec_module(counter)
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            (root/'.rasa-environment-retired.json').write_text('{"owner":"test"}')
+            (root/'application.json').write_text('{"setting":true}')
+            (root/'agent.py').write_text('# concern: agent-logic\nanswer = 1\n')
+            self.assertEqual({p.name for p in counter.counted_files(root)}, {'application.json','agent.py'})
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

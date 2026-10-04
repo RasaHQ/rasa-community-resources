@@ -62,6 +62,25 @@ class NativeGuardTests(unittest.IsolatedAsyncioTestCase):
         await self.collect(c, 'No, I meant budesonide.')
         self.assertEqual(self.effects(), 0)
         self.assertTrue(any(e['kind'] == 'confirmation' and not e['args']['confirmed'] for e in AUDIT.entries(self.cid)))
+    async def test_rejected_request_then_new_confirmation_uses_unresolved_requirement(self):
+        c, record = self.prepared()
+        c.agent.model.outputs = [
+            ('send_refill_request', {'record_id': record}),
+            ('select_medication', {'medication_name': 'budesonide'}),
+            ('send_refill_request', {'record_id': 'CC-RX-2044'}),
+            'Awaiting prescribing team review.',
+        ]
+        await self.collect(c, 'Please send it')
+        await self.collect(c, 'No, I meant budesonide.')
+        self.assertEqual(self.effects(), 0)
+        self.assertIsNotNone(c.pending)
+        self.assertTrue(any(not r.needs_confirmation for r in c.pending.requirements))
+        self.assertTrue(any(r.needs_confirmation for r in c.pending.requirements))
+        await self.collect(c, 'Yes, send that one.')
+        self.assertEqual(self.effects(), 1)
+        sends = [e for e in AUDIT.entries(self.cid) if e.get('name') == 'send_refill_request' and e.get('result', {}).get('effects')]
+        self.assertEqual(sends[0]['args']['record_id'], 'CC-RX-2044')
+
     async def test_wrong_record_stays_blocked_despite_yes(self):
         c, record = self.prepared()
         c.agent.model.outputs = [('send_refill_request', {'record_id': 'another-entry'}), 'Please select a medicine.']

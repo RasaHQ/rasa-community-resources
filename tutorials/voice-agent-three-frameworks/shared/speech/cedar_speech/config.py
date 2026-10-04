@@ -3,7 +3,7 @@
 
 The Rasa version sets the same values in YAML (``rasa/integrations.yml``,
 ``channels.browser_audio``); ``rasa/tests/test_speech_parity.py`` fails if
-they drift, so all three versions make identical vendor calls.
+they drift, to check that the configured vendor messages match.
 """
 
 from __future__ import annotations
@@ -25,12 +25,10 @@ ASR_SETTINGS = {
     "enable_partials": True,
     # Speechmatics finalises a word or two at a time. With this set it sends
     # EndOfUtterance after 0.7 s of silence and the segments are joined into
-    # one transcript per caller turn (the Northgate dispute build saw one
-    # 14-second turn become 19 user turns without it).
+    # one transcript per caller turn.
     "end_of_utterance_silence_trigger": 0.7,
 }
 #: Custom vocabulary: the clinic's medicine names, known before any call
-#: (the same list the earlier on-device build gave Whisper as hotwords).
 #: No patient names: a caller's name is not known until they say it.
 ADDITIONAL_VOCAB = [
     "Cedar Clinic", "lisinopril", "atorvastatin", "albuterol", "budesonide", "lorazepam", "simvastatin",
@@ -40,7 +38,6 @@ ADDITIONAL_VOCAB = [
 #: Text-to-speech (preview API; one POST per utterance, a WAV file back).
 TTS_ENDPOINT = "https://preview.tts.speechmatics.com/generate"
 TTS_VOICE = "megan"
-#: The API accepts wav_16000 or pcm_16000 only (checked 2026-09-30: other
-#: values return HTTP 422). The audio is resampled to SAMPLE_RATE locally.
+#: Request 16 kHz WAV, then resample to SAMPLE_RATE locally.
 TTS_OUTPUT_FORMAT = "wav_16000"
 TTS_SOURCE_RATE = 16000

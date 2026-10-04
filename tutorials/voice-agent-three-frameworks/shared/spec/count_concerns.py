@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Count each framework's own lines per concern, the same way for all three.
+"""Count each tutorial implementation's own lines per concern.
 
     python3 shared/spec/count_concerns.py rasa            # table
     python3 shared/spec/count_concerns.py rasa --json     # per file and per concern
 
-Stdlib only. The rules, which COMPARISON-PLAN.md states for every version:
+Stdlib only. Source-accounting rules:
 
 Which files count. Every file under the framework folder except tests
 (``tests/``, ``test_*.py``), documentation (``README.md``, ``AGENTS.md``,
@@ -27,7 +27,7 @@ lines sets the file's concern. ``concern-begin: <tag>`` and ``concern-end``
 comments mark a region inside a file with a different concern (the marker
 lines themselves do not count). A file that cannot hold a comment (JSON) is
 tagged in ``concerns.txt`` at the framework root, one ``<glob> <tag>`` per
-line. Anything left over is ``untagged``. Tags used by the comparison:
+line. Anything left over is ``untagged``. Concern tags:
 ``agent-logic``, ``refill-guard``, ``voice-adapter`` (the speech vendor client), ``voice-loop`` (everything else that moves audio or manages the call), ``ops``.
 """
 
@@ -45,7 +45,7 @@ from typing import Optional
 
 SKIP_DIRS = {".venv", "venv", "models", ".rasa", "__pycache__", "node_modules", "results", "tests", "docs",
              ".whisper", ".pytest_cache", "build", "dist"}
-SKIP_NAMES = {"README.md", "AGENTS.md", "CLAUDE.md", ".gitignore", "guard.diff", "concerns.txt"}
+SKIP_NAMES = {"README.md", "AGENTS.md", "CLAUDE.md", ".gitignore", "guard.diff", "concerns.txt", ".rasa-environment-retired.json"}
 SKIP_SUFFIXES = (".lock", ".wav", ".png", ".jpg", ".pyc")
 CODE = {".py", ".js", ".ts", ".mjs", ".cjs"}
 CONFIG = {".yml", ".yaml", ".toml", ".json", ".ini", ".cfg"}
