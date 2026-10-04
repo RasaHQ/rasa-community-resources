@@ -1,0 +1,76 @@
+# External integrations for the Horizon Travel journey-change voice agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa's OpenAI client sends
+# gpt-5.5-2026-04-23 through LiteLLM. reasoning_effort is set to low rather
+# than Rasa's default for this model, which is none
+# (rasa/shared/utils/llm.py, _apply_default_reasoning_effort). In the
+# Northgate block-card build (examples/mantle-voice-banking-block-card-gpt),
+# at none GPT-5.5 sometimes spoke a tool call as text or announced an action
+# without taking it; at low it did neither, for about 0.1 s more at the median.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+
+# Mantle reads channels from here, never from credentials.yml.
+# `browser_audio` is the raw WebSocket voice channel a browser (or the case-build
+# harness) streams to at /webhooks/browser_audio/websocket. `inspector` serves
+# `rasa inspect` with the same speech stack.
+channels:
+  browser_audio:
+    server_url: localhost
+    # 16 kHz 16-bit PCM both ways. Deepgram Flux takes linear16 at the stream's
+    # rate, Rime returns PCM at the rate asked for, and the caller fixtures are
+    # recorded at this rate.
+    sample_rate: 16000
+    # The harness names each call, so the tracker, usage and logs join on one id.
+    # Trusted local transports only: any client can pick any conversation id.
+    external_sender_id_header: X-Rasa-Sender-Id
+    silence_timeout: 30
+    interruptions:
+      enabled: false
+    # Deepgram Flux through Rasa's built-in engine, settings as in the Northgate
+    # block-card build. No `language` key: Rasa sends it to Flux as
+    # language_hint, which only flux-general-multi accepts (the Northgate
+    # advisor build).
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    # Rime Mist v3, speaker peak (Rime's catalogue: "a confident, professional
+    # young American voice", customer support). Rasa's built-in engine with one
+    # change: the websocket is reopened after 20 s idle (engines/rime_idle.py,
+    # from the Northgate advisor build), because Rime's socket goes quiet after
+    # about 30 s without traffic and the built-in engine never reopens it.
+    tts:
+      name: engines.rime_idle.RimeTTSReconnectOnIdle
+      language_map:
+        en:
+          voice: peak
+          language: en
+      model_id: mistv3
+  inspector:
+    enabled: true
+    interruptions:
+      enabled: false
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+    tts:
+      name: engines.rime_idle.RimeTTSReconnectOnIdle
+      language_map:
+        en:
+          voice: peak
+          language: en
+      model_id: mistv3

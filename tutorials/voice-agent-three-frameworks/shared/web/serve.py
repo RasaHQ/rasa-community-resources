@@ -45,6 +45,11 @@ PRESETS = {
     "langgraph": {"agent": "http://127.0.0.1:5006", "events_path": "/conversations/{id}/events"},
     "strands": {"agent": "http://127.0.0.1:5007", "events_path": "/conversations/{id}/events"},
 }
+for _name, _port in (("langchain", 5008), ("agno", 5009), ("crewai", 5010),
+                     ("pipecat", 5011), ("livekit", 5012)):
+    PRESETS[_name] = {"agent": f"http://127.0.0.1:{_port}",
+                      "events_path": "/conversations/{id}/events"}
+
 WS_PATH = "/webhooks/browser_audio/websocket"
 
 

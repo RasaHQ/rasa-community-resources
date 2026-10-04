@@ -64,10 +64,10 @@ fix-copy: ## Copy FW=rasa|langgraph|strands to <fw>-fix/ and apply its fix.diff 
 	cd $(FW)-fix && patch -p1 -s < fix.diff
 
 count: ## Lines per concern for every framework folder present, and each guard diff
-	@for fw in rasa langgraph strands; do \
+	@for fw in rasa langgraph strands langchain agno crewai pipecat livekit; do \
 		if [ -d $$fw ]; then python3 shared/spec/count_concerns.py $$fw; \
 		test -f $$fw/guard.diff && python3 shared/spec/count_concerns.py $$fw --diff; fi; done
 	@python3 shared/spec/count_concerns.py shared/speech
 	@python3 shared/spec/count_concerns.py shared/speech-deepgram
-	@for fw in rasa langgraph strands; do test -f $$fw/fix.diff && python3 shared/spec/count_concerns.py $$fw --diff-file fix.diff; done; true
+	@for fw in rasa langgraph strands langchain agno crewai pipecat livekit; do test -f $$fw/fix.diff && python3 shared/spec/count_concerns.py $$fw --diff-file fix.diff; done; true
 	@for v in deepgram-tts deepgram; do test -d rasa-$$v && python3 shared/spec/count_concerns.py rasa-$$v; done; true

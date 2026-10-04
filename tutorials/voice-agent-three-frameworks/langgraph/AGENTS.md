@@ -1,7 +1,7 @@
 # LangGraph version: Cedar Clinic refill requests by voice
 
 One of three builds of the same agent (see [`../README.md`](../README.md)
-and [`../COMPARISON-PLAN.md`](../COMPARISON-PLAN.md)). Cedar Clinic is a
+and [`../README.md`](../README.md)). Cedar Clinic is a
 fictional clinic.
 
 Pins: `langgraph==1.2.12`, `langchain==1.4.3`, `langchain-openai==1.6.7`.
