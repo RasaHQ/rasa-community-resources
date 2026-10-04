@@ -1,17 +1,16 @@
-# The browser_audio protocol, as all three servers speak it
+# The shared browser_audio protocol
 
 The voice page ([`index.html`](index.html), [`app.js`](app.js)) and the spec
 runner ([`../spec/run_spec.py`](../spec/run_spec.py), through
 [`scripts/case_builds/voice_driver.py`](../../../../scripts/case_builds/voice_driver.py))
 talk to every version of the agent the same way: Rasa's `browser_audio`
-WebSocket channel. The Rasa version gets it from the runtime. The LangGraph
-and Strands versions must implement the server side of what follows, so the
-same page and the same runner work against all three.
+WebSocket channel. Rasa supplies the channel through its runtime. The other
+tutorial implementations supply compatible server endpoints so the same page
+and runner can connect to each implementation.
 
 This describes rasa-pro 3.21.0.dev5
 (`rasa/core/channels/voice_stream/browser_audio.py` and `voice_channel.py`
-in the wheel), as observed by the companion's voice driver in the case-build
-runs and in this tutorial's Rasa run.
+in the pinned runtime) and the corresponding tutorial adapter contract.
 
 ## 1. Connection
 
@@ -42,7 +41,7 @@ Every frame after the upgrade is a JSON text frame.
 {"type": "handshake", "sample_rate": 24000}
 ```
 
-The rate applies to audio in both directions. All three versions use 24000
+The rate applies to audio in both directions. All tutorial versions use 24000
 (16-bit linear PCM); Rasa also allows 8000 (mu-law on the wire, decoded as
 L16), 16000 and 48000. The client sends nothing but may buffer until it has
 the handshake.
@@ -64,7 +63,7 @@ Anything else is ignored.
 | `{"audio": "<base64>"}` | Agent speech, same encoding. Any chunk size |
 | `{"marker": "<hex id>"}` | A playback marker (see 3) |
 | `{"marker": "<hex id>", "latency": {...}}` | A marker carrying the latency of the current bot message (see 4) |
-| `{"interruptPlayback": true}` | Stop playing and drop queued audio (barge-in). Only sent when interruptions are on; they are off in all three versions |
+| `{"interruptPlayback": true}` | Stop playing and drop queued audio (barge-in). Only sent when interruptions are on; they are off in all tutorial versions |
 
 There is **no end-of-turn frame and no text of what anyone said**. The
 wire carries audio and markers only. The page shows a transcript by reading
@@ -118,7 +117,7 @@ The runner and the page's transcript need to see the conversation.
 
 - **Rasa:** `GET /conversations/<id>/tracker` (with `--enable-api`), the
   tracker. Its `user`, `bot` and `bot_turn_ended` events are used.
-- **LangGraph and Strands:** `GET /conversations/<id>/events`, returning the
+- **Other tutorial servers:** `GET /conversations/<id>/events`, returning the
   same shape:
 
 ```json
@@ -158,8 +157,8 @@ the runner waits until the events stop changing.
 
 ## 7. What a server has to write
 
-For the comparison, everything in this file that a server implements is
-**voice loop** code (see [`../../README.md`](../../README.md)):
+The server supplies the **voice loop**
+(see [`../../README.md`](../../README.md)):
 the WebSocket endpoint, the handshake, decoding and encoding audio frames,
 feeding the speech-to-text and acting on end of utterance, sentence
 chunking for text-to-speech, sending audio with markers and latency, the

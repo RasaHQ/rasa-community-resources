@@ -1,23 +1,11 @@
 # concern: voice-adapter
-"""Speechmatics speech-to-text and text-to-speech as Rasa voice engines.
+"""Speechmatics clients implementing Rasa ASREngine and TTSEngine.
 
-Rasa 3.21.0.dev5 ships no Speechmatics engine (its built-in ASR engines are
-Deepgram and Azure; TTS: Azure, Cartesia, Deepgram, Rime). An engine it does
-not know is named by dotted path in integrations.yml; Rasa falls back to
-``class_from_module_path`` and calls ``from_config_dict`` (a beta extension
-point: it logs a beta warning on load). This file is that custom engine code,
-and it is the part of the Rasa version's voice plumbing that had to be
-written: everything else in the voice loop is the built-in browser_audio
-channel.
-
-It is a copy of the companion's live-tested adapters, with the imports
-changed and the HTTP base class and WAV helpers folded into this one file:
-``patterns/voice-vendor-router/voicerouter/providers/speechmatics.py``,
-``_http_tts.py`` and ``audio.py`` at commit 103f707 (the version with the
-``additional_headers`` fix and ``end_of_utterance_silence_trigger`` from the
-Northgate dispute build). The LangGraph and Strands versions make the same
-vendor calls through ``shared/speech`` (``cedar_speech``);
-``tests/test_speech_parity.py`` checks both send identical messages.
+Configure these custom engines by dotted path in integrations.yml.
+The browser_audio channel owns the WebSocket voice loop; these classes
+handle the provider messages and audio conversion. The shared speech
+package supplies the corresponding clients for the other implementations.
+tests/test_speech_parity.py checks their configured provider messages.
 """
 
 from __future__ import annotations

@@ -1,11 +1,8 @@
 # External integrations for the Rasa Mantle version of the Cedar Clinic voice agent.
 #
 # concern-begin: agent-logic
-# The model, the same for all three versions: gpt-5.5-2026-04-23 at
+# The shared model: gpt-5.5-2026-04-23 at
 # reasoning_effort low, through Rasa's OpenAI client (LiteLLM underneath).
-# Rasa's default reasoning_effort for this model is none; the Northgate
-# block-card build saw GPT-5.5 speak tool calls aloud or announce an action
-# without taking it at none (4 of 24 calls) and not at low.
 llm:
   model_group: orchestrator
 
@@ -44,8 +41,7 @@ channels:
     # end_of_utterance_silence_trigger: Speechmatics finalises a word or two at
     # a time and Rasa takes every transcript as a whole user turn; with 0.7 s
     # it marks the end of each utterance and the engine sends one transcript
-    # (the Northgate dispute build saw 19 user turns from one 14-second caller
-    # turn without it). additional_vocab: the clinic's medicine names, known
+    # additional_vocab: the clinic's medicine names, known
     # before any call; no patient names.
     asr:
       name: engines.speechmatics.SpeechmaticsASR
