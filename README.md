@@ -18,6 +18,8 @@ This is the code companion to [rasa.community](https://rasa.community/). Every r
 
 ## Start here
 
+For development worktrees, start with [workspaces and isolated environments](docs/WORKSPACES.md). Install only the resource you plan to run.
+
 **New to Rasa Skills / Mantle voice agents.** Request a free [Developer Edition licence key](https://rasa.community/license/), then clone and run the flagship Atlas travel agent:
 
 1. [`examples/mantle-voice-agent`](examples/mantle-voice-agent) — finished agent you can run with `make install` → `make inspect`

@@ -105,8 +105,11 @@ class LLMMeter:
     """Run with ``start()``; read ``rows`` or the JSONL file; ``stop()`` at the end."""
 
     def __init__(self, prices: dict, log_path: Optional[Path] = None, port: int = 0,
-                 upstream: str = UPSTREAM) -> None:
+                 upstream: str = UPSTREAM, model_id: Optional[str] = None,
+                 reasoning_effort: Optional[str] = None) -> None:
         self.prices = prices
+        self.model_id = model_id
+        self.reasoning_effort = reasoning_effort
         parts = urlsplit(upstream)
         self._upstream_https = parts.scheme == "https"
         self._upstream_host = parts.hostname or "api.openai.com"
@@ -171,6 +174,7 @@ class LLMMeter:
         length = int(handler.headers.get("Content-Length") or 0)
         raw = handler.rfile.read(length) if length else b""
         injected = False
+        body = None
         model = None
         stream = False
         if raw:
@@ -186,13 +190,35 @@ class LLMMeter:
                     body["stream_options"] = {**(body.get("stream_options") or {}), "include_usage": True}
                     raw = json.dumps(body).encode()
                     injected = True
+        if isinstance(body, dict) and method == "POST" and handler.path.rstrip("/").endswith(("/responses", "/chat/completions")):
+            reasoning = body.get("reasoning") or {}
+            effort = reasoning.get("effort") if isinstance(reasoning, dict) else None
+            effort = effort or body.get("reasoning_effort")
+            wrong_model = self.model_id is not None and model != self.model_id
+            wrong_effort = self.reasoning_effort is not None and effort != self.reasoning_effort
+            if wrong_model or wrong_effort:
+                ended = time.time()
+                self._record({"ts_start": round(started, 6), "ts_end": round(ended, 6),
+                    "path": handler.path, "method": method, "model": model,
+                    "reasoning_effort": effort, "status": 409,
+                    "error_code": "benchmark_contract_mismatch", "cost_usd": 0.0,
+                    "duration_ms": round((ended-started)*1000, 1), "upstream_called": False})
+                payload = json.dumps({"error": {"message": "Benchmark requires the pinned model and reasoning effort; no upstream request made",
+                    "type": "benchmark_contract_mismatch", "code": "benchmark_contract_mismatch"}}).encode()
+                handler.send_response(409)
+                handler.send_header("Content-Type", "application/json")
+                handler.send_header("Content-Length", str(len(payload)))
+                handler.end_headers()
+                handler.wfile.write(payload)
+                return
         headers = {k: v for k, v in handler.headers.items() if k.lower() not in _HOP_HEADERS}
         headers["Host"] = self._upstream_host
         headers["Accept-Encoding"] = "identity"
         if raw:
             headers["Content-Length"] = str(len(raw))
         row: dict = {"ts_start": round(started, 6), "path": handler.path, "method": method, "model": model,
-                     "stream": stream, "injected_include_usage": injected}
+                     "stream": stream, "injected_include_usage": injected,
+                     "reasoning_effort": ((body.get("reasoning") or {}).get("effort") or body.get("reasoning_effort")) if isinstance(body, dict) else None}
         connection = http.client.HTTPSConnection if self._upstream_https else http.client.HTTPConnection
         upstream = connection(self._upstream_host, self._upstream_port, timeout=180)
         recorded = False

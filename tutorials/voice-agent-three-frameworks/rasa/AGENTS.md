@@ -1,7 +1,7 @@
 # Rasa Mantle version: Cedar Clinic refill requests by voice
 
 One of three builds of the same agent (see [`../README.md`](../README.md)
-and [`../COMPARISON-PLAN.md`](../COMPARISON-PLAN.md)). Cedar Clinic is a
+and [`../README.md`](../README.md)). Cedar Clinic is a
 fictional clinic.
 
 Pin: `rasa-pro==3.21.0.dev5`. Model: `gpt-5.5-2026-04-23` through the

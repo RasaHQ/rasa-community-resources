@@ -159,7 +159,7 @@ the runner waits until the events stop changing.
 ## 7. What a server has to write
 
 For the comparison, everything in this file that a server implements is
-**voice loop** code (see [`../../COMPARISON-PLAN.md`](../../COMPARISON-PLAN.md)):
+**voice loop** code (see [`../../README.md`](../../README.md)):
 the WebSocket endpoint, the handshake, decoding and encoding audio frames,
 feeding the speech-to-text and acting on end of utterance, sentence
 chunking for text-to-speech, sending audio with markers and latency, the

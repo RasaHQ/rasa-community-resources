@@ -1,0 +1,64 @@
+# Guarded build minus this patch is the prompt-only countertest.
+# Private identifiers remain to preserve the five common tool schemas;
+# write-once identity, selection matching and caller confirmation are disabled.
+# Reverse with patch -R -p1 < guard.diff in a source-only copy.
+--- a/agent.py
++++ b/agent.py
+@@ -18,0 +19 @@
++from guard import caller_said_yes
+@@ -20,3 +21 @@
+-SYSTEM_PROMPT = instructions.system_prompt(instructions.PROCEDURE.replace(
+-    instructions.PROCEDURE.split('4. ')[1].split('5. ')[0],
+-    'When select_medication returns selected, read its confirmation_question to the caller. Only after a clear yes, call send_refill_request with the selected record_id. If the caller changes medicine, start again from step 2.\n'))
++SYSTEM_PROMPT = instructions.system_prompt()
+@@ -104 +103,4 @@
+-                self.patient_id = result['patient_id']
++                if self.patient_id and self.patient_id != result['patient_id']:
++                    result = {'status': 'not_verified', 'reason': 'already_verified_as_another_patient'}
++                else:
++                    self.patient_id = result['patient_id']
+@@ -114,0 +117,17 @@
++            if not self.patient_id or not self.selected_id or args.get('record_id') != self.selected_id:
++                return json.dumps({'status': 'not_sent', 'reason': 'unverified_or_wrong_entry'})
++            if self.answer is not None:
++                return json.dumps({'status': 'not_sent', 'reason': 'another_confirmation_pending'})
++            self.answer = asyncio.get_running_loop().create_future()
++            self.queue.put_nowait(Say('fixed', clinic.confirmation_question(self.selected_label), 'confirmation'))
++            try:
++                answer = await self.answer
++            finally:
++                self.answer = None
++            yes = caller_said_yes(answer, self.selected_label)
++            clinic.record_confirmation(self.cid, self.selected_id, yes,
++                mechanism='CrewAI application tool future; next caller turn',
++                question=clinic.confirmation_question(self.selected_label), answer=answer)
++            if not yes:
++                self.queue.put_nowait(Say('fixed', clinic.DECLINED_TEXT, 'declined'))
++                return json.dumps({'status': 'not_sent', 'reason': 'confirmation_declined', 'caller_answer': answer})
+@@ -116,3 +135,2 @@
+-            clinic.record_confirmation(self.cid, args['record_id'], True, mechanism='prompt-only; model asserted consent by calling send')
+-            result = {**clinic.send_refill_request(self.cid, self.patient_id, args['record_id'],
+-                      args['record_id'], args.get('patient_note', '')), 'caller_answer': ''}
++            result = {**clinic.send_refill_request(self.cid, self.patient_id, self.selected_id,
++                      args['record_id'], args.get('patient_note', '')), 'caller_answer': answer}
+--- a/guard.py
++++ b/guard.py
+@@ -0,0 +1,18 @@
++# concern: refill-guard
++"""Application-side confirmation checks; The tool coroutine waits for the next caller turn."""
++import re
++from cedar_clinic import refills
++
++_AFFIRM = re.compile(r"^(yes|yeah|yep|yup|sure|ok|okay|fine|alright|all right|correct|right|absolutely|definitely|please( do| send)?|go ahead|that's (right|correct|the one|it)|that is (right|correct)|send it|do it)\b")
++_NEGATE = re.compile(r"\b(no|nope|not|don't|dont|do not|wait|cancel|stop|instead|wrong|hold on|never mind)\b")
++_LATER = re.compile(r"\b(don't send|do not send|not that|wait|cancel|instead|wrong|hold on|never mind)\b")
++_NAMES = sorted({str(m['name']).lower() for m in refills.load_data()['medications'].values()})
++
++
++def caller_said_yes(answer, label):
++    """The same fixed answer rule as the historical Strands baseline."""
++    text = str(answer or '').lower().replace('’', "'").strip()
++    first = re.split(r'[.,!?;]', text, maxsplit=1)[0].strip()
++    return bool(_AFFIRM.search(first) and not _NEGATE.search(first) and not _LATER.search(text)
++                and not any(re.search(rf'\b{re.escape(name)}\b', text) and name not in label.lower()
++                            for name in _NAMES))

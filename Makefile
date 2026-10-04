@@ -22,6 +22,10 @@ SCRIPTS := $(ROOT)/scripts
 VERSION ?=
 # KEEP_GOING=1 continues after a project failure (check-all / test-all / lock-all / …)
 KEEP_GOING ?= 0
+# Full-catalog installs belong to explicit CI/full validation, not editorial worktrees.
+ALL_PROJECTS ?= 0
+PROJECT ?=
+EXPERIMENT ?=
 # STRICT=1 promotes lint warnings to failures.
 STRICT ?= 0
 # REQUIRE_LICENSE=1 makes a missing RASA_LICENSE a failure instead of a skip.
@@ -127,7 +131,7 @@ help: ## Show this help message
 	@echo ''
 	@echo '$(YELLOW)▸ Install & run$(RESET)'
 	@echo '  $(GREEN)make lock-all$(RESET)          uv lock in every project'
-	@echo '  $(GREEN)make install-all$(RESET)       uv sync in every project'
+	@echo '  $(GREEN)make install-all$(RESET)       uv sync in every project (ALL_PROJECTS=1)'
 	@echo '  $(GREEN)make check-all$(RESET)         Sync + assert rasa-pro version + validate_project'
 	@echo '  $(GREEN)make test-all$(RESET)          check-all, then rasa train when RASA_LICENSE is set'
 	@echo '  $(GREEN)make verify-all$(RESET)        Per-project make verify (needs each project .env)'
@@ -207,7 +211,7 @@ update: check-uv ## The routine bump: what is new, take it if usable, re-validat
 lint: ## Static checks: versions, locks, skill prose, metadata, secrets
 	@$(LINT) $(STRICT_ARGS) $(VERSION_ARGS)
 
-test-scripts: ## Unit-test the migration/lint tooling
+test-scripts: workspace-test ## Unit-test the migration/lint tooling
 	@$(UNITTESTS)
 
 # The case-build index. test_tooling.py fails `make validate` when it is stale.
@@ -218,6 +222,7 @@ catalog: ## Rebuild CATALOG.md and catalog/case-builds.json from the case builds
 	@$(PYTHON) $(SCRIPTS)/catalog_case_builds.py $(if $(SITE),--site $(SITE) --site-ref origin/main,)
 
 validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
+	@$(PYTHON) -m unittest discover -s scripts -p test_public_tutorial_delta.py
 	@echo "$(MAGENTA)▸ tooling unit tests$(RESET)"
 	@out=$$($(UNITTESTS) 2>&1) || { echo "$$out"; exit 1; }; \
 		case "$$out" in *"OK"*) ;; *) echo "$$out"; \
@@ -234,9 +239,11 @@ validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
 	@echo "$(GREEN)✓ validate passed — repository is internally consistent.$(RESET)"
 	@echo "$(YELLOW)  Note: this does not install anything. Run 'make ci' for that.$(RESET)"
 
+ci: ALL_PROJECTS=1
 ci: validate check-all check-snapshots ## validate + install every resource, both tiers
 	@echo "$(GREEN)✓ ci passed — every resource installs and validates.$(RESET)"
 
+validate-full: ALL_PROJECTS=1
 validate-full: validate ## Everything, including rasa train (needs RASA_LICENSE)
 	@$(MAKE) test-all REQUIRE_LICENSE=1 KEEP_GOING=$(KEEP_GOING)
 	@echo "$(GREEN)✓ validate-full passed — every resource trains end to end.$(RESET)"
@@ -255,7 +262,7 @@ lock-all: check-uv _require-projects ## Regenerate uv.lock in every project
 	done; \
 	exit $$fail
 
-install-all: check-uv _require-projects ## uv sync in every project
+install-all: _require-all-environments check-uv _require-projects ## uv sync in every project
 	@fail=0; \
 	for p in $(PROJECTS); do \
 		echo "$(BLUE)→ install $$p$(RESET)"; \
@@ -269,7 +276,7 @@ install-all: check-uv _require-projects ## uv sync in every project
 	done; \
 	exit $$fail
 
-check-all: check-uv _require-projects ## Sync + version assert + validate_project
+check-all: _require-all-environments check-uv _require-projects ## Sync + version assert + validate_project
 	@fail=0; \
 	for p in $(PROJECTS); do \
 		if $(CHECK) $$p $(VERSION_ARGS); then \
@@ -286,7 +293,7 @@ check-all: check-uv _require-projects ## Sync + version assert + validate_projec
 snapshots: ## List frozen snapshots (community/, heroes/) and their own pins
 	@$(LIST) --scope snapshots
 
-check-snapshots: check-uv ## Install every frozen snapshot and run validate_project
+check-snapshots: _require-all-environments check-uv ## Install every frozen snapshot and run validate_project
 	@if [ -z "$(SNAPSHOTS)" ]; then \
 		echo "$(DIM)No frozen snapshots checked in yet.$(RESET)"; \
 		exit 0; \
@@ -304,7 +311,7 @@ check-snapshots: check-uv ## Install every frozen snapshot and run validate_proj
 	if [ $$fail -eq 0 ]; then echo "$(GREEN)All frozen snapshots still install and validate.$(RESET)"; fi; \
 	exit $$fail
 
-test-all: check-uv _require-projects ## check-all + train when RASA_LICENSE is available
+test-all: _require-all-environments check-uv _require-projects ## check-all + train when RASA_LICENSE is available
 	@fail=0; \
 	for p in $(PROJECTS); do \
 		if $(CHECK) $$p --train $(LICENSE_ARGS) $(SECRET_ARGS) $(VERSION_ARGS); then \
@@ -318,7 +325,7 @@ test-all: check-uv _require-projects ## check-all + train when RASA_LICENSE is a
 	if [ $$fail -eq 0 ]; then echo "$(GREEN)All projects passed test-all.$(RESET)"; fi; \
 	exit $$fail
 
-verify-all: check-uv _require-projects ## Delegate to each project's make verify
+verify-all: _require-all-environments check-uv _require-projects ## Delegate to each project's make verify
 	@fail=0; \
 	for p in $(PROJECTS); do \
 		echo "$(BLUE)→ verify $$p$(RESET)"; \
@@ -338,3 +345,15 @@ clean-all: _require-projects ## Per-project make clean
 		$(MAKE) -C $(ROOT)/$$p clean; \
 	done
 	@echo "$(GREEN)✓ clean-all complete.$(RESET)"
+
+.PHONY: environment workspace-test _require-all-environments
+environment: check-uv ## Create just PROJECT's isolated environment for EXPERIMENT
+	@test -n "$(PROJECT)" -a -n "$(EXPERIMENT)" || { echo 'Set PROJECT=<path> EXPERIMENT=<id>'; exit 2; }
+	@$(PYTHON) scripts/workspace.py start "$(PROJECT)" --owner "$(EXPERIMENT)"
+
+workspace-test: ## Source-only worktrees and managed experiment retirement
+	@$(PYTHON) scripts/workspace.test.py
+	@$(PYTHON) scripts/workspace-policy.test.py
+
+_require-all-environments:
+	@test "$(ALL_PROJECTS)" = "1" || { echo 'Use make environment PROJECT=<path> EXPERIMENT=<id> for one experiment. Full-catalog installs require ALL_PROJECTS=1 or an explicit make ci / make validate-full run.'; exit 2; }

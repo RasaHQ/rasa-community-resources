@@ -61,6 +61,7 @@ import checks  # noqa: E402
 import voice_driver  # noqa: E402
 from harness import agent_env, percentile  # noqa: E402
 from llm_meter import LLMMeter  # noqa: E402
+from source_receipt import source_receipt  # noqa: E402
 
 sys.path.insert(0, str(TUTORIAL / "shared" / "clinic"))
 from cedar_clinic.audit import read_log  # noqa: E402
@@ -92,6 +93,15 @@ PRESETS: dict[str, dict[str, Any]] = {
                 "events_path": "/conversations/{id}/events", "ws_path": "/webhooks/browser_audio/websocket",
                 "session_end_turn": False},
 }
+
+# Community SDK additions retain the common browser-audio protocol.
+for _framework in ("langchain", "agno", "crewai", "pipecat", "livekit"):
+    PRESETS[_framework] = {"cwd": _framework,
+        "server_cmd": "uv run --locked python server.py --port {port}",
+        "train_cmd": None, "ready_path": "/health",
+        "events_path": "/conversations/{id}/events",
+        "ws_path": "/webhooks/browser_audio/websocket", "session_end_turn": False}
+
 
 
 def free_port() -> int:
@@ -533,6 +543,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("framework", choices=sorted(PRESETS))
     parser.add_argument("--label", default=None, help="results folder name (default: timestamp)")
+    parser.add_argument("--results-root", type=Path, default=TUTORIAL / "results",
+                        help="output directory; use a private directory for evaluation records")
     parser.add_argument("--spec", default=str(SPEC_FILE),
                         help="conversation spec file (default: conversations.json, the 17 headline calls)")
     parser.add_argument("--only", nargs="*", help="conversation ids to run")
@@ -561,47 +573,72 @@ def main() -> int:
         parser.error(f"unknown conversation id in {args.only}")
     run_tag = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     label = args.label or run_tag
-    fw_dir = TUTORIAL / "results" / args.framework
+    fw_dir = args.results_root.resolve() / args.framework
     out_dir = fw_dir / label
+    if out_dir.exists() and any(out_dir.iterdir()):
+        parser.error(f"result label already exists: {label}; choose a new label to retain every attempt")
     raw_dir = out_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
     ledger = fw_dir / "spend-ledger.json"
     audit_path = Path(args.audit_log) if args.audit_log else out_dir / "audit.jsonl"
     if audit_path.exists() and not args.audit_log:
         audit_path.unlink()
-    meter = LLMMeter(spec["prices"], log_path=out_dir / "llm-calls.jsonl").start()
+    meter = LLMMeter(spec["prices"], log_path=out_dir / "llm-calls.jsonl",
+                     model_id=spec["model"].split()[0], reasoning_effort="low").start()
     (out_dir / "llm-calls.jsonl").unlink(missing_ok=True)
     (out_dir / "call-purposes.jsonl").unlink(missing_ok=True)
 
     agent: Optional[AgentProcess] = None
     startup_s = None
     cwd = (TUTORIAL / (args.server_cwd or preset["cwd"])).resolve()
-    if args.base_url:
-        base_url = args.base_url.rstrip("/")
-    else:
-        cmd = args.server_cmd or preset["server_cmd"]
-        if not cmd:
-            parser.error(f"--server-cmd is required for {args.framework}")
-        port = free_port()
-        base_url = f"http://127.0.0.1:{port}"
-        env = agent_env(cwd, {
-            "CEDAR_AUDIT_LOG": str(audit_path),
-            "RASA_TELEMETRY_ENABLED": "false",
-            "HF_HUB_OFFLINE": "1",
-            "CASE_BUILD_USAGE_LOG": str(raw_dir / "litellm-usage.jsonl"),
-            "RASA_CALL_PURPOSES_LOG": str(out_dir / "call-purposes.jsonl"),
-            "LITELLM_LOCAL_MODEL_COST_MAP": "True",
-            **meter.env(),
-        })
-        if preset.get("train_cmd") and not args.no_train:
-            print(f"training: {preset['train_cmd']}", flush=True)
-            with open(raw_dir / "train.log", "w", encoding="utf-8") as log:
-                subprocess.run(shlex.split(preset["train_cmd"]), cwd=cwd, env=env, check=True, stdout=log,
-                               stderr=subprocess.STDOUT)
-        agent = AgentProcess(cmd.format(port=port), cwd, env, raw_dir / "server.log")
-        print(f"starting {args.framework}: {agent.cmd}", flush=True)
-        startup_s = round(agent.start(f"{base_url}{preset['ready_path']}", args.ready_timeout), 1)
-        print(f"ready in {startup_s}s at {base_url}", flush=True)
+    input_receipt = source_receipt(TUTORIAL, cwd, args.framework)
+    try:
+        if args.base_url:
+            base_url = args.base_url.rstrip("/")
+        else:
+            cmd = args.server_cmd or preset["server_cmd"]
+            if not cmd:
+                parser.error(f"--server-cmd is required for {args.framework}")
+            port = free_port()
+            base_url = f"http://127.0.0.1:{port}"
+            env = agent_env(cwd, {
+                "CEDAR_AUDIT_LOG": str(audit_path),
+                "RASA_TELEMETRY_ENABLED": "false",
+                "HF_HUB_OFFLINE": "1",
+                "CASE_BUILD_USAGE_LOG": str(raw_dir / "litellm-usage.jsonl"),
+                "RASA_CALL_PURPOSES_LOG": str(out_dir / "call-purposes.jsonl"),
+                "LITELLM_LOCAL_MODEL_COST_MAP": "True",
+                **meter.env(),
+            })
+            if preset.get("train_cmd") and not args.no_train:
+                print(f"training: {preset['train_cmd']}", flush=True)
+                with open(raw_dir / "train.log", "w", encoding="utf-8") as log:
+                    subprocess.run(shlex.split(preset["train_cmd"]), cwd=cwd, env=env, check=True, stdout=log,
+                                   stderr=subprocess.STDOUT)
+            agent = AgentProcess(cmd.format(port=port), cwd, env, raw_dir / "server.log")
+            print(f"starting {args.framework}: {agent.cmd}", flush=True)
+            startup_s = round(agent.start(f"{base_url}{preset['ready_path']}", args.ready_timeout), 1)
+            print(f"ready in {startup_s}s at {base_url}", flush=True)
+
+    except Exception as error:
+        if agent is not None:
+            agent.stop()
+        meter.stop()
+        failure = {"framework": args.framework, "label": label, "run_tag": run_tag,
+            "mode": args.mode, "spec": spec["spec"], "spec_model": spec["model"],
+            "source_receipt": input_receipt, "budget_usd": args.budget_usd,
+            "status": "startup_error", "error": {"type": type(error).__name__, "message": str(error)},
+            "ended_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "aggregate": aggregate([]), "conversations": [],
+            "skipped": [{"id": c["id"], "reason": "startup_error"} for c in convs],
+            "meter_total_cost_usd": meter.total_cost()}
+        (out_dir / "results.json").write_text(json.dumps(failure, indent=2) + "\n")
+        ledger_append(ledger, {"label": label, "run_tag": run_tag, "mode": args.mode,
+            "spec": spec["spec"], "conversations": 0, "status": "startup_error",
+            "cost_usd": meter.total_cost(), "llm_cost_usd": meter.total_cost(),
+            "source": "meter usage during failed startup; no caller conversations"})
+        print(f"startup failed ({type(error).__name__}); attempt retained: {out_dir}", flush=True)
+        return 1
 
     ws_url = base_url.replace("http://", "ws://", 1) + preset["ws_path"]
 
@@ -651,6 +688,7 @@ def main() -> int:
 
     report = {
         "framework": args.framework,
+        "source_receipt": input_receipt,
         "label": label,
         "run_tag": run_tag,
         "mode": args.mode,

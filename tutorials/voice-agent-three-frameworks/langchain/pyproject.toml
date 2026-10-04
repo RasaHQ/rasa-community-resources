@@ -1,0 +1,14 @@
+# concern: ops
+[project]
+name = "cedar-clinic-langchain-without-langgraph"
+version = "0.1.0"
+description = "Cedar Clinic using LangChain model, message and tool interfaces without LangGraph"
+requires-python = ">=3.11,<3.13"
+dependencies = ["langchain-core==1.6.6", "langchain-openai==1.6.7", "starlette>=0.47", "uvicorn>=0.35", "cedar-clinic", "cedar-speech"]
+[tool.uv.sources]
+cedar-clinic = { path = "../shared/clinic", editable = true }
+cedar-speech = { path = "../shared/speech", editable = true }
+[tool.uv]
+package = false
+[dependency-groups]
+dev = ["httpx>=0.27"]

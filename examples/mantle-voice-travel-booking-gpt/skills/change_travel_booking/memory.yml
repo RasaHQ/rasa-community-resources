@@ -1,0 +1,26 @@
+# Written only by prepare_journey_change (never llm_settable), so the change and
+# the linked services the engine reads back for confirmation are always the
+# ones the tools resolved and will check. Each value is kept under 100
+# characters: Mantle cuts longer memory values in the prompt without saying so
+# (tests/test_journeys.py checks every option of every booking).
+# draft_booking: the booking the draft is for, e.g. HZ4R8N; empty when none.
+# draft_option: the replacement option, e.g. HZ4R8N-S3-A.
+# draft_segment: the segment id, flight and departure when drafted, so a change
+#   to the segment since then fails segment_identity_confirmed.
+# draft_services: ids of the linked services read back, e.g. S4,TR-1,BG-1,PK-1.
+# change_label: the change, read in the confirmation question.
+# services_label: the linked services, read in the confirmation question.
+schema:
+  public:
+    draft_booking:
+      type: text
+    draft_option:
+      type: text
+    draft_segment:
+      type: text
+    draft_services:
+      type: text
+    change_label:
+      type: text
+    services_label:
+      type: text
