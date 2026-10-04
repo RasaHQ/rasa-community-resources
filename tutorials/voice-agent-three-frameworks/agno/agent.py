@@ -91,6 +91,8 @@ class Conversation:
             pending, self.pending = self.pending, None
             self.caller_answer = text
             for requirement in pending.requirements or []:
+                if not requirement.needs_confirmation:
+                    continue
                 call = requirement.tool_execution
                 args = call.tool_args or {}
                 allowed = bool(self.patient_id and self.selected_id and args.get('record_id') == self.selected_id)
