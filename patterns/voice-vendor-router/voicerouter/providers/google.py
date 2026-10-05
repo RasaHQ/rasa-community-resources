@@ -35,18 +35,18 @@ import asyncio
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.asr.asr_engine import (
+from voicerouter.engine import (
     ASREngine,
     ASREngineConfig,
     ASRLanguageMapEntry,
 )
-from rasa.core.channels.voice_stream.asr.asr_event import (
+from voicerouter.engine import (
     ASREvent,
     NewTranscript,
     UserIsSpeaking,
 )
-from rasa.core.channels.voice_stream.audio_bytes import AudioFormat, RasaAudioBytes
-from rasa.core.channels.voice_stream.tts.tts_engine import (
+from voicerouter.engine import AudioFormat, RasaAudioBytes
+from voicerouter.engine import (
     TTSEngineConfig,
     TTSLanguageMapEntry,
 )

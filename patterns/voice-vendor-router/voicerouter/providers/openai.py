@@ -15,8 +15,8 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
-from rasa.core.channels.voice_stream.audio_bytes import AudioFormat
-from rasa.core.channels.voice_stream.tts.tts_engine import (
+from voicerouter.engine import AudioFormat
+from voicerouter.engine import (
     TTSEngineConfig,
     TTSLanguageMapEntry,
 )

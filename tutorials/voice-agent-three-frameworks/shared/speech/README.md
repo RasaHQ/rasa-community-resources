@@ -66,3 +66,18 @@ endpoint. This package handles provider communication and audio conversion.
   configured; caller names are not supplied as recognition hints.
 - Continuous audio includes silence. Check the provider's current pricing
   and account terms before running live tests.
+
+## Select a shared vendor router
+
+All eight tutorial implementations accept `CEDAR_VOICE_ROUTER_CONFIG`, an absolute
+path to a versioned JSON profile. The example is
+[`profiles/speechmatics-fixed.json`](profiles/speechmatics-fixed.json).
+`create_asr()` and `create_tts()` in `cedar_speech.router` adapt the shared router
+back to this package's PCM/transcript interface. Rasa's existing custom engine
+factories select the same router when the variable is set.
+
+Provider credentials remain environment variables. Do not store them in profiles.
+An invalid profile fails before a connection is opened. With no profile selected,
+the original Speechmatics clients and settings remain the defaults. Shared provider
+implementation and installation details are in
+[the router README](../../../../patterns/voice-vendor-router/README.md).

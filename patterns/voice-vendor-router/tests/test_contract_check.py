@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from voicerouter.engine import RASA_AVAILABLE
 from voicerouter import contract  # noqa: E402
 
 
@@ -74,6 +75,7 @@ class TestScanner(unittest.TestCase):
         )
 
 
+@unittest.skipUnless(RASA_AVAILABLE, "Installed Rasa source contract requires the rasa dependency group")
 class TestInstalledRasa(unittest.TestCase):
     """What the pinned wheel actually uses, including the uses that broke calls."""
 
@@ -120,6 +122,7 @@ class MethodsOnlyTTS:
     async def set_language(self, language): ...
 
 
+@unittest.skipUnless(RASA_AVAILABLE, "Installed Rasa source contract requires the rasa dependency group")
 class TestFindsWhatIsMissing(unittest.TestCase):
     def test_the_pre_fix_router_shape_fails_the_check(self):
         asr_gaps = contract.missing(MethodsOnlyASR, contract.required_surface("asr"))

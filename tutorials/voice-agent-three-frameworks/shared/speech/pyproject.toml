@@ -6,6 +6,7 @@ description = "Speechmatics realtime speech-to-text and text-to-speech clients f
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "voice-vendor-router",
     # The asyncio client with additional_headers, as Rasa's engines use it.
     "websockets>=15",
     "aiohttp>=3.9",
@@ -19,3 +20,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["cedar_speech"]
+
+[tool.uv.sources]
+voice-vendor-router = { path = "../../../../patterns/voice-vendor-router", editable = true }

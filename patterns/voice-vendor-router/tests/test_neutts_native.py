@@ -21,7 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from rasa.core.channels.voice_stream.audio_bytes import L16_16KHZ, L16_24KHZ  # noqa: E402
+from voicerouter.engine import L16_16KHZ, L16_24KHZ  # noqa: E402
 
 from voicerouter.providers import neutts_native as nn  # noqa: E402
 

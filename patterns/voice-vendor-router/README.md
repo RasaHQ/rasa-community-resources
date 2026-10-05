@@ -773,3 +773,62 @@ graduate into its own repository once those land.
 
 Apache 2.0 — see the repository root [LICENSE](../../LICENSE). Rasa Pro is a
 commercial framework under its own terms.
+
+## Use the same router with other frameworks
+
+The library can now run without Rasa Pro. Provider transport, audio conversion,
+health and routing stay in `voicerouter`; framework code passes mono PCM16 in
+and consumes transcripts or audio out. The runnable Rasa example retains its
+pinned Rasa dependency in the default `rasa` dependency group. Library consumers
+do not install that group. For a standalone installation in this directory:
+
+```bash
+uv sync --locked --no-default-groups
+```
+
+A versioned JSON profile selects ASR and TTS independently. The Cedar Clinic
+implementations for Rasa, LangGraph, Strands, LangChain, Agno, CrewAI, Pipecat and
+LiveKit accept the same profile through `CEDAR_VOICE_ROUTER_CONFIG`:
+
+```bash
+# Run from a selected tutorial framework directory. Load authorized credentials
+# into your environment separately; do not put them in the profile.
+export CEDAR_VOICE_ROUTER_CONFIG="$(cd ../shared/speech/profiles && pwd)/speechmatics-fixed.json"
+uv run --locked python server.py --port 5009   # the seven non-Rasa servers
+# For the Rasa directory, use its existing make train and make run targets.
+```
+
+Without that variable the tutorials retain their original Speechmatics clients.
+With it, all eight use the shared router's provider implementations. The profile
+sample rate and language must match the Rasa channel; the seven PCM transports
+also check the sample rate. The example profile fixes one provider per role,
+turns off retries and exploration, uses call-scoped health, and exposes transport
+failures. It sends the original tutorial's Speechmatics configuration and voice.
+It is a separate speech integration condition.
+
+To add a vendor, implement its ASR or TTS transport once under `voicerouter/providers`,
+then select its dotted class path in a profile. Existing shared adapters cover
+Deepgram Nova/Aura, Speechmatics, AssemblyAI, OpenAI TTS, ElevenLabs, AWS, Google, Vosk, Faster Whisper
+and NeuTTS variants. AWS, Google and local models need their documented optional
+SDKs or model assets installed in the selected environment. Provider availability
+and live behaviour require separate qualification with the intended vendor.
+The `deepgram-nova-aura-fixed.json` profile selects the shared `/v1/listen` and
+`/v1/speak` adapters. Flux `/v2/listen` is a separate protocol. Rasa built-in
+names such as `deepgram` and `rime` retain their Rasa factory; select the shared
+Deepgram adapters by dotted class path or `deepgram-shared`.
+The transports follow Deepgram’s [listen messages](https://developers.deepgram.com/reference/speech-to-text/listen-streaming)
+and [Flush/Flushed contract](https://developers.deepgram.com/docs/tts-ws-flush).
+
+The shared interface does not replace a framework's native voice pipeline. These
+tutorials retain their common browser PCM transport and framework conversation
+engines. LiveKit room/audio nodes and Pipecat frame processors need their own
+transport bindings if used outside this tutorial.
+
+Offline checks are available in `tests/test_shared_profile.py`. They compare the
+configured vendor messages, check the shared factories, validate profile identity
+and exercise the PCM/transcript bridge. Native Rasa channel contracts additionally
+run with the pinned `rasa` group installed. They do not establish live vendor
+latency, quality or billing. The bridge records requested characters and submitted
+audio seconds; these are not provider invoices or retry request counts. Time to
+first audio is recorded separately from HTTP headers, which remain unavailable
+through the common interface.

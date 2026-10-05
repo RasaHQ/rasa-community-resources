@@ -45,8 +45,8 @@ from pathlib import Path
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.audio_bytes import AudioFormat, RasaAudioBytes
-from rasa.core.channels.voice_stream.tts.tts_engine import (
+from voicerouter.engine import AudioFormat, RasaAudioBytes
+from voicerouter.engine import (
     TTSEngine,
     TTSEngineConfig,
     TTSError,

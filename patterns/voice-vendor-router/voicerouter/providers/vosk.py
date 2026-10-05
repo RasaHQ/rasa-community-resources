@@ -27,17 +27,17 @@ from pathlib import Path
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.asr.asr_engine import (
+from voicerouter.engine import (
     ASREngine,
     ASREngineConfig,
     ASRLanguageMapEntry,
 )
-from rasa.core.channels.voice_stream.asr.asr_event import (
+from voicerouter.engine import (
     ASREvent,
     NewTranscript,
     UserIsSpeaking,
 )
-from rasa.core.channels.voice_stream.audio_bytes import AudioFormat, RasaAudioBytes
+from voicerouter.engine import AudioFormat, RasaAudioBytes
 
 logger = structlog.get_logger(__name__)
 

@@ -28,6 +28,8 @@ interruptions off.
 
 from __future__ import annotations
 
+from cedar_speech.router import create_asr, create_tts
+
 import asyncio
 import base64
 import json
@@ -39,7 +41,6 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from cedar_clinic import instructions
-from cedar_speech import SpeechmaticsASR
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.types import Command
 
@@ -136,7 +137,7 @@ class Call:
         await self.ws.send_text(json.dumps({"type": "handshake", "sample_rate": SAMPLE_RATE}))
         if self.use_asr:
             try:
-                self.asr = await SpeechmaticsASR(SAMPLE_RATE).open()
+                self.asr = await create_asr(SAMPLE_RATE).open()
             except Exception as exc:  # the call still works with {"text"} frames
                 log.error("%s: speech-to-text unavailable: %s", self.id, exc)
         self.tasks = [asyncio.create_task(self._sender()), asyncio.create_task(self._turn_worker()),

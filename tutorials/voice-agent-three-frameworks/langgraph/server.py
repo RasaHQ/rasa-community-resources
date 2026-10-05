@@ -15,6 +15,8 @@ Routes (shared/web/PROTOCOL.md):
 
 from __future__ import annotations
 
+from cedar_speech.router import create_asr, create_tts
+
 import argparse
 import contextlib
 import logging
@@ -22,7 +24,6 @@ import re
 import uuid
 
 import uvicorn
-from cedar_speech import SpeechmaticsTTS
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -42,7 +43,7 @@ def create_app(agent=None, tts=None, *, use_asr: bool = True) -> Starlette:
     @contextlib.asynccontextmanager
     async def lifespan(app: Starlette):
         state["agent"] = state["agent"] or build_agent()
-        state["tts"] = state["tts"] or SpeechmaticsTTS()
+        state["tts"] = state["tts"] or create_tts()
         yield
         await state["tts"].close()
 

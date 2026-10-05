@@ -32,8 +32,8 @@ import random
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.audio_bytes import AudioFormat, RasaAudioBytes
-from rasa.core.channels.voice_stream.tts.tts_engine import StreamState, TTSError
+from voicerouter.engine import AudioFormat, RasaAudioBytes
+from voicerouter.engine import StreamState, TTSError
 
 from voicerouter.base import (
     BuiltProvider,
@@ -116,7 +116,7 @@ class RoutedTTS:
         rasa_language: str,
         additional_languages: Optional[List[str]] = None,
     ) -> "RoutedTTS":
-        from rasa.core.channels.voice_stream.voice_channel import tts_engine_from_config
+        from voicerouter.engine import tts_engine_from_config
 
         config = dict(config or {})
         raw_providers = config.pop("providers", None)
@@ -398,6 +398,10 @@ class RoutedTTS:
                 except Exception as exc:  # noqa: BLE001 - any vendor failure routes
                     verdict = health.record_failure(exc)
                     self._metrics.record_failure(label, verdict.kind.value)
+                    try:
+                        await provider.engine.close_connection()
+                    except Exception:
+                        pass  # preserve the transport failure, not a secondary close error
                     self._connected.discard(index)
                     last_error = exc
 
@@ -407,6 +411,8 @@ class RoutedTTS:
                             provider=label, error=str(exc), verdict=str(verdict),
                             note="sentence truncated; provider marked unhealthy",
                         )
+                        if self._policy.raise_on_failure:
+                            raise TTSError("TTS failed after emitting audio; utterance was not replayed") from exc
                         return
 
                     # Keeping the caller's voice is worth a retry when the
