@@ -95,6 +95,7 @@ class DeepgramTTS(TTSEngine[DeepgramTTSConfig]):
         super().__init__(*args,**kwargs)
         self._socket=None
         self._lock=asyncio.Lock()
+        self._connect_lock=asyncio.Lock()
 
     @classmethod
     def name(cls): return 'deepgram-shared'
@@ -113,22 +114,27 @@ class DeepgramTTS(TTSEngine[DeepgramTTSConfig]):
         return {'model':self.current_language_config.model,'encoding':'linear16','sample_rate':self.audio_format.sample_rate}
 
     async def connect(self,config:Optional[Any]=None):
-        if self._socket is None:
-            self._socket=await connect(self.config.endpoint+'?'+urlencode(self.query()),
-                                      additional_headers={'Authorization':'Token '+os.environ['DEEPGRAM_API_KEY']})
+        # RoutedTTS may connect concurrent sentence tasks before either task
+        # enters synthesize's utterance lock. Keep one shared transport.
+        async with self._connect_lock:
+            if self._socket is None:
+                self._socket=await connect(self.config.endpoint+'?'+urlencode(self.query()),
+                                          additional_headers={'Authorization':'Token '+os.environ['DEEPGRAM_API_KEY']})
 
     async def close_connection(self):
-        socket,self._socket=self._socket,None
-        if socket is not None:await asyncio.wait_for(socket.close(),timeout=5)
+        async with self._connect_lock:
+            socket,self._socket=self._socket,None
+            if socket is not None:await asyncio.wait_for(socket.close(),timeout=5)
 
     async def synthesize(self,text,config:Optional[Any]=None):
         async with self._lock:
             await self.connect()
+            socket=self._socket
             try:
-                await self._socket.send(json.dumps({'type':'Speak','text':text}))
-                await self._socket.send(json.dumps({'type':'Flush'}))
+                await socket.send(json.dumps({'type':'Speak','text':text}))
+                await socket.send(json.dumps({'type':'Flush'}))
                 while True:
-                    raw=await asyncio.wait_for(self._socket.recv(),timeout=float(self.config.timeout))
+                    raw=await asyncio.wait_for(socket.recv(),timeout=float(self.config.timeout))
                     if isinstance(raw,bytes):
                         yield RasaAudioBytes(raw,format=self.audio_format)
                         continue

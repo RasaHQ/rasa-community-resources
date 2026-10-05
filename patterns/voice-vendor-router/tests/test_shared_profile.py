@@ -159,6 +159,34 @@ class ProfileTests(unittest.TestCase):
     def test_pcm_rate_mismatch_fails(self):
         with self.assertRaises(ValueError): create_asr(16000)
 
+    def test_concurrent_deepgram_sentences_share_one_connection(self):
+        async def check():
+            sockets=[]
+            class Socket:
+                def __init__(self):self.frames=asyncio.Queue();self.messages=[]
+                async def send(self,raw):
+                    message=json.loads(raw);self.messages.append(message)
+                    if message['type']=='Flush':
+                        self.frames.put_nowait(b'\0\0')
+                        self.frames.put_nowait(json.dumps({'type':'Flushed'}))
+                async def recv(self):return await self.frames.get()
+                async def close(self):pass
+            async def dial(*args,**kwargs):
+                socket=Socket();sockets.append(socket)
+                await asyncio.sleep(0)  # connection opens overlap without the connection lock
+                return socket
+            with patch.dict(os.environ,{'DEEPGRAM_API_KEY':'offline-test'}):
+                routed=VoiceProfile.load(PROFILE.with_name('deepgram-nova-aura-fixed.json')).build_tts()
+                async def speak(text):return [chunk.data async for chunk in routed.synthesize(text)]
+                with patch('voicerouter.providers.deepgram.connect',side_effect=dial):
+                    audio=await asyncio.wait_for(asyncio.gather(speak('one'),speak('two')),timeout=1)
+                self.assertEqual(len(sockets),1)
+                self.assertEqual(audio,[[b'\0\0'],[b'\0\0']])
+                self.assertEqual(sockets[0].messages,[{'type':'Speak','text':'one'},{'type':'Flush'},
+                                                      {'type':'Speak','text':'two'},{'type':'Flush'}])
+                await routed.close_connection()
+        asyncio.run(check())
+
     def test_bridge_audio_events_lifecycle_and_timings(self):
         async def check():
             asr, tts = create_asr(), create_tts()
