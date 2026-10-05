@@ -25,13 +25,13 @@ from urllib.parse import urlencode
 
 import structlog
 import websockets.exceptions
-from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine, ASREngineConfig
-from rasa.core.channels.voice_stream.asr.asr_event import (
+from voicerouter.engine import SocketASR, ASREngineConfig
+from voicerouter.engine import (
     ASREvent,
     NewTranscript,
     UserIsSpeaking,
 )
-from rasa.core.channels.voice_stream.audio_bytes import (
+from voicerouter.engine import (
     AudioEncoding,
     AudioFormat,
     RasaAudioBytes,
@@ -57,7 +57,7 @@ class AssemblyAIASRConfig(ASREngineConfig):
     format_turns: Optional[bool] = None
 
 
-class AssemblyAIASR(ASREngine[AssemblyAIASRConfig]):
+class AssemblyAIASR(SocketASR[AssemblyAIASRConfig]):
     required_env_vars = (ASSEMBLYAI_API_KEY_ENV_VAR,)
 
     @classmethod
@@ -124,7 +124,7 @@ class AssemblyAIASR(ASREngine[AssemblyAIASRConfig]):
             return None
         if message.get("type") != "Turn":
             if message.get("type") == "Error":
-                logger.error("assemblyai.error", error=message.get("error"))
+                raise RuntimeError("AssemblyAI ASR returned an error event")
             return None
         text = (message.get("transcript") or "").strip()
         if not text:
@@ -146,7 +146,7 @@ class AssemblyAIASR(ASREngine[AssemblyAIASRConfig]):
 
     @staticmethod
     def get_default_config(rasa_language: str) -> AssemblyAIASRConfig:
-        from rasa.core.channels.voice_stream.asr.asr_engine import ASRLanguageMapEntry
+        from voicerouter.engine import ASRLanguageMapEntry
 
         return AssemblyAIASRConfig(
             endpoint=DEFAULT_ENDPOINT, format_turns=True,

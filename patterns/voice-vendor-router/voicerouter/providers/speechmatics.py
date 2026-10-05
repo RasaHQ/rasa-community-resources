@@ -23,18 +23,18 @@ from urllib.parse import quote
 
 import structlog
 import websockets.exceptions
-from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine, ASREngineConfig
-from rasa.core.channels.voice_stream.asr.asr_event import (
+from voicerouter.engine import SocketASR, ASREngineConfig
+from voicerouter.engine import (
     ASREvent,
     NewTranscript,
     UserIsSpeaking,
 )
-from rasa.core.channels.voice_stream.audio_bytes import (
+from voicerouter.engine import (
     AudioEncoding,
     AudioFormat,
     RasaAudioBytes,
 )
-from rasa.core.channels.voice_stream.tts.tts_engine import (
+from voicerouter.engine import (
     TTSEngineConfig,
     TTSLanguageMapEntry,
 )
@@ -127,7 +127,7 @@ class SpeechmaticsASRConfig(ASREngineConfig):
     additional_vocab: Optional[List[Any]] = None
 
 
-class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
+class SpeechmaticsASR(SocketASR[SpeechmaticsASRConfig]):
     """Realtime transcription over one websocket.
 
     Two protocol details that cost real time to discover:
@@ -271,8 +271,7 @@ class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
             text, self._segments = " ".join(self._segments), []
             return NewTranscript(text)
         if kind == "Error":
-            logger.error("speechmatics.error", type=message.get("type"),
-                         reason=message.get("reason"))
+            raise RuntimeError("Speechmatics ASR returned an error event")
         return None
 
     @classmethod
@@ -288,7 +287,7 @@ class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
 
     @staticmethod
     def get_default_config(rasa_language: str) -> SpeechmaticsASRConfig:
-        from rasa.core.channels.voice_stream.asr.asr_engine import ASRLanguageMapEntry
+        from voicerouter.engine import ASRLanguageMapEntry
 
         return SpeechmaticsASRConfig(
             endpoint=DEFAULT_ASR_ENDPOINT, operating_point="enhanced",

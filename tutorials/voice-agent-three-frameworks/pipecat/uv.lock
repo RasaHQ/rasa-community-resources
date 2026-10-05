@@ -162,6 +162,7 @@ version = "0.1.0"
 source = { editable = "../shared/speech" }
 dependencies = [
     { name = "aiohttp" },
+    { name = "voice-vendor-router" },
     { name = "websockets" },
 ]
 
@@ -169,6 +170,7 @@ dependencies = [
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.9" },
     { name = "audioop-lts", marker = "python_full_version >= '3.13'", specifier = ">=0.2.1" },
+    { name = "voice-vendor-router", editable = "../../../patterns/voice-vendor-router" },
     { name = "websockets", specifier = ">=15" },
 ]
 
@@ -1039,6 +1041,15 @@ wheels = [
 ]
 
 [[package]]
+name = "structlog"
+version = "26.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/89/b4a0bcfdf4f71a3dea31379f095929613d7e4528a0996bca6aa964cd0dca/structlog-26.1.0.tar.gz", hash = "sha256:f63a716cbd1b1291cf7661de7794b455acfa4c43c5bcf1630e6ad5ddc1adb3b7", size = 1459881, upload-time = "2026-06-06T07:33:39.348Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a9/18/489c97b834dfff9cf2fc2507cede4bcd4b11e67f84bc462acd1992496f86/structlog-26.1.0-py3-none-any.whl", hash = "sha256:e081a26d6c373e6d201eca24eede26d8ffab07f88f477822e679183428d3d91e", size = 73764, upload-time = "2026-06-06T07:33:38.046Z" },
+]
+
+[[package]]
 name = "sympy"
 version = "1.14.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1092,6 +1103,36 @@ sdist = { url = "https://files.pythonhosted.org/packages/da/34/30e9280707135d2cf
 wheels = [
     { url = "https://files.pythonhosted.org/packages/38/0c/b54a4fdd7f90a3af8b02ebc9ce6712c2c208b7926a2f7bad95c33ebbe943/uvicorn-0.54.0-py3-none-any.whl", hash = "sha256:505bdb0f318731d45f1f712071fc781a8981f6847a31c902c9f5e652d4f67faf", size = 87427, upload-time = "2026-09-25T06:52:35.829Z" },
 ]
+
+[[package]]
+name = "voice-vendor-router"
+version = "0.1.0"
+source = { editable = "../../../patterns/voice-vendor-router" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "pydantic" },
+    { name = "structlog" },
+    { name = "websockets" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.9" },
+    { name = "amazon-transcribe", marker = "extra == 'aws'", specifier = ">=0.6.2" },
+    { name = "audioop-lts", marker = "python_full_version >= '3.13'", specifier = ">=0.2.1" },
+    { name = "boto3", marker = "extra == 'aws'", specifier = ">=1.34" },
+    { name = "faster-whisper", marker = "extra == 'local-asr'", specifier = ">=1.2.1" },
+    { name = "google-cloud-speech", marker = "extra == 'google'", specifier = ">=2.26" },
+    { name = "google-cloud-texttospeech", marker = "extra == 'google'", specifier = ">=2.16" },
+    { name = "pydantic", specifier = ">=2.10,<3" },
+    { name = "structlog", specifier = ">=24" },
+    { name = "vosk", marker = "extra == 'local-asr'", specifier = "==0.3.44" },
+    { name = "websockets", specifier = ">=15" },
+]
+provides-extras = ["aws", "google", "local-asr"]
+
+[package.metadata.requires-dev]
+rasa = [{ name = "rasa-pro", specifier = "==3.21.0.dev5" }]
 
 [[package]]
 name = "wait-for2"

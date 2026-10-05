@@ -21,8 +21,8 @@ from __future__ import annotations
 
 from typing import Any, List, Optional
 
-from rasa.core.channels.voice_stream.asr.asr_engine import ASRLanguageMapEntry
-from rasa.core.channels.voice_stream.audio_bytes import AudioFormat
+from voicerouter.engine import ASRLanguageMapEntry
+from voicerouter.engine import AudioFormat
 
 from voicerouter.providers._local_asr import LocalASRConfig, LocalBufferedASR
 

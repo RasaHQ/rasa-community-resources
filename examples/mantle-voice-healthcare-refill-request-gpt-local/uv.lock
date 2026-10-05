@@ -577,7 +577,7 @@ resolution-markers = [
     "python_full_version < '3.12' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "numpy", marker = "python_full_version < '3.12'" },
+    { name = "numpy" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/58/01/1253e6698a07380cd31a736d248a3f2a50a7c88779a1813da27503cadc2a/contourpy-1.3.3.tar.gz", hash = "sha256:083e12155b210502d0bca491432bb04d56dc3432f95a979b429f2848c3dbe880", size = 13466174, upload-time = "2025-07-26T12:03:12.549Z" }
 wheels = [
@@ -620,7 +620,7 @@ resolution-markers = [
     "python_full_version >= '3.12' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "numpy", marker = "python_full_version >= '3.12'" },
+    { name = "numpy" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/83/5a/a55177dd22553a277388e8a1b3220e92de91bacb28356cdc73caa240121d/contourpy-1.4.0.tar.gz", hash = "sha256:20156f5a1ac4f8ce02656e39a61e82164a3d359796dc8026f75b062783d500e1", size = 13323726, upload-time = "2026-09-11T19:05:05.808Z" }
 wheels = [
@@ -3261,7 +3261,7 @@ resolution-markers = [
     "python_full_version < '3.12' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "numpy", marker = "python_full_version < '3.12'" },
+    { name = "numpy" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ae/00/48c2f661e2816ccf2ecd77982f6605b2950afe60f60a52b4cbbc2504aa8f/scipy-1.13.1.tar.gz", hash = "sha256:095a87a0312b08dfd6a6155cbbd310a8c51800fc931b8c0b84003014b874ed3c", size = 57210720, upload-time = "2024-05-23T03:29:26.079Z" }
 wheels = [
@@ -3289,7 +3289,7 @@ resolution-markers = [
     "python_full_version >= '3.12' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "numpy", marker = "python_full_version >= '3.12'" },
+    { name = "numpy" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/62/11/4d44a1f274e002784e4dbdb81e0ea96d2de2d1045b2132d5af62cc31fd28/scipy-1.14.1.tar.gz", hash = "sha256:5a275584e726026a5699459aa72f828a610821006228e841b94275c4a7c08417", size = 58620554, upload-time = "2024-08-21T00:09:20.662Z" }
 wheels = [
@@ -3745,20 +3745,30 @@ name = "voice-vendor-router"
 version = "0.1.0"
 source = { editable = "../../patterns/voice-vendor-router" }
 dependencies = [
-    { name = "rasa-pro" },
+    { name = "aiohttp" },
+    { name = "pydantic" },
+    { name = "structlog" },
+    { name = "websockets" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "aiohttp", specifier = ">=3.9" },
     { name = "amazon-transcribe", marker = "extra == 'aws'", specifier = ">=0.6.2" },
+    { name = "audioop-lts", marker = "python_full_version >= '3.13'", specifier = ">=0.2.1" },
     { name = "boto3", marker = "extra == 'aws'", specifier = ">=1.34" },
     { name = "faster-whisper", marker = "extra == 'local-asr'", specifier = ">=1.2.1" },
     { name = "google-cloud-speech", marker = "extra == 'google'", specifier = ">=2.26" },
     { name = "google-cloud-texttospeech", marker = "extra == 'google'", specifier = ">=2.16" },
-    { name = "rasa-pro", specifier = "==3.21.0.dev5" },
+    { name = "pydantic", specifier = ">=2.10,<3" },
+    { name = "structlog", specifier = ">=24" },
     { name = "vosk", marker = "extra == 'local-asr'", specifier = "==0.3.44" },
+    { name = "websockets", specifier = ">=15" },
 ]
 provides-extras = ["aws", "google", "local-asr"]
+
+[package.metadata.requires-dev]
+rasa = [{ name = "rasa-pro", specifier = "==3.21.0.dev5" }]
 
 [[package]]
 name = "wcwidth"

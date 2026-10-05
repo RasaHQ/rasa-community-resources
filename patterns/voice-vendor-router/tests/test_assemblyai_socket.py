@@ -31,7 +31,7 @@ class TestAssemblyAISocket(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
     def _engine(self, **config):
-        from rasa.core.channels.voice_stream.audio_bytes import L16_16KHZ
+        from voicerouter.engine import L16_16KHZ
 
         from voicerouter.providers.assemblyai import AssemblyAIASR
 

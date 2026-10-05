@@ -79,6 +79,7 @@ class TestFailureClassification(unittest.TestCase):
         v = classify(http_error(429, "You exceeded your current quota"))
         self.assertEqual(v.kind, FailureKind.QUOTA)
 
+    @unittest.skipUnless(__import__("importlib.util", fromlist=["find_spec"]).find_spec("botocore"), "Install the aws extra for SDK error tests")
     def test_aws_throttling_arrives_as_400_and_must_not_disable(self):
         # The regression this branch exists for: a status-only reading would
         # permanently disable a vendor that only asked us to slow down.
@@ -296,7 +297,7 @@ class TestAudioConversion(unittest.TestCase):
         )
 
     def test_duration_is_preserved_across_odd_chunk_boundaries(self):
-        from rasa.core.channels.voice_stream.audio_bytes import (
+        from voicerouter.engine import (
             L16_24KHZ, L16_48KHZ, MULAW_8KHZ,
         )
 
@@ -347,7 +348,7 @@ class TestSpeechmaticsSocket(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
     def _engine(self):
-        from rasa.core.channels.voice_stream.audio_bytes import L16_16KHZ
+        from voicerouter.engine import L16_16KHZ
 
         from voicerouter.providers.speechmatics import SpeechmaticsASR
 
@@ -385,7 +386,7 @@ class TestSpeechmaticsSocket(unittest.TestCase):
         return json.dumps(body)
 
     def test_default_mode_makes_every_final_segment_a_transcript(self):
-        from rasa.core.channels.voice_stream.asr.asr_event import NewTranscript
+        from voicerouter.engine import NewTranscript
 
         engine = self._engine()
         events = [engine.engine_event_to_asr_event(self._msg("AddTranscript", t)) for t in ("Hello,", "this is", "Priya")]
@@ -393,8 +394,8 @@ class TestSpeechmaticsSocket(unittest.TestCase):
         self.assertNotIn("conversation_config", engine._start_recognition_message()["transcription_config"])
 
     def test_utterance_mode_joins_segments_until_end_of_utterance(self):
-        from rasa.core.channels.voice_stream.asr.asr_event import NewTranscript, UserIsSpeaking
-        from rasa.core.channels.voice_stream.audio_bytes import L16_16KHZ
+        from voicerouter.engine import NewTranscript, UserIsSpeaking
+        from voicerouter.engine import L16_16KHZ
 
         from voicerouter.providers.speechmatics import SpeechmaticsASR
 
@@ -417,7 +418,7 @@ class TestSpeechmaticsSocket(unittest.TestCase):
         self.assertEqual(engine.engine_event_to_asr_event(self._msg("EndOfUtterance")).text, "Yes.")
 
     def test_additional_vocab_is_sent_in_start_recognition(self):
-        from rasa.core.channels.voice_stream.audio_bytes import L16_16KHZ
+        from voicerouter.engine import L16_16KHZ
 
         from voicerouter.providers.speechmatics import SpeechmaticsASR
 
@@ -449,8 +450,8 @@ class TestVendorCatalogue(unittest.TestCase):
 
     @staticmethod
     def _bases():
-        from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine
-        from rasa.core.channels.voice_stream.tts.tts_engine import TTSEngine
+        from voicerouter.engine import ASREngine
+        from voicerouter.engine import TTSEngine
 
         return {"asr": ASREngine, "tts": TTSEngine}
 

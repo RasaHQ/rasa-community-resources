@@ -28,13 +28,13 @@ import time
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine, ASREngineConfig
-from rasa.core.channels.voice_stream.asr.asr_event import (
+from voicerouter.engine import ASREngine, ASREngineConfig
+from voicerouter.engine import (
     ASREvent,
     NewTranscript,
     UserIsSpeaking,
 )
-from rasa.core.channels.voice_stream.audio_bytes import (
+from voicerouter.engine import (
     AudioEncoding,
     AudioFormat,
     RasaAudioBytes,

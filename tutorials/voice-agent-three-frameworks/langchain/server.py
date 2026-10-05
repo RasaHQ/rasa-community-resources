@@ -28,6 +28,8 @@ Speechmatics clients and ``agent.Conversation``:
 
 from __future__ import annotations
 
+from cedar_speech.router import create_asr, create_tts
+
 import argparse
 import asyncio
 import base64
@@ -46,7 +48,7 @@ from starlette.routing import Route, WebSocketRoute
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from cedar_clinic import instructions
-from cedar_speech import SpeechmaticsASR, SpeechmaticsTTS, config
+from cedar_speech import config
 
 import agent as cedar
 
@@ -69,7 +71,7 @@ SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
 
 #: conversation id -> events, the shape PROTOCOL.md section 5 fixes.
 EVENTS: dict[str, list[dict]] = {}
-TTS = SpeechmaticsTTS()
+TTS = create_tts()
 
 
 def log(*parts: object) -> None:
@@ -125,7 +127,7 @@ class Call:
         await self.send({"type": "handshake", "sample_rate": RATE})
         tasks = [asyncio.create_task(self.turn_loop()), asyncio.create_task(self.silence_loop())]
         try:
-            self.asr = await SpeechmaticsASR(RATE).open()
+            self.asr = await create_asr(RATE).open()
             tasks.append(asyncio.create_task(self.asr_loop()))
         except Exception as exc:  # typed turns still work
             log(self.cid, "speech-to-text unavailable:", exc)

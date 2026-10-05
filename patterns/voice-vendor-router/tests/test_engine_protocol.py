@@ -22,6 +22,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from voicerouter.engine import RASA_AVAILABLE
+if not RASA_AVAILABLE:
+    raise unittest.SkipTest("Native Rasa response/channel contract requires the rasa dependency group")
+
 from rasa.core.channels.voice_stream.audio_bytes import (  # noqa: E402
     L16_16KHZ,
     RasaAudioBytes,

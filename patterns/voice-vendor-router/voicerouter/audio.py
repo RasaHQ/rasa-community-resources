@@ -16,7 +16,7 @@ import audioop
 import struct
 from typing import Any
 
-from rasa.core.channels.voice_stream.audio_bytes import (
+from voicerouter.engine import (
     AudioEncoding,
     AudioFormat,
     RasaAudioBytes,

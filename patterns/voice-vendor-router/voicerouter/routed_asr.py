@@ -25,8 +25,8 @@ from __future__ import annotations
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.asr.asr_event import ASREvent
-from rasa.core.channels.voice_stream.audio_bytes import AudioFormat, RasaAudioBytes
+from voicerouter.engine import ASREvent
+from voicerouter.engine import AudioFormat, RasaAudioBytes
 
 from voicerouter.base import (
     BuiltProvider,
@@ -86,7 +86,7 @@ class RoutedASR:
         rasa_language: str,
         additional_languages: Optional[List[str]] = None,
     ) -> "RoutedASR":
-        from rasa.core.channels.voice_stream.voice_channel import asr_engine_from_config
+        from voicerouter.engine import asr_engine_from_config
 
         config = dict(config or {})
         raw_providers = config.pop("providers", None)
@@ -301,6 +301,10 @@ class RoutedASR:
             except Exception as exc:  # noqa: BLE001
                 verdict = health.record_failure(exc)
                 self._metrics.record_failure(provider.spec.label, verdict.kind.value)
+                try:
+                    await provider.engine.close_connection()
+                except Exception:
+                    pass  # preserve the transport failure, not a secondary close error
                 self._connected.discard(self._active_index)
                 logger.warning(
                     "voicerouter.asr.stream_failed",
@@ -315,12 +319,16 @@ class RoutedASR:
                     "voicerouter.asr.exhausted",
                     note="no ASR provider left; the agent can no longer hear",
                 )
+                if self._policy.raise_on_failure:
+                    raise RuntimeError("ASR stream ended without an available provider")
                 return
 
             try:
                 await self.connect()
             except Exception as exc:  # noqa: BLE001
                 logger.error("voicerouter.asr.reconnect_failed", error=str(exc))
+                if self._policy.raise_on_failure:
+                    raise
                 return
             logger.info(
                 "voicerouter.asr.resumed",

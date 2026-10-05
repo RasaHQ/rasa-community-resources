@@ -463,7 +463,14 @@ def _declares_rasa_pro(pyproject: Path) -> bool:
         data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
     except (tomllib.TOMLDecodeError, OSError):
         return False
-    deps = data.get("project", {}).get("dependencies", [])
+    deps = list(data.get("project", {}).get("dependencies", []))
+    # A reusable library may keep its runnable Rasa example in a default
+    # dependency group, without imposing Rasa on downstream library users.
+    groups = data.get("dependency-groups", {})
+    selected = data.get("tool", {}).get("uv", {}).get("default-groups", ["dev"])
+    if selected == "all": selected = list(groups)
+    for name in selected:
+        deps.extend(groups.get(name, []))
     return any(isinstance(dep, str) and dep.startswith("rasa-pro") for dep in deps)
 
 

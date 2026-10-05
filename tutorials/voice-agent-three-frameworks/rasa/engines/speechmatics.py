@@ -151,6 +151,12 @@ class SpeechmaticsTTS(TTSEngine[SpeechmaticsTTSConfig]):
     @classmethod
     def from_config_dict(cls, config: Any, format: AudioFormat, rasa_language: str,
                          additional_languages: Optional[List[str]] = None) -> "SpeechmaticsTTS":
+        from cedar_speech.router import selected_profile
+        profile = selected_profile()
+        if profile is not None:
+            if format.sample_rate != profile.sample_rate or rasa_language != profile.language:
+                raise ValueError("Rasa channel format/language differs from the speech profile")
+            return profile.build_tts()
         return cls(rasa_language=rasa_language, format=format,
                    config=SpeechmaticsTTSConfig.model_validate(config or {}),
                    additional_languages=additional_languages)
@@ -289,6 +295,12 @@ class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
     @classmethod
     def from_config_dict(cls, config: Any, format: AudioFormat, rasa_language: str,
                          additional_languages: Optional[List[str]] = None) -> "SpeechmaticsASR":
+        from cedar_speech.router import selected_profile
+        profile = selected_profile()
+        if profile is not None:
+            if format.sample_rate != profile.sample_rate or rasa_language != profile.language:
+                raise ValueError("Rasa channel format/language differs from the speech profile")
+            return profile.build_asr()
         return cls(rasa_language=rasa_language, format=format,
                    config=SpeechmaticsASRConfig.model_validate(config or {}),
                    additional_languages=additional_languages)

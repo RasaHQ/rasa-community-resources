@@ -16,8 +16,8 @@ from typing import Any, AsyncIterator, Dict, Optional, Tuple
 
 import aiohttp
 import structlog
-from rasa.core.channels.voice_stream.audio_bytes import RasaAudioBytes
-from rasa.core.channels.voice_stream.tts.tts_engine import TTSEngine, TTSError
+from voicerouter.engine import RasaAudioBytes
+from voicerouter.engine import TTSEngine, TTSError
 
 from voicerouter.audio import PcmStreamConverter, to_rasa_audio
 
@@ -48,7 +48,9 @@ class HttpStreamingTTS(TTSEngine):
         renegotiated every time the agent speaks — which is audible.
         """
         if self._session is None or self._session.closed:
-            self._session = aiohttp.ClientSession()
+            self._session = aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=float(self.config.timeout))
+            )
 
     async def close_connection(self) -> None:
         if self._session is not None and not self._session.closed:

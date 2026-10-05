@@ -1,11 +1,15 @@
 [project]
 name = "voice-vendor-router"
 version = "0.1.0"
-description = "Vendor-agnostic ASR/TTS routing for Rasa Mantle: failover, health, and any provider"
+description = "Shared ASR/TTS routing with optional Rasa integration: failover and health"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
-    "rasa-pro==3.21.0.dev5",
+    "aiohttp>=3.9",
+    "websockets>=15",
+    "pydantic>=2.10,<3",
+    "structlog>=24",
+    "audioop-lts>=0.2.1; python_version >= '3.13'",
 ]
 
 # NeuTTS is deliberately NOT declared as an optional dependency here.
@@ -37,7 +41,13 @@ local-asr = [
     "faster-whisper>=1.2.1",
 ]
 
+[dependency-groups]
+# The runnable Rasa example keeps its existing default installation.
+# Installing this library as a dependency does not install this group.
+rasa = ["rasa-pro==3.21.0.dev5"]
+
 [tool.uv]
+default-groups = ["rasa"]
 prerelease = "allow"
 
 [build-system]
