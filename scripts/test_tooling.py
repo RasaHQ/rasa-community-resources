@@ -1081,6 +1081,16 @@ class TestTierDiscovery(unittest.TestCase):
         self.assertEqual(found, ["tutorials/multi/rasa", "tutorials/single"])
 
 
+class TestDefaultRasaGroup(unittest.TestCase):
+    def test_runnable_library_is_discovered_without_making_rasa_a_library_dependency(self):
+        with FakeRepo() as repo:
+            project=repo.project("patterns/router")
+            (project/"pyproject.toml").write_text('[project]\nname="router"\nversion="0.1.0"\ndependencies=[]\n[dependency-groups]\nrasa=["rasa-pro==3.19.0.dev7"]\n[tool.uv]\ndefault-groups=["rasa"]\n')
+            self.assertIn("patterns/router",[p.rel for p in rasa_projects.discover_projects()])
+            (project/"pyproject.toml").write_text('[project]\nname="router"\nversion="0.1.0"\ndependencies=[]\n[dependency-groups]\nrasa=["rasa-pro==3.19.0.dev7"]\n[tool.uv]\ndefault-groups=[]\n')
+            self.assertNotIn("patterns/router",[p.rel for p in rasa_projects.discover_projects()])
+
+
 class TestVersionConsistencyTiers(unittest.TestCase):
     """The shared pin governs everything maintained, and stops at `heroes/`."""
 

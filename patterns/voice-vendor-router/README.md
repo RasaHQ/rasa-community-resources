@@ -783,7 +783,7 @@ pinned Rasa dependency in the default `rasa` dependency group. Library consumers
 do not install that group. For a standalone installation in this directory:
 
 ```bash
-uv sync --locked --no-default-groups
+uv sync --prerelease=allow --locked --no-default-groups
 ```
 
 A versioned JSON profile selects ASR and TTS independently. The Cedar Clinic
