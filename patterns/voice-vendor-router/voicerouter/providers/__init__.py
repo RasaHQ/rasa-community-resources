@@ -38,6 +38,8 @@ class VendorEntry(NamedTuple):
 
 
 CATALOGUE: tuple[VendorEntry, ...] = (
+    VendorEntry("tts", "voicerouter.providers.rime.RimeTTS",
+                "RIME_API_KEY", False, "shared HTTP PCM transport; explicit model, voice and language"),
     VendorEntry("asr", "voicerouter.providers.deepgram.DeepgramASR",
                 "DEEPGRAM_API_KEY", False, "shared Nova /v1/listen transport; Flux uses a separate protocol"),
     VendorEntry("tts", "voicerouter.providers.deepgram.DeepgramTTS",
