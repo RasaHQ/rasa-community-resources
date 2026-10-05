@@ -832,3 +832,25 @@ latency, quality or billing. The bridge records requested characters and submitt
 audio seconds; these are not provider invoices or retry request counts. Time to
 first audio is recorded separately from HTTP headers, which remain unavailable
 through the common interface.
+
+### Standalone Rime transport
+
+Use `voicerouter.providers.rime.RimeTTS` (or `rime-shared`) for Rime HTTP
+streaming in any supported framework. It sends bearer authentication from
+`RIME_API_KEY`, an explicit `model_id`, a voice and provider language from
+`language_map`, and a PCM `sampling_rate`. The default is Coda/Astra at 24 kHz;
+account access and model/voice availability still require a live check. The
+short name `rime` retains its existing Rasa-native factory.
+
+```yaml
+name: voicerouter.providers.rime.RimeTTS
+model_id: coda
+sampling_rate: 24000
+language_map:
+  en: { voice: astra, language: en }
+```
+
+The [Rime HTTP API](https://docs.rime.ai/api-reference/coda/http) documents
+`audio/L16` as little-endian PCM. This adapter uses that documented wire
+format and the same per-utterance converter as the other HTTP transports.
+Credentials belong in the authorized process environment.

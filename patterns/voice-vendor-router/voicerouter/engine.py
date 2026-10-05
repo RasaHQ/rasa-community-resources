@@ -177,16 +177,7 @@ if not RASA_AVAILABLE:
 
 # Short names here refer only to implementations shipped in this package.
 # Rasa-only built-ins remain available through the native Rasa factory.
-_PROVIDERS = {
-    "asr": {"deepgram-shared": "deepgram.DeepgramASR", "speechmatics": "speechmatics.SpeechmaticsASR",
-            "assemblyai": "assemblyai.AssemblyAIASR", "vosk": "vosk.VoskASR",
-            "whisper": "whisper.FasterWhisperASR", "aws": "aws.TranscribeASR",
-            "google": "google.GoogleSTT"},
-    "tts": {"deepgram-shared": "deepgram.DeepgramTTS", "speechmatics": "speechmatics.SpeechmaticsTTS", "openai": "openai.OpenAITTS",
-            "elevenlabs": "elevenlabs.ElevenLabsTTS", "aws": "aws.PollyTTS",
-            "google": "google.GoogleTTS", "neutts": "neuphonic.NeuTTSLocal",
-            "neutts-native": "neutts_native.NeuTTSNative"},
-}
+from voicerouter._provider_registry import _PROVIDERS
 
 
 def _factory(kind: str, config: dict, format: AudioFormat, language: str, additional_languages=None):
