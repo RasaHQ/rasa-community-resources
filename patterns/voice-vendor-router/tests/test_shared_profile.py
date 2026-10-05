@@ -135,6 +135,27 @@ class ProfileTests(unittest.TestCase):
                 else:self.assertEqual((new.text,isinstance(new,NewTranscript)),(old[1],old[0]=='final'))
             with self.assertRaises(RuntimeError):asr._active.engine.engine_event_to_asr_event(json.dumps({'type':'Error'}))
 
+    def test_deepgram_tts_protocol_and_cancelled_socket_retirement(self):
+        from unittest.mock import AsyncMock
+        async def check():
+            with patch.dict(os.environ,{'DEEPGRAM_API_KEY':'offline-test'}):
+                profile=VoiceProfile.load(PROFILE.with_name('deepgram-nova-aura-fixed.json'))
+                engine=profile.build_tts()._active.engine
+                socket=type('Socket',(),{})()
+                socket.send=AsyncMock();socket.close=AsyncMock()
+                socket.recv=AsyncMock(side_effect=[b'\0\0',json.dumps({'type':'Flushed'})])
+                with patch('voicerouter.providers.deepgram.connect',AsyncMock(return_value=socket)):
+                    out=[chunk.data async for chunk in engine.synthesize('hello')]
+                    self.assertEqual(out,[b'\0\0'])
+                    self.assertEqual([json.loads(c.args[0]) for c in socket.send.call_args_list],
+                                     [{'type':'Speak','text':'hello'},{'type':'Flush'}])
+                    socket.recv=AsyncMock(side_effect=asyncio.CancelledError())
+                    with self.assertRaises(asyncio.CancelledError):
+                        _=[chunk async for chunk in engine.synthesize('cancel')]
+                    socket.close.assert_awaited_once()
+                    self.assertIsNone(engine._socket)
+        asyncio.run(check())
+
     def test_pcm_rate_mismatch_fails(self):
         with self.assertRaises(ValueError): create_asr(16000)
 

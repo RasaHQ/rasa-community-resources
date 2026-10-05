@@ -124,13 +124,19 @@ class DeepgramTTS(TTSEngine[DeepgramTTSConfig]):
     async def synthesize(self,text,config:Optional[Any]=None):
         async with self._lock:
             await self.connect()
-            await self._socket.send(json.dumps({'type':'Speak','text':text}))
-            await self._socket.send(json.dumps({'type':'Flush'}))
-            while True:
-                raw=await asyncio.wait_for(self._socket.recv(),timeout=float(self.config.timeout))
-                if isinstance(raw,bytes):
-                    yield RasaAudioBytes(raw,format=self.audio_format)
-                    continue
-                kind=json.loads(raw).get('type')
-                if kind=='Flushed':return
-                if kind=='Error':raise TTSError('Deepgram TTS returned an error event')
+            try:
+                await self._socket.send(json.dumps({'type':'Speak','text':text}))
+                await self._socket.send(json.dumps({'type':'Flush'}))
+                while True:
+                    raw=await asyncio.wait_for(self._socket.recv(),timeout=float(self.config.timeout))
+                    if isinstance(raw,bytes):
+                        yield RasaAudioBytes(raw,format=self.audio_format)
+                        continue
+                    kind=json.loads(raw).get('type')
+                    if kind=='Flushed':return
+                    if kind=='Error':raise TTSError('Deepgram TTS returned an error event')
+            except BaseException:
+                # Cancellation leaves buffered audio on a pooled socket. Drop
+                # it so the next utterance cannot consume the old response.
+                await self.close_connection()
+                raise

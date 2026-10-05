@@ -93,7 +93,7 @@ else:
             if missing:
                 raise ValueError("Missing environment variables: " + ", ".join(missing))
             defaults = self.get_default_config(rasa_language)
-            supplied = config.model_dump(exclude_unset=True) if config is not None else {}
+            supplied = config.model_dump(exclude_unset=True, exclude_none=True) if config is not None else {}
             self.config = type(defaults).model_validate({**defaults.model_dump(), **supplied})
             self.audio_format = format
             self.additional_languages = additional_languages or []
@@ -130,6 +130,16 @@ else:
             if self.asr_socket is None:
                 raise RuntimeError("ASR socket is not connected")
             await self.asr_socket.send(self.rasa_audio_bytes_to_engine_bytes(chunk))
+
+        async def set_language(self, language: str):
+            active = self.asr_socket is not None
+            if self.current_language_config.rasa_language_key == language:
+                return True
+            self._set_current_language_config(language)
+            if active:
+                await self.close_connection()
+                await self.connect()
+            return True
 
         async def stream_asr_events(self):
             if self.asr_socket is None:
