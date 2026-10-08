@@ -9,6 +9,7 @@ dependencies = [
     "python-dateutil>=2.9.0",
     "python-dotenv>=1.0.0",
     "sentence-transformers>=5.7.0",
+    "torch==2.14.0; sys_platform == 'linux'",
 ]
 
 # Gemini authenticates runtime conversations. Training builds local embeddings
@@ -21,6 +22,16 @@ training-secrets = ["GEMINI_API_KEY"]
 
 [tool.uv]
 prerelease = "allow"
+
+# Local embeddings do not need CUDA. Keep Linux installs on the explicit CPU
+# index; macOS and Windows retain their existing PyPI selection.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
 
 [build-system]
 requires = ["hatchling"]
