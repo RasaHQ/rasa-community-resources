@@ -51,6 +51,10 @@ configuration lives here rather than becoming the catalog default: readers
 following the main tutorial should not pay a multi-hundred-megabyte install for
 a provider they are not using.
 
+Linux installs use the locked CPU build of PyTorch for local embeddings. This
+avoids downloading CUDA libraries for this example. macOS and Windows keep
+their existing package source. Training still downloads the embedding model.
+
 ---
 ## What Atlas can do
 
