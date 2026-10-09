@@ -115,3 +115,9 @@ already imported loads the archive, while a fresh process with the dependency
 unavailable refuses it. The normal fresh-process test then proves loading with
 the correctly installed dependency. This is offline fault injection, not a live
 model or a measured production incident.
+
+When inspecting Mantle tracker events, check the returned application `status`
+as well as `is_error`. In this wrapper a refused SQL result uses
+`{"status": "error", "reason": ...}`; the pinned runtime parser detects
+`error`/`errors` fields, so that application refusal can have `is_error=false`.
+The native write-refusal test checks this distinction.

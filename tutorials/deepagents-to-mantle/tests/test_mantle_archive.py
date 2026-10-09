@@ -104,6 +104,9 @@ class NativeBindings(unittest.IsolatedAsyncioTestCase):
     async def test_actual_invoker_preserves_write_refusal(self):
         result = await self.invoke(self.module.sql_db_query, "DELETE FROM Example")
         self.assertEqual(result["status"], "error")
+        from rasa.mantle.orchestration.tool_execution.payload import error_from_tool_payload
+        # This application refusal is not a dispatch exception. Inspect both layers.
+        self.assertEqual(error_from_tool_payload(result), (False, None))
 
     async def test_removing_context_breaks_the_actual_invocation(self):
         from shared import database
