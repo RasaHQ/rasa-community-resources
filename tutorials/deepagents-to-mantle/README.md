@@ -93,3 +93,24 @@ outputs and dependency manifests.
 Both implementations use OpenAI Responses with the pinned GPT-5.5 snapshot.
 Its Chat Completions endpoint rejects function tools with low reasoning; the
 Deep Agents model therefore sets `use_responses_api=True` explicitly.
+
+
+## Inspect SQL and compare the answer
+
+From `deepagents`, `uv run --locked python inspect_chat.py QUESTION --out .local/chat.json`
+saves the native message list, including tool calls and tool results. It refuses
+an existing output path before any new model request. For the local Mantle REST
+example, save its response and fetch
+`/conversations/chinook-demo-1/tracker?include_events=ALL&start_session=false`
+from the same local server. `tool_executed` events contain `arguments`, `result`
+and `is_error`. These are your local tutorial outputs; do not commit them.
+From the tutorial root, `python3 oracle.py` prints independent billing-country
+revenue over the hash-checked public database. Compare the query, all returned
+rows and the final answer, rather than grading a plausible sentence alone.
+
+The cold-dependency mutation blocks new imports of the shared package with a
+MetaPathFinder; it does not uninstall anything. A warm process with the package
+already imported loads the archive, while a fresh process with the dependency
+unavailable refuses it. The normal fresh-process test then proves loading with
+the correctly installed dependency. This is offline fault injection, not a live
+model or a measured production incident.

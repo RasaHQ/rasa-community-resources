@@ -24,8 +24,46 @@ class ColdMantleArchive(unittest.TestCase):
             self.assertEqual(process.returncode, 0, process.stderr)
             self.assertIn("cold archive load: ok", process.stdout)
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_warm_import_does_not_prove_cold_dependency_availability(self):
+        from rasa.mantle.model_archive.snapshot import package_model_archive
+        with tempfile.TemporaryDirectory() as temp:
+            result = package_model_archive(str(PROJECT / 'agent.yml'), temp, fixed_model_name='dependency-check', validate=True)
+            self.assertEqual(result.code, 0)
+            env = {k: v for k, v in os.environ.items() if not k.endswith('_API_KEY') and k not in {'RASA_PRO_LICENSE', 'RASA_LICENSE', 'PYTHONPATH'}}
+            env.update(RASA_TELEMETRY_ENABLED='false', LITELLM_LOCAL_MODEL_COST_MAP='True')
+            code = """
+import asyncio, importlib.abc, sys
+from rasa.core.agent import Agent
+from rasa.core.config.configuration import Configuration
+from rasa.exceptions import ValidationError
+from rasa.mantle.tools.loader import ToolLoadingError
+Configuration.initialise_endpoints(None)
+mode = sys.argv[2]
+if mode == 'warm':
+    from shared import database
+class MissingShared(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == 'shared' or fullname.startswith('shared.'):
+            raise ModuleNotFoundError('injected missing shared dependency')
+sys.meta_path.insert(0, MissingShared())
+try:
+    agent = Agent.load(sys.argv[1])
+except ValidationError as error:
+    cause = error.__cause__
+    if mode != 'cold' or not isinstance(cause, ToolLoadingError) or 'injected missing shared dependency' not in str(cause):
+        raise
+    print('cold: missing dependency refused')
+else:
+    asyncio.run(agent.close())
+    if mode != 'warm':
+        raise AssertionError('Cold model unexpectedly loaded with dependency unavailable')
+    print('warm: cached dependency hides the fault')
+"""
+            for mode, expected in [('warm', 'warm: cached dependency hides the fault'), ('cold', 'cold: missing dependency refused')]:
+                process = subprocess.run([sys.executable, '-B', '-c', code, result.model, mode], cwd=temp, env=env, capture_output=True, text=True, timeout=90)
+                self.assertEqual(process.returncode, 0, process.stderr)
+                self.assertIn(expected, process.stdout)
+                print(expected)
 
 @unittest.skipUnless(importlib.util.find_spec("rasa"), "Run with the locked Mantle interpreter for native invocation checks")
 class NativeBindings(unittest.IsolatedAsyncioTestCase):
@@ -74,3 +112,7 @@ class NativeBindings(unittest.IsolatedAsyncioTestCase):
             return ToolResult(llm_response=database.query(query))
         result = await self.invoke(broken_query, "SELECT 1 AS one")
         self.assertIn("unexpected keyword argument 'context'", result["error"])
+
+
+if __name__ == "__main__":
+    unittest.main()
