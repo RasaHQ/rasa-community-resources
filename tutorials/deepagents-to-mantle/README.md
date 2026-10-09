@@ -31,7 +31,8 @@ uv run --locked python agent.py "Which five billing countries generated the most
 Each invocation creates a fresh local workspace containing only the declared skill.
 Generated files remain under `deepagents/.local/` for your inspection.
 The model and reasoning setting match the Mantle configuration. Deep Agents
-planning, file tools and skill loading remain enabled. Shell execution and
+file tools and skill loading remain enabled. This pinned harness profile does
+not add a to-do middleware; the skill plans joins in prose. Shell execution and
 its implicit general-purpose subagent are explicitly disabled for this
 single-agent task. This is an adapted profile, not the upstream default.
 
@@ -70,7 +71,7 @@ retries. The system prompt bytes differ after each runtime adds its instructions
 
 Both builds share task instructions, schemas and query results; the frameworks
 add different prompts. Mantle's skill references use `@tool`; Deep Agents reads
-its skill file. Mantle does not acquire the Deep Agents filesystem or planning
+its skill file. Mantle does not acquire the Deep Agents filesystem or optional planning
 API simply because its tools answer the same database questions. Background
 jobs, delegated agents, shell execution, persistence across restarts and A2A
 are outside this example. Do not call tool composition subprocess isolation.
