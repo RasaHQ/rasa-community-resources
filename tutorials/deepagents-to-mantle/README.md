@@ -89,3 +89,7 @@ Keep each lock with its project. Create only the environments you use, through
 the repository workspace tool. Do not copy environments into worktrees or
 backups. Retire them after the local experiment finishes; retain unique local
 outputs and dependency manifests.
+
+Both implementations use OpenAI Responses with the pinned GPT-5.5 snapshot.
+Its Chat Completions endpoint rejects function tools with low reasoning; the
+Deep Agents model therefore sets `use_responses_api=True` explicitly.

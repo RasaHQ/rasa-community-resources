@@ -43,7 +43,7 @@ def create_agent(workspace: Path | None = None):
     workspace = workspace or Path(__file__).parent / ".local" / uuid.uuid4().hex
     workspace.mkdir(parents=True, exist_ok=False)
     shutil.copytree(Path(__file__).parent / "workspace/skills", workspace / "skills")
-    model = ChatOpenAI(model="gpt-5.5-2026-04-23", reasoning_effort="low", max_retries=0)
+    model = ChatOpenAI(model="gpt-5.5-2026-04-23", reasoning_effort="low", use_responses_api=True, max_retries=0)
     register_harness_profile(
         "openai:gpt-5.5-2026-04-23",
         HarnessProfile(
