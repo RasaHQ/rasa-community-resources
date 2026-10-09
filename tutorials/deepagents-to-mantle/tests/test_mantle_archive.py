@@ -107,6 +107,26 @@ class NativeBindings(unittest.IsolatedAsyncioTestCase):
         from rasa.mantle.orchestration.tool_execution.payload import error_from_tool_payload
         # This application refusal is not a dispatch exception. Inspect both layers.
         self.assertEqual(error_from_tool_payload(result), (False, None))
+        from rasa.mantle.orchestration.tool_execution.constraints import ToolConstraintsExecutor
+        from types import SimpleNamespace
+        import json
+        for label, query, expected in [
+            ('refused write', 'DELETE FROM Example', False),
+            ('valid read', 'SELECT 1 AS one', True),
+        ]:
+            payload = await self.invoke(self.module.sql_db_query, query)
+            events = []
+            tracker = SimpleNamespace(memory_scope=lambda: ('query_store', 'query_store'), apply_events=events.extend)
+            # Actual deterministic SDK event recorder, with a controlled tracker.
+            # This is not a model conversation or the full LLM orchestration path.
+            ToolConstraintsExecutor._record_execute_tool_event(tracker, tool_name='sql_db_query', arguments={'query': query}, result=json.dumps(payload))
+            event = next(e.as_dict() for e in events if e.type_name == 'tool_executed')
+            application = json.loads(event['result'])
+            flag_only = not event['is_error']
+            both = flag_only and application.get('status') == 'ok'
+            self.assertTrue(flag_only)
+            self.assertEqual(both, expected)
+            print(f"{label} | application={application['status']} | is_error={event['is_error']} | flag-only={flag_only} | both={both}")
 
     async def test_removing_context_breaks_the_actual_invocation(self):
         from shared import database

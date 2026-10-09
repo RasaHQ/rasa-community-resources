@@ -121,3 +121,9 @@ as well as `is_error`. In this wrapper a refused SQL result uses
 `{"status": "error", "reason": ...}`; the pinned runtime parser detects
 `error`/`errors` fields, so that application refusal can have `is_error=false`.
 The native write-refusal test checks this distinction.
+
+The write-refusal control also calls the actual deterministic SDK event recorder
+with a controlled tracker. A checker using only its runtime flag accepts the
+refused result; requiring the application status rejects it while accepting a
+valid read. This tests result acceptance, not a model conversation or the full
+LLM orchestration path.
