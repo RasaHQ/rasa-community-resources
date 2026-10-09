@@ -1,8 +1,4 @@
 """Thin Mantle bindings: business queries live in shared.database."""
-from pathlib import Path
-import sys
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT))
 from shared import database
 from rasa.mantle.tools.decorator import ToolContext, tool
 from rasa.mantle.tools.result import ToolResult

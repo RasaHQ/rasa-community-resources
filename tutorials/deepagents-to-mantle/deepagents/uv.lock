@@ -125,6 +125,11 @@ wheels = [
 ]
 
 [[package]]
+name = "chinook-chat-tools"
+version = "0.1.0"
+source = { editable = "../shared" }
+
+[[package]]
 name = "cryptography"
 version = "50.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -197,12 +202,14 @@ name = "deepagents-chinook-chat"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "chinook-chat-tools" },
     { name = "deepagents" },
     { name = "langchain-openai" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "chinook-chat-tools", editable = "../shared" },
     { name = "deepagents", specifier = "==0.7.23" },
     { name = "langchain-openai", specifier = "==1.7.0" },
 ]

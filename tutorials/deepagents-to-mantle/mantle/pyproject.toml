@@ -2,9 +2,12 @@
 name = "mantle-chinook-chat"
 version = "0.1.0"
 requires-python = ">=3.12,<3.13"
-dependencies = ["rasa-pro==3.21.0.dev5"]
+dependencies = ["chinook-chat-tools", "rasa-pro==3.21.0.dev5"]
 [tool.rasa-catalog]
 required-secrets = ["OPENAI_API_KEY"]
 [tool.uv]
 prerelease = "allow"
 package = false
+
+[tool.uv.sources]
+chinook-chat-tools = { path = "../shared", editable = true }

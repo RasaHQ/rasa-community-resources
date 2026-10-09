@@ -8,4 +8,4 @@ train:
 run:
 	uv run --locked rasa run --enable-api --port 5005
 test:
-	python3 -B -m unittest discover -s ../tests -v
+	uv run --locked python -B -m unittest discover -s ../tests -v

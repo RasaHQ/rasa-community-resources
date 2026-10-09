@@ -1,6 +1,6 @@
 # Move a Deep Agents database chat to Mantle
 
-Two native chat implementations use the same read-only SQL library and
+Two native chat implementations install the same local read-only SQL package and
 Chinook public sample database. This is a task migration, not a replacement
 for every Deep Agents feature. No customer-specific data or internal results
 belong here.
@@ -28,6 +28,8 @@ uv sync --locked --python 3.12
 uv run --locked python agent.py "Which five billing countries generated the most revenue?"
 ```
 
+Each invocation creates a fresh local workspace containing only the declared skill.
+Generated files remain under `deepagents/.local/` for your inspection.
 The model and reasoning setting match the Mantle configuration. Deep Agents
 planning, file tools and skill loading remain enabled. Shell execution and
 its implicit general-purpose subagent are explicitly disabled for this

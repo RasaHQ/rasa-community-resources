@@ -1,6 +1,8 @@
 """Run a Deep Agents chat over the shared, read-only Chinook tools."""
 import argparse
 import os
+import shutil
+import uuid
 from pathlib import Path
 import sys
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,7 +39,10 @@ async def sql_db_query(query: str) -> dict:
     return database.query(query)
 
 
-def create_agent():
+def create_agent(workspace: Path | None = None):
+    workspace = workspace or Path(__file__).parent / ".local" / uuid.uuid4().hex
+    workspace.mkdir(parents=True, exist_ok=False)
+    shutil.copytree(Path(__file__).parent / "workspace/skills", workspace / "skills")
     model = ChatOpenAI(model="gpt-5.5-2026-04-23", reasoning_effort="low", max_retries=0)
     register_harness_profile(
         "openai:gpt-5.5-2026-04-23",
@@ -51,7 +56,7 @@ def create_agent():
         tools=[sql_db_list_tables, sql_db_schema, sql_db_query_checker, sql_db_query],
         system_prompt=(ROOT / "shared/instructions.txt").read_text(),
         skills=["/skills/"],
-        backend=FilesystemBackend(root_dir=str(Path(__file__).parent / "workspace"), virtual_mode=True),
+        backend=FilesystemBackend(root_dir=str(workspace), virtual_mode=True),
         subagents=[],
     )
 

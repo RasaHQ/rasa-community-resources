@@ -388,6 +388,11 @@ wheels = [
 ]
 
 [[package]]
+name = "chinook-chat-tools"
+version = "0.1.0"
+source = { editable = "../shared" }
+
+[[package]]
 name = "click"
 version = "8.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1415,11 +1420,15 @@ name = "mantle-chinook-chat"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "chinook-chat-tools" },
     { name = "rasa-pro" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "rasa-pro", specifier = "==3.21.0.dev5" }]
+requires-dist = [
+    { name = "chinook-chat-tools", editable = "../shared" },
+    { name = "rasa-pro", specifier = "==3.21.0.dev5" },
+]
 
 [[package]]
 name = "marisa-trie"
