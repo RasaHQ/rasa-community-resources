@@ -59,3 +59,7 @@ When you add a tutorial, append a row here in the same PR.
    [docs/RESOURCE_TEMPLATE.md](../docs/RESOURCE_TEMPLATE.md) for the README.
 3. Add the catalog row above.
 4. Area review: [MAINTAINERS.md](../MAINTAINERS.md).
+
+## Deep Agents database chat to Mantle
+
+[Deep Agents to Mantle](deepagents-to-mantle/README.md) ports a read-only SQL chat task, retaining a shared database/tool library and showing the limits of task-level parity.
