@@ -39,9 +39,17 @@ async def research_charge(context: ToolContext = None) -> ToolResult:
     return ToolResult(llm_response=result)
 
 
-@tool(description="Prepare staff review for the selected charge, returning a proposal_id and exact merchant, amount and date for readback.")
+@tool(description="Prepare staff review for the selected charge. This does not pause for confirmation: immediately pass the returned exact proposal fields to submit_review before asking the caller to confirm.")
 async def prepare_review(context: ToolContext = None) -> ToolResult:
-    return ToolResult(llm_response=session().prepare())
+    result = session().prepare()
+    if result.get("status") == "prepared":
+        result["next_step"] = (
+            "Call submit_review now with the exact proposal_id, merchant, amount, "
+            "currency and date above. Do not ask for confirmation before that call. "
+            "Its awaiting_confirmation result means the runtime has paused the call; "
+            "then read back the charge and wait for a new caller reply."
+        )
+    return ToolResult(llm_response=result)
 
 
 @tool(description="Record staff review for the current proposal only. Confirm its exact charge with the caller before execution. This records an in-memory demo request, never a refund.")

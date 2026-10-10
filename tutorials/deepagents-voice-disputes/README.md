@@ -62,6 +62,7 @@ mantle/.venv/bin/python -B -m unittest discover -s tests -p test_casework.py -v
 mantle/.venv/bin/python -B -m unittest discover -s tests -p test_bridge.py -v
 mantle/.venv/bin/python -B -m unittest discover -s tests -p test_mantle_native.py -v
 worker/.venv/bin/python -B -m unittest discover -s tests -p test_worker_native.py -v
+mantle/.venv/bin/python -B -m unittest discover -s tests -p test_replay_text.py -v
 cd mantle
 make validate
 make train
@@ -82,6 +83,46 @@ pending call through Mantle. It records TX-102 from arguments that still read ba
 TX-101 and 49 pounds. This is an intentionally unsafe test-only variant, not a
 service configuration or a product defect. It shows why consent and current
 case binding are separate requirements. `verification.json` records both outputs.
+
+## Replay text before using a microphone
+
+Start the local runtime from `mantle/` with `make run` after training. In another
+terminal, from this tutorial directory, run one selected case:
+
+```bash
+python3 replay_text.py --case approval --out /tmp/jacaranda-approval.json
+```
+
+This sends four synthetic messages to the local REST channel. The server makes
+paid model calls, including the Deep Agents research pass; it does not exercise
+recognition or speech synthesis. One message can cause several model calls.
+The client reads no keys, starts no service, performs no automatic retries and
+refuses to overwrite a previous run. Stop and inspect a failure before rerunning.
+The output retains raw tracker data locally; do not commit or publish that file.
+
+Recheck that saved trace without a server or any new model requests:
+
+```bash
+python3 replay_text.py --case approval --read /tmp/jacaranda-approval.json
+```
+
+The check requires `submit_review` to return `awaiting_confirmation` before the
+caller answers. A spoken confirmation question alone is not enough. The skill
+calls `prepare_review` and `submit_review` before asking the question;
+preparation by itself does not arm the gate. Its returned instruction is
+application data, not a runtime control-flow field or guarantee.
+
+Try `--case denial` with a different output path to require no recorded result.
+Use `--case correction` to change TX-101 to TX-102, prepare a fresh proposal and
+confirm it; this sends six messages. Do not run all cases again just to reread
+their saved output. Wording can vary between model runs; the checks inspect tool
+outcomes rather than matching friendly prose. These are development examples,
+not measurements of model reliability or production banking authentication.
+
+Mantle reports the resumed submission under both the builder tool and its
+confirmation resolver. The client counts distinct demo receipt identities,
+not the number of `demo_recorded` result events. Its offline negative controls
+reject a missing pause, same-turn error, wrong charge and two distinct receipts.
 
 ## Speak to the agent
 
