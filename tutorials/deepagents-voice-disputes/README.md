@@ -73,6 +73,16 @@ responses and the actual Mantle confirmation gate/invoker with a controlled
 tracker. They make no provider requests. They do not measure speech accuracy,
 model judgement, production authentication or a full caller conversation.
 
+## Why the proposal check matters
+
+The native correction control resumes a pending TX-101 call after TX-102 becomes
+current. The guarded application records nothing. A separate mutation test removes
+only the two refusal checks from the actual submit method and resumes the same
+pending call through Mantle. It records TX-102 from arguments that still read back
+TX-101 and 49 pounds. This is an intentionally unsafe test-only variant, not a
+service configuration or a product defect. It shows why consent and current
+case binding are separate requirements. `verification.json` records both outputs.
+
 ## Speak to the agent
 
 From `mantle/`, run:

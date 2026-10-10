@@ -1,4 +1,8 @@
 """Native gate and invoker with a controlled tracker; not a model conversation."""
+import ast
+import hashlib
+import inspect
+import textwrap
 import importlib.util
 import json
 import sys
@@ -65,6 +69,27 @@ class ConfirmationControl(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(json.loads(result)['error'],'proposal_changed_or_missing')
         print(f'corrected charge | recorded={len(self.case.submitted)} | error={json.loads(result)["error"]}')
         self.assertEqual(self.case.submitted,{})
+        print('guard present | pending=TX-101/49.00 GBP | current=TX-102/149.00 GBP | recorded=0')
+
+    async def test_removing_proposal_checks_records_current_charge_from_old_call(self):
+        # Controlled mutation of the actual method, never a runnable service path.
+        tree = ast.parse(textwrap.dedent(inspect.getsource(CaseSession.submit)))
+        body = tree.body[0].body
+        self.assertEqual([type(node) for node in body[:2]], [ast.If, ast.If])
+        self.assertEqual(body[0].body[0].value.values[0].value, 'proposal_changed_or_missing')
+        self.assertEqual(body[1].body[0].value.values[0].value, 'readback_changed')
+        tree.body[0].body = body[2:]
+        namespace = {'hashlib': hashlib}
+        exec(compile(ast.fix_missing_locations(tree), '<guard-removal-control>', 'exec'), namespace)
+        self.pause(); self.case.select('TX-102'); self.gate.begin_user_turn()
+        with patch.object(CaseSession, 'submit', namespace['submit']):
+            result, complete = await self.gate.dispatch_resolve({'confirmed': True}, self.tracker)
+        self.assertTrue(complete)
+        self.assertEqual(json.loads(result)['status'], 'demo_recorded')
+        self.assertEqual(len(self.case.submitted), 1)
+        self.assertEqual(next(iter(self.case.submitted.values()))['transaction_id'], 'TX-102')
+        self.assertEqual(self.args['amount'], '49.00')
+        print('guard removed | pending=TX-101/49.00 GBP | current=TX-102/149.00 GBP | recorded=1 | stored=TX-102')
 
     async def test_changed_readback_refused_through_native_binding(self):
         self.args['amount']='149.00';self.pause();self.gate.begin_user_turn()

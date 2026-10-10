@@ -6,7 +6,7 @@
     "langchain-openai": "1.7.0"
   },
   "proof_types": {
-    "mantle": "Native gate and tool invoker with controlled tracker; 25 tests pass, two worker-native tests skipped in this interpreter",
+    "mantle": "Native gate and tool invoker with controlled tracker; 26 tests pass, two worker-native tests skipped in this interpreter",
     "worker": "Actual graph with controlled model; 6 tests pass separately",
     "live_worker": "One synthetic snapshot returns descriptor, review-policy and transaction through the subprocess bridge; no submission"
   },
@@ -36,7 +36,7 @@
     "Subprocess is not an OS sandbox"
   ],
   "source_sha256": {
-    "README.md": "a08068d89f40985f3668b1e0188807d286eb4c7e8ce27016a20a3cafeae903de",
+    "README.md": "a556cabb874704d696f38acb702a7df69ce502fff3e4ea55c38715e79fceeab8",
     "mantle/.env.example": "ebf4751260b7af1295ece42e789c9fac3f6ae307d0b9b7e443cd1726fdd359a6",
     "mantle/Makefile": "99295391373f6152101761385ce9f967ec52e46a03e151251190dbddd922aafa",
     "mantle/README.md": "41fb295fe1e31ec3ac31fd02791933c7f543b231790c299cf47fad671958b59b",
@@ -54,7 +54,7 @@
     "shared/pyproject.toml": "6139f2ddc703beab1618c874656cc258bc3bc713c1fe56270d92b136f9ad79f6",
     "tests/test_bridge.py": "bdb78daed9237f2de24a5546f742541465e4aab07be372c883f480d2c74e6ea4",
     "tests/test_casework.py": "0e909d8d4855668b371d7a8d4ede8f169e1ea9738c7b58be634152f0aebe1b2c",
-    "tests/test_mantle_native.py": "2225637fd0249d85c9be5fcc0265d6902677926a24d481aaed7e25c5d3d05283",
+    "tests/test_mantle_native.py": "16e44c3531f024f7572ddc8036f685e1f966e6afc7bfd256837c758be5704b29",
     "tests/test_worker_native.py": "9d2f39cebf71a93f8976190c2253702cc451f119fd2a2a779fa27180171fe721",
     "worker/Makefile": "7a9edec357f4da4abb2be90e5b095b56dc7176673cf4c35c20baeff91b14d23c",
     "worker/README.md": "152663e3abc0484e7fe520bb92e404690dee994700f191fb8bfc3e5346c7dce1",
@@ -89,5 +89,15 @@
     "model_archive_bytes": 3131,
     "log_sha256": "43819bbb3baa064b237e1f225cab4a354d28c085c9323d81144ddbbdd04840bc",
     "retention": "Archive and raw log kept locally; no model archive, credentials or raw provider messages published."
+  },
+  "mutation_control": {
+    "kind": "Offline native gate/invoker with controlled tracker; no model or provider calls",
+    "change": "AST removes the two proposal/readback refusal checks from the actual CaseSession.submit method only inside one test; service source remains guarded",
+    "test": "tests/test_mantle_native.py::ConfirmationControl.test_removing_proposal_checks_records_current_charge_from_old_call",
+    "observed": [
+      "guard present | pending=TX-101/49.00 GBP | current=TX-102/149.00 GBP | recorded=0",
+      "guard removed | pending=TX-101/49.00 GBP | current=TX-102/149.00 GBP | recorded=1 | stored=TX-102"
+    ],
+    "log_sha256": "1119dea2a98564b2e3d9dc879c7b734aecd7bc58e110e3832e2adafc6c83ba16"
   }
 }
