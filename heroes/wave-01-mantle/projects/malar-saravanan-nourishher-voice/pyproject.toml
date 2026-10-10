@@ -1,0 +1,30 @@
+[project]
+name = "nourishher-voice"
+version = "0.1.0"
+description = "Voice-first women's health nutrition companion, with optional condition-aware guidance (Rasa Mantle Skills)"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "rasa-pro==3.20.0.dev6",
+    "python-dateutil>=2.9.0",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.27.0",
+]
+
+[tool.uv]
+prerelease = "allow"
+
+[tool.rasa-catalog]
+# This agent runs on non-default providers (OpenAI + Groq LLM, Gemini
+# embeddings, Deepgram voice). Declaring the keys makes CI skip `rasa train`
+# with a warning on runners that lack them, instead of dying on an
+# unexpanded ${VAR} and reading as broken. All names also appear in
+# .env.example (enforced by the env-example lint).
+required-secrets = ["RASA_LICENSE", "OPENAI_API_KEY", "GROQ_API_KEY", "GEMINI_API_KEY", "DEEPGRAM_API_KEY"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["lib"]

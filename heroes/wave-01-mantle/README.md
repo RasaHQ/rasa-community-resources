@@ -41,7 +41,7 @@ pull request that adds their project.
 
 | Participant | GitHub | Project |
 |---|---|---|
-| _TBD — roster not yet announced_ | — | — |
+| Malar Saravanan | [@Malar-saravanan](https://github.com/Malar-saravanan) | [`malar-saravanan-nourishher-voice`](projects/malar-saravanan-nourishher-voice) |
 
 ## Projects
 
@@ -49,7 +49,7 @@ No projects have landed yet. This wave is open.
 
 | Project | What it does | Author | Verified with | Assessed on |
 |---|---|---|---|---|
-| _none yet_ | — | — | — | — |
+| [`malar-saravanan-nourishher-voice`](projects/malar-saravanan-nourishher-voice) | Voice-first women's health nutrition companion — profile, meal planning, natural meal logging, history/coaching, with optional condition-aware support | Malar Saravanan | rasa-pro 3.20.0.dev6 | 2026-09-18 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a

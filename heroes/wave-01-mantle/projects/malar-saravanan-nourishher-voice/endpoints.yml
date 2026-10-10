@@ -1,0 +1,67 @@
+# Platform endpoints for the NourishHer nutrition voice agent.
+#
+# LLM routing and Deepgram ASR/TTS for the Inspector live in integrations.yml.
+# This file is still read by `rasa train` / `rasa inspect` for optional
+# platform services (NLG rephrasing, tracker store, tracing, and so on).
+#
+# Docs: https://rasa.com/docs/pro/build/configuring-assistant/
+
+# ---------------------------------------------------------------------------
+# Contextual response rephraser
+# ---------------------------------------------------------------------------
+# Honours `metadata.rephrase: true` on responses. Escalation and
+# medication-timing responses deliberately omit that flag so they are always
+# spoken verbatim — zero tolerance for LLM paraphrase drift on safety content.
+# https://rasa.com/docs/pro/build/configuring-assistant/#contextual-response-rephraser
+nlg:
+  type: rephrase
+  llm:
+    model_group: rephraser_llm
+
+# ---------------------------------------------------------------------------
+# Model groups (LLMs / embeddings referenced by endpoints features)
+# ---------------------------------------------------------------------------
+# https://rasa.com/docs/reference/config/components/llm-configuration/
+model_groups:
+  # Rephraser runs on Gemini (not Groq) for two reasons:
+  #  1. It keeps rephrasing off Groq's tight 8000 TPM budget, which the main
+  #     orchestrator LLM needs — fewer empty/rate-limited turns.
+  #  2. A non-zero temperature here makes fixed responses (greeting, fallback)
+  #     vary naturally turn to turn, so the assistant never sounds canned,
+  #     while the orchestrator stays at temperature 0 for precise, reliable
+  #     tool-calling. Safety/escalation responses omit `metadata.rephrase`, so
+  #     they are still spoken verbatim and are never touched by this.
+  - id: rephraser_llm
+    models:
+      - provider: gemini
+        model: gemini/gemini-flash-latest
+        api_key_env: GEMINI_API_KEY
+        temperature: 0.7
+  - id: openai-embeddings
+    models:
+      - provider: gemini
+        model: gemini/gemini-embedding-001
+        api_key_env: GEMINI_API_KEY
+
+# Optional production services (defaults are fine for local development).
+# Left commented so a clean clone runs with no external collector; uncomment
+# for a production run.
+#
+# Observability — OpenTelemetry tracing. Point endpoint at your OTLP collector
+# (e.g. Jaeger/Grafana Tempo on :4317). Once enabled, every turn, tool call and
+# LLM request is traced under service_name.
+#tracing:
+#  type: otlp
+#  endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT}   # e.g. localhost:4317
+#  service_name: nourishher-voice
+#  insecure: true
+#
+# Durable conversation history across restarts (default is in-memory).
+#tracker_store:
+#  type: sql
+#  dialect: sqlite
+#  db: tracker.db
+
+# NOTE: Do not add a classic `action_endpoint` / `actions_module` here.
+# Side effects use `@tool` functions under tools/ and skills/*/tools.py,
+# not rasa-sdk actions.
