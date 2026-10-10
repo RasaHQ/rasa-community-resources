@@ -1,0 +1,46 @@
+llm:
+  model_group: orchestrator
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+channels:
+  rest:
+    enabled: true
+  browser_audio:
+    server_url: localhost
+    sample_rate: 16000
+    silence_timeout: 30
+    interruptions:
+      enabled: false
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: nova-3
+          language: en-GB
+    tts:
+      name: rime
+      model_id: mistv3
+      language_map:
+        en:
+          voice: ironwood
+          language: en
+  inspector:
+    enabled: true
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: nova-3
+          language: en-GB
+    tts:
+      name: rime
+      model_id: mistv3
+      language_map:
+        en:
+          voice: ironwood
+          language: en
