@@ -1,0 +1,40 @@
+# The orchestrator LLM is a model-group reference. Provider, model and
+# credentials live on the named group — the inline form was removed in
+# rasa-pro 3.20.0.dev6.
+#
+# The full gpt-5.4 model gives the live agent stronger instruction following and
+# language judgement for noisy, out-of-order civic reports. Deterministic facts
+# and writes remain controlled by Rasa constraints and Python tools. The cheaper
+# models used for response rephrasing and offline evaluation stay independent.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.4
+        # `api_key_env:` names an environment variable. The `${OPENAI_API_KEY}`
+        # form looks like it interpolates and does not — it is passed through
+        # to the provider as a literal string.
+        api_key_env: OPENAI_API_KEY
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      # 1800ms is long enough to hear out a six-digit PIN read slowly, short
+      # enough that the agent does not feel asleep between turns.
+      eot_threshold: 0.7
+      eot_timeout_ms: 1800
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en

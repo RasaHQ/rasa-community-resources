@@ -1,0 +1,50 @@
+# RUN THIS ONE WITH run_count: 1, AND `make reset-db` BEFORE IT.
+#
+# It is the only scenario in the suite that mutates the thing it depends on:
+# escalating CIV1002 gives it a fresh target date, so a second run finds it on
+# time and correctly refuses to escalate — and the scenario fails while the
+# agent is behaving perfectly. Measured: 1/3 with run_count 3, 3/3 across three
+# separate runs with a reset between each. The framework has no per-run reset
+# hook. See FINDINGS.md #22.
+#
+# CIV1002 is seeded nine days past a three-day target. Escalation is the one
+# thing on this line a caller is entitled to, and it has to be offered without
+# them having to know it exists.
+scenario:
+  name: An overdue complaint is reported as late and raised to the next authority
+
+  simulation_context: >
+    You filed a complaint a while ago about street lights and nothing has
+    happened. Open by asking what happened to complaint C I V one zero zero
+    two — say it one character at a time, as it was read to you. Listen to the
+    answer. If the agent offers to raise it to the next authority, say yes.
+    Stop once it tells you who has it now.
+
+  goals:
+    criteria:
+      - The agent states plainly how many days past its target date the
+        complaint is, without softening or explaining it away
+      - The agent offers to raise it to the next authority without the caller
+        having to ask
+      - After raising it, the agent names the new authority and the new date
+        to expect an update by, and says the reference number does not change
+    expected_tools:
+      - tool_called: look_up_complaint
+      - tool_called: escalate_complaint
+    assertions:
+      - slot_was_set:
+          - name: check_status.complaint_id
+            value: CIV1002
+          - name: check_status.is_overdue
+            value: true
+          - name: check_status.raise_answer
+            value: "yes"
+      - slot_was_set:
+          - name: check_status.escalated
+            value: true
+      - bot_uttered:
+          text_matches: "zonal officer"
+      # A judged criterion could not tell "the twelfth of September" from
+      # "2026-09-12" reliably. A regex can.
+      - bot_did_not_utter:
+          text_matches: "[0-9]{4}-[0-9]{2}-[0-9]{2}"

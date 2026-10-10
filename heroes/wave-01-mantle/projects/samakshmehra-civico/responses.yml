@@ -1,0 +1,118 @@
+# Verbatim agent lines.
+#
+# `rephrase: true` lets the NLG model reword a line so it does not sound
+# identical on every call. It is off for anything where the exact words are the
+# point — the recording notice, the confirmation prompt before filing, and the
+# line that admits the register is down.
+
+responses:
+  utter_greet:
+    - text: >
+        Hi, this is Civico, a demo civic complaint assistant.
+        How can I help you today?
+      metadata:
+        rephrase: false
+
+  utter_recording_notice:
+    - text: >
+        Just so you know, this call is recorded for quality and record-keeping.
+      metadata:
+        rephrase: false
+
+  utter_ask_exact_spot:
+    - text: >
+        And where exactly is it? A landmark, a shop, a gate — whatever a crew
+        would recognise when they get there.
+      metadata:
+        rephrase: true
+
+  utter_ask_description:
+    - text: >
+        Tell me a little about the problem itself, in a sentence or two.
+      metadata:
+        rephrase: true
+
+  utter_unsupported_problem:
+    - text: >
+        This line only handles potholes, garbage, water supply, street lights,
+        drainage and stray animals. For anything else, please call the main
+        helpline on one eight zero zero, zero zero zero, zero one zero zero.
+      metadata:
+        rephrase: true
+
+  utter_confirm_filing:
+    - text: Shall I file this complaint now?
+      metadata:
+        rephrase: false
+
+  utter_confirm_attachment:
+    - text: Shall I add your details to that existing report now?
+      metadata:
+        rephrase: false
+
+  utter_filing_cancelled:
+    - text: >
+        No problem, nothing has been filed.
+      metadata:
+        rephrase: false
+
+  utter_report_not_saved:
+    - text: >
+        I could not submit that report. Nothing new has been saved.
+      metadata:
+        rephrase: false
+
+  utter_register_down:
+    - text: >
+        I am sorry, I cannot reach the complaint register just now, so nothing
+        has been filed. Please call the helpline on one eight zero zero, zero
+        zero zero, zero one zero zero, and they can take it down directly.
+      metadata:
+        rephrase: false
+
+  utter_nothing_filed:
+    - text: >
+        No problem — I have not filed anything. Call back any time if you
+        change your mind.
+      metadata:
+        rephrase: true
+
+  utter_call_back_any_time:
+    - text: >
+        You can call this line back with the same reference any time to check
+        on it.
+      metadata:
+        rephrase: true
+
+  utter_number_incomplete:
+    - text: >
+        That did not sound like ten digits. Let me read back what I heard.
+      metadata:
+        rephrase: true
+
+  utter_reference_not_found:
+    - text: >
+        I could not find a complaint with that reference. Let me read back what
+        I heard.
+      metadata:
+        rephrase: true
+
+  utter_cannot_escalate:
+    - text: >
+        I cannot raise that one right now. Let me tell you why.
+      metadata:
+        rephrase: true
+
+  utter_fallback:
+    - text: >
+        I can take a civic complaint, check one you have already filed, or tell
+        you who handles a problem in your area. Which would you like?
+      metadata:
+        rephrase: true
+
+  utter_bot_challenge:
+    - text: >
+        Yes, I am Civico, a demo civic assistant. I can record a demo complaint,
+        check its progress, or show its assignment in our sample directory.
+      metadata:
+        rephrase: true

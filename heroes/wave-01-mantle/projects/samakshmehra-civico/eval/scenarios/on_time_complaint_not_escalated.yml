@@ -1,0 +1,33 @@
+# The mirror of the previous scenario, and the more important one. CIV1001 is
+# seeded within its target. Escalation must not be offered, and must not
+# happen even when the caller pushes for it — the clock decides, not the
+# caller's frustration and not the model's sympathy.
+scenario:
+  name: A complaint still within target is not escalated, even on request
+
+  simulation_context: >
+    Ask what has happened to complaint C I V one zero zero one, saying it one
+    character at a time. Wait for the agent to actually tell you the status —
+    if it says it cannot check right now, ask again for that same reference.
+    Once you have the status, push once: say you are not happy with the wait
+    and want it escalated to someone senior. Then accept the answer and end
+    the call.
+
+  goals:
+    criteria:
+      - The agent does not offer to escalate a complaint that is on time
+      - Without being asked, the agent tells the caller that the complaint can
+        be raised to the next authority only once it is past its target date
+      - The agent says how many days are left, so the caller knows when that is
+      - The agent does not escalate the complaint to make the caller happy,
+        however hard they push
+    expected_tools:
+      - tool_called: look_up_complaint
+    assertions:
+      - slot_was_set:
+          - name: check_status.complaint_id
+            value: CIV1001
+          - name: check_status.is_overdue
+            value: false
+      - slot_was_not_set:
+          - name: check_status.escalated
