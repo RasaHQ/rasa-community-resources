@@ -8,7 +8,7 @@ Mantle handles the voice conversation. One Mantle tool calls Deep Agents in a
 separate local process. That worker can read evidence for the selected charge;
 it cannot submit a review, decide fraud or promise a refund.
 
-Northgate Bank, its customers, codes, merchants and charges are fictional.
+Jacaranda Bank, its customers, codes, merchants and charges are fictional.
 This is an in-memory developer demo, not production banking software. Do not
 use real customer data. The published demo codes are selectors, not authentication.
 
@@ -41,8 +41,8 @@ The pinned Mantle and LangChain packages need incompatible OpenAI SDK versions.
 Do not combine their environments or override the resolver. From the repo root:
 
 ```bash
-python3 scripts/workspace.py start tutorials/deepagents-voice-disputes/worker --owner northgate-worker
-python3 scripts/workspace.py start tutorials/deepagents-voice-disputes/mantle --owner northgate-mantle
+python3 scripts/workspace.py start tutorials/deepagents-voice-disputes/worker --owner jacaranda-worker
+python3 scripts/workspace.py start tutorials/deepagents-voice-disputes/mantle --owner jacaranda-mantle
 cd tutorials/deepagents-voice-disputes
 export BANK_RESEARCH_PYTHON="$PWD/worker/.venv/bin/python"
 ```
@@ -98,7 +98,7 @@ Deepgram Nova-3 for recognition and Rime Mist v3 for synthesis. The selected
 Rime speaker is ironwood. These are configuration choices, not a vendor ranking.
 
 Use the published fixture code 111111, then TX-101. Ask it to explain the
-49-pound PINE*ANNUAL payment. If you still want staff review, ask to record it,
+49-pound ASTER*ANNUAL payment. If you still want staff review, ask to record it,
 then answer Mantle's separate confirmation. A record is a demo staff-review
 request, never a fraud finding or a refund. Stopping the server clears records.
 
@@ -151,8 +151,8 @@ disabled here. Do not treat these offline tests as acoustic qualification.
 Stop your own runtime and finish saving any unique local notes. From the repo root:
 
 ```bash
-python3 scripts/workspace.py retire tutorials/deepagents-voice-disputes/worker --owner northgate-worker --inactive
-python3 scripts/workspace.py retire tutorials/deepagents-voice-disputes/mantle --owner northgate-mantle --inactive
+python3 scripts/workspace.py retire tutorials/deepagents-voice-disputes/worker --owner jacaranda-worker --inactive
+python3 scripts/workspace.py retire tutorials/deepagents-voice-disputes/mantle --owner jacaranda-mantle --inactive
 ```
 
 Keep both manifests and lockfiles. Do not copy installed environments into

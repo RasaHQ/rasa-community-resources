@@ -4,9 +4,9 @@ import hashlib
 import secrets
 
 TRANSACTIONS = {
-    "TX-101": {"owner": "demo-a", "merchant": "PINE*ANNUAL", "amount": "49.00", "currency": "GBP", "date": "2026-10-06"},
-    "TX-102": {"owner": "demo-a", "merchant": "RIVER HOTEL", "amount": "149.00", "currency": "GBP", "date": "2026-10-07"},
-    "TX-201": {"owner": "demo-b", "merchant": "PINE*ANNUAL", "amount": "49.00", "currency": "GBP", "date": "2026-10-06"},
+    "TX-101": {"owner": "demo-a", "merchant": "ASTER*ANNUAL", "amount": "49.00", "currency": "GBP", "date": "2026-10-06"},
+    "TX-102": {"owner": "demo-a", "merchant": "MAGNOLIA HOTEL", "amount": "149.00", "currency": "GBP", "date": "2026-10-07"},
+    "TX-201": {"owner": "demo-b", "merchant": "ASTER*ANNUAL", "amount": "49.00", "currency": "GBP", "date": "2026-10-06"},
 }
 
 
@@ -14,7 +14,7 @@ def evidence_for(transaction_id):
     tx = TRANSACTIONS[transaction_id]
     return {
         "transaction": {k: v for k, v in tx.items() if k != "owner"},
-        "descriptor": {"text": "PINE*ANNUAL is the descriptor used by the fictional Pine Reading annual membership." if tx["merchant"] == "PINE*ANNUAL" else "No descriptor match is available."},
+        "descriptor": {"text": "ASTER*ANNUAL is the descriptor used by the fictional Aster Reading annual membership." if tx["merchant"] == "ASTER*ANNUAL" else "No descriptor match is available."},
         "review-policy": {"text": "An unfamiliar descriptor does not establish fraud. Record the customer's account of events for staff review. No refund is decided here."},
     }
 

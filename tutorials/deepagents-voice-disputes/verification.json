@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-10T18:19:41.983141+00:00",
+  "checked_at": "2026-10-10T18:54:55.609580+00:00",
   "versions": {
     "rasa-pro": "3.21.0.dev5",
     "deepagents": "0.7.23",
@@ -17,13 +17,13 @@
   ],
   "live_worker_evidence": {
     "descriptor": {
-      "text": "PINE*ANNUAL is the descriptor used by the fictional Pine Reading annual membership."
+      "text": "ASTER*ANNUAL is the descriptor used by the fictional Aster Reading annual membership."
     },
     "review-policy": {
       "text": "An unfamiliar descriptor does not establish fraud. Record the customer's account of events for staff review. No refund is decided here."
     },
     "transaction": {
-      "merchant": "PINE*ANNUAL",
+      "merchant": "ASTER*ANNUAL",
       "amount": "49.00",
       "currency": "GBP",
       "date": "2026-10-06"
@@ -36,11 +36,11 @@
     "Subprocess is not an OS sandbox"
   ],
   "source_sha256": {
-    "README.md": "a556cabb874704d696f38acb702a7df69ce502fff3e4ea55c38715e79fceeab8",
+    "README.md": "5d95b2f90f2d074731ec4cad74fd844f62355cf8134028c2ae410bbb08af5de5",
     "mantle/.env.example": "ebf4751260b7af1295ece42e789c9fac3f6ae307d0b9b7e443cd1726fdd359a6",
     "mantle/Makefile": "99295391373f6152101761385ce9f967ec52e46a03e151251190dbddd922aafa",
     "mantle/README.md": "41fb295fe1e31ec3ac31fd02791933c7f543b231790c299cf47fad671958b59b",
-    "mantle/agent.yml": "5d88cffac5928435e5626e2ced14b71021d40b60b8ea1a33ab8676dffb6d9b21",
+    "mantle/agent.yml": "65b0bb90f092c214a7a9b059de48b0724d8b025ee318ef62bf5f0d5c647e32bc",
     "mantle/integrations.yml": "f8ed9ff22ad3b56b7fed9c855a4690fbd2e92faa85c2d0030453d99ddde73d76",
     "mantle/pyproject.toml": "b0adfc62818b97183eae9eb596fc399613775db63d58ad33629862ff72e1420b",
     "mantle/skills/charge_review/skill.md": "065543be5e4d7cd2f50c93a20cae70a0cea1e46cdc7a301c664041f3133c224d",
@@ -48,7 +48,7 @@
     "mantle/uv.lock": "de31a0097c0b4a6793a30b6e905ab3a506c15f698f3a2070581067f85c2bd669",
     "shared/bank_research/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "shared/bank_research/bridge.py": "828d929e6d2ec82437d4a2e2bd5c9de3689e669227ecebabf7cb09adf15545b1",
-    "shared/bank_research/casework.py": "e2d79e73fb09d099cf8d3c714006231745f68fb990638d7d9c4ae057cdd4daa2",
+    "shared/bank_research/casework.py": "ea146d916508158fc9e7fb60cafc7614f1426b7344e40ee4ea0010da4ac7cd4d",
     "shared/bank_research/researcher.py": "df1ebb8e4ff756d29125866ce44d6da68536d23fc81f38be860a5bc51108b605",
     "shared/bank_research/worker.py": "4b5b654200a927e14cb42d39afbe6e210d85b4656f790c833462cb124a2b5a38",
     "shared/pyproject.toml": "6139f2ddc703beab1618c874656cc258bc3bc713c1fe56270d92b136f9ad79f6",
@@ -78,16 +78,16 @@
     "command": "from rasa.mantle.validation import validate_project; validate_project(Path(\".\"))",
     "cwd": "mantle",
     "returncode": 0,
-    "log_sha256": "1adb2b9192091436839091213cce42c3536f969f4c546c74fe2ab086cbb1ecaa"
+    "log_sha256": "2496596cb8e1ca3ebd883f5fe8cd0be84e173e19b9f54f63e46d780d9e036735"
   },
   "licensed_training": {
-    "command": "rasa train --fixed-model-name northgate-voice-research --out <local-model-directory>",
+    "command": "rasa train --fixed-model-name jacaranda-voice-research --out <local-model-directory>",
     "cwd": "mantle",
     "returncode": 0,
-    "completed_at": "2026-10-10T19:28:57Z",
-    "model_archive_sha256": "83ae718e4097b2ee85b910ec4a20102ccd2baba780f436752a2ec332e2f272f4",
-    "model_archive_bytes": 3131,
-    "log_sha256": "43819bbb3baa064b237e1f225cab4a354d28c085c9323d81144ddbbdd04840bc",
+    "artifact_written_at_utc": "2026-10-10T18:53:48.882442+00:00",
+    "model_archive_sha256": "87d444e96e9e6fda899a100230e48084cffbcb8b0fdde441d959c3c6f880a6ac",
+    "model_archive_bytes": 3112,
+    "log_sha256": "7f5fafbbef8f409bb8167a6cbe2eb4de4826b76d9b30aeb2abdedc54aa36591c",
     "retention": "Archive and raw log kept locally; no model archive, credentials or raw provider messages published."
   },
   "mutation_control": {
@@ -98,6 +98,14 @@
       "guard present | pending=TX-101/49.00 GBP | current=TX-102/149.00 GBP | recorded=0",
       "guard removed | pending=TX-101/49.00 GBP | current=TX-102/149.00 GBP | recorded=1 | stored=TX-102"
     ],
-    "log_sha256": "1119dea2a98564b2e3d9dc879c7b734aecd7bc58e110e3832e2adafc6c83ba16"
+    "log_sha256": "8b6be00f0bfd176a16a0e9a2bd18a64bb3e6e1ae57cfa8f13d1ef3114a149ac0"
+  },
+  "live_worker_scope": {
+    "qualification": "One live worker bridge run on the final Aster Reading synthetic snapshot; no submission or acoustic measurement.",
+    "log_sha256": "f6deef402d3ebe9ec71b3a0ec3f99c45cbecfeea872c38b3ceaa2c6ad93e3c03"
+  },
+  "native_logs": {
+    "mantle": "8b6be00f0bfd176a16a0e9a2bd18a64bb3e6e1ae57cfa8f13d1ef3114a149ac0",
+    "worker": "5e434479ea3dd756d452f93d1e8cec115e94bc5a6fc387dc19f8667a750c48cf"
   }
 }
