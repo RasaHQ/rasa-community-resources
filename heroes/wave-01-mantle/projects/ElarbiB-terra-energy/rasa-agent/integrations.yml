@@ -1,0 +1,79 @@
+llm:
+  provider: mistral
+  model: ministral-14b-latest
+  api_key_env: MISTRAL_API_KEY
+  temperature: 0.3
+
+channels:
+  rest:
+    enabled: true
+    asr:
+      name: "voice_engines.whisper_asr.WhisperASR"
+      model_size: "base"
+      device: "cpu"
+      compute_type: "float16"
+      language_map:
+        en:
+          language: "en"
+        fr:
+          language: "fr"
+        de:
+          language: "de"
+        es:
+          language: "es"
+    tts:
+      name: "voice_engines.neuphonic_tts.NeuphonicTTS"
+      endpoint: "wss://api.neuphonic.com/v1/tts/stream"
+      voice_id: "en-US-female-1"
+      speed: 1.0
+      language_map:
+        en:
+          model: "en-US-female-1"
+        fr:
+          model: "fr-FR-female-1"
+        de:
+          model: "de-DE-female-1"
+        es:
+          model: "es-ES-female-1"
+    interruptions:
+      enabled: true
+      min_words: 2
+  inspector:
+    enabled: true
+    asr:
+      name: "voice_engines.whisper_asr.WhisperASR"
+      model_size: "base"
+      device: "cpu"
+      compute_type: "float16"
+      language_map:
+        en:
+          language: "en"
+        fr:
+          language: "fr"
+        de:
+          language: "de"
+        es:
+          language: "es"
+    tts:
+      name: "voice_engines.neuphonic_tts.NeuphonicTTS"
+      endpoint: "wss://api.neuphonic.com/v1/tts/stream"
+      voice_id: "en-US-female-1"
+      speed: 1.0
+      language_map:
+        en:
+          model: "en-US-female-1"
+        fr:
+          model: "fr-FR-female-1"
+        de:
+          model: "de-DE-female-1"
+        es:
+          model: "es-ES-female-1"
+    interruptions:
+      enabled: true
+      min_words: 2
+
+model_groups:
+  - id: reference_embeddings
+    models:
+      - provider: mistral
+        model: mistral/mistral-embed

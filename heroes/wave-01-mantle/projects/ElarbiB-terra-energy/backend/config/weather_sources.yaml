@@ -1,0 +1,92 @@
+# Weather Data Sources Configuration
+# All sources are free and open. Configure API keys in .env
+
+sources:
+  pvgis:
+    enabled: true
+    priority: 1
+    regions: ["EU", "AF", "LATAM", "ASIA"]
+    variables: ["GHI", "DNI", "DHI", "WS", "WD", "T2M", "RH", "PS"]
+    tmy: true
+    hourly: true
+    rate_limit: 50
+    rate_limit_period: "day"
+    timeout: 15
+    cache_ttl_days: 30
+    quality_base: 0.95
+    base_url: "https://re.jrc.ec.europa.eu/api/v5_2"
+
+  nsrdb:
+    enabled: true
+    priority: 1
+    regions: ["NA", "GLOBAL"]
+    variables: ["GHI", "DNI", "DHI", "WS", "WD", "T2M", "RH", "PS"]
+    tmy: true
+    half_hourly: true
+    rate_limit: 1000
+    rate_limit_period: "day"
+    timeout: 20
+    cache_ttl_days: 30
+    quality_base: 0.93
+    base_url: "https://developer.nrel.gov/api/nsrdb/v2"
+    api_key_env: "NSRDB_API_KEY"
+
+  era5:
+    enabled: true
+    priority: 2
+    regions: ["GLOBAL"]
+    variables: ["ALL"]
+    hourly: true
+    land_resolution: 0.1
+    batch_async: true
+    timeout: 3600
+    cache_ttl_days: 7
+    quality_base: 0.88
+    api_key_env: "CDS_API_KEY"
+
+  open_meteo:
+    enabled: true
+    priority: 3
+    regions: ["GLOBAL"]
+    variables: ["GHI", "DNI", "WS", "T2M"]
+    rate_limit: 10000
+    rate_limit_period: "day"
+    timeout: 10
+    cache_ttl_days: 1
+    quality_base: 0.75
+    base_url: "https://archive-api.open-meteo.com/v1/archive"
+
+  nasa_power:
+    enabled: true
+    priority: 4
+    regions: ["GLOBAL"]
+    variables: ["ALL"]
+    rate_limit: 1000
+    rate_limit_period: "day"
+    timeout: 30
+    cache_ttl_days: 1
+    quality_base: 0.70
+    base_url: "https://power.larc.nasa.gov/api/temporal"
+
+routing:
+  default_strategy: "geo_priority"
+  cross_validate_threshold: 0.15
+  require_min_sources: 2
+  geo_mapping:
+    EU: ["pvgis", "era5", "open_meteo", "nasa_power"]
+    AF: ["pvgis", "era5", "open_meteo", "nasa_power"]
+    LATAM: ["pvgis", "era5", "open_meteo", "nasa_power"]
+    ASIA: ["pvgis", "era5", "open_meteo", "nasa_power"]
+    NA: ["nsrdb", "era5", "open_meteo", "nasa_power"]
+    GLOBAL: ["era5", "open_meteo", "nasa_power"]
+
+cache:
+  backend: "file"
+  directory: "cache/weather"
+  max_size_mb: 500
+
+quality:
+  cross_validation_enabled: true
+  bias_correction_enabled: true
+  uncertainty_scoring_enabled: true
+  min_overlap_hours: 168
