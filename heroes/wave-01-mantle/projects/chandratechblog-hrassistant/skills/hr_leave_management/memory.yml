@@ -1,0 +1,32 @@
+schema:
+  public:
+    leave_mode:
+      type: categorical
+      enum_values: [balance, request]
+      description: Whether the employee is checking a balance or requesting leave.
+      llm_settable: true
+    employee_id:
+      type: text
+      description: The employee identifier used by the leave system.
+      llm_settable: true
+    leave_type:
+      type: categorical
+      enum_values: [annual, sick, personal, parental, unpaid]
+      description: The type of leave.
+      llm_settable: true
+    start_date:
+      type: text
+      description: The first date of a requested leave period.
+      llm_settable: true
+    end_date:
+      type: text
+      description: The last date of a requested leave period.
+      llm_settable: true
+    request_note:
+      type: text
+      description: A brief non-sensitive note for the leave request.
+      llm_settable: true
+    leave_confirmed:
+      type: bool
+      description: Whether the employee confirmed the summarized leave request.
+      llm_settable: true
