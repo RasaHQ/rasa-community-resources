@@ -1,0 +1,31 @@
+schema:
+  public:
+    job_ref:
+      type: text
+      description: Task being closed.
+      llm_settable: true
+    diagnosis:
+      type: text
+      description: What the developer found and did.
+      llm_settable: true
+    resolution:
+      type: categorical
+      enum_values: [fixed, replaced_component, no_issue, deferred]
+      description: How the task was resolved.
+      llm_settable: true
+    labor_hours:
+      type: text
+      description: Hours spent on the task.
+      llm_settable: true
+    part_no:
+      type: text
+      description: Tool or license used, or none.
+      llm_settable: true
+    details_verified:
+      type: bool
+      description: Developer confirmed the task summary.
+      llm_settable: true
+    # Written by close_work_order, never set by the LLM, so it carries no
+    # description: the engine only surfaces descriptions for settable fields.
+    closed_job_ref:
+      type: text

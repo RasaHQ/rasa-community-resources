@@ -1,0 +1,46 @@
+# External integrations for the DevPilot developer agent.
+
+llm:
+  model_group: deepseek-llm
+
+model_groups:
+  - id: deepseek-llm
+    models:
+      - provider: openai
+        model: deepseek-chat
+        api_key_env: OPENAI_API_KEY
+        api_base: https://api.deepseek.com
+        temperature: 0.0
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    # Deepgram end-to-end: speech-to-text (ASR) and text-to-speech (TTS)
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en
+
+# Remote MCP tools. Import a tool in a skill with
+# `import_tools: [mcp/<server>:<tool>]` (e.g. mcp/licenses:check_license_seats).
+mcp_servers:
+  - name: licenses
+    url: http://127.0.0.1:8000/mcp
+    # token: ${MCP_LICENSES_TOKEN}   # only if the server requires auth
+    # tool_timeout: 30
+  - name: slack
+    url: http://127.0.0.1:8001/mcp
+    # token: ${SLACK_BOT_TOKEN}      # sent as additional_params if set
+  - name: exa
+    url: https://mcp.exa.ai/mcp
+    tool_timeout: 8

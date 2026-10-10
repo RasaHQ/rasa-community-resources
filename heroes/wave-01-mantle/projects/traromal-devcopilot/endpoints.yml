@@ -1,0 +1,51 @@
+# Platform endpoints for the DevPilot developer agent.
+#
+# LLM routing and Deepgram ASR/TTS for the Inspector live in integrations.yml.
+# This file is still read by `rasa train` / `rasa inspect` for optional
+# platform services (NLG rephrasing, tracker store, tracing, and so on).
+#
+# Docs: https://rasa.com/docs/pro/build/configuring-assistant/
+
+# ---------------------------------------------------------------------------
+# Contextual response rephraser
+# ---------------------------------------------------------------------------
+# Honours `metadata.rephrase: true` on responses (for example utter_greet in
+# responses.yml). Responses without that flag are always spoken verbatim —
+# that contrast is the point of the verbatim responses chapter.
+# https://rasa.com/docs/pro/build/configuring-assistant/#contextual-response-rephraser
+nlg:
+  type: rephrase
+  llm:
+    model_group: deepseek-llm
+
+# ---------------------------------------------------------------------------
+# Model groups (LLMs / embeddings referenced by endpoints features)
+# ---------------------------------------------------------------------------
+# https://rasa.com/docs/reference/config/components/llm-configuration/
+model_groups:
+  - id: deepseek-llm
+    models:
+      - provider: openai
+        model: deepseek-chat
+        api_base: https://api.deepseek.com
+        api_key_env: OPENAI_API_KEY
+        temperature: 0.0
+
+# ---------------------------------------------------------------------------
+# Optional production services (defaults are fine for this demo)
+# ---------------------------------------------------------------------------
+# Tracker store — conversations stay in memory unless configured:
+# https://rasa.com/docs/pro/build/configuring-assistant/#tracker-store
+#tracker_store:
+#  type: sql
+#  dialect: sqlite
+#  db: tracker.db
+
+# Backend tracing (jaeger / otlp):
+#tracing:
+#  type: otlp
+#  endpoint: localhost:4317
+#  service_name: atlas
+
+# NOTE: Do not add a classic `action_endpoint` / `actions_module` here.
+# Side effects use `@tool` functions under tools/, not rasa-sdk actions.

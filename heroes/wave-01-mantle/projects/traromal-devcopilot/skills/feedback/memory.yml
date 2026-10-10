@@ -1,0 +1,24 @@
+schema:
+  public:
+    category:
+      type: categorical
+      enum_values: [bug, usability, safety, voice, feature]
+      description: Feedback category.
+      llm_settable: true
+    severity:
+      type: categorical
+      enum_values: [critical, high, medium, low]
+      description: Feedback severity.
+      llm_settable: true
+    description:
+      type: text
+      description: What happened.
+      llm_settable: true
+    expected:
+      type: text
+      description: What should have happened.
+      llm_settable: true
+    actual:
+      type: text
+      description: What DevPilot actually did.
+      llm_settable: true

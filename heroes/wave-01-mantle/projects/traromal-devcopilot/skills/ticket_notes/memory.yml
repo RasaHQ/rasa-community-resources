@@ -1,0 +1,49 @@
+schema:
+  public:
+    mode:
+      type: categorical
+      enum_values: [list, update, reopen, comment, standup, briefing, file]
+      description: What the developer wants right now — see tickets, update or reopen one, add a note, standup, briefing, or file one.
+      llm_settable: true
+    incident_notes:
+      type: text
+      description: The developer's raw spoken description of the incident.
+      llm_settable: true
+    summary:
+      type: text
+      description: One-sentence technical summary of the incident.
+      llm_settable: true
+    severity:
+      type: categorical
+      enum_values: [critical, high, medium, low]
+      description: Confirmed severity of the incident.
+      llm_settable: true
+    system:
+      type: text
+      description: System or service affected by the incident.
+      llm_settable: true
+    repro_steps:
+      type: text
+      description: Steps to reproduce, or none.
+      llm_settable: true
+    summary_verified:
+      type: bool
+      description: Developer confirmed the ticket summary.
+      llm_settable: true
+    selected_ticket_id:
+      type: text
+      description: Ticket the developer wants to act on.
+      llm_settable: true
+    new_status:
+      type: categorical
+      enum_values: [in_progress, done, open]
+      description: Target status for the ticket being updated. Open means reopened.
+      llm_settable: true
+    comment_text:
+      type: text
+      description: Note the developer wants to add to the selected ticket.
+      llm_settable: true
+    # Written by file_support_ticket / update_ticket_status, never set by
+    # the LLM.
+    ticket_ref:
+      type: text

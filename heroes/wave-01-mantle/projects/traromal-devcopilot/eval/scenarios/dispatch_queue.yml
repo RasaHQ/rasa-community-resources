@@ -1,0 +1,16 @@
+scenario:
+  name: Dispatch queue check
+  simulation_context: >
+    You are Alex Chen, a software developer at DevSoft. You are talking to
+    DevPilot, your voice assistant. You speak briefly and naturally, the way
+    you would talk to a speech assistant. You want to know your assigned tasks
+    for today.
+  goals:
+    assertions:
+      - flow_started: dispatch
+    criteria:
+      - "The bot lists the developer's open tasks in short spoken sentences including at least the critical task and its reference."
+      - "The bot asks the developer whether they can take the critical photo upload task or want it escalated."
+    expected_tools:
+      - tool_called: list_jobs
+        gate: true
