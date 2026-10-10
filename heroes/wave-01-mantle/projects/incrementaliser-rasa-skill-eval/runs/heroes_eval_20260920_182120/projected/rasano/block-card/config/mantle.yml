@@ -1,0 +1,17 @@
+tool_constraints:
+- block_card:
+    requires: session.block_card.selected_card_id
+    requires_confirmation:
+      enabled: true
+      utter_for_confirmation: utter_confirm_block_card
+      utter_on_user_denial: utter_block_cancelled
+    on_success: utter_card_blocked
+- order_replacement_card:
+    requires: session.block_card.card_blocked
+utter:
+- utter_recording_notice:
+    true: activate
+- utter_stolen_warning:
+    when: session.block_card.block_reason == "stolen"
+- utter_fraud_warning:
+    when: session.block_card.block_reason == "fraud"

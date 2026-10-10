@@ -1,0 +1,128 @@
+project:
+  rasa_pro_version: "3.20.0.dev6"
+  engine: mantle
+
+paths:
+  runs_dir: runs
+  data_dir: data
+  writing_for_agents_dir: .cursor/skills/writing-for-agents
+  unslop_dir: data/skills/unslop
+
+tracking:
+  mlflow:
+    tracking_uri:
+
+nvidia:
+  checks: "schema,pii,license,quality,unicode,lint"
+  min_score: 70
+  quality_timeout_sec: 180
+  validate_timeout_sec: 300
+  # SkillEvaluator nv_build defaults (nemotron-3-nano-30b, nv-embed-v1) are EOL.
+  rubric_model: nvidia/nemotron-3-super-120b-a12b
+  embedding_model: nvidia/nemotron-3-embed-1b
+
+projection:
+  license: Apache-2.0
+  author: "RasaHQ <hi@rasa.com>"
+  compatibility: "Rasa Mantle (rasa-pro 3.20.0.dev6)"
+  metadata_version: "0.1.0"
+
+llm:
+  improver:
+    provider: nvidia
+    model: moonshotai/kimi-k3
+    temperature: 0.2
+    max_tokens: 8192
+    timeout_sec: 600
+    backup_model: meta/llama-3.1-70b-instruct
+  # Layer B actor factor: native vs improved × each entry.
+  # Size ladder: 2×1–2B local LFM, 2×8B local GGUF, 2×30B local GGUF.
+  # muse-30b / gemma4-31b used to be free NIM; they now share one CUDA llama-server.
+  # Layer B starts one local llama-server at a time.
+  agents:
+    - id: lfm-1.2b
+      provider: local
+      model: LFM2-1.2B
+      base_url: http://127.0.0.1:8082/v1
+    - id: lfm-2.6b
+      provider: local
+      model: LFM2-2.6B
+      base_url: http://127.0.0.1:8081/v1
+    - id: llama-8b
+      provider: local
+      model: llama-3.1-8b-instruct
+      base_url: http://127.0.0.1:8083/v1
+    - id: nemotron-8b
+      provider: local
+      model: llama-3.1-nemotron-nano-8b-v1
+      base_url: http://127.0.0.1:8084/v1
+    - id: muse-30b
+      provider: local
+      model: muse-glimmer-30b
+      base_url: http://127.0.0.1:8085/v1
+    - id: gemma4-31b
+      provider: local
+      model: gemma-4-31b-it
+      base_url: http://127.0.0.1:8086/v1
+  # Optional extras. Uncomment if free credits remain. Each entry multiplies Layer B.
+  # - id: gpt-oss-20b
+  #   provider: nvidia
+  #   model: openai/gpt-oss-20b
+  # - id: nemotron-super-120b
+  #   provider: nvidia
+  #   model: nvidia/nemotron-3-super-120b-a12b
+  # Partner / credits only (free endpoints deprecated):
+  # - id: llama4-maverick
+  #   provider: nvidia
+  #   model: meta/llama-4-maverick-17b-128e-instruct
+  # - id: gpt-oss-120b
+  #   provider: nvidia
+  #   model: openai/gpt-oss-120b
+  judge:
+    provider: nvidia
+    model: nvidia/nemotron-3-super-120b-a12b
+    # After NVIDIA 429/503/410 or a GEval schema mismatch, switch to this endpoint.
+    # Uses OPENAI_API_KEY when backup_provider is openai. Change backup_model as needed.
+    backup_provider: openai
+    backup_model: gpt-4.1-mini
+  # Rasano FAQ index at rasa train. Held fixed. Not a Layer B factor.
+  embeddings:
+    provider: nvidia
+    model: nvidia/nemotron-3-embed-1b
+
+eval:
+  repeats: 3
+  turn_timeout_sec: 360
+  scenario_timeout_sec: 360
+  local_startup_timeout_sec: 300
+  sync_timeout_sec: 300
+  train_timeout_sec: 900
+  rasa_startup_timeout_sec: 180
+  consecutive_timeout_limit: 3
+  max_retry_after_sec: 300
+  llm_rate_limit_trip_after: 3
+  judge_max_retries: 12
+  llama_n_gpu_layers: 99
+  llama_flash_attn: true
+  llama_parallel: 1
+  llama_threads: 8
+  tsr_weights:
+    skill_started: 0.20
+    tool_correct: 0.30
+    memory_set: 0.20
+    confirmation: 0.15
+    safety: 0.15
+
+corpora:
+  rasano:
+    repo: https://github.com/RasaHQ/rasa-community-resources.git
+    sparse_path: examples/mantle-voice-banking-skills
+    dest: corpus/rasano
+  personalization:
+    repo: https://github.com/RasaHQ/rasa-community-resources.git
+    sparse_path: patterns/session-start-personalization
+    dest: corpus/personalization
+  writing_for_agents:
+    repo: https://github.com/mattpocock/skills.git
+    sparse_path: skills/productivity/writing-for-agents
+    dest: corpus/writing-for-agents
