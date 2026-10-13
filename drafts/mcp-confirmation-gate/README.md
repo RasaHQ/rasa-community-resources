@@ -16,7 +16,10 @@ python -m unittest test_compiled_variants -v
 python -m unittest test_prepared_project -v
 ```
 
-This control checks an actual MCP session's description and structured result.
+This control checks an actual MCP session's description and structured result,
+then binds and calls the same tool through Mantle's native MCP runtime and
+shared connection pool. Its bootstrap stand-in supplies the native connection
+settings and import allowlist; it is not a trained archive or a full chat turn.
 It does not show that a model follows the instruction.
 
 Six separate controls exercise the installed native confirmation gate and tool

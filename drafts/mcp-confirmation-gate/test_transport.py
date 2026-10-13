@@ -1,5 +1,6 @@
 """Real loopback MCP transport control; does not test model or engine gating."""
 import asyncio
+import os
 import socket
 import subprocess
 import sys
@@ -7,6 +8,8 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from mcp import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
@@ -48,7 +51,31 @@ class Transport(unittest.TestCase):
                             self.assertEqual(result.structuredContent["value"], CANARY)
                             self.assertEqual(result.structuredContent["completion_step"],
                                              "record_local_canary")
-                asyncio.run(read())
+                    # Exercise Mantle's actual MCP binding and shared pool too.
+                    # The bootstrap stand-in contains only the two native input
+                    # fields; this is not a trained model archive or chat turn.
+                    from rasa.mantle.config.mcp import parse_mcp_servers
+                    from rasa.mantle.tools.mcp_import_spec import try_parse_mcp_tool_import
+                    from rasa.mantle.tools.mcp_runtime import MCPRuntime
+                    settings = parse_mcp_servers([{"name": "fictional_support",
+                                                   "url": f"http://127.0.0.1:{port}/mcp"}])
+                    reference = try_parse_mcp_tool_import("mcp/fictional_support:read_case")
+                    runtime = MCPRuntime()
+                    try:
+                        await runtime.prepare(SimpleNamespace(
+                            mcp_servers=settings, mcp_tool_allowlist={"review_case": [reference]}))
+                        self.assertTrue(runtime.has_mcp_tool("review_case", "read_case"))
+                        self.assertFalse(runtime.has_mcp_tool("review_case", "record_local_canary"))
+                        self.assertEqual(runtime.mcp_tool_schemas["review_case"]["read_case"].description,
+                                         DESCRIPTION)
+                        result = await runtime.call_mcp_tool("fictional_support", "read_case", {})
+                        self.assertEqual(result.llm_response["value"], CANARY)
+                    finally:
+                        await runtime.close()
+                with patch.dict(os.environ, {"NO_PROXY": "127.0.0.1,localhost",
+                                             "no_proxy": "127.0.0.1,localhost",
+                                             "LANGFUSE_TRACING_ENABLED": "false"}):
+                    asyncio.run(read())
             finally:
                 if child.poll() is None:
                     child.terminate()
