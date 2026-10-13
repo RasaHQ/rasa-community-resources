@@ -11,14 +11,25 @@ With the pinned Rasa 3.21.0.dev5 SDK environment, run from this directory:
 
 ```bash
 python -m unittest test_transport -v
+python -m unittest test_native_confirmation -v
 ```
 
 This control checks an actual MCP session's description and structured result.
-It does not show that a model follows the instruction or that a confirmation
-gate stops a call. Those are separate pending controls.
+It does not show that a model follows the instruction.
 
-Next: add identical gated and ungated skills, a local recording tool, native
-confirmation lifecycle controls, and an optional paired model trial. Preserve
+Six separate controls exercise the installed native confirmation gate and tool
+invoker with an in-memory tracker stand-in. They check same-turn refusal,
+stored arguments, single execution, cancellation, boolean validation and pending
+recall. The ungated invoker control records immediately. These are isolated
+component checks, rather than a full chat or an MCP-to-engine integration test.
+
+The tests supply the resolution flag directly. A later `confirmed: true` runs
+the stored tool; this does not prove that a model inferred informed consent
+from the caller's words. Test that interpretation separately before claiming
+that caller approval is enforced.
+
+Next: wire identical gated and ungated skills into the full runtime and add an
+optional paired model trial. Preserve
 all outcomes, including a model that never asks for the recording tool. A gate
 requires confirmation; it does not establish that the caller's consent is
 informed, or that the whole application resists prompt injection.
