@@ -10,6 +10,20 @@ MESSAGES = ["Please change the delivery day to Friday.", "Yes, hand me to staff 
 DETOURS = {"note_request", "send_elsewhere", "retry_change"}
 
 
+class NoRedirects(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def local_json(request):
+    # Do not send chat or full trackers through inherited proxies or redirects.
+    url = urllib.parse.urlsplit(request.full_url if isinstance(request, urllib.request.Request) else request)
+    local_origin(url.scheme + "://" + url.netloc)
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirects())
+    with opener.open(request, timeout=90) as response:
+        return json.load(response)
+
+
 def local_origin(value):
     url = urllib.parse.urlsplit(value)
     if (url.scheme != "http" or url.hostname not in {"127.0.0.1", "localhost", "::1"}
@@ -116,10 +130,8 @@ def main():
         body = json.dumps({"sender": sender, "message": message}).encode()
         req = urllib.request.Request(base + "/webhooks/rest/webhook", data=body,
                                      headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=90) as response:
-            reply = json.load(response)
-        with urllib.request.urlopen(base + "/conversations/" + sender + "/tracker?include_events=ALL", timeout=90) as response:
-            tracker = json.load(response)
+        reply = local_json(req)
+        tracker = local_json(base + "/conversations/" + sender + "/tracker?include_events=ALL")
         saved["turns"].append({"message": message, "reply": reply, "tracker": tracker})
         args.out.write_text(json.dumps(saved, indent=2) + "\n")
         if not reply:
