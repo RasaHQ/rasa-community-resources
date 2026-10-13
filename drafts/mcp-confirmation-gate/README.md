@@ -12,6 +12,7 @@ With the pinned Rasa 3.21.0.dev5 SDK environment, run from this directory:
 ```bash
 python -m unittest test_transport -v
 python -m unittest test_native_confirmation -v
+python -m unittest test_compiled_variants -v
 ```
 
 This control checks an actual MCP session's description and structured result.
@@ -28,7 +29,12 @@ the stored tool; this does not prove that a model inferred informed consent
 from the caller's words. Test that interpretation separately before claiming
 that caller approval is enforced.
 
-Next: wire identical gated and ungated skills into the full runtime and add an
+The skill template differs only in the confirmation flag. A separate native
+compiler/catalog control checks that the imported MCP tools match and that the
+confirmation constraint is active in one variant and inactive in the other.
+This does not validate a complete runnable project.
+
+Next: wire these gated and ungated skills into the full runtime and add an
 optional paired model trial. Preserve
 all outcomes, including a model that never asks for the recording tool. A gate
 requires confirmation; it does not establish that the caller's consent is
