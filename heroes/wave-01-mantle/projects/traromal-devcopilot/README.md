@@ -2,9 +2,11 @@
 
     Author:        Aromal TR
     Wave:          wave-01-mantle
-    Assessed on:   2026-09-15
+    Assessed on:   2026-10-13
     Assessed by:   Aromal TR
     Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
+    Audience:      Practitioners building voice developer-operations agents with Rasa Skills
+    Time:          60–90 minutes
 
 DevPilot is a hands-free **voice assistant for developers**. It listens when you
 talk, figures out what you want, and does the work — pulling up your task queue,

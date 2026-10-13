@@ -47,7 +47,7 @@ pull request that adds their project.
 
 | Project | What it does | Author | Verified with | Assessed on |
 |---|---|---|---|---|
-| [DevPilot](projects/traromal-devcopilot/) | Voice/text assistant for developer ops — task queue, tickets, deploy gating, hardware orders, two-way Slack, on-call handoffs, and web-search doc lookup | Aromal TR | `3.20.0.dev6` | 2026-09-15 |
+| [DevPilot](projects/traromal-devcopilot/) | Voice/text assistant for developer ops — task queue, tickets, deploy gating, hardware orders, two-way Slack, on-call handoffs, and web-search doc lookup | Aromal TR | `3.20.0.dev6` | 2026-10-13 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a
