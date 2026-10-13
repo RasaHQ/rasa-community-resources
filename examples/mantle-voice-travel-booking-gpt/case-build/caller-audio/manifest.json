@@ -485,20 +485,54 @@
    "in_git": false
   }
  },
- "description": "Synthetic fictional caller speech generated with Rime mistv2, using tundra and moraine voices at 16 kHz. Regenerate with case-build/render_caller_audio.py.",
+ "description": "Fictional caller audio metadata; the summary reflects recorded per-file declarations, separately from the generator defaults.",
  "vendor": "rime",
- "model": "gemini-3.8-flash-tts",
+ "model": "mistv2",
  "regenerate": "python3 case-build/render_caller_audio.py --budget-usd 4 (from the project directory)",
  "in_git": "Only the files listed under samples are committed; the rest are regenerated, and their SHA-256s here identify the recorded run's bytes.",
- "price": {
-  "usd_per_1m_input_tokens": 0.5,
-  "usd_per_1m_audio_output_tokens": 9.0,
-  "price_source": "https://ai.google.dev/gemini-api/docs/pricing (gemini-3.8-flash-tts, paid tier: $0.50 / 1M text input tokens, $9.00 / 1M audio output tokens through 2026-12-31); cost per file from the usageMetadata Gemini returns",
-  "price_checked": "2026-09-30"
- },
  "samples": {
   "tundra-621cffbf3569.wav": "tundra spells the booking code H Z four R eight N (recovery-partial-parking-freeze); in the estimate call Flux wrote the final N as 'and' and GPT-5.5 passed HZ4R8",
   "moraine-63733c998be7.wav": "moraine's bare 'Yes.' at the engine's confirmation question (normal-dublin-return-bare-yes), the Flux short-reply check",
   "tundra-0138ae998abd.wav": "tundra asks to change another traveller's booking, H Z eight D one X (adversarial-other-travellers-booking)"
+ },
+ "declared_file_models": [
+  {
+   "vendor": "rime",
+   "model": "mistv2",
+   "files": 44
+  }
+ ],
+ "attribution": {
+  "summary_basis": "recorded per-file declarations",
+  "original_provider_use_verified": false,
+  "note": "File labels and matching audio hashes do not verify original provider use."
+ },
+ "renderer_configuration": {
+  "default_vendor": "gemini",
+  "default_model": "gemini-3.8-flash-tts",
+  "default_tariff": {
+   "usd_per_1m_input_tokens": 0.5,
+   "usd_per_1m_audio_output_tokens": 9.0,
+   "price_source": "https://ai.google.dev/gemini-api/docs/pricing (gemini-3.8-flash-tts, paid tier: $0.50 / 1M text input tokens, $9.00 / 1M audio output tokens through 2026-12-31); cost per file from the usageMetadata Gemini returns",
+   "price_checked": "2026-09-30"
+  },
+  "fallback_voices": {
+   "tundra": {
+    "model": "mistv2",
+    "lang": "eng",
+    "usd_per_1k_characters": 0.03,
+    "catalogue": "Rime voice_details.json: mistv2, gender Female, country US, dialect African American, 'A confident, upbeat young African-American voice, warm and bright.'",
+    "price_source": "https://www.rime.ai/pricing (Starter: $0.03 / 1K characters for Mist)",
+    "price_checked": "2026-09-30"
+   },
+   "moraine": {
+    "model": "mistv2",
+    "lang": "eng",
+    "usd_per_1k_characters": 0.03,
+    "catalogue": "Rime voice_details.json: mistv2, gender Female, country US, dialect Standard, 'A confident, smart young American voice, polished and steady.'",
+    "price_source": "https://www.rime.ai/pricing (Starter: $0.03 / 1K characters for Mist)",
+    "price_checked": "2026-09-30"
+   }
+  }
  }
 }
