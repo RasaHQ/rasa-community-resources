@@ -1,14 +1,13 @@
-# The happy path, with the speech that broke the previous version of this
-# project three times on a live call. "Vishalig Azabad" is Vaishali,
-# Ghaziabad, and the PIN the caller reads out belongs to the next locality
-# over — both of which the agent has to handle without asking again.
+# Fictionalised reproduction of the observed misspelled-locality/PIN-conflict
+# case. "Maplewik" means Maplewick, while 000102 belongs to Cedarwick.
+# This revised scenario is a test plan until a fresh simulation has been run.
 scenario:
   name: A mangled locality and a mismatched PIN still produce a filed complaint
 
   simulation_context: >
     You are reporting a large pothole and you are a little impatient. When the
-    agent asks where it is, say "near in front of super tech state, Vishalig
-    Azabad, PIN code two zero one zero one two" — say it exactly that badly.
+    agent asks where it is, say "near in front of juniper hites, Maplewik
+    Civico Demo City, PIN code zero zero zero one zero two" — say it exactly that badly.
     If it offers you a ward, accept it. When asked where exactly, say "right
     in front of the Juniper Heights main gate, near the water tank". Describe
     the problem as a two-foot hole that fills with water when it rains. When
@@ -18,7 +17,7 @@ scenario:
 
   goals:
     criteria:
-      - The agent identifies the locality as Vaishali despite the caller
+      - The agent identifies the locality as Maplewick despite the caller
         mispronouncing it, without asking them to repeat themselves
       - The agent points out that the PIN code the caller gave does not match
         the one the directory holds for that locality, and lets the caller
@@ -49,6 +48,6 @@ scenario:
       - bot_uttered:
           text_matches: "C I V one"
       - bot_uttered:
-          text_matches: "A. Sharma"
+          text_matches: "Demo Officer 12"
       - bot_did_not_utter:
           text_matches: "[0-9]{4}-[0-9]{2}-[0-9]{2}"

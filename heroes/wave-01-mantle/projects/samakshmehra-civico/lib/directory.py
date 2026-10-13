@@ -9,7 +9,7 @@ This is twenty-nine rows we ship. Matching a mangled phrase against known
 strings is a solved problem; matching it against every place on Earth is not,
 and the earlier version of this project spent most of its complexity losing
 that fight. Nothing here touches the network, so nothing here can time out,
-rate-limit, or route a caller in Ghaziabad to Vijayawada.
+rate-limit, or route a caller in Civico Demo City to Faraway Demo City.
 
 Everything the caller says beyond the locality — "in front of the Juniper
 Heights main gate" — is kept verbatim as text and printed on the work order. A
@@ -27,8 +27,8 @@ from difflib import SequenceMatcher
 from lib.paths import data_dir
 
 #: How close a locality name has to sound before the directory accepts it.
-#: 0.72 was chosen against the mangled place names in this project's ASR
-#: transcripts: it accepts "vishali" and "indrapuram", and rejects "vijayawada".
+#: Kept from the initial ASR experiments. Fictional-data regression tests check
+#: misspellings such as "maplewik" and "brookmer", and an out-of-directory city.
 THRESHOLD = float(os.getenv("CIVICO_MATCH_THRESHOLD", "0.72"))
 
 #: How far below the best match a runner-up may sit and still be worth offering.
@@ -50,7 +50,7 @@ _NUMBER_WORDS = {
 }
 
 #: Words that carry no location information. Stripped before matching so that
-#: "near the pothole in Vaishali" scores on "vaishali", not on the filler.
+#: "near the pothole in Maplewick" scores on "maplewick", not on the filler.
 _FILLER = frozenset({
     "near", "at", "in", "on", "the", "a", "an", "of", "by", "to", "from",
     "front", "behind", "opposite", "beside", "next", "outside", "inside",
@@ -92,7 +92,7 @@ def _words(text: str) -> list[str]:
 def digits_from_speech(text: str) -> list[str]:
     """Pull runs of digits out of speech, spoken or written.
 
-    "two zero one zero one zero" and "201010" both come back as ["201010"];
+    "zero zero zero one zero one" and "000101" both come back as ["000101"];
     "double nine eight" becomes ["998"]. Returns each contiguous run
     separately so a caller who says a PIN and a house number does not end up
     with the two glued together.
@@ -161,7 +161,7 @@ def _score(name: str, spoken_words: list[str]) -> float:
     """Best similarity between a directory name and any phrase the caller said.
 
     Slides a window the length of the name across what was said, so "there is a
-    pothole in indrapuram near the market" is scored on "indrapuram" alone
+    pothole in brookmer near the market" is scored on "brookmer" alone
     rather than being diluted by the rest of the sentence.
     """
     target = _normalize(name)
@@ -209,7 +209,7 @@ def find_ward(spoken: str) -> dict:
     if scored:
         scored.sort(key=lambda pair: (-pair[0], pair[1]["locality"]))
         # Only offer the near-misses when the best match is itself uncertain.
-        # "Indirapuram" also scores 0.76 against "Govindpuram", and reading
+        # Similar locality names can both exceed the fuzzy threshold. Reading
         # both back to someone who pronounced their own neighbourhood clearly
         # is how a confident answer gets turned into a confusing question.
         floor = max(THRESHOLD, scored[0][0] - _BAND)

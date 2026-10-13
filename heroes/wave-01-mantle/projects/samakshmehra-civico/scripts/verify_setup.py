@@ -62,10 +62,10 @@ def main() -> int:
     print("\nWard lookup")
     try:
         from lib import directory
-        for spoken, expected in [("Vaishali", "Vaishali"),
-                                 ("Vishali two zero one zero one two", "Vaishali"),
-                                 ("indrapuram", "Indirapuram"),
-                                 ("201005", "Sahibabad / Shalimar Garden / Rajendra Nagar")]:
+        for spoken, expected in [("Maplewick", "Maplewick"),
+                                 ("Maplewik zero zero zero one zero two", "Maplewick"),
+                                 ("brookmer", "Brookmere"),
+                                 ("000105", "Foundry Vale / Petal Gardens / Beacon Court")]:
             matches = directory.find_ward(spoken)["matches"]
             got = matches[0]["label"] if matches else "(nothing)"
             check(f'"{spoken}"', got == expected, f"→ {got}")
@@ -78,8 +78,8 @@ def main() -> int:
     try:
         from lib import store
         store.connect()
-        overdue = [c for c in store.complaints_for_phone("9876543210") if c["is_overdue"]]
-        ontime = [c for c in store.complaints_for_phone("9876543210")
+        overdue = [c for c in store.complaints_for_phone("0000000501") if c["is_overdue"]]
+        ontime = [c for c in store.complaints_for_phone("0000000501")
                   if c["is_open"] and not c["is_overdue"]]
         check("database seeds", True, str(store.db_path().name))
         check("an overdue complaint exists (escalation demo)", bool(overdue),

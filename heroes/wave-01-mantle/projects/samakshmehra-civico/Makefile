@@ -115,7 +115,7 @@ show-demo-data: check-uv ## Print the ward directory and seeded complaints
 
 demo-unknown: check-uv guard-env ## Inspector as a caller the line does not recognise
 	@echo "$(YELLOW)Calling from an unrecognised number — no name, no history.$(RESET)"
-	CIVICO_DEMO_CALLER=9000000000 $(RASA) inspect
+	CIVICO_DEMO_CALLER=0000000000 $(RASA) inspect
 
 demo-failure: check-uv guard-env ## Inspector with file_complaint forced to fail
 	@echo "$(YELLOW)file_complaint will fail — this demonstrates on_failure.$(RESET)"

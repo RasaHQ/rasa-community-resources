@@ -9,8 +9,8 @@ from scripts.conversation_quality import score
 class TestProductExperience(TempStore):
     def draft(self):
         ctx = FakeContext()
-        run(report.capture_report(problem="Street light not working", area="Vasundhara",
-            landmark="outside Juniper Heights main gate", callback="9000000001", context=ctx))
+        run(report.capture_report(problem="Street light not working", area="Cedarwick",
+            landmark="outside Juniper Heights main gate", callback="0000000001", context=ctx))
         run(report.find_similar_open(ctx))
         run(report.prepare_report_summary(ctx))
         return ctx
@@ -19,7 +19,7 @@ class TestProductExperience(TempStore):
         ctx = self.draft()
         run(report.revise_report("exact_spot", "the other gate", ctx))
         self.assertEqual(ctx.memory.get("exact_spot"), "outside Juniper Heights other gate")
-        self.assertEqual(ctx.memory.get("ward_label"), "Vasundhara")
+        self.assertEqual(ctx.memory.get("ward_label"), "Cedarwick")
         self.assertIn("Juniper Heights other gate", ctx.said[-1])
         self.assertIsNone(ctx.memory.get("complaint_id"))
 
@@ -29,21 +29,21 @@ class TestProductExperience(TempStore):
 
     def test_added_metro_landmark_keeps_building(self):
         ctx = FakeContext()
-        run(report.capture_report(area="Vaishali", landmark="near Juniper Heights", context=ctx))
-        run(report.capture_report(landmark="near the metro station, Vikas Marg", context=ctx))
+        run(report.capture_report(area="Maplewick", landmark="near Juniper Heights", context=ctx))
+        run(report.capture_report(landmark="near the metro station, Juniper Road", context=ctx))
         self.assertEqual(ctx.memory.get("exact_spot"),
-                         "near Juniper Heights, near the metro station, Vikas Marg")
+                         "near Juniper Heights, near the metro station, Juniper Road")
 
     def test_explicit_new_spot_does_not_keep_old_building(self):
         ctx = FakeContext()
-        run(report.capture_report(area="Vaishali", landmark="Juniper Heights", context=ctx))
+        run(report.capture_report(area="Maplewick", landmark="Juniper Heights", context=ctx))
         run(report.capture_report(landmark="Juniper School", replace_landmark=True, context=ctx))
         self.assertEqual(ctx.memory.get("exact_spot"), "Juniper School")
 
     def test_new_locality_with_new_spot_does_not_merge_old_address(self):
         ctx = FakeContext()
-        run(report.capture_report(area="Vaishali", landmark="Juniper Heights", context=ctx))
-        run(report.capture_report(area="Vasundhara", landmark="Juniper School", replace_area=True, context=ctx))
+        run(report.capture_report(area="Maplewick", landmark="Juniper Heights", context=ctx))
+        run(report.capture_report(area="Cedarwick", landmark="Juniper School", replace_area=True, context=ctx))
         self.assertEqual(ctx.memory.get("exact_spot"), "Juniper School")
 
     def test_no_gate_number_is_invented(self):
@@ -53,7 +53,7 @@ class TestProductExperience(TempStore):
     def test_pin_does_not_replace_required_landmark(self):
         ctx = FakeContext()
         result = run(report.capture_report(problem="Street light not working",
-            area="201012", callback="9000000001", context=ctx)).llm_response
+            area="000102", callback="0000000001", context=ctx)).llm_response
         self.assertIn("landmark", result["missing"])
         self.assertFalse(run(report.prepare_report_summary(ctx)).llm_response["ok"])
 
@@ -62,12 +62,12 @@ class TestProductExperience(TempStore):
         run(report.revise_report("category", "garbage", ctx))
         self.assertIsNone(ctx.memory.get("description"))
         self.assertFalse(ctx.memory.get("details_verified"))
-        self.assertEqual(ctx.memory.get("ward_label"), "Vasundhara")
+        self.assertEqual(ctx.memory.get("ward_label"), "Cedarwick")
 
     def test_callback_correction_refreshes_summary_without_reasking_incident(self):
         ctx = self.draft()
-        run(report.revise_report("callback_number", "9000000002", ctx))
-        self.assertEqual(ctx.memory.get("callback_number"), "9000000002")
+        run(report.revise_report("callback_number", "0000000002", ctx))
+        self.assertEqual(ctx.memory.get("callback_number"), "0000000002")
         self.assertTrue(ctx.memory.get("details_verified"))
         self.assertEqual(ctx.memory.get("duplicate_decision"), "new")
         self.assertIsNone(ctx.memory.get("complaint_id"))
@@ -91,7 +91,7 @@ class TestProductExperience(TempStore):
 class TestScorecard(TestCase):
     def test_metrics_and_no_caller_data_in_output(self):
         events = [
-            {"event": "user", "text": "private 9000000000", "timestamp": 0},
+            {"event": "user", "text": "private 0000000000", "timestamp": 0},
             {"event": "bot", "text": "Which building? Which building?", "timestamp": 3},
             {"event": "user", "timestamp": 4},
             {"event": "bot", "text": '{"target_id":"report_problem__main"}', "timestamp": 6},
@@ -107,7 +107,7 @@ class TestScorecard(TestCase):
         self.assertEqual(result["saved_reports"], 1)
         self.assertEqual(result["reports_saved_after_correction"], 1)
         self.assertEqual(result["median_time_to_first_bot_text_seconds"], 2.5)
-        for private in ("9000000000", "CIV1005", "Which building"):
+        for private in ("0000000000", "CIV1005", "Which building"):
             self.assertNotIn(private, json.dumps(result))
 
     def test_failed_or_pending_write_is_not_success(self):

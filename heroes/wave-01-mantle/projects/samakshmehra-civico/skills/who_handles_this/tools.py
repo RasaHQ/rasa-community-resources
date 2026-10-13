@@ -63,7 +63,7 @@ def _spoken_answer(answer: dict) -> str:
     """Assemble the reply here rather than leaving it to the model.
 
     Asked as free prose, the model said "I am not sure I can place
-    Indirapuram" about a locality sitting in the directory — it had never
+    Brookmere" about a locality sitting in the directory — it had never
     called the lookup at all. The facts are all present by this point, so the
     sentence is assembled where the facts are.
     """

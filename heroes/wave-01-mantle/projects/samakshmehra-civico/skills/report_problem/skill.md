@@ -62,12 +62,12 @@ steps:
       whole conversation. Problem, area, landmark and callback are independent:
       location can arrive before problem. Never discard an answer because it
       is not what you just asked for.
-      "Near Juniper Heights, Vashali, Ghaziabad" gives area Vashali, Ghaziabad
+      "Near Juniper Heights, Maplwick, Civico Demo City" gives area Maplwick, Civico Demo City
       AND landmark near Juniper Heights. Save both immediately.
       "The light bulb is not working" in this civic context is already a usable
       streetlight description. Do not ask for another sentence about it.
       If they clearly mean a private indoor bulb, explain this covers public lights.
-      "Vikas Marg" or "near the metro station" adds to the incident location,
+      "Juniper Road" or "near the metro station" adds to the incident location,
       not the problem description. Preserve earlier landmarks unless corrected.
       Keep the existing locality when adding a road. Set replace_area true only
       when the caller explicitly changes locality, not for an extra landmark.

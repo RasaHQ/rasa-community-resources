@@ -10,15 +10,15 @@ Speak naturally and answer the question actually asked; do not rush the next lin
 
 Normal report:
 
-1. “Garbage bags have been outside the Juniper School gate in Indirapuram for three days.”
-2. If asked for a number: “Nine zero zero zero zero zero zero zero zero one.”
+1. “Garbage bags have been outside the Juniper School gate in Brookmere for three days.”
+2. If asked for a number: “zero zero zero zero zero zero zero zero zero one.”
 3. Check the summary, then “Yes, submit it.”
 4. “Can you check that report?”
 
 Recovery case, in a fresh conversation:
 
-1. “The street light at Juniper Heights main gate in Vasundhara is not working.
-   My callback number is nine zero zero zero zero zero zero zero zero five.”
+1. “The street light at Juniper Heights main gate in Cedarwick is not working.
+   My callback number is zero zero zero zero zero zero zero zero zero five.”
 2. At the summary: “Actually, the other gate.”
 3. If asked which gate, supply a real detail for this fictional incident, such
    as “the back gate”. Check that the building and locality are retained.

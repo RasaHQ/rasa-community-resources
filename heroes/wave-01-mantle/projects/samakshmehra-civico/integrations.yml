@@ -14,10 +14,9 @@ model_groups:
     models:
       - provider: openai
         model: gpt-5.4
-        # `api_key_env:` names an environment variable. The `${OPENAI_API_KEY}`
-        # form looks like it interpolates and does not — it is passed through
-        # to the provider as a literal string.
-        api_key_env: OPENAI_API_KEY
+        # Resolved from the environment at provider call time. Supported on
+        # our frozen 3.20.0.dev6 pin and accepted by current catalog checks.
+        api_key: ${OPENAI_API_KEY}
 
 channels:
   rest:

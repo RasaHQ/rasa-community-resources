@@ -18,7 +18,7 @@ OpenAI and Deepgram respectively.
 `complaints.json` stores an age in days, not a calendar date. The seeder turns
 it into a real date when the database is created. A complaint seeded with a
 hardcoded date is on time in the week it is written and absurdly overdue three
-months later; an age stays true. `CIV1002` is always eight days past a
+months later; an age stays true. `CIV1002` is always nine days past a
 three-day target, which is what makes the escalation flow demonstrable in a
 two-minute recording.
 
@@ -37,7 +37,16 @@ Deletes `data/civico.db`. The next tool call rebuilds it from these files.
 
 ## This is fictional
 
-Localities and PIN codes are real Ghaziabad ones so the demo sounds plausible
-to anyone who knows the city. Ward numbers, officer names, phone numbers,
-departments and target times are invented. No routing or service data came from
-a real municipal authority, and nothing here should be relied on operationally.
+The entire directory belongs to the invented Civico Demo City. Localities,
+aliases, landmarks, ward and caller identifiers, officer labels, departments,
+contact numbers and target times are fictional.
+
+PIN values such as `000101` (Maplewick) and `000104` (Brookmere) are dummy
+six-digit strings. They retain their leading zeros in JSON, lookup and speech
+normalisation; they do not represent real postal areas. Callback values such
+as `0000000501` (Demo Caller One) and `0000000502` (Demo Caller Two) and
+all `0000-000-01xx` helpdesk contacts are non-dialable placeholders.
+
+These values exist only to exercise routing, ambiguity, consent, persistence,
+duplicate support and escalation. No routing or service data came from a real
+municipal authority, and no report, message or call leaves the demo.

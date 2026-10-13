@@ -8,7 +8,8 @@ problems, and stray animals.
 
 Anything else — property tax, birth and death certificates, trade licences,
 building plan approvals, electricity, or police matters — is handled elsewhere.
-The main helpline on 1800-000-0100 will direct you.
+The sample helpdesk identifier is 0000-000-0100. It is fictional and cannot
+connect you to a person; this demo cannot route unsupported requests.
 
 Emergencies are not handled here at all. A fire, an accident, a medical
 emergency, violence, or a live electrical hazard means hanging up and calling
@@ -17,7 +18,8 @@ emergency, violence, or a live electrical hazard means hanging up and calling
 ## What you need to file a complaint
 
 Three things: what the problem is, which locality or PIN code it is in, and a
-ten-digit number the field team can call you back on. You do not need an
+ten-digit demo callback identifier, such as 0000000001. No call or SMS is
+sent. You do not need an
 account, a login, or a document number, and you do not have to give your name.
 
 You will also be asked where exactly the problem is — a landmark, a shop, a

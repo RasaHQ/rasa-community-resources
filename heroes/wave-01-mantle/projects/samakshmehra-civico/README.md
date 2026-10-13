@@ -5,7 +5,7 @@
 ```text
 Author:        Samaksh Mehra
 Wave:          wave-01-mantle
-Assessed on:   2026-09-18
+Assessed on:   2026-10-13
 Assessed by:   Samaksh Mehra
 Verified with: rasa-pro 3.20.0.dev6, Python 3.12, uv
 Audience:      Builders evaluating reliable voice intake with Rasa Mantle
@@ -33,10 +33,12 @@ The agent can:
 - answer routing and process questions; and
 - provide an honest handoff path when a live transfer is unavailable.
 
-This is a local demonstration, not an official municipal service. Localities
-and PIN codes are real enough to make the scenario understandable, but ward
-numbers, officers, phone numbers, departments, deadlines, and dispatches are
-fictional.
+This is a local demonstration set in the fictional **Civico Demo City**.
+Every locality, landmark, PIN code, caller, officer, contact number, ward,
+department and complaint is invented. Demo PINs such as `000101` and `000104`
+are six-character strings, not real postal codes. Callback identifiers such
+as `0000000501` and `0000000001` are non-dialable demo values; the agent
+does not dispatch reports, send messages or make calls.
 
 ## Why this is a Mantle use case
 
@@ -207,8 +209,8 @@ Other scripted cases are listed by `make demo-call ARGS=--help` and in
 
 After `make inspect`, try this normal report:
 
-1. “I want to report garbage bags left outside the Juniper School gate in Indirapuram.”
-2. “Use nine zero zero zero zero zero zero zero zero one for follow-up.”
+1. “I want to report garbage bags left outside the Juniper School gate in Brookmere.”
+2. “Use zero zero zero zero zero zero zero zero zero one for follow-up.”
 3. If asked about an existing incident, answer whether it is the same place.
 4. At the final confirmation, say “Yes, file it.”
 5. Then ask, “What is the status of that complaint?”
@@ -217,7 +219,7 @@ Useful edge cases:
 
 - Say “Actually, it is at the park gate opposite the school” during review to
   show correction and revalidation.
-- Report drainage in Vaishali to exercise the seeded duplicate path.
+- Report drainage in Maplewick to exercise the seeded duplicate path.
 - Look up `CIV1002` to demonstrate a genuinely overdue complaint and escalation.
 - Give an unknown locality twice to show fallback to the grievance cell instead
   of abandoning the caller.
@@ -225,7 +227,7 @@ Useful edge cases:
 
 ## Testing and reproducibility
 
-The repository contains 151 offline regression tests covering directory
+The repository contains 155 offline regression tests covering directory
 matching, spoken digits, category validation, complaint IDs, duplicate support,
 corrections, consent gates, status, escalation, persistence, and failure paths.
 

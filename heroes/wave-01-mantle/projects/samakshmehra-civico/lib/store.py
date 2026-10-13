@@ -108,7 +108,7 @@ def normalise_category(spoken: str) -> str:
     """Map what a caller said onto one of the six category keys.
 
     Shared, because it was not: living inside the report_problem tools, it
-    meant "who handles potholes in Kavi Nagar" was told this line does not
+    meant "who handles potholes in Lantern Hollow" was told this line does not
     handle potholes, while "there is a pothole" filed one without complaint.
     """
     key = str(spoken or "").strip().lower().replace(" ", "_").replace("-", "_")

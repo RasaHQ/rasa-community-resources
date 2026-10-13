@@ -11,10 +11,10 @@ from skills.check_status import tools as status
 class TestSubmissionFlow(TempStore):
     def ready(self, **changes):
         values = dict(category="drainage", department="Drainage", sla_days="5",
-                      ward_id="W12", ward_label="Vaishali", ward_officer="A. Sharma",
+                      ward_id="W12", ward_label="Maplewick", ward_officer="Demo Officer 12",
                       ward_confirmed=True, exact_spot="Outside the corner shop",
                       description="Drain water spills onto the footpath",
-                      callback_number="9000000000", details_verified=True,
+                      callback_number="0000000000", details_verified=True,
                       duplicate_decision="attach", similar_id="CIV1004")
         values.update(changes)
         return FakeContext(**values)
@@ -33,7 +33,7 @@ class TestSubmissionFlow(TempStore):
         current = store.get_complaint("CIV1004")
         self.assertEqual(current["resolution_note"], original["resolution_note"])
         self.assertEqual(current["target_on"], original["target_on"])
-        tracked = run(status.list_my_complaints("9000000000", FakeContext())).llm_response
+        tracked = run(status.list_my_complaints("0000000000", FakeContext())).llm_response
         self.assertEqual(tracked["complaint_id"], "CIV1004")
 
     def test_join_cannot_skip_confirmation_or_required_details(self):
@@ -59,7 +59,7 @@ class TestSubmissionFlow(TempStore):
 
     def test_area_correction_clears_old_ward_and_exact_spot(self):
         ctx = self.ready()
-        run(report.revise_report("area", "Indirapuram", ctx))
+        run(report.revise_report("area", "Brookmere", ctx))
         self.assertFalse(ctx.memory.get("ward_confirmed"))
         self.assertIsNone(ctx.memory.get("ward_id"))
         self.assertIsNone(ctx.memory.get("exact_spot"))
@@ -97,8 +97,8 @@ class TestSubmissionFlow(TempStore):
         self.assertEqual(row["sla_days"], 5)
 
     def test_selection_uses_the_number_searched_and_only_offered_items(self):
-        ctx = FakeContext(caller_phone="9812345678")
-        result = run(status.list_my_complaints("9876543210", ctx)).llm_response
+        ctx = FakeContext(caller_phone="0000000502")
+        result = run(status.list_my_complaints("0000000501", ctx)).llm_response
         chosen = run(status.choose_complaint("second", ctx)).llm_response
         self.assertEqual(chosen["complaint_id"], result["options"][1]["complaint_id"])
         self.assertFalse(run(status.choose_complaint("4", ctx)).llm_response["ok"])
@@ -107,7 +107,7 @@ class TestSubmissionFlow(TempStore):
         store.get_complaint("CIV1001")  # Seed before concurrent requests.
         def file_one(index):
             return store.insert_complaint(phone=str(index), category="garbage",
-                ward_id="W12", locality="Vaishali", exact_spot="Gate", description="Bins",
+                ward_id="W12", locality="Maplewick", exact_spot="Gate", description="Bins",
                 department="Sanitation", sla_days=2)["complaint_id"]
         with ThreadPoolExecutor(max_workers=4) as pool:
             refs = list(pool.map(file_one, range(8)))

@@ -47,7 +47,7 @@ pull request that adds their project.
 
 | Project | What it does | Author | Verified with | Assessed on |
 |---|---|---|---|---|
-| [`samakshmehra-civico`](projects/samakshmehra-civico/) | Voice-first civic complaint intake with deterministic routing, duplicate handling, status lookup, and overdue escalation | Samaksh Mehra | rasa-pro 3.20.0.dev6 | 2026-09-18 |
+| [`samakshmehra-civico`](projects/samakshmehra-civico/) | Voice-first civic complaint intake with deterministic routing, duplicate handling, status lookup, and overdue escalation | Samaksh Mehra | rasa-pro 3.20.0.dev6 | 2026-10-13 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a

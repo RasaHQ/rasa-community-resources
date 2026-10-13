@@ -32,7 +32,7 @@ def main() -> None:
 
     print("\nSEEDED COMPLAINTS")
     seen = set()
-    for citizen in [{"phone": "9876543210"}, {"phone": "9812345678"}]:
+    for citizen in [{"phone": "0000000501"}, {"phone": "0000000502"}]:
         for row in store.complaints_for_phone(citizen["phone"]):
             if row["complaint_id"] in seen:
                 continue
@@ -48,18 +48,18 @@ def main() -> None:
             print(f"            say: \"{row['spoken_id']}\"")
 
     print("\nDEMO CALLERS")
-    for c in [store.citizen_by_phone("9876543210"), store.citizen_by_phone("9812345678")]:
+    for c in [store.citizen_by_phone("0000000501"), store.citizen_by_phone("0000000502")]:
         print(f"  {c['phone']}  {c['name']}")
-    print("  9000000000  (unrecognised — make demo-unknown)")
+    print("  0000000000  (unrecognised — make demo-unknown)")
 
     print("\nTRY SAYING")
     for line in [
-        "There is a huge pothole in Vaishali",
-        "The drain is blocked in Vaishali          (finds the open CIV1004)",
+        "There is a huge pothole in Maplewick",
+        "The drain is blocked in Maplewick          (finds the open CIV1004)",
         "It is near my house                       (unmappable — two tries, then the cell)",
         "My property tax is wrong                  (out of scope)",
         "What happened to C I V one zero zero two? (overdue — offers escalation)",
-        "Who handles garbage in Indirapuram?       (answers, files nothing)",
+        "Who handles garbage in Brookmere?       (answers, files nothing)",
     ]:
         print(f"  {line}")
     print()

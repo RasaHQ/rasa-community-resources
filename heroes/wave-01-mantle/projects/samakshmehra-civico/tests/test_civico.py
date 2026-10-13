@@ -99,30 +99,30 @@ class TestProjectRoot(unittest.TestCase):
 class TestSpokenDigits(unittest.TestCase):
 
     def test_pincode_spoken_as_words(self):
-        self.assertEqual(directory.extract_pincode("two zero one zero one zero"), "201010")
+        self.assertEqual(directory.extract_pincode("zero zero zero one zero one"), "000101")
 
     def test_pincode_written_as_digits(self):
-        self.assertEqual(directory.extract_pincode("my pin code is 201014"), "201014")
+        self.assertEqual(directory.extract_pincode("my pin code is 000104"), "000104")
 
     def test_pincode_with_oh_for_zero(self):
-        self.assertEqual(directory.extract_pincode("two oh one oh one four"), "201014")
+        self.assertEqual(directory.extract_pincode("zero oh zero one oh four"), "000104")
 
     def test_five_digits_is_not_a_pincode(self):
         """Guessing which sixth digit was meant is how you route the wrong ward."""
-        self.assertEqual(directory.extract_pincode("two zero one zero one"), "")
+        self.assertEqual(directory.extract_pincode("zero zero zero one zero"), "")
 
     def test_phone_from_spoken_digits(self):
-        spoken = "nine eight seven six five four three two one zero"
-        self.assertEqual(directory.extract_phone(spoken), "9876543210")
+        spoken = "zero zero zero zero zero zero zero five zero one"
+        self.assertEqual(directory.extract_phone(spoken), "0000000501")
 
     def test_phone_strips_country_code(self):
-        self.assertEqual(directory.extract_phone("+91 9812345678"), "9812345678")
+        self.assertEqual(directory.extract_phone("+91 0000000502"), "0000000502")
 
     def test_phone_strips_leading_zero(self):
-        self.assertEqual(directory.extract_phone("09812345678"), "9812345678")
+        self.assertEqual(directory.extract_phone("00000000502"), "0000000502")
 
     def test_nine_digits_is_rejected(self):
-        self.assertEqual(directory.extract_phone("987654321"), "")
+        self.assertEqual(directory.extract_phone("000000050"), "")
 
     def test_double_expands(self):
         self.assertEqual(directory.digits_from_speech("double nine eight"), ["998"])
@@ -168,40 +168,40 @@ class TestSpokenReferences(unittest.TestCase):
 class TestWardLookup(unittest.TestCase):
 
     def test_exact_locality(self):
-        matches = directory.find_ward("Indirapuram")["matches"]
-        self.assertEqual(matches[0]["label"], "Indirapuram")
+        matches = directory.find_ward("Brookmere")["matches"]
+        self.assertEqual(matches[0]["label"], "Brookmere")
         self.assertEqual(matches[0]["ward_id"], "W14")
 
     def test_mangled_by_speech_recognition(self):
-        """The transcript that broke version one, three times, on a live call."""
-        result = directory.find_ward("Vishali, two zero one zero one two")
-        self.assertEqual(result["matches"][0]["label"], "Vaishali")
-        self.assertEqual(result["matches"][0]["officer_name"], "A. Sharma")
+        """A fictional misspelling retains the observed ASR regression case."""
+        result = directory.find_ward("Maplewik, zero zero zero one zero two")
+        self.assertEqual(result["matches"][0]["label"], "Maplewick")
+        self.assertEqual(result["matches"][0]["officer_name"], "Demo Officer 12")
 
     def test_pincode_disagreement_is_surfaced_not_resolved(self):
-        """201012 is Vasundhara, but they said Vaishali. Say so; do not pick."""
-        result = directory.find_ward("Vishali, two zero one zero one two")
+        """000102 is Cedarwick, but they said Maplewick. Say so; do not pick."""
+        result = directory.find_ward("Maplewik, zero zero zero one zero two")
         self.assertTrue(result["matches"][0]["pincode_differs"])
 
     def test_locality_name_beats_pincode(self):
-        result = directory.find_ward("Vishali, two zero one zero one two")
+        result = directory.find_ward("Maplewik, zero zero zero one zero two")
         self.assertEqual(result["matched_on"], "name")
 
     def test_filler_words_are_ignored(self):
-        matches = directory.find_ward("there is a pothole near the market in Kavi Nagar")["matches"]
-        self.assertEqual(matches[0]["label"], "Kavi Nagar")
+        matches = directory.find_ward("there is a pothole near the market in Lantern Hollow")["matches"]
+        self.assertEqual(matches[0]["label"], "Lantern Hollow")
 
     def test_alias(self):
-        self.assertEqual(directory.find_ward("rdc")["matches"][0]["label"], "Raj Nagar")
+        self.assertEqual(directory.find_ward("cfd")["matches"][0]["label"], "Copperfield")
 
     def test_confident_match_does_not_drag_near_misses_along(self):
-        """Indirapuram also scores 0.76 against Govindpuram. Offer one, not two."""
-        matches = directory.find_ward("indirapuram")["matches"]
+        """A clear exact name must not pull a similar locality into the options."""
+        matches = directory.find_ward("brookmere")["matches"]
         self.assertEqual(len(matches), 1)
 
     def test_pincode_alone_returns_the_ward_once(self):
         """One PIN covers three localities in W09 — offer the ward, not three rows."""
-        result = directory.find_ward("201005")
+        result = directory.find_ward("000105")
         self.assertEqual(result["matched_on"], "pincode")
         self.assertEqual(len(result["matches"]), 1)
         self.assertIn("/", result["matches"][0]["label"])
@@ -210,8 +210,8 @@ class TestWardLookup(unittest.TestCase):
         self.assertEqual(directory.find_ward("outside our lane")["matches"], [])
 
     def test_another_city_is_not_matched(self):
-        """The Vijayawada bug: structurally impossible against a fixed table."""
-        self.assertEqual(directory.find_ward("Vijayawada")["matches"], [])
+        """An out-of-directory city must not receive a local ward."""
+        self.assertEqual(directory.find_ward("Faraway Demo City")["matches"], [])
 
     def test_general_cell_is_reachable_by_id(self):
         self.assertIsNotNone(directory.ward_by_id("GEN"))
@@ -244,12 +244,12 @@ class TestStore(TempStore):
         self.assertIsNone(store.get_complaint("CIV9999"))
 
     def test_complaints_for_phone(self):
-        rows = store.complaints_for_phone("9876543210")
+        rows = store.complaints_for_phone("0000000501")
         self.assertEqual({r["complaint_id"] for r in rows},
                          {"CIV1001", "CIV1002", "CIV1003"})
 
     def test_open_only_filter(self):
-        rows = store.complaints_for_phone("9876543210", open_only=True)
+        rows = store.complaints_for_phone("0000000501", open_only=True)
         self.assertNotIn("CIV1003", {r["complaint_id"] for r in rows})
 
     def test_similar_matches_category_and_ward(self):
@@ -265,7 +265,7 @@ class TestStore(TempStore):
     def test_insert_sets_target_from_sla(self):
         row = store.insert_complaint(
             phone="9999999999", category="pothole", ward_id="W12",
-            locality="Vaishali", exact_spot="by the temple",
+            locality="Maplewick", exact_spot="by the temple",
             description="Big hole", department="Road Maintenance", sla_days=7,
         )
         self.assertEqual(row["complaint_id"], "CIV1005")
@@ -274,17 +274,17 @@ class TestStore(TempStore):
 
     def test_ids_do_not_collide(self):
         first = store.insert_complaint(
-            phone="1", category="garbage", ward_id="W12", locality="Vaishali",
+            phone="1", category="garbage", ward_id="W12", locality="Maplewick",
             exact_spot="", description="", department="Sanitation", sla_days=2)
         second = store.insert_complaint(
-            phone="2", category="garbage", ward_id="W12", locality="Vaishali",
+            phone="2", category="garbage", ward_id="W12", locality="Maplewick",
             exact_spot="", description="", department="Sanitation", sla_days=2)
         self.assertNotEqual(first["complaint_id"], second["complaint_id"])
 
     def test_exact_spot_is_stored_verbatim(self):
         spot = "in front of the Juniper Heights main gate, near the water tank"
         row = store.insert_complaint(
-            phone="1", category="pothole", ward_id="W12", locality="Vaishali",
+            phone="1", category="pothole", ward_id="W12", locality="Maplewick",
             exact_spot=spot, description="x",
             department="Road Maintenance", sla_days=7)
         self.assertEqual(store.get_complaint(row["complaint_id"])["exact_spot"], spot)
@@ -334,9 +334,9 @@ class TestReportProblemTools(TempStore):
         """A context as it stands just before filing."""
         return FakeContext(
             category="pothole", department="Road Maintenance", sla_days="7",
-            ward_id="W12", ward_label="Vaishali", ward_officer="A. Sharma",
+            ward_id="W12", ward_label="Maplewick", ward_officer="Demo Officer 12",
             ward_confirmed=True, exact_spot="by the temple gate",
-            description="Deep pothole", callback_number="9876543210",
+            description="Deep pothole", callback_number="0000000501",
             caller_id="501",
             details_verified=True, duplicate_decision="new",
         )
@@ -378,7 +378,7 @@ class TestReportProblemTools(TempStore):
 
     def test_find_ward_stores_candidates(self):
         ctx = FakeContext()
-        result = run(self.t.find_ward("Vaishali", ctx)).llm_response
+        result = run(self.t.find_ward("Maplewick", ctx)).llm_response
         self.assertEqual(result["found"], 1)
         self.assertTrue(ctx.memory.get("ward_candidates"))
 
@@ -389,20 +389,20 @@ class TestReportProblemTools(TempStore):
 
     def test_confirm_ward_writes_the_officer(self):
         ctx = FakeContext()
-        run(self.t.find_ward("Indirapuram", ctx))
+        run(self.t.find_ward("Brookmere", ctx))
         result = run(self.t.confirm_ward("1", ctx)).llm_response
         self.assertTrue(result["ok"])
-        self.assertEqual(ctx.memory.get("ward_officer"), "S. Kaur")
+        self.assertEqual(ctx.memory.get("ward_officer"), "Demo Officer 14")
         self.assertTrue(ctx.memory.get("ward_confirmed"))
 
     def test_a_plain_yes_confirms_a_single_option(self):
         """Callers do not answer a one-item list with "one". Observed live:
         the agent asked for a digit three turns running."""
         ctx = FakeContext()
-        run(self.t.find_ward("Indirapuram", ctx))
+        run(self.t.find_ward("Brookmere", ctx))
         result = run(self.t.confirm_ward("Yes that is the one", ctx)).llm_response
         self.assertTrue(result["ok"])
-        self.assertEqual(ctx.memory.get("ward_officer"), "S. Kaur")
+        self.assertEqual(ctx.memory.get("ward_officer"), "Demo Officer 14")
 
     def test_a_plain_yes_is_ambiguous_when_several_were_offered(self):
         from skills.report_problem.tools import _pick
@@ -418,7 +418,7 @@ class TestReportProblemTools(TempStore):
 
     def test_confirm_ward_rejects_an_option_that_was_not_offered(self):
         ctx = FakeContext()
-        run(self.t.find_ward("Indirapuram", ctx))
+        run(self.t.find_ward("Brookmere", ctx))
         result = run(self.t.confirm_ward("4", ctx)).llm_response
         self.assertFalse(result["ok"])
         self.assertFalse(ctx.memory.get("ward_confirmed"))
@@ -440,7 +440,7 @@ class TestReportProblemTools(TempStore):
     def test_a_later_success_does_not_trip_the_counter(self):
         ctx = FakeContext()
         run(self.t.find_ward("outside our lane", ctx))
-        found = run(self.t.find_ward("Vaishali", ctx)).llm_response
+        found = run(self.t.find_ward("Maplewick", ctx)).llm_response
         self.assertEqual(found["found"], 1)
         self.assertNotEqual(ctx.memory.get("ward_id"), "GEN")
 
@@ -453,9 +453,9 @@ class TestReportProblemTools(TempStore):
 
     def test_callback_number_accepts_spoken_digits(self):
         ctx = FakeContext()
-        spoken = "nine eight seven six five four three two one zero"
+        spoken = "zero zero zero zero zero zero zero five zero one"
         result = run(self.t.record_callback_number(spoken, ctx)).llm_response
-        self.assertEqual(result["number"], "9876543210")
+        self.assertEqual(result["number"], "0000000501")
 
     def test_callback_number_rejects_short_input(self):
         ctx = FakeContext()
@@ -465,7 +465,7 @@ class TestReportProblemTools(TempStore):
 
     def test_similar_finds_the_open_one_in_the_same_ward(self):
         ctx = FakeContext(category="drainage", ward_id="W12",
-                          callback_number="9876543210")
+                          callback_number="0000000501")
         result = run(self.t.find_similar_open(ctx)).llm_response
         self.assertEqual(result["found"], 1)
         self.assertEqual(ctx.memory.get("similar_id"), "CIV1004")
@@ -473,7 +473,7 @@ class TestReportProblemTools(TempStore):
     def test_no_duplicate_decides_itself(self):
         """Most calls take this branch and should never hear the word."""
         ctx = FakeContext(category="pothole", ward_id="W14",
-                          callback_number="9876543210")
+                          callback_number="0000000501")
         result = run(self.t.find_similar_open(ctx)).llm_response
         self.assertEqual(result["found"], 0)
         self.assertEqual(ctx.memory.get("duplicate_decision"), "new")
@@ -483,7 +483,7 @@ class TestReportProblemTools(TempStore):
         """The tool finds it and clears the field; only the caller's answer
         fills it in, so the step cannot complete without them."""
         ctx = FakeContext(category="drainage", ward_id="W12",
-                          callback_number="9876543210")
+                          callback_number="0000000501")
         result = run(self.t.find_similar_open(ctx)).llm_response
         self.assertEqual(result["found"], 1)
         self.assertIsNone(ctx.memory.get("duplicate_decision"))
@@ -493,25 +493,25 @@ class TestReportProblemTools(TempStore):
         """Observed live: the model filled the empty parameter object with
         {"": ""} and the call came back as a TypeError."""
         ctx = FakeContext(category="pothole", ward_id="W14",
-                          callback_number="9876543210")
+                          callback_number="0000000501")
         self.assertTrue(run(self.t.find_similar_open(ctx, **{"": ""})).llm_response["ok"])
 
     def test_similar_never_reads_out_someone_elses_reference(self):
         ctx = FakeContext(category="drainage", ward_id="W12",
-                          callback_number="9876543210")
+                          callback_number="0000000501")
         result = run(self.t.find_similar_open(ctx)).llm_response
         self.assertNotIn("complaint_id", result)
 
     def test_similar_includes_the_callers_own_complaint(self):
         ctx = FakeContext(category="drainage", ward_id="W12",
-                          callback_number="9812345678")
+                          callback_number="0000000502")
         self.assertEqual(run(self.t.find_similar_open(ctx)).llm_response["found"], 1)
 
     def test_file_complaint_returns_a_reference(self):
         ctx = self._ready_context()
         result = run(self.t.file_complaint(ctx)).llm_response
         self.assertTrue(result["ok"])
-        self.assertEqual(result["officer"], "A. Sharma")
+        self.assertEqual(result["officer"], "Demo Officer 12")
         self.assertEqual(result["spoken_id"], store.spoken_id(result["complaint_id"]))
 
     def test_the_tool_speaks_the_reference_itself(self):
@@ -522,8 +522,8 @@ class TestReportProblemTools(TempStore):
         self.assertEqual(len(ctx.said), 1)
         spoken = ctx.said[0]
         self.assertIn(result["spoken_id"], spoken)
-        self.assertIn("A. Sharma", spoken)
-        self.assertIn("Vaishali", spoken)
+        self.assertIn("Demo Officer 12", spoken)
+        self.assertIn("Maplewick", spoken)
 
     def test_the_general_cell_line_does_not_name_a_ward_officer(self):
         """"The Grievance Cell duty officer is the ward officer for General
@@ -571,7 +571,7 @@ class TestReportProblemTools(TempStore):
         result = run(self.t.attach_to_existing(ctx)).llm_response
         self.assertTrue(result["ok"])
         self.assertIn("CIV1004", [r["complaint_id"]
-                                 for r in store.complaints_for_phone("9876543210")])
+                                 for r in store.complaints_for_phone("0000000501")])
 
     def test_attach_speaks_the_existing_reference(self):
         ctx = self._ready_context()
@@ -598,7 +598,7 @@ class TestCheckStatusTools(TempStore):
     def test_look_up_by_reference(self):
         result = run(self.shared.look_up_complaint("CIV1001", FakeContext())).llm_response
         self.assertTrue(result["ok"])
-        self.assertEqual(result["officer"], "A. Sharma")
+        self.assertEqual(result["officer"], "Demo Officer 12")
 
     def test_look_up_tolerates_spoken_spacing(self):
         self.assertTrue(run(self.shared.look_up_complaint("CIV 1001", FakeContext())).llm_response["ok"])
@@ -621,44 +621,44 @@ class TestCheckStatusTools(TempStore):
     def test_list_never_searches_the_calling_number_unasked(self):
         """Caller ID is not consent. This used to default to the calling
         number, handing over a whole complaint history to anyone on the line."""
-        ctx = FakeContext(caller_phone="9876543210")
+        ctx = FakeContext(caller_phone="0000000501")
         result = run(self.t.list_my_complaints("", ctx)).llm_response
         self.assertFalse(result["ok"])
         self.assertEqual(result["error"], "no_number")
 
     def test_list_offers_only_the_last_four_digits(self):
-        ctx = FakeContext(caller_phone="9876543210")
+        ctx = FakeContext(caller_phone="0000000501")
         result = run(self.t.list_my_complaints("", ctx)).llm_response
-        self.assertEqual(result["calling_number_ends"], "3210")
-        self.assertNotIn("9876543210", json.dumps(result))
+        self.assertEqual(result["calling_number_ends"], "0501")
+        self.assertNotIn("0000000501", json.dumps(result))
 
     def test_list_searches_once_the_number_is_given(self):
-        ctx = FakeContext(caller_phone="9876543210")
-        result = run(self.t.list_my_complaints("9876543210", ctx)).llm_response
+        ctx = FakeContext(caller_phone="0000000501")
+        result = run(self.t.list_my_complaints("0000000501", ctx)).llm_response
         self.assertEqual(result["found"], 3)
 
     def test_list_returns_the_single_match_directly(self):
-        ctx = FakeContext(caller_phone="9812345678")
-        result = run(self.t.list_my_complaints("9812345678", ctx)).llm_response
+        ctx = FakeContext(caller_phone="0000000502")
+        result = run(self.t.list_my_complaints("0000000502", ctx)).llm_response
         self.assertEqual(result["found"], 1)
         self.assertEqual(result["complaint_id"], "CIV1004")
 
     def test_list_never_reads_reference_numbers_in_the_options(self):
-        ctx = FakeContext(caller_phone="9876543210")
-        result = run(self.t.list_my_complaints("9876543210", ctx)).llm_response
+        ctx = FakeContext(caller_phone="0000000501")
+        result = run(self.t.list_my_complaints("0000000501", ctx)).llm_response
         for option in result["options"]:
             self.assertNotIn("CIV", option["say"])
 
     def test_choose_picks_from_the_list(self):
-        ctx = FakeContext(caller_phone="9876543210")
-        run(self.t.list_my_complaints("9876543210", ctx))
+        ctx = FakeContext(caller_phone="0000000501")
+        run(self.t.list_my_complaints("0000000501", ctx))
         result = run(self.t.choose_complaint("1", ctx)).llm_response
         self.assertTrue(result["ok"])
         self.assertTrue(result["complaint_id"].startswith("CIV"))
 
     def test_choose_rejects_an_option_that_was_not_offered(self):
-        ctx = FakeContext(caller_phone="9876543210")
-        run(self.t.list_my_complaints("9876543210", ctx))
+        ctx = FakeContext(caller_phone="0000000501")
+        run(self.t.list_my_complaints("0000000501", ctx))
         self.assertFalse(run(self.t.choose_complaint("9", ctx)).llm_response["ok"])
 
 
@@ -741,9 +741,9 @@ class TestWhoHandlesTool(TempStore):
         self.t = wt
 
     def test_category_and_area(self):
-        result = run(self.t.who_handles("garbage", "Indirapuram", FakeContext())).llm_response
+        result = run(self.t.who_handles("garbage", "Brookmere", FakeContext())).llm_response
         self.assertEqual(result["department"], "Sanitation")
-        self.assertEqual(result["officer"], "S. Kaur")
+        self.assertEqual(result["officer"], "Demo Officer 14")
 
     def test_category_alone(self):
         result = run(self.t.who_handles("pothole", "", FakeContext())).llm_response
@@ -751,24 +751,24 @@ class TestWhoHandlesTool(TempStore):
         self.assertNotIn("officer", result)
 
     def test_area_alone(self):
-        result = run(self.t.who_handles("", "Mohan Nagar", FakeContext())).llm_response
-        self.assertEqual(result["officer"], "B. Rathore")
+        result = run(self.t.who_handles("", "Forgefield", FakeContext())).llm_response
+        self.assertEqual(result["officer"], "Demo Officer 17")
 
     def test_the_category_map_is_shared_with_the_report_flow(self):
         """"Who handles potholes" was told this line does not handle
         potholes, while "there is a pothole" filed one without complaint —
         the alias map lived inside the other skill's tools."""
-        result = run(self.t.who_handles("potholes", "Kavi Nagar", FakeContext())).llm_response
+        result = run(self.t.who_handles("potholes", "Lantern Hollow", FakeContext())).llm_response
         self.assertEqual(result["department"], "Road Maintenance")
         self.assertNotIn("unsupported_category", result)
 
     def test_ward_numbers_are_read_the_same_way_everywhere(self):
-        result = run(self.t.who_handles("", "Kavi Nagar", FakeContext())).llm_response
+        result = run(self.t.who_handles("", "Lantern Hollow", FakeContext())).llm_response
         self.assertEqual(result["ward"], "1")
 
     def test_unknown_area_is_admitted(self):
-        result = run(self.t.who_handles("garbage", "Vijayawada", FakeContext())).llm_response
-        self.assertEqual(result["area_not_found"], "Vijayawada")
+        result = run(self.t.who_handles("garbage", "Faraway Demo City", FakeContext())).llm_response
+        self.assertEqual(result["area_not_found"], "Faraway Demo City")
         self.assertNotIn("officer", result)
 
 
@@ -780,21 +780,21 @@ class TestLoadCaller(TempStore):
         self.t = civic
 
     def test_known_number(self):
-        os.environ["CIVICO_DEMO_CALLER"] = "9876543210"
+        os.environ["CIVICO_DEMO_CALLER"] = "0000000501"
         self.addCleanup(os.environ.pop, "CIVICO_DEMO_CALLER", None)
         ctx = FakeContext()
         result = run(self.t.load_caller(ctx)).llm_response
         self.assertTrue(result["known"])
-        self.assertEqual(result["first_name"], "Ravi")
+        self.assertEqual(result["first_name"], "Demo")
         self.assertTrue(ctx.memory.get("known_caller"))
 
     def test_unknown_number_is_normal(self):
-        os.environ["CIVICO_DEMO_CALLER"] = "9000000000"
+        os.environ["CIVICO_DEMO_CALLER"] = "0000000000"
         self.addCleanup(os.environ.pop, "CIVICO_DEMO_CALLER", None)
         ctx = FakeContext()
         result = run(self.t.load_caller(ctx)).llm_response
         self.assertFalse(result["known"])
-        self.assertEqual(ctx.memory.get("caller_phone"), "9000000000")
+        self.assertEqual(ctx.memory.get("caller_phone"), "0000000000")
 
 
 if __name__ == "__main__":

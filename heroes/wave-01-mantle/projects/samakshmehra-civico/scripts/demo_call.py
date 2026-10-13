@@ -18,35 +18,35 @@ URL = os.getenv("CIVICO_REST_URL", "http://localhost:5007/webhooks/rest/webhook"
 
 SCRIPTS = {
     "gate": [
-        "I want to report a street light not working outside Juniper Heights main gate in Vasundhara. My number is 9000000005.",
+        "I want to report a street light not working outside Juniper Heights main gate in Cedarwick. My number is 0000000005.",
         "Actually, the other gate",
         "Yes, please submit the corrected report",
     ],
     "natural": [
         "I want to file a complaint",
         "It is nearby my society only",
-        "Near Juniper Heights, Vashali, Ghaziabad",
+        "Near Juniper Heights, Maplwick, Civico Demo City",
         "The light bulb is not working",
-        "It is near the metro station, Vikas Marg",
-        "9000000000",
+        "It is near the metro station, Juniper Road",
+        "0000000000",
         "Yes, please file it",
     ],
     "quick": [
-        "I want to report garbage bags left for three days outside the Juniper School gate in Indirapuram. Use 9000000001 as my callback number.",
+        "I want to report garbage bags left for three days outside the Juniper School gate in Brookmere. Use 0000000001 as my callback number.",
         "Yes, please file it",
     ],
     "revise": [
-        "I want to report a street light not working outside Juniper School in Vasundhara. My number is 9000000002.",
+        "I want to report a street light not working outside Juniper School in Cedarwick. My number is 0000000002.",
         "No, change the spot to the park gate opposite the school",
         "Yes, please file the corrected complaint",
     ],
     "join": [
-        "I want to report an overflowing drain outside the corner shop on the main road in Vaishali. My number is 9000000003.",
+        "I want to report an overflowing drain outside the corner shop on the main road in Maplewick. My number is 0000000003.",
         "It is the same issue",
         "Yes, add my report",
     ],
     "cancel": [
-        "I want to report no water supply at Juniper Heights in Vasundhara. My callback number is 9000000004.",
+        "I want to report no water supply at Juniper Heights in Cedarwick. My callback number is 0000000004.",
         "No, cancel the complaint. I do not want to submit anything.",
     ],
     "status": [
@@ -54,7 +54,7 @@ SCRIPTS = {
         "Yes please raise it",
         "Yes go ahead",
     ],
-    "who": ["Who handles garbage in Indirapuram?", "No thanks, not right now"],
+    "who": ["Who handles garbage in Brookmere?", "No thanks, not right now"],
     "scope": ["My property tax bill is wrong"],
 }
 

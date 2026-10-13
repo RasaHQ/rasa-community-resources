@@ -1,5 +1,46 @@
 # Findings
 
+## Fictional-data revision, October 13, 2026
+
+- Rebased the submission onto community repository main at `43db47a`.
+  Kept the shared Wave 01 charter and catalog structure, with Civico's own rows.
+- Replaced the real geographic framing with Civico Demo City and 29 invented
+  localities. Updated aliases, roads, PINs, callers, officers, contacts, seeds,
+  skills, references, demos, evaluation scenarios and tests together.
+- PINs use six-character strings beginning with `000`; caller and helpdesk
+  identifiers are non-dialable placeholders. Leading zeros survive both
+  written and spoken input. Ward/PIN ambiguity and mismatched-PIN handling
+  remain covered.
+- Changed model-group credentials to `api_key: ${OPENAI_API_KEY}` in both
+  integrations.yml and endpoints.yml. Current catalog checks require this
+  form; Rasa's provider expands it at call time on the frozen 3.20.0.dev6 pin.
+- Added four data-contract tests for dummy PIN round trips, every locality and
+  alias, seeded complaint/caller/ward consistency, and placeholder contacts.
+
+Verification on October 13:
+
+- Repository-root `make validate` passed: 20 lint checks, 171 tooling tests
+  (one optional installed-engine contract check skipped), and catalog pin/lock
+  drift checks. The gate covered 64 maintained projects and this frozen snapshot.
+- `UV_PYTHON=3.12 python3 scripts/check_project.py
+  heroes/wave-01-mantle/projects/samakshmehra-civico --use-project-pin`
+  synced the committed lockfile, confirmed rasa-pro 3.20.0.dev6 and passed
+  Mantle `validate_project`.
+- `uv run --locked python -m unittest discover -s tests -q` passed all
+  155 offline regression tests in the freshly installed snapshot environment.
+- Local `make train` packaged
+  `models/20261013-090820-seasoned-console.tar.gz`.
+- No new live conversation, simulation-judge or microphone/TTS run was
+  performed for the fictional-data revision. The historical results below
+  are evidence for earlier builds, not new voice verification.
+
+
+Historical location names, caller numbers, officer labels and quoted transcripts
+below have been anonymised to the current fictional demo vocabulary. This is a
+presentation change, not a claim that those historical live runs used the new
+names. Dates, outcomes, timings and unresolved beta issues retain their original
+meaning. The current fictional build's verification is reported separately.
+
 ## Stronger orchestrator model, September 12, 2026
 
 - Upgraded the live Civico orchestrator from OpenAI `gpt-5.4-mini` to the full
@@ -12,7 +53,7 @@
   `models/20260912-001842-largo-hash.tar.gz`.
 - An isolated REST smoke test accepted a complete one-sentence garbage report,
   produced one summary, paused for confirmation, called the filing tool and
-  saved `CIV1005` with Indirapuram, the Juniper School gate and Sanitation intact.
+  saved `CIV1005` with Brookmere, the Juniper School gate and Sanitation intact.
   The two user turns took about 7.2 and 6.0 seconds respectively. This is one
   smoke test, not a latency benchmark or a voice-quality result.
 - The installed Rasa tokenizer does not yet recognise the `gpt-5.4` name and
@@ -45,14 +86,14 @@ Verification: 150 offline tests pass. Model packaging succeeded:
 
 Isolated REST rehearsals in `/private/tmp/civico-product.GviT7x/civico.db` saved
 garbage report CIV1005 and corrected streetlight CIV1006, with the saved spot
-`outside Juniper Heights other gate` in Vasundhara. Joining CIV1004 persisted
+`outside Juniper Heights other gate` in Cedarwick. Joining CIV1004 persisted
 its own supporting landmark and retained the original target. The correction
 scorecard showed one saved-after-correction, zero empty replies, zero internal
 tool-text messages, and zero doubled questions within a turn. Its repeated
 confirmation across turns was appropriate because the caller corrected the draft.
 The final-build location-first run saved CIV1008 with Juniper Heights, metro
-station, Vikas Marg and Vaishali retained together. A cancellation with callback
-9000000004 left zero complaint rows. Rehearsals used port 5018; the user's
+station, Juniper Road and Maplewick retained together. A cancellation with callback
+0000000004 left zero complaint rows. Rehearsals used port 5018; the user's
 existing port 5007 server and database were preserved.
 
 Microphone/TTS testing is still outstanding. Inspector audio-before-text ordering
@@ -113,9 +154,9 @@ the added rule is not proof that it is eliminated.
 
 - 135 offline tests pass; project preflight passes; model packaging succeeds.
 - Intermediate isolated REST runs saved a compact garbage report (`CIV1006`),
-  a corrected Vasundhara streetlight report (`CIV1007`), and a Vaishali report
+  a corrected Cedarwick streetlight report (`CIV1007`), and a Maplewick report
   retaining building + metro + road (`CIV1008`). Attachment saved a supporting
-  report on `CIV1004`. Cancelling callback `9000000004` saved no complaint.
+  report on `CIV1004`. Cancelling callback `0000000004` saved no complaint.
 - One repeated correction script encountered an existing report created by its
   earlier run, so its next fixed answer no longer matched the bot's question.
   Scripted rehearsals are not a passing eval verdict; use a fresh database or
@@ -126,11 +167,11 @@ the added rule is not proof that it is eliminated.
 - Final packaged model: `models/20260910-235348-visible-sanding.tar.gz`.
 - Final-build REST checks in `/private/tmp/civico-final.8Q1CqR/civico.db`:
   corrected pothole `CIV1007` saved at the park gate opposite the school in
-  Vasundhara, with one corrected-confirmation question; garbage `CIV1008`
-  saved at the Juniper School gate in Indirapuram after a single summary/consent.
+  Cedarwick, with one corrected-confirmation question; garbage `CIV1008`
+  saved at the Juniper School gate in Brookmere after a single summary/consent.
   These final turns took approximately 3.5–5.5 seconds. Earlier in this clean
   database, attachment to `CIV1004` persisted, while cancellation saved zero rows
-  for `9000000004`. Temporary test servers were stopped after verification.
+  for `0000000004`. Temporary test servers were stopped after verification.
 
 Existing server on port 5007 and existing complaint rows were preserved.
 New rehearsal rows live only in temporary databases. Historical simulator
@@ -178,12 +219,12 @@ filled it with prose. It was removed; the detail tool exposes only `field` and
   attachment idempotence, correction invalidation and alternate-phone selection.
 - Model validation and packaging passed on Mantle `3.20.0.dev6`.
 - Direct REST correction rehearsal saved `CIV1005` after a fresh confirmation,
-  spoke its reference, named S. Kaur, and returned the two-day Sanitation target.
+  spoke its reference, named Demo Officer 14, and returned the two-day Sanitation target.
 - Direct REST attachment rehearsal spoke `CIV1004` and persisted the supporting
   description and landmark separately, without creating a new complaint.
 - Final package: `models/20260908-215615-cloudy-slider.tar.gz`. A separate REST
   conversation retrieved `CIV1005`, spoke the corrected park-gate location,
-  Sanitation, S. Kaur and the September 10 target. The isolated database held
+  Sanitation, Demo Officer 14 and the September 10 target. The isolated database held
   five complaints (four seeds plus that one filing) and one supporting report.
 
 Rehearsals used an isolated database on port 5017; the existing server on 5007
@@ -378,7 +419,7 @@ Removing `on_success` was not enough on its own — see finding 3.
 With `on_success` removed, the outcome became a coin flip. Sometimes:
 
 > Done — your reference is C, I, V, one, zero, zero, six. Ward officer
-> A. Sharma will handle it, and you can expect an update by the twelfth of
+> Demo Officer 12 will handle it, and you can expect an update by the twelfth of
 > September.
 
 and sometimes just "Do you need anything else?".
@@ -486,11 +527,11 @@ It is called `record_category` here.
 ## 11. `llm_settable` fields get filled from earlier context, before the question is asked
 
 `exact_spot` was an `llm_settable` field collected by an `instructions:` step.
-The caller answered the *previous* question with "It is in Vaishali", and the
+The caller answered the *previous* question with "It is in Maplewick", and the
 tracker showed:
 
 ```
-report_problem.exact_spot = "in Vaishali"
+report_problem.exact_spot = "in Maplewick"
 ```
 
 written before the step was reached. The step's `complete_when` then read as
@@ -570,9 +611,9 @@ tracker. `**_ignored` on every zero-argument tool costs nothing.
 to pick, callers say "yes". An agent that then asks for a digit has turned a
 confirmation into an obstacle — observed three turns running:
 
-> BOT  I found one match: Vaishali, ward 12. Is that the one?
+> BOT  I found one match: Maplewick, ward 12. Is that the one?
 > YOU  Yes
-> BOT  I still need the ward choice, please. Say 1 for Vaishali, ward 12.
+> BOT  I still need the ward choice, please. Say 1 for Maplewick, ward 12.
 
 The choice parser now takes a number, an ordinal ("the second one"), or a plain
 agreement when — and only when — there is exactly one option to agree to.

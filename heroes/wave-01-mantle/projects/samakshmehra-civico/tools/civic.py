@@ -25,7 +25,7 @@ async def load_caller(context: ToolContext = None) -> ToolResult:
     Not being recognised is not an error. A civic line has no accounts, and
     most people who call one have never called it before.
     """
-    phone = os.getenv("CIVICO_DEMO_CALLER", "9876543210")
+    phone = os.getenv("CIVICO_DEMO_CALLER", "0000000501")
     citizen = store.citizen_by_phone(phone)
 
     if context is not None:

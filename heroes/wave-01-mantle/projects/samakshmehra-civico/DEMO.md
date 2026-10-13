@@ -1,7 +1,7 @@
 # Civico: submission and recording guide
 
 Civico helps a caller report a civic problem, join an existing report, and follow
-up using the same reference. The current sample directory covers Ghaziabad;
+up using the same reference. The current sample directory covers Civico Demo City;
 wards, officers, contacts and deadlines are fictional demo records.
 
 ## What to show in Rasa
@@ -43,8 +43,8 @@ panels containing keys. Use the fictional callback number below.
 Speak each line when it answers the agent's current question. If the agent asks
 something extra, answer that question; the script is not a fixed turn protocol.
 
-1. “I want to report garbage bags left for three days outside the Juniper School gate in Indirapuram.”
-2. When asked for a callback: “Nine zero zero zero zero zero zero zero zero one.”
+1. “I want to report garbage bags left for three days outside the Juniper School gate in Brookmere.”
+2. When asked for a callback: “zero zero zero zero zero zero zero zero zero one.”
 3. At the submission question: “Actually, it's at the park gate opposite the school.”
 4. After the corrected summary: “Yes, please file it.”
 5. After receiving the reference: “What is the status of that complaint?”
@@ -61,13 +61,13 @@ for later follow-up.”
 
 ## Second short clip: an existing incident
 
-Report drainage in Vaishali. Give the landmark “outside the corner shop on the
-main road”, describe the overflow, and use `9000000000` as the callback number.
+Report drainage in Maplewick. Give the landmark “outside the corner shop on the
+main road”, describe the overflow, and use `0000000000` as the callback number.
 When offered the existing incident, say “Yes, that's the same drain.” After
 the summary, approve adding your details once. You should hear the shared reference
 `C I V one zero zero four`. No extra complaint is created.
 
-In a new conversation, ask to check complaints using `9000000000`. The shared
+In a new conversation, ask to check complaints using `0000000000`. The shared
 report should be available even though that number did not file the original.
 
 ## Other useful cases
@@ -75,10 +75,10 @@ report should be available even though that number did not file the original.
 Location-first example (the caller does not have to follow a form):
 
 1. “I want to file a complaint.”
-2. “It's near Juniper Heights, Vashali, Ghaziabad.”
+2. “It's near Juniper Heights, Maplwick, Civico Demo City.”
 3. “The street light is not working.”
-4. “It's beside the metro station on Vikas Marg.”
-5. “Nine zero zero zero zero zero zero zero zero zero.”
+4. “It's beside the metro station on Juniper Road.”
+5. “zero zero zero zero zero zero zero zero zero zero.”
 6. Approve the final summary. If offered an earlier report, say whether it is
    actually the same incident before approving.
 

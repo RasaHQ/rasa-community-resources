@@ -33,7 +33,7 @@ agent is running.
 
 | Scenario | The thing it is guarding |
 |---|---|
-| `complaint_filed_end_to_end` | The speech that broke the previous version three times on a live call — a mangled locality and a PIN belonging to the next locality over |
+| `complaint_filed_end_to_end` | Fictionalised version of the observed mangled-locality case, with a PIN belonging to another locality |
 | `location_unmappable_still_files` | A caller who cannot name anything the directory knows still ends the call with a reference number |
 | `duplicate_attached_not_refiled` | The second person to report the same drain is attached, not given a second complaint |
 | `overdue_complaint_escalates` | An overdue complaint is reported as late without softening, and can be raised |
