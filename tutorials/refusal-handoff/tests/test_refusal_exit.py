@@ -19,6 +19,48 @@ def event(name, status):
 
 
 class ReplayControls(unittest.TestCase):
+    def test_initial_request_must_actually_be_refused(self):
+        for status in ("success", "pending", None):
+            with self.subTest(status=status), self.assertRaises(ValueError):
+                validate_tracker({"events": [event("request_change", status),
+                                  event("record_demo_handoff", "demo_handoff")]})
+
+    def test_handoff_status_and_reference_are_required(self):
+        for result in ({"status": "success", "reference": "HANDOFF-DEMO"},
+                       {"status": "demo_handoff"},
+                       {"status": "demo_handoff", "reference": "WRONG"}):
+            with self.subTest(result=result), self.assertRaises(ValueError):
+                validate_tracker({"events": [event("request_change", "refused"),
+                                  {"event": "tool_executed", "tool_name": "record_demo_handoff",
+                                   "result": result}]})
+
+    def test_unknown_successful_tool_is_not_an_exit(self):
+        with self.assertRaises(ValueError):
+            validate_tracker({"events": [event("request_change", "refused"),
+                              event("unknown", "success"),
+                              event("record_demo_handoff", "demo_handoff")]})
+
+    def test_another_business_tool_cannot_precede_refusal(self):
+        with self.assertRaises(ValueError):
+            validate_tracker({"events": [event("unknown", "success"),
+                              event("request_change", "refused"),
+                              event("record_demo_handoff", "demo_handoff")]})
+
+    def test_runtime_errors_and_malformed_results_are_rejected(self):
+        for initial in ({**event("request_change", "refused"), "is_error": True},
+                        {**event("request_change", "refused"), "result": "not-json"}):
+            with self.subTest(initial=initial), self.assertRaises(ValueError):
+                validate_tracker({"events": [initial, event("record_demo_handoff", "demo_handoff")]})
+
+    def test_premature_completion_or_bad_control_result_is_rejected(self):
+        for control in ({"event": "tool_executed", "tool_name": "complete_skill",
+                         "result": "complete_skill: done"},
+                        {"event": "tool_executed", "tool_name": "activate",
+                         "arguments": {"target_id": "blocked_request"}, "result": "wrong"}):
+            with self.subTest(control=control), self.assertRaises(ValueError):
+                validate_tracker({"events": [control, event("request_change", "refused"),
+                                  event("record_demo_handoff", "demo_handoff")]})
+
     def test_impossible_task_calls_no_detour(self):
         # Predicate controls use declared synthetic events, not model output.
         initial = event("request_change", "refused")

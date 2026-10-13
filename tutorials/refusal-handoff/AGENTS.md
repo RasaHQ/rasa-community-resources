@@ -15,3 +15,8 @@ Use one environment for both variants. Prepare source only; never copy
 `.venv`, credentials, caches or trained models from another experiment. New
 run directories are required when source changes. Model and speech keys are
 not needed for the offline controls; this example is text-only.
+
+# Publication mapping
+
+Runnable companion planned for site brief `make-a-refused-agent-hand-off`.
+The guide is not published yet.

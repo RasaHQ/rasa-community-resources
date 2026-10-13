@@ -17,9 +17,6 @@ prefix. The pinned native compiler and activation classifier show how each
 reference is treated. A separate text replay checks what the agent actually
 does. A compiler result is not a model-behaviour guarantee.
 
-Publication plan: this is the runnable companion for the proposed
-`make-a-refused-agent-hand-off` guide. That guide is not published yet.
-
 ## Install one environment
 
 You need Python 3.12, uv and make. From this directory:
@@ -67,9 +64,12 @@ results forward.
 
 ## Run a selected text trial
 
-This step needs an exported `OPENAI_API_KEY` and `RASA_PRO_LICENSE`; the local
+This step needs an exported `OPENAI_API_KEY` and `RASA_LICENSE`; the local
 `.env.example` lists them. Export your own values in the server terminal.
 The client discovers no credentials and calls only an HTTP loopback server.
+It ignores inherited proxy settings and rejects redirects. If the server
+returns a redirect, check its local address instead of forwarding the chat or
+tracker to the destination.
 The server makes paid model requests, possibly several for one message.
 
 For the bare variant, from this project directory:
@@ -110,9 +110,8 @@ client URL if 5051 is occupied; never stop someone else's process.
 Report both outcomes, including matching behaviour or either failure. One pair
 cannot establish a reliability rate or that the reference prevents workarounds.
 Inspect the separately reported terminal frames as well. Passing the tool-path
-checks does not mean the blocked task has left the stack. Keep actual model
-traces private; the proposed article must qualify any behavioural claim against
-those observations, including failures and incomplete task closure.
+checks does not mean the blocked task has left the stack. Keep traces local
+and include failures and incomplete task closure when assessing your results.
 
 ## What to inspect
 
