@@ -60,6 +60,7 @@ sys.path.insert(0, str(REPO / "scripts" / "case_builds"))
 
 from harness import agent_env, ledger_append, ledger_total, load_spec  # noqa: E402
 from render_caller_audio import caller_lines, resample_to_wav  # noqa: E402
+from caller_metadata import declared_summary  # noqa: E402
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 RIME_URL = "https://users.rime.ai/v1/rime-tts"
@@ -249,15 +250,14 @@ def main() -> int:
             }
             print(f"rendered {name} ({duration:.2f} s, {usage.get('candidatesTokenCount')} audio tokens)")
     finally:
+        # Retire the former default-Gemini tariff field: it was not file attribution.
+        manifest.pop("price", None)
         manifest.update({
-            "description": caller.get("description", ""),
-            "vendor": "gemini, with rime for the voices under rime_voices",
-            "model": caller["model"],
+            "description": "Fictional caller audio metadata; the summary reflects recorded per-file declarations, separately from the generator defaults.",
+            **declared_summary(caller, manifest["files"]),
             "regenerate": "python3 case-build/render_caller_audio.py --budget-usd 4 (from the project directory)",
             "in_git": "Only the files listed under samples are committed; the rest are regenerated, and their SHA-256s here identify the recorded run's bytes.",
             **({"samples": caller["samples"]} if caller.get("samples") else {}),
-            "price": {k: caller.get(k) for k in (
-                "usd_per_1m_input_tokens", "usd_per_1m_audio_output_tokens", "price_source", "price_checked")},
         })
         for name, entry in manifest["files"].items():
             entry["in_git"] = name in (caller.get("samples") or {})
