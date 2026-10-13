@@ -13,6 +13,7 @@ With the pinned Rasa 3.21.0.dev5 SDK environment, run from this directory:
 python -m unittest test_transport -v
 python -m unittest test_native_confirmation -v
 python -m unittest test_compiled_variants -v
+python -m unittest test_prepared_project -v
 ```
 
 This control checks an actual MCP session's description and structured result.
@@ -32,10 +33,26 @@ that caller approval is enforced.
 The skill template differs only in the confirmation flag. A separate native
 compiler/catalog control checks that the imported MCP tools match and that the
 confirmation constraint is active in one variant and inactive in the other.
-This does not validate a complete runnable project.
+The prepared-project control also runs native validation on both source
+configurations, with a clearly fake key. It neither trains nor starts a chat.
 
-Next: wire these gated and ungated skills into the full runtime and add an
-optional paired model trial. Preserve
+Prepare new run directories without copying an environment:
+
+```bash
+python prepare.py --variant gated --run-dir /tmp/mcp-gated --mcp-port 8937
+python prepare.py --variant ungated --run-dir /tmp/mcp-ungated --mcp-port 8937
+```
+
+Existing directories are refused rather than overwritten. Each prepared source
+has file checksums in `variant.json`. Both projects use the same local mock
+server address and model configuration. Only the confirmation flag differs.
+
+The dependency manifest pins the two directly exercised packages. The initial
+checks reuse an owned SDK environment on those pins; a fresh install of this
+draft's complete lock has not yet been qualified.
+
+Next: qualify the dependency lock, train the prepared projects and exercise the
+complete runtime in an optional paired model trial. Preserve
 all outcomes, including a model that never asks for the recording tool. A gate
 requires confirmation; it does not establish that the caller's consent is
 informed, or that the whole application resists prompt injection.
