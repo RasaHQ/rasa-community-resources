@@ -204,3 +204,9 @@ SKILL memory (public = other skills may read; private = never)
   authenticate:    public verification_method   private passphrase_attempts
   transfer_money:  public amount, payee_name    private transfer_reason
 ```
+
+The `train`, `chat` and `run` targets read this project's `.env` through
+`scripts/run_rasa.py`. The runner maps the local `RASA_LICENSE` value to the
+SDK's licence variable and replaces inherited provider credentials with the
+selected file's values. It does not print credentials. An empty local key
+does not fall back to a key from another shell session or project.

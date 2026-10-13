@@ -50,13 +50,13 @@ validate: check-uv guard-env ## Validate the project without training
 from rasa.mantle.validation import validate_project; validate_project('.'); print('ok')"
 
 train: check-uv guard-env ## Validate and train
-	@$(UV) run rasa train
+	@$(UV) run python scripts/run_rasa.py train
 
 chat: check-uv guard-env ## Talk to the agent
-	@$(UV) run rasa inspect
+	@$(UV) run python scripts/run_rasa.py inspect
 
 run: check-uv guard-env ## Start the API server
-	@$(UV) run rasa run --enable-api
+	@$(UV) run python scripts/run_rasa.py run --enable-api
 
 scopes: ## Print the tool and memory scopes in this project
 	@echo ''
