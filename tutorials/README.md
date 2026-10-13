@@ -46,6 +46,8 @@ If a tutorial is the companion to an example in `examples/`, say so in both READ
 | AI team casebook | Six AI team roles | 62 fictional scenarios | [`rasa-ai-team-casebook`](rasa-ai-team-casebook) | 2026-09-08 |
 | One voice agent, three frameworks (Rasa Mantle version; LangGraph and Strands to follow) | Cedar Clinic prescription line | Cedar Clinic | [`voice-agent-three-frameworks`](voice-agent-three-frameworks) | 2026-09-30 |
 
+| Test the exit from a refused request | Synthetic support assistant | Fictional delivery-day request | [`refusal-handoff`](refusal-handoff) | 2026-10-13 |
+
 When you add a tutorial, append a row here in the same PR.
 
 ---
