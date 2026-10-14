@@ -50,9 +50,25 @@ Existing directories are refused rather than overwritten. Each prepared source
 has file checksums in `variant.json`. Both projects use the same local mock
 server address and model configuration. Only the confirmation flag differs.
 
-The dependency manifest pins the two directly exercised packages. The initial
-checks reuse an owned SDK environment on those pins; a fresh install of this
-draft's complete lock has not yet been qualified.
+The complete lock was installed into a fresh isolated environment on macOS
+Arm64 with Python 3.12.13. All nine transport, native confirmation, compilation
+and source-validation controls passed there. Package download caches were
+retained; this was not an empty-cache download test. See `qualification.json`
+for the dependency pins, input hashes and scope.
+
+To repeat these controls from this directory:
+
+```bash
+uv sync --locked
+RASA_TELEMETRY_ENABLED=false PYTHON_DOTENV_DISABLED=1 \
+  OPENAI_API_KEY=placeholder-not-a-real-key \
+  uv run --locked python -m unittest discover -p 'test_*.py' -v
+```
+
+The placeholder is sufficient for source validation. These controls do not
+call a model provider or qualify trained archives and complete chat turns.
+Use one environment for this paired experiment; preparing either variant
+copies source files only.
 
 Next: qualify the dependency lock, train the prepared projects and exercise the
 complete runtime in an optional paired model trial. Preserve
