@@ -14,6 +14,7 @@ python -m unittest test_transport -v
 python -m unittest test_native_confirmation -v
 python -m unittest test_compiled_variants -v
 python -m unittest test_prepared_project -v
+python -m unittest test_cold_archives -v
 ```
 
 This control checks an actual MCP session's description and structured result,
@@ -66,12 +67,20 @@ RASA_TELEMETRY_ENABLED=false PYTHON_DOTENV_DISABLED=1 \
 ```
 
 The placeholder is sufficient for source validation. These controls do not
-call a model provider or qualify trained archives and complete chat turns.
+call a model provider or qualify complete chat turns.
 Use one environment for this paired experiment; preparing either variant
 copies source files only.
 
-Next: qualify the dependency lock, train the prepared projects and exercise the
-complete runtime in an optional paired model trial. Preserve
+An additional control packages both projects through the same native function
+used by Mantle's `rasa train`. Each archive then loads in a fresh process from
+an empty working directory, with the original source path unavailable. The
+loaded catalogs retain the same MCP import and their opposite confirmation
+flags. All ten controls pass. `archive-qualification.json` records the archive
+hashes before the temporary test files are removed. This direct packager check
+does not exercise the licensed CLI command or a complete orchestrator turn.
+
+Next: exercise the complete paired turn loop and, separately, any optional
+model trial. Preserve
 all outcomes, including a model that never asks for the recording tool. A gate
 requires confirmation; it does not establish that the caller's consent is
 informed, or that the whole application resists prompt injection.
