@@ -1,5 +1,15 @@
 # HR Bot
 
+```text
+Author:        Chandra Sekhar
+Wave:          wave-01-mantle
+Assessed on:   2026-09-19
+Assessed by:   Chandra Sekhar
+Verified with: rasa-pro 3.20.0.dev6, Python 3.11–3.12, uv
+Audience:      HR teams and Rasa practitioners prototyping conversational HR support
+Time:          15–20 minutes
+```
+
 An HR support assistant built on the Rasa Mantle engine. It helps employees
 understand general HR policies, check demo attendance and leave records, and
 create or track HR support tickets through a conversational interface.
