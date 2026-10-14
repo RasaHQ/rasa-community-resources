@@ -2183,6 +2183,40 @@ class TestCaseBuildCatalog(unittest.TestCase):
         self.assertEqual(entry["findings"], [])
 
 
+class CompatibilityWorkerInputs(unittest.TestCase):
+    def test_catalog_declares_the_separate_native_crew(self):
+        from compatibility import test_workers
+        root = _SCRIPTS.parent
+        project = root / 'tutorials/frameworks-with-rasa/crewai-mantle'
+        self.assertEqual(test_workers(project), [project.parent / 'crewai'])
+        self.assertEqual(test_workers(root / 'tutorials/rasa-tools-and-memory-tutorial'), [])
+
+    def test_workers_require_both_rebuild_inputs(self):
+        from compatibility import test_workers
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project, worker = root / 'mantle', root / 'worker'
+            project.mkdir(); worker.mkdir()
+            (project / 'pyproject.toml').write_text('[tool.rasa-catalog]\ntest-workers = ["../worker"]\n')
+            (worker / 'pyproject.toml').write_text('[project]\nname="worker"\n')
+            with self.assertRaisesRegex(ValueError, 'locked rebuild inputs'):
+                test_workers(project, root)
+            (worker / 'uv.lock').write_text('version=1\n')
+            self.assertEqual(test_workers(project, root), [worker.resolve()])
+
+    def test_worker_metadata_cannot_select_an_unrelated_environment(self):
+        from compatibility import test_workers
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project = root / 'mantle'
+            project.mkdir()
+            for declaration in ('"../worker"', '["."]', '["../../outside"]', '["/tmp/other-seat"]'):
+                with self.subTest(declaration=declaration):
+                    (project / 'pyproject.toml').write_text('[tool.rasa-catalog]\ntest-workers = '+declaration+'\n')
+                    with self.assertRaises(ValueError):
+                        test_workers(project, root)
+
+
 class CompatibilityFailureEvidence(unittest.TestCase):
     def test_keep_going_runs_later_checks_but_still_fails(self):
         from compatibility import CheckRunner

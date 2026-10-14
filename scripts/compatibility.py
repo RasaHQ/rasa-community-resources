@@ -11,6 +11,7 @@ import json
 import os
 import subprocess
 import sys
+import tomllib
 from rasa_projects import REPO_ROOT, discover_projects, read_expected_version, read_training_secrets
 from check_project import _load_dotenv
 
@@ -19,6 +20,24 @@ def fingerprint(root, prefix=''):
     names = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'], cwd=root).decode().split('\0')
     files = {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in sorted(names) if name and name.startswith(prefix) and (root/name).is_file() and name != 'COMPATIBILITY.json'}
     return hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()
+
+
+def test_workers(project, root=REPO_ROOT):
+    """Resolve declared isolated workers without expanding the Rasa catalog."""
+    metadata = tomllib.loads((project / 'pyproject.toml').read_text())
+    declared = metadata.get('tool', {}).get('rasa-catalog', {}).get('test-workers', [])
+    if not isinstance(declared, list) or any(not isinstance(p, str) or not p for p in declared):
+        raise ValueError('test-workers must be a list of project-relative paths')
+    workers = []
+    for name in declared:
+        worker = (project / name).resolve()
+        if Path(name).is_absolute() or not worker.is_relative_to(root.resolve()) or worker == project.resolve():
+            raise ValueError('test-workers must name separate projects inside this repository')
+        if not all((worker / file).is_file() for file in ('pyproject.toml', 'uv.lock')):
+            raise ValueError(f'Test worker lacks locked rebuild inputs: {name}')
+        if worker not in workers:
+            workers.append(worker)
+    return workers
 
 
 class CheckRunner:
@@ -77,7 +96,19 @@ def main():
             continue
         checks=['locked-install','installed-version','mantle-import','project-validation']
         if args.train: checks.append(f'licensed-training (references embedded with {args.local_embeddings})' if args.local_embeddings and (project.path/'agent.yml').is_file() and ((project.path/'references').is_dir() or 'references:' in (project.path/'agent.yml').read_text()) else 'licensed-training')
+        workers=[]
         if (project.path/'tests').is_dir():
+            worker_ready = True
+            for worker in test_workers(project.path):
+                worker_rel = worker.relative_to(REPO_ROOT).as_posix()
+                # These runtimes deliberately stay out of the Mantle environment.
+                # Always sync the lock before executing the dependent native tests.
+                if not run(worker_rel+'-worker-install', ['uv','sync','--locked','--project',str(worker)]):
+                    worker_ready = False
+                    continue
+                workers.append({'path':worker_rel,'sourceHash':fingerprint(REPO_ROOT,worker_rel+'/'),'checks':['locked-install']})
+            if not worker_ready:
+                continue
             run(rel+'-tests',['uv','run','--locked','python','-m','unittest','discover','-s','tests','-v'],project.path)
             checks.append('project-unittests')
         if rel=='tutorials/rasa-hubspot-crm-tutorial':
@@ -87,6 +118,7 @@ def main():
             run(rel+'-sdk',['uv','run','--locked','python',str(REPO_ROOT/'scripts/check_casebook_sdk.py')],project.path)
             checks += ['62-scenario-oracles','186-mutations-killed','62-sdk-tool-dispatches']
         entry={'path':rel,'sourceHash':fingerprint(REPO_ROOT,rel+'/'),'checks':checks,'liveConversations':'not tested'}
+        if workers: entry['nativeTestWorkers'] = workers
         used=[n for n in placeholders if n in read_training_secrets(project)]
         if args.train and used: entry['placeholderSecrets']=used
         projects.append(entry)
