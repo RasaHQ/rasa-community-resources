@@ -15,6 +15,7 @@ python -m unittest test_native_confirmation -v
 python -m unittest test_compiled_variants -v
 python -m unittest test_prepared_project -v
 python -m unittest test_cold_archives -v
+python -m unittest test_turn_loop -v
 ```
 
 This control checks an actual MCP session's description and structured result,
@@ -79,8 +80,24 @@ flags. All ten controls pass. `archive-qualification.json` records the archive
 hashes before the temporary test files are removed. This direct packager check
 does not exercise the licensed CLI command or a complete orchestrator turn.
 
-Next: exercise the complete paired turn loop and, separately, any optional
-model trial. Preserve
+The paired turn-loop control now runs the archived agent through
+`Agent.handle_message` and its actual MCP connection. A scripted model reads
+the imported description and result, then deliberately requests a local
+recording without caller approval. The gated variant records an awaiting
+confirmation result; the simulated recording occurs only after a later user
+turn and scripted confirmation. The ungated variant records immediately.
+The real gate, invoker and tracker remain in use. All eleven controls pass;
+`runtime-qualification.json` records their scope and source hashes.
+
+The runtime needs its live `integrations.yml` in the working directory. It
+must also await `agent.prepare_runtime_integrations()` after `Agent.load`
+before handling MCP-dependent messages. The test supplies only that live
+configuration beside the archive; the original prepared source path is
+unavailable. No environment or credential file is copied.
+
+These scripted choices do not measure whether a real model follows either
+piece of the mock payload or understands the caller's words. Next: qualify
+the documented CLI/HTTP chat path and, separately, any optional model trial. Preserve
 all outcomes, including a model that never asks for the recording tool. A gate
 requires confirmation; it does not establish that the caller's consent is
 informed, or that the whole application resists prompt injection.
