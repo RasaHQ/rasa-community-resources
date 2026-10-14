@@ -50,4 +50,3 @@ class Decisions:
         return LLMResponse(id=f'scripted-{self.stage}', choices=[text] if text else [],
             created=0, tool_calls=[LLMToolCall(id=f'call-{self.stage}',
                 tool_name=name, tool_args=arguments or {})] if name else None)
-
