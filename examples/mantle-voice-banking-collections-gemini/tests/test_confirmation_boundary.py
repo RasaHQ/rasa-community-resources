@@ -34,7 +34,8 @@ def acquire(hardship, broken=False):
     return {'status': result['status'], 'effects': result['effects'],
             'plan_recorded': case.state.active_plan() is not None,
             'referral_open': case.state.open_referral() is not None,
-            'payment_status': result.get('payment_status')}
+            'payment_status': result.get('payment_status'),
+            'reason': result.get('reason'), 'detail': result.get('detail')}
 
 
 class FinalConfirmationBoundary(unittest.TestCase):
@@ -46,13 +47,15 @@ class FinalConfirmationBoundary(unittest.TestCase):
     def test_final_hardship_check_prevents_recording(self):
         result = acquire(True)
         self.assertEqual((result['status'], result['effects'], result['plan_recorded']), ('blocked', 0, False))
+        self.assertEqual(result['reason'], 'choice_not_confirmed')
+        self.assertEqual(result['detail'], 'hardship_declared')
+        # Blocking the plan does not itself create a human referral.
+        self.assertFalse(result['referral_open'])
 
     def test_removing_only_final_check_records_despite_hardship(self):
         result = acquire(True, broken=True)
         self.assertEqual((result['status'], result['effects'], result['plan_recorded']), ('succeeded', 1, True))
         self.assertEqual(result['payment_status'], 'no_payment_received')
-        # Blocking the plan does not itself create a human referral.
-        self.assertFalse(result['referral_open'])
 
 
 if __name__ == '__main__':

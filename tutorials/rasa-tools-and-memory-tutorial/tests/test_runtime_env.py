@@ -21,9 +21,24 @@ class SelectedCredentialFile(unittest.TestCase):
         self.path.write_text('RASA_LICENSE=LOCAL_LICENSE_PLACEHOLDER\nOPENAI_API_KEY=LOCAL_KEY_PLACEHOLDER\n')
         result = self.runner.environment(self.path, {'PATH': '/example', 'OPENAI_API_KEY': 'OTHER_PROJECT_PLACEHOLDER', 'RASA_PRO_LICENSE': 'OTHER_LICENSE_PLACEHOLDER', 'OTHER_API_KEY': 'UNRELATED_PLACEHOLDER'})
         self.assertEqual(result['OPENAI_API_KEY'], 'LOCAL_KEY_PLACEHOLDER')
-        self.assertEqual(result['RASA_PRO_LICENSE'], 'LOCAL_LICENSE_PLACEHOLDER')
+        self.assertEqual(result['RASA_LICENSE'], 'LOCAL_LICENSE_PLACEHOLDER')
         self.assertNotIn('OTHER_API_KEY', result)
         self.assertEqual(result['PATH'], '/example')
+
+    def test_other_dotenv_and_inherited_passwords_are_excluded(self):
+        import os
+        from unittest.mock import patch
+        from dotenv import load_dotenv
+        self.path.write_text('RASA_LICENSE=LOCAL_LICENSE_PLACEHOLDER\n')
+        other = Path(self.temp.name) / 'other.env'
+        other.write_text('OTHER_API_KEY=OTHER_FILE_PLACEHOLDER\n')
+        result = self.runner.environment(self.path, {'DB_PASSWORD': 'OTHER_PASSWORD_PLACEHOLDER', 'CLOUD_CREDENTIALS': 'OTHER_CREDENTIAL_PLACEHOLDER'})
+        self.assertNotIn('DB_PASSWORD', result)
+        self.assertNotIn('CLOUD_CREDENTIALS', result)
+        self.assertNotIn('RASA_PRO_LICENSE', result)
+        with patch.dict(os.environ, result, clear=True):
+            load_dotenv(other, override=False)
+            self.assertNotIn('OTHER_API_KEY', os.environ)
 
     def test_empty_local_key_does_not_use_shell_key(self):
         self.path.write_text('RASA_LICENSE=LOCAL_LICENSE_PLACEHOLDER\nOPENAI_API_KEY=\n')

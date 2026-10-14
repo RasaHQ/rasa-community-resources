@@ -2183,6 +2183,37 @@ class TestCaseBuildCatalog(unittest.TestCase):
         self.assertEqual(entry["findings"], [])
 
 
+class CompatibilityFailureEvidence(unittest.TestCase):
+    def test_keep_going_runs_later_checks_but_still_fails(self):
+        from compatibility import CheckRunner
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()):
+            root = Path(temp)
+            runner = CheckRunner(root / 'logs', [], keep_going=True)
+            self.assertFalse(runner.run('first', [sys.executable, '-c', 'raise SystemExit(1)']))
+            self.assertTrue(runner.run('second', [sys.executable, '-c', "from pathlib import Path; Path('later-ran').write_text('actual process')"], root))
+            self.assertTrue((root / 'later-ran').is_file())
+            with self.assertRaisesRegex(RuntimeError, 'first'):
+                runner.finish()
+
+    def test_default_stops_and_redacts_failure_output(self):
+        from compatibility import CheckRunner
+        secret = 'PLACEHOLDER_NOT_A_CREDENTIAL'
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()) as shown:
+            runner = CheckRunner(Path(temp), [secret])
+            with self.assertRaises(RuntimeError):
+                runner.run('first', [sys.executable, '-c', f"print({secret!r}); raise SystemExit(1)"])
+            self.assertNotIn(secret, shown.getvalue())
+            self.assertEqual((Path(temp) / 'first.log').read_text(), '[REDACTED]\n')
+
+    def test_success_finishes_without_failures(self):
+        from compatibility import CheckRunner
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()):
+            runner = CheckRunner(Path(temp), [])
+            self.assertTrue(runner.run('clean', [sys.executable, '-c', "print('actual pass')"]))
+            runner.finish()
+            self.assertEqual(runner.failures, [])
+
+
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every
     # caller reads as a pass. That is not hypothetical: an edit once removed

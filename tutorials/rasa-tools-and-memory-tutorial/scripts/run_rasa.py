@@ -18,9 +18,12 @@ def environment(path, inherited):
         raise ValueError('The selected file needs RASA_LICENSE; inherited licences are not used')
     # Do not accidentally pick another project's credentials from the shell.
     env = {key: value for key, value in inherited.items()
-           if not any(word in key.upper() for word in ('KEY', 'TOKEN', 'SECRET', 'LICENSE'))}
+           if not any(word in key.upper() for word in ('KEY', 'TOKEN', 'SECRET', 'LICENSE', 'PASSWORD', 'CREDENTIAL'))}
     env.update({key: value for key, value in values.items() if value is not None})
-    env['RASA_PRO_LICENSE'] = license_value
+    env.pop('RASA_PRO_LICENSE', None)
+    env['RASA_LICENSE'] = license_value
+    # The selected file was read above; block SDK loading a second .env.
+    env['PYTHON_DOTENV_DISABLED'] = 'true'
     env['OPENAI_API_KEY'] = values.get('OPENAI_API_KEY') or ''
     return env
 
