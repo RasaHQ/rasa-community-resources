@@ -2183,6 +2183,71 @@ class TestCaseBuildCatalog(unittest.TestCase):
         self.assertEqual(entry["findings"], [])
 
 
+class CompatibilityWorkerInputs(unittest.TestCase):
+    def test_catalog_declares_the_separate_native_crew(self):
+        from compatibility import test_workers
+        root = _SCRIPTS.parent
+        project = root / 'tutorials/frameworks-with-rasa/crewai-mantle'
+        self.assertEqual(test_workers(project), [project.parent / 'crewai'])
+        self.assertEqual(test_workers(root / 'tutorials/rasa-tools-and-memory-tutorial'), [])
+
+    def test_workers_require_both_rebuild_inputs(self):
+        from compatibility import test_workers
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project, worker = root / 'mantle', root / 'worker'
+            project.mkdir(); worker.mkdir()
+            (project / 'pyproject.toml').write_text('[tool.rasa-catalog]\ntest-workers = ["../worker"]\n')
+            (worker / 'pyproject.toml').write_text('[project]\nname="worker"\n')
+            with self.assertRaisesRegex(ValueError, 'locked rebuild inputs'):
+                test_workers(project, root)
+            (worker / 'uv.lock').write_text('version=1\n')
+            self.assertEqual(test_workers(project, root), [worker.resolve()])
+
+    def test_worker_metadata_cannot_select_an_unrelated_environment(self):
+        from compatibility import test_workers
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project = root / 'mantle'
+            project.mkdir()
+            for declaration in ('"../worker"', '["."]', '["../../outside"]', '["/tmp/other-seat"]'):
+                with self.subTest(declaration=declaration):
+                    (project / 'pyproject.toml').write_text('[tool.rasa-catalog]\ntest-workers = '+declaration+'\n')
+                    with self.assertRaises(ValueError):
+                        test_workers(project, root)
+
+
+class CompatibilityFailureEvidence(unittest.TestCase):
+    def test_keep_going_runs_later_checks_but_still_fails(self):
+        from compatibility import CheckRunner
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()):
+            root = Path(temp)
+            runner = CheckRunner(root / 'logs', [], keep_going=True)
+            self.assertFalse(runner.run('first', [sys.executable, '-c', 'raise SystemExit(1)']))
+            self.assertTrue(runner.run('second', [sys.executable, '-c', "from pathlib import Path; Path('later-ran').write_text('actual process')"], root))
+            self.assertTrue((root / 'later-ran').is_file())
+            with self.assertRaisesRegex(RuntimeError, 'first'):
+                runner.finish()
+
+    def test_default_stops_and_redacts_failure_output(self):
+        from compatibility import CheckRunner
+        secret = 'PLACEHOLDER_NOT_A_CREDENTIAL'
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()) as shown:
+            runner = CheckRunner(Path(temp), [secret])
+            with self.assertRaises(RuntimeError):
+                runner.run('first', [sys.executable, '-c', f"print({secret!r}); raise SystemExit(1)"])
+            self.assertNotIn(secret, shown.getvalue())
+            self.assertEqual((Path(temp) / 'first.log').read_text(), '[REDACTED]\n')
+
+    def test_success_finishes_without_failures(self):
+        from compatibility import CheckRunner
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()):
+            runner = CheckRunner(Path(temp), [])
+            self.assertTrue(runner.run('clean', [sys.executable, '-c', "print('actual pass')"]))
+            runner.finish()
+            self.assertEqual(runner.failures, [])
+
+
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every
     # caller reads as a pass. That is not hypothetical: an edit once removed
