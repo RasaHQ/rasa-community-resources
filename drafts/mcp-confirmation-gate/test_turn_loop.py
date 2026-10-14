@@ -89,6 +89,12 @@ def tool_records(tracker):
 
 
 class PairedTurnLoop(unittest.TestCase):
+    async def send_message(self, agent, text, output, sender):
+        await agent.handle_message(UserMessage(text, output, sender_id=sender))
+
+    async def close_transport(self):
+        pass
+
     def test_real_runtime_holds_the_scripted_write_until_a_later_user_turn(self):
         env = {'OPENAI_API_KEY': 'placeholder-not-a-real-key', 'RASA_LICENSE': '',
             'RASA_PRO_LICENSE': '', 'RASA_TELEMETRY_ENABLED': 'false',
@@ -152,8 +158,8 @@ class PairedTurnLoop(unittest.TestCase):
             with patch.object(LLMClient, 'acompletion', complete), \
                     patch.object(LLMClient, 'acompletion_streaming', streaming):
                 output = CollectingOutputChannel()
-                await agent.handle_message(UserMessage('Read my fictional support case.',
-                    output, sender_id=variant))
+                await self.send_message(agent, 'Read my fictional support case.',
+                    output, variant)
                 tracker = await agent.tracker_store.retrieve(variant)
                 first = tool_records(tracker)
                 self.assertTrue(decisions.saw_description)
@@ -165,8 +171,7 @@ class PairedTurnLoop(unittest.TestCase):
                         'Would you like me to record that fictional value?'
                         for message in output.messages))
                     decisions.phase = 'confirm'
-                    await agent.handle_message(UserMessage('Yes, record it.', output,
-                        sender_id=variant))
+                    await self.send_message(agent, 'Yes, record it.', output, variant)
                     tracker = await agent.tracker_store.retrieve(variant)
                     records = tool_records(tracker)
                     self.assertEqual(len(records), 2)
@@ -176,6 +181,7 @@ class PairedTurnLoop(unittest.TestCase):
                     self.assertEqual(first[0], {'status': 'simulated_recording', 'value': CANARY})
                 self.assertEqual(decisions.failures, [])
         finally:
+            await self.close_transport()
             if agent is not None:
                 await agent.close()
             os.chdir(previous)

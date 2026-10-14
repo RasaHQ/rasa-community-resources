@@ -16,6 +16,7 @@ python -m unittest test_compiled_variants -v
 python -m unittest test_prepared_project -v
 python -m unittest test_cold_archives -v
 python -m unittest test_turn_loop -v
+python -m unittest test_http_turn_loop -v
 ```
 
 This control checks an actual MCP session's description and structured result,
@@ -97,7 +98,7 @@ unavailable. No environment or credential file is copied.
 
 These scripted choices do not measure whether a real model follows either
 piece of the mock payload or understands the caller's words. Next: qualify
-the documented CLI/HTTP chat path and, separately, any optional model trial. Preserve
+the documented `rasa run` CLI startup and, separately, any optional model trial. Preserve
 all outcomes, including a model that never asks for the recording tool. A gate
 requires confirmation; it does not establish that the caller's consent is
 informed, or that the whole application resists prompt injection.
@@ -115,6 +116,20 @@ Both variants also passed the licensed `rasa train` CLI on the pinned SDK.
 `cli-qualification.json` records their source commit, archive hashes and
 redacted log hashes. The licence was kept local; a placeholder model key was
 sufficient for packaging. This check did not start a chat endpoint.
+
+The HTTP control starts Rasa's real REST channel on a loopback TCP listener
+and sends JSON requests to `/webhooks/rest/webhook`. It repeats the paired
+archived-agent assertions through that route: the gated request waits, a
+later scripted confirmation records once, and the ungated request records
+immediately. It also checks the health response and recipient identifiers.
+Only model completions are scripted; MCP, the tracker and confirmation gate
+remain real. The server closes after each variant.
+
+This in-process harness disables Sanic's source-rewriting optimisation
+(`TOUCHUP`), which cannot transform Rasa's wrapped send method. It does not
+replace the REST handler. `http-qualification.json` records this limitation
+and the tested inputs. This is a text HTTP integration check, not a licensed
+`rasa run` startup, a voice test or evidence of a model understanding consent.
 
 Set your Rasa Pro licence in your shell before the CLI command. For packaging,
 you can use `OPENAI_API_KEY=placeholder-not-a-real-key`. From this directory,
