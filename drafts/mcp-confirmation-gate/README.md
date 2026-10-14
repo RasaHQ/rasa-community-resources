@@ -45,13 +45,22 @@ configurations, with a clearly fake key. It neither trains nor starts a chat.
 Prepare new run directories without copying an environment:
 
 ```bash
-python prepare.py --variant gated --run-dir /tmp/mcp-gated --mcp-port 8937
-python prepare.py --variant ungated --run-dir /tmp/mcp-ungated --mcp-port 8937
+python prepare.py --variant gated --run-dir /tmp/mcp-gated --mcp-port 8937 --scripted-model-port 8938
+python prepare.py --variant ungated --run-dir /tmp/mcp-ungated --mcp-port 8937 --scripted-model-port 8938
 ```
 
 Existing directories are refused rather than overwritten. Each prepared source
-has file checksums in `variant.json`. Both projects use the same local mock
-server address and model configuration. Only the confirmation flag differs.
+has file checksums and its model mode in `variant.json`. Both projects use the
+same local mock server address and scripted model configuration. Only the
+confirmation flag differs. The model port must be different from the MCP port.
+Omitting `--scripted-model-port` selects the separate provider configuration;
+that is outside the local scripted exercise and may make billable model calls.
+
+Both generated local configurations passed native validation on the pinned
+SDK, and invalid or conflicting model ports leave no partial project. The
+full suite now has fourteen passing controls. This preparation check is
+recorded in `scripted-preparation-qualification.json`; earlier CLI receipts
+remain bound to their original inputs and were not rewritten.
 
 The complete lock was installed into a fresh isolated environment on macOS
 Arm64 with Python 3.12.13. All nine transport, native confirmation, compilation
@@ -180,21 +189,13 @@ Start the two fixtures from this directory in separate terminals:
 "$mcp_python" scripted_model_server.py --port 8938
 ```
 
-For each prepared project, keep the MCP address on port 8937. In its live
-`integrations.yml`, use this model entry under the `orchestrator` group:
-
-```yaml
-      - provider: openai
-        model: gpt-4o-mini
-        api_key: ${OPENAI_API_KEY}
-        api_base: http://127.0.0.1:8938/v1
-```
-
-Remove the template's `reasoning_effort` from that entry. The model name is
-only a route label that selects Chat Completions; the fixture does not run
-GPT-4o mini. The original template's model selects the Responses API, which
-this fixture does not implement. Keep the same fixture configuration in both
-variants and use the placeholder key.
+The earlier preparation commands already set the model endpoint to
+`http://127.0.0.1:8938/v1` and the MCP endpoint to port 8937. Check that
+`variant.json` says `"model_mode": "scripted-loopback"` before starting Rasa.
+No manual model-configuration edit is needed. The `gpt-4o-mini` name in the
+generated configuration only selects Chat Completions; the fixture does not
+run that model. The separate provider template selects the Responses API,
+which this fixture does not implement. Use the placeholder key for this exercise.
 
 From a prepared project, with your licence in the shell, start its trained
 archive and send the first request from another terminal:

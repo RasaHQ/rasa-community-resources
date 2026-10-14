@@ -1,0 +1,17 @@
+# Local scripted responses only; this route label does not run GPT-4o mini.
+llm:
+  model_group: orchestrator
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-4o-mini
+        api_key: ${OPENAI_API_KEY}
+        api_base: http://127.0.0.1:MODEL_PORT/v1
+channels:
+  rest:
+    enabled: true
+mcp_servers:
+  - name: fictional_support
+    url: http://127.0.0.1:MCP_PORT/mcp
+    tool_timeout: 15
