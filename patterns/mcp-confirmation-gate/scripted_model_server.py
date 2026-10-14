@@ -8,7 +8,7 @@ import asyncio
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from test_turn_loop import Decisions
+from fixture_decisions import Decisions
 
 
 def serve(port):

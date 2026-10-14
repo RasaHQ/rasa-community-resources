@@ -11,6 +11,16 @@ from rasa.mantle.validation import validate_project
 
 
 class PreparedProject(unittest.TestCase):
+    def test_catalog_project_is_the_default_generated_gated_configuration(self):
+        root = Path(__file__).resolve().parent
+        with tempfile.TemporaryDirectory() as temp, patch.dict(
+                os.environ, {"OPENAI_API_KEY": "placeholder-not-a-real-key"}):
+            target = Path(temp) / "gated"
+            receipt = prepare("gated", target, 8937, scripted_model_port=8938)
+            for name in receipt["files"]:
+                self.assertEqual((root / name).read_bytes(), (target / name).read_bytes(), name)
+            validate_project(root)
+
     def test_scripted_pair_validates_with_identical_local_endpoints(self):
         with tempfile.TemporaryDirectory() as temp, patch.dict(
                 os.environ, {"OPENAI_API_KEY": "placeholder-not-a-real-key",

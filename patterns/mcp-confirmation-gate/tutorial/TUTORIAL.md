@@ -1,8 +1,7 @@
 # Test tool confirmation in a Rasa agent that uses MCP
 
-Editorial manuscript for the commissioned MCP exercise. Not approved for
-publication. Its source is this draft project; the project must become a
-maintained companion before the website can publish the tutorial.
+Teaching manuscript accompanying this maintained pattern. Website publication
+and independent rendered review are separate release steps.
 
 If your support agent reads cases through an MCP server, it receives more than
 case data. The server also supplies tool descriptions, which the model sees
@@ -45,8 +44,8 @@ you identify what the confirmation requirement changes.
 
 ## Before you start
 
-You need Python 3.12, uv and a checkout containing this draft project. Run the
-commands below from `drafts/mcp-confirmation-gate` in that checkout. The lock
+You need Python 3.12, uv and a checkout containing this pattern. Run the
+commands below from `patterns/mcp-confirmation-gate` in that checkout. The lock
 pins Rasa Pro 3.21.0.dev5 and MCP 1.28.1. The recorded installation and CLI
 checks used macOS on Arm64; they do not establish the same result on other
 platforms or releases.
@@ -59,7 +58,7 @@ shared logs.
 Install the locked dependencies into this project's environment:
 
 ```bash
-uv sync --locked
+uv sync --prerelease=allow --locked
 ```
 
 Check the interpreter and installed pins before continuing:
@@ -189,5 +188,5 @@ gated call must instead return `awaiting_confirmation`; the later execution
 must use the stored value. Check the recorded tool result, not only the text.
 
 For the recorded source hashes, archive checks and CLI cleanup results, see
-the qualification JSON files alongside this manuscript. They describe the
+the qualification JSON files under `qualification-history/`. They describe the
 tested release and platform; they are not a claim of production safety.
