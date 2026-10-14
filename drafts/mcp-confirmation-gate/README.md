@@ -108,3 +108,32 @@ It is not a reproduction of that paper's attacks or reported success rates.
 
 Keep environments, credentials and trial traces out of this source directory.
 No publication or new ready-to-merge PR is requested by this draft.
+
+## Train the two prepared projects
+
+Both variants also passed the licensed `rasa train` CLI on the pinned SDK.
+`cli-qualification.json` records their source commit, archive hashes and
+redacted log hashes. The licence was kept local; a placeholder model key was
+sufficient for packaging. This check did not start a chat endpoint.
+
+Set your Rasa Pro licence in your shell before the CLI command. For packaging,
+you can use `OPENAI_API_KEY=placeholder-not-a-real-key`. From this directory,
+capture the interpreter in the experiment's existing environment:
+
+```bash
+mcp_python="$(pwd)/.venv/bin/python"
+```
+
+Prepare the gated and ungated directories with the earlier commands, then run
+the following from each prepared directory. Both commands should finish with
+a saved model archive in that project's `models` folder:
+
+```bash
+RASA_TELEMETRY_ENABLED=false PYTHON_DOTENV_DISABLED=true \
+  "$mcp_python" -m rasa train
+```
+
+The interpreter remains in the original project. The prepared directories
+contain the source configurations and generated archives, without another
+Python environment. Use a real model credential only when you deliberately
+run a live chat trial; the scripted controls use no such credential.
