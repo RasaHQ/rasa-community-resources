@@ -22,6 +22,12 @@ async def verify_passphrase(passphrase: str, context: ToolContext = None) -> Too
     Args:
         passphrase: The secret word the caller gives to prove identity.
     """
+    if context is not None and context.memory.get("project.authenticated") is True:
+        return ToolResult(llm_response={
+            "ok": True, "already_authenticated": True,
+            "customer_id": context.memory.get("project.customer_id"),
+        })
+
     customer = customer_by_passphrase(passphrase)
 
     if customer is None:

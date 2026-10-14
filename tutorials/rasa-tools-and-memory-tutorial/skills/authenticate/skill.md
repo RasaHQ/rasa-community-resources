@@ -14,6 +14,9 @@ If the caller has already given a passphrase in what they just said, call
 Only if no passphrase has been given, ask for it once, then call
 `verify_passphrase` with their answer.
 
+If the tool returns `already_authenticated`, say they are already signed in;
+do not claim a new identity check or greet them with a name it did not return.
+
 When the tool succeeds, greet them by the returned name and confirm they are
 signed in. When it fails, say the passphrase did not match and offer one more
 try. After three failed attempts, stop and suggest they call the branch.
