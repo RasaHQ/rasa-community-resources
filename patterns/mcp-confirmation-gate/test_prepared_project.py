@@ -57,11 +57,19 @@ class PreparedProject(unittest.TestCase):
             sources = []
             for variant in ("gated", "ungated"):
                 path = Path(temp) / variant
-                prepare(variant, path, 8937)
+                prepare(variant, path, 8937, provider=True)
                 self.assertFalse((path / ".env").exists())
                 self.assertFalse((path / ".venv").exists())
                 validate_project(path)
                 sources.append((path / "skills/review_case/skill.md").read_text())
                 with self.assertRaises(FileExistsError):
-                    prepare(variant, path, 8937)
+                    prepare(variant, path, 8937, provider=True)
             self.assertEqual(sources[0].replace("enabled: true", "enabled: false"), sources[1])
+
+    def test_model_mode_requires_explicit_selection_before_writing_source(self):
+        with tempfile.TemporaryDirectory() as temp:
+            for settings in ({}, {"scripted_model_port": 8938, "provider": True}):
+                path = Path(temp) / "unused"
+                with self.assertRaises(ValueError):
+                    prepare("gated", path, 8937, **settings)
+                self.assertFalse(path.exists())

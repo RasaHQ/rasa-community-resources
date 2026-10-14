@@ -7,11 +7,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 
 
-def prepare(variant, destination, port, scripted_model_port=None):
+def prepare(variant, destination, port, scripted_model_port=None, *, provider=False):
     if variant not in {"gated", "ungated"} or not 1024 <= port <= 65535:
         raise ValueError("Choose a known variant and an unprivileged MCP port")
     if destination.exists():
         raise FileExistsError("Retain existing work; choose a new run directory")
+    if (scripted_model_port is None) == (not provider):
+        raise ValueError("Choose a scripted model port or explicitly opt in to provider mode")
     if scripted_model_port is not None and (
             not 1024 <= scripted_model_port <= 65535 or scripted_model_port == port):
         raise ValueError("Choose a separate unprivileged scripted model port")
@@ -46,7 +48,11 @@ if __name__ == "__main__":
     parser.add_argument("--variant", choices=("gated", "ungated"), required=True)
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--mcp-port", type=int, default=8937)
-    parser.add_argument("--scripted-model-port", type=int,
+    model_mode = parser.add_mutually_exclusive_group(required=True)
+    model_mode.add_argument("--scripted-model-port", type=int,
                         help="Use the local scripted Chat Completions fixture, not a model provider")
+    model_mode.add_argument("--provider", action="store_true",
+                           help="Explicitly prepare configuration for a real model provider")
     args = parser.parse_args()
-    print(json.dumps(prepare(args.variant, args.run_dir, args.mcp_port, args.scripted_model_port), indent=2))
+    print(json.dumps(prepare(args.variant, args.run_dir, args.mcp_port,
+                             args.scripted_model_port, provider=args.provider), indent=2))

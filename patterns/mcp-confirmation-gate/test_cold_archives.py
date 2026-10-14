@@ -49,7 +49,7 @@ class ColdArchives(unittest.TestCase):
             observed = []
             for variant in ('gated', 'ungated'):
                 source = root / variant
-                prepare(variant, source, 8937)
+                prepare(variant, source, 8937, scripted_model_port=8938)
                 result = package_model_archive(str(source / 'agent.yml'),
                     str(root / 'archives'), fixed_model_name=variant, validate=True)
                 self.assertEqual(result.code, 0)

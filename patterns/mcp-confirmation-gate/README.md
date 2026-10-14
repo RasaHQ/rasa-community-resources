@@ -4,14 +4,15 @@
 Author:        Rasa community team
 Assessed on:   2026-10-15
 Assessed by:   Locked installation, native validation and paired runtime controls
-Verified with: rasa-pro 3.21.0.dev5, Python 3.12, mcp 1.28.1
+Verified with: rasa-pro 3.21.0.dev5, Python 3.12, mcp 1.28.1  <!-- rasa-version-ignore: frozen tested release -->
 Audience:      Engineers connecting MCP tools to a Rasa agent
 Time:          About 30 minutes for the local exercise, excluding installation
 ```
 
 Use this pattern to check what your agent does when a model requests a tool
 that needs confirmation. A local MCP server supplies a fictional support case.
-Scripted model responses request a simulated recording, so you can compare
+Scripted model responses request a separate local tool that simulates recording,
+so you can compare
 the same request with confirmation enabled and disabled.
 
 The engine, MCP transport, tracker and tool invoker are real. The model choices
@@ -39,6 +40,22 @@ The suite must finish with `OK`. It checks the real MCP connection, native
 confirmation rules, compiled configurations, cold archive loading, complete
 turn loops and the REST channel. It starts and closes its own test services.
 The tests make no model-provider requests; they do not require a Rasa licence.
+That request count follows from the fixture and patched completion boundary;
+it is not a network-capture result.
+
+The archived-agent and REST controls also make the script attempt confirmation
+in the same turn, supply a later boolean denial, and deliberately send the
+wrong boolean after the user says no:
+
+| Input to the real turn loop | What the check expects |
+| --- | --- |
+| Request the recording and resolve `true` in the same turn | The call remains pending and no recording runs |
+| A later “No” with scripted `confirmed: false` | The call is cancelled and no recording runs |
+| A later “No” with scripted `confirmed: true` | The recording runs: the engine trusts the model's boolean |
+
+The last row is a limit control. Waiting for another user turn does not show
+that a model interpreted the answer correctly. The gate protects a local tool
+in this example; it is not attached to the MCP-imported case-reading tool.
 
 If installation fails, check the Python version before changing anything.
 Keep the lock and package pins unchanged when repeating this exercise.
@@ -150,8 +167,9 @@ curl --fail-with-body -sS http://127.0.0.1:8938/fixture-inspection
 There should now be one `simulated_recording` result after the earlier pending
 result. The fixture inspection shows `resolved: true` and no failures.
 The script recognises the fixed positive phrase; it is not a general chat
-model. Cancellation is tested separately in the native controls, not by
-typing arbitrary answers into this fixture.
+model. The automated runtime tests supply the denial sequence separately;
+typing arbitrary answers into this positive-only CLI fixture is a different
+exercise.
 
 If you see a connection error, check that all three services are running.
 If the fixture reports failure, restart it before another trial: it holds a
@@ -182,9 +200,12 @@ does not show informed consent or the accuracy of a real model's decisions.
 Backend permissions, identity, current values and real write effects need
 their own checks. This text example does not test voice, ASR, TTS or barge-in.
 
-The current source-bound CLI results are in `qualification-cli.json`.
-Earlier prototype checkpoints remain in Git history and the private site
-engineering records. Each receipt applies to the inputs and scope it names.
+Historical source-bound CLI results are in `qualification-cli.json`. They are
+maintainer attestations with archive and log hashes, not self-contained HTTP
+transcripts. An empty CLI log contains no HTTP response body. The automated
+runtime controls check those returned results.
+Earlier prototype checkpoints remain in Git history, although they are absent
+from the current tree. Each receipt applies to the inputs and scope it names.
 
 Teaching source follows the repository's [Apache 2.0 licence](../../LICENSE).
 Rasa Pro has its own licence and terms.
