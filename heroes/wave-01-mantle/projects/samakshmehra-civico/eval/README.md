@@ -35,6 +35,7 @@ agent is running.
 |---|---|
 | `complaint_filed_end_to_end` | Fictionalised version of the observed mangled-locality case, with a PIN belonging to another locality |
 | `location_unmappable_still_files` | A caller who cannot name anything the directory knows still ends the call with a reference number |
+| `correct_landmark_before_filing` | A location correction updates the complaint before submission |
 | `duplicate_attached_not_refiled` | The second person to report the same drain is attached, not given a second complaint |
 | `overdue_complaint_escalates` | An overdue complaint is reported as late without softening, and can be raised |
 | `on_time_complaint_not_escalated` | The mirror, and the harder one: escalation is refused on an on-time complaint even when the caller pushes |
@@ -70,9 +71,13 @@ that one singly, with `make reset-db` in front of it.
 That, and the flakiness above, are the honest limitations of this instrument,
 and the reason the deterministic suite is the one wired into `make test`.
 
-## Measured
+## Historical results reported by the author
 
-Twenty-seven runs, three per scenario:
+These figures describe the earlier nine-scenario build, not this ten-scenario
+revision. The raw results are not committed, so the figures below have not
+been independently verified. They are retained as the author's account.
+
+Twenty-seven runs, three per scenario in that earlier build:
 
 | Result | Count |
 |---|---|
@@ -86,6 +91,6 @@ whole reason this file exists.
 ## What these cost
 
 Every run bills three ways: the agent's own model, the simulator, and the
-judge. That is why this is nine scenarios rather than thirty — the cheap,
+judge. That is why the current suite has ten scenarios rather than thirty — the cheap,
 exhaustive coverage lives in `tests/`, and these are reserved for the things
 only a conversation can show.

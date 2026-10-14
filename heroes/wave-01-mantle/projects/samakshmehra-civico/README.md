@@ -280,13 +280,19 @@ scripts/           Setup checks, scripted calls, data display, quality report
   Rasa requires explicit submission confirmation before a write.
 - **Duplicate detection is assisted, not automatic.** The system finds a
   candidate; the caller decides whether it is the same incident.
-- **Caller-ID lookup requires consent.** A status request alone does not expose
-  the complaint history associated with the calling number.
+- **Ask before searching a caller's number.** The skill asks for permission
+  before using caller ID. This is a conversational rule, not identity verification.
 - **Failure remains a valid outcome.** Unknown locations route to a general
   cell, unsupported categories are explained, and failed writes are not
   represented as successful submissions.
 
 ## Known rough edges
+
+- Complaint lookup is unauthenticated. A phone-number search accepts any
+  matching number, and a complaint reference can reveal its problem, location
+  and officer. The model records conversational permission, but neither tool
+  verifies that the caller owns the number or complaint. A real deployment
+  needs caller verification and access checks before returning those details.
 
 - Voice has had less coverage than the deterministic text/tool paths and needs
   a fresh end-to-end microphone pass before a live demonstration.
