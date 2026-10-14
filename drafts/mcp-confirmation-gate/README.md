@@ -97,8 +97,8 @@ configuration beside the archive; the original prepared source path is
 unavailable. No environment or credential file is copied.
 
 These scripted choices do not measure whether a real model follows either
-piece of the mock payload or understands the caller's words. Next: qualify
-the documented `rasa run` CLI startup and, separately, any optional model trial. Preserve
+piece of the mock payload or understands the caller's words. Test any optional
+real-model trial separately. Preserve
 all outcomes, including a model that never asks for the recording tool. A gate
 requires confirmation; it does not establish that the caller's consent is
 informed, or that the whole application resists prompt injection.
@@ -152,3 +152,68 @@ The interpreter remains in the original project. The prepared directories
 contain the source configurations and generated archives, without another
 Python environment. Use a real model credential only when you deliberately
 run a live chat trial; the scripted controls use no such credential.
+
+## Exercise the CLI with a scripted local model service
+
+Both variants also passed the real licensed `rasa run` subprocess and REST
+requests with a loopback model fixture. `cli-http-qualification.json` binds
+the source inputs, archives, live configurations and redacted logs. Both CLI
+processes exceeded the 30-second shutdown allowance and had to be stopped;
+graceful shutdown is not qualified by that run.
+
+`scripted_model_server.py` provides a loopback-only Chat Completions fixture.
+It follows the same fixed choices as the turn-loop test and never forwards
+requests to a provider. Its inspection endpoint reports scripted calls,
+without claiming token usage, cost or model quality.
+
+Start the two fixtures from this directory in separate terminals:
+
+```bash
+"$mcp_python" mock_server.py --port 8937
+"$mcp_python" scripted_model_server.py --port 8938
+```
+
+For each prepared project, keep the MCP address on port 8937. In its live
+`integrations.yml`, use this model entry under the `orchestrator` group:
+
+```yaml
+      - provider: openai
+        model: gpt-4o-mini
+        api_key: ${OPENAI_API_KEY}
+        api_base: http://127.0.0.1:8938/v1
+```
+
+Remove the template's `reasoning_effort` from that entry. The model name is
+only a route label that selects Chat Completions; the fixture does not run
+GPT-4o mini. The original template's model selects the Responses API, which
+this fixture does not implement. Keep the same fixture configuration in both
+variants and use the placeholder key.
+
+From a prepared project, with your licence in the shell, start its trained
+archive and send the first request from another terminal:
+
+```bash
+OPENAI_API_KEY=placeholder-not-a-real-key \
+  RASA_TELEMETRY_ENABLED=false PYTHON_DOTENV_DISABLED=true \
+  LLM_API_HEALTH_CHECK=false LITELLM_LOCAL_MODEL_COST_MAP=True \
+  "$mcp_python" -m rasa run --enable-api --interface 127.0.0.1 --port 5005
+
+curl -sS http://127.0.0.1:5005/webhooks/rest/webhook \
+  -H 'Content-Type: application/json' \
+  -d '{"sender":"gate-demo","message":"Read my fictional support case."}'
+```
+
+The gated version asks for confirmation. Send a second request using the
+same sender and the message `Yes, record it.`. The script then supplies the
+confirmation flag, and the stored fictional value is recorded once. Inspect
+the real tracker and the fixture's decisions:
+
+```bash
+curl -sS http://127.0.0.1:5005/conversations/gate-demo/tracker
+curl -sS http://127.0.0.1:8938/fixture-inspection
+```
+
+Restart the scripted model service before trying the ungated project: its
+decisions are a single-conversation sequence. Use a fresh sender. The ungated
+version records on the first request. Stop your own fixture and Rasa processes
+when finished. No second environment is needed.
