@@ -157,9 +157,16 @@ run a live chat trial; the scripted controls use no such credential.
 
 Both variants also passed the real licensed `rasa run` subprocess and REST
 requests with a loopback model fixture. `cli-http-qualification.json` binds
-the source inputs, archives, live configurations and redacted logs. Both CLI
-processes exceeded the 30-second shutdown allowance and had to be stopped;
-graceful shutdown is not qualified by that run.
+the source inputs, archives, live configurations and redacted logs. That first
+run kept the test HTTP client open and sent SIGTERM; both CLI processes
+exceeded its shutdown allowance and needed forced cleanup.
+
+A later check closes the owned HTTP client before sending SIGINT, the signal
+used by a terminal interrupt. Both CLI processes exit normally, without forced
+cleanup. `cli-interrupt-qualification.json` records those results on macOS
+Arm64 and the same pinned SDK. Two cleanup conditions changed, so this does
+not identify which removed the wait or qualify other signals and platforms.
+The earlier receipt remains intact.
 
 `scripted_model_server.py` provides a loopback-only Chat Completions fixture.
 It follows the same fixed choices as the turn-loop test and never forwards
@@ -215,5 +222,5 @@ curl -sS http://127.0.0.1:8938/fixture-inspection
 
 Restart the scripted model service before trying the ungated project: its
 decisions are a single-conversation sequence. Use a fresh sender. The ungated
-version records on the first request. Stop your own fixture and Rasa processes
-when finished. No second environment is needed.
+version records on the first request. Use Ctrl+C in the Rasa terminal after your curl commands have finished, then
+stop your own fixture terminals. No second environment is needed.
