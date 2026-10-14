@@ -188,5 +188,5 @@ gated call must instead return `awaiting_confirmation`; the later execution
 must use the stored value. Check the recorded tool result, not only the text.
 
 For the recorded source hashes, archive checks and CLI cleanup results, see
-the qualification JSON files under `qualification-history/`. They describe the
+the `qualification-current.json` and `qualification-cli.json`. They describe the
 tested release and platform; they are not a claim of production safety.

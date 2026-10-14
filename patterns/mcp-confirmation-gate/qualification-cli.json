@@ -1,0 +1,185 @@
+{
+  "schema": 1,
+  "tested_source_commit": "716286772dc44c06094478ece6ad330799a3c3c6",
+  "scope": "Paired maintained-source licensed training and loopback scripted HTTP; zero model-provider requests",
+  "training": {
+    "scope": "Real licensed rasa train CLI, with placeholder model credential; no conversation",
+    "source_commit": "716286772dc44c06094478ece6ad330799a3c3c6",
+    "variants": [
+      {
+        "variant": "gated",
+        "returncode": 0,
+        "archive_sha256": "e8e1af873838c08330e4204b712d782884c5e930414d9920af3af6f5a1fa154c",
+        "redacted_log_sha256": "50ab23119797b42908fb043ec73a73cfe6f006044f680d2c9e85dd8c40632513"
+      },
+      {
+        "variant": "ungated",
+        "returncode": 0,
+        "archive_sha256": "60203870d8c37abfc8def80e43ea7bc3e39b530325c3a54bbe4873723b9e4353",
+        "redacted_log_sha256": "b08be341b864fe70f60586b810e1f05e811a7e6b820bf97d8df49c3ad4ebe1ff"
+      }
+    ],
+    "credentials_written_to_projects": false
+  },
+  "http": {
+    "scope": "Real licensed rasa run subprocess, native REST HTTP and real MCP, with loopback scripted model service",
+    "source_commit": "716286772dc44c06094478ece6ad330799a3c3c6",
+    "live_model_provider_requests": 0,
+    "variants": [
+      {
+        "variant": "gated",
+        "outcome": "passed",
+        "model_fixture": {
+          "requests": [
+            {
+              "index": 1,
+              "tool_calls": [
+                "activate"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 2,
+              "tool_calls": [
+                "read_case"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 3,
+              "tool_calls": [
+                "record_local_canary"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 4,
+              "tool_calls": [],
+              "scripted": true
+            },
+            {
+              "index": 5,
+              "tool_calls": [
+                "record_discovered_facts"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 6,
+              "tool_calls": [],
+              "scripted": true
+            },
+            {
+              "index": 7,
+              "tool_calls": [
+                "resolve_tool_confirmation"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 8,
+              "tool_calls": [],
+              "scripted": true
+            }
+          ],
+          "failures": [],
+          "saw_description": true,
+          "saw_result": true,
+          "resolved": true
+        },
+        "archive_sha256": "e8e1af873838c08330e4204b712d782884c5e930414d9920af3af6f5a1fa154c",
+        "live_configuration_sha256": "cb53976b7195c088039554edc087dfbd0245fc2bee90dfb8ed0b76df9d3abebb",
+        "cli_shutdown": {
+          "signal": "SIGINT",
+          "forced": false,
+          "seconds": 0.779,
+          "returncode": 0
+        }
+      },
+      {
+        "variant": "ungated",
+        "outcome": "passed",
+        "model_fixture": {
+          "requests": [
+            {
+              "index": 1,
+              "tool_calls": [
+                "activate"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 2,
+              "tool_calls": [
+                "read_case"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 3,
+              "tool_calls": [
+                "record_local_canary"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 4,
+              "tool_calls": [],
+              "scripted": true
+            },
+            {
+              "index": 5,
+              "tool_calls": [
+                "record_discovered_facts"
+              ],
+              "scripted": true
+            },
+            {
+              "index": 6,
+              "tool_calls": [],
+              "scripted": true
+            }
+          ],
+          "failures": [],
+          "saw_description": true,
+          "saw_result": true,
+          "resolved": false
+        },
+        "archive_sha256": "60203870d8c37abfc8def80e43ea7bc3e39b530325c3a54bbe4873723b9e4353",
+        "live_configuration_sha256": "bcb3e46400623cc8bbf0833f64f51269378efc0cf8ec856e574275f3ee6a24f6",
+        "cli_shutdown": {
+          "signal": "SIGINT",
+          "forced": false,
+          "seconds": 0.812,
+          "returncode": 0
+        }
+      }
+    ],
+    "redacted_log_sha256": {
+      "gated-mcp.log": "0ae8c1e3836e1fc7361dd03c39d87b6b43a4997254a2918fa7da97c6a9512e07",
+      "ungated-rasa.log": "e0871d59ffdaeb842c35cd24adca46a3e645ee6d2dcbacb6136942fe2da68f1b",
+      "ungated-mcp.log": "7c0603b47e7c3b4ec26c64de7c57c7dd11027f6c6e342f9cca0970a40165957f",
+      "ungated-model.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gated-rasa.log": "dbb3e5ebd77e41653262e5eeb0f3429a995e2e15ce6e968a0e4de6509d4cff56",
+      "gated-model.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "limits": [
+      "Scripted model responses, not susceptibility or informed consent",
+      "Model archive from maintained-source licensed training; runtime config supplies generated fixture endpoints",
+      "Text only; no ASR/TTS or voice streaming",
+      "REST client closes before simulated Ctrl-C; this is a cleanup-path qualification, not a production-service test",
+      "The scripted fixture uses a gpt-4o-mini route label solely to select Chat Completions; no actual GPT model is called",
+      "No host service or external provider started; only owned loopback child servers"
+    ]
+  },
+  "native_controls": {
+    "tests": 15,
+    "outcome": "passed",
+    "log_sha256": "ddb3f871987abbd56e903aa6d7310bcfe0bb793aa3c287f41a2cbf04d57f8493"
+  },
+  "limits": [
+    "Scripted model choices do not measure interpretation of customer consent",
+    "Recording is simulated; no customer write",
+    "Text only, macOS Arm64 on pinned Rasa3.21.0.dev5"
+  ]
+}

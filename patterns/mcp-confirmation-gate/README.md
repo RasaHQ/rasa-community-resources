@@ -42,8 +42,8 @@ The tests make no model-provider requests; they do not require a Rasa licence.
 
 If installation fails, check the Python version before changing anything.
 Keep the lock and package pins unchanged when repeating this exercise.
-If a test fails, preserve its traceback and identify the failed assertion;
-do not infer success from the assistant's wording. The guided exercise explains
+If a test fails, preserve its traceback and identify the failed assertion.
+Inspect the tool results as well as the assistant's wording. The guided exercise explains
 how to read the tool results.
 
 ## Prepare a pair for the licensed CLI
@@ -182,10 +182,9 @@ does not show informed consent or the accuracy of a real model's decisions.
 Backend permissions, identity, current values and real write effects need
 their own checks. This text example does not test voice, ASR, TTS or barge-in.
 
-Historical source-bound qualification receipts are preserved under
-`qualification-history/`. They name the original inputs and scope; moving
-the files does not extend those results to changed source. Current catalog
-qualification is recorded separately after running the maintained project.
+The current source-bound CLI results are in `qualification-cli.json`.
+Earlier prototype checkpoints remain in Git history and the private site
+engineering records. Each receipt applies to the inputs and scope it names.
 
 Teaching source follows the repository's [Apache 2.0 licence](../../LICENSE).
 Rasa Pro has its own licence and terms.
