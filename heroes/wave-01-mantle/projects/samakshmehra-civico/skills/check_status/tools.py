@@ -18,6 +18,7 @@ from rasa.mantle.tools.decorator import ToolContext, tool
 from rasa.mantle.tools.result import ToolResult
 
 from lib import directory, store
+from lib.choices import pick as _pick
 from tools.civic import complaint_view, spoken_status
 
 
@@ -100,8 +101,6 @@ async def choose_complaint(choice: str = "", context: ToolContext = None) -> Too
         options = []
     if not isinstance(options, list):
         options = []
-    from skills.report_problem.tools import _pick
-
     index = _pick(choice, len(options))
     if index < 0 or index >= len(options):
         return ToolResult(llm_response={"ok": False, "error": "no_such_option",
