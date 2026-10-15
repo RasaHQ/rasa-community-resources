@@ -18,13 +18,18 @@ class ReturnRecord:
             raise ValueError("received_day must be a non-negative integer")
 
 
+def has_inspection(record: ReturnRecord | None) -> bool:
+    """An inspection needs both its reference and a recorded condition."""
+    return bool(record and record.inspection_ref and record.condition is not None)
+
+
 def assess_refund(record: ReturnRecord | None, customer_id: str) -> dict:
     """Apply REFUND-POLICY.md to a looked-up order, not customer-supplied facts."""
     if record is None or record.customer_id != customer_id:
         return {"status": "unknown_order"}
     if record.received_day > 30:
         return {"status": "staff_review", "reason": "outside_automatic_window"}
-    if not record.inspection_ref or record.condition is None:
+    if not has_inspection(record):
         return {"status": "awaiting_inspection"}
     if record.condition not in {"sealed", "confirmed_defect"}:
         return {"status": "staff_review", "reason": "condition_needs_review"}

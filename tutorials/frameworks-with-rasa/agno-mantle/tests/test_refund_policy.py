@@ -20,6 +20,7 @@ class PolicyExamples(unittest.TestCase):
             ("defect outside window", replace(self.order, received_day=34, condition="confirmed_defect"), outside),
             ("inspection absent", replace(self.order, condition=None, inspection_ref=None), {"status": "awaiting_inspection"}),
             ("condition without inspection", replace(self.order, inspection_ref=None), {"status": "awaiting_inspection"}),
+            ("inspection reference without condition", replace(self.order, condition=None), {"status": "awaiting_inspection"}),
             ("other condition", replace(self.order, condition="opened"), {"status": "staff_review", "reason": "condition_needs_review"}),
         ]
         for label, record, expected in cases:

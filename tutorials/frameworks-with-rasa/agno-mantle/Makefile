@@ -2,7 +2,7 @@
 test:
 	.venv/bin/python -B -m unittest discover -s ../agno/tests -p 'test_*.py' -v
 	.venv/bin/python -B -m unittest discover -s tests -p 'test_*.py' -v
-	.venv/bin/python -B tests/demo_refund_identity.py
+	OPENAI_API_KEY=placeholder-not-a-real-key LITELLM_LOCAL_MODEL_COST_MAP=True LLM_API_HEALTH_CHECK=false .venv/bin/python -B tests/demo_refund_identity.py
 validate:
 	.venv/bin/python -c 'from pathlib import Path; from rasa.mantle.validation import collect_project_findings; findings=collect_project_findings(Path(".")); print(findings); assert not findings'
 train:

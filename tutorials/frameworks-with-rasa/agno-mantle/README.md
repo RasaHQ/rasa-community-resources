@@ -8,7 +8,7 @@ takes an order reference.
 
 **Author:** Rod Rivera
 **Assessed on:** 2026-10-15
-**Assessed by:** OpenAI client-contract controls assessed on 15 October 2026 and written-policy checks; refund-native/build evidence is recorded separately.
+**Assessed by:** OpenAI client-contract controls assessed on 15 October 2026 and written-policy checks; refund-native/build receipts are retained locally and are not yet published.
 **Verified with:** Standard-library policy checks; SDK steps are locked to Rasa Pro 3.21.0.dev5 and Agno 3.1.2.
 
 ## Check a return against the shop's written policy
@@ -23,8 +23,8 @@ qualify for an automatic full-refund offer and which need an inspection or
 staff review. You will test those rules with invented order records before
 connecting the check to a conversation.
 
-You can check the pure policy without an SDK, licence or provider key. From
-the repository root:
+You can check the pure policy with Python 3.11 or newer, without an SDK,
+licence or provider key. From the repository root:
 
 ```sh
 PYTHONPATH=tutorials/frameworks-with-rasa/agno python3 -B -m unittest discover -s tutorials/frameworks-with-rasa/agno-mantle/tests -p test_refund_policy.py -v
@@ -86,7 +86,8 @@ The three checks in `tests/test_openai_client_contract.py` use Agno's real
 OpenAI client with an in-memory HTTP transport. They check the product-tool
 round trip, structured reply, provider-error handling and refusal of an unknown
 demo sender before any client request. Those controls use explicit response
-and usage fixtures to check client behaviour. No provider
+and usage fixtures to check client behaviour, not generated answers or cost
+measurements. No provider
 key, network connection or model inference is needed. Run them with the
 selected environment above:
 
@@ -205,8 +206,8 @@ article remain subject to separate publication review.
 
 ## Review the policy before using its decisions
 
-A policy owner can inspect a seven-case review sheet without installing the
-agent environment. From this combined project’s directory, run:
+A policy owner can inspect a seven-case review sheet with Python 3.11 or newer,
+without installing the agent environment. From this combined project's directory, run:
 
 ```sh
 make policy-review
@@ -229,10 +230,13 @@ The worksheet also contains the worked choice in `REFUND-REVIEW.md`: retain
 the first automatic reason and attach inspection status to a local draft note.
 A missing inspection leads to obtaining it; an inspected late return proceeds
 to exception review. Removing the inspection field or skipping a missing
-inspection is rejected by the local note checker. Every receiving-role label
+inspection is rejected by the local note checker. It also checks the note's
+inspection status against the source record, so changing both the status and
+the next step cannot invent an inspection. An inspection needs both a reference
+and a recorded condition. Every receiving-role label
 is fictional and every delivery state remains `draft_not_sent`. These fields
 belong to this community worksheet, not a Mantle staff-service API.
 
 For a shorter display, run the same script with `--cases-only` to print the
 seven policy cases, or `--notes-only` to print the worked receiving notes and
-two rejection controls. Both displays still execute the complete local sheet.
+three rejection controls. Both displays still execute the complete local sheet.

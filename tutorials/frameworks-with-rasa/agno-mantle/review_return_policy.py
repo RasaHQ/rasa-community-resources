@@ -2,16 +2,16 @@
 import argparse
 import json
 from dataclasses import replace
-from shop_adviser.refund_policy import ReturnRecord, assess_refund
+from shop_adviser.refund_policy import ReturnRecord, assess_refund, has_inspection
 
 
-def review_examples():
+def policy_examples():
     order = ReturnRecord("WS-REVIEW-01", "customer-a", 1299, 30,
                          "sealed", "inspection-review-01")
     offer = {"status": "full_refund_offer", "amount_minor": 1299, "currency": "GBP"}
     late = {"status": "staff_review", "reason": "outside_automatic_window"}
     absent = replace(order, condition=None, inspection_ref=None)
-    cases = [
+    return [
         ("sealed, last included day", order, "customer-a", offer),
         ("sealed, first excluded day", replace(order, received_day=31), "customer-a", late),
         ("no inspection, last included day", absent, "customer-a", {"status": "awaiting_inspection"}),
@@ -21,25 +21,31 @@ def review_examples():
         ("another customer's order", order, "customer-b", {"status": "unknown_order"}),
         ("missing order", None, "customer-a", {"status": "unknown_order"}),
     ]
+
+
+def review_examples():
     rows = []
-    for label, record, customer, expected in cases:
+    for label, record, customer, expected in policy_examples():
         actual = assess_refund(record, customer)
         if actual != expected:
             raise AssertionError(f"{label}: expected {expected!r}, got {actual!r}")
         rows.append({"case": label,
                      "received_day": record.received_day if record else None,
                      "condition": record.condition if record else None,
-                     "inspection_recorded": bool(record and record.inspection_ref),
+                     "inspection_recorded": has_inspection(record),
                      "customer_matches_order": bool(record and record.customer_id == customer),
                      "result": actual})
     return rows
 
 
-def validate_review_note(note):
+def validate_review_note(note, record):
     """Check a proposed local worksheet contract, not an authenticated queue."""
     if type(note.get("inspection_recorded")) is not bool:
         raise ValueError("review note needs an explicit inspection status")
-    expected = "review_exception" if note["inspection_recorded"] else "obtain_inspection"
+    inspected = has_inspection(record)
+    if note["inspection_recorded"] != inspected:
+        raise ValueError("inspection status disagrees with the source record")
+    expected = "review_exception" if inspected else "obtain_inspection"
     if note.get("next_step") != expected:
         raise ValueError("next step disagrees with the recorded inspection status")
     if note.get("receiving_role") != "returns-reviewer" or note.get("delivery") != "draft_not_sent":
@@ -50,6 +56,7 @@ def validate_review_note(note):
 def draft_review_notes(rows):
     """Worked fictional choice: collect inspection before reviewing a late return."""
     notes = []
+    records = {label: record for label, record, _, _ in policy_examples()}
     for row in rows:
         if row["result"].get("reason") != "outside_automatic_window":
             continue
@@ -58,16 +65,17 @@ def draft_review_notes(rows):
                 "inspection_recorded": inspected,
                 "next_step": "review_exception" if inspected else "obtain_inspection",
                 "receiving_role": "returns-reviewer", "delivery": "draft_not_sent"}
-        notes.append(validate_review_note(note))
+        notes.append(validate_review_note(note, records[row["case"]]))
     return notes
 
 
 def review_sheet():
     rows = review_examples()
     notes = draft_review_notes(rows)
+    records = {label: record for label, record, _, _ in policy_examples()}
     incomplete = {k: v for k, v in notes[0].items() if k != "inspection_recorded"}
     try:
-        validate_review_note(incomplete)
+        validate_review_note(incomplete, records[incomplete["case"]])
     except ValueError as error:
         control = {"changed": "removed inspection_recorded", "result": "rejected",
                    "reason": str(error)}
@@ -75,15 +83,24 @@ def review_sheet():
         raise AssertionError("An incomplete review note was accepted")
     wrong_step = {**notes[1], "next_step": "review_exception"}
     try:
-        validate_review_note(wrong_step)
+        validate_review_note(wrong_step, records[wrong_step["case"]])
     except ValueError as error:
         step_control = {"changed": "skip missing inspection", "result": "rejected",
                         "reason": str(error)}
     else:
         raise AssertionError("A note skipped its missing inspection")
+    forged = {**notes[1], "inspection_recorded": True, "next_step": "review_exception"}
+    try:
+        validate_review_note(forged, records[forged["case"]])
+    except ValueError as error:
+        status_control = {"changed": "falsify inspection and next step", "result": "rejected",
+                          "reason": str(error)}
+    else:
+        raise AssertionError("A note invented an inspection")
     return {"policy": "fictional Willow Shop automatic returns", "cases": rows,
             "proposed_review_notes": notes, "incomplete_note_control": control,
-            "wrong_next_step_control": step_control}
+            "wrong_next_step_control": step_control,
+            "false_inspection_control": status_control}
 
 
 if __name__ == "__main__":
