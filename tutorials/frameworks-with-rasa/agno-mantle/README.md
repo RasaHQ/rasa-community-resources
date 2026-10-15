@@ -8,8 +8,8 @@ distinct conversation; the model-facing tool accepts only a question.
 **Author:** Rod Rivera
 **Assessed on:** 2026-10-11
 **Assessed by:** Native memory-owner controls, decorated Mantle bindings and licensed build qualification
-**Verified with:** Rasa Pro 3.21.0.dev5, Agno 3.1.2 and Python 3.12.13. The current
-20 native controls and project validation pass. Licensed training and cold archive
+**Verified with:** Rasa Pro 3.21.0.dev5, Agno 3.1.2 and Python 3.12.13. The
+original 20 native controls and project validation passed on that date. Licensed training and cold archive
 loading were qualified at `fe5aeb26`; later changes add fixture observations and
 a one-argument mutation control. Application and configuration SHA pairs remain
 unchanged in `../agno-verification.json`.
@@ -33,6 +33,31 @@ The controls use scripted replies from the real Agno executor. They inspect
 the actual model input, native product tool result, structured output and
 decorated Mantle binding. Customer preferences are seeded through native
 database writes. Automatic memory extraction is disabled in this exercise.
+
+## Check OpenAI client compatibility without a provider key
+
+The shared adviser allows OpenAI SDK `>=2.44.0,<2.55.0` so each combined
+runtime can satisfy Rasa's own SDK requirement. The committed standalone and
+Mantle locks still select `2.44.0`; the maintained Rasa pin is unchanged.
+Use the committed locks rather than upgrading the SDK independently.
+
+The selected 15 adviser controls and eight Mantle/client controls passed on
+15 October 2026 with Rasa `3.21.0.dev5` / OpenAI `2.44.0`, and in an isolated
+candidate with Rasa `3.21.0.dev10` / OpenAI `2.54.0`. Agno remains `3.1.2`.
+This checks those two installed combinations, not every intervening SDK release.
+The candidate is not the catalog's tested release pin.
+
+The three checks in `tests/test_openai_client_contract.py` use Agno's real
+OpenAI client with an in-memory HTTP transport. They check the product-tool
+round trip, structured reply, provider-error handling and refusal of an unknown
+demo sender before any client request. Their responses and usage counts are
+explicit fixtures, not generated answers or cost measurements. No provider
+key, network connection or model inference is needed. Run them with the
+selected environment above:
+
+```sh
+.venv/bin/python -m unittest discover -s tests -p test_openai_client_contract.py -v
+```
 
 For a live conversation, export your own `RASA_PRO_LICENSE` and
 `OPENAI_API_KEY` using `.env.example` as the variable list. `SHOP_MODEL`

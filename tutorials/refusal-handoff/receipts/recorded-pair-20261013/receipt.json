@@ -1,0 +1,123 @@
+{
+  "scope": "Reduced fictional tutorial traces, retaining unmodified user messages, assistant replies, tool_executed events and tracker stack. These are derived copies, not unedited wire captures or a reliability benchmark.",
+  "readerCommit": "54c3380b6b3e8f8fb1fddfb701015891b4611c12",
+  "readerSha256": "7ba0f552ee69267982a3b2e5f4ea9ae8715431fc6d0aa432ae97bad664213e46",
+  "results": [
+    {
+      "variant": "bare",
+      "sourceTraceSha256": "7df8ee1332958a259f38fc02442873b0bfe2384d97c41bed5f2d0c693a76ecc2",
+      "derivedFile": "bare.json",
+      "derivedSha256": "3623758af9db7c7163197f09dc9976ce2837c429dcc4c6204083d8d4f82e5cbe",
+      "bytes": 7074,
+      "originalAcquisitionStatus": "incomplete",
+      "readerResult": {
+        "status": "passed",
+        "tool_order": [
+          "request_change",
+          "record_demo_handoff"
+        ],
+        "engine_controls": [
+          {
+            "name": "activate",
+            "arguments": {
+              "target_id": "blocked_request"
+            }
+          },
+          {
+            "name": "activate",
+            "arguments": {
+              "target_id": "staff_handoff"
+            }
+          }
+        ],
+        "terminal_frames": [
+          {
+            "skill_id": "blocked_request",
+            "frame_type": "interrupt"
+          },
+          {
+            "skill_id": "staff_handoff",
+            "frame_type": "regular"
+          }
+        ],
+        "task_closed": false,
+        "scope": "Tool-path checks only; terminal task state is reported separately"
+      },
+      "derivedResultExactlyMatchesOriginal": true
+    },
+    {
+      "variant": "referenced",
+      "sourceTraceSha256": "c4f1764c1171c5c81e79e4b86ecff63fb4e1fde520d0cadb1eaa61457393683e",
+      "derivedFile": "referenced.json",
+      "derivedSha256": "dfb9d59868dce4fda9bc2484ab7adacdf0fdd73739360649fd0c72e4cbc19ccd",
+      "bytes": 7490,
+      "originalAcquisitionStatus": "incomplete",
+      "readerResult": {
+        "status": "passed",
+        "tool_order": [
+          "request_change",
+          "record_demo_handoff"
+        ],
+        "engine_controls": [
+          {
+            "name": "activate",
+            "arguments": {
+              "target_id": "blocked_request"
+            }
+          },
+          {
+            "name": "activate",
+            "arguments": {
+              "target_id": "staff_handoff"
+            }
+          },
+          {
+            "name": "complete_skill",
+            "arguments": {}
+          }
+        ],
+        "terminal_frames": [
+          {
+            "skill_id": "blocked_request",
+            "frame_type": "regular"
+          }
+        ],
+        "task_closed": false,
+        "scope": "Tool-path checks only; terminal task state is reported separately"
+      },
+      "derivedResultExactlyMatchesOriginal": true
+    }
+  ],
+  "credentialMatches": [],
+  "newProviderRequests": 0,
+  "originalTracesRewritten": false,
+  "acquisitionDate": "2026-10-13",
+  "dateBasis": "Original tracker conversation_started_timestamp and latest_event_time, not extraction date or directory age.",
+  "sdk": "rasa-pro 3.21.0.dev5",
+  "configuredModel": {
+    "provider": "openai",
+    "model": "gpt-5.5-2026-04-23",
+    "reasoning_effort": "low",
+    "scope": "Configuration preserved in the pinned source; not independent provider/request attestation."
+  },
+  "sourceRelationship": "The agent, tools, skills, model configuration, preparation code and dependency manifests match the retained acquisition source. The reader and tests were subsequently corrected; original top-level incomplete statuses are preserved.",
+  "limitations": [
+    "One two-message trial per variant; no rate, ranking or causal prevention claim.",
+    "Tool-path passed and task_closed false are separate observed predicates; no later turns were captured.",
+    "The staff tool returns a simulated reference, not a real queue acknowledgement.",
+    "Actual model request count, tariff and invoice are not captured here; do not treat missing usage as zero."
+  ],
+  "acquisitionRuntimeFiles": {
+    "agent.yml": "3e04d61bcf504e6affdbef48417325593526731703b23f816b50fbe6a5adaf1b",
+    "experiment.py": "e3289304603f88fee2b3144f9cad262ae73b2f2322188820ae07d32c3b1cd27b",
+    "integrations.yml": "0308966d5bd45fcef8fc7c4a887c7f3081078b5dfaf31655bed3bca2d9069007",
+    "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lib/actions.py": "8f5b2292c6a30a83240b5fb8c1056db85bf1aadee36b92f04fd7beb0590011ad",
+    "skills/blocked_request/skill.md": "4b7ff590b9848a23c17e98e2c1de7ea5d2543935e05c7f9f8aaa01f8105c885d",
+    "skills/blocked_request/tools.py": "35cd225cec9c7478de4312b53da19c6b9348450d44a7fdc9190c9cf0432187a7",
+    "skills/staff_handoff/skill.md": "2789684c26f4bf4a17f55540c0663ea41d187a9c89e5dfdc4ab27fc0c015352f",
+    "skills/staff_handoff/tools.py": "69d5f0fb0d771cb062586a132d77773df37cd4910068828e18030b7a960a2743",
+    "pyproject.toml": "fe6e1183ca1255525934070956115137fd2ec23de69ab83428f5d25222a1bdcf",
+    "uv.lock": "fc5f65c2e028de3aa3f6013f0e1b59e36b06d169a29f7e561bbe162f9489ff5f"
+  }
+}
