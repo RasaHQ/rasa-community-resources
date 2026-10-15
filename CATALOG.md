@@ -178,6 +178,7 @@ Industries follow the rasa.community casebook.
 
 Tutorials ([catalog](tutorials/README.md)):
 
+- [`tutorials/agent-tool-inventory`](tutorials/agent-tool-inventory/): List a Rasa agent’s tools and check for changes
 - [`tutorials/deepagents-to-mantle`](tutorials/deepagents-to-mantle/): Move a Deep Agents database chat to Mantle
 - [`tutorials/deepagents-voice-disputes`](tutorials/deepagents-voice-disputes/): Investigate a card charge with Mantle voice and Deep Agents
 - [`tutorials/frameworks-with-rasa`](tutorials/frameworks-with-rasa/): Frameworks with Rasa

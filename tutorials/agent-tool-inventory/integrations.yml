@@ -1,0 +1,11 @@
+# Required project configuration; inventory commands never call this route.
+# No service is supplied on this loopback endpoint. This is not a chat demo.
+llm:
+  model_group: inventory_fixture
+model_groups:
+  - id: inventory_fixture
+    models:
+      - provider: openai
+        model: gpt-4o-mini
+        api_key: ${OPENAI_API_KEY}
+        api_base: http://127.0.0.1:9/v1
