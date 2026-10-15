@@ -197,7 +197,7 @@ in-memory mutation, not an observed production incident or model behaviour.
 The context manager restores the resolver and leaves source files unchanged.
 Use the same kind of check when replacing this public fixture mapping with
 a real authenticated channel identity. Keep the existing native ownership
-test; a passing pure-policy suite does not establish a correct caller mapping.
+test to check the caller mapping alongside the pure-policy suite.
 
 This extends the existing adviser for the planned Community guide
 `/library/guides/add-return-checks-to-an-agno-rasa-assistant/`. The source and
