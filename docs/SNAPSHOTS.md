@@ -54,7 +54,8 @@ this ran, then, and here is the lock that proves what "then" means.
 
 ## What freezing does *not* excuse
 
-A frozen resource is held to everything except the shared pin:
+A frozen resource keeps the repository's hygiene checks and uses its own
+engine pin for release-specific configuration checks:
 
 | Check | What it requires |
 |---|---|
@@ -64,6 +65,14 @@ A frozen resource is held to everything except the shared pin:
 | `env-example` | a `.env.example` so a clean clone can bootstrap |
 | `secret-hygiene` | no committed keys, licences, or `.env` |
 | `heroes-layout` | wave slugs are `wave-NN-<theme>`; projects live at `<wave>/projects/<project>/` |
+
+The model-group and project-memory rules start at Rasa Pro 3.20.0.dev6. The
+removal of `api_key_env` starts at 3.21.0.dev2. A snapshot on an earlier pin
+keeps its earlier configuration syntax. Maintained projects still follow the
+current rules. Missing or unrecognised snapshot pins keep the strict checks.
+Secret hygiene and voice-provider credential checks remain active in both tiers.
+Run the installed engine's validation as well as these static checks to verify
+the snapshot itself.
 
 A snapshot without a `uv.lock` is not frozen. It is a project with a date
 written on it: `uv sync` will resolve it to something the author never ran, and

@@ -164,6 +164,7 @@ Industries follow the rasa.community casebook.
 
 ## Patterns and reusable parts
 
+- [`patterns/mcp-confirmation-gate`](patterns/mcp-confirmation-gate/): Test pending, cancelled and confirmed tool requests with an MCP service and scripted model responses.
 - [`patterns/voice-vendor-router`](patterns/voice-vendor-router/): **the voice vendor router.** Swap and fail over between ASR/TTS vendors so one provider outage cannot mute or deafen a live call. Its README lists 17 ASR and TTS engines; live-verified: Deepgram, Rime, OpenAI, Speechmatics, Vosk, faster-whisper, Neuphonic NeuTTS-2E. Case builds that load its adapters directly: [`mantle-voice-banking-dispute-claude`](examples/mantle-voice-banking-dispute-claude/), [`mantle-voice-healthcare-refill-request-gpt-local`](examples/mantle-voice-healthcare-refill-request-gpt-local/).
 - [`patterns/voice-auth-stepup`](patterns/voice-auth-stepup/): Risk-tiered authentication step-up: low/medium/high driven by the action attempted, not by the caller.
 - [`patterns/voice-handoff-context`](patterns/voice-handoff-context/): Hand a caller to a human as a state transfer: a structured context package with a derived summary, an allowlist governing what crosses, and a fixture agent desk that reconstructs the caller.
