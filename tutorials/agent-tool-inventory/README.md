@@ -128,8 +128,18 @@ inventory differs from its reviewed snapshot. The new tool and changed
 source hash both need review. Remove the added function, restore the original
 file contents, and repeat the check to recover the passing result.
 
-For an intentional change, inspect a fresh snapshot before replacing the
-reviewed file. Do not regenerate it automatically in the same CI step that
+For an intentional change, save a candidate and inspect the differences:
+
+```sh
+uv run --locked python inventory_cli.py snapshot . --trusted-python > candidate.json
+diff -u inventory.json candidate.json
+```
+
+The CLI writes JSON to the candidate file and diagnostics to standard error.
+`diff` exits with status 1 when it finds differences; this is the expected
+result after adding a tool. The inventory check reports a refusal reason,
+not a line-by-line diff. Review the candidate before replacing the approved
+file. Do not regenerate it automatically in the same CI step that
 compares it: that would approve every change before checking it. Keep the
 previous snapshot until the new command exits successfully and its JSON has
 been reviewed.
