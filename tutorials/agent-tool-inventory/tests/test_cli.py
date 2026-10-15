@@ -38,6 +38,24 @@ class CliControls(unittest.TestCase):
             bad=self.call('check',D,'--trusted-python','--expected',p)
             self.assertEqual(bad.returncode,1);self.assertEqual(json.loads(bad.stdout)['status'],'refused');self.assertIn('differs',json.loads(bad.stdout)['reason'])
 
+    def test_inline_block_confirmation_settings_match_reviewed_inventory(self):
+        result = self.call('snapshot', D, '--trusted-python')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        actual = json.loads(result.stdout)
+        reviewed = json.loads((D / 'inventory.json').read_text())
+        self.assertEqual(actual, reviewed)
+        settings = {
+            row['target']: (
+                row['modelConfirmationSetting'],
+                row['engineConfirmationSetting'],
+            )
+            for row in actual['rows'] if row['tool'] == 'record_review'
+        }
+        self.assertEqual(settings, {
+            '(prose)': (True, True),
+            'review_record__finish_review': (False, True),
+        })
+
     def test_new_local_tool_requires_a_new_reviewed_snapshot(self):
         baseline = self.call('snapshot', D, '--trusted-python')
         self.assertEqual(baseline.returncode, 0, baseline.stderr)
