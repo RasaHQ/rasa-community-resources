@@ -32,7 +32,15 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and use
 Python 3.12. Rasa Pro has its own licence terms; this teaching code uses the
 repository’s [Apache 2.0 licence](../../LICENSE).
 
-Work from this directory:
+If you do not have a checkout, obtain the resource first:
+
+```sh
+git clone --filter=blob:none --sparse https://github.com/RasaHQ/rasa-community-resources.git rasa-resources
+cd rasa-resources
+git sparse-checkout set tutorials/agent-tool-inventory
+```
+
+From the repository root, enter this directory:
 
 ```sh
 cd tutorials/agent-tool-inventory
