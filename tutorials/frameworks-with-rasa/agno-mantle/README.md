@@ -85,8 +85,8 @@ The candidate is not the catalog's tested release pin.
 The three checks in `tests/test_openai_client_contract.py` use Agno's real
 OpenAI client with an in-memory HTTP transport. They check the product-tool
 round trip, structured reply, provider-error handling and refusal of an unknown
-demo sender before any client request. Their responses and usage counts are
-explicit fixtures, not generated answers or cost measurements. No provider
+demo sender before any client request. Those controls use explicit response
+and usage fixtures to check client behaviour. No provider
 key, network connection or model inference is needed. Run them with the
 selected environment above:
 
@@ -174,3 +174,31 @@ a one-argument mutation control. Those historical hashes are retained in
 `../agno-verification.json`; they do not qualify the refund extension.
 
 Further reading: [an independent study of model refund decisions](https://github.com/KarenSpinner/shopping_agents/tree/5905a95f0195c686c04d2fb5ba1684973cd194d4) explores how company instructions affect discretionary offers. This project uses its own fictional policy and records; it does not repeat or measure that study.
+
+## Check the customer mapping as well as the policy
+
+The return-policy function checks an order against the customer supplied by
+its caller. An incorrect mapping can therefore supply the wrong customer even
+while every policy rule is implemented correctly. The worked control uses
+`willow-b-chat` to request customer A’s `WS-RETURN-01` order. It runs the native
+Mantle invoker three times: with the correct registry, with a deliberately
+incorrect customer-A resolver, then with the restored registry.
+
+From this combined project’s directory, in its locked environment:
+
+```sh
+OPENAI_API_KEY=placeholder-not-a-real-key LITELLM_LOCAL_MODEL_COST_MAP=True LLM_API_HEALTH_CHECK=false .venv/bin/python -B tests/demo_refund_identity.py
+```
+
+The correct and restored mappings return `unknown_order`. The deliberately
+broken mapping returns a £12.99 offer for another customer’s order. The
+policy function is unchanged in all three calls. This is an intentional
+in-memory mutation, not an observed production incident or model behaviour.
+The context manager restores the resolver and leaves source files unchanged.
+Use the same kind of check when replacing this public fixture mapping with
+a real authenticated channel identity. Keep the existing native ownership
+test; a passing pure-policy suite does not establish a correct caller mapping.
+
+This extends the existing adviser for the planned Community guide
+`/library/guides/add-return-checks-to-an-agno-rasa-assistant/`. The source and
+article remain subject to separate publication review.
