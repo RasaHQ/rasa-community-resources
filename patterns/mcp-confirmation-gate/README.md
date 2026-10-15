@@ -200,6 +200,12 @@ does not show informed consent or the accuracy of a real model's decisions.
 Backend permissions, identity, current values and real write effects need
 their own checks. This text example does not test voice, ASR, TTS or barge-in.
 
+The current 22-test run and both licensed CLI variants are recorded in
+[`qualification-runtime.json`](qualification-runtime.json), bound to tested
+source `0261a7f82410463377df13d070be49d88303860a`. The receipt includes the
+fictional HTTP replies and tool results. Its zero provider-request count is
+derived from the local fixture and completion patch, not a network capture.
+
 Historical source-bound CLI results are in `qualification-cli.json`. They are
 maintainer attestations with archive and log hashes, not self-contained HTTP
 transcripts. An empty CLI log contains no HTTP response body. The automated
