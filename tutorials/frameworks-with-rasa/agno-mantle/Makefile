@@ -1,4 +1,4 @@
-.PHONY: test validate train run
+.PHONY: test validate train run policy-review
 test:
 	.venv/bin/python -B -m unittest discover -s ../agno/tests -p 'test_*.py' -v
 	.venv/bin/python -B -m unittest discover -s tests -p 'test_*.py' -v
@@ -9,3 +9,6 @@ train:
 	.venv/bin/rasa train --fixed-model-name willowshop-existing-adviser
 run:
 	.venv/bin/rasa run --enable-api --port 5020 --interface 127.0.0.1 --model models
+
+policy-review:
+	PYTHONPATH=../agno python3 -B review_return_policy.py

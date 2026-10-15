@@ -202,3 +202,25 @@ test to check the caller mapping alongside the pure-policy suite.
 This extends the existing adviser for the planned Community guide
 `/library/guides/add-return-checks-to-an-agno-rasa-assistant/`. The source and
 article remain subject to separate publication review.
+
+## Review the policy before using its decisions
+
+A policy owner can inspect a seven-case review sheet without installing the
+agent environment. From this combined project’s directory, run:
+
+```sh
+make policy-review
+```
+
+This calls the existing policy function with literal fictional records and
+compares its results with independently written expected examples. Read each
+input and result together. A late sealed return and a late return without an
+inspection both return the outside-window staff-review reason. The function
+returns that first reason before checking inspection. Decide what additional
+information the receiving staff workflow needs before adopting that rule
+order. A matching worksheet records behaviour against the included examples;
+policy acceptance belongs to the actual service owner.
+
+This worksheet supports the planned policy-owner guide
+`/library/guides/review-an-assistants-refund-rules/`, alongside the separate
+implementation lesson. It uses the same fictional business deliberately.
