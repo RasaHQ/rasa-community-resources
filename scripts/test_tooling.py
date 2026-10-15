@@ -2248,6 +2248,74 @@ class CompatibilityFailureEvidence(unittest.TestCase):
             self.assertEqual(runner.failures, [])
 
 
+class TestFrozenConfigVersionRules(unittest.TestCase):
+    """A cohort snapshot keeps its engine grammar without escaping hygiene."""
+
+    def project(self, version, *, snapshot=True):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        if version is not None:
+            (root / "pyproject.toml").write_text(
+                f'[project]\ndependencies = ["rasa-pro=={version}"]\n'
+            )
+        (root / "integrations.yml").write_text(
+            "llm:\n  provider: openai\n  model: example\n"
+            "  api_key_env: OPENAI_API_KEY\n"
+        )
+        (root / "memory.yml").write_text("example:\n  llm_settable: true\n")
+        return rasa_projects.Project(root, snapshot=snapshot)
+
+    def credentials(self, project, body=None):
+        path = project.path / "integrations.yml"
+        if body is not None:
+            path.write_text(body)
+        with mock.patch.object(lint_repo, "discover_projects", return_value=[project]), \
+                mock.patch.object(lint_repo, "_tracked_files", return_value=[path]):
+            return lint_repo.check_api_key_env()
+
+    def test_older_snapshot_keeps_its_inline_model_and_memory_grammar(self):
+        project = self.project("3.19.0.dev5")
+        self.assertEqual(lint_repo.check_llm_model_group([project]), [])
+        self.assertEqual(lint_repo.check_project_memory_writes([project]), [])
+        self.assertEqual(self.credentials(project), [])
+
+    def test_model_group_and_memory_rules_start_at_dev_six(self):
+        for version, rejected in [("3.20.0.dev5", False), ("3.20.0.dev6", True),
+                                  ("3.20.0", True), ("3.20.3", True)]:
+            with self.subTest(version=version):
+                project = self.project(version)
+                self.assertEqual(bool(lint_repo.check_llm_model_group([project])), rejected)
+                self.assertEqual(bool(lint_repo.check_project_memory_writes([project])), rejected)
+
+    def test_credential_removal_has_its_own_later_boundary(self):
+        for version, rejected in [("3.20.0.dev6", False), ("3.20.3", False),
+                                  ("3.21.0.dev1", False), ("3.21.0.dev2", True),
+                                  ("3.21.0", True)]:
+            with self.subTest(version=version):
+                self.assertEqual(bool(self.credentials(self.project(version))), rejected)
+
+    def test_voice_credential_rule_is_still_enforced_on_old_snapshots(self):
+        project = self.project("3.19.0.dev5")
+        findings = self.credentials(project, "asr:\n  name: deepgram\n  api_key_env: DEEPGRAM_API_KEY\n")
+        self.assertEqual(len(findings), 1)
+        self.assertIn("not read by the engine", findings[0].message)
+
+    def test_missing_pin_does_not_exempt_a_snapshot(self):
+        project = self.project(None)
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
+    def test_maintained_project_cannot_opt_out_by_naming_an_old_pin(self):
+        project = self.project("3.19.0.dev5", snapshot=False)
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        with mock.patch.object(lint_repo, "discover_projects", return_value=[]), \
+                mock.patch.object(lint_repo, "_tracked_files", return_value=[project.path / "integrations.yml"]):
+            self.assertTrue(lint_repo.check_api_key_env())
+
+
 if __name__ == "__main__":
     # A suite that collects nothing exits 0 and prints nothing, which every
     # caller reads as a pass. That is not hypothetical: an edit once removed

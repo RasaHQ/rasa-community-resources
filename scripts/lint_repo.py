@@ -54,6 +54,7 @@ from rasa_projects import (
     read_required_secrets,
     read_uv_prerelease_setting,
     read_version_line,
+    _version_sort_key,
 )
 
 # The engine package name to show in messages. Follows the rename in
@@ -814,6 +815,23 @@ def check_brand_terms() -> list[Finding]:
 INLINE_LLM_KEYS = ("provider", "model", "api_key_env", "api_key")
 
 
+def _project_requires_rule(project: Project, introduced: str) -> bool:
+    """Apply newer config rules to maintained projects and matching snapshots.
+
+    Missing or unrecognised snapshot pins keep the strict rule. The separate
+    snapshot-pin check reports the missing reproducibility information.
+    """
+    if not project.snapshot:
+        return True
+    try:
+        version = read_pyproject_pin(project)
+    except OSError:
+        return True
+    if not version or not _version_sort_key(version)[0]:
+        return True
+    return _version_sort_key(version) >= _version_sort_key(introduced)
+
+
 def check_llm_model_group(projects: list[Project]) -> list[Finding]:
     """`llm:` names a model group; provider settings live on the group.
 
@@ -825,6 +843,8 @@ def check_llm_model_group(projects: list[Project]) -> list[Finding]:
     """
     findings: list[Finding] = []
     for project in projects:
+        if not _project_requires_rule(project, "3.20.0.dev6"):
+            continue
         path = project.path / "integrations.yml"
         if not path.is_file():
             continue
@@ -933,12 +953,21 @@ def check_api_key_env() -> list[Finding]:
     and never consult the config.
     """
     findings: list[Finding] = []
+    snapshots = discover_projects("snapshots")
     for path in _tracked_files("*.yml", "*.yaml", "*.md"):
         text = _read(path)
         # Cheap reject: most files mention no credential at all.
         if "api_key" not in text:
             continue
         rel = _rel(path)
+        absolute = path if path.is_absolute() else REPO_ROOT / path
+        snapshot = next(
+            (project for project in snapshots
+             if absolute.is_relative_to(project.path)), None
+        )
+        strict_model_credentials = (
+            snapshot is None or _project_requires_rule(snapshot, "3.21.0.dev2")
+        )
         voice_indent: int | None = None
         for lineno, line in _numbered(text):
             stripped = line.strip()
@@ -972,6 +1001,11 @@ def check_api_key_env() -> list[Finding]:
                         f"Remove it and select the vendor with 'name:'.",
                     )
                 )
+                continue
+
+            # Older frozen engines accept api_key_env. Keep voice credential
+            # checks above and repository-wide secret hygiene in every tier.
+            if not strict_model_credentials:
                 continue
 
             if API_KEY_ENV_RE.match(line):
@@ -1018,6 +1052,8 @@ def check_project_memory_writes(projects: list[Project]) -> list[Finding]:
     """
     findings: list[Finding] = []
     for project in projects:
+        if not _project_requires_rule(project, "3.20.0.dev6"):
+            continue
         path = project.path / "memory.yml"
         if not path.is_file():
             continue
