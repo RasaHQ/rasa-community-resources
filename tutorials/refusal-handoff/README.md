@@ -1,9 +1,9 @@
 # Check the exit after a tool refuses a request
 
 **Author:** Rod Rivera
-**Assessed on:** 2026-10-13
-**Assessed by:** Native compiler, activation-classifier and tool-invoker controls
-**Verified with:** rasa-pro 3.21.0.dev5, Python 3.12; offline controls only
+**Assessed on:** 2026-10-15; recorded conversations from 2026-10-13
+**Assessed by:** Native compiler, activation-classifier, tool-invoker and saved-trace controls
+**Verified with:** rasa-pro 3.21.0.dev5, Python 3.12; current checks are offline
 **Audience:** Engineers writing and testing an agent's refusal branch
 **Time:** About 20 minutes for the offline exercise; allow extra time for model trials
 
@@ -16,6 +16,11 @@ other says `@skill.staff_handoff`. The only instructional difference is the
 prefix. The pinned native compiler and activation classifier show how each
 reference is treated. A separate text replay checks what the agent actually
 does. A compiler result is not a model-behaviour guarantee.
+
+To inspect the retained conversations first, jump to
+[the recorded handoff](#inspect-a-recorded-handoff-without-a-model-call).
+That path uses only Python's standard library. Install the SDK below when
+you want to run the native compiler and tool-invoker checks.
 
 ## Install one environment
 
@@ -61,6 +66,44 @@ handoff is activated**, not whether the model will choose it.
 The classifier is an internal SDK method tied to this exact release. When you
 upgrade, rerun the controls and examine changes instead of copying these
 results forward.
+
+## Inspect a recorded handoff without a model call
+
+The `receipts/recorded-pair-20261013` directory contains reduced copies of one
+retained two-message trial for each variant. They keep the actual messages,
+replies, tool events and remaining skill entries used by the reader. Other
+tracker fields and non-tool events are omitted. The receipt records the
+original and derived hashes; these are not unedited wire captures.
+
+From this project directory, use your existing Python interpreter:
+
+```bash
+python3 replay.py --variant bare --read receipts/recorded-pair-20261013/bare.json
+python3 replay.py --variant referenced --read receipts/recorded-pair-20261013/referenced.json
+```
+
+Both return tool-path `status: passed` and `tool_order` of `request_change`,
+then `record_demo_handoff`. Both also report `task_closed: false`. A simulated
+handoff was recorded, but at the two-message cutoff the original task was
+still present. The bare variant also retained the handoff skill.
+
+Mantle keeps unfinished skills as entries, or frames, in the tracker stack.
+Here `terminal_frames` means the entries at the end of the captured trial,
+not entries that have finished. The reader computes `task_closed` only for
+the two skills in this example; it is not a real staff-queue completion signal.
+
+The files retain their original top-level `incomplete` acquisition status.
+The corrected reader evaluates their saved turns separately; it does not
+rewrite that history. Its returned `passed` means the tool-path checks passed,
+and its separate closure field remains false. The current live replay writer
+likewise uses `passed` for its tool-path result, so always inspect both fields.
+
+If your service requires the blocked task to end at this point, these two
+recordings do not meet that requirement. They contain no later turn, so they
+cannot show whether the agent would subsequently finish or resume the task.
+Use the same distinction when you define your own end-state check. One pair
+establishes no reliability rate or behavioural advantage for either prefix.
+Reading these files needs no key, licence, server or new model request.
 
 ## Run a selected text trial
 
