@@ -224,3 +224,15 @@ policy acceptance belongs to the actual service owner.
 This worksheet supports the planned policy-owner guide
 `/library/guides/review-an-assistants-refund-rules/`, alongside the separate
 implementation lesson. It uses the same fictional business deliberately.
+
+The worksheet also contains the worked choice in `REFUND-REVIEW.md`: retain
+the first automatic reason and attach inspection status to a local draft note.
+A missing inspection leads to obtaining it; an inspected late return proceeds
+to exception review. Removing the inspection field or skipping a missing
+inspection is rejected by the local note checker. Every receiving-role label
+is fictional and every delivery state remains `draft_not_sent`. These fields
+belong to this community worksheet, not a Mantle staff-service API.
+
+For a shorter display, run the same script with `--cases-only` to print the
+seven policy cases, or `--notes-only` to print the worked receiving notes and
+two rejection controls. Both displays still execute the complete local sheet.

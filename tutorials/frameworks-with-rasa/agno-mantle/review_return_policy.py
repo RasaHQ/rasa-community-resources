@@ -1,4 +1,5 @@
 """Literal invented policy examples; standard-library only, no model client."""
+import argparse
 import json
 from dataclasses import replace
 from shop_adviser.refund_policy import ReturnRecord, assess_refund
@@ -34,6 +35,66 @@ def review_examples():
     return rows
 
 
+def validate_review_note(note):
+    """Check a proposed local worksheet contract, not an authenticated queue."""
+    if type(note.get("inspection_recorded")) is not bool:
+        raise ValueError("review note needs an explicit inspection status")
+    expected = "review_exception" if note["inspection_recorded"] else "obtain_inspection"
+    if note.get("next_step") != expected:
+        raise ValueError("next step disagrees with the recorded inspection status")
+    if note.get("receiving_role") != "returns-reviewer" or note.get("delivery") != "draft_not_sent":
+        raise ValueError("this worksheet creates local drafts only")
+    return note
+
+
+def draft_review_notes(rows):
+    """Worked fictional choice: collect inspection before reviewing a late return."""
+    notes = []
+    for row in rows:
+        if row["result"].get("reason") != "outside_automatic_window":
+            continue
+        inspected = row["inspection_recorded"]
+        note = {"case": row["case"], "policy_result": row["result"],
+                "inspection_recorded": inspected,
+                "next_step": "review_exception" if inspected else "obtain_inspection",
+                "receiving_role": "returns-reviewer", "delivery": "draft_not_sent"}
+        notes.append(validate_review_note(note))
+    return notes
+
+
+def review_sheet():
+    rows = review_examples()
+    notes = draft_review_notes(rows)
+    incomplete = {k: v for k, v in notes[0].items() if k != "inspection_recorded"}
+    try:
+        validate_review_note(incomplete)
+    except ValueError as error:
+        control = {"changed": "removed inspection_recorded", "result": "rejected",
+                   "reason": str(error)}
+    else:
+        raise AssertionError("An incomplete review note was accepted")
+    wrong_step = {**notes[1], "next_step": "review_exception"}
+    try:
+        validate_review_note(wrong_step)
+    except ValueError as error:
+        step_control = {"changed": "skip missing inspection", "result": "rejected",
+                        "reason": str(error)}
+    else:
+        raise AssertionError("A note skipped its missing inspection")
+    return {"policy": "fictional Willow Shop automatic returns", "cases": rows,
+            "proposed_review_notes": notes, "incomplete_note_control": control,
+            "wrong_next_step_control": step_control}
+
+
 if __name__ == "__main__":
-    print(json.dumps({"policy": "fictional Willow Shop automatic returns",
-                      "cases": review_examples()}, indent=2))
+    parser = argparse.ArgumentParser(description=__doc__)
+    display = parser.add_mutually_exclusive_group()
+    display.add_argument("--cases-only", action="store_true")
+    display.add_argument("--notes-only", action="store_true")
+    args = parser.parse_args()
+    sheet = review_sheet()
+    if args.cases_only:
+        sheet = {key: sheet[key] for key in ("policy", "cases")}
+    elif args.notes_only:
+        sheet = {key: value for key, value in sheet.items() if key != "cases"}
+    print(json.dumps(sheet, indent=2))
