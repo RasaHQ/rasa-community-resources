@@ -87,8 +87,9 @@ unused ports with `--mcp-port` and `--scripted-model-port` if needed, and use
 those same ports when starting the services. Do not stop another process to
 take its port.
 
-Omitting `--scripted-model-port` deliberately selects the separate provider
-configuration, which is outside this exercise and may make billable requests.
+Choose exactly one mode: `--scripted-model-port` for this local exercise, or
+`--provider` for the separate provider configuration. Omitting both is an error.
+Provider mode is outside this exercise and may make billable requests.
 
 Train both projects using the same interpreter:
 
