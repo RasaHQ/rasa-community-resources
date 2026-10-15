@@ -41,28 +41,14 @@ tool_constraints:
 In the second variant, `enabled` is `false`. Keeping that difference small lets
 you identify what the confirmation requirement changes.
 
-:::diagram{title="One scripted request, two tool-execution paths"}
-
-```dot
-rankdir=LR;
-request [label="Script requests
-the recording"];
-gate [label="Confirmation enabled
-request waits", class="ok"];
-confirmation [label="Later user turn
-script confirms"];
-simulation [label="Simulated recording
-no customer write"];
-no_gate [label="Confirmation disabled
-request runs now", class="blocked"];
-request -> gate;
-gate -> confirmation;
-confirmation -> simulation;
-request -> no_gate;
-no_gate -> simulation;
+```mermaid
+flowchart LR
+  request["Script requests the recording"] --> gate["Confirmation enabled: request waits"]
+  gate --> confirmation["Later user turn: script confirms"]
+  confirmation --> simulation["Simulated recording: no customer write"]
+  request --> no_gate["Confirmation disabled: request runs now"]
+  no_gate --> simulation
 ```
-
-:::
 
 ## Before you start
 
@@ -79,10 +65,11 @@ cd ../rasa-mcp-confirmation/patterns/mcp-confirmation-gate
 Choose another destination if that worktree already exists. These commands
 create committed source only; they copy no existing environment or credential.
 
-You need Python 3.12, uv and the companion checkout below. Run the
-commands below from `patterns/mcp-confirmation-gate` in that checkout. The lock
-pins Rasa Pro 3.21.0.dev5 and MCP 1.28.1. The recorded installation and CLI checks used macOS on Arm64. Repeat the
-controls on your target platform and release before relying on that setup.
+You need Python 3.12, uv and the companion checkout above. Run the commands
+below from `patterns/mcp-confirmation-gate` in that checkout. The lock pins
+Rasa Pro 3.21.0.dev5 and MCP 1.28.1. The recorded installation and CLI checks
+used macOS on Arm64. Repeat the controls on your target platform and release
+before relying on that setup.
 
 The automated checks use a fake model key and make no model-provider requests.
 The optional `rasa train` and `rasa run` exercise in the README needs a valid
@@ -91,7 +78,9 @@ shared logs.
 
 Install the locked dependencies into this project's environment:
 
-::run{cmd="uv sync --prerelease=allow --locked"}
+```bash
+uv sync --prerelease=allow --locked
+```
 
 Check the interpreter and installed pins before continuing:
 
@@ -250,20 +239,24 @@ does after a tool request has already been made.
 
 ## Check your understanding
 
-:::checkpoint{id="mcp-confirmation-execution" question="The model asks ‘Would you like me to save this?’ but the tracker already contains simulated_recording. What does that tell you?" options="The question proves the tool waited|The operation ran before approval|The tracker records only what the model intended" answer="1"}
+The model asks “Would you like me to save this?” but the tracker already
+contains `simulated_recording`. What does that tell you?
+
+1. The question proves the tool waited.
+2. The operation ran before approval.
+3. The tracker records only what the model intended.
 
 Choose the evidence you would trust before allowing the tool to write to your
 own backend.
 
-:::
-
-:::solution{title="Compare your answer with the tool result"}
+<details>
+<summary>Compare your answer with the tool result</summary>
 
 The simulated operation has already run. In this exercise, the first
 gated call must instead return `awaiting_confirmation`; the later execution
 must use the stored value. Check the recorded tool result, not only the text.
 
-:::
+</details>
 
 For the earlier archive/bootstrap scope, see the
 [initial maintained-source receipt](https://github.com/RasaHQ/rasa-community-resources/blob/0261a7f82410463377df13d070be49d88303860a/patterns/mcp-confirmation-gate/qualification-current.json).
@@ -281,10 +274,6 @@ perform the operation, [review the agent's permissions](https://rasa.community/l
 alongside the confirmation step. These answer different questions from
 whether the call waited.
 
-:::cta{href="/library/guides/mutation-test-an-agent-guard/" label="Check whether your tests catch a broken guard"}
-
 After you have a passing test, deliberately break the rule it protects.
-The mutation-testing guide shows how to check whether a test catches that
+[The mutation-testing guide](https://rasa.community/library/guides/mutation-test-an-agent-guard/) shows how to check whether a test catches that
 change, rather than continuing to pass.
-
-:::

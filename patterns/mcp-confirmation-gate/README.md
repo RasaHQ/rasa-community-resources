@@ -1,10 +1,10 @@
 # Test confirmation before a Rasa tool runs
 
 ```text
-Author:        Rasa community team
+Author:        Rod Rivera
 Assessed on:   2026-10-15
-Assessed by:   Locked installation, native validation and paired runtime controls
-Verified with: rasa-pro 3.21.0.dev5, Python 3.12, mcp 1.28.1  <!-- rasa-version-ignore: frozen tested release -->
+Assessed by:   Rod Rivera (automated checks listed in qualification-runtime.json)
+Verified with: rasa-pro 3.21.0.dev5, Python 3.12, mcp 1.28.1  # rasa-version-ignore: historical assessment; current scope in qualification-runtime.json
 Audience:      Engineers connecting MCP tools to a Rasa agent
 Time:          About 30 minutes for the local exercise, excluding installation
 ```
@@ -20,9 +20,8 @@ are fixed: this tests tool execution, not whether a language model follows an
 injected instruction or understands consent. The recording creates no file or
 customer record. No model-provider key is needed for the local exercise.
 
-Start with the [guided exercise](tutorial/TUTORIAL.md). The website guide is
-commissioned under `test-a-gate-against-split-mcp-payloads`; it is not yet a
-published route. This pattern supplies that guide's runnable source.
+Start with the [guided exercise](tutorial/TUTORIAL.md), which includes the
+commands, expected results and a short question to check your understanding.
 
 ## Install and check
 
