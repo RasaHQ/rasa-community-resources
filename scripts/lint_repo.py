@@ -1003,12 +1003,9 @@ def check_api_key_env() -> list[Finding]:
                 )
                 continue
 
-            # Older frozen engines accept api_key_env. Keep voice credential
-            # checks above and repository-wide secret hygiene in every tier.
-            if not strict_model_credentials:
-                continue
-
-            if API_KEY_ENV_RE.match(line):
+            # Older frozen engines accept api_key_env. Exempt only that
+            # syntax; literal api_key values remain forbidden in every tier.
+            if strict_model_credentials and API_KEY_ENV_RE.match(line):
                 findings.append(
                     Finding(
                         "api-key-env",
@@ -1029,10 +1026,10 @@ def check_api_key_env() -> list[Finding]:
                         "api-key-env",
                         rel,
                         lineno,
-                        "'api_key' must be exactly '${VAR}' — the engine "
-                        "rejects a literal, a bare $VAR, a ${VAR:-default} or "
-                        "an empty value (rasa/shared/providers/"
-                        "model_group_validation.py). Name the environment "
+                        "'api_key' must be exactly '${VAR}' — repository "
+                        "credential hygiene forbids a literal, a bare $VAR, "
+                        "a ${VAR:-default} or an empty value in every tier. "
+                        "Name the environment "
                         "variable, for example 'api_key: ${OPENAI_API_KEY}'.",
                     )
                 )
@@ -1334,8 +1331,8 @@ CHECKS = {
     "agent-config-keys": lambda p, s, e: check_agent_config_keys(),
     "brand-terms": lambda p, s, e: check_brand_terms(),
     "llm-model-group": lambda p, s, e: check_llm_model_group(p + s),
-    # Both tiers: a frozen resource whose credentials never resolved is a
-    # broken example regardless of which pin it is frozen at.
+    # Both tiers reject literal credentials and misplaced voice keys;
+    # only the removed api_key_env syntax follows the frozen engine pin.
     "api-key-env": lambda p, s, e: check_api_key_env(),
     "project-memory-writes": lambda p, s, e: check_project_memory_writes(p + s),
     "env-example": lambda p, s, e: check_env_examples(p + s),

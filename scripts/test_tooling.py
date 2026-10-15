@@ -2307,6 +2307,30 @@ class TestFrozenConfigVersionRules(unittest.TestCase):
         self.assertTrue(lint_repo.check_project_memory_writes([project]))
         self.assertTrue(self.credentials(project))
 
+    def test_old_snapshot_still_rejects_literal_model_credentials(self):
+        project = self.project("3.19.0.dev5")
+        for value in ("fictional-gemini-key", "fictional-azure-key", "fictional-groq-key"):
+            with self.subTest(value=value):
+                findings = self.credentials(project, f"model_groups:\n  - api_key: {value}\n")
+                self.assertEqual(len(findings), 1)
+                self.assertIn("must be exactly '${VAR}'", findings[0].message)
+        self.assertEqual(self.credentials(project, "api_key: ${OPENAI_API_KEY}\n"), [])
+
+    def test_unpinned_dependency_does_not_exempt_a_snapshot(self):
+        project = self.project("3.19.0.dev5")
+        (project.path / "pyproject.toml").write_text(
+            '[project]\ndependencies = ["rasa-pro>=3.19"]\n'
+        )
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
+    def test_unparseable_pin_does_not_exempt_a_snapshot(self):
+        project = self.project("not-a-version")
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
     def test_maintained_project_cannot_opt_out_by_naming_an_old_pin(self):
         project = self.project("3.19.0.dev5", snapshot=False)
         self.assertTrue(lint_repo.check_llm_model_group([project]))
