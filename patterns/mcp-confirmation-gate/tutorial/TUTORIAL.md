@@ -224,7 +224,7 @@ the same stored tool results. It closes its client and server afterwards.
 
 This in-process test disables Sanic's source-rewriting optimisation because it
 cannot transform Rasa's wrapped send method. For the separate, licensed CLI
-exercise, follow the [companion setup and startup commands](https://github.com/RasaHQ/rasa-community-resources/blob/270a6c6d24799ef390a7ad99aec415db76b9526e/patterns/mcp-confirmation-gate/README.md#prepare-a-pair-for-the-licensed-cli).
+exercise, follow the [companion setup and startup commands](https://github.com/RasaHQ/rasa-community-resources/blob/b03bbe41b1b83938290c0c184fdd4264a815d256/patterns/mcp-confirmation-gate/README.md#prepare-a-pair-for-the-licensed-cli).
 That route was also checked with `rasa run`; it does not use the in-process
 server adjustment.
 
