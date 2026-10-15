@@ -1,24 +1,59 @@
-# Keep an Agno product adviser and add a Rasa conversation
+# Add return checks to an Agno and Rasa shopping assistant
 
 Willow Shop's existing native Agno adviser keeps its registered product tool,
 model and SQLite customer memory. Mantle exposes the read-only public product
 task. Application code maps the channel sender to a stable demo customer and a
-distinct conversation; the model-facing tool accepts only a question.
+distinct conversation. Product advice takes a question; the new return check
+takes an order reference.
 
 **Author:** Rod Rivera
-**Assessed on:** 2026-10-11
-**Assessed by:** Native memory-owner controls, decorated Mantle bindings and licensed build qualification
-**Verified with:** Rasa Pro 3.21.0.dev5, Agno 3.1.2 and Python 3.12.13. The
-original 20 native controls and project validation passed on that date. Licensed training and cold archive
-loading were qualified at `fe5aeb26`; later changes add fixture observations and
-a one-argument mutation control. Application and configuration SHA pairs remain
-unchanged in `../agno-verification.json`.
+**Assessed on:** 2026-10-15
+**Assessed by:** OpenAI client-contract controls assessed on 15 October 2026 and written-policy checks; refund-native/build evidence is recorded separately.
+**Verified with:** Standard-library policy checks; SDK steps are locked to Rasa Pro 3.21.0.dev5 and Agno 3.1.2.
+
+## Check a return against the shop's written policy
+
+The existing adviser still answers product questions. The additional refund
+skill looks up invented order and inspection records for the same public demo
+customer. It makes a read-only offer from the recorded amount paid. It cannot
+issue a payment or contact staff.
+
+Read [the fictional policy](REFUND-POLICY.md) first. It states which returns
+qualify for an automatic full-refund offer and which need an inspection or
+staff review. You will test those rules with invented order records before
+connecting the check to a conversation.
+
+You can check the pure policy without an SDK, licence or provider key. From
+the repository root:
+
+```sh
+PYTHONPATH=tutorials/frameworks-with-rasa/agno python3 -B -m unittest discover -s tutorials/frameworks-with-rasa/agno-mantle/tests -p test_refund_policy.py -v
+```
+
+A passing result checks the written rules and order ownership in the fixture.
+It does not show that a model calls the tool or accurately explains its result.
+After installing the selected runtime below, `make test` also exercises the
+actual Mantle invoker with fixed channel contexts. The binding takes an order
+reference; customer identity comes from the existing public demo mapping,
+while payment and inspection values come from the order lookup.
+
+Try `WS-RETURN-01`, `WS-RETURN-LATE` and `WS-RETURN-PENDING` with sender
+`willow-a-chat`. Their records represent an automatic offer, staff review and
+a missing inspection. `willow-b-chat` cannot read those fixture orders through
+the tool. Anyone can choose a public demo sender name, so this is not a login
+or a production access-control implementation. Replace that mapping with an
+authenticated channel identity before using real records.
+
+Staff review is a status, not an acknowledged handoff. The tool does not change
+a payment, open a ticket or send customer details anywhere. Check those
+integrations separately if you add them.
 
 ## Start only the selected runtime
 
-The supplied lock includes the native adviser. The combined demo needs only
-this environment; the standalone Agno environment is optional when running
-that project separately.
+Use the committed lock for this combined project; do not upgrade its OpenAI
+SDK independently. The lock includes the native adviser. The combined demo
+needs only this environment; the standalone Agno environment is optional when
+running that project separately.
 
 From the repository root:
 
@@ -126,3 +161,16 @@ Run `../agno/demo_handoff_owner.py` with the selected combined Python runtime
 to inspect the one-argument ownership mutation. Both native runs return checked
 public advice, while their initial memory inputs differ. Each starts with the
 same seeded records and empty history in an independent database.
+
+## Earlier product-advice qualification
+
+**Author:** Rod Rivera
+**Assessed on:** 2026-10-11
+**Assessed by:** Native memory-owner controls, decorated Mantle bindings and licensed build qualification
+**Verified with:** Rasa Pro 3.21.0.dev5, Agno 3.1.2 and Python 3.12.13. The
+original 20 native controls and project validation passed on that date. Licensed training and cold archive
+loading were qualified at `fe5aeb26`; later changes add fixture observations and
+a one-argument mutation control. Those historical hashes are retained in
+`../agno-verification.json`; they do not qualify the refund extension.
+
+Further reading: [an independent study of model refund decisions](https://github.com/KarenSpinner/shopping_agents/tree/5905a95f0195c686c04d2fb5ba1684973cd194d4) explores how company instructions affect discretionary offers. This project uses its own fictional policy and records; it does not repeat or measure that study.
