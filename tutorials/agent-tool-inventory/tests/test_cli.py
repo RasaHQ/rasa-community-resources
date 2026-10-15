@@ -38,6 +38,27 @@ class CliControls(unittest.TestCase):
             bad=self.call('check',D,'--trusted-python','--expected',p)
             self.assertEqual(bad.returncode,1);self.assertEqual(json.loads(bad.stdout)['status'],'refused');self.assertIn('differs',json.loads(bad.stdout)['reason'])
 
+    def test_new_local_tool_requires_a_new_reviewed_snapshot(self):
+        baseline = self.call('snapshot', D, '--trusted-python')
+        self.assertEqual(baseline.returncode, 0, baseline.stderr)
+        local = D / 'skills/review_record/tools.py'
+        original = local.read_text()
+        addition = '\n@tool(description="Read an invented revision.")\nasync def read_revision(context: ToolContext) -> ToolResult:\n    return ToolResult(llm_response={"revision": 1})\n'
+        with tempfile.TemporaryDirectory(dir=D) as temporary:
+            expected = Path(temporary) / 'reviewed.json'
+            expected.write_text(baseline.stdout)
+            try:
+                local.write_text(original + addition)
+                changed = self.call('snapshot', D, '--trusted-python')
+                self.assertEqual(changed.returncode, 0, changed.stderr)
+                tools = {row['tool'] for row in json.loads(changed.stdout)['rows']}
+                self.assertIn('read_revision', tools)
+                comparison = self.call('check', D, '--trusted-python', '--expected', expected)
+                self.assertEqual(comparison.returncode, 1, comparison.stderr)
+                self.assertEqual(json.loads(comparison.stdout)['status'], 'refused')
+            finally:
+                local.write_text(original)
+
     def test_declared_unbound_tool_cannot_be_saved_as_snapshot(self):
         skill=D/'skills/review_record/skill.md'
         original=skill.read_text()

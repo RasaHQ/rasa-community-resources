@@ -156,7 +156,8 @@ If the command refuses your project, keep the refusal in the review and add
 an adapter or explicit state coverage before relying on a complete list.
 Removing the refusal to get a green check loses that boundary.
 
-This inventory is one input to a tool-access review. It does not describe
+The list covers custom Python bindings from the project. Built-in engine
+tools are not included. This inventory is one input to a tool-access review. It does not describe
 permissions inside a tool’s implementation, external service credentials,
 all possible runtime states or regulatory compliance. Review those separately.
 No latency, cost or model-quality comparison is made here.
