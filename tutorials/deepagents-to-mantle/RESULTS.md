@@ -31,6 +31,13 @@ python3 -B exercises/result_contract.py > "$exercise_dir/after.json"
 Inspect both reports. They omit cell contents, so the large-value case does
 not flood your terminal. Both use the same queries and fresh database layout.
 
+Read the saved reports with Python's JSON formatter:
+
+```sh
+python3 -m json.tool "$exercise_dir/before.json"
+python3 -m json.tool "$exercise_dir/after.json"
+```
+
 | Input | Earlier helper | Current result contract |
 | --- | --- | --- |
 | One integer | JSON result | JSON result |
