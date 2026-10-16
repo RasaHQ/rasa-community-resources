@@ -26,6 +26,11 @@ records: read-only access does not provide row-level access control or protect
 personal information in free-form queries. Deploy aggregate views and enforce
 your own authorisation in a real service.
 
+Use [the SQL result exercise](RESULTS.md) to compare row limits with value size,
+strict JSON types and the aggregate result budget. It runs without either
+runtime. The shared helper refuses oversized or unsupported values rather
+than returning a truncated answer; its byte budget is not a model token limit.
+
 ## Deep Agents chat
 
 ```sh
