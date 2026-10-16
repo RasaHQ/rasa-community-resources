@@ -1,6 +1,6 @@
 """Characterisation of the status lookup after an unresolved bind. No model, no network, no licence.
 
-Run from the project directory:  python -m unittest tests.test_status_lookup_characterisation -v
+Run from the project directory:  python -m unittest discover -s tests -p "test_status*" -v
 (or all offline tests: python -m unittest discover -s tests -v)
 
 This records what the fixture does TODAY. It is not a specification of how a status lookup should behave:
