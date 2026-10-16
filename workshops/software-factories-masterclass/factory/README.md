@@ -16,7 +16,7 @@ Exit status: 0 ACCEPT, 1 REJECT, 2 the factory could not run, 3 NOT_READY (this 
 | --- | --- |
 | `product/` | The baseline: a Mantle project with an agent, a model group and no skills |
 | `tasks/` | Three tasks: A1 a card-blocking skill with a confirmation gate, A2 and A3 one rule each in `agent.yml` |
-| `acceptance/`, `accept_lib.py` | The protected suites and their helper, pinned by SHA-256 in each task, written from the task text before any candidate existed |
+| `acceptance/`, `accept_lib.py` | The protected suites and their helper, pinned by SHA-256 in each task. Write the suite from the task text before you see any candidate; the hash proves which suite ran, not when it was written |
 | `candidates/` | Hand-written candidates: a good one per task, three that silently lose the confirmation gate, one that nests its rule wrongly, one that edits the acceptance suite, and two for the stale-base lesson |
 | `scratch.py`, `builder/` | A working folder for a builder agent: the project, one task and instructions, nothing protected |
 | `agent-runs/` | Eighteen recorded runs, nine by codex-cli 0.162.1 and nine by Claude Code 2.1.299, October 15, 2026, with decisions, patches and final messages |
