@@ -6,7 +6,7 @@ REPO   := ../..
 BUILD  := examples/mantle-text-payment-plan-authority-gpt
 
 .DEFAULT_GOAL := help
-.PHONY: help install env proof proof-full validate train inspect run conversations metric clean
+.PHONY: help install env proof proof-full offer-change validate train inspect run conversations metric clean
 
 help: ## Show targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-14s %s\n", $$1, $$2}'
@@ -19,6 +19,9 @@ env: ## Create .env from .env.example (never overwrites)
 
 proof: ## Offline guard tests (no licence, no model, no network; hook tests skip)
 	python3 -m unittest discover -s tests -v
+
+offer-change: ## Offline changed-offer replay (no SDK, model or network)
+	@python3 -B exercises/changed_offer.py
 
 proof-full: ## The same tests in the project venv, including the output hook
 	uv run --locked python -m unittest discover -s tests -v

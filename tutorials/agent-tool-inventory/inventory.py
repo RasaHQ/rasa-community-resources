@@ -10,6 +10,21 @@ import inspect
 import json
 
 
+def source_file_for(function, root):
+    try:
+        name = inspect.getsourcefile(inspect.unwrap(function))
+    except TypeError:
+        name = None
+    if name is None:
+        raise ValueError("A loaded tool has no inspectable Python source file")
+    source = Path(name).resolve()
+    try:
+        relative = source.relative_to(root)
+    except ValueError:
+        raise ValueError("A loaded tool is defined outside the project") from None
+    return source, relative
+
+
 def inventory(root):
     from rasa.mantle.skills.catalog import load_skill_catalog
     from rasa.mantle.skills.conditions import is_confirmation_gate_active
@@ -61,8 +76,7 @@ def inventory(root):
                 catalog, skill_id, target, functions, {}
             )
             for name, function in sorted(functions.items()):
-                source = Path(inspect.getsourcefile(inspect.unwrap(function))).resolve()
-                relative = source.relative_to(root)
+                source, relative = source_file_for(function, root)
                 engine_gate = catalog.effective_tool_gate(skill_id, target, name)
                 model_gate = gates.get(name)
                 rows.append({

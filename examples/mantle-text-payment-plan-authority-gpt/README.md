@@ -48,6 +48,11 @@ it do exactly the wrong thing, and each outcome was read from the tracker.
 
 ## Quick start
 
+For a Python-only exercise before starting the agent, follow
+[Test confirmation after a payment offer changes](exercises/README.md).
+It shows why refreshing saved values does not renew an earlier question.
+It uses local service calls and fixture events; it does not run a conversation.
+
 ```bash
 make install
 make env        # then fill RASA_LICENSE and OPENAI_API_KEY in .env
