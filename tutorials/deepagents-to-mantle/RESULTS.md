@@ -135,7 +135,7 @@ that an agent chose a suitable query or explained the answer correctly.
 python3 -B -m unittest discover -s tests -p test_result_contract.py -v
 ```
 
-Expect ten tests followed by `OK`, with no skips. The recovery command has its
+Expect twelve tests followed by `OK`, with no skips. The recovery command has its
 own CLI regression:
 
 ```sh
@@ -146,7 +146,8 @@ Expect one test followed by `OK`, with no skips. Stop on an error, failure or
 skip, and check your selected interpreter and source revision before changing
 an expected result.
 
-The controls cover value refusal, combined rows, escaping, finite numbers,
+The controls cover value refusal, plain multi-column and internal sorted
+results, combined rows, escaping, finite numbers,
 small Unicode and null values, exact budget edges, schema output and the SQL
 checker's echo. Each verifies that its local database remains unchanged. Run
 the existing `make test` too: a result-budget change must preserve the
