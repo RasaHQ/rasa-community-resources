@@ -1,24 +1,59 @@
-# Keep an Agno product adviser and add a Rasa conversation
+# Add return checks to an Agno and Rasa shopping assistant
 
 Willow Shop's existing native Agno adviser keeps its registered product tool,
 model and SQLite customer memory. Mantle exposes the read-only public product
 task. Application code maps the channel sender to a stable demo customer and a
-distinct conversation; the model-facing tool accepts only a question.
+distinct conversation. Product advice takes a question; the new return check
+takes an order reference.
 
 **Author:** Rod Rivera
-**Assessed on:** 2026-10-11
-**Assessed by:** Native memory-owner controls, decorated Mantle bindings and licensed build qualification
-**Verified with:** Rasa Pro 3.21.0.dev5, Agno 3.1.2 and Python 3.12.13. The
-original 20 native controls and project validation passed on that date. Licensed training and cold archive
-loading were qualified at `fe5aeb26`; later changes add fixture observations and
-a one-argument mutation control. Application and configuration SHA pairs remain
-unchanged in `../agno-verification.json`.
+**Assessed on:** 2026-10-15
+**Assessed by:** OpenAI client-contract controls assessed on 15 October 2026 and written-policy checks; refund-native/build receipts are retained locally and are not yet published.
+**Verified with:** Standard-library policy checks; SDK steps are locked to Rasa Pro 3.21.0.dev5 and Agno 3.1.2.
+
+## Check a return against the shop's written policy
+
+The existing adviser still answers product questions. The additional refund
+skill looks up invented order and inspection records for the same public demo
+customer. It makes a read-only offer from the recorded amount paid. It cannot
+issue a payment or contact staff.
+
+Read [the fictional policy](REFUND-POLICY.md) first. It states which returns
+qualify for an automatic full-refund offer and which need an inspection or
+staff review. You will test those rules with invented order records before
+connecting the check to a conversation.
+
+You can check the pure policy with Python 3.11 or newer, without an SDK,
+licence or provider key. From the repository root:
+
+```sh
+PYTHONPATH=tutorials/frameworks-with-rasa/agno python3 -B -m unittest discover -s tutorials/frameworks-with-rasa/agno-mantle/tests -p test_refund_policy.py -v
+```
+
+A passing result checks the written rules and order ownership in the fixture.
+It does not show that a model calls the tool or accurately explains its result.
+After installing the selected runtime below, `make test` also exercises the
+actual Mantle invoker with fixed channel contexts. The binding takes an order
+reference; customer identity comes from the existing public demo mapping,
+while payment and inspection values come from the order lookup.
+
+Try `WS-RETURN-01`, `WS-RETURN-LATE` and `WS-RETURN-PENDING` with sender
+`willow-a-chat`. Their records represent an automatic offer, staff review and
+a missing inspection. `willow-b-chat` cannot read those fixture orders through
+the tool. Anyone can choose a public demo sender name, so this is not a login
+or a production access-control implementation. Replace that mapping with an
+authenticated channel identity before using real records.
+
+Staff review is a status, not an acknowledged handoff. The tool does not change
+a payment, open a ticket or send customer details anywhere. Check those
+integrations separately if you add them.
 
 ## Start only the selected runtime
 
-The supplied lock includes the native adviser. The combined demo needs only
-this environment; the standalone Agno environment is optional when running
-that project separately.
+Use the committed lock for this combined project; do not upgrade its OpenAI
+SDK independently. The lock includes the native adviser. The combined demo
+needs only this environment; the standalone Agno environment is optional when
+running that project separately.
 
 From the repository root:
 
@@ -50,8 +85,9 @@ The candidate is not the catalog's tested release pin.
 The three checks in `tests/test_openai_client_contract.py` use Agno's real
 OpenAI client with an in-memory HTTP transport. They check the product-tool
 round trip, structured reply, provider-error handling and refusal of an unknown
-demo sender before any client request. Their responses and usage counts are
-explicit fixtures, not generated answers or cost measurements. No provider
+demo sender before any client request. Those controls use explicit response
+and usage fixtures to check client behaviour, not generated answers or cost
+measurements. No provider
 key, network connection or model inference is needed. Run them with the
 selected environment above:
 
@@ -126,3 +162,81 @@ Run `../agno/demo_handoff_owner.py` with the selected combined Python runtime
 to inspect the one-argument ownership mutation. Both native runs return checked
 public advice, while their initial memory inputs differ. Each starts with the
 same seeded records and empty history in an independent database.
+
+## Earlier product-advice qualification
+
+**Author:** Rod Rivera
+**Assessed on:** 2026-10-11
+**Assessed by:** Native memory-owner controls, decorated Mantle bindings and licensed build qualification
+**Verified with:** Rasa Pro 3.21.0.dev5, Agno 3.1.2 and Python 3.12.13. The
+original 20 native controls and project validation passed on that date. Licensed training and cold archive
+loading were qualified at `fe5aeb26`; later changes add fixture observations and
+a one-argument mutation control. Those historical hashes are retained in
+`../agno-verification.json`; they do not qualify the refund extension.
+
+Further reading: [an independent study of model refund decisions](https://github.com/KarenSpinner/shopping_agents/tree/5905a95f0195c686c04d2fb5ba1684973cd194d4) explores how company instructions affect discretionary offers. This project uses its own fictional policy and records; it does not repeat or measure that study.
+
+## Check the customer mapping as well as the policy
+
+The return-policy function checks an order against the customer supplied by
+its caller. An incorrect mapping can therefore supply the wrong customer even
+while every policy rule is implemented correctly. The worked control uses
+`willow-b-chat` to request customer A’s `WS-RETURN-01` order. It runs the native
+Mantle invoker three times: with the correct registry, with a deliberately
+incorrect customer-A resolver, then with the restored registry.
+
+From this combined project’s directory, in its locked environment:
+
+```sh
+OPENAI_API_KEY=placeholder-not-a-real-key LITELLM_LOCAL_MODEL_COST_MAP=True LLM_API_HEALTH_CHECK=false .venv/bin/python -B tests/demo_refund_identity.py
+```
+
+The correct and restored mappings return `unknown_order`. The deliberately
+broken mapping returns a £12.99 offer for another customer’s order. The
+policy function is unchanged in all three calls. This is an intentional
+in-memory mutation, not an observed production incident or model behaviour.
+The context manager restores the resolver and leaves source files unchanged.
+Use the same kind of check when replacing this public fixture mapping with
+a real authenticated channel identity. Keep the existing native ownership
+test to check the caller mapping alongside the pure-policy suite.
+
+This extends the existing adviser for the planned Community guide
+`/library/guides/add-return-checks-to-an-agno-rasa-assistant/`. The source and
+article remain subject to separate publication review.
+
+## Review the policy before using its decisions
+
+A policy owner can inspect a seven-case review sheet with Python 3.11 or newer,
+without installing the agent environment. From this combined project's directory, run:
+
+```sh
+make policy-review
+```
+
+This calls the existing policy function with literal fictional records and
+compares its results with independently written expected examples. Read each
+input and result together. A late sealed return and a late return without an
+inspection both return the outside-window staff-review reason. The function
+returns that first reason before checking inspection. Decide what additional
+information the receiving staff workflow needs before adopting that rule
+order. A matching worksheet records behaviour against the included examples;
+policy acceptance belongs to the actual service owner.
+
+This worksheet supports the planned policy-owner guide
+`/library/guides/review-an-assistants-refund-rules/`, alongside the separate
+implementation lesson. It uses the same fictional business deliberately.
+
+The worksheet also contains the worked choice in `REFUND-REVIEW.md`: retain
+the first automatic reason and attach inspection status to a local draft note.
+A missing inspection leads to obtaining it; an inspected late return proceeds
+to exception review. Removing the inspection field or skipping a missing
+inspection is rejected by the local note checker. It also checks the note's
+inspection status against the source record, so changing both the status and
+the next step cannot invent an inspection. An inspection needs both a reference
+and a recorded condition. Every receiving-role label
+is fictional and every delivery state remains `draft_not_sent`. These fields
+belong to this community worksheet, not a Mantle staff-service API.
+
+For a shorter display, run the same script with `--cases-only` to print the
+seven policy cases, or `--notes-only` to print the worked receiving notes and
+three rejection controls. Both displays still execute the complete local sheet.
