@@ -49,7 +49,7 @@ From the same directory:
 python3 -m unittest discover -s tests -p test_appointment_exchange.py -v
 ```
 
-Expect eight tests and `OK`, with no skips. They cover expiry, revision and
+Expect nine tests and `OK`, with no skips. They cover expiry, revision and
 requirement changes, another customer, rollback, durable lookup after reopening
 the database, repeat requests and a conflicting reuse of the same key. An
 exception, failed assertion or skipped test needs investigation before you use

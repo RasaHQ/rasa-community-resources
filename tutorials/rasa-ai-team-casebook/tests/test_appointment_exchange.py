@@ -45,9 +45,18 @@ class AppointmentExchange(unittest.TestCase):
                          "requirements_changed")
         self.old_still_active()
 
-    def test_other_customer_cannot_consume_the_hold(self):
+    def test_other_customer_cannot_change_the_original_booking(self):
         self.assertEqual(self.exchange(customer="customer-2")["status"], "refused")
         self.old_still_active()
+
+    def test_customer_cannot_consume_another_customers_hold(self):
+        # Give customer-2 a valid old booking so the check reaches hold ownership.
+        self.service.db.execute("INSERT INTO bookings VALUES (?, ?, ?, 1, 1)",
+                                ("visit-2", "customer-2", "Thursday 10:00"))
+        self.service.db.commit()
+        self.assertEqual(self.exchange(old_id="visit-2", customer="customer-2"),
+                         {"status": "refused", "reason": "hold_unavailable"})
+        self.assertEqual([row["id"] for row in self.service.active()], ["visit-1", "visit-2"])
 
     def test_failure_between_writes_rolls_back(self):
         with self.assertRaises(RuntimeError):
