@@ -14,4 +14,4 @@ Confirm the store location and the depleted ingredient name.
 
 Call @tool.escalate_outage_alert with the store ID and depleted item name.
 
-Report that the emergency supply notification has been routed to regional operations (regional_ops@artisanroastcoffee.com), an expedited transfer ticket has been opened, and the item has been marked out-of-stock on the digital POS.
+Report that the emergency supply notification has been routed to regional operations (regional_ops@example.com), an expedited transfer ticket has been opened, and the item has been marked out-of-stock on the digital POS.

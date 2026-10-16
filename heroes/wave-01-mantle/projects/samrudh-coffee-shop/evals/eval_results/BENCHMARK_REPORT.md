@@ -30,7 +30,7 @@ This report documents the performance progression of the **Artisan Roast Coffee 
 * **API Calls**: 78 calls
 * **Key Observations**: Upgrading Rasa Pro introduced stricter engine schema validation on tool arguments (e.g. `category="coffee beans"` failed validation against `Beans`) and memory locks, temporarily causing a pass rate drop before skill adaptation.
 
-### Phase Z: Refactored Skills & `complete_when` (`rasa-pro==3.20.0.dev9`)
+### Phase Z: Refactored Skills & `complete_when` (`rasa-pro==3.20.0`)
 * **Overall Pass Rate**: **80.0%** (12/15)
 * **API Calls**: 71 calls
 * **Key Improvements**:

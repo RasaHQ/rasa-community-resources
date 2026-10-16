@@ -4,11 +4,12 @@
 Author:        Samrudha Kelkar
 Wave:          wave-01-mantle
 Assessed on:   2026-09-11
+Assessed by:   Samrudha Kelkar
 Verified with: rasa-pro 3.20.0, Python 3.12, uv
 ```
 
 > **Overview for Rasa Practitioners & Architects:**  
-> This project is an enterprise reference implementation demonstrating how to build a production-grade conversational assistant using **Rasa Mantle**. It highlights how Mantle's **Five Levels of Progressive Control**, **Typed Session Memory**, and **Declarative Tool Constraints** orchestrate complex multi-persona workflows with deterministic reliability.
+> This project is a reference implementation demonstrating how to build a multi-persona conversational assistant using **Rasa Mantle**. It highlights how Mantle's **Five Levels of Progressive Control**, **Typed Session Memory**, and **Declarative Tool Constraints** orchestrate customer, barista, and manager workflows, validated against dialogue understanding tests, end-to-end conversation flows, and multi-turn simulator benchmarks.
 
 ---
 
@@ -81,7 +82,7 @@ This project includes an autonomous multi-turn evaluation suite equipped with an
 coffee-shop/
 ├── agent.yml                  # Root agent persona, system instructions, and settings
 ├── memory.yml                 # Typed session memory schema
-├── pyproject.toml             # Dependencies (rasa-pro 3.20.0.dev9)
+├── pyproject.toml             # Dependencies (rasa-pro 3.20.0)
 ├── Makefile                   # Training and testing commands
 ├── tools/
 │   └── coffeeshop.py          # 16 Mantle tools with RBAC security

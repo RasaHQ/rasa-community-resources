@@ -525,7 +525,7 @@ async def escalate_outage_alert(
         llm_response={
             "ok": True,
             **res,
-            "alert_recipient": "regional_ops@artisanroastcoffee.com",
+            "alert_recipient": "regional_ops@example.com",
             "message": f"Urgent supply alert dispatched for {item_name} at Store {store_id}. Emergency delivery requested.",
         }
     )
