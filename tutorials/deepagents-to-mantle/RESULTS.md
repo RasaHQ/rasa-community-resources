@@ -72,6 +72,46 @@ tokenization can change the final request size. The helper retains its
 read-only authorizer and opcode progress check; neither replaces customer
 authorization or a production service's resource controls.
 
+## Try a smaller query
+
+From the same project directory, run:
+
+```sh
+python3 -B exercises/recover_result.py
+```
+
+The command uses a fresh temporary database and prints four fixed queries and
+results. It does not ask a model to repair a query or use your database.
+
+First, it tries to take a short preview after generating the oversized value:
+
+```sql
+SELECT substr(hex(zeroblob(65536)), 1, 80) AS preview
+```
+
+That still returns `sqlite_value_too_large`: SQLite must evaluate the large
+inner value before the outer substring can trim it. Generating only the small
+value succeeds:
+
+```sql
+SELECT hex(zeroblob(40)) AS preview
+```
+
+This produces the same preview for this all-zero test value. It is not a
+replacement for the complete original value, or a general rule about taking
+substrings of stored columns. Keep the intended question in view when choosing
+what to return.
+
+The other queries ask for counts and total character lengths instead of all
+the text. They return `[6, 72000]` and `[8, 12000]` respectively, with named
+columns. These summaries answer different questions from returning every value.
+Use an aggregate only when it gives the information the user needs; do not
+present a summary as the full result.
+
+The supplied queries demonstrate possible changes. The helper's `next_step`
+is guidance, not an automatic repair, and a passing helper result does not show
+that an agent chose a suitable query or explained the answer correctly.
+
 ## Check the contract
 
 ```sh
