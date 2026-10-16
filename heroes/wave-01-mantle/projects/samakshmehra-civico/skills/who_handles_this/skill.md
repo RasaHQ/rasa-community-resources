@@ -23,6 +23,10 @@ steps:
       only thing that knows who covers where, and it is not guessable.
 
       The tool speaks the answer itself. Add nothing to it.
+      If it returns needs_clarification, wait for the caller to choose a
+      locality. Then call who_handles again with that locality and the same
+      problem category. Do not guess an officer or offer to file until the
+      area has been clarified. Do not repeat the tool's clarification question.
     complete_when: session.who_handles_this.answered == True
 
   - id: offer
@@ -47,6 +51,7 @@ steps:
 
   - id: take_the_complaint
     call: report_problem
+    next: END
 
   - id: sign_off
     action: utter_nothing_filed

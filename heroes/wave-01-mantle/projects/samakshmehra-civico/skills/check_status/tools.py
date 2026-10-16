@@ -19,7 +19,7 @@ from rasa.mantle.tools.result import ToolResult
 
 from lib import directory, store
 from lib.choices import pick as _pick
-from tools.civic import complaint_view, spoken_status
+from tools.civic import clear_complaint_selection, complaint_view, spoken_status
 
 
 @tool(description="List the complaints filed from a phone number.")
@@ -36,6 +36,7 @@ async def list_my_complaints(phone: str = "", context: ToolContext = None) -> To
     having it accepted takes one turn, and it is the difference between a
     convenience and a leak.
     """
+    clear_complaint_selection(context)
     digits = directory.extract_phone(phone) if phone else ""
     if not digits:
         calling = str(context.memory.get("caller_phone") or "") if context else ""
@@ -95,6 +96,7 @@ async def choose_complaint(choice: str = "", context: ToolContext = None) -> Too
     if context is None:
         return ToolResult(llm_response={"ok": False, "error": "no_context"})
 
+    clear_complaint_selection(context, clear_options=False)
     try:
         options = json.loads(context.memory.get("complaint_options") or "[]")
     except (ValueError, TypeError):

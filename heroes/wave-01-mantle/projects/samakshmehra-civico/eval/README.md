@@ -71,11 +71,12 @@ that one singly, with `make reset-db` in front of it.
 That, and the flakiness above, are the honest limitations of this instrument,
 and the reason the deterministic suite is the one wired into `make test`.
 
-## Historical results reported by the author
+## Historical simulation notes
 
-These figures describe the earlier nine-scenario build, not this ten-scenario
-revision. The raw results are not committed, so the figures below have not
-been independently verified. They are retained as the author's account.
+The figures below are from my notes on the earlier nine-scenario build, not
+this ten-scenario revision. The raw results are not committed, so these
+historical figures have not been independently verified. They are not a fresh
+evaluation of the current revision.
 
 Twenty-seven runs, three per scenario in that earlier build:
 

@@ -41,7 +41,13 @@ async def who_handles(category: str = "", area: str = "",
 
     if area:
         matches = directory.find_ward(area)["matches"]
-        if matches:
+        if len(matches) > 1:
+            answer["needs_clarification"] = True
+            answer["options"] = [
+                {"locality": row["label"], "ward": store.say_ward(row["ward_id"])}
+                for row in matches
+            ]
+        elif matches:
             best = matches[0]
             answer["locality"] = best["label"]
             answer["ward"] = store.say_ward(best["ward_id"])
@@ -53,7 +59,7 @@ async def who_handles(category: str = "", area: str = "",
 
     if context is not None:
         await context.send(_spoken_answer(answer))
-        context.memory.set("answered", True)
+        context.memory.set("answered", not answer.get("needs_clarification", False))
     answer["already_read_out_to_the_caller"] = True
 
     return ToolResult(llm_response=answer)
@@ -85,6 +91,10 @@ def _spoken_answer(answer: dict) -> str:
             f"{answer['zone']} zone. The ward officer is {answer['officer']} "
             f"on {answer['officer_contact']}."
         )
+
+    if answer.get("needs_clarification"):
+        names = ", ".join(option["locality"] for option in answer["options"])
+        parts.append(f"That matches more than one area. Which locality do you mean: {names}?")
 
     if "area_not_found" in answer:
         parts.append(

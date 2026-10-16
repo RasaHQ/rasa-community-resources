@@ -35,6 +35,8 @@ from rasa.mantle.tools.loader import _load_tool_module
 snapshot = Path(sys.argv[1])
 functions = _load_tool_module(snapshot / 'skills/check_status/tools.py',
                               'civico_packaged_status_regression', snapshot)
+shared = _load_tool_module(snapshot / 'tools/civic.py',
+                          'civico_packaged_shared_regression', snapshot)
 assert str(snapshot) not in sys.path
 # An editable project install can otherwise rescue the source-only namespace.
 # Packaged tools must work without resolving a skill module from that install.
@@ -64,6 +66,22 @@ async def check():
     selected = (await functions['choose_complaint']('second', context)).llm_response
     assert selected['complaint_id'] == listed['options'][1]['complaint_id'], selected
     assert context.said
+    failed = (await functions['list_my_complaints']('123', context)).llm_response
+    assert not failed['ok']
+    assert context.memory.get('complaint_id') is None
+    assert not (await functions['choose_complaint']('second', context)).llm_response['ok']
+    await shared['look_up_complaint']('CIV1002', context)
+    await shared['look_up_complaint']('CIV9999', context)
+    assert context.memory.get('complaint_id') is None
+    assert context.memory.get('is_overdue') is None
+    from lib import store
+    store.insert_complaint(phone='0000000501', category='garbage', ward_id='W12',
+        locality='Maplewick', exact_spot='School gate', description='Uncollected bins',
+        department='Sanitation', sla_days=2)
+    listed = (await functions['list_my_complaints']('0000000501', context)).llm_response
+    assert len(listed['options']) == 4
+    fourth = (await functions['choose_complaint']('the fourth one', context)).llm_response
+    assert fourth['complaint_id'] == listed['options'][3]['complaint_id'], fourth
     print('COLD_SELECTION_OK')
 asyncio.run(check())
 '''

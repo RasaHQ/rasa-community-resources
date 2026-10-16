@@ -4,7 +4,6 @@
 
 ```text
 Author:        Samaksh Mehra
-Co-author:     Rod Rivera (packaged-tool import repair and regression)
 Wave:          wave-01-mantle
 Assessed on:   2026-10-13
 Assessed by:   Samaksh Mehra
@@ -228,13 +227,16 @@ Useful edge cases:
 
 ## Testing and reproducibility
 
-The repository contains 156 offline regression tests covering directory
+The repository contains 176 offline regression tests covering directory
 matching, spoken digits, category validation, complaint IDs, duplicate support,
 corrections, consent gates, status, escalation, persistence, and failure paths.
 The packaged-tool regression loads the status tool through the frozen SDK,
 removes its extracted source directory, and selects a complaint from the
-returned list. This catches imports that work in the checkout but fail after
+returned list, including the fourth spoken option and failed replacement
+lookups. This catches imports that work in the checkout but fail after
 model loading; it does not test a model's interpretation of the caller.
+Additional regressions cover concurrent first-use seeding, lookup state reset,
+landmark preservation, ambiguous PINs and the reporting handoff's return path.
 
 ```bash
 make test       # offline Python regression suite

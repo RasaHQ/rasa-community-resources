@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS supporting_reports (
 """
 
 OPEN_STATUSES = ("registered", "assigned", "in_progress")
+_SCHEMA_VERSION = 1
 
 STATUS_SPOKEN = {
     "registered": "registered and waiting to be assigned",
@@ -136,12 +137,30 @@ def say_ward(ward_id: str) -> str:
 
 def connect() -> sqlite3.Connection:
     """Open the demo database, creating and seeding it on first use."""
-    fresh = not db_path().exists()
     conn = sqlite3.connect(db_path())
     conn.row_factory = sqlite3.Row
-    conn.executescript(_SCHEMA)
-    if fresh:
-        _seed(conn)
+    try:
+        if conn.execute("PRAGMA user_version").fetchone()[0] < _SCHEMA_VERSION:
+            # The schema, seed records and marker must become visible together.
+            # A second process rechecks the marker after acquiring this lock.
+            conn.execute("BEGIN IMMEDIATE")
+            if conn.execute("PRAGMA user_version").fetchone()[0] < _SCHEMA_VERSION:
+                existing = conn.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name='complaints'"
+                ).fetchone()
+                # executescript commits a pending transaction, so execute the
+                # statements in this fixed schema individually under the lock.
+                for statement in _SCHEMA.split(";"):
+                    if statement.strip():
+                        conn.execute(statement)
+                if existing is None:
+                    _seed(conn)
+                conn.execute(f"PRAGMA user_version={_SCHEMA_VERSION}")
+            conn.commit()
+    except BaseException:
+        conn.rollback()
+        conn.close()
+        raise
     return conn
 
 
@@ -149,7 +168,7 @@ def _seed(conn: sqlite3.Connection) -> None:
     today = date.today()
 
     conn.executemany(
-        "INSERT OR REPLACE INTO citizens (citizen_id, name, phone) VALUES (?, ?, ?)",
+        "INSERT OR IGNORE INTO citizens (citizen_id, name, phone) VALUES (?, ?, ?)",
         [(c["citizen_id"], c["name"], c["phone"]) for c in _load("citizens.json")],
     )
 
@@ -167,14 +186,13 @@ def _seed(conn: sqlite3.Connection) -> None:
             c["status"], int(c["escalation_level"]), c["resolution_note"],
         ))
     conn.executemany(
-        """INSERT OR REPLACE INTO complaints
+        """INSERT OR IGNORE INTO complaints
            (complaint_id, citizen_id, phone, category, ward_id, locality,
             exact_spot, description, department, sla_days, created_on,
             target_on, status, escalation_level, resolution_note)
            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         rows,
     )
-    conn.commit()
 
 
 # --------------------------------------------------------------------------

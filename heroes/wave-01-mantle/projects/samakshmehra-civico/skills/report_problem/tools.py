@@ -113,7 +113,8 @@ async def capture_report(problem: str = "", area: str = "", landmark: str = "",
         m.set("area_text", area.strip())
         candidates = json.loads(m.get("ward_candidates") or "[]")
         same_locality = len(candidates) == 1 and candidates[0]["label"] == previous_label
-        if previous_area and not same_locality:
+        changed_locality = bool(previous_label and candidates and not same_locality)
+        if previous_area and (replace_area or changed_locality):
             m.set("exact_spot", None)
         if len(candidates) == 1 and not candidates[0].get("pincode_differs"):
             row = candidates[0]

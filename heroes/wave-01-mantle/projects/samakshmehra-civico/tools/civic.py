@@ -44,6 +44,21 @@ async def load_caller(context: ToolContext = None) -> ToolResult:
     })
 
 
+def clear_complaint_selection(context: ToolContext | None,
+                              clear_options: bool = True) -> None:
+    """Invalidate the previous target before a replacement lookup or choice."""
+    if context is None:
+        return
+    for name in ("complaint_id", "is_overdue", "escalation_level", "escalated"):
+        context.memory.set(name, None)
+    # These fields belong only to check_status. Undeclared reads return None,
+    # so a shared lookup in escalate never writes outside its memory schema.
+    optional = ("raise_answer", "complaint_options") if clear_options else ("raise_answer",)
+    for name in optional:
+        if context.memory.get(name) is not None:
+            context.memory.set(name, None)
+
+
 def complaint_view(row: dict, context: ToolContext | None) -> dict:
     """The caller-facing view of a complaint row.
 
@@ -126,6 +141,7 @@ async def look_up_complaint(complaint_id: str, context: ToolContext = None) -> T
         complaint_id: The reference, like CIV1002. Spoken letters and digits
             are fine — spacing and case are normalised here.
     """
+    clear_complaint_selection(context)
     cleaned = speech.hear_reference(complaint_id)
     row = store.get_complaint(cleaned)
     if row is None:
