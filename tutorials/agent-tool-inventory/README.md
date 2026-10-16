@@ -96,12 +96,38 @@ The inventory records two different questions:
 
 For `record_review` inside `review_record__finish_review`, the supplied
 fixture resolves the model confirmation setting to false and the engine
-setting to true. The inline block follows a different lookup path from prose.
+setting to true. The model-facing lookup hides parent-skill gates in a
+non-routable inline block. The engine lookup still prefers the skill-level
+gate for its own steps. That column records configuration, not user approval.
 Do not replace those columns with one “safe” or “authorised” label.
 
 These are resolved settings, not a recording of a person confirming an
 action. To prove that a deployed agent pauses and resumes correctly, you
 still need a test through its actual dispatcher and conversation path.
+
+## Compare two review procedures
+
+Suppose you must decide whether engine-driven `record_review` has confirmation
+configured. Run `make review`. It loads the native inventory, then compares
+an intentionally flawed model-only review with a review of the engine setting.
+The flawed procedure is a teaching counterexample, not a Mantle checker or
+a reported production incident.
+
+Both procedures agree for prose. For the inline target, model-only review
+requests a gate fix while the engine lookup already reports it enabled.
+The JSON counts one `modelOnlyFalseMissingGateReports`: a configuration-review
+false alarm relative to that lookup, not a runtime confirmation failure.
+Both rows leave `userApprovalObserved` null.
+
+A counter-test changes only the saved engine setting to false. The engine
+review then requests a fix while the model-only answer stays unchanged.
+This synthetic row mutation checks which question the reviewer answers;
+it does not change an engine configuration or run a conversation. Missing
+lookup values are refused rather than assumed disabled.
+
+Record the question and target beside the setting. A missing model-facing
+entry does not establish a missing engine gate. An enabled engine setting
+still needs dispatcher/conversation evidence before you sign off behaviour.
 
 ## Check a reviewed snapshot
 
@@ -179,3 +205,8 @@ tools are not included. This inventory is one input to a tool-access review. It 
 permissions inside a tool’s implementation, external service credentials,
 all possible runtime states or regulatory compliance. Review those separately.
 No latency, cost or model-quality comparison is made here.
+
+The availability-scope check inspects compiled `skill.tools` and ordered-block
+`tools` lists. It is not a separate audit of every per-step condition or
+permission inside a tool. External or uninspectable Python source is refused
+rather than assigned a misleading source hash.
