@@ -262,6 +262,7 @@ run for this build.
 | `lib/fixtures/` | Fictional data and the vendored case contract |
 | `hooks.py` | Output guard |
 | `tests/test_guard.py` | Offline tests |
+| `tests/test_status_lookup_characterisation.py` | What the status lookup returns after a missing receipt and after a receipt for older answers, as the fixture behaves today. Not a specification. Run: `python -m unittest discover -s tests -p "test_status*" -v` |
 | `case-build/conversations.json` | The 19 scripted conversations and their tracker checks |
 | `case-build/results/` | Recorded live runs, trackers and the spend ledger |
 
