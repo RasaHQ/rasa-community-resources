@@ -8,7 +8,8 @@ import sqlite3
 ROOT = Path(__file__).resolve().parents[1]
 MAX_ROWS = 100
 # Teaching defaults, not a token budget or a process-memory sandbox. SQLite's
-# length limit also applies to its encoded rows, not only individual cells.
+# length limit covers values and records SQLite builds internally, not the
+# combined columns of every plain SELECT result; JSON needs its own limit.
 MAX_SQLITE_VALUE_BYTES = 16_384
 MAX_RESULT_JSON_BYTES = 65_536
 ALLOWED = {sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ, sqlite3.SQLITE_FUNCTION, sqlite3.SQLITE_RECURSIVE}
@@ -62,7 +63,7 @@ def checked_result(result: dict) -> dict:
 def query_error(error: sqlite3.Error) -> dict:
     if getattr(error, "sqlite_errorcode", None) == sqlite3.SQLITE_TOOBIG:
         return {"status": "error", "reason": "sqlite_value_too_large",
-                "next_step": "Select smaller values or fewer columns; SQLite also limits encoded row length."}
+                "next_step": "Select smaller values or fewer columns. SQLite also limits records it builds internally, including stored and sorted rows."}
     return {"status": "error", "reason": str(error)[:240], "next_step": "Use the schema to correct the query. Writes, attachments and PRAGMA are refused."}
 
 

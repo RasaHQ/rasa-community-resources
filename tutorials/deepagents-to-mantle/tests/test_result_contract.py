@@ -34,6 +34,26 @@ class ResultContract(unittest.TestCase):
         self.assertEqual(result["reason"], "sqlite_value_too_large")
         self.assertNotIn("rows", result)
 
+    def test_plain_result_columns_can_together_exceed_the_sqlite_value_limit(self):
+        result = database.query(
+            "SELECT hex(zeroblob(8000)) AS a, hex(zeroblob(8000)) AS b, "
+            "hex(zeroblob(8000)) AS c"
+        )
+        self.assertEqual(result["status"], "ok")
+        self.assertEqual([len(value) for value in result["rows"][0]], [16000] * 3)
+        self.assertGreater(sum(map(len, result["rows"][0])), database.MAX_SQLITE_VALUE_BYTES)
+        encoded = json.dumps(result, ensure_ascii=True, allow_nan=False, separators=(",", ":"))
+        self.assertLessEqual(len(encoded.encode("utf-8")), database.MAX_RESULT_JSON_BYTES)
+
+    def test_sort_records_can_exceed_the_sqlite_length_limit(self):
+        result = database.query(
+            "SELECT hex(zeroblob(8000)) AS a, hex(zeroblob(8000)) AS b, "
+            "hex(zeroblob(8000)) AS c FROM (SELECT 1 UNION ALL SELECT 2) "
+            "ORDER BY a LIMIT 1"
+        )
+        self.assertEqual((result["status"], result["reason"]), ("error", "sqlite_value_too_large"))
+        self.assertNotIn("rows", result)
+
     def test_small_binary_value_is_not_silently_stringified(self):
         result = database.query("SELECT zeroblob(8) AS value LIMIT 1")
         self.assertEqual(result["reason"], "unsupported_result_value")

@@ -66,7 +66,9 @@ The teaching defaults in `shared/database.py` are:
 - At most 100 rows. Too many rows return an error, never an apparently complete
   truncated answer.
 - SQLite's `SQLITE_LIMIT_LENGTH` is 16 KiB. It limits strings, binary values
-  and SQLite's encoded rows. Several columns can exceed it together.
+  and records SQLite builds internally, including stored rows and sorting records.
+  A plain multi-column result can exceed this limit in total; the complete JSON
+  check separately bounds the whole returned response.
 - Successful helper results must fit 64 KiB of compact, ASCII-escaped JSON,
   with nonfinite numbers disabled. This includes column names and result
   metadata. It also applies to schema results and the checker's echoed query.
