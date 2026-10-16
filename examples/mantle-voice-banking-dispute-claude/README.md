@@ -351,12 +351,37 @@ run again with no change. Neither crashed. One passed; the other failed on
    streamed in the same turn had failed first with "TTS response no longer
    accepts text". A rerun of both calls did not crash, so this is
    intermittent.
-6. **The tracker can record a confirmation question the caller never
-   heard.** In 4 of 75 recorded turns the bot's text is in the tracker but no
-   audio reached the caller. Twice it was the confirmation question the
-   dispute rule relies on; Rasa logged `voice_channel.audio_missing` with
-   `reason: tts_produced_no_audio_without_barge_in`. A tracker check that the
-   question was asked is not proof the caller heard it.
+6. **Two passing calls have no recorded audio for the confirmation.** In
+   `2026-09-29-custom-vocab/results.json`, `normal-date-said-numerically`
+   turn 1 and `recovery-ambiguous-then-amount` turn 2 contain the confirmation
+   question as tracker text. Each turn records zero audio, no first audio
+   frame and no interruption. Each also has a matching
+   `voice_channel.audio_missing` event with
+   `reason: tts_produced_no_audio_without_barge_in`. The next scripted
+   "yes" leads to a successful fixture filing, and both calls pass their
+   original checks. These are synthetic calls: the records describe the
+   client's observation window, not human hearing. The earlier aggregate
+   "4 of 75" is omitted because its run cohort is not unambiguous.
+
+   From this example directory, inspect the saved records without keys,
+   installs or new voice calls:
+
+   ```bash
+   python3 case-build/audit_confirmation_audio.py
+   ```
+
+   Exit 1 means the evidence needs review; the saved run contains the two
+   cases above. `missing_audio_corroborated` requires matching client and
+   server evidence. `delivery_unverified` means the evidence is insufficient.
+   `audio_recorded_in_turn` establishes only audio presence within that turn,
+   not playback of the complete question. The audit recognises this example's
+   English confirmation wording, not arbitrary voice conversations.
+
+   Run its saved-record and missing-evidence controls with:
+
+   ```bash
+   python3 -m unittest discover -s tests -p 'test_confirmation_audio_audit.py' -v
+   ```
 7. **Rasa sends Claude no prompt caching and no reasoning setting.** 0 of
    632,404 prompt tokens were cached, which is 1.26 of the run's 1.40 USD of
    model spend at the uncached price. Rasa applies a default
