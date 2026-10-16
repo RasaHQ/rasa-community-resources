@@ -6,7 +6,10 @@ string. Check those properties before passing results to an agent.
 
 This exercise uses a temporary local database. It does not download Chinook,
 start an agent, install an SDK or make a model call. Use Python 3.12, the
-version supported by this project's package. The source SHA and actual Python
+version supported by this project's package. Check `python3 --version` first.
+If it selects another version, check an existing `python3.12 --version` and use
+`python3.12` in place of `python3` in every command below. Continue once your
+selected interpreter reports Python 3.12. The source SHA and actual Python
 and SQLite versions appear in each report.
 
 ## Compare the same inputs
@@ -37,6 +40,11 @@ Read the saved reports with Python's JSON formatter:
 python3 -m json.tool "$exercise_dir/before.json"
 python3 -m json.tool "$exercise_dir/after.json"
 ```
+
+Keep `sourceSha256` with each result to identify the helper that ran. Both
+reports should have `databaseUnchanged: true`, and the ordinary scalar should
+remain successful. Compare `status` and `reason` for each other named case
+with the table below.
 
 | Input | Earlier helper | Current result contract |
 | --- | --- | --- |
@@ -125,11 +133,23 @@ that an agent chose a suitable query or explained the answer correctly.
 python3 -B -m unittest discover -s tests -p test_result_contract.py -v
 ```
 
+Expect ten tests followed by `OK`, with no skips. The recovery command has its
+own CLI regression:
+
+```sh
+python3 -B -m unittest discover -s tests -p test_recovery_exercise.py -v
+```
+
+Expect one test followed by `OK`, with no skips. Stop on an error, failure or
+skip, and check your selected interpreter and source revision before changing
+an expected result.
+
 The controls cover value refusal, combined rows, escaping, finite numbers,
 small Unicode and null values, exact budget edges, schema output and the SQL
 checker's echo. Each verifies that its local database remains unchanged. Run
 the existing `make test` too: a result-budget change must preserve the
 read-only and query-work controls.
 
-An accepted helper result does not establish that a chat model answered a
-question correctly. Keep native binding and conversation checks separate.
+The helper checks cover the returned data structure. Native binding checks
+cover its passage through the tool wrapper. Evaluate the final chat answer
+with separate conversation checks.
