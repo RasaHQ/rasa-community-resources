@@ -1,0 +1,138 @@
+--- a/product/responses.yml
++++ b/product/responses.yml
+@@ -0,0 +1,3 @@
++responses:
++  utter_confirm_block_card:
++    - text: "Do you confirm that you want to permanently block the card you selected? This cannot be undone."
+--- a/product/skills/block_card/memory.yml
++++ b/product/skills/block_card/memory.yml
+@@ -0,0 +1,14 @@
++schema:
++  private:
++    cards:
++      type: list
++      initial_value:
++        - card_id: card_1
++          last_four: "1234"
++          status: active
++        - card_id: card_2
++          last_four: "5678"
++          status: active
++    cards_listed:
++      type: bool
++      initial_value: false
+--- a/product/skills/block_card/skill.md
++++ b/product/skills/block_card/skill.md
+@@ -0,0 +1,23 @@
++---
++name: Block a card
++description: List the caller's cards and permanently block a selected card after confirmation.
++tool_constraints:
++  - block_card:
++      requires_confirmation:
++        enabled: true
++        utter_for_confirmation: utter_confirm_block_card
++---
++
++Call `list_cards` first. Show the caller their cards and ask which single card
++they want to block. Use only a card_id returned by that tool; never guess an ID.
++If the choice is ambiguous, clarify before proceeding.
++
++Clearly identify the selected card to the caller and explain that blocking is
++irreversible. Call `block_card` with that one card_id to start the engine's
++confirmation pause. Wait for the caller's explicit confirmation of that exact
++card before allowing the pending tool to run. Never block a card the caller has
++not confirmed. A refusal or ambiguous reply is not confirmation. If the caller
++changes cards, cancel the pending request and obtain confirmation for the new
++card. Report success only when the tool reports that the card is blocked.
++
++The tools currently use session-scoped sample card data, without a bank backend.
+--- a/product/skills/block_card/tools.py
++++ b/product/skills/block_card/tools.py
+@@ -0,0 +1,30 @@
++"""Session-scoped sample card operations; no bank backend is configured."""
++
++from copy import deepcopy
++
++from rasa.mantle.tools.decorator import ToolContext, tool
++from rasa.mantle.tools.result import ToolResult
++
++
++@tool(description="List the caller's cards before selecting one to block.")
++async def list_cards(context: ToolContext) -> ToolResult:
++    cards = deepcopy(context.memory.get("cards", []))
++    context.memory.set("cards_listed", True)
++    return ToolResult(llm_response={"cards": cards})
++
++
++@tool(description="Permanently block exactly one listed card, after caller confirmation.")
++async def block_card(card_id: str, context: ToolContext) -> ToolResult:
++    if not context.memory.get("cards_listed", False):
++        return ToolResult(llm_response={"ok": False, "error": "list_cards_first"})
++
++    cards = deepcopy(context.memory.get("cards", []))
++    matches = [card for card in cards if card["card_id"] == card_id]
++    if len(matches) != 1:
++        return ToolResult(llm_response={"ok": False, "error": "unknown_card"})
++    if context.is_cancelled:
++        return ToolResult(llm_response={"ok": False, "error": "interrupted"})
++
++    matches[0]["status"] = "blocked"
++    context.memory.set("cards", cards)
++    return ToolResult(llm_response={"ok": True, "card_id": card_id, "status": "blocked"})
+--- a/product/tests/test_block_card.py
++++ b/product/tests/test_block_card.py
+@@ -0,0 +1,53 @@
++import importlib.util
++import unittest
++from copy import deepcopy
++from pathlib import Path
++from types import SimpleNamespace
++import yaml
++
++SKILL = Path(__file__).resolve().parents[1] / "skills" / "block_card"
++spec = importlib.util.spec_from_file_location("card_tools", SKILL / "tools.py")
++tools = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(tools)
++
++class Memory:
++    def __init__(self):
++        fields = yaml.safe_load((SKILL / "memory.yml").read_text())["schema"]["private"]
++        self.values = {key: deepcopy(value["initial_value"]) for key, value in fields.items()}
++
++    def get(self, key, default=None):
++        return self.values.get(key, default)
++
++    def set(self, key, value):
++        self.values[key] = value
++
++
++def caller():
++    return SimpleNamespace(memory=Memory(), is_cancelled=False)
++
++
++class CardToolsTests(unittest.IsolatedAsyncioTestCase):
++    async def test_blocks_only_selected_card_and_isolates_callers(self):
++        context = caller()
++        before = (await tools.list_cards(context)).llm_response["cards"]
++        result = await tools.block_card(before[1]["card_id"], context)
++        self.assertTrue(result.llm_response["ok"])
++        after = (await tools.list_cards(context)).llm_response["cards"]
++        self.assertEqual(after[0], before[0])
++        self.assertEqual(after[1], {**before[1], "status": "blocked"})
++        await tools.block_card(before[1]["card_id"], context)
++        self.assertEqual((await tools.list_cards(context)).llm_response["cards"], after)
++        self.assertEqual((await tools.list_cards(caller())).llm_response["cards"], before)
++
++    async def test_rejects_unlisted_unknown_and_interrupted_requests(self):
++        context = caller()
++        before = deepcopy(context.memory.get("cards"))
++        result = await tools.block_card("card_1", context)
++        self.assertFalse(result.llm_response["ok"])
++        await tools.list_cards(context)
++        result = await tools.block_card("unknown", context)
++        self.assertFalse(result.llm_response["ok"])
++        context.is_cancelled = True
++        result = await tools.block_card("card_1", context)
++        self.assertFalse(result.llm_response["ok"])
++        self.assertEqual(context.memory.get("cards"), before)

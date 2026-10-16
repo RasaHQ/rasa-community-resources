@@ -150,6 +150,13 @@ A companion unit test compares the check's key list against the installed
 names the list to update — rather than the check silently enforcing an old
 schema.
 
+**Files that are wrong on purpose.** A teaching input may need to fail a check.
+List it in `scripts/invalid_fixtures.json`, one entry per file:
+`{"path", "check", "reason"}`. Only that exact path and check are excused, the
+lint still prints it as a declared invalid fixture, and an entry fails if the
+file is gone, is not tracked, repeats, names an unknown check, uses a glob, has
+no reason, or no longer fails the check it excuses.
+
 ### The two skill authoring rules, in detail
 
 These are the ones most likely to bite when writing a new skill, because both

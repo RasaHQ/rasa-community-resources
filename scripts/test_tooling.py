@@ -402,12 +402,10 @@ class TestLintChecksAgainstRepo(unittest.TestCase):
         projects = discover_projects()
         snapshots = discover_projects("snapshots")
         self.assertTrue(projects, "no projects discovered")
-        errors = [
-            f
-            for name, fn in lint_repo.CHECKS.items()
-            for f in fn(projects, snapshots, expected)
-            if f.severity == lint_repo.SEVERITY_ERROR
-        ]
+        findings, _declared = lint_repo.run_checks(
+            list(lint_repo.CHECKS), projects, snapshots, expected
+        )
+        errors = [f for f in findings if f.severity == lint_repo.SEVERITY_ERROR]
         self.assertEqual(errors, [], "\n".join(f"{f.location()}: {f.message}" for f in errors))
 
 
@@ -909,9 +907,117 @@ class TestAgentConfigKeys(unittest.TestCase):
         self.assertEqual(self._findings(body), [])
 
     def test_the_real_catalog_is_clean(self):
-        self.assertEqual(
-            [f.location() for f in lint_repo.check_agent_config_keys()], []
+        # Only the declared teaching fixtures may fail; see TestDeclaredInvalidFixtures.
+        kept, _declared = lint_repo.apply_declared_fixtures(
+            lint_repo.check_agent_config_keys(), ["agent-config-keys"]
         )
+        self.assertEqual([f.location() for f in kept], [])
+
+
+class TestDeclaredInvalidFixtures(unittest.TestCase):
+    """A file that is wrong on purpose is declared, one file and one check at a time."""
+
+    FIXTURE = "workshops/software-factories-masterclass/factory/candidates/rule-digits-nested/product/agent.yml"
+    NESTED = "agent:\n  id: demo\n  rules:\n    - Be polite.\n"
+
+    def _finding(self, path, check="agent-config-keys"):
+        return lint_repo.Finding(check, path, 5, "nested")
+
+    def _declare(self, entries):
+        handle = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        self.addCleanup(os.unlink, handle.name)
+        json.dump(entries, handle)
+        handle.close()
+        return Path(handle.name)
+
+    def _entry(self, path="a/agent.yml", check="agent-config-keys", reason="teaching input"):
+        return {"path": path, "check": check, "reason": reason}
+
+    def _apply(self, findings, entries, selected=("agent-config-keys",), tracked=("a/agent.yml", "b/agent.yml")):
+        return lint_repo.apply_declared_fixtures(
+            findings, list(selected), self._declare(entries), set(tracked)
+        )
+
+    def test_the_listed_fixture_still_fails_its_direct_check(self):
+        with mock.patch.object(lint_repo, "_tracked_files", return_value=[lint_repo.REPO_ROOT / self.FIXTURE]):
+            raw = lint_repo.check_agent_config_keys()
+        self.assertEqual([(f.path, f.check) for f in raw], [(self.FIXTURE, "agent-config-keys")])
+        entries, problems = lint_repo.load_invalid_fixtures(tracked={self.FIXTURE})
+        self.assertEqual(problems, [])
+        self.assertIn((self.FIXTURE, "agent-config-keys"), entries)
+
+    def test_the_real_declarations_are_valid_and_current(self):
+        findings = lint_repo.check_agent_config_keys()
+        kept, declared = lint_repo.apply_declared_fixtures(findings, ["agent-config-keys"])
+        self.assertEqual(kept, [])
+        self.assertEqual([f.path for f in declared], [self.FIXTURE])
+
+    def test_the_fixture_bytes_are_the_nested_case(self):
+        text = (lint_repo.REPO_ROOT / self.FIXTURE).read_text(encoding="utf-8")
+        self.assertIn("agent:\n", text)
+        self.assertRegex(text, r"(?m)^  rules:\n")
+
+    def test_an_identical_unlisted_file_still_fails(self):
+        kept, declared = self._apply(
+            [self._finding("a/agent.yml"), self._finding("b/agent.yml")], [self._entry()]
+        )
+        self.assertEqual([f.path for f in kept], ["b/agent.yml"])
+        self.assertEqual([f.path for f in declared], ["a/agent.yml"])
+
+    def test_a_different_check_on_the_listed_file_stays_an_error(self):
+        kept, declared = self._apply(
+            [self._finding("a/agent.yml"), self._finding("a/agent.yml", "secret-hygiene")],
+            [self._entry()],
+        )
+        self.assertEqual([f.check for f in kept], ["secret-hygiene"])
+        self.assertEqual(len(declared), 1)
+
+    def test_a_stale_declaration_fails(self):
+        kept, _ = self._apply([], [self._entry()])
+        self.assertEqual([f.check for f in kept], [lint_repo.DECLARATION_CHECK])
+        self.assertIn("stale", kept[0].message)
+
+    def test_a_stale_declaration_is_not_judged_when_its_check_was_not_run(self):
+        kept, _ = self._apply([], [self._entry()], selected=("secret-hygiene",))
+        self.assertEqual(kept, [])
+
+    def test_a_missing_file_fails(self):
+        kept, _ = self._apply([self._finding("a/agent.yml")], [self._entry()], tracked=())
+        self.assertTrue(any("not a tracked file" in f.message for f in kept))
+
+    def test_a_glob_fails(self):
+        kept, _ = self._apply([], [self._entry(path="a/*.yml")])
+        self.assertTrue(any("glob" in f.message for f in kept))
+
+    def test_a_path_that_is_not_normalised_fails(self):
+        kept, _ = self._apply([], [self._entry(path="a/../a/agent.yml")])
+        self.assertTrue(any("normalized" in f.message for f in kept))
+
+    def test_a_duplicate_fails(self):
+        kept, _ = self._apply(
+            [self._finding("a/agent.yml")],
+            [self._entry(), self._entry(check="secret-hygiene")],
+            selected=("agent-config-keys", "secret-hygiene"),
+        )
+        self.assertTrue(any("declared twice" in f.message for f in kept))
+
+    def test_an_unknown_check_fails(self):
+        kept, _ = self._apply([], [self._entry(check="no-such-check")])
+        self.assertTrue(any("unknown check" in f.message for f in kept))
+
+    def test_an_empty_reason_fails(self):
+        kept, _ = self._apply([self._finding("a/agent.yml")], [self._entry(reason="  ")])
+        self.assertTrue(any("reason" in f.message for f in kept))
+
+    def test_extra_or_missing_keys_fail(self):
+        kept, _ = self._apply([], [{"path": "a/agent.yml", "check": "agent-config-keys"}])
+        self.assertTrue(any("exactly path, check and reason" in f.message for f in kept))
+
+    def test_a_declaration_never_hides_a_warning(self):
+        warning = lint_repo.Finding("agent-config-keys", "a/agent.yml", 1, "w", lint_repo.SEVERITY_WARNING)
+        kept, declared = self._apply([warning], [self._entry()])
+        self.assertIn(warning, kept)
+        self.assertEqual(declared, [])
 
 
 class TestAgentSpecContract(unittest.TestCase):

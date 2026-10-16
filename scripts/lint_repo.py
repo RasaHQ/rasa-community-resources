@@ -1344,6 +1344,107 @@ CHECKS = {
 }
 
 
+# ------------------------------------------------------------------------------
+# declared invalid fixtures
+# ------------------------------------------------------------------------------
+
+#: Files that are wrong on purpose (a teaching input the engine mishandles
+#: silently). One entry per FILE: {"path", "check", "reason"}. Only that exact
+#: (path, check) is suppressed, never a glob and never another check on the same
+#: file, and the finding is still printed as a declared invalid fixture.
+INVALID_FIXTURES_FILE = _SCRIPTS / "invalid_fixtures.json"
+DECLARATION_CHECK = "invalid-fixtures"
+
+
+def _declaration_error(message: str) -> Finding:
+    return Finding(DECLARATION_CHECK, _rel(INVALID_FIXTURES_FILE), None, message)
+
+
+def load_invalid_fixtures(
+    declarations: Path | None = None, tracked: set[str] | None = None
+) -> tuple[dict[tuple[str, str], str], list[Finding]]:
+    """Read the declarations. Anything malformed becomes an error, never a pass."""
+    source = declarations or INVALID_FIXTURES_FILE
+    if not source.exists():
+        return {}, []
+    try:
+        data = json.loads(source.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return {}, [_declaration_error(f"not valid JSON: {exc}")]
+    if not isinstance(data, list):
+        return {}, [_declaration_error("must be a list of {path, check, reason} objects")]
+    if tracked is None:
+        tracked = {_rel(p) for p in _tracked_files()}
+    entries: dict[tuple[str, str], str] = {}
+    seen_paths: set[str] = set()
+    problems: list[Finding] = []
+    for index, entry in enumerate(data):
+        where = f"entry {index}"
+        if not isinstance(entry, dict) or set(entry) != {"path", "check", "reason"}:
+            problems.append(_declaration_error(f"{where}: needs exactly path, check and reason"))
+            continue
+        path, check, reason = entry["path"], entry["check"], entry["reason"]
+        if not all(isinstance(v, str) for v in (path, check, reason)):
+            problems.append(_declaration_error(f"{where}: path, check and reason must be strings"))
+            continue
+        if not reason.strip():
+            problems.append(_declaration_error(f"{where}: reason must not be empty"))
+        if any(ch in path for ch in "*?[]") or path != Path(path).as_posix() \
+                or path.startswith("/") or ".." in Path(path).parts:
+            problems.append(_declaration_error(
+                f"{where}: path must be a normalized repository-relative file, not a glob: {path!r}"))
+            continue
+        if path not in tracked:
+            problems.append(_declaration_error(f"{where}: {path} is not a tracked file"))
+            continue
+        if check not in CHECKS:
+            problems.append(_declaration_error(f"{where}: unknown check {check!r}"))
+            continue
+        if path in seen_paths:
+            problems.append(_declaration_error(f"{where}: {path} is declared twice; one entry per file"))
+            continue
+        seen_paths.add(path)
+        entries[(path, check)] = reason
+    return entries, problems
+
+
+def apply_declared_fixtures(
+    findings: list[Finding],
+    selected: list[str],
+    declarations: Path | None = None,
+    tracked: set[str] | None = None,
+) -> tuple[list[Finding], list[Finding]]:
+    """Split findings into (still to report, declared invalid fixtures).
+
+    A declaration that no longer produces its finding is stale and is an error,
+    so the list cannot outlive the file it excuses or hide a different problem.
+    """
+    entries, problems = load_invalid_fixtures(declarations, tracked)
+    kept: list[Finding] = []
+    declared: list[Finding] = []
+    produced: set[tuple[str, str]] = set()
+    for finding in findings:
+        key = (finding.path, finding.check)
+        if key in entries and finding.severity == SEVERITY_ERROR:
+            declared.append(finding)
+            produced.add(key)
+        else:
+            kept.append(finding)
+    for (path, check), _reason in entries.items():
+        if check in selected and (path, check) not in produced:
+            problems.append(_declaration_error(
+                f"stale declaration: {path} no longer fails {check}; remove the entry"))
+    return kept + problems, declared
+
+
+def run_checks(selected, projects, snapshots, expected):
+    """Run the named checks; return (findings to report, declared invalid fixtures)."""
+    findings: list[Finding] = []
+    for name in selected:
+        findings.extend(CHECKS[name](projects, snapshots, expected))
+    return apply_declared_fixtures(findings, list(selected))
+
+
 def _c(code: str) -> str:
     return code if sys.stdout.isatty() else ""
 
@@ -1382,9 +1483,7 @@ def main() -> int:
     projects = discover_projects()
     snapshots = discover_projects("snapshots")
 
-    findings: list[Finding] = []
-    for name in selected:
-        findings.extend(CHECKS[name](projects, snapshots, expected))
+    findings, declared = run_checks(selected, projects, snapshots, expected)
 
     errors = [f for f in findings if f.severity == SEVERITY_ERROR]
     warnings = [f for f in findings if f.severity == SEVERITY_WARNING]
@@ -1398,6 +1497,7 @@ def main() -> int:
             "errors": len(errors),
             "warnings": len(warnings),
             "findings": [asdict(f) for f in findings],
+            "declared_invalid_fixtures": [asdict(f) for f in declared],
         }, indent=2))
         return 1 if errors or (args.strict and warnings) else 0
 
@@ -1406,6 +1506,12 @@ def main() -> int:
         print(f"{DIM}Plus {len(snapshots)} frozen snapshot(s), held to their own "
               f"pins (see docs/SNAPSHOTS.md){RESET}")
     print(f"{DIM}Checks: {', '.join(selected)}{RESET}\n")
+
+    for finding in declared:
+        print(f"{DIM}declared invalid fixture: {finding.location()} fails {finding.check} "
+              f"on purpose (scripts/invalid_fixtures.json){RESET}")
+    if declared:
+        print()
 
     if not findings:
         print(f"{GREEN}✓ All {len(selected)} checks passed.{RESET}")

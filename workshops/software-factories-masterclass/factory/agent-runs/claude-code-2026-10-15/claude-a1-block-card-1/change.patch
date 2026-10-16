@@ -1,0 +1,81 @@
+--- a/product/responses.yml
++++ b/product/responses.yml
+@@ -0,0 +1,3 @@
++responses:
++  confirm_block_card:
++    - text: "Blocking a card can't be undone. Do you want me to block this card?"
+--- a/product/skills/block_card/skill.md
++++ b/product/skills/block_card/skill.md
+@@ -0,0 +1,15 @@
++---
++description: List the caller's cards and block one of them after the caller confirms.
++tool_constraints:
++  - block_card:
++      requires_confirmation:
++        enabled: true
++        utter_for_confirmation: confirm_block_card
++---
++
++Help the caller block a card.
++
++1. Always call `list_cards` first to see the caller's cards.
++2. Ask which card the caller wants to block, and identify it by its `card_id` from that list.
++3. Call `block_card` with that single `card_id`. The engine asks the caller to confirm before it runs.
++4. Never block a card the caller has not confirmed. If the caller declines or does not confirm, do not call `block_card`.
+--- a/product/skills/block_card/tools.py
++++ b/product/skills/block_card/tools.py
+@@ -0,0 +1,26 @@
++from rasa.mantle.tools.decorator import tool
++from rasa.mantle.tools.result import ToolResult
++
++_CARDS = [
++    {"card_id": "card_1001", "type": "debit", "last4": "4821", "status": "active"},
++    {"card_id": "card_1002", "type": "credit", "last4": "7733", "status": "active"},
++]
++
++
++@tool(description="List the caller's cards. Call this first, before blocking anything.")
++async def list_cards() -> ToolResult:
++    return ToolResult(llm_response={"cards": [dict(card) for card in _CARDS]})
++
++
++@tool(
++    description=(
++        "Block exactly one card, identified by card_id. Irreversible; only call it "
++        "for a card the caller has chosen from list_cards."
++    )
++)
++async def block_card(card_id: str) -> ToolResult:
++    for card in _CARDS:
++        if card["card_id"] == card_id:
++            card["status"] = "blocked"
++            return ToolResult(llm_response={"ok": True, "card_id": card_id, "status": "blocked"})
++    return ToolResult(llm_response={"ok": False, "card_id": card_id, "reason": "card_not_found"})
+--- a/product/tests/test_block_card.py
++++ b/product/tests/test_block_card.py
+@@ -0,0 +1,25 @@
++import asyncio
++import importlib.util
++from pathlib import Path
++
++_TOOLS = Path(__file__).resolve().parents[1] / "skills" / "block_card" / "tools.py"
++_spec = importlib.util.spec_from_file_location("block_card_tools", _TOOLS)
++tools = importlib.util.module_from_spec(_spec)
++_spec.loader.exec_module(tools)
++
++
++def test_list_cards_returns_cards():
++    result = asyncio.run(tools.list_cards())
++    assert result.llm_response["cards"]
++
++
++def test_block_card_blocks_only_the_named_card():
++    asyncio.run(tools.block_card(card_id="card_1001"))
++    statuses = {c["card_id"]: c["status"] for c in tools._CARDS}
++    assert statuses["card_1001"] == "blocked"
++    assert statuses["card_1002"] == "active"
++
++
++def test_block_card_unknown_id_changes_nothing():
++    result = asyncio.run(tools.block_card(card_id="nope"))
++    assert result.llm_response["ok"] is False

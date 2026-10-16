@@ -1,0 +1,18 @@
+I added the `block_card` skill. `python validate.py` passes ("Mantle found nothing to object to."). I could not run the tests I wrote, because the sandbox blocked the pytest command, so they have never been run.
+
+**What I changed** (all inside `allowed_paths`):
+- `product/skills/block_card/skill.md`: the frontmatter has a `tool_constraints` entry for `block_card` with `requires_confirmation` enabled and `utter_for_confirmation: confirm_block_card`. `list_cards` has no constraint, so it needs no confirmation. The instructions say to:
+  - call `list_cards` first;
+  - have the caller pick a card by `card_id`;
+  - call `block_card` with that one `card_id`;
+  - never block a card the caller hasn't confirmed.
+- `product/skills/block_card/tools.py`:
+  - `list_cards()` returns the caller's cards.
+  - `block_card(card_id)` blocks only the card with that id. For an unknown id it returns `ok: false` and changes nothing.
+  - The cards come from a hardcoded in-memory list of two cards, because no integration for real card data exists in the project. I didn't touch `integrations.yml`, since the task excludes it.
+- `product/responses.yml` (new file): defines `confirm_block_card` as the confirmation prompt text.
+- `product/tests/test_block_card.py`: three tests covering the list, blocking only the named card, and an unknown id.
+
+**What I checked:**
+- `python validate.py` passes, so the skill loads, the tools import, and the `confirm_block_card` response exists.
+- I could not read Mantle's source for the confirmation gate itself, so I haven't confirmed that the engine actually pauses before `block_card` runs. The format came from the Mantle source and validator errors. That behavior needs a live run or the acceptance suite.
