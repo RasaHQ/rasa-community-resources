@@ -12,7 +12,7 @@ together and the failure that rolls them back.
 
 ## Run the scenarios
 
-Use an existing Python 3.11 or 3.12 interpreter. These exercises use only its
+Use an existing Python 3.12 interpreter. These exercises use only its
 standard library; no environment installation is needed. From the repository
 root, run:
 
@@ -49,9 +49,10 @@ From the same directory:
 python3 -m unittest discover -s tests -p test_appointment_exchange.py -v
 ```
 
-Expect nine tests and `OK`, with no skips. They cover expiry, revision and
-requirement changes, another customer, rollback, durable lookup after reopening
-the database, repeat requests and a conflicting reuse of the same key. An
+Expect twelve tests and `OK`, with no skips. They cover expiry, revision and
+requirement changes, booking and hold ownership, inactive bookings, missing or
+consumed holds, rollback, durable lookup after reopening the database, repeat
+requests and a conflicting reuse of the same key. An
 exception, failed assertion or skipped test needs investigation before you use
 the corresponding behavior in a conversation design.
 

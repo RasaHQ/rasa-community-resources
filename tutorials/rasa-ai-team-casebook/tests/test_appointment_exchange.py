@@ -1,6 +1,7 @@
 """Exercise durable service states, not a model conversation or HTTP service."""
 import importlib.util
 from pathlib import Path
+import sqlite3
 import tempfile
 import unittest
 
@@ -46,8 +47,36 @@ class AppointmentExchange(unittest.TestCase):
         self.old_still_active()
 
     def test_other_customer_cannot_change_the_original_booking(self):
-        self.assertEqual(self.exchange(customer="customer-2")["status"], "refused")
+        self.assertEqual(self.exchange(customer="customer-2"),
+                         {"status": "refused", "reason": "old_booking_unavailable"})
         self.old_still_active()
+
+    def test_inactive_original_booking_returns_a_clean_refusal(self):
+        self.service.db.execute("UPDATE bookings SET active=0 WHERE id='visit-1'")
+        self.service.db.commit()
+        self.assertEqual(self.exchange(),
+                         {"status": "refused", "reason": "old_booking_unavailable"})
+        self.assertEqual(self.service.active(), [])
+        self.assertEqual(self.service.lookup("request-1"), {"status": "unknown"})
+
+    def test_missing_hold_returns_a_clean_refusal(self):
+        self.assertEqual(self.exchange(hold_id="missing-hold"),
+                         {"status": "refused", "reason": "hold_unavailable"})
+        self.old_still_active()
+
+    def test_consumed_hold_refuses_before_a_duplicate_booking_insert(self):
+        self.exchange()
+        self.service.db.execute("INSERT INTO bookings VALUES (?, ?, ?, 1, 1)",
+                                ("visit-2", "customer-1", "Thursday 10:00"))
+        self.service.db.commit()
+        before = self.service.active()
+        try:
+            result = self.exchange(request_key="request-2", old_id="visit-2")
+        except sqlite3.IntegrityError as exc:
+            self.fail(f"Expected hold_unavailable before the duplicate insert, got {exc}")
+        self.assertEqual(result, {"status": "refused", "reason": "hold_unavailable"})
+        self.assertEqual(self.service.active(), before)
+        self.assertEqual(self.service.lookup("request-2"), {"status": "unknown"})
 
     def test_customer_cannot_consume_another_customers_hold(self):
         # Give customer-2 a valid old booking so the check reaches hold ownership.
