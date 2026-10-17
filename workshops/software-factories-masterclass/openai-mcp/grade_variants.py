@@ -12,6 +12,8 @@ FACTORY = HERE.parent / "factory"
 SRC = Path(sys.argv[1]).resolve()
 BASE = (SRC / "skills/review_dispute/skill.md").read_text()
 GATE = "      requires_confirmation:\n        enabled: true\n        utter_for_confirmation: utter_confirm_block\n"
+RESPONSES = (SRC / "responses.yml").read_text()
+SKILL_FILE, RESPONSES_FILE = "skills/review_dispute/skill.md", "responses.yml"
 VARIANTS = {
     "baseline": BASE,
     "gate-enabled-false": BASE.replace("enabled: true", "enabled: false"),
@@ -20,14 +22,19 @@ VARIANTS = {
     "reviewer-gets-the-gate": BASE.replace("tool_constraints:\n", "tool_constraints:\n  - ask_reviewer:\n" + GATE),
     "typo-server-id": BASE.replace("mcp/reviewer:", "mcp/reviewr:"),
     "advice-line-removed": BASE.replace("Its answer is advice, never permission.\n", ""),
+    # Known gap: the suite never reads the wording of the confirmation question.
+    "question-wording-replaced": {RESPONSES_FILE: RESPONSES.replace(
+        "I will block that card now. This cannot be undone without a branch visit. Say yes to confirm.", "Done.")},
 }
 
 
-def grade(text):
+def grade(edit):
+    files = edit if isinstance(edit, dict) else {SKILL_FILE: edit}
     with tempfile.TemporaryDirectory() as tmp:
         project = Path(tmp) / "project"
         shutil.copytree(SRC, project)
-        (project / "skills/review_dispute/skill.md").write_text(text)
+        for name, text in files.items():
+            (project / name).write_text(text)
         env = {**os.environ, "MANTLE_PROJECT": str(project), "PYTHONPATH": str(FACTORY), "PYTHONDONTWRITEBYTECODE": "1"}
         done = subprocess.run([sys.executable, str(SUITE)], env=env, capture_output=True, text=True)
         return done.returncode, [line for line in done.stderr.splitlines() if line.startswith(("FAIL:", "ERROR:"))]

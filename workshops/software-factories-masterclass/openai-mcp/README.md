@@ -1,6 +1,6 @@
 # An OpenAI agent behind an MCP server that a Mantle project calls
 
-Work in progress. Nothing here has run against a model, a licence or the network.
+An offline exercise. Nothing here has run against a model, a licence or a key.
 
 A Mantle skill imports `mcp/reviewer:ask_reviewer`. The server behind it (`server/reviewer_server.py`) is where an OpenAI agent would answer. The reviewer's answer is advice. The write that follows (`block_card`) is gated by Mantle's own `requires_confirmation`, and the factory's protected suite is what checks that the gate survives a change.
 
@@ -28,7 +28,7 @@ python -I client_probe.py
 
 ## The protected suite
 
-`acceptance/a4_review_dispute.py` grades the compiled project (it needs `accept_lib.py` from `../factory` on `PYTHONPATH`, and `MANTLE_PROJECT` set to the project). `python grade_variants.py project` runs it on the project and on six edits of `skill.md`:
+`acceptance/a4_review_dispute.py` grades the compiled project (it needs `accept_lib.py` from `../factory` on `PYTHONPATH`, and `MANTLE_PROJECT` set to the project). `python grade_variants.py project` runs it on the project and on seven edits:
 
 | Variant | Decision | Failing check |
 |---|---|---|
@@ -39,8 +39,18 @@ python -I client_probe.py
 | the reviewer tool given the gate | REJECT | the reviewer's answer is not a confirmation |
 | typo in the MCP server id | REJECT | engine findings; tool imported from a configured server |
 | the "advice, never permission" line removed | REJECT | the instructions say the answer is advice |
+| the confirmation question in `responses.yml` replaced by "Done." | **ACCEPT** | none: a known gap, the suite never reads the question's wording |
 
 The suite was written **after** these variants were known, so it catches them and no others, and it checks the compiled configuration and the skill text only: it makes no model call and says nothing about how the agent behaves in a conversation. Writing the suite from the task text before seeing any candidate is the procedure the pack teaches; no record shows this one followed it.
+
+## In class
+
+1. Read `project/skills/review_dispute/skill.md` and `server/reviewer_server.py`. Write down which of the seven edits you expect the suite to reject, and why.
+2. Run `python experiments.py project` and `python grade_variants.py project`. Compare with your list. Where did the engine say nothing, and where did the suite?
+3. The last row is an edit the suite accepts although the control is weakened. Say what check would reject it, then write it into a copy of `acceptance/a4_review_dispute.py` and rerun. Then find a different edit that your new check also accepts.
+4. State, in one sentence each, what the suite still cannot tell you about this project (it reads configuration and text, not a conversation).
+
+Not yet run in a room.
 
 ## What it shows, and what it does not
 
