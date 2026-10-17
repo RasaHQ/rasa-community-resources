@@ -8,10 +8,10 @@ Rasa supplies API keys and Mantle licences for everyone. The track was built and
 
 ## What the room leaves with
 
-1. A factory they ran: task, isolated change, protected check, decision (Lessons 1, 2, 10).
-2. One concrete failure no test of their own would have caught: a Mantle confirmation gate that compiles away with zero engine findings (Lesson 10).
-3. A real coding agent's work, collected and judged (Lesson 11), by Claude Code or Codex, their choice, or both. The course already holds 18 recorded runs (9 per agent), all accepted; do not promise the room a failure.
-4. Their own runs pooled into one report with an interval, and a sentence about what the numbers do not support (Lesson 14).
+1. A factory they ran: task, isolated change, protected check, decision (`factory/factory.py`; the method is Lessons 1 and 2 of the profrod.ai course).
+2. One concrete failure no test of their own would have caught: a Mantle confirmation gate that compiles away with zero engine findings (`factory/show_gate.py`).
+3. A real coding agent's work, collected and judged (`factory/scratch.py`, `factory/collect.py`), by Claude Code or Codex, their choice, or both. The course already holds 18 recorded runs (9 per agent), all accepted; do not promise the room a failure.
+4. Their own runs pooled into one report with an interval, and a sentence about what the numbers do not support (`factory/measure.py`).
 
 ## Before class (facilitator, the day before)
 
@@ -27,17 +27,17 @@ Rasa supplies API keys and Mantle licences for everyone. The track was built and
 
 ## Agenda
 
-| Clock | Block                                                | Lesson | What participants do                                                                                        | Facilitator says                                                                              |
+| Clock | Block                                                | Where | What participants do                                                                                        | Facilitator says                                                                              |
 | ----- | ---------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| 0:00  | Why a factory needs a grader the builder cannot edit | 1      | Listen, answer one checkpoint                                                                               | The evaluation is the only review in a dark factory. A pass rate is a count with an error bar |
-| 0:15  | The loop, on a toy                                   | 2      | Run the three commands that ACCEPT, REJECT, REJECT                                                          | A defect the agent's own tests missed is the whole course in one run                          |
-| 0:35  | Mantle as the product, the engine as the grader      | 10     | `uv run python factory.py ...` on the good candidate and the three silent-gate candidates; `show_gate.py`   | The engine reported nothing and the gate was gone. Who owns that requirement?                 |
+| 0:00  | Why a factory needs a grader the builder cannot edit | profrod.ai L1 | Listen, answer one checkpoint                                                                               | The evaluation is the only review in a dark factory. A pass rate is a count with an error bar |
+| 0:15  | The loop, on a toy                                   | profrod.ai L2 | Run the three commands that ACCEPT, REJECT, REJECT                                                          | A defect the agent's own tests missed is the whole course in one run                          |
+| 0:35  | Mantle as the product, the engine as the grader      | `factory/` | `uv run python factory.py ...` on the good candidate and the three silent-gate candidates; `show_gate.py`   | The engine reported nothing and the gate was gone. Who owns that requirement?                 |
 | 1:05  | Break                                                |        |                                                                                                             |                                                                                               |
-| 1:15  | Brief a coding agent                                 | 11     | `scratch.py`, run Claude Code or Codex on task A1, `collect.py`, `factory.py`                               | Read the diff before you read the summary                                                     |
-| 1:50  | Two teams, one agent.yml                             | 12     | Run the nested-rule check, then the integration sequence                                                    | Passing alone says nothing about the trunk                                                    |
-| 2:15  | Release and recover (short)                          | 13     | Run the approver refusal and `verify`                                                                       | The builder cannot approve itself                                                             |
-| 2:25  | The experiment                                       | 14     | Each participant runs A2 and A3 with their agent (A1 done), adds meta.json, copies runs to the shared place | One attempt per task. A blank field stays blank                                               |
-| 2:45  | Pool, report, decide                                 | 14, 9  | Facilitator runs `measure.py report`, `measure.py needed 0.9`, `policy.py what-if` live                     | What do these runs support? What would we need to claim more?                                 |
+| 1:15  | Brief a coding agent                                 | `factory/` | `scratch.py`, run Claude Code or Codex on task A1, `collect.py`, `factory.py`                               | Read the diff before you read the summary                                                     |
+| 1:50  | Two teams, one agent.yml                             | `factory/` | Run the nested-rule check, then the integration sequence                                                    | Passing alone says nothing about the trunk                                                    |
+| 2:15  | Release and recover (short)                          | `factory/` | Run the approver refusal and `verify`                                                                       | The builder cannot approve itself                                                             |
+| 2:25  | The experiment                                       | `factory/` | Each participant runs A2 and A3 with their agent (A1 done), adds meta.json, copies runs to the shared place | One attempt per task. A blank field stays blank                                               |
+| 2:45  | Pool, report, decide                                 | `factory/` | Facilitator runs `measure.py report`, `measure.py needed 0.9`, `policy.py what-if` live                     | What do these runs support? What would we need to claim more?                                 |
 | 2:55  | Close                                                |        |                                                                                                             |                                                                                               |
 
 ## Hard parts
@@ -47,7 +47,7 @@ Rasa supplies API keys and Mantle licences for everyone. The track was built and
 - **An agent that edits files it should not.** `collect.py` reports it, the factory refuses it, and it is a teaching moment, not a rule violation.
 - **Agent runs that take longer than the block.** One attempt per task; stop at the time box and record the run as it stands (`meta.json` with what is known).
 - **Different agent versions in one pool.** The report prints `rasa-pro` once; the agent and its version live in each `meta.json`. Do not average across versions without saying so.
-- **A participant's run fails with NOT_READY.** That is the Lesson 10 outcome. Read the reason aloud; it is almost always Python or `uv sync`.
+- **A participant's run fails with NOT_READY.** That is the factory's NOT_READY outcome. Read the reason aloud; it is almost always Python or `uv sync`.
 
 ## What not to claim afterwards
 
