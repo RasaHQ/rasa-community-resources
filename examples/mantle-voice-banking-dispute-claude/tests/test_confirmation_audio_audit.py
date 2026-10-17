@@ -43,11 +43,12 @@ class ConfirmationAudioAuditTests(unittest.TestCase):
 
     def test_another_conversations_event_is_not_evidence_for_this_question(self):
         self.report["conversations"][0]["log_event_details"]["voice_channel.audio_missing"][0]["conversation_id"] = "another-call"
-        self.assertEqual(self.finding(), "delivery_unverified")
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
 
     def test_another_utterances_event_is_not_evidence_for_this_question(self):
         self.report["conversations"][0]["log_event_details"]["voice_channel.audio_missing"][0]["text"] = "Another reply"
         self.assertEqual(self.finding(), "delivery_unverified")
+        self.assertEqual(len(MODULE.audit(self.report)["unbound_events"]), 1)
 
     def test_missing_client_fields_are_not_assumed_to_be_zero_audio(self):
         self.report["conversations"][0]["turns"][0]["extra"] = {}
@@ -66,7 +67,7 @@ class ConfirmationAudioAuditTests(unittest.TestCase):
         conversation = self.report["conversations"][0]
         conversation.pop("conversation_id")
         conversation["log_event_details"]["voice_channel.audio_missing"][0].pop("conversation_id")
-        self.assertEqual(self.finding(), "delivery_unverified")
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
 
     def test_positive_audio_with_missing_audio_event_requires_review(self):
         observation = self.report["conversations"][0]["turns"][0]["extra"]
@@ -78,6 +79,59 @@ class ConfirmationAudioAuditTests(unittest.TestCase):
         conversation["log_event_details"] = {}
         conversation["turns"][0]["extra"].update(bot_audio_s=2, eos_to_first_audio_ms=100)
         self.assertEqual(self.finding(), "audio_recorded_in_turn")
+        self.assertFalse(MODULE.audit(self.report)["review_required"])
+
+    def test_other_server_reason_with_audio_is_conflicting(self):
+        conversation = self.report["conversations"][0]
+        conversation["log_event_details"]["voice_channel.audio_missing"][0]["reason"] = "another_reason"
+        conversation["turns"][0]["extra"].update(bot_audio_s=2, eos_to_first_audio_ms=100)
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
+        self.assertTrue(MODULE.audit(self.report)["review_required"])
+
+    def test_other_server_reason_with_zero_audio_is_not_corroborated(self):
+        self.report["conversations"][0]["log_event_details"]["voice_channel.audio_missing"][0]["reason"] = "another_reason"
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
+
+    def test_other_conversation_event_with_audio_is_conflicting(self):
+        conversation = self.report["conversations"][0]
+        conversation["log_event_details"]["voice_channel.audio_missing"][0]["conversation_id"] = "another-call"
+        conversation["turns"][0]["extra"].update(bot_audio_s=2, eos_to_first_audio_ms=100)
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
+        self.assertTrue(MODULE.audit(self.report)["review_required"])
+
+    def test_missing_audio_event_for_another_reply_is_kept_for_review(self):
+        conversation = self.report["conversations"][0]
+        conversation["log_event_details"]["voice_channel.audio_missing"][0]["text"] = "Another reply"
+        conversation["turns"][0]["extra"].update(bot_audio_s=2, eos_to_first_audio_ms=100)
+        result = MODULE.audit(self.report)
+        self.assertEqual(result["confirmations"][0]["finding"], "audio_recorded_in_turn")
+        self.assertEqual(len(result["unbound_events"]), 1)
+        self.assertTrue(result["review_required"])
+
+    def test_duplicate_matching_events_are_ambiguous(self):
+        events = self.report["conversations"][0]["log_event_details"]["voice_channel.audio_missing"]
+        events.append(copy.deepcopy(events[0]))
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
+
+    def test_same_question_twice_in_one_turn_is_ambiguous(self):
+        texts = self.report["conversations"][0]["turns"][0]["bot"]
+        texts.append(texts[0])
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
+
+    def test_zero_duration_with_first_audio_is_not_corroborated(self):
+        self.report["conversations"][0]["turns"][0]["extra"]["eos_to_first_audio_ms"] = 0
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
+
+    def test_zero_duration_with_first_audible_audio_is_not_corroborated(self):
+        self.report["conversations"][0]["turns"][0]["extra"]["eos_to_first_audible_ms"] = 0
+        self.assertEqual(self.finding(), "conflicting_or_incomplete_evidence")
+
+    def test_positive_duration_without_first_audio_is_unverified(self):
+        conversation = self.report["conversations"][0]
+        conversation["log_event_details"] = {}
+        conversation["turns"][0]["extra"].update(bot_audio_s=2, eos_to_first_audio_ms=None)
+        self.assertEqual(self.finding(), "delivery_unverified")
+        self.assertTrue(MODULE.audit(self.report)["review_required"])
 
     def test_no_recognised_question_cannot_clear_review(self):
         self.assertTrue(MODULE.audit({"conversations": []})["review_required"])

@@ -2,11 +2,13 @@
 
 This recognises this example's English confirmation question only. Audio in
 a turn is not proof that the complete question played or that a human heard it.
+Only results.json is read; disagreement with a separate tracker is not detected.
 """
 
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 from pathlib import Path
 
@@ -17,28 +19,41 @@ MISSING_REASON = "tts_produced_no_audio_without_barge_in"
 
 def audit(report: dict) -> dict:
     rows = []
+    unbound_events = []
     for conversation in report["conversations"]:
         events = conversation.get("log_event_details", {}).get(
             "voice_channel.audio_missing", []
         )
+        occurrences = Counter(
+            text for turn in conversation["turns"]
+            for text in turn.get("bot", []) if QUESTION in text
+        )
+
+        def binds(event):
+            return (
+                occurrences.get(event.get("text"), 0) == 1
+                and bool(conversation.get("conversation_id"))
+                and event.get("conversation_id") == conversation["conversation_id"]
+                and event.get("reason") == MISSING_REASON
+            )
+
+        for event in events:
+            if not binds(event):
+                unbound_events.append({
+                    "case": conversation["id"],
+                    "event": event,
+                    "finding": "event_cannot_be_bound_to_one_confirmation",
+                })
         for index, turn in enumerate(conversation["turns"], 1):
             questions = [text for text in turn.get("bot", []) if QUESTION in text]
             if not questions:
                 continue
             observation = turn.get("extra", {})
-            matches = [
-                event for event in events
-                if event.get("text") in questions
-                and bool(conversation.get("conversation_id"))
-                and event.get("conversation_id") == conversation.get("conversation_id")
-                and event.get("reason") == MISSING_REASON
-            ]
+            candidates = [event for event in events if event.get("text") in questions]
+            matches = [event for event in candidates if binds(event)]
             # These event summaries have no turn index. Repeated identical
             # questions cannot be assigned to one turn from text alone.
-            unique_question = all(
-                sum(text in item.get("bot", []) for item in conversation["turns"]) == 1
-                for text in questions
-            )
+            unique_question = len(questions) == 1 and occurrences[questions[0]] == 1
             no_audio = (
                 observation.get("bot_audio_s") == 0
                 and "eos_to_first_audio_ms" in observation
@@ -52,9 +67,9 @@ def audit(report: dict) -> dict:
                 isinstance(seconds, (int, float)) and seconds > 0
                 and observation.get("eos_to_first_audio_ms") is not None
             )
-            if matches and no_audio and unique_question:
+            if len(candidates) == len(matches) == 1 and no_audio and unique_question:
                 finding = "missing_audio_corroborated"
-            elif matches:
+            elif candidates:
                 finding = "conflicting_or_incomplete_evidence"
             elif has_audio:
                 finding = "audio_recorded_in_turn"
@@ -72,7 +87,8 @@ def audit(report: dict) -> dict:
             })
     return {
         "confirmations": rows,
-        "review_required": not rows or any(
+        "unbound_events": unbound_events,
+        "review_required": bool(unbound_events) or not rows or any(
             row["finding"] != "audio_recorded_in_turn" for row in rows
         ),
         "scope": "Captured turn windows only; audio presence does not prove complete question playback or human hearing.",

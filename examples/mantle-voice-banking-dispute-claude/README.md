@@ -374,8 +374,12 @@ run again with no change. Neither crashed. One passed; the other failed on
    cases above. `missing_audio_corroborated` requires matching client and
    server evidence. `delivery_unverified` means the evidence is insufficient.
    `audio_recorded_in_turn` establishes only audio presence within that turn,
-   not playback of the complete question. The audit recognises this example's
-   English confirmation wording, not arbitrary voice conversations.
+   not playback of the complete question. `conflicting_or_incomplete_evidence`
+   flags inconsistent observations, incomplete event binding or ambiguous
+   repeats. Unmatched missing-audio events are retained in `unbound_events`
+   and keep the review flag on. The audit reads only `results.json`, so it
+   cannot detect disagreement with a separate tracker. It recognises this
+   example's English confirmation wording, not arbitrary voice conversations.
 
    Run its saved-record and missing-evidence controls with:
 
