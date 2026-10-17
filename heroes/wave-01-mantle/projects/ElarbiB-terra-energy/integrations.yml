@@ -1,0 +1,27 @@
+# External integrations for Terra — TerraEnergy (Mantle engine).
+#
+# The orchestrator LLM is a model-group reference. Provider, model and
+# credentials live on the named group, never inline under `llm:` — the
+# inline form was removed in rasa-pro 3.20.0.dev6.
+
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: mistral
+        model: ministral-14b-latest
+        api_key: ${MISTRAL_API_KEY}
+        temperature: 0.3
+  - id: reference_embeddings
+    models:
+      - provider: mistral
+        model: mistral/mistral-embed
+        api_key: ${MISTRAL_API_KEY}
+
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
