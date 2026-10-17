@@ -1,7 +1,8 @@
 #!/bin/sh
 # usage: run_one.sh <agent: claude|codex> <task-file> <n>
-cd /Volumes/ZeoWork/rasa-ops/mantle/agent-runs/mf || exit 2
-VENV=/Volumes/ZeoWork/rasa-ops/mantle/venv/bin
+# The folder and virtual environment of the machine that ran these were here; set them for your own machine.
+cd "${MF_DIR:?set MF_DIR to the folder that holds scratch.py and work/}" || exit 2
+VENV="${MF_VENV:?set MF_VENV to the bin folder of the virtual environment}"
 AGENT=$1; TASK=$2; N=$3
 T=$(basename $TASK .json); NAME=$AGENT-$T-$N
 TID=$($VENV/python -c "import json;print(json.load(open('$TASK'))['id'])")

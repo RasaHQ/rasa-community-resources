@@ -1,6 +1,5 @@
-"""Offline engine checks on the project in $MANTLE_PROJECT. No model, licence or network."""
+"""Offline engine checks on the project folder given as the first argument. No model, licence or network."""
 import logging
-import os
 import sys
 from pathlib import Path
 
