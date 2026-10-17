@@ -26,6 +26,22 @@ python server/reviewer_server.py &      # then, in another shell
 python -I client_probe.py
 ```
 
+## The protected suite
+
+`acceptance/a4_review_dispute.py` grades the compiled project (it needs `accept_lib.py` from `../factory` on `PYTHONPATH`, and `MANTLE_PROJECT` set to the project). `python grade_variants.py project` runs it on the project and on six edits of `skill.md`:
+
+| Variant | Decision | Failing check |
+|---|---|---|
+| baseline | ACCEPT | none |
+| gate `enabled: false` | REJECT | blocking waits for confirmation |
+| gate key omitted | REJECT | blocking waits for confirmation |
+| gate constraint deleted | REJECT | blocking waits for confirmation |
+| the reviewer tool given the gate | REJECT | the reviewer's answer is not a confirmation |
+| typo in the MCP server id | REJECT | engine findings; tool imported from a configured server |
+| the "advice, never permission" line removed | REJECT | the instructions say the answer is advice |
+
+The suite was written **after** these variants were known, so it catches them and no others, and it checks the compiled configuration and the skill text only: it makes no model call and says nothing about how the agent behaves in a conversation. Writing the suite from the task text before seeing any candidate is the procedure the pack teaches; no record shows this one followed it.
+
 ## What it shows, and what it does not
 
 - Engine, compile time, dev5: a typo in the MCP server id and a typo in a gated tool name are each reported (one finding). A gate with `enabled: false` on the MCP tool, and the three silent removals on the local tool (`enabled: false`, the key omitted, the constraint deleted), compile to no gate with zero findings.
