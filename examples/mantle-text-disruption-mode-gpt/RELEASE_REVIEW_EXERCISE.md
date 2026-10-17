@@ -16,8 +16,9 @@ python3 case-build/release_policy_comparison.py
 The comparison prints three constructed paths using the same fixture:
 
 - Direct service: deliberately call release after a refused application
-  decision. This establishes what the service's ownership checks permit;
-  it is not a claim that the recorded model ignored a refusal.
+  decision. The caller bypasses the application decision and shows what the
+  service's ownership checks permit. The historical saved conversation records
+  an explicit release offer followed by the scripted answer Yes.
 - Unbound-answer control: a deliberate mutation applies an old answer to
   whichever question is current. The controller otherwise uses the same
   state checks and service as the bound path. It does not reproduce the
@@ -60,4 +61,4 @@ implement persistence, expiry, concurrent requests or transport authentication.
 It rechecks ownership and current hold state through the existing service.
 A real integration needs those missing application controls and its own
 end-to-end tests. Run the complete project proof separately before describing
-the whole project as qualified. No result for this new exercise is recorded yet.
+the whole project as qualified. Inspect skipped checks alongside passed tests.
