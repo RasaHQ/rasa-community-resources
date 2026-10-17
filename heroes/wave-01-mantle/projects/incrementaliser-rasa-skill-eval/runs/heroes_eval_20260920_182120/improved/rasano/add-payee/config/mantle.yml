@@ -1,0 +1,9 @@
+import_tools:
+- check_payee_exists
+tool_constraints:
+- add_payee:
+    requires: session.add_payee.payee_confirmed
+    requires_confirmation:
+      enabled: true
+      utter_for_confirmation: utter_confirm_add_payee
+      utter_on_user_denial: utter_add_payee_cancelled
