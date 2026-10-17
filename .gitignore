@@ -172,22 +172,19 @@ temp/
 # ------------------------------------------------------------------------------
 # Local agent tooling
 # ------------------------------------------------------------------------------
-# Seat identities map a seat name to a real GitHub account and are per-machine.
-# They were protected only by a local .git/info/exclude, which does not travel:
-# a fresh clone of this public repository had nothing stopping `git add -A` from
-# committing someone's account names. It has already happened once here.
+# Per-machine files that map local identities to accounts. A per-clone
+# .git/info/exclude does not travel, so a fresh clone needs these rules to keep
+# `git add -A` from committing them.
 .zeo/
 
-# The rest of the ZEO seat overlay, for the same reason. These are per-machine
-# agent boot files, never repository content. .claude/, .codex/, .agents/ and
-# CLAUDE.md were already covered here; scripts/zeo-org, AGENTS.md and ZEO-BOOT.md
-# were left behind in .git/info/exclude, which is per-clone and does not travel.
+# Per-machine agent boot files, never repository content. .claude/, .codex/,
+# .agents/ and CLAUDE.md are covered above.
 /scripts/zeo-org
 /AGENTS.md
 /ZEO-BOOT.md
 
-# The starter pack SHIPS agent-tooling files as repository content — the seat
-# overlay rules above must not swallow them. Order matters: a file cannot be
+# The starter pack SHIPS agent-tooling files as repository content, so the rules
+# above must not swallow them. Order matters: a file cannot be
 # re-included while its parent directory is excluded, hence the dir first.
 !starter-pack/CLAUDE.md
 !starter-pack/.claude/
