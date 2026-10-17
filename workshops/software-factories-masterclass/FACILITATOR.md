@@ -1,6 +1,6 @@
 # Facilitator runbook: agentic software factories on Rasa Mantle (3 hours, in person)
 
-DRAFT 2026-10-15, rasa-ops. It accompanies the Mantle track (lessons 10 to 14 of Towards Dark Software Factories, merged in #295).
+DRAFT 2026-10-15. It accompanies this pack; the technology-neutral course is Towards Dark Software Factories on profrod.ai.
 Lines marked TO CONFIRM need an answer from the operator. Nothing marked TO CONFIRM has been run.
 
 Open session details, to fill in when known: date [DATE], room [ROOM], headcount [HEADCOUNT], level [LEVEL].

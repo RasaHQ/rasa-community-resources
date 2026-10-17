@@ -1,8 +1,8 @@
 # Software factories on Rasa Mantle: a three-hour masterclass pack
 
-    Author:        Rod Rivera, rasa-ops (Claude Code)
+    Author:        Rod Rivera (Claude Code)
     Assessed on:   2026-10-16
-    Assessed by:   rasa-ops (Claude Code): offline, on macOS, Python 3.11 and 3.12, no Rasa licence
+    Assessed by:   Claude Code: offline, on macOS, Python 3.11 and 3.12, no Rasa licence
     Verified with: rasa-pro 3.21.0.dev5, Python 3.11+, uv
     Audience:      Engineers who build or review agents and want to put an automated check between a coding agent's change and the project the agent changes
     Time:          3 hours in a room; about 90 minutes alone
