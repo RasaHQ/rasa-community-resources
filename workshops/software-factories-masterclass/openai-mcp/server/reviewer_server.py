@@ -13,9 +13,12 @@ engine-side checks can run with no key and no network; it is not a model and pro
 from __future__ import annotations
 
 import os
+from typing import Literal
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel
+
+VerdictName = Literal["looks_unauthorised", "looks_authorised", "unclear"]
 
 HOST, PORT = "127.0.0.1", 8941
 
@@ -29,7 +32,7 @@ class Review(BaseModel):
     model_config = {"extra": "allow"}
 
     ok: bool
-    verdict: str
+    verdict: VerdictName
     reason: str
     backend: str
 
@@ -38,7 +41,7 @@ class Verdict(BaseModel):
     """What the OpenAI agent must return. Strict (no extra keys) because the Agents SDK requires it;
     the tool's own result model above allows extras, and the SDK refuses that one as an output type."""
 
-    verdict: str
+    verdict: VerdictName
     reason: str
 
 
