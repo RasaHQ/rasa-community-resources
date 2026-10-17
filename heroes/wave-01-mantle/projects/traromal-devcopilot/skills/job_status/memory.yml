@@ -1,0 +1,11 @@
+schema:
+  public:
+    job_ref:
+      type: text
+      description: Task reference for SLA status.
+      llm_settable: true
+    priority:
+      type: categorical
+      enum_values: [emergency, standard, planned]
+      description: Priority returned by get_job_status.
+      llm_settable: true
