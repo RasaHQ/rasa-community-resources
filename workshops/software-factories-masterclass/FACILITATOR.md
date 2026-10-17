@@ -10,17 +10,17 @@ Rasa supplies API keys and Mantle licences for everyone. The track was built and
 
 1. A factory they ran: task, isolated change, protected check, decision (`factory/factory.py`; the method is Lessons 1 and 2 of the profrod.ai course).
 2. One concrete failure no test of their own would have caught: a Mantle confirmation gate that compiles away with zero engine findings (`factory/show_gate.py`).
-3. A real coding agent's work, collected and judged (`factory/scratch.py`, `factory/collect.py`), by Claude Code or Codex, their choice, or both. The course already holds 18 recorded runs (9 per agent), all accepted; do not promise the room a failure.
+3. A real coding agent's work, collected and judged (`factory/scratch.py`, `factory/collect.py`), by Claude Code or Codex, their choice, or both. This pack already holds 18 recorded runs (9 per agent, under `factory/agent-runs/`), all accepted; do not promise the room a failure.
 4. Their own runs pooled into one report with an interval, and a sentence about what the numbers do not support (`factory/measure.py`).
 
 ## Before class (facilitator, the day before)
 
-- [ ] Download `mantle-factory.zip` and `factory-course-full.zip` from the course page; check the zip hashes against the PR.
-- [ ] On the room's wifi and a spare laptop: unzip, `uv sync`, `uv run python factory.py tasks/a1-block-card.json candidates/block-card-good runs/check`. Expect ACCEPT in about five seconds after the first import.
+- [ ] Clone this repository (there are no zip downloads for this pack) and note the commit participants will use.
+- [ ] On the room's wifi and a spare laptop: from `workshops/software-factories-masterclass/factory/`, `uv sync --frozen`, `uv run python factory.py tasks/a1-block-card.json candidates/block-card-good runs/check`. Expect ACCEPT in about five seconds after the first import.
 - [ ] `uv sync` downloads about 750 MB. Do NOT make participants do it in class. Either they sync at home, or you bring a pre-synced copy (TO CONFIRM: how: USB drive, shared folder, or the uv cache).
 - [ ] Keys and licenses (TO CONFIRM): Rasa provides API keys and Mantle licences for everyone. Which provider for the Mantle model group; which for Claude Code (login or ANTHROPIC_API_KEY); which for Codex (login or OPENAI_API_KEY); how they reach participants; spending limits.
-- [ ] Both agents installed and signed in on every laptop: `claude --version`, `codex --version`. Verified end to end on 2026-10-15 with Claude Code 2.1.299 and codex-cli 0.162.1 (18 recorded runs in the course). Newer versions may differ.
-- [ ] Codex needs `--skip-git-repo-check` in a folder that is not a git repository (the lesson's command has it). Claude Code run headless (`claude -p`) must not be launched from inside another Claude Code session: it hangs. Participants running it in an ordinary terminal are fine.
+- [ ] Both agents installed and signed in on every laptop: `claude --version`, `codex --version`. Verified end to end on 2026-10-15 with Claude Code 2.1.299 and codex-cli 0.162.1 (18 recorded runs in this pack). Newer versions may differ.
+- [ ] Codex needs `--skip-git-repo-check` in a folder that is not a git repository (the recorded driver, `factory/agent-runs/drivers/run_one_codex_and_claude.sh`, passes it). Claude Code run headless (`claude -p`) must not be launched from inside another Claude Code session: it hangs. Participants running it in an ordinary terminal are fine.
 - [ ] Agent timing from the recorded runs, to plan blocks: the card skill (A1) took 78 to 222 seconds per run, the one-rule tasks (A2, A3) 8 to 17 seconds.
 - [ ] No Docker anywhere. Nothing in the plan needs it.
 - [ ] A shared place for run folders after the experiment (TO CONFIRM: drive, Slack, or USB).
