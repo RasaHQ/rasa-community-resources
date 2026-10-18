@@ -2,7 +2,7 @@
 
 The first two blocks of `FACILITATOR.md` point to profrod.ai, which needs a network. This page replaces them when the room has none, or when you would rather not depend on it. Everything here runs from this repository after `uv sync --frozen`. Nothing runs against a live model.
 
-## 14:30 Why a factory needs a grader the builder cannot edit (10 min)
+## 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
 
 Say, in your words:
 
@@ -17,7 +17,7 @@ Say, in your words:
 
 Participants: with their partner, answer "Who can edit the check in your team's agent workflow today?" No answer is collected.
 
-## 14:40 The loop on a toy (20 min)
+## 14:40 A forged pass fools the first factory and is rejected by the second (20 min)
 
 The pack's own factory is the toy. Run from `factory/`:
 

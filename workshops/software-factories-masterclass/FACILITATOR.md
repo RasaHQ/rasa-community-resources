@@ -10,7 +10,7 @@ The room is unknown: 5 to 40 people, so everything is done in pairs or small gro
 
 1. A factory they ran: a task, an isolated change, a protected check, a decision (`factory/factory.py`). The method is profrod.ai Lessons 1 and 2.
 2. One failure no test of their own would catch: a Mantle confirmation gate that compiles away with no engine finding (`factory/show_gate.py`).
-3. A vendor agent behind a tool boundary: its answer is advice, and the write that follows still waits for a person (`openai-mcp/`). The vendor in the room is a stub.
+3. A vendor agent's answer is advice, and the write that follows still waits for a person: its answer is advice, and the write that follows still waits for a person (`openai-mcp/`). The vendor in the room is a stub.
 4. A coding agent's work, read and judged, from the 18 recorded runs.
 5. A number with an interval, and a sentence about what it does not support (`factory/measure.py`).
 
@@ -51,31 +51,31 @@ All times London. "Say" is what you say, in your words; "Show" is what is on the
 
 | Clock | Min | Block |
 | --- | --- | --- |
-| 14:30 | 10 | Why a factory needs a grader the builder cannot edit |
-| 14:40 | 20 | The loop on a toy |
-| 15:00 | 30 | Mantle as the product, the engine as the grader |
+| 14:30 | 10 | A grader the builder cannot edit is the only review a dark factory has |
+| 14:40 | 20 | A forged pass fools the first factory and is rejected by the second |
+| 15:00 | 30 | The engine reports nothing when a confirmation gate has silently disappeared |
 | 15:30 | 10 | Break |
-| 15:40 | 30 | A vendor agent behind a tool boundary |
-| 16:10 | 30 | Brief a coding agent |
+| 15:40 | 30 | A vendor agent's answer is advice, and the write that follows still waits for a person |
+| 16:10 | 30 | A coding agent's summary is a claim until you have read its diff |
 | 16:40 | 10 | Break |
-| 16:50 | 20 | Two teams, one file; release and recover |
-| 17:10 | 15 | Pool, report, decide |
-| 17:25 | 5 | Close |
+| 16:50 | 20 | Two changes that pass alone can fail together, and the builder cannot approve its own release |
+| 17:10 | 15 | A few runs support a count with an error bar, not a pass rate |
+| 17:25 | 5 | The grader is not the builder's, the engine can be silent, and advice is not permission |
 
-### 14:30 Why a factory needs a grader the builder cannot edit (10 min)
+### 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
 
 - Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Nothing today runs against a live model; the vendor agent is a stub.
 - Show: profrod.ai, course "Towards Dark Software Factories", Lesson 1, if the room is online. Offline: `OFFLINE-OPENING.md`, 14:30 section, which needs no network.
 - Do: Answer the one question in the offline page, or the lesson's checkpoint, with your partner.
 
-### 14:40 The loop on a toy (20 min)
+### 14:40 A forged pass fools the first factory and is rejected by the second (20 min)
 
 - Say: A defect the agent's own tests missed is the whole course in one run.
 - Show: profrod.ai Lesson 2 and its three commands, if the room is online. Offline: the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository.
 - Do: Pairs run the commands; they print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT.
 - If a pair is stuck: the lesson's NOT_READY message names the cause, almost always Python or the environment. Read it aloud.
 
-### 15:00 Mantle as the product, the engine as the grader (30 min)
+### 15:00 The engine reports nothing when a confirmation gate has silently disappeared (30 min)
 
 - Say: The engine reported nothing and the gate was gone. Who owns that requirement?
 - Show and Do, in this order:
@@ -93,7 +93,7 @@ All times London. "Say" is what you say, in your words; "Show" is what is on the
 
 Walk the room. Fix any machine that did not run the previous block now.
 
-### 15:40 A vendor agent behind a tool boundary (30 min)
+### 15:40 A vendor agent's answer is advice, and the write that follows still waits for a person (30 min)
 
 - Say: You cannot put a vendor's agent under your acceptance suite. You can put the line between its answer and your system's next action under it. The vendor's answer is advice; the write that follows still waits for a person.
 - Show: `openai-mcp/project/skills/review_dispute/skill.md` and `openai-mcp/server/reviewer_server.py`. Say again that the server is a stub and that the OpenAI path has not run.
@@ -105,7 +105,7 @@ Walk the room. Fix any machine that did not run the previous block now.
 - Stretch: write that check into a copy of `acceptance/a4_review_dispute.py` and rerun; then find a different edit it also accepts. There always is one.
 - The author's run of both commands took 23 seconds.
 
-### 16:10 Brief a coding agent (30 min)
+### 16:10 A coding agent's summary is a claim until you have read its diff (30 min)
 
 - Say: Read the diff before you read the summary.
 - Show: one recorded run, for example `agent-runs/claude-code-2026-10-15/claude-a1-block-card-1/`: the final message, the patch, the decision.
@@ -115,7 +115,7 @@ Walk the room. Fix any machine that did not run the previous block now.
 
 ### 16:40 Break (10 min)
 
-### 16:50 Two teams, one file; release and recover (20 min)
+### 16:50 Two changes that pass alone can fail together, and the builder cannot approve its own release (20 min)
 
 - Say: Passing alone says nothing about the trunk. And the builder cannot approve its own work.
 - Do, integration (each candidate is judged first, then merged):
@@ -140,7 +140,7 @@ Walk the room. Fix any machine that did not run the previous block now.
   This needs `runs/good` from the 15:00 block and an `approvals/` folder (`mkdir approvals`). The first publish is refused because `codex` is not on the approvers list.
 - The author's run of this block took 18 seconds for the integration part.
 
-### 17:10 Pool, report, decide (15 min)
+### 17:10 A few runs support a count with an error bar, not a pass rate (15 min)
 
 - Do: Each pair copies its `factory/runs/` folders to the shared place. Then you run:
 
@@ -152,7 +152,7 @@ Walk the room. Fix any machine that did not run the previous block now.
 - Say: What do these runs support? What would we need to claim more? A blank field stays blank.
 - If the room's pooled runs are in the shared folder, run `measure.py report` over those folders too, and say how many runs there are and that they are this room's.
 
-### 17:25 Close (5 min)
+### 17:25 The grader is not the builder's, the engine can be silent, and advice is not permission (5 min)
 
 - Say: Three things to take: the grader is not the builder's to edit; the engine can be silent where the gate is gone; the vendor's answer is advice. And what we did not do: we did not run a live model.
 - Hand out: the repository link and the commit.
