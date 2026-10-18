@@ -12,6 +12,9 @@ on:
     # uv.lock and would not notice a new release at all.
     - cron: "0 6 * * 1"
 
+permissions:
+  contents: read
+
 concurrency:
   group: validate-${{ github.ref }}
   cancel-in-progress: true
