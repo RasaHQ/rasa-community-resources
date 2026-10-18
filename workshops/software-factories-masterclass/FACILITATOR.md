@@ -8,7 +8,7 @@ The room is unknown: 5 to 40 people, so everything is done in pairs or small gro
 
 ## What the room leaves with
 
-1. A factory they ran: a task, an isolated change, a protected check, a decision (`factory/factory.py`). The method is profrod.ai Lessons 1 and 2.
+1. A factory they ran: a task, an isolated change, a protected check, a decision (`factory/factory.py`). The method is the one in profrod.ai Lessons 1 and 2, run here with this pack's own commands.
 2. One failure no test of their own would catch: a Mantle confirmation gate that compiles away with no engine finding (`factory/show_gate.py`).
 3. A vendor agent behind a tool boundary: its answer is advice, and the write that follows still waits for a person (`openai-mcp/`). The vendor in the room is a stub.
 4. A coding agent's work, read and judged, from the 18 recorded runs.
@@ -65,15 +65,13 @@ All times London. "Say" is what you say, in your words; "Show" is what is on the
 ### 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
 
 - Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Then say the opening line you chose in "What this session does not show".
-- Show: profrod.ai, course "Towards Dark Software Factories", Lesson 1, if the room is online. Offline: `OFFLINE-OPENING.md`, 14:30 section, which needs no network.
+- Show: the 14:30 section of `OFFLINE-OPENING.md`, online or not. profrod.ai Lesson 1 is background reading for the same idea.
 - Do: Answer the one question in the offline page, or the lesson's checkpoint, with your partner.
 
 ### 14:40 A forged pass fools the first factory and is rejected by the second (20 min)
 
 - Say: A defect the agent's own tests missed is the whole course in one run.
-- Choose one of two openings. Do not mix them; they are different exercises with different results.
-  - Online: show profrod.ai Lesson 2. Pairs run its three commands and get the results the lesson shows (ACCEPT, REJECT, REJECT).
-  - Offline: use the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository. They print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT.
+- Run the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository, online or not. They print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT. This is the only exercise run in the room; profrod.ai Lesson 2 is a different exercise with its own steps and is background reading, not part of this block.
 - If a pair is stuck: the lesson's NOT_READY message names the cause, almost always Python or the environment. Read it aloud.
 
 ### 15:00 The engine reports nothing when a confirmation gate has silently disappeared (30 min)

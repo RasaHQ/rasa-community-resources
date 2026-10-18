@@ -1,10 +1,10 @@
 # Facilitator card: Thu 22 Oct 2026, 14:30 to 17:30 London (13:30 UTC)
 
-In person, 5 to 40 people, pairs or groups of up to four. Offline by default: nothing runs against a live model unless you choose the one optional live coding-agent run (then say so, and that it is one run); the vendor agent is a stub. Say the matching line in the first ten minutes and at 17:25. Full script: `FACILITATOR.md`. No wifi: `OFFLINE-OPENING.md` replaces the two profrod.ai blocks. Rehearse: `uv run python rehearse.py` in `factory/`.
+In person, 5 to 40 people, pairs or groups of up to four. Offline by default: nothing runs against a live model unless you choose the one optional live coding-agent run (then say so, and that it is one run); the vendor agent is a stub. Say the matching line in the first ten minutes and at 17:25. Full script: `FACILITATOR.md`. `OFFLINE-OPENING.md` is the 14:30 and 14:40 material, online or not. Rehearse: `uv run python rehearse.py` in `factory/`.
 
 | Clock | Block | One line to say | Pairs do |
 | --- | --- | --- | --- |
-| 14:30 | A grader the builder cannot edit is the only review a dark factory has | In a dark factory the evaluation is the only review | Answer the question in `OFFLINE-OPENING.md`, or the Lesson 1 checkpoint if online |
+| 14:30 | A grader the builder cannot edit is the only review a dark factory has | In a dark factory the evaluation is the only review | Answer the question in `OFFLINE-OPENING.md` |
 | 14:40 | A forged pass fools the first factory and is rejected by the second | A defect the agent's own tests missed is the whole course | Offline toy loop: ACCEPT, REJECT, ACCEPT (first factory fooled), REJECT (second factory) |
 | 15:00 | The engine reports nothing when a confirmation gate has silently disappeared | The engine reported nothing and the gate was gone | `factory.py` on good + 3 silent-gate candidates; `show_gate.py` |
 | 15:30 | Break | | |
