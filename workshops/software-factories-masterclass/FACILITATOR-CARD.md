@@ -1,6 +1,6 @@
 # Facilitator card: Thu 22 Oct 2026, 14:30 to 17:30 London (13:30 UTC)
 
-In person, 5 to 40 people, pairs or groups of up to four. Offline: nothing runs against a live model; the vendor agent is a stub. Say so in the first ten minutes. Full script: `FACILITATOR.md`. No wifi: `OFFLINE-OPENING.md` replaces the two profrod.ai blocks. Rehearse: `uv run python rehearse.py` in `factory/`.
+In person, 5 to 40 people, pairs or groups of up to four. Offline by default: nothing runs against a live model unless you choose the one optional live coding-agent run (then say so, and that it is one run); the vendor agent is a stub. Say the matching line in the first ten minutes and at 17:25. Full script: `FACILITATOR.md`. No wifi: `OFFLINE-OPENING.md` replaces the two profrod.ai blocks. Rehearse: `uv run python rehearse.py` in `factory/`.
 
 | Clock | Block | One line to say | Pairs do |
 | --- | --- | --- | --- |

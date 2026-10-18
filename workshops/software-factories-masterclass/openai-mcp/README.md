@@ -41,7 +41,7 @@ python -I client_probe.py
 | the "advice, never permission" line removed | REJECT | the instructions say the answer is advice |
 | the confirmation question in `responses.yml` replaced by "Done." | **ACCEPT** | none: a known gap, the suite never reads the question's wording |
 
-The suite was written **after** these variants were known, so it catches them and no others, and it checks the compiled configuration and the skill text only: it makes no model call and says nothing about how the agent behaves in a conversation. Writing the suite from the task text before seeing any candidate is the procedure the pack teaches; no record shows this one followed it.
+The suite was written **after** these variants were known. In this offline run it rejected six of the seven edits and accepted the seventh, the known gap; that does not show it catches every variant of those kinds or that the gap is the only one it misses, so any other edit is untested. It checks the compiled configuration and the skill text only: it makes no model call and says nothing about how the agent behaves in a conversation. Writing the suite from the task text before seeing any candidate is the procedure the pack teaches; no record shows this one followed it.
 
 ## In class
 

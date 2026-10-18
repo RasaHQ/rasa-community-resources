@@ -13,7 +13,7 @@ Say, in your words:
       python measure.py intervals 4
 
   The row `4  1.00 to 1.00  0.51 to 1.00` is four passes in four runs: the simple interval says 1.00 to 1.00, the Wilson interval says 0.51 to 1.00. Four clean runs do not show a high pass rate.
-- Say that nothing today runs against a live model.
+- Say the opening line you chose in `FACILITATOR.md` ("What this session does not show"): no live run, or one live coding-agent run and nothing else.
 
 Participants: with their partner, answer "Who can edit the check in your team's agent workflow today?" No answer is collected.
 
