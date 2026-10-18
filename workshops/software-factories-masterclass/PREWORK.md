@@ -8,7 +8,7 @@ Subject: Before Thursday 22 October: 15 minutes, once, on the laptop you will br
 
 Please do this once before the session, with a normal internet connection. It downloads about 750 MB. In the room we will not do it.
 
-1. Install `git` and `uv` if you do not have them, and use Python 3.11 or newer.
+1. Install `git` and `uv` if you do not have them, and use Python 3.11 or 3.12.
 2. Clone the repository: `git clone https://github.com/RasaHQ/rasa-community-resources` and note the commit shown by `git log -1`. [Operator: replace with the exact commit participants should use.]
 3. In `workshops/software-factories-masterclass/factory`, run `uv sync --frozen`.
 4. Run `uv run python factory.py tasks/a1-block-card.json candidates/block-card-good runs/check`. You should see `ACCEPT - protected acceptance passed`.
