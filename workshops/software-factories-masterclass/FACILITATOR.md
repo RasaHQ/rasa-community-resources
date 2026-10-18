@@ -2,7 +2,7 @@
 
 Thursday 22 October 2026, 14:30 to 17:30 London time (13:30 to 16:30 UTC), in person, three hours. You are the facilitator and this is your script. The one-page version for the table is `FACILITATOR-CARD.md`.
 
-Status: DRAFT 2026-10-18. The author ran every command below once, in order, on a Mac, with the pinned environment (`rasa-pro` 3.21.0.dev5), and the outputs match what the script says. That run was the author's, not yours: rehearse it on your own machine ("Before the day"). The author did not run the profrod.ai lessons in the room's setting, did not run a live model and did not test the pre-synced copy on a second machine.
+Status: DRAFT 2026-10-18. The author ran every command below, in order, on a Mac, twice through `factory/rehearse.py` (27 of 27 steps matched both times, 80 to 100 seconds in all), with the pinned environment (`rasa-pro` 3.21.0.dev5), and the outputs match what the script says. That run was the author's, not yours: rehearse it on your own machine ("Before the day"). The author did not run the profrod.ai lessons in the room's setting, did not run a live model and did not test the pre-synced copy on a second machine.
 
 The room is unknown: 5 to 40 people, so everything is done in pairs or small groups of up to four. With 5 people it is one table; with 40 it is ten tables, and you work the room, not the screen.
 
@@ -25,7 +25,8 @@ Do these on the machine and network you will use, at least a day before.
 - [ ] Clone this repository and note the commit. Participants use that commit. There is no zip.
 - [ ] From `workshops/software-factories-masterclass/factory/`: `uv sync --frozen`, then `uv run python factory.py tasks/a1-block-card.json candidates/block-card-good runs/check`. Expect ACCEPT. (The author's four-factory-run block took 82 seconds including the first import.)
 - [ ] `uv sync` downloads about 750 MB. Do not do it in class. Bring a pre-synced copy of the cloned folder, including `factory/.venv`, on two USB drives. A venv is tied to the operating system and Python of the machine that made it: test the copy on a spare laptop of each kind that will be in the room, and where it fails, have those people sync at home or pair up.
-- [ ] Rehearse every command in the run-of-show once, in order, and write down the time each took.
+- [ ] Rehearse: from `factory/`, `uv run python rehearse.py`. It runs the commands of every block except the two profrod.ai ones, offline, and prints the time and result of each block. It exits 0 only if all 27 steps match. Run it on the machine you will present from, and keep the printout.
+- [ ] Read `PREWORK.md`, the draft of the message participants get beforehand. It is yours to send or change.
 - [ ] Print `FACILITATOR-CARD.md`, one copy for you and one for each table.
 - [ ] Decide the fallback in advance (see "If something fails").
 
@@ -35,7 +36,7 @@ Do these on the machine and network you will use, at least a day before.
 | --- | --- |
 | Laptops | Every pair has at least one laptop with the pre-synced folder and a terminal. People without one pair up. |
 | Python and uv | `uv --version` works; Python 3.11 or newer. |
-| wifi | No block needs it if the folder is pre-synced. Test it anyway, then do not depend on it. |
+| wifi | No block needs it once the repository is cloned and synced: the two opening blocks have an offline version (`OFFLINE-OPENING.md`). Test it anyway, then do not depend on it. |
 | Projector | Terminal font large enough for the back row. |
 | Power | Strips for the number of laptops. |
 | Spare laptop | One, pre-synced, to take over a pair whose machine fails. |
@@ -64,14 +65,14 @@ All times London. "Say" is what you say, in your words; "Show" is what is on the
 ### 14:30 Why a factory needs a grader the builder cannot edit (10 min)
 
 - Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Nothing today runs against a live model; the vendor agent is a stub.
-- Show: profrod.ai, course "Towards Dark Software Factories", Lesson 1.
-- Do: Answer the lesson's one checkpoint with your partner.
+- Show: profrod.ai, course "Towards Dark Software Factories", Lesson 1, if the room is online. Offline: `OFFLINE-OPENING.md`, 14:30 section, which needs no network.
+- Do: Answer the one question in the offline page, or the lesson's checkpoint, with your partner.
 
 ### 14:40 The loop on a toy (20 min)
 
 - Say: A defect the agent's own tests missed is the whole course in one run.
-- Show: profrod.ai Lesson 2 and its three commands.
-- Do: Pairs run the three commands in the lesson; they print ACCEPT, REJECT, REJECT.
+- Show: profrod.ai Lesson 2 and its three commands, if the room is online. Offline: the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository.
+- Do: Pairs run the commands; they print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT.
 - If a pair is stuck: the lesson's NOT_READY message names the cause, almost always Python or the environment. Read it aloud.
 
 ### 15:00 Mantle as the product, the engine as the grader (30 min)
