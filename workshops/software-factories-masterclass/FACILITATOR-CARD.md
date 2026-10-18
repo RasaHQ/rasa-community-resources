@@ -5,7 +5,7 @@ In person, 5 to 40 people, pairs or groups of up to four. Offline: nothing runs 
 | Clock | Block | One line to say | Pairs do |
 | --- | --- | --- | --- |
 | 14:30 | Why a grader the builder cannot edit | The evaluation is the only review in a dark factory | Answer the Lesson 1 checkpoint |
-| 14:40 | A forged pass fools the first factory and is rejected by the second | A defect the agent's own tests missed is the whole course | Lesson 2: ACCEPT, REJECT, REJECT |
+| 14:40 | A forged pass fools the first factory and is rejected by the second | A defect the agent's own tests missed is the whole course | Offline toy loop: ACCEPT, REJECT, ACCEPT (first factory fooled), REJECT (second factory) |
 | 15:00 | Mantle as product, engine as grader | The engine reported nothing and the gate was gone | `factory.py` on good + 3 silent-gate candidates; `show_gate.py` |
 | 15:30 | Break | | |
 | 15:40 | Vendor agent behind a tool boundary | The vendor's answer is advice; the write waits for a person | `openai-mcp/`: `experiments.py`, `grade_variants.py`; predict, then compare |

@@ -2,7 +2,7 @@
 
 Thursday 22 October 2026, 14:30 to 17:30 London time (13:30 to 16:30 UTC), in person, three hours. You are the facilitator and this is your script. The one-page version for the table is `FACILITATOR-CARD.md`.
 
-Status: DRAFT 2026-10-18. The author ran every command below, in order, on a Mac, twice through `factory/rehearse.py` (27 of 27 steps matched both times, 80 to 100 seconds in all), with the pinned environment (`rasa-pro` 3.21.0.dev5), and the outputs match what the script says. That run was the author's, not yours: rehearse it on your own machine ("Before the day"). The author did not run the profrod.ai lessons in the room's setting, did not run a live model and did not test the pre-synced copy on a second machine.
+Status: DRAFT 2026-10-18. The author ran every command below, in order, on a Mac, through `factory/rehearse.py` (27 of 27 steps matched, each on both its output and its exit status, 80 to 100 seconds in all; `--self-check` shows a wrong exit status or wrong output fails a step), with the pinned environment (`rasa-pro` 3.21.0.dev5), and the outputs match what the script says. That run was the author's, not yours: rehearse it on your own machine ("Before the day"). The author did not run the profrod.ai lessons in the room's setting, did not run a live model and did not test the pre-synced copy on a second machine.
 
 The room is unknown: 5 to 40 people, so everything is done in pairs or small groups of up to four. With 5 people it is one table; with 40 it is ten tables, and you work the room, not the screen.
 
@@ -25,7 +25,7 @@ Do these on the machine and network you will use, at least a day before.
 - [ ] Clone this repository and note the commit. Participants use that commit. There is no zip.
 - [ ] From `workshops/software-factories-masterclass/factory/`: `uv sync --frozen`, then `uv run python factory.py tasks/a1-block-card.json candidates/block-card-good runs/check`. Expect ACCEPT. (The author's four-factory-run block took 82 seconds including the first import.)
 - [ ] `uv sync` downloads about 750 MB. Do not do it in class. Bring a pre-synced copy of the cloned folder, including `factory/.venv`, on two USB drives. A venv is tied to the operating system and Python of the machine that made it: test the copy on a spare laptop of each kind that will be in the room, and where it fails, have those people sync at home or pair up.
-- [ ] Rehearse: from `factory/`, `uv run python rehearse.py`. It runs the commands of every block except the two profrod.ai ones, offline, and prints the time and result of each block. It exits 0 only if all 27 steps match. Run it on the machine you will present from, and keep the printout.
+- [ ] Rehearse: from `factory/`, `uv run python rehearse.py`. It runs the commands of every block in session order, offline (the two opening blocks as `OFFLINE-OPENING.md` teaches them, not the profrod.ai lessons), and prints the time and result of each block. A step passes only if its output and its exit status both match. `uv run python rehearse.py --self-check` proves that rule on stub commands. It exits 0 only if all 27 steps match. Run it on the machine you will present from, and keep the printout.
 - [ ] Read `PREWORK.md`, the draft of the message participants get beforehand. It is yours to send or change.
 - [ ] Print `FACILITATOR-CARD.md`, one copy for you and one for each table.
 - [ ] Decide the fallback in advance (see "If something fails").
