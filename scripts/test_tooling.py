@@ -39,7 +39,6 @@ if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
 import lint_repo  # noqa: E402
-import ci_projects  # noqa: E402
 from migrate_rasa_pro import (  # noqa: E402
     _apply_prerelease_setting,
     _replace_pin,
@@ -2445,92 +2444,6 @@ class TestFrozenConfigVersionRules(unittest.TestCase):
         with mock.patch.object(lint_repo, "discover_projects", return_value=[]), \
                 mock.patch.object(lint_repo, "_tracked_files", return_value=[project.path / "integrations.yml"]):
             self.assertTrue(lint_repo.check_api_key_env())
-
-
-class TestCIProjectSelection(unittest.TestCase):
-    def test_workflow_keeps_strict_gate_and_training_only_on_main_or_schedule(self):
-        workflow = (rasa_projects.REPO_ROOT / ".github/workflows/validate.yml").read_text()
-        full = workflow.split("\n  full-check:\n", 1)[1].split("\n  snapshots:\n", 1)[0]
-        self.assertIn("if: github.event_name == 'push' || github.event_name == 'schedule'", full)
-        self.assertIn("matrix:", full)
-        self.assertNotIn("name: ${{ matrix.project }}", full)
-        self.assertIn("--train --require-license --skip-sync", full)
-        self.assertEqual(workflow.count("--train"), 1)
-        self.assertIn("run: make validate STRICT=1", workflow)
-        self.assertIn('run: python scripts/ci_projects.py >> "$GITHUB_OUTPUT"', workflow)
-
-    def test_selection_respects_directory_boundaries_and_literal_names(self):
-        projects = ["examples/a", "examples/a-more", "patterns/a.b", "tutorials/multi/rasa"]
-        self.assertEqual(ci_projects.select_projects(projects, [
-            "examples/a-more/README.md", "patterns/axb/README.md",
-            "tutorials/multi/rasa/flows/a.yml",
-        ]), ["examples/a-more", "tutorials/multi/rasa"])
-        self.assertEqual(ci_projects.select_projects(projects, ["README.md"]), [])
-        self.assertEqual(ci_projects.select_projects(projects, None), projects)
-
-    def test_real_merge_base_diff_selects_both_tiers_but_not_base_only_changes(self):
-        with FakeRepo() as repo, mock.patch.object(ci_projects, "REPO_ROOT", repo.root):
-            repo.project("examples/changed")
-            repo.project("examples/base-only")
-            repo.project("heroes/wave-01-test/projects/snapshot")
-            def git(*args):
-                return subprocess.run(["git", *args], cwd=repo.root, check=True,
-                                      capture_output=True, text=True).stdout.strip()
-            git("init", "-q")
-            git("config", "user.name", "CI test")
-            git("config", "user.email", "ci@example.invalid")
-            git("add", ".")
-            git("commit", "-qm", "base")
-            base = git("rev-parse", "HEAD")
-            git("checkout", "-qb", "upstream")
-            (repo.root / "examples/base-only/README.md").write_text("base advanced")
-            git("commit", "-qam", "upstream only")
-            git("update-ref", "refs/remotes/origin/main", "HEAD")
-            git("checkout", "-qb", "topic", base)
-            (repo.root / "examples/changed/README.md").write_text("changed")
-            (repo.root / "heroes/wave-01-test/projects/snapshot/new file.txt").write_text("new")
-            git("add", ".")
-            git("commit", "-qm", "topic changes")
-            self.assertEqual(ci_projects.outputs("pull_request", "main"), {
-                "projects": ["examples/changed"],
-                "snapshots": ["heroes/wave-01-test/projects/snapshot"],
-            })
-            self.assertEqual(len(ci_projects.outputs("push", "")["projects"]), 2)
-            self.assertEqual(len(ci_projects.outputs("schedule", "")["projects"]), 2)
-            with self.assertRaises(ValueError):
-                ci_projects.outputs("pull_request", "")
-            with self.assertRaises(subprocess.CalledProcessError):
-                ci_projects.outputs("pull_request", "missing")
-
-    def test_workflow_pr_loop_handles_empty_selection_and_propagates_failure(self):
-        workflow = (rasa_projects.REPO_ROOT / ".github/workflows/validate.yml").read_text()
-        job = workflow.split("\n  check:\n", 1)[1].split("\n  full-check:\n", 1)[0]
-        self.assertIn("if: github.event_name == 'pull_request'", job)
-        self.assertNotIn("--train", job)
-        self.assertNotIn("matrix:", job)
-        self.assertNotIn("secrets.", job)
-        script = job.split("        run: |\n", 1)[1]
-        script = "\n".join(line[10:] for line in script.splitlines())
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            (root / "scripts").mkdir()
-            (root / "bin").mkdir()
-            (root / "bin/python").symlink_to(sys.executable)
-            (root / "scripts/check_project.py").write_text(
-                "import sys\nprint(sys.argv[1:])\nraise SystemExit(1)\n"
-            )
-            env = os.environ | {"PATH": str(root / "bin") + os.pathsep + os.environ["PATH"],
-                                "GITHUB_STEP_SUMMARY": str(root / "summary")}
-            empty = subprocess.run(["bash", "-c", script], cwd=root,
-                                   env=env | {"PROJECTS": "[]"}, capture_output=True, text=True)
-            self.assertEqual(empty.returncode, 0, empty.stderr)
-            self.assertIn("No maintained projects touched.", empty.stdout)
-            failed = subprocess.run(["bash", "-c", script], cwd=root,
-                                    env=env | {"PROJECTS": '["examples/one", "examples/two"]'},
-                                    capture_output=True, text=True)
-            self.assertEqual(failed.returncode, 1, failed.stderr)
-            self.assertIn("examples/one", failed.stdout)
-            self.assertIn("examples/two", failed.stdout)
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ concurrency:
 jobs:
   validate:
     name: offline gate
+    timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -38,10 +39,10 @@ jobs:
 
       # Machine-readable findings for anything that wants to consume them.
       - name: lint report
-        if: always()
+        if: always() && github.event_name != 'pull_request'
         run: python scripts/lint_repo.py --json > lint-report.json || true
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
+        if: always() && github.event_name != 'pull_request'
         with:
           name: lint-report
           path: lint-report.json
@@ -75,73 +76,33 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
   discover:
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     name: discover projects
     runs-on: ubuntu-latest
     outputs:
       projects: ${{ steps.list.outputs.projects }}
       snapshots: ${{ steps.list.outputs.snapshots }}
     steps:
-      # Full history: selecting which frozen snapshots a pull request touched
-      # needs a real merge base to diff against.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - id: list
-        env:
-          BASE_REF: ${{ github.base_ref }}
-        run: python scripts/ci_projects.py >> "$GITHUB_OUTPUT"
-
-  check:
-    # A static job name also gives documentation-only PRs a successful empty
-    # selection, rather than GitHub displaying an unevaluated matrix name.
-    name: touched maintained projects
-    if: github.event_name == 'pull_request'
-    needs: [validate, discover]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-        with:
-          enable-cache: true
-      - name: check touched projects without training
-        env:
-          PROJECTS: ${{ needs.discover.outputs.projects }}
         run: |
           set -euo pipefail
-          PROJECT_PATHS=()
-          while IFS= read -r project; do
-            PROJECT_PATHS+=("$project")
-          done < <(
-            printf '%s' "$PROJECTS" |
-              python -c 'import json,sys; [print(p) for p in json.load(sys.stdin)]'
-          )
-          if [ "${#PROJECT_PATHS[@]}" -eq 0 ]; then
-            echo "No maintained projects touched."
-            echo "No maintained projects touched." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          failed=0
-          for project in "${PROJECT_PATHS[@]}"; do
-            echo "::group::${project}"
-            if ! python scripts/check_project.py "$project"; then
-              failed=1
-              echo "::error::${project} failed its project check"
-            fi
-            echo "::endgroup::"
-          done
-          exit "$failed"
+          to_json() {
+            python -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'
+          }
 
-  full-check:
-    # All maintained projects and licensed training belong to main/schedule.
-    # Keep the default job name: a skipped PR job must not expose a literal
-    # matrix expression when GitHub never expands that matrix.
+          # Project installs and training run on main/schedule only.
+          printf 'projects=' >> "$GITHUB_OUTPUT"
+          python scripts/list_projects.py --paths-only | to_json >> "$GITHUB_OUTPUT"
+          printf 'snapshots=' >> "$GITHUB_OUTPUT"
+          python scripts/list_projects.py --scope snapshots --paths-only | to_json >> "$GITHUB_OUTPUT"
+
+  check:
     if: github.event_name == 'push' || github.event_name == 'schedule'
+    name: ${{ matrix.project }}
     needs: [validate, discover]
     runs-on: ubuntu-latest
     strategy:
@@ -184,6 +145,7 @@ jobs:
             --train --require-license --skip-sync
 
   snapshots:
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     # One job that loops, rather than a matrix over wave projects.
     #
     # `heroes/` is empty until the first cohort lands, and an empty matrix does
