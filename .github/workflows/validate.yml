@@ -139,8 +139,9 @@ jobs:
 
   full-check:
     # All maintained projects and licensed training belong to main/schedule.
+    # Keep the default job name: a skipped PR job must not expose a literal
+    # matrix expression when GitHub never expands that matrix.
     if: github.event_name == 'push' || github.event_name == 'schedule'
-    name: ${{ matrix.project }}
     needs: [validate, discover]
     runs-on: ubuntu-latest
     strategy:

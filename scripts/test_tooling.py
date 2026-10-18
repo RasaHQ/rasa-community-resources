@@ -2453,6 +2453,7 @@ class TestCIProjectSelection(unittest.TestCase):
         full = workflow.split("\n  full-check:\n", 1)[1].split("\n  snapshots:\n", 1)[0]
         self.assertIn("if: github.event_name == 'push' || github.event_name == 'schedule'", full)
         self.assertIn("matrix:", full)
+        self.assertNotIn("name: ${{ matrix.project }}", full)
         self.assertIn("--train --require-license --skip-sync", full)
         self.assertEqual(workflow.count("--train"), 1)
         self.assertIn("run: make validate STRICT=1", workflow)
