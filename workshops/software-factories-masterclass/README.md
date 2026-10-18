@@ -60,7 +60,7 @@ exercise runs in a copy of the project; a copied folder is not a sandbox.
 |---|---|
 | `factory/` | The factory, its tasks, protected acceptance suites, candidates, units and recorded agent runs. `factory/README.md` lists each part |
 | `openai-mcp/` | An optional offline exercise: an OpenAI agent behind an MCP server that a Mantle skill imports, graded by a protected suite. The reviewer is a stub; the OpenAI path and everything needing a key or licence has not run. `openai-mcp/README.md` says what it shows and what it does not |
-| `FACILITATOR.md` | Agenda by the clock, preparation checklist, hard parts, what not to claim afterwards. Placeholders for date, room, headcount and level |
+| `FACILITATOR.md`, `FACILITATOR-CARD.md` | The facilitator's script for the 22 October 2026 session (timed run of show, what to say, show and do, room checklist, fallbacks, what not to claim) and a one-page card |
 
 ## Pin
 
