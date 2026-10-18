@@ -60,7 +60,12 @@ exercise runs in a copy of the project; a copied folder is not a sandbox.
 |---|---|
 | `factory/` | The factory, its tasks, protected acceptance suites, candidates, units and recorded agent runs. `factory/README.md` lists each part |
 | `openai-mcp/` | An optional offline exercise: an OpenAI agent behind an MCP server that a Mantle skill imports, graded by a protected suite. The reviewer is a stub; the OpenAI path and everything needing a key or licence has not run. `openai-mcp/README.md` says what it shows and what it does not |
-| `FACILITATOR.md` | Agenda by the clock, preparation checklist, hard parts, what not to claim afterwards. Placeholders for date, room, headcount and level |
+| `OFFLINE-OPENING.md`, `PREWORK.md`, `factory/rehearse.py` | The two opening blocks without a network, a draft pre-work message for the operator to send, and a script that rehearses the session's commands offline and times each block |
+| `FACILITATOR.md`, `FACILITATOR-CARD.md` | The facilitator's script for the 22 October 2026 session (timed run of show, what to say, show and do, room checklist, fallbacks, what not to claim) and a one-page card |
+
+## Which Mantle the pack was checked against
+
+Every Mantle behavior in this pack (`agent.yml`, skills, `import_tools`, `tool_constraints`, `requires_confirmation`, `mcp_servers`, `responses`) was observed by running the pinned `rasa-pro==3.21.0.dev5` engine on the pack's own projects. The author did not check these primitives against Rasa's documentation for a release. Where documentation and the engine differ, the engine build named here is what the pack describes.
 
 ## Pin
 
