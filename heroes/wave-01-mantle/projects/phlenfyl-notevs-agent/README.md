@@ -105,7 +105,7 @@ https://console.groq.com/docs/models for whatever's current and confirm
 it supports tool calling well — this agent's entire job is calling tools
 correctly; `reasoning_effort: none` turns off this model's default
 thinking mode, which otherwise leaks its reasoning trace into chat
-replies), OpenAI `gpt-4o-mini`, Anthropic `claude-3-5-haiku-20241022`.
+replies), OpenAI `gpt-4o-mini`, Anthropic `claude-haiku-4-5-20251001`.
 
 ## Running this project
 
