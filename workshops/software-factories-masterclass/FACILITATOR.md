@@ -66,13 +66,13 @@ All times London. "Say" is what you say, in your words; "Show" is what is on the
 
 - Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Then say the opening line you chose in "What this session does not show".
 - Show: the 14:30 section of `OFFLINE-OPENING.md`, online or not. profrod.ai Lesson 1 is background reading for the same idea.
-- Do: Answer the one question in the offline page, or the lesson's checkpoint, with your partner.
+- Do: Answer the one question in the offline page with your partner.
 
 ### 14:40 A forged pass fools the first factory and is rejected by the second (20 min)
 
-- Say: A defect the agent's own tests missed is the whole course in one run.
+- Say: The forged pass you are about to run is constructed for this exercise; it is not an agent's work. The case it stands for, a defect the agent's own tests missed, is the one in the profrod.ai background lesson, and it is the whole course in one run.
 - Run the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository, online or not. They print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT. This is the only exercise run in the room; profrod.ai Lesson 2 is a different exercise with its own steps and is background reading, not part of this block.
-- If a pair is stuck: the lesson's NOT_READY message names the cause, almost always Python or the environment. Read it aloud.
+- If a pair is stuck: the NOT_READY message in the terminal names the cause, almost always Python or the environment. Read it aloud.
 
 ### 15:00 The engine reports nothing when a confirmation gate has silently disappeared (30 min)
 

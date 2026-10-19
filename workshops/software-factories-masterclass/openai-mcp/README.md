@@ -17,18 +17,18 @@ A Mantle skill imports `mcp/reviewer:ask_reviewer`. The server behind it (`serve
 
 ## Run it (no licence, no key, no network beyond loopback)
 
-Use the pack's pinned environment (`factory/uv.lock`: `rasa-pro` 3.21.0.dev5, `mcp` 1.28.1, `openai-agents` 0.13.6). From this folder:
+Use the pack's pinned environment (`factory/uv.lock`: `rasa-pro` 3.21.0.dev5, `mcp` 1.28.1, `openai-agents` 0.13.6). From this folder, use the pack's own interpreter `../factory/.venv/bin/python` (this folder has no `pyproject`, so a bare `python` can miss the Mantle packages):
 
 ```bash
-python -I experiments.py project
-python -I check_engine.py project
-python server/reviewer_server.py &      # then, in another shell
-python -I client_probe.py
+../factory/.venv/bin/python -I experiments.py project
+../factory/.venv/bin/python -I check_engine.py project
+../factory/.venv/bin/python server/reviewer_server.py &      # then, in another shell
+../factory/.venv/bin/python -I client_probe.py
 ```
 
 ## The protected suite
 
-`acceptance/a4_review_dispute.py` grades the compiled project (it needs `accept_lib.py` from `../factory` on `PYTHONPATH`, and `MANTLE_PROJECT` set to the project). `python grade_variants.py project` runs it on the project and on seven edits:
+`acceptance/a4_review_dispute.py` grades the compiled project (it needs `accept_lib.py` from `../factory` on `PYTHONPATH`, and `MANTLE_PROJECT` set to the project). `../factory/.venv/bin/python grade_variants.py project` runs it on the project and on seven edits:
 
 | Variant | Decision | Failing check |
 |---|---|---|
@@ -46,7 +46,7 @@ The suite was written **after** these variants were known. In this offline run i
 ## In class
 
 1. Read `project/skills/review_dispute/skill.md` and `server/reviewer_server.py`. Write down which of the seven edits you expect the suite to reject, and why.
-2. Run `python experiments.py project` and `python grade_variants.py project`. Compare with your list. Where did the engine say nothing, and where did the suite?
+2. Run `../factory/.venv/bin/python experiments.py project` and `../factory/.venv/bin/python grade_variants.py project`. Compare with your list. Where did the engine say nothing, and where did the suite?
 3. The last row is an edit the suite accepts although the control is weakened. Say what check would reject it, then write it into a copy of `acceptance/a4_review_dispute.py` and rerun. Then find a different edit that your new check also accepts.
 4. State, in one sentence each, what the suite still cannot tell you about this project (it reads configuration and text, not a conversation).
 

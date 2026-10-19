@@ -5,7 +5,7 @@ In person, 5 to 40 people, pairs or groups of up to four. Offline by default: no
 | Clock | Block | One line to say | Pairs do |
 | --- | --- | --- | --- |
 | 14:30 | A grader the builder cannot edit is the only review a dark factory has | In a dark factory the evaluation is the only review | Answer the question in `OFFLINE-OPENING.md` |
-| 14:40 | A forged pass fools the first factory and is rejected by the second | A defect the agent's own tests missed is the whole course | Offline toy loop: ACCEPT, REJECT, ACCEPT (first factory fooled), REJECT (second factory) |
+| 14:40 | A forged pass fools the first factory and is rejected by the second | The forgery is constructed here; the defect it stands for, one the agent's own tests missed, is the whole course in one run | Offline toy loop: ACCEPT, REJECT, ACCEPT (first factory fooled), REJECT (second factory) |
 | 15:00 | The engine reports nothing when a confirmation gate has silently disappeared | The engine reported nothing and the gate was gone | `factory.py` on good + 3 silent-gate candidates; `show_gate.py` |
 | 15:30 | Break | | |
 | 15:40 | A vendor agent's answer is advice, and the write that follows still waits for a person | You can grade the line after the vendor's answer, not the vendor | From `openai-mcp/`: `../factory/.venv/bin/python -I experiments.py project`, then `.../python grade_variants.py project`; predict, then compare |
