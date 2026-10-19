@@ -22,6 +22,13 @@ The host allocates one `TurnView` per authenticated conversation and calls
 the old display immediately. Each read carries a host-generated lease and exact
 operation/invocation binding. Older completions cannot overwrite a newer turn.
 An error on the current turn replaces the old card with an unavailable message.
+The authenticated host must allocate a unique invocation for each actual read,
+bind it to that conversation's governed original result, and prevent model input
+from supplying either reference. Equality against model-supplied IDs proves no
+provenance. The host's asynchronous read must honor cancellation and use bounded
+transport timeouts. Read plus validation share a nine-second budget, below the
+ten-second tool timeout; validation runs outside the event loop. Timeout or
+cancellation revokes the display lease, including for a late validation worker.
 
 The `show_connection_status` tool takes no model-supplied identifiers. Its
 authenticated host binds `Services` through `bind_services` for that turn.
@@ -45,6 +52,11 @@ are excluded. A refusal stops the read; never substitute another identity.
 `validate_bytes`, not the weaker exported JSON schema. Dependency adoption
 requires an approved exact Core revision/version and consumer qualification;
 these are **not yet supplied here**. A missing Core package fails closed.
+The scratch environment must include its owned `TMPDIR`. Validator stdout is
+read with a byte cap and a five-second deadline; only the bridge's explicit
+refusal marker together with its distinct exit code counts as a schema refusal.
+Missing scripts, process failures and timeouts are unavailable, never successful
+negative conformance cases.
 Rasa runs separately on Python 3.11–3.12; do not combine incompatible environments.
 
 No alternative schema validator is implemented. The consumer adds only its
@@ -60,6 +72,7 @@ The renderer uses a fixed template and escapes every value. Evidence is inert
 text, never a link or a fetch. All non-ASCII characters are displayed as literal
 escapes, including invisible characters. This intentionally limited pilot loses
 natural Unicode typography rather than duplicating Core's Unicode tables.
+ASCII controls and DEL are also shown as literal escapes.
 No returned HTML, CSS, JavaScript, SVG, commands or action references execute.
 Payloads, validator diagnostics, provider data and credentials are not logged.
 
@@ -81,8 +94,10 @@ integration. No fixture command accesses a provider or installs dependencies.
 
 1. Qualify the approved Core dependency and producer mapping on exact source.
    Run byte-level rejection fixtures through Core, plus consumer tests.
-2. Complete authenticated Mantle host/turn-container integration, dependency lock,
-   catalogue entry and normal full repository gates in the supported venue.
+2. Complete authenticated Mantle host/turn-container integration and normal full
+   repository gates in the supported venue. The committed catalogue entry marks
+   this pilot in progress; its lock uses exactly the sibling helpdesk example's
+   registry package names and versions, not a fresh dependency upgrade.
 3. Follow the Architect's owner-present sequence: council-cleared Broker flag
    read; normal pairing using its returned verification URL; owner creates the
    PoC application, grants one existing connection and assigns the device;

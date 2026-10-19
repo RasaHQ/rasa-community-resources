@@ -12,6 +12,8 @@ from typing import Awaitable, Callable
 
 from .turns import TurnView
 
+TURN_BUDGET_SECONDS = 9  # Below agent.yml tool_timeout=10, including validation.
+
 
 @dataclass(frozen=True)
 class RetainedRead:
@@ -29,13 +31,18 @@ async def show_current(
 ) -> dict[str, str]:
     """Use once for the current host turn; begin/clear also on non-tool turns."""
     turn = view.begin(operation, invocation)
-    try:
-        result = await asyncio.wait_for(read(), timeout=8)
+    async def complete():
+        result = await read()
         if (result.operation, result.invocation) != (operation, invocation):
             raise ValueError("producer_binding")
-        accepted = view.accept(
-            turn, result.envelope, retained_original=retained_original
+        return await asyncio.to_thread(
+            view.accept, turn, result.envelope, retained_original=retained_original
         )
+    try:
+        accepted = await asyncio.wait_for(complete(), timeout=TURN_BUDGET_SECONDS)
+    except asyncio.CancelledError:
+        view.fail(turn)
+        raise
     except Exception:
         view.fail(turn)
         accepted = False

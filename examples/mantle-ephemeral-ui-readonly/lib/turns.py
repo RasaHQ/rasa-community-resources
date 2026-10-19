@@ -34,7 +34,11 @@ def visible(value: object) -> str:
     This intentionally limited pilot displays Unicode as literal escapes rather
     than duplicating Core's pinned Unicode tables. It never creates links.
     """
-    return escape(str(value).encode("ascii", "backslashreplace").decode("ascii"))
+    text = str(value).encode("ascii", "backslashreplace").decode("ascii")
+    return escape("".join(
+        f"\\x{ord(char):02x}" if ord(char) < 32 or ord(char) == 127 else char
+        for char in text
+    ))
 
 
 def render_card(envelope: dict) -> str:
@@ -83,6 +87,8 @@ class TurnView:
     def fail(self, turn: Turn) -> None:
         with self._lock:
             if turn == self._turn:
+                # Revoke the lease so a timed-out validation thread cannot publish.
+                self._turn = None
                 self.html = UNAVAILABLE
 
     def accept(

@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from lib.core_process import CanonicalRefusal, CoreProcess
 
@@ -22,10 +23,31 @@ class ProcessBoundaryTests(unittest.TestCase):
 
     def test_explicit_refusal_is_distinct_from_runtime_failure(self):
         with self.assertRaises(CanonicalRefusal):
-            self.invoke("raise SystemExit(2)\n")
+            self.invoke("print('ZEO_UI_REFUSED_V1'); raise SystemExit(65)\n")
         with self.assertRaises(RuntimeError) as caught:
             self.invoke("raise SystemExit(1)\n")
         self.assertNotIsInstance(caught.exception, CanonicalRefusal)
+
+    def test_exit_code_alone_and_missing_bridge_are_unavailable(self):
+        for code in (2, 65):
+            with self.assertRaisesRegex(RuntimeError, "canonical_validator_unavailable"):
+                self.invoke(f"raise SystemExit({code})\n")
+        with tempfile.TemporaryDirectory() as directory:
+            validator = CoreProcess(
+                Path(sys.executable).resolve(), Path(directory) / "missing.py",
+                environment={"HOME": directory, "TMPDIR": directory},
+            )
+            with self.assertRaisesRegex(RuntimeError, "canonical_validator_unavailable"):
+                validator(b"fixture")
+
+    def test_stdout_cap_stops_an_unbounded_writer(self):
+        with self.assertRaisesRegex(RuntimeError, "canonical_validator_output_bound"):
+            self.invoke("import os\nwhile True: os.write(1, b'x' * 65536)\n")
+
+    def test_bridge_timeout_is_unavailable_not_refusal(self):
+        with patch("lib.core_process.VALIDATION_TIMEOUT_SECONDS", 0.05):
+            with self.assertRaisesRegex(RuntimeError, "canonical_validator_timeout"):
+                self.invoke("import time; time.sleep(10)\n")
 
     def test_invalid_normalized_output_is_not_a_schema_refusal(self):
         with self.assertRaises(ValueError) as caught:

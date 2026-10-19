@@ -20,7 +20,10 @@ def main() -> int:
         sys.stdout.write(result.model_dump_json(by_alias=True, exclude_unset=True))
         return 0
     except UiRefused:
-        return 2
+        # Python itself can exit 2 for a missing script. Require a bridge marker
+        # as well as a distinct code before reporting a canonical refusal.
+        sys.stdout.write("ZEO_UI_REFUSED_V1\n")
+        return 65
     except Exception:
         # Never print provider data, raw payloads, credentials or error values.
         return 1

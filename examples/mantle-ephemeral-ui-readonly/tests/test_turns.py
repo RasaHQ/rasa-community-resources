@@ -5,6 +5,8 @@ from copy import deepcopy
 from datetime import datetime, timezone
 import json
 import unittest
+import threading
+from unittest.mock import patch
 
 from lib.mantle_adapter import RetainedRead, show_current
 from lib.turns import MAX_BYTES, Refused, TurnView, UNAVAILABLE
@@ -112,6 +114,9 @@ class ConsumerTests(unittest.TestCase):
         changed["in_reply_to"]["invocation"] = "other"
         cases.append(changed)
         changed = fixture()
+        changed["in_reply_to"]["operation"] = "other"
+        cases.append(changed)
+        changed = fixture()
         changed["components"][0]["kind"] = "table"
         cases.append(changed)
         changed = fixture()
@@ -127,7 +132,7 @@ class ConsumerTests(unittest.TestCase):
                 self.assertEqual(view.html, UNAVAILABLE)
 
     def test_old_missing_expired_or_misbound_source_snapshot_is_unavailable(self):
-        for change in ["old", "missing", "expired", "wrong"]:
+        for change in ["old", "missing", "expired", "wrong", "kind"]:
             value = fixture()
             card = value["components"][0]
             if change == "old":
@@ -136,6 +141,8 @@ class ConsumerTests(unittest.TestCase):
                 del card["snapshot"]
             elif change == "expired":
                 card["snapshot"]["expires_at"] = "2026-10-19T10:00:00Z"
+            elif change == "kind":
+                card["snapshot"]["source"]["kind"] = "other"
             else:
                 card["snapshot"]["source"]["ref"] = "other-invocation"
             view = TurnView(FixtureValidationDouble(value))
@@ -171,6 +178,45 @@ class ConsumerTests(unittest.TestCase):
         self.assertIn("&lt;img", view.html)
         self.assertIn("\\u202e", view.html)
         self.assertNotIn("<a ", view.html)
+
+    def test_attribute_quotes_and_ascii_controls_are_visible_inert_text(self):
+        value = fixture()
+        value["components"][0]["accessibility_label"] = '\" onmouseover=\"bad\x00\x1b\x7f'
+        view = TurnView(FixtureValidationDouble(value))
+        self.assertTrue(self.accept(view))
+        self.assertIn('&quot; onmouseover=&quot;bad\\x00\\x1b\\x7f', view.html)
+        for char in ('\x00', '\x1b', '\x7f'):
+            self.assertNotIn(char, view.html)
+
+    def test_validation_does_not_block_loop_or_publish_after_total_timeout(self):
+        release = threading.Event()
+        started = threading.Event()
+        value = fixture()
+        value["produced_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        value["components"][0]["snapshot"]["observed_at"] = value["produced_at"]
+        def validate(_raw):
+            started.set()
+            release.wait(timeout=1)
+            return value
+        view = TurnView(validate)
+        async def read():
+            return RetainedRead(OPERATION, "fixture-invocation", b"fixture")
+        async def check():
+            try:
+                with patch("lib.mantle_adapter.TURN_BUDGET_SECONDS", 0.05):
+                    task = asyncio.create_task(show_current(
+                        view, OPERATION, "fixture-invocation", read, lambda *_: True
+                    ))
+                    await asyncio.sleep(0.02)
+                    self.assertTrue(started.is_set())
+                    self.assertFalse(release.is_set())  # Event loop still ran.
+                    self.assertEqual(await task, {"status": "unavailable"})
+                    self.assertEqual(view.html, UNAVAILABLE)
+            finally:
+                release.set()
+            await asyncio.sleep(0.02)
+            self.assertEqual(view.html, UNAVAILABLE)  # Late worker has no lease.
+        asyncio.run(check())
 
     def test_failed_read_clears_card_and_does_not_retry(self):
         view = TurnView(FixtureValidationDouble())
