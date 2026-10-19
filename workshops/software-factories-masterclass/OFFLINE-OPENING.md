@@ -1,6 +1,6 @@
 # Offline opening: the 14:30 and 14:40 blocks without profrod.ai
 
-The first two blocks of `FACILITATOR.md` point to profrod.ai, which needs a network. This page replaces them when the room has none, or when you would rather not depend on it. Everything here runs from this repository after `uv sync --frozen`. Nothing runs against a live model.
+The first two blocks of `FACILITATOR.md` run from this page, with or without a network. profrod.ai Lessons 1 and 2 cover the same ideas with different exercises; they are background reading, not part of these blocks. Everything here runs from this repository after `uv sync --frozen`. Nothing runs against a live model.
 
 ## 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
 
@@ -13,7 +13,7 @@ Say, in your words:
       python measure.py intervals 4
 
   The row `4  1.00 to 1.00  0.51 to 1.00` is four passes in four runs: the simple interval says 1.00 to 1.00, the Wilson interval says 0.51 to 1.00. Four clean runs do not show a high pass rate.
-- Say that nothing today runs against a live model.
+- Say the opening line you chose in `FACILITATOR.md` ("What this session does not show"): no live run, or one live coding-agent run and nothing else.
 
 Participants: with their partner, answer "Who can edit the check in your team's agent workflow today?" No answer is collected.
 

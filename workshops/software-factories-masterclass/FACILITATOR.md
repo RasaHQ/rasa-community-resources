@@ -4,11 +4,11 @@ Thursday 22 October 2026, 14:30 to 17:30 London time (13:30 to 16:30 UTC), in pe
 
 Status: DRAFT 2026-10-18. The author ran every command below, in order, on a Mac, through `factory/rehearse.py` (27 of 27 steps matched, 80 to 100 seconds in all; each step checks its output and its exit status, and the steps that state a landing line also check it; `--self-check` runs stub commands to show that a wrong exit status, wrong output, a weakened variant table or a RAISED line fails a step), with the pinned environment (`rasa-pro` 3.21.0.dev5), and the outputs match what the script says. That run was the author's, not yours: rehearse it on your own machine ("Before the day"). The author did not run the profrod.ai lessons in the room's setting, did not run a live model and did not test the pre-synced copy on a second machine.
 
-The room is unknown: 5 to 40 people, so everything is done in pairs or small groups of up to four. With 5 people it is one table; with 40 it is ten tables, and you work the room, not the screen.
+The room is unknown: 5 to 40 people, so everything is done in pairs or small groups of up to four. With 5 people, sit them at one table but work as a pair and a group of three; with 40, ten tables of up to four. You work the room, not the screen.
 
 ## What the room leaves with
 
-1. A factory they ran: a task, an isolated change, a protected check, a decision (`factory/factory.py`). The method is profrod.ai Lessons 1 and 2.
+1. A factory they ran: a task, an isolated change, a protected check, a decision (`factory/factory.py`). The method is the one in profrod.ai Lessons 1 and 2, run here with this pack's own commands.
 2. One failure no test of their own would catch: a Mantle confirmation gate that compiles away with no engine finding (`factory/show_gate.py`).
 3. A vendor agent behind a tool boundary: its answer is advice, and the write that follows still waits for a person (`openai-mcp/`). The vendor in the room is a stub.
 4. A coding agent's work, read and judged, from the 18 recorded runs.
@@ -16,7 +16,7 @@ The room is unknown: 5 to 40 people, so everything is done in pairs or small gro
 
 ## What this session does not show
 
-No live model call, no OpenAI call and no Mantle conversation is part of the plan. Every check reads what the engine compiles from project files. If a live run is done in the room, say so and say that it is one run. Say this out loud in the first ten minutes: "Nothing today runs against a live model. The vendor agent is a stub."
+No live model call, no OpenAI call and no Mantle conversation is part of the plan. Every check reads what the engine compiles from project files. Decide before the day whether you will do the optional live coding-agent run at 16:10 (the plan does not need it). Then say one of these out loud in the first ten minutes: if there is no live run, "Nothing today runs against a live model. The vendor agent is a stub." If you will do the live run, "One run today uses a live coding agent, and I will say when. Nothing else runs against a live model. The vendor agent is a stub." At 17:25 say the matching closing line (see that block). A live run is one run.
 
 ## Before the day
 
@@ -64,15 +64,14 @@ All times London. "Say" is what you say, in your words; "Show" is what is on the
 
 ### 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
 
-- Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Nothing today runs against a live model; the vendor agent is a stub.
-- Show: profrod.ai, course "Towards Dark Software Factories", Lesson 1, if the room is online. Offline: `OFFLINE-OPENING.md`, 14:30 section, which needs no network.
+- Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Then say the opening line you chose in "What this session does not show".
+- Show: the 14:30 section of `OFFLINE-OPENING.md`, online or not. profrod.ai Lesson 1 is background reading for the same idea.
 - Do: Answer the one question in the offline page, or the lesson's checkpoint, with your partner.
 
 ### 14:40 A forged pass fools the first factory and is rejected by the second (20 min)
 
 - Say: A defect the agent's own tests missed is the whole course in one run.
-- Show: profrod.ai Lesson 2 and its three commands, if the room is online. Offline: the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository.
-- Do: Pairs run the commands; they print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT.
+- Run the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository, online or not. They print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT. This is the only exercise run in the room; profrod.ai Lesson 2 is a different exercise with its own steps and is background reading, not part of this block.
 - If a pair is stuck: the lesson's NOT_READY message names the cause, almost always Python or the environment. Read it aloud.
 
 ### 15:00 The engine reports nothing when a confirmation gate has silently disappeared (30 min)
@@ -101,7 +100,7 @@ Walk the room. Fix any machine that did not run the previous block now.
   1. Write down which of the seven edits the suite will reject, and why.
   2. `../factory/.venv/bin/python -I experiments.py project`, then `../factory/.venv/bin/python grade_variants.py project`.
   3. Compare with your list. Where did the engine say nothing, and where did the suite?
-- Land it: six edits are REJECTED. The seventh, the confirmation question replaced by "Done.", is ACCEPTED, although the control is weakened. The suite was written after these edits were known, so it catches them and no others. Ask each pair: what check would reject it?
+- Land it: six edits are REJECTED. The seventh, the confirmation question replaced by "Done.", is ACCEPTED, although the control is weakened. The suite was written after these edits were known. Here it rejected six and accepted the seventh. That does not show it catches every edit of those kinds, nor that the seventh is the only one it accepts: any other edit is untested. Ask each pair: what check would reject it?
 - Stretch: write that check into a copy of `acceptance/a4_review_dispute.py` and rerun; then find a different edit it also accepts. There always is one.
 - The author's run of both commands took 23 seconds.
 
@@ -111,7 +110,7 @@ Walk the room. Fix any machine that did not run the previous block now.
 - Show: one recorded run, for example `agent-runs/claude-code-2026-10-15/claude-a1-block-card-1/`: the final message, the patch, the decision.
 - Do: Each pair reads a different recorded run (there are nine per agent, under `agent-runs/claude-code-2026-10-15/` and `agent-runs/codex-2026-10-15/`) and compares what the agent said with what the diff changed.
 - Say: all 18 recorded runs were accepted. Do not promise the room a failure.
-- Optional, only if a live run is available and you decide to: one run of a coding agent on task A1 in front of the room, once. It is one run and says nothing about a rate. The plan does not need it.
+- Optional, only if a live run is available and you decide to: one run of a coding agent on task A1 in front of the room, once. It is one run and says nothing about a rate. The plan does not need it. If you do it, you have chosen the "live run" opening and closing lines; if you do not, the "no live run" ones.
 
 ### 16:40 Break (10 min)
 
@@ -154,7 +153,7 @@ Walk the room. Fix any machine that did not run the previous block now.
 
 ### 17:25 You leave knowing who may edit the check, where the engine is silent and why advice is not permission (5 min)
 
-- Say: Three things to take: the grader is not the builder's to edit; the engine can be silent where the gate is gone; the vendor's answer is advice. And what we did not do: we did not run a live model.
+- Say: Three things to take: the grader is not the builder's to edit; the engine can be silent where the gate is gone; the vendor's answer is advice. And what we did not do. If there was no live run: "we did not run a live model." If you did the live coding-agent run: "we ran one live coding agent, once, and it says nothing about a rate." Either way: "the vendor agent was a stub."
 - Hand out: the repository link and the commit.
 
 ## If something fails
