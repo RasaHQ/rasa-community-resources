@@ -91,6 +91,18 @@ class TurnView:
                 self._turn = None
                 self.html = UNAVAILABLE
 
+    def is_current(self, turn: Turn) -> bool:
+        with self._lock:
+            return turn == self._turn
+
+    def bind(self, turn: Turn, operation: str, invocation: str) -> Turn | None:
+        """Bind an actual reservation only if the clearing lease still owns the view."""
+        with self._lock:
+            if turn != self._turn:
+                return None
+            self._turn = Turn(secrets.token_hex(16), operation, invocation)
+            return self._turn
+
     def accept(
         self,
         turn: Turn,

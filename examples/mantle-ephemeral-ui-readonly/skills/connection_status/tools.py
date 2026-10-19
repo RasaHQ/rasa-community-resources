@@ -10,6 +10,7 @@ from rasa.mantle.tools.result import ToolResult
 
 from lib.mantle_adapter import RetainedRead, show_current
 from lib.turns import TurnView
+from lib.worker_client import WorkerClient
 
 
 @dataclass(frozen=True)
@@ -21,11 +22,17 @@ class Services:
     retained_original: Callable[[str, str], bool]
 
 
-_services: ContextVar[Services | None] = ContextVar("readonly_ui_services", default=None)
+@dataclass(frozen=True)
+class WorkerServices:
+    view: TurnView
+    worker: WorkerClient
+
+
+_services: ContextVar[Services | WorkerServices | None] = ContextVar("readonly_ui_services", default=None)
 
 
 @contextmanager
-def bind_services(services: Services):
+def bind_services(services: Services | WorkerServices):
     """Host-only hook around a single authenticated Mantle turn; never memory."""
     token = _services.set(services)
     try:
@@ -39,6 +46,8 @@ async def show_connection_status() -> ToolResult:
     services = _services.get()
     if services is None:
         return ToolResult(llm_response={"status": "unavailable"})
+    if isinstance(services, WorkerServices):
+        return ToolResult(llm_response=await services.worker.show(services.view))
     status = await show_current(
         services.view, services.operation, services.invocation,
         services.read, services.retained_original,

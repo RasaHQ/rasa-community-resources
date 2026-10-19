@@ -12,6 +12,7 @@ import tempfile
 import time
 
 from .turns import MAX_BYTES, Refused
+from .budget import current_budget
 
 VALIDATION_TIMEOUT_SECONDS = 5
 
@@ -34,6 +35,9 @@ class CoreProcess:
         self._environment = dict(environment)
 
     def __call__(self, raw: bytes) -> dict:
+        budget = current_budget.get()
+        if budget is not None:
+            budget.remaining()
         if len(raw) > MAX_BYTES:
             raise Refused("response_bound")
         # A file bounds stdin without blocking on a child that never reads it.
@@ -48,14 +52,18 @@ class CoreProcess:
             )
             output = bytearray()
             deadline = time.monotonic() + VALIDATION_TIMEOUT_SECONDS
+            if budget is not None:
+                deadline = min(deadline, budget.deadline)
             try:
                 with selectors.DefaultSelector() as selector:
                     selector.register(process.stdout, selectors.EVENT_READ)
                     while selector.get_map():
+                        if budget is not None:
+                            budget.remaining()
                         remaining = deadline - time.monotonic()
                         if remaining <= 0:
                             raise RuntimeError("canonical_validator_timeout")
-                        for key, _ in selector.select(remaining):
+                        for key, _ in selector.select(min(remaining, 0.05)):
                             chunk = os.read(key.fileobj.fileno(), min(65536, MAX_BYTES + 1 - len(output)))
                             if not chunk:
                                 selector.unregister(key.fileobj)
@@ -63,7 +71,16 @@ class CoreProcess:
                             output.extend(chunk)
                             if len(output) > MAX_BYTES:
                                 raise RuntimeError("canonical_validator_output_bound")
-                process.wait(timeout=max(0.001, deadline - time.monotonic()))
+                while process.returncode is None:
+                    if budget is not None:
+                        budget.remaining()
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise RuntimeError("canonical_validator_timeout")
+                    try:
+                        process.wait(timeout=min(remaining, 0.05))
+                    except subprocess.TimeoutExpired:
+                        pass
             finally:
                 # Only our child process group, including any residual descendants.
                 try:

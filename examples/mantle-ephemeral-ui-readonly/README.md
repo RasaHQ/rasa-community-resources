@@ -47,6 +47,41 @@ are excluded. A refusal stops the read; never substitute another identity.
 
 ## Validation and rendering
 
+### Trusted worker client
+
+The authenticated host can bind `WorkerServices(view, worker)` with
+`bind_services`. `WorkerClient` consumes the producer's closed
+`zeoconnect.poc-worker/v1` pipe protocol. Its launcher and interpreter must be
+absolute host-owned, qualified paths; the launcher constructs the producer
+with the dedicated caller, session store and approved validator. This example
+does not supply those identities or a default launcher. Construct the client
+off the event loop, with an isolated environment, before a tool turn.
+
+Keep one `ConversationBudget` per authenticated conversation, including across
+worker replacement. It permits eight attempts in total and rejects invocation
+reuse. Do not create a fresh budget after failure. The client reserves the
+actual invocation before binding it to the cleared view, reads once, validates
+through Core and checks retention without another discovery request. The
+displayed facts name service, status and advertised operations; advertised
+operations are not application grants. There is no provider field or SDK upgrade.
+
+The worker path shares a seven-second monotonic deadline across reservation,
+read, consumer validation and retained-original lookup. Failure, cancellation
+or a superseding turn revokes the view lease, kills the owned worker process
+group (including its validator descendants) and reaps the direct worker. The separate consumer
+`CoreProcess` also observes that deadline and cancellation before reaping its
+own process group. Cleanup has a bounded grace period below the ten-second
+tool timeout. Arbitrary synchronous validators that ignore the budget are not
+supported. Call `worker.close()` when the conversation ends; call `view.begin`
+on every turn, including turns without a tool, to clear the previous card.
+The execution owner must independently verify final namespace quiescence;
+reaping a direct child alone is not that receipt.
+
+The subprocess fixtures test this client without importing the producer SDK,
+running the canonical Core schema or using a real grant. The qualified
+launcher, installed Core environment and authenticated conversation host still
+need receiving and native integration checks.
+
 `CoreProcess` runs `core_bridge.py` with an explicitly configured, owned Python
 3.14 interpreter and scratch environment. The bridge imports the actual Core
 `validate_bytes`, not the weaker exported JSON schema. The Architect selected exact Core commit
