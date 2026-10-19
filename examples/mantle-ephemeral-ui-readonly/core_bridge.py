@@ -9,7 +9,7 @@ import sys
 
 def main() -> int:
     try:
-        from zeo_core.contracts.ui.wire import UiRefused, validate_bytes
+        from zeo_core.contracts.ui import UiRefused, validate_bytes
 
     except Exception:
         return 1
