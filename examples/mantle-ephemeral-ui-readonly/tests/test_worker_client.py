@@ -1,6 +1,8 @@
 """Controlled private pipes, not SDK, Core conformance or live grants."""
 
 import asyncio
+import base64
+from contextlib import suppress
 import json
 import os
 from pathlib import Path
@@ -24,36 +26,41 @@ from datetime import datetime,timezone
 MODE = MODE_VALUE
 PAYLOAD = PAYLOAD_VALUE
 ROOT = ROOT_VALUE
-print('{"ok":true,"outcome":"ready","protocol":"zeoconnect.poc-worker/v1"}',flush=True)
+print(json.dumps({'ok':1 if MODE=='readyint' else True,'outcome':'ready','protocol':'zeoconnect.poc-worker/v1'}),flush=True)
 for line in __import__('sys').stdin:
     request=json.loads(line)
     with open(ROOT+'/requests','a') as log: log.write(request['method']+'\n')
     reply={'ok':True,'outcome':'completed'}
     if request['method']=='begin':
         if MODE=='slowbegin': time.sleep(3)
+        if MODE=='timed_valid': time.sleep(0.04)
         inv='fixture-invocation' if MODE=='reuse' else uuid.uuid4().hex
         reply.update(operation='zeoconnect.connections.list',invocation=inv)
     elif request['method']=='read':
         if MODE=='slowread': time.sleep(3)
         if MODE=='combined': time.sleep(0.08)
+        if MODE=='timed_valid': time.sleep(0.04)
         if MODE=='descendant':
             import subprocess,sys
             subprocess.Popen([sys.executable,'-c',"import time;time.sleep(.3);open("+repr(ROOT+'/late')+",'w').write('late')"])
             time.sleep(3)
         if MODE=='unbounded':
             while True: os.write(1,b'x'*65536)
-        if MODE=='duplicate':
-            print('{"ok":true,"ok":true,"outcome":"completed"}',flush=True);continue
         at=datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
         PAYLOAD['in_reply_to']['invocation']=inv
         PAYLOAD['produced_at']=at
         PAYLOAD['components'][0]['snapshot'].update(observed_at=at,source={'kind':'operation','ref':inv})
         reply.update(operation='zeoconnect.connections.list',invocation=inv if MODE!='wronginv' else 'wrong',
           envelope_base64='!' if MODE=='badbase64' else base64.b64encode(json.dumps(PAYLOAD).encode()).decode())
+        if MODE=='wrongop': reply['operation']='other.operation'
     elif request['method']=='contains':
         if MODE=='combined': time.sleep(0.10)
+        if MODE=='timed_valid': time.sleep(0.04)
         reply['retained']=1 if MODE=='badbool' else MODE!='missing'
-    print(json.dumps(reply),flush=True)
+    encoded=json.dumps(reply)
+    if MODE=='duplicate' and request['method']=='read':
+        encoded=encoded.replace('"ok": true','"ok": true, "ok": true',1)
+    print(encoded,flush=True)
 '''
 
 
@@ -82,8 +89,8 @@ class WorkerClientTests(unittest.TestCase):
         view.begin('non-tool', 'next')
         self.assertEqual(view.html, '')
 
-    def test_malformed_binding_duplicates_base64_and_boolean_refuse(self):
-        for mode in ('wronginv','duplicate','badbase64','badbool','missing','unbounded'):
+    def test_malformed_binding_or_retention_refuses(self):
+        for mode in ('wronginv','badbool','missing'):
             with self.subTest(mode=mode):
                 worker=self.client(mode);view=TurnView(json.loads)
                 self.assertEqual(asyncio.run(worker.show(view)), {'status':'unavailable'})
@@ -210,3 +217,165 @@ class WorkerClientTests(unittest.TestCase):
         self.assertIsInstance(caught.exception.failure,PermissionError)
         self.assertIs(caught.exception.owned_process,process)
         signal_call.assert_called_once();process.wait.assert_not_called()
+
+    def read_failure(self, mode, reason):
+        worker=self.client(mode)
+        budget=TurnBudget(time.monotonic()+5)
+        invocation=worker._begin(budget)
+        with self.assertRaisesRegex(ValueError, '^'+reason+'$'):
+            worker._read(invocation,budget)
+
+    def test_duplicate_key_in_otherwise_exact_read_reply(self):
+        # The reply contains every correct read field, and differs only by
+        # a second identical ok key. Without the duplicate guard it is valid.
+        self.read_failure('duplicate','duplicate_reply_key')
+
+    def test_base64_decoder_guard_is_not_masked_by_view_policy(self):
+        # validate=False would decode ! into an empty byte string. Calling
+        # _read directly ensures no later view/schema guard can hide that bug.
+        self.read_failure('badbase64','worker_envelope_invalid')
+
+    def test_unbounded_writer_hits_size_guard_not_timeout_or_eof(self):
+        self.read_failure('unbounded','worker_reply_bound')
+
+    def line_from(self, raw):
+        # Atomic small write gives _line exactly one chunk, with no process.
+        reader,writer=os.pipe()
+        try:
+            os.write(writer,raw)
+        finally:
+            os.close(writer)
+        with os.fdopen(reader,'rb',buffering=0) as source:
+            worker=object.__new__(WorkerClient)
+            worker._closed=False;worker._process=Mock(stdout=source)
+            return worker._line(TurnBudget(time.monotonic()+5))
+
+    def test_line_framing_and_json_guards_are_independent(self):
+        self.assertEqual(self.line_from(b'{}\n'),{})
+        for raw in (b'{}\ntrailing',b'{}\n{}\n',b'\xef\xbb\xbf{}\n'):
+            with self.subTest(raw=raw),self.assertRaisesRegex(ValueError,'^worker_reply_framing$'):
+                self.line_from(raw)
+        with self.assertRaisesRegex(ValueError,'^invalid_number$'):
+            self.line_from(b'{"value":NaN}\n')
+        with self.assertRaisesRegex(ValueError,'^worker_reply_object$'):
+            self.line_from(b'[]\n')
+
+    def test_exact_response_fields_and_boolean_identity(self):
+        valid={'ok':True,'outcome':'completed','operation':'zeoconnect.connections.list','invocation':'valid'}
+        cases=[dict(valid,extra='not allowed'),{k:v for k,v in valid.items() if k!='invocation'},
+               dict(valid,ok=1),dict(valid,outcome='ready')]
+        for reply in cases:
+            with self.subTest(reply=reply):
+                worker=self.client()
+                with patch.object(worker,'_line',return_value=reply):
+                    with self.assertRaisesRegex(ValueError,'^worker_refused_or_invalid$'):
+                        worker._exchange({'method':'begin'},{'operation','invocation'},TurnBudget(time.monotonic()+5))
+
+    def test_ready_numeric_one_is_not_boolean_true(self):
+        with self.assertRaisesRegex(ValueError,'^worker_not_ready$'):
+            self.client('readyint')
+
+    def test_request_byte_and_request_count_caps_precede_exchange(self):
+        valid={'ok':True,'outcome':'completed','operation':'zeoconnect.connections.list','invocation':'valid'}
+        for request,count,reason in [({'method':'begin','padding':'x'*1024},0,'worker_request_bound'),
+                                     ({'method':'begin'},32,'worker_unavailable')]:
+            with self.subTest(reason=reason):
+                worker=self.client();worker._requests=count
+                with patch.object(worker,'_line',return_value=valid) as read_reply:
+                    with self.assertRaisesRegex(ValueError,'^'+reason+'$'):
+                        worker._exchange(request,{'operation','invocation'},TurnBudget(time.monotonic()+5))
+                read_reply.assert_not_called()
+
+    def test_parallel_exchange_is_refused_before_another_write(self):
+        worker=self.client();worker._exchange_lock.acquire()
+        try:
+            with self.assertRaisesRegex(ValueError,'^concurrent_worker_exchange$'):
+                worker._exchange({'method':'begin'},{'operation','invocation'},TurnBudget(time.monotonic()+5))
+        finally:worker._exchange_lock.release()
+        self.assertLess(worker._process.returncode,0)
+        self.assertFalse((self.root/'requests').exists())
+
+    def test_concurrent_show_refuses_without_waiting_for_first_deadline(self):
+        worker=self.client('slowread');view=TurnView(json.loads)
+        async def run():
+            pending=asyncio.create_task(worker.show(view))
+            try:
+                deadline=time.monotonic()+1
+                while not (self.root/'requests').exists() or 'read' not in (self.root/'requests').read_text():
+                    if time.monotonic()>deadline:self.fail('fixture did not reach read')
+                    await asyncio.sleep(0.005)
+                # Far from the first seven-second deadline and its 3s read.
+                result=await asyncio.wait_for(worker.show(view),timeout=0.5)
+                self.assertEqual(result,{'status':'unavailable'})
+                self.assertEqual(await asyncio.wait_for(pending,timeout=0.5),{'status':'unavailable'})
+            finally:
+                worker.close()
+                if not pending.done():pending.cancel()
+                with suppress(asyncio.CancelledError):await pending
+        asyncio.run(run())
+
+    def test_invocation_shape_guard_without_other_protocol_checks(self):
+        for invocation in ('','space here','x'*257,'non-ascii-\u00e9',None,True):
+            with self.subTest(invocation=invocation),self.assertRaisesRegex(ValueError,'^invalid_invocation$'):
+                ConversationBudget().bind(invocation)
+        ConversationBudget().bind('valid._:/-123')
+
+    def test_wrong_operation_during_reservation_and_read(self):
+        worker=self.client()
+        with patch.object(worker,'_exchange',return_value={'operation':'wrong','invocation':'valid'}):
+            with self.assertRaisesRegex(ValueError,'^worker_operation$'):
+                worker._begin(TurnBudget(time.monotonic()+5))
+        self.read_failure('wrongop','worker_result_binding')
+
+    def test_encoded_and_decoded_envelope_bounds(self):
+        worker=self.client();budget=TurnBudget(time.monotonic()+5)
+        operation='zeoconnect.connections.list';invocation='valid'
+        limit=4*((262144+2)//3)
+        too_long='A'*(limit+4)
+        reply={'operation':operation,'invocation':invocation,'envelope_base64':too_long}
+        with patch.object(worker,'_exchange',return_value=reply), \
+             patch('lib.worker_client.base64.b64decode',wraps=base64.b64decode) as decode:
+            with self.assertRaisesRegex(ValueError,'^worker_envelope_bound$'):worker._read(invocation,budget)
+        decode.assert_not_called()
+        # MAX_BYTES+1 has the same encoded length as MAX_BYTES, so this reaches
+        # the decoded-size guard without failing the preceding encoded cap.
+        reply['envelope_base64']=base64.b64encode(b'x'*262145).decode()
+        self.assertEqual(len(reply['envelope_base64']),limit)
+        with patch.object(worker,'_exchange',return_value=reply):
+            with self.assertRaisesRegex(ValueError,'^worker_envelope_bound$'):worker._read(invocation,budget)
+
+    def test_constructor_rejects_unowned_paths_env_and_startup_timeout_before_launch(self):
+        valid={'python':Path('/host/python'),'launcher':Path('/host/launcher'),
+               'environment':{'HOME':str(self.root),'TMPDIR':str(self.root)},
+               'conversation':ConversationBudget()}
+        cases=[{'python':Path('relative/python')},{'launcher':Path('relative/launcher')},
+               {'environment':{'HOME':str(self.root)}},{'environment':{'TMPDIR':str(self.root)}},
+               {'environment':dict(valid['environment'],PATH='/untrusted')},
+               {'startup_timeout':0},{'startup_timeout':6}]
+        for change in cases:
+            with self.subTest(change=change),patch('lib.worker_client.subprocess.Popen',side_effect=AssertionError('must not launch')) as launch:
+                with self.assertRaises(ValueError):WorkerClient(**(valid|change))
+                launch.assert_not_called()
+
+    def test_bind_race_after_reservation_with_far_deadline(self):
+        worker=self.client();view=TurnView(json.loads);newest=[]
+        begin=worker._begin
+        def supersede_after_reservation(budget):
+            invocation=begin(budget)
+            self.assertGreater(budget.deadline-time.monotonic(),5)
+            newest.append(view.begin('other','newer-turn'))
+            return invocation
+        with patch.object(worker,'_begin',side_effect=supersede_after_reservation):
+            self.assertEqual(asyncio.run(worker.show(view)),{'status':'unavailable'})
+        self.assertTrue(view.is_current(newest[0]))
+        self.assertEqual(view.html,'')
+        self.assertEqual((self.root/'requests').read_text().splitlines(),['begin'])
+
+    def test_timed_valid_path_completes_within_shared_budget(self):
+        worker=self.client('timed_valid');view=TurnView(json.loads)
+        with patch('lib.worker_client.WORKER_TURN_BUDGET_SECONDS',0.6):
+            start=time.monotonic()
+            self.assertEqual(asyncio.run(worker.show(view)),{'status':'displayed'})
+            elapsed=time.monotonic()-start
+        self.assertGreaterEqual(elapsed,0.10)
+        self.assertLess(elapsed,0.6)

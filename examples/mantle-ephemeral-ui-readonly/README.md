@@ -59,8 +59,10 @@ off the event loop, with an isolated environment, before a tool turn.
 
 Keep one `ConversationBudget` per authenticated conversation, including across
 worker replacement. It permits eight attempts in total and rejects invocation
-reuse. Do not create a fresh budget after failure. The client reserves the
-actual invocation before binding it to the cleared view, reads once, validates
+reuse. Do not create a fresh budget after failure. The reuse check is scoped
+to that conversation; the producer must ensure invocation uniqueness across
+conversations. The client requests an actual reservation before binding the
+invocation to the cleared view, reads once, validates
 through Core and checks retention without another discovery request. The
 displayed facts name service, status and advertised operations; advertised
 operations are not application grants. There is no provider field or SDK upgrade.
