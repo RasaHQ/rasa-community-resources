@@ -77,6 +77,15 @@ on every turn, including turns without a tool, to clear the previous card.
 The execution owner must independently verify final namespace quiescence;
 reaping a direct child alone is not that receipt.
 
+If the environment denies a cleanup signal, the client closes its local pipe
+ends, records `UNKNOWN_SIGNAL_PERMISSION_DENIED`, and raises
+`WorkerCleanupError` to the host. It retains the process handle and original
+failure; startup errors remain attached when cleanup also fails. It does not
+retry the signal, switch cleanup methods, or claim the process exited. The
+host must retain this unresolved ownership record and obtain a supported
+resolution from the launch venue's permission owner. The Mantle tool reports
+only unavailable; its host can inspect `cleanup_error` and `cleanup_state`.
+
 The subprocess fixtures test this client without importing the producer SDK,
 running the canonical Core schema or using a real grant. The qualified
 launcher, installed Core environment and authenticated conversation host still

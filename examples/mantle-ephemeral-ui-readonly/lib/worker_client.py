@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import binascii
+from contextlib import suppress
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,16 @@ WORKER_TURN_BUDGET_SECONDS = min(7, TURN_BUDGET_SECONDS)  # Leave cleanup below 
 MAX_REPLY = 4 * ((MAX_BYTES + 2) // 3) + 1024
 _ENV = {"HOME", "TMPDIR", "XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME",
         "XDG_STATE_HOME", "LANG", "LC_ALL", "TZ"}
+
+
+class WorkerCleanupError(RuntimeError):
+    """Host-only unresolved lifecycle evidence; never a successful cleanup receipt."""
+
+    def __init__(self, process, failure):
+        super().__init__("worker_cleanup_unavailable")
+        self.owned_process = process
+        self.failure = failure
+        self.startup_error: BaseException | None = None
 
 
 class ConversationBudget:
@@ -75,6 +86,8 @@ class WorkerClient:
         self._exchange_lock = threading.Lock()
         self._close_lock = threading.Lock()
         self._closed = False
+        self.cleanup_state = "NOT_REQUESTED"
+        self.cleanup_error: WorkerCleanupError | None = None
         self._requests = 0
         self._active: TurnBudget | None = None
         self._show_lock = asyncio.Lock()
@@ -89,8 +102,12 @@ class WorkerClient:
             ready = self._line(TurnBudget(time.monotonic() + startup_timeout))
             if ready != {"ok": True, "outcome": "ready", "protocol": "zeoconnect.poc-worker/v1"} or type(ready.get("ok")) is not bool:
                 raise ValueError("worker_not_ready")
-        except BaseException:
-            self.close()
+        except BaseException as startup_error:
+            try:
+                self.close()
+            except WorkerCleanupError as failure:
+                failure.startup_error = startup_error
+                raise
             raise
 
     def close(self):
@@ -98,17 +115,35 @@ class WorkerClient:
         # must remain reserved until all descendants have been signalled.
         with self._close_lock:
             if self._closed:
+                if self.cleanup_error is not None:
+                    raise self.cleanup_error
                 return
             self._closed = True
             if self._active is not None:
                 self._active.cancelled.set()
             try:
-                os.killpg(self._process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            self._process.wait(timeout=1)
-            self._process.stdin.close()
-            self._process.stdout.close()
+                try:
+                    os.killpg(self._process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                except PermissionError as denied:
+                    self.cleanup_state = "UNKNOWN_SIGNAL_PERMISSION_DENIED"
+                    self.cleanup_error = WorkerCleanupError(self._process, denied)
+                    # Do not try terminate/kill, another signal, another actor,
+                    # or infer that failure to signal means the process exited.
+                    raise self.cleanup_error from denied
+                try:
+                    self._process.wait(timeout=1)
+                except subprocess.TimeoutExpired as timeout:
+                    self.cleanup_state = "UNKNOWN_REAP_TIMEOUT"
+                    self.cleanup_error = WorkerCleanupError(self._process, timeout)
+                    raise self.cleanup_error from timeout
+                self.cleanup_state = "DIRECT_CHILD_REAPED"
+            finally:
+                # Closing our pipe ends is containment, not proof of quiescence.
+                for pipe in (self._process.stdin, self._process.stdout):
+                    with suppress(OSError):
+                        pipe.close()
 
     def _line(self, budget):
         raw = bytearray()
@@ -238,13 +273,21 @@ class WorkerClient:
             except BaseException as error:
                 budget.cancelled.set()
                 view.fail(turn)
-                self.close()
+                cleanup_error = None
+                try:
+                    self.close()
+                except WorkerCleanupError as failure:
+                    cleanup_error = failure
                 if validation_started.is_set():
                     # CoreProcess polls this same budget and reaps its child in
                     # finally. A custom validator must honor the same contract.
                     await asyncio.to_thread(validation_done.wait, 1.25)
                 if isinstance(error, asyncio.CancelledError):
                     raise
+                if cleanup_error is not None:
+                    if cleanup_error is error:
+                        raise
+                    raise cleanup_error from error
                 if not isinstance(error, Exception):
                     raise
                 return {"status": "unavailable"}

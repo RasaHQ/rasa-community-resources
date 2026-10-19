@@ -6,14 +6,15 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+import threading
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from lib.budget import TurnBudget, current_budget
 from lib.core_process import CoreProcess
 from lib.turns import TurnView, UNAVAILABLE
-from lib.worker_client import ConversationBudget, WorkerClient
+from lib.worker_client import ConversationBudget, WorkerClient, WorkerCleanupError
 from test_turns import fixture
 
 
@@ -172,3 +173,40 @@ class WorkerClientTests(unittest.TestCase):
         time.sleep(0.35)
         self.assertFalse((self.root/'late').exists())
         self.assertLess(worker._process.returncode,0)
+
+    def test_denied_cleanup_is_unknown_and_never_retried_or_substituted(self):
+        # No process is launched or signalled. The permission denial is an
+        # injected control-path fixture, not a retry of the reported experiment.
+        worker=object.__new__(WorkerClient)
+        worker._process=Mock(pid=123)
+        worker._close_lock=threading.Lock()
+        worker._closed=False;worker._active=None
+        worker.cleanup_state='NOT_REQUESTED';worker.cleanup_error=None
+        denied=PermissionError(1,'Operation not permitted')
+        with patch('lib.worker_client.os.killpg',side_effect=denied) as signal_call:
+            with self.assertRaises(WorkerCleanupError) as first:worker.close()
+            with self.assertRaises(WorkerCleanupError) as second:worker.close()
+        self.assertIs(first.exception,second.exception)
+        self.assertIs(first.exception.failure,denied)
+        self.assertIs(first.exception.owned_process,worker._process)
+        self.assertEqual(worker.cleanup_state,'UNKNOWN_SIGNAL_PERMISSION_DENIED')
+        signal_call.assert_called_once()
+        for method in ('wait','poll','kill','terminate'):
+            getattr(worker._process,method).assert_not_called()
+        worker._process.stdin.close.assert_called_once()
+        worker._process.stdout.close.assert_called_once()
+
+    def test_startup_error_survives_a_cleanup_denial(self):
+        process=Mock(pid=123);startup=ValueError('worker_eof')
+        with patch('lib.worker_client.subprocess.Popen',return_value=process), \
+             patch('lib.worker_client.os.set_blocking'), \
+             patch.object(WorkerClient,'_line',side_effect=startup), \
+             patch('lib.worker_client.os.killpg',side_effect=PermissionError(1,'Operation not permitted')) as signal_call:
+            with self.assertRaises(WorkerCleanupError) as caught:
+                WorkerClient(Path('/host/python'),Path('/host/launcher'),
+                    environment={'HOME':str(self.root),'TMPDIR':str(self.root)},
+                    conversation=ConversationBudget())
+        self.assertIs(caught.exception.startup_error,startup)
+        self.assertIsInstance(caught.exception.failure,PermissionError)
+        self.assertIs(caught.exception.owned_process,process)
+        signal_call.assert_called_once();process.wait.assert_not_called()

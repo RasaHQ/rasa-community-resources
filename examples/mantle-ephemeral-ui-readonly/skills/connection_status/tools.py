@@ -10,7 +10,7 @@ from rasa.mantle.tools.result import ToolResult
 
 from lib.mantle_adapter import RetainedRead, show_current
 from lib.turns import TurnView
-from lib.worker_client import WorkerClient
+from lib.worker_client import WorkerClient, WorkerCleanupError
 
 
 @dataclass(frozen=True)
@@ -47,7 +47,13 @@ async def show_connection_status() -> ToolResult:
     if services is None:
         return ToolResult(llm_response={"status": "unavailable"})
     if isinstance(services, WorkerServices):
-        return ToolResult(llm_response=await services.worker.show(services.view))
+        try:
+            status = await services.worker.show(services.view)
+        except WorkerCleanupError:
+            # The authenticated host retains worker.cleanup_error/state. Never
+            # disclose diagnostics to the model or call cleanup another way.
+            status = {"status": "unavailable"}
+        return ToolResult(llm_response=status)
     status = await show_current(
         services.view, services.operation, services.invocation,
         services.read, services.retained_original,
