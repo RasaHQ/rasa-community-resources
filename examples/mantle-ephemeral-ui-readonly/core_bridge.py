@@ -1,7 +1,8 @@
 """Run ONLY in an owned, qualified zeocore Python 3.14 environment.
 
-No dependency is downloaded by this bridge. Core's approved exact version is a
-deployment input still to be supplied; absence fails closed.
+No dependency is downloaded by this bridge. The exact selected source commit
+is declared in core-validator-input.json; its owned installed qualification is
+still a host input, and absence fails closed.
 """
 
 import sys

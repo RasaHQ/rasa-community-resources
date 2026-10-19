@@ -49,9 +49,14 @@ are excluded. A refusal stops the read; never substitute another identity.
 
 `CoreProcess` runs `core_bridge.py` with an explicitly configured, owned Python
 3.14 interpreter and scratch environment. The bridge imports the actual Core
-`validate_bytes`, not the weaker exported JSON schema. Dependency adoption
-requires an approved exact Core revision/version and consumer qualification;
-these are **not yet supplied here**. A missing Core package fails closed.
+`validate_bytes`, not the weaker exported JSON schema. The Architect selected exact Core commit
+`5b226fa9f2cf8d23337d5dee750828886675fb8b`; `core-validator-input.json`
+records that immutable input and the host qualification obligations. It is not
+a floating branch or an automatic substitution with release 0.26.0. The owned
+installed environment and canonical consumer qualification are **not yet supplied**.
+The host must verify exact source provenance and dependency closure before
+binding the process; this declaration does not verify an environment by itself.
+A missing Core package fails closed.
 The scratch environment must include its owned `TMPDIR`. Validator stdout is
 read with a byte cap and a five-second deadline; only the bridge's explicit
 refusal marker together with its distinct exit code counts as a schema refusal.
