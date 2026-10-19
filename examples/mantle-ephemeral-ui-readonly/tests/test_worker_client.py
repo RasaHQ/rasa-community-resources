@@ -114,7 +114,9 @@ class WorkerClientTests(unittest.TestCase):
             newest=view.begin('other','newest')
             self.assertEqual(await pending,{'status':'unavailable'})
             self.assertTrue(view.is_current(newest))
+        started=time.monotonic()
         asyncio.run(run())
+        self.assertLess(time.monotonic()-started,1)
         self.assertEqual(view.html,'')
         self.assertLess(worker._process.returncode,0)
 
@@ -291,7 +293,8 @@ class WorkerClientTests(unittest.TestCase):
         try:
             with self.assertRaisesRegex(ValueError,'^concurrent_worker_exchange$'):
                 worker._exchange({'method':'begin'},{'operation','invocation'},TurnBudget(time.monotonic()+5))
-        finally:worker._exchange_lock.release()
+        finally:
+            if worker._exchange_lock.locked():worker._exchange_lock.release()
         self.assertLess(worker._process.returncode,0)
         self.assertFalse((self.root/'requests').exists())
 
@@ -305,7 +308,10 @@ class WorkerClientTests(unittest.TestCase):
                     if time.monotonic()>deadline:self.fail('fixture did not reach read')
                     await asyncio.sleep(0.005)
                 # Far from the first seven-second deadline and its 3s read.
-                result=await asyncio.wait_for(worker.show(view),timeout=0.5)
+                try:
+                    result=await asyncio.wait_for(worker.show(view),timeout=0.5)
+                except TimeoutError:
+                    self.fail('concurrent show waited instead of refusing immediately')
                 self.assertEqual(result,{'status':'unavailable'})
                 self.assertEqual(await asyncio.wait_for(pending,timeout=0.5),{'status':'unavailable'})
             finally:
@@ -343,18 +349,26 @@ class WorkerClientTests(unittest.TestCase):
         self.assertEqual(len(reply['envelope_base64']),limit)
         with patch.object(worker,'_exchange',return_value=reply):
             with self.assertRaisesRegex(ValueError,'^worker_envelope_bound$'):worker._read(invocation,budget)
+        reply['envelope_base64']=base64.b64encode(b'x'*262144).decode()
+        with patch.object(worker,'_exchange',return_value=reply):
+            self.assertEqual(len(worker._read(invocation,budget).envelope),262144)
 
     def test_constructor_rejects_unowned_paths_env_and_startup_timeout_before_launch(self):
         valid={'python':Path('/host/python'),'launcher':Path('/host/launcher'),
                'environment':{'HOME':str(self.root),'TMPDIR':str(self.root)},
                'conversation':ConversationBudget()}
-        cases=[{'python':Path('relative/python')},{'launcher':Path('relative/launcher')},
-               {'environment':{'HOME':str(self.root)}},{'environment':{'TMPDIR':str(self.root)}},
-               {'environment':dict(valid['environment'],PATH='/untrusted')},
-               {'startup_timeout':0},{'startup_timeout':6}]
-        for change in cases:
+        path_reason='absolute owned interpreter and launcher required'
+        env_reason='isolated environment required'
+        timeout_reason='invalid startup timeout'
+        cases=[({'python':Path('relative/python')},path_reason),
+               ({'launcher':Path('relative/launcher')},path_reason),
+               ({'environment':{'HOME':str(self.root)}},env_reason),
+               ({'environment':{'TMPDIR':str(self.root)}},env_reason),
+               ({'environment':dict(valid['environment'],PATH='/untrusted')},env_reason),
+               ({'startup_timeout':0},timeout_reason),({'startup_timeout':6},timeout_reason)]
+        for change,reason in cases:
             with self.subTest(change=change),patch('lib.worker_client.subprocess.Popen',side_effect=AssertionError('must not launch')) as launch:
-                with self.assertRaises(ValueError):WorkerClient(**(valid|change))
+                with self.assertRaisesRegex(ValueError,'^'+reason+'$'):WorkerClient(**(valid|change))
                 launch.assert_not_called()
 
     def test_bind_race_after_reservation_with_far_deadline(self):
@@ -365,8 +379,10 @@ class WorkerClientTests(unittest.TestCase):
             self.assertGreater(budget.deadline-time.monotonic(),5)
             newest.append(view.begin('other','newer-turn'))
             return invocation
-        with patch.object(worker,'_begin',side_effect=supersede_after_reservation):
+        with patch.object(worker,'_begin',side_effect=supersede_after_reservation), \
+             patch.object(worker,'_read',wraps=worker._read) as read:
             self.assertEqual(asyncio.run(worker.show(view)),{'status':'unavailable'})
+        read.assert_not_called()
         self.assertTrue(view.is_current(newest[0]))
         self.assertEqual(view.html,'')
         self.assertEqual((self.root/'requests').read_text().splitlines(),['begin'])
