@@ -32,7 +32,7 @@ def fixture():
             },
             "props": {
                 "summary": "Synthetic fixture only",
-                "facts": [{"label": "Provider", "value_type": "text", "value": "fixture"}],
+                "facts": [{"label": "Service", "value_type": "text", "value": "fixture"}],
                 "evidence": [], "action_refs": [],
             },
         }],
