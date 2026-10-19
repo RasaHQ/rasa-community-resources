@@ -1,0 +1,96 @@
+# Fixture-first connection-status card (in progress)
+
+Author: rasa-community-maintainer
+Assessed on: pending qualification
+Assessed by: none; fixture consumer tests only
+Verified with: no installed Mantle or Core runtime yet; source targets the repository pin
+Audience: Developers connecting a retained tool result to a read-only user interface
+Time: Fixture tests take seconds; live setup requires an owner-present session
+
+sow: ephemeral-ui-readonly-SOW-01
+
+This is an **unfinished fixture-first pilot**, not a connected demonstration.
+It implements a consumer boundary and a Mantle tool entrypoint. It does not yet
+install an agent host, call the Broker, or claim an actual Mantle turn. The
+authenticated host integration and producer result contract are still required.
+Do not deploy or treat synthetic results as evidence of a real connection.
+
+## What the consumer does
+
+The host allocates one `TurnView` per authenticated conversation and calls
+`begin` on **every** new turn, including turns without a tool call. This clears
+the old display immediately. Each read carries a host-generated lease and exact
+operation/invocation binding. Older completions cannot overwrite a newer turn.
+An error on the current turn replaces the old card with an unavailable message.
+
+The `show_connection_status` tool takes no model-supplied identifiers. Its
+authenticated host binds `Services` through `bind_services` for that turn.
+The injected producer performs one permitted read, retains its original result,
+and returns a `RetainedRead`. Rendering never calls the Broker again. The host
+mounts the returned `view.html` in its current-turn container; no persistent
+storage is used. The host must also clear that container when beginning a turn.
+There is deliberately no default global session, credential lookup or live route.
+
+The first real action selected by the Architect is authenticated
+`GET /v1/connections`, with **one visible connection and zero operation grants**.
+A newly paired device can return an empty list until its owner grants its
+application a connection and assigns the device. Empty is honest, but it does
+not pass the chosen nonempty acceptance. `labels.list` and `messages.read_page`
+are excluded. A refusal stops the read; never substitute another identity.
+
+## Validation and rendering
+
+`CoreProcess` runs `core_bridge.py` with an explicitly configured, owned Python
+3.14 interpreter and scratch environment. The bridge imports the actual Core
+`validate_bytes`, not the weaker exported JSON schema. Dependency adoption
+requires an approved exact Core revision/version and consumer qualification;
+these are **not yet supplied here**. A missing Core package fails closed.
+Rasa runs separately on Python 3.11–3.12; do not combine incompatible environments.
+
+No alternative schema validator is implemented. The consumer adds only its
+binding, freshness and subset policy after Core accepts the original bytes:
+`zeo.ui-result/v1`, exactly one card, no action references, a retrievable original,
+and `complete:false` because the projection omits original result properties.
+This consumer requires a source snapshot bound to the same invocation, observed
+within 60 seconds; future, expired, missing or mismatched snapshots are refused.
+The producer chooses the actual retained invocation reference; do not invent one.
+Unknown, malformed or unsupported input is unavailable, never healthy-empty.
+
+The renderer uses a fixed template and escapes every value. Evidence is inert
+text, never a link or a fetch. All non-ASCII characters are displayed as literal
+escapes, including invisible characters. This intentionally limited pilot loses
+natural Unicode typography rather than duplicating Core's Unicode tables.
+No returned HTML, CSS, JavaScript, SVG, commands or action references execute.
+Payloads, validator diagnostics, provider data and credentials are not logged.
+
+## Run the consumer tests
+
+From this directory, using Python 3.11 or later:
+
+```sh
+python3 -m unittest discover -s tests -v
+```
+
+These tests inject an explicitly labelled fixture validation double to isolate
+consumer behaviour. They **do not prove canonical schema validation**, a Mantle
+import, training, model behaviour, provider access or live acceptance. Negative
+byte/schema cases must also pass through the real qualified Core bridge before
+integration. No fixture command accesses a provider or installs dependencies.
+
+## Remaining acceptance
+
+1. Qualify the approved Core dependency and producer mapping on exact source.
+   Run byte-level rejection fixtures through Core, plus consumer tests.
+2. Complete authenticated Mantle host/turn-container integration, dependency lock,
+   catalogue entry and normal full repository gates in the supported venue.
+3. Follow the Architect's owner-present sequence: council-cleared Broker flag
+   read; normal pairing using its returned verification URL; owner creates the
+   PoC application, grants one existing connection and assigns the device;
+   ops' reviewed `devices_add` only if the flag is off.
+4. Observe the actual metadata turn, validated card and next-turn replacement.
+   Retain a redacted correlated trace. No guessed IDs, borrowed identity, early
+   expiring pairing code, operation grant, deployment or provider spend.
+
+Fixtures and source review do not complete these steps. The separate owned
+article and newsletter work remains preserved; this directory covers only the
+Rasa adapter/renderer slice.

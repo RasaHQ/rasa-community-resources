@@ -47,6 +47,7 @@ Looking for a case build? The case-build rows below are in the order the builds 
 
 | Name | Persona | Domain | Path | Assessed on |
 |---|---|---|---|---|
+| Connection-status UI pilot (fixture checkpoint; not connected) | Read-only metadata | Application connections | [`mantle-ephemeral-ui-readonly`](mantle-ephemeral-ui-readonly) | Runtime qualification pending |
 | Atlas voice travel | Atlas | Horizon Travel | [`mantle-voice-agent`](mantle-voice-agent) | 2026-08-13 |
 | Rasano voice banking | Rasano | Retail banking | [`mantle-voice-banking-skills`](mantle-voice-banking-skills) | 2026-08-13 |
 | Telano voice telecom | Telano | Telecom care | [`mantle-voice-telco-skills`](mantle-voice-telco-skills) | 2026-08-13 |

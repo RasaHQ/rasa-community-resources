@@ -195,6 +195,7 @@ Tutorials ([catalog](tutorials/README.md)):
 
 Finished example agents that are not case builds ([catalog](examples/README.md)):
 
+- [`examples/mantle-ephemeral-ui-readonly`](examples/mantle-ephemeral-ui-readonly/): Fixture-first connection-status card (in progress)
 - [`examples/mantle-voice-agent`](examples/mantle-voice-agent/): Atlas — Voice Travel Agent with Rasa Skills
 - [`examples/mantle-voice-appointment-skills`](examples/mantle-voice-appointment-skills/): Schedora — Voice Appointment Booking with Rasa Mantle
 - [`examples/mantle-voice-banking-skills`](examples/mantle-voice-banking-skills/): Rasa Mantle Voice Banking Skills
