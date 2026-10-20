@@ -1,0 +1,181 @@
+{
+  "sow": "flagship-resources-SOW-01",
+  "kind": "public-derivative-of-owned-offline-control",
+  "recordedDate": "2026-10-20",
+  "sourceBase": "95512574c12edf563a5e23bde2d17eb808b00c3b",
+  "sourceFiles": {
+    "examples/mantle-text-insurance-file-claim-claude/controls/crewai_checklist.py": "788fd3b15079065d82a1bf864cae9c40dbbe71f242cf46502f4b269628b4902e",
+    "examples/mantle-text-insurance-file-claim-claude/tests/test_crewai_checklist.py": "8a10e5b3c5e42c6f72ffc9e23e4623117c2aa606dfe11472ff6fde8c39a5eca8",
+    "examples/mantle-text-insurance-file-claim-claude/lib/claims.py": "bda32ea80cb2e45dd289b95d2d228b001d8207ab6d3f87f356687639aa8d6705",
+    "tutorials/frameworks-with-rasa/crewai/worker.py": "8ec8e9b09a8ee30c5bee8ed8a5d5dfd2a84995dff64cba67d678dde45eb18353",
+    "tutorials/frameworks-with-rasa/crewai/claim_crew/native_fixture.py": "e94320717999dcc1ed377892b81c19a18f333023a379001a7f194bd931b25291",
+    "tutorials/frameworks-with-rasa/crewai/claim_crew/runtime.py": "f29aff13cad3d0850c7cb66e7c9e47920fbcd8ec0ee0c8d9f383c0f33d26bff9",
+    "tutorials/frameworks-with-rasa/crewai/pyproject.toml": "2f34a39d2afc95c346da67b1e5c4e56c3d72d0eb953b2b80458e2242eb455694",
+    "tutorials/frameworks-with-rasa/crewai/uv.lock": "e21641f60ba7cd2efc968c920c6b3deb5cc3f992a607e7b0e8e366a6ca15be8e",
+    "tutorials/frameworks-with-rasa/crewai-transport/crew_transport/__init__.py": "fa4d89bcc0d04e17b682236436289ea50a71ecb9d73a353ef21ea3880408ce95"
+  },
+  "toolchain": {
+    "python": "3.12.13",
+    "crewai": "1.15.27"
+  },
+  "executionControls": "Explicit clean scratch HOME/XDG/tool config/temp/cache, bounded own Class1 run, no inherited credentials; recorded parent/session closure with zero survivors.",
+  "derivation": "Selected fields from actual native scripted CrewAI/direct-service command output. Full raw logs and process/config receipts retained privately under their recorded hashes. Base plus staged source delta is recorded; no later committed head is claimed as executed.",
+  "positive": {
+    "exit": 0,
+    "startUTC": "2026-10-20T06:04:56.444335+00:00",
+    "endUTC": "2026-10-20T06:05:02.431976+00:00",
+    "logSHA256": "ef3ce1d1393df60c0166d195a92c5e7903c134b588e49c0b23d69413a261ed8c",
+    "sourceDeltaSHA256": "c31bf719ec17064357273a8a113f4ba88419cc90482bfb558781240a2c4dbd7e",
+    "rows": [
+      {
+        "photo_state": "processing",
+        "service_requirements": [
+          "damage_photos",
+          "repair_estimate"
+        ],
+        "request_status": "blocked",
+        "request_reason": "attachment_state_unknown",
+        "submission_count": 0,
+        "reconciled_status": null,
+        "follow_up_required": [],
+        "coverage_decision": null
+      },
+      {
+        "photo_state": "received",
+        "service_requirements": [
+          "damage_photos",
+          "repair_estimate"
+        ],
+        "request_status": "pending",
+        "request_reason": "submission_not_acknowledged",
+        "submission_count": 1,
+        "reconciled_status": "acknowledged",
+        "follow_up_required": [],
+        "coverage_decision": null
+      },
+      {
+        "photo_state": "not_provided",
+        "service_requirements": [
+          "damage_photos",
+          "repair_estimate"
+        ],
+        "request_status": "pending",
+        "request_reason": "submission_not_acknowledged",
+        "submission_count": 1,
+        "reconciled_status": "acknowledged",
+        "follow_up_required": [
+          {
+            "requirement": "photos of the damage",
+            "why": "not provided"
+          }
+        ],
+        "coverage_decision": null
+      }
+    ],
+    "parentAndSessionQuiescent": true,
+    "scope": "native scripted CrewAI plus direct claims-service control; constructed confirmation, no live Mantle/model conversation",
+    "crew": {
+      "checklist": {
+        "claim_type": "vehicle",
+        "documents": [
+          "Incident details",
+          "Repair estimate"
+        ]
+      },
+      "source": {
+        "claim_type": "vehicle",
+        "required_documents": [
+          "Incident details",
+          "Repair estimate"
+        ],
+        "revision": "2026-10-11",
+        "source_id": "HC-V-101"
+      },
+      "status": "ready"
+    }
+  },
+  "mutant": {
+    "exit": 1,
+    "startUTC": "2026-10-20T06:06:49.310633+00:00",
+    "endUTC": "2026-10-20T06:06:53.220728+00:00",
+    "logSHA256": "267eb4ed6c91ce737b94770119e4afb35666de458091b8a013ec32a7ca7ad01c",
+    "sourceDeltaSHA256": "c31bf719ec17064357273a8a113f4ba88419cc90482bfb558781240a2c4dbd7e",
+    "rows": [
+      {
+        "photo_state": "processing",
+        "service_requirements": [
+          "damage_photos",
+          "repair_estimate"
+        ],
+        "request_status": "pending",
+        "request_reason": "submission_not_acknowledged",
+        "submission_count": 1,
+        "reconciled_status": "acknowledged",
+        "follow_up_required": [],
+        "coverage_decision": null
+      },
+      {
+        "photo_state": "received",
+        "service_requirements": [
+          "damage_photos",
+          "repair_estimate"
+        ],
+        "request_status": "pending",
+        "request_reason": "submission_not_acknowledged",
+        "submission_count": 1,
+        "reconciled_status": "acknowledged",
+        "follow_up_required": [],
+        "coverage_decision": null
+      },
+      {
+        "photo_state": "not_provided",
+        "service_requirements": [
+          "damage_photos",
+          "repair_estimate"
+        ],
+        "request_status": "pending",
+        "request_reason": "submission_not_acknowledged",
+        "submission_count": 1,
+        "reconciled_status": "acknowledged",
+        "follow_up_required": [
+          {
+            "requirement": "photos of the damage",
+            "why": "not provided"
+          }
+        ],
+        "coverage_decision": null
+      }
+    ],
+    "parentAndSessionQuiescent": true,
+    "scope": "native scripted CrewAI plus direct claims-service control; constructed confirmation, no live Mantle/model conversation",
+    "crew": {
+      "checklist": {
+        "claim_type": "vehicle",
+        "documents": [
+          "Incident details",
+          "Repair estimate"
+        ]
+      },
+      "source": {
+        "claim_type": "vehicle",
+        "required_documents": [
+          "Incident details",
+          "Repair estimate"
+        ],
+        "revision": "2026-10-11",
+        "source_id": "HC-V-101"
+      },
+      "status": "ready"
+    }
+  },
+  "mutationClassification": {
+    "outcome": "KILLED_ASSERTION",
+    "assertion": "Processing damage photo must block submission",
+    "panicOrTimeout": false
+  },
+  "limits": [
+    "Constructed confirmation events and copied fixture photo states; no live Mantle conversation.",
+    "CrewAI uses scripted BaseLLM responses; no provider call or model-reliability result.",
+    "No new Rasa training or licence use; production guard, skills and tools are unchanged."
+  ]
+}
