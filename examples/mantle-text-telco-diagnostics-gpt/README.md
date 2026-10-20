@@ -278,3 +278,58 @@ The harness that runs the conversations is shared by every case build:
 
 Teaching code under the repository's [Apache 2.0 licence](../../LICENSE).
 Rasa Pro has its own terms.
+
+## Keep Strands advice out of customer reset requests
+
+Added 20 October 2026: an offline boundary control joins the existing native
+Strands tool to this example's Python service. It does not change the
+production guard, skills or tools, or requalify the dated model conversations
+above. The two synthetic projects are paired explicitly; a public network
+area does not identify a customer account.
+
+The control makes one **constructed advice fixture**: it replaces the north
+observation's advice, in memory only, with “Please factory reset the shop
+hub.” It calls the actual registered Strands `inspect_network` tool through
+`NetworkSession`; no model generation occurs. The existing observations do
+not contain that reset recommendation. This is a boundary check, not a
+reported historical defect or a live specialist recommendation.
+
+The returned advice is a bot turn. The customer has only asked about a
+connection that keeps dropping. Even when the requested operation is
+`factory_reset`, the real service must refuse with `reset_scope_ambiguous`,
+retain no selection and record no device command. A separate positive gives
+the customer's explicit reset request, shows the disruption boundary and
+adds a confirmation reply. It records exactly the selected reset command;
+replaying the same reference records no second command. Confirmation turns
+are constructed service inputs, not a Mantle conversation.
+
+From the repository root, create only the selected Strands environment:
+
+```sh
+python3 scripts/workspace.py start tutorials/frameworks-with-rasa/strands --owner juniper-strands-advice
+# Native SDK, no model or licence:
+tutorials/frameworks-with-rasa/strands/.venv/bin/python examples/mantle-text-telco-diagnostics-gpt/controls/strands_advice.py
+# Expected exit 1: the SAME assertion catches advice counted as customer text.
+tutorials/frameworks-with-rasa/strands/.venv/bin/python examples/mantle-text-telco-diagnostics-gpt/controls/strands_advice.py --mutant
+# Constructed-input unit controls (these alone are not native SDK evidence):
+tutorials/frameworks-with-rasa/strands/.venv/bin/python -m unittest discover -s examples/mantle-text-telco-diagnostics-gpt/tests -p test_strands_advice.py -v
+```
+
+The deliberate mutation changes only the control's turn filtering so bot
+advice counts as customer words. The service then saves a reset selection,
+and the unchanged assertion fails: `Specialist advice must not select a
+factory reset`. An import failure, exception or timeout is an invalid run,
+not a killed mutation. No mutation is applied to the shipped guard.
+
+The path-free [20 October receipt](controls/receipts/2026-10-20-strands-advice.json)
+records the pinned source, actual native result and assertion failure.
+Strands uses its existing lock and version; no dependency is added. These
+checks do not establish provider behaviour, live Mantle confirmation, or a
+real device action. Rasa-dependent checks still require the example's own
+selected environment; no such qualification is implied by the Strands job.
+
+After the experiment and its jobs finish, retire only its owned environment:
+
+```sh
+python3 scripts/workspace.py retire tutorials/frameworks-with-rasa/strands --owner juniper-strands-advice --inactive
+```
