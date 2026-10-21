@@ -366,6 +366,8 @@ python3.12 -m unittest discover -s examples/mantle-text-telco-diagnostics-gpt/te
 
 The two tests verify that the detector exposes the current failure and that
 selection sends no command. Their passing result is **not** evidence of a
-repaired request classifier. A receiving decision and a separate service repair
+repaired request classifier. `test_detector_exposes_current_quotation_failure`
+asserts today's failure; a future repair must invert that expectation and
+require the quotation to be blocked. A receiving decision and a separate service repair
 with broader request/quotation controls are still needed. Do not use this
 synthetic predicate as production authorisation.
