@@ -6,18 +6,28 @@ import sys
 import traceback
 
 _CAPABILITY = re.compile(r"brf_[A-Za-z0-9_-]{43}")
-_API_KEY = re.compile(r"(?<![A-Za-z0-9])sk-(?:ant-|proj-)?[A-Za-z0-9_-]{12,}")
+_API_KEY = re.compile(r"(?:(?<![A-Za-z0-9])|(?<=\\[ntr]))sk-(?:ant-|proj-)?[A-Za-z0-9_-]{12,}")
 _installed = False
+
+
+def configured_secrets():
+    # Short/blank values are not usable keys and must not rewrite common text.
+    return tuple(value for name in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY')
+                 if len(value := os.environ.get(name, '').strip()) >= 16)
 
 
 def redact_api(value):
     if isinstance(value, str):
-        for name in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY'):
-            secret = os.environ.get(name)
-            if secret:
-                value = value.replace(secret, '[API credential redacted]')
-        value = _API_KEY.sub('[API credential redacted]', value)
-        return value
+        for secret in configured_secrets():
+            value = value.replace(secret, '[API credential redacted]')
+            # Framework error reprs can clip either end. Every remaining run
+            # of eight secret characters is removed, independently of prefix.
+            fragments = {secret[i:i + 8] for i in range(len(secret) - 7)}
+            pattern = '|'.join(re.escape(fragment) for fragment in sorted(fragments))
+            value = re.sub(pattern, '[API fragment redacted]', value)
+            value = re.sub(r'(?:\*{2,}|\.{2,}|…)' + re.escape(secret[-4:]),
+                           '[API fragment redacted]', value)
+        return _API_KEY.sub('[API credential redacted]', value)
     if isinstance(value, dict):
         return {redact_api(key): redact_api(item) for key, item in value.items()}
     if isinstance(value, list):
@@ -43,8 +53,8 @@ def redact(value):
 def contains_api_key(value):
     if isinstance(value, str):
         return bool(_API_KEY.search(value)) or any(
-            os.environ.get(name) and os.environ[name] in value
-            for name in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY'))
+            any(secret[i:i + 8] in value for i in range(len(secret) - 7))
+            for secret in configured_secrets())
     if isinstance(value, dict):
         return any(contains_api_key(k) or contains_api_key(v) for k, v in value.items())
     if isinstance(value, (list, tuple)):

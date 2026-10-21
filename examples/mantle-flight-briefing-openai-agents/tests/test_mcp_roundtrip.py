@@ -2,6 +2,9 @@
 from pathlib import Path
 import sys
 import unittest
+import os
+import json
+from unittest.mock import patch
 
 import httpx
 
@@ -31,9 +34,33 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
                     response = await client.post('/mcp', json={'jsonrpc': '2.0', 'id': index + 1,
                         'method': 'tools/call', 'params': {'name': 'briefing', 'arguments': arguments, '_meta': meta}})
                     self.assertEqual(response.status_code, 200)
-                    self.assertFalse(contains_api_key(response.text))
-                    self.assertTrue(response.json()['result'].get('isError'))
+                    self.assertFalse(any(key[i:i + 8] in response.text for i in range(len(key) - 7)), 'planted key fragment escaped')
+                    self.assertIn('error', response.json())
                 self.assertEqual(jobs._jobs, {})
+
+    async def test_key_bearing_extra_argument_refused_before_framework_parsing(self):
+        from briefing.mcp_app import _MantlePeer
+        called = False
+        async def framework(scope, receive, send):
+            nonlocal called
+            called = True
+            raise AssertionError('framework must not parse or log credential input')
+        token = 'synthetic-transport-token-with-no-authority'
+        key = 'sk-proj-' + 'uniqueSyntheticCanary' * 5
+        app = _MantlePeer(framework, token)
+        with patch.dict(os.environ, {'OPENAI_API_KEY': key}, clear=True):
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url='http://127.0.0.1',
+                    headers={'authorization': 'Bearer ' + token}) as client:
+                for value in (key, key[15:70]):
+                    payload = json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': 'tools/call',
+                        'params': {'name': 'briefing', 'arguments': {'extra': 'long prefix ' * 20 + value}}})
+                    # Unicode-escaped input is decoded before the framework too.
+                    payload = payload.replace('s', chr(92) + 'u0073')
+                    response = await client.post('/mcp', content=payload)
+                    self.assertFalse(called)
+                    self.assertEqual(response.json()['error']['code'], -32602)
+                    self.assertFalse(any(key[i:i + 8] in response.text for i in range(len(key) - 7)),
+                                     'planted key fragment escaped')
 
     async def test_source_card_and_transcript_do_not_echo_synthetic_key(self):
         from project.lib.card_text import render_cards
@@ -45,9 +72,10 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
             started = await jobs.briefing(owner, action='start', request='Replay DEMO101')
             await jobs._jobs[started['job_id']].task
             snapshot = await jobs.briefing(owner, action='get', job_id=started['job_id'])
-            snapshot['cards'][0]['data_ref']['source'] = 'sk-' + 'syntheticOnly' * 4
+            key = 'sk-' + 'syntheticOnly' * 4
+            snapshot['cards'][0]['data_ref']['source'] = key
             text = render_cards(snapshot)
-            self.assertFalse(contains_api_key(text))
+            self.assertFalse(any(key[i:i + 8] in text for i in range(len(key) - 7)), 'planted card fragment escaped')
             self.assertIn('credential redacted', text)
         finally:
             await jobs.close()

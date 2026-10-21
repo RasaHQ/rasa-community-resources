@@ -44,6 +44,7 @@ def probe_agents():
 
 
 def main(argv=None):
+    os.environ['LITELLM_MODE'] = 'PRODUCTION'
     class SafeParser(argparse.ArgumentParser):
         def error(self, message):
             # argparse normally echoes unknown values; a pasted credential must
@@ -70,6 +71,10 @@ def main(argv=None):
             return 2
         print('PATH: SCRIPTED — project/.venv/bin/python scripted_demo.py')
         return 0
+    if not args.probe and not args.probe_agents and not any(
+            os.environ.get(name, '').strip() for name in KEYS.values()):
+        print('PATH: SCRIPTED — project/.venv/bin/python scripted_demo.py')
+        return 0
     try:
         provider = 'openai' if args.probe_agents else selected_provider()
     except (ValueError, OSError):
@@ -79,6 +84,12 @@ def main(argv=None):
     if not os.environ.get(key_name, '').strip():
         print('PATH: SCRIPTED (live ' + provider.upper() + ' unavailable)')
         print('Refused: set ' + key_name + ' in this process environment for the live path.')
+        return 2
+    if len(os.environ[key_name].strip()) < 16:
+        print('Refused: selected environment key is not a usable credential.')
+        return 2
+    if any(os.environ.get(name, '').strip() for name in ('OPENAI_BASE_URL', 'ANTHROPIC_BASE_URL')):
+        print('Refused: custom provider base URL environment is SET; this kit supports provider defaults only.')
         return 2
     print('PATH: live ' + provider.upper() + (' managed Agents' if args.probe_agents else ' Mantle'))
     if args.probe or args.probe_agents:

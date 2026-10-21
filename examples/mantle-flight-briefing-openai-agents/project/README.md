@@ -32,8 +32,8 @@ widget rendering, voice or a live Agents API result. No assessment date or
 assessor is supplied until the intended workflow is qualified.
 
 Environment variable names are listed in `.env.example`; values must remain
-only in the facilitator's own runtime environment. No file is loaded by this
-project to discover credentials.
+only in the facilitator's own runtime environment. The doctor reads only process
+environment values. For engine dotenv controls and their limits, see below.
 
 ## Facilitator runtime checkpoint
 
@@ -67,6 +67,7 @@ worker/.venv/bin/python -m briefing
 From this `project/` directory in the second shell:
 
 ```sh
+export LITELLM_MODE=PRODUCTION
 .venv/bin/rasa train
 .venv/bin/rasa inspect
 ```
@@ -89,13 +90,18 @@ processes when the exercise is finished.
 Participants bring no keys. The facilitator hands out OpenAI and Anthropic keys
 in class and shows how to set process environment variables privately. Do not
 paste them into chat, terminal recordings, this repository, `.env`, logs or
-notebooks. The kit does not load `.env`; names-only `.env.example` is documentation.
+notebooks. The doctor does not load `.env`; names-only `.env.example` is documentation.
+The engine is a separate dependency: launch it with `LITELLM_MODE=PRODUCTION`
+to disable LiteLLM development dotenv loading. This is not a certification of
+every third-party configuration loader.
 `.env`, `.env.*`, `.envrc` and `*.key` are git-ignored. No OAuth, ZEOconnect or
 account login is used by these paths. Seats never receive a key.
 
 Choose the live Mantle provider with **one setting** in `integrations.yml`:
 `llm.model_group: openai` or `llm.model_group: anthropic`. Both declared groups
-reference environment variables rather than literal keys.
+reference environment variables rather than literal keys. The doctor refuses
+custom `OPENAI_BASE_URL` / `ANTHROPIC_BASE_URL` overrides and unusably short
+keys without printing their values; use provider defaults for the class.
 
 | Path | Environment key required | Data / remaining proof |
 | --- | --- | --- |
@@ -111,8 +117,10 @@ project/.venv/bin/python class_doctor.py
 ```
 
 It prints only `SET` or `MISSING` for each key name and the selected live path.
-When a selected key is missing it prints the SCRIPTED fallback and a plain
-refusal, returns nonzero, and makes no network call. To check the fallback:
+With neither key and no live probe requested, SCRIPTED is a valid ready state
+and exits zero without a refusal or network call. Explicit live probes still
+refuse a missing selected key. If only the other provider key is set, selected
+provider readiness remains refused. To check the fallback:
 
 ```sh
 project/.venv/bin/python class_doctor.py --scripted
@@ -154,7 +162,7 @@ OpenAI Agents leg remains NOT_RUN until its SDK/Core compatibility work is
 received. Keep all keys in the facilitator's process environment. Send no keys,
 raw logs or transcripts to a seat.
 
-1. From the example directory, run `git rev-parse HEAD` and
+1. From the example directory, set `export LITELLM_MODE=PRODUCTION`, then run `git rev-parse HEAD` and
    `project/.venv/bin/python class_doctor.py --scripted`. The head must match the
    linked run candidate; see both key names with SET/MISSING and PATH: SCRIPTED.
    Missing keys are expected before they are handed out. The managed worker and

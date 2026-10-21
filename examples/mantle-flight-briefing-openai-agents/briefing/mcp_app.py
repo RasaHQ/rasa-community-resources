@@ -6,6 +6,7 @@ OpenAI nor provider credentials belong in MCP metadata or tool arguments.
 """
 from contextlib import asynccontextmanager
 import secrets
+import json
 from typing import Literal
 
 from mcp.server.fastmcp import Context, FastMCP
@@ -48,6 +49,44 @@ class _MantlePeer:
                         "headers": [(b"content-type", b"application/json")]})
             await send({"type": "http.response.body", "body": b'{"error":"unauthenticated_peer"}'})
             return
+        # Inspect the bounded complete request BEFORE FastMCP/Pydantic can
+        # log or shorten validation inputs. Decode JSON escape sequences here.
+        request_body = bytearray()
+        while True:
+            message = await receive()
+            if message['type'] == 'http.disconnect':
+                return
+            request_body.extend(message.get('body', b''))
+            if len(request_body) > 4 * 1024 * 1024:
+                await send({'type': 'http.response.start', 'status': 413,
+                            'headers': [(b'content-type', b'application/json')]})
+                await send({'type': 'http.response.body', 'body': b'{"error":"request_limit"}'})
+                return
+            if not message.get('more_body', False):
+                break
+        try:
+            decoded = json.loads(request_body)
+        except (ValueError, UnicodeDecodeError):
+            decoded = None
+        if contains_api_key(decoded) or contains_api_key(request_body.decode('utf-8', errors='replace')):
+            rpc_id = decoded.get('id') if isinstance(decoded, dict) else None
+            if not isinstance(rpc_id, (str, int)) or contains_api_key(rpc_id):
+                rpc_id = None
+            body = json.dumps({'jsonrpc': '2.0', 'id': rpc_id,
+                               'error': {'code': -32602, 'message': 'api_credentials_forbidden_in_mcp'}}).encode()
+            await send({'type': 'http.response.start', 'status': 200,
+                        'headers': [(b'content-type', b'application/json')]})
+            await send({'type': 'http.response.body', 'body': body})
+            return
+        delivered = False
+
+        async def inspected_receive():
+            nonlocal delivered
+            if not delivered:
+                delivered = True
+                return {'type': 'http.request', 'body': bytes(request_body), 'more_body': False}
+            return await receive()
+
         # Request scope is created by the server, never copied from model data.
         scope = {**scope, "briefing.peer": "mantle"}
         # Protect even SDK validation errors produced before the tool function,
@@ -73,7 +112,7 @@ class _MantlePeer:
             else:
                 await send(message)
 
-        return await self._app(scope, receive, safe_send)
+        return await self._app(scope, inspected_receive, safe_send)
 
 
 def create_app(jobs: Jobs, *, transport_token: str):

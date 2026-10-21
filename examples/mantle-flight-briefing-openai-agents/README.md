@@ -28,8 +28,11 @@ text), initial and rendered structlog events, rendered cards and model replies.
 The public MCP boundary refuses credentials in tool arguments or metadata and
 sanitizes validation-error responses. Synthetic-key controls cover these paths;
 this does not certify arbitrary third-party telemetry. Keep request-body/access
-tracing disabled and never paste keys into the conversation. Keys are read only
-from process environment, never from a key file. See the participant key setup
+tracing disabled and never paste keys into the conversation. The doctor reads keys only
+from process environment. For the engine launcher set `LITELLM_MODE=PRODUCTION`
+to disable LiteLLM development dotenv loading; other dependency loaders are not
+certified by this control. Thread exceptions, unraisable exceptions and warnings
+are not covered by the application logging hook. See the participant key setup
 and doctor in [the project instructions](project/README.md).
 
 Core supplies widget validation, per-widget supersession and the managed Agents

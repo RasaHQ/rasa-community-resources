@@ -20,7 +20,14 @@ from project.lib.capability_logging import install, redact, contains_api_key
 
 
 def fake_key(provider='openai'):
-    return 'sk-' + ('ant-' if provider == 'anthropic' else 'proj-') + 'syntheticOnly' * 4
+    return 'sk-' + ('ant-' if provider == 'anthropic' else 'proj-') + 'Q7m9V2x4N6p8R0t3W5y1Z9c7B4d2F6h8J0k3L5s1U9v7X4a2'
+
+
+def assert_no_fragments(case, text, key):
+    # Independent of the production detector/regex. Do not echo the canary
+    # itself in an assertion diagnostic.
+    if any(key[i:i + 8] in text for i in range(len(key) - 7)):
+        case.fail('planted credential fragment escaped')
 
 
 class ClassKeys(unittest.TestCase):
@@ -28,17 +35,20 @@ class ClassKeys(unittest.TestCase):
         out = io.StringIO()
         with patch.dict(os.environ, env or {}, clear=True), contextlib.redirect_stdout(out):
             code = class_doctor.main(args)
-        self.assertFalse(contains_api_key(out.getvalue()))
+        assert_no_fragments(self, out.getvalue(), fake_key())
+        assert_no_fragments(self, out.getvalue(), fake_key('anthropic'))
         return code, out.getvalue()
 
-    def test_doctor_missing_keys_refuses_and_names_scripted_fallback(self):
+    def test_doctor_no_keys_is_ready_scripted_but_explicit_live_refuses(self):
         code, text = self.doctor()
-        self.assertEqual(code, 2)
+        self.assertEqual(code, 0)
         self.assertIn('OPENAI_API_KEY: MISSING', text)
         self.assertIn('ANTHROPIC_API_KEY: MISSING', text)
         self.assertIn('PATH: SCRIPTED', text)
-        self.assertIn('Refused:', text)
+        self.assertNotIn('Refused:', text)
         self.assertEqual(self.doctor(['--scripted'])[0], 0)
+        for option in ('--probe', '--probe-agents'):
+            self.assertEqual(self.doctor([option])[0], 2)
 
     def test_both_provider_settings_and_environment_only_readiness(self):
         for provider, variable in class_doctor.KEYS.items():
@@ -78,7 +88,8 @@ class ClassKeys(unittest.TestCase):
                 logger.exception('synthetic %s', key, extra={'extra_secret': key})
         finally:
             logger.removeHandler(handler)
-        self.assertFalse(contains_api_key(out.getvalue()))
+        assert_no_fragments(self, out.getvalue(), fake_key())
+        assert_no_fragments(self, out.getvalue(), fake_key('anthropic'))
 
     def test_uncaught_traceback_boundary_and_nested_card_transcript_values(self):
         install()
@@ -89,8 +100,9 @@ class ClassKeys(unittest.TestCase):
                 raise RuntimeError(key)
             except RuntimeError:
                 sys.excepthook(*sys.exc_info())
-        self.assertFalse(contains_api_key(out.getvalue()))
-        self.assertFalse(contains_api_key(redact({'cards': [{'source': key}], 'transcript': key})))
+        assert_no_fragments(self, out.getvalue(), fake_key())
+        assert_no_fragments(self, out.getvalue(), fake_key('anthropic'))
+        assert_no_fragments(self, json.dumps(redact({'cards': [{'source': key}], 'transcript': key})), key)
 
     def test_dotenv_is_not_read_or_written_and_git_ignores_key_files(self):
         key = fake_key()
@@ -104,7 +116,7 @@ class ClassKeys(unittest.TestCase):
                 code, text = self.doctor()
             finally:
                 os.chdir(previous)
-            self.assertEqual(code, 2)
+            self.assertEqual(code, 0)
             self.assertIn('OPENAI_API_KEY: MISSING', text)
             self.assertEqual(before, {x.name: x.read_bytes() for x in p.iterdir()})
         repo = ROOT.parents[1]
@@ -151,8 +163,8 @@ class ClassKeys(unittest.TestCase):
     def test_key_shapes_in_an_output_artifact_are_a_failing_condition(self):
         key = fake_key()
         def check_output(text):
-            if contains_api_key(text):
-                raise AssertionError('credential-shaped output forbidden')
+            if any(key[i:i + 8] in text for i in range(len(key) - 7)):
+                raise AssertionError('credential fragment output forbidden')
         with self.assertRaises(AssertionError):
             check_output('transcript ' + key)
         check_output(redact('transcript ' + key))
@@ -169,4 +181,49 @@ class ClassKeys(unittest.TestCase):
                 raise RuntimeError(key)
             except RuntimeError:
                 structlog.get_logger('class.synthetic').exception('failure', data={'key': key})
-        self.assertFalse(contains_api_key(out.getvalue()))
+        assert_no_fragments(self, out.getvalue(), fake_key())
+        assert_no_fragments(self, out.getvalue(), fake_key('anthropic'))
+
+    def test_clipped_masked_and_escaped_key_output_is_redacted_independently(self):
+        from project.lib.capability_logging import redact_api
+        key = fake_key()
+        with patch.dict(os.environ, {'OPENAI_API_KEY': key}, clear=True):
+            for text in (key[13:], key[:25], 'invalid input=' + key[8:42],
+                         'masked ***' + key[-4:], 'masked ...' + key[-4:],
+                         'note' + chr(92) + 'n' + key, repr('note\n' + key)):
+                with self.subTest(kind='synthetic-output'):
+                    safe = redact_api(text)
+                    assert_no_fragments(self, safe, key)
+                    if text.startswith('masked'):
+                        self.assertFalse(safe.endswith(key[-4:]), 'masked suffix escaped')
+        # Shape redaction must also work without an environment key.
+        with patch.dict(os.environ, {}, clear=True):
+            assert_no_fragments(self, redact_api(repr('note\t' + key)), key)
+
+    def test_short_or_blank_environment_values_do_not_rewrite_common_text(self):
+        with patch.dict(os.environ, {'OPENAI_API_KEY': ' the ', 'ANTHROPIC_API_KEY': ' '}, clear=True):
+            self.assertEqual(redact('the weather is available'), 'the weather is available')
+
+    @unittest.skipUnless(importlib.util.find_spec('rasa'), 'Mantle project interpreter required')
+    def test_engine_bootstrap_subprocess_with_planted_dotenv(self):
+        key = fake_key()
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp)
+            (p / '.env').write_text('OPENAI_API_KEY=' + key + '\n')
+            script = "import os; os.environ['LITELLM_MODE']='PRODUCTION'; import litellm; from rasa.core.agent import Agent; assert 'OPENAI_API_KEY' not in os.environ; print('DOTENV_NOT_IMPORTED')"
+            env = {k: v for k, v in os.environ.items() if k not in class_doctor.KEYS.values()}
+            result = subprocess.run([sys.executable, '-c', script], cwd=p, env=env,
+                                    capture_output=True, text=True, timeout=60)
+            assert_no_fragments(self, result.stdout + result.stderr, key)
+            self.assertEqual(result.returncode, 0, 'isolated engine dotenv control failed')
+            self.assertIn('DOTENV_NOT_IMPORTED', result.stdout)
+            self.assertEqual((p / '.env').read_text(), 'OPENAI_API_KEY=' + key + '\n')
+
+    def test_short_key_and_custom_base_url_refuse_without_echo(self):
+        code, text = self.doctor(env={'OPENAI_API_KEY': 'short'})
+        self.assertEqual(code, 2)
+        for name in ('OPENAI_BASE_URL', 'ANTHROPIC_BASE_URL'):
+            code, text = self.doctor(['--probe'], {'OPENAI_API_KEY': fake_key(), name: 'https://example.invalid/private'})
+            self.assertEqual(code, 2)
+            self.assertIn('base URL environment is SET', text)
+            self.assertNotIn('example.invalid', text)

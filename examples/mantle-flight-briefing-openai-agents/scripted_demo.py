@@ -1,6 +1,7 @@
 """Print the checked keyless Mantle conversation; never call a real model."""
 from contextlib import redirect_stderr, redirect_stdout
 import io
+import os
 from pathlib import Path
 import runpy
 import sys
@@ -8,6 +9,7 @@ import unittest
 
 
 def main() -> int:
+    os.environ['LITELLM_MODE'] = 'PRODUCTION'
     transcript = []
     diagnostics = io.StringIO()
     # Keep engine diagnostics out of the projected transcript. In particular,
