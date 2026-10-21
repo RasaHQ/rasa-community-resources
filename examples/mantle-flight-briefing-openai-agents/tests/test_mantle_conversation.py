@@ -31,6 +31,7 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
         from rasa.agents.schemas.agent_tool_schema import AgentToolSchema
         from rasa.core.channels.channel import CollectingOutputChannel
         from rasa.shared.core.trackers import DialogueStateTracker
+        from rasa.shared.core.events import UserUttered
         from rasa.shared.providers.llm.llm_response import LLMResponse, LLMToolCall
         from rasa.mantle.config.integrations import MCPServerSpec
         from rasa.mantle.hooks.loader import load_hooks
@@ -63,12 +64,16 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                     name, args = 'activate', {'target_id': 'briefing'}
                 elif self.count == 2:
                     name, args = 'briefing', {'action': 'start', 'request': 'Replay DEMO101'}
-                elif self.count == 3:
+                elif self.count in (3, 6, 9):
                     fixture.assertEqual(len(jobs._jobs), 1)
                     capability, job = next(iter(jobs._jobs.items()))
                     await job.task
                     name, args = 'briefing', {'action': 'get', 'briefing_id': capability}
-                elif self.count == 4:
+                elif self.count in (5, 8):
+                    capability = next(iter(jobs._jobs))
+                    change = 'Replay DEMO101 morning weather' if self.count == 5 else 'Replay DEMO101 later arrival'
+                    name, args = 'briefing', {'action': 'revise', 'briefing_id': capability, 'change': change}
+                elif self.count in (4, 7, 10):
                     return LLMResponse(id='script-final', choices=['Unchecked model margin 9999 minutes'], created=0)
                 else:
                     raise AssertionError('unexpected provider fixture call')
@@ -103,17 +108,36 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                             output = CollectingOutputChannel()
                             executor = SkillExecutor(skill_catalog=catalog, mcp_runtime=runtime, hooks=hooks)
                             orchestrator = Orchestrator(executor, PromptConstructor(), bootstrap)
-                            turn = IncomingTurn(sender_id='fixture-conversation-a', text='Show the constructed Replay DEMO101')
-                            with patch('rasa.mantle.llm.client.LLMClient.from_bootstrap', return_value=provider):
+                            async def run_turn(text):
+                                turn = IncomingTurn(sender_id='fixture-conversation-a', text=text)
+                                tracker.update(UserUttered(text=text, input_channel='fixture'))
+                                before = len(output.messages)
                                 async with MessageTurnContext(handle, turn, output, turn.sender_id):
                                     result = await orchestrator.run_turn(handle, turn)
-                            self.assertIsNone(result.error, result)
-                            self.assertEqual(provider.count, 4)
-                            delivered = '\n\n'.join(message['text'] for message in output.messages)
-                            self.assertIn('Margin: 120.0 minutes', delivered)
-                            self.assertIn('not bound to this conversation', delivered)
-                            self.assertNotIn('9999', delivered)
-                            self.assertNotIn(next(iter(jobs._jobs)), delivered)
+                                self.assertIsNone(result.error, result)
+                                delivered = '\n\n'.join(message['text'] for message in output.messages[before:])
+                                self.assertIn('not bound to this conversation', delivered)
+                                self.assertNotIn('9999', delivered)
+                                self.assertNotIn(next(iter(jobs._jobs)), delivered)
+                                return delivered
+
+                            with patch('rasa.mantle.llm.client.LLMClient.from_bootstrap', return_value=provider):
+                                first = await run_turn('Show the constructed Replay DEMO101')
+                                self.assertEqual(provider.count, 4)
+                                self.assertIn('Margin: 120.0 minutes', first)
+                                original = {card['event']['component']: card for card in next(iter(jobs._jobs.values())).cards}
+                                weather = await run_turn('Replay DEMO101 morning weather')
+                                self.assertEqual(provider.count, 7)
+                                self.assertIn('Margin: 120.0 minutes', weather)
+                                revised = {card['event']['component']: card for card in next(iter(jobs._jobs.values())).cards}
+                                for component in ('flight_status', 'arrival_timeline'):
+                                    self.assertEqual(original[component], revised[component])
+                                self.assertNotEqual(original['weather_hourly']['event']['request_id'],
+                                                    revised['weather_hourly']['event']['request_id'])
+                                later = await run_turn('Replay DEMO101 later arrival')
+                                self.assertEqual(provider.count, 10)
+                                self.assertIn('Margin: 30.0 minutes', later)
+                                self.assertNotIn('Margin: 120.0 minutes', later)
                             await runtime.close()
         finally:
             await jobs.close()
