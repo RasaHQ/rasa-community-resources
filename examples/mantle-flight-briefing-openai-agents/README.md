@@ -91,15 +91,18 @@ model-driven conversation or a proof of streaming behavior.
 
 A separate keyless conversation control runs the actual Mantle orchestrator,
 skill dispatch, MCP ClientSession/server, Core replay, hooks, tracker and output
-channel. Only the LLM provider factory is replaced with scripted responses over three turns
-(initial briefing, weather-only revision, later arrival); the HTTP transport stays in process. This proves
+channel. Only the LLM provider factory is replaced with scripted responses over ten turns
+(initial briefing, weather and arrival revisions, missing-input questions and
+resumption, source failure, recovery and missing estimate); the HTTP transport stays in process. This proves
 that those pieces connect, that the weather follow-up retains the original
 flight/timeline provenance, and that a later arrival changes the margin from
 120 to 30 minutes while unchecked model numbers are replaced. The
 script chooses the capability from fixture state; it does not prove a model can
 retain it, follow the skill or interpret a traveller’s request. No installed
 engine file is changed. Real model behavior and facilitator acceptance remain
-outstanding.
+outstanding. `Replay DEMO101 no estimate` explicitly exercises the scheduled
+arrival fallback, displaying the absent estimate as not provided rather than
+inventing it or a delayed status.
 
 ## Runtime boundary
 

@@ -34,6 +34,10 @@ reasons, no old arrival or margin stays current, and the briefing is incomplete.
 Do not turn the failed source into a claimed completed investigation. Revise
 with the named `Replay DEMO101` to exercise recovery from that fixture failure.
 
+`Replay DEMO101 no estimate` exercises missing provider estimates. Scheduled
+arrival is explicitly selected and labelled; no estimate or delayed status is
+invented. Retain the traveller's supplied meeting and transfer inputs.
+
 Collect the flight and travel date, destination, meeting time with timezone,
 and an explicitly stated transfer-minute assumption. Ask about missing details;
 never fill them with guessed values. Start the task with `briefing(action="start",

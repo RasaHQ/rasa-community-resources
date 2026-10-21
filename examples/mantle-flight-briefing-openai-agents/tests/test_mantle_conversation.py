@@ -58,25 +58,24 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
 
         class ProviderFixture:
             count = 0
+            plan = []
+
             async def acompletion(self, messages, **kwargs):
                 self.count += 1
-                if self.count == 1:
-                    name, args = 'activate', {'target_id': 'briefing'}
-                elif self.count == 2:
-                    name, args = 'briefing', {'action': 'start', 'request': 'Replay DEMO101'}
-                elif self.count in (3, 6, 9):
-                    fixture.assertEqual(len(jobs._jobs), 1)
-                    capability, job = next(iter(jobs._jobs.items()))
-                    await job.task
-                    name, args = 'briefing', {'action': 'get', 'briefing_id': capability}
-                elif self.count in (5, 8):
-                    capability = next(iter(jobs._jobs))
-                    change = 'Replay DEMO101 morning weather' if self.count == 5 else 'Replay DEMO101 later arrival'
-                    name, args = 'briefing', {'action': 'revise', 'briefing_id': capability, 'change': change}
-                elif self.count in (4, 7, 10):
-                    return LLMResponse(id='script-final', choices=['Unchecked model margin 9999 minutes'], created=0)
-                else:
-                    raise AssertionError('unexpected provider fixture call')
+                fixture.assertTrue(self.plan, 'unexpected provider fixture call')
+                step = self.plan.pop(0)
+                if isinstance(step, str):
+                    return LLMResponse(id=f'script-final-{self.count}', choices=[step], created=0)
+                name, args = step
+                args = dict(args)
+                offered = {tool['function']['name'] for tool in kwargs.get('tools') or []}
+                fixture.assertIn(name, offered, 'fixture attempted a tool the actual engine did not offer')
+                if args.get('action') in ('get', 'revise'):
+                    # Fixture-only selection; not a claim that a model remembers IDs.
+                    capability, job = list(jobs._jobs.items())[-1]
+                    if args['action'] == 'get':
+                        await job.task
+                    args['briefing_id'] = capability
                 return LLMResponse(id=f'script-{self.count}', choices=[], created=0,
                     tool_calls=[LLMToolCall(id=f'call-{self.count}', tool_name=name, tool_args=args)])
 
@@ -108,7 +107,8 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                             output = CollectingOutputChannel()
                             executor = SkillExecutor(skill_catalog=catalog, mcp_runtime=runtime, hooks=hooks)
                             orchestrator = Orchestrator(executor, PromptConstructor(), bootstrap)
-                            async def run_turn(text):
+                            async def run_turn(text, steps, *, cards=True):
+                                provider.plan = [*steps, "Unchecked model margin 9999 minutes"]
                                 turn = IncomingTurn(sender_id='fixture-conversation-a', text=text)
                                 tracker.update(UserUttered(text=text, input_channel='fixture'))
                                 before = len(output.messages)
@@ -116,17 +116,25 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                     result = await orchestrator.run_turn(handle, turn)
                                 self.assertIsNone(result.error, result)
                                 delivered = '\n\n'.join(message['text'] for message in output.messages[before:])
-                                self.assertIn('not bound to this conversation', delivered)
+                                self.assertEqual(provider.plan, [], 'turn ended before fixture actions completed')
+                                if cards:
+                                    self.assertIn('not bound to this conversation', delivered)
                                 self.assertNotIn('9999', delivered)
-                                self.assertNotIn(next(iter(jobs._jobs)), delivered)
+                                for capability in jobs._jobs:
+                                    self.assertNotIn(capability, delivered)
                                 return delivered
 
                             with patch('rasa.mantle.llm.client.LLMClient.from_bootstrap', return_value=provider):
-                                first = await run_turn('Show the constructed Replay DEMO101')
+                                first = await run_turn('Show the constructed Replay DEMO101', [
+                                    ('activate', {'target_id': 'briefing'}),
+                                    ('briefing', {'action': 'start', 'request': 'Replay DEMO101'}),
+                                    ('briefing', {'action': 'get'})])
                                 self.assertEqual(provider.count, 4)
                                 self.assertIn('Margin: 120.0 minutes', first)
                                 original = {card['event']['component']: card for card in next(iter(jobs._jobs.values())).cards}
-                                weather = await run_turn('Replay DEMO101 morning weather')
+                                weather = await run_turn('Replay DEMO101 morning weather', [
+                                    ('briefing', {'action': 'revise', 'change': 'Replay DEMO101 morning weather'}),
+                                    ('briefing', {'action': 'get'})])
                                 self.assertEqual(provider.count, 7)
                                 self.assertIn('Margin: 120.0 minutes', weather)
                                 revised = {card['event']['component']: card for card in next(iter(jobs._jobs.values())).cards}
@@ -134,10 +142,49 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                     self.assertEqual(original[component], revised[component])
                                 self.assertNotEqual(original['weather_hourly']['event']['request_id'],
                                                     revised['weather_hourly']['event']['request_id'])
-                                later = await run_turn('Replay DEMO101 later arrival')
+                                later = await run_turn('Replay DEMO101 later arrival', [
+                                    ('briefing', {'action': 'revise', 'change': 'Replay DEMO101 later arrival'}),
+                                    ('briefing', {'action': 'get'})])
                                 self.assertEqual(provider.count, 10)
                                 self.assertIn('Margin: 30.0 minutes', later)
                                 self.assertNotIn('Margin: 120.0 minutes', later)
+                                question = await run_turn('Show the missing-input replay', [
+                                    ('briefing', {'action': 'start', 'request': 'Replay DEMO101 missing inputs'}),
+                                    ('briefing', {'action': 'get'})], cards=False)
+                                self.assertIn('meeting time', question)
+                                self.assertNotIn('Margin:', question)
+                                capability = list(jobs._jobs)[-1]
+                                for reply in ('tomorrow at five', '2026-10-22T21:00:00Z', '45 minutes'):
+                                    answer = await run_turn(reply, [
+                                        ('briefing', {'action': 'revise', 'change': reply}),
+                                        ('briefing', {'action': 'get'})], cards=reply == '45 minutes')
+                                    self.assertEqual(list(jobs._jobs)[-1], capability)
+                                    if reply == 'tomorrow at five':
+                                        self.assertIn('meeting time', answer)
+                                    elif reply.endswith('Z'):
+                                        self.assertIn('transfer duration', answer)
+                                    else:
+                                        self.assertIn('Margin: 165.0 minutes', answer)
+                                        self.assertIn('Transfer assumption: 45 minutes', answer)
+                                failure = await run_turn('Show the flight-source failure replay', [
+                                    ('briefing', {'action': 'revise', 'change': 'Replay DEMO101 flight unavailable'}),
+                                    ('briefing', {'action': 'get'})])
+                                self.assertIn('Briefing incomplete', failure)
+                                self.assertIn('Unavailable: Flight source', failure)
+                                self.assertIn('Weather Hourly', failure)
+                                self.assertNotIn('Margin:', failure)
+                                recovered = await run_turn('Recover the named replay', [
+                                    ('briefing', {'action': 'revise', 'change': 'Replay DEMO101'}),
+                                    ('briefing', {'action': 'get'})])
+                                self.assertIn('Briefing complete', recovered)
+                                self.assertIn('Margin: 165.0 minutes', recovered)
+                                scheduled = await run_turn('Use the no-estimate replay', [
+                                    ('briefing', {'action': 'revise', 'change': 'Replay DEMO101 no estimate'}),
+                                    ('briefing', {'action': 'get'})])
+                                self.assertIn('Arrival from scheduled_arrival', scheduled)
+                                self.assertIn('Estimated arrival: not provided', scheduled)
+                                self.assertIn('Margin: 195.0 minutes', scheduled)
+                                self.assertEqual(provider.count, 31)
                             await runtime.close()
         finally:
             await jobs.close()

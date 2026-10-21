@@ -24,7 +24,7 @@ class ReplayRunner:
         # Missing-input scenarios remain explicitly named constructed replay.
         named = ("Replay DEMO101", "Replay DEMO101 later arrival", "Replay DEMO101 morning weather",
                  "Replay DEMO101 missing transfer", "Replay DEMO101 missing meeting", "Replay DEMO101 missing inputs",
-                 "Replay DEMO101 flight unavailable")
+                 "Replay DEMO101 flight unavailable", "Replay DEMO101 no estimate")
         inputs = dict(work.inputs or {"meeting_time": "2026-10-22T21:00:00Z", "transfer_minutes": 90})
         waiting = inputs.get("awaiting")
         if waiting and work.text not in named:
@@ -45,6 +45,8 @@ class ReplayRunner:
                 inputs["transfer_minutes"] = None
             if work.text == "Replay DEMO101 later arrival":
                 inputs["later"] = True
+            elif work.text in ("Replay DEMO101", "Replay DEMO101 no estimate"):
+                inputs["later"] = False
         else:
             raise ValueError("named_replay_scenario_required")
         for field, question in (("meeting_time", "What is the meeting time, including its date and timezone?"),
@@ -61,7 +63,8 @@ class ReplayRunner:
             "destination": {"code_iata": "JFK"},
             "scheduled_out": "2026-10-22T10:00:00Z", "estimated_out": None,
             "scheduled_in": "2026-10-22T17:00:00Z",
-            "estimated_in": "2026-10-22T19:00:00Z" if later else "2026-10-22T17:30:00Z",
+            "estimated_in": (None if work.text == "Replay DEMO101 no estimate" else
+                             "2026-10-22T19:00:00Z" if later else "2026-10-22T17:30:00Z"),
             "terminal_destination": None, "status": "Classroom replay status",
         }
         unavailable = work.text == "Replay DEMO101 flight unavailable"

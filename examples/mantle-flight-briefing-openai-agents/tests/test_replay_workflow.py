@@ -126,6 +126,21 @@ class ReplayWorkflow(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(recovered["status"], "complete")
         self.assertIn("Margin: 120.0 minutes", render_cards(recovered))
 
+    async def test_missing_estimate_uses_labelled_schedule_without_inventing_delay(self):
+        started = await self.jobs.briefing(self.owner, action="start", request="Replay DEMO101 no estimate")
+        job_id = started["job_id"]
+        await self.jobs._jobs[job_id].task
+        state = await self.jobs.briefing(self.owner, action="get", job_id=job_id)
+        self.assertEqual(state["status"], "complete", state)
+        cards = {card["event"]["component"]: card for card in state["cards"]}
+        flight = cards["flight_status"]["data_ref"]["payload"]
+        self.assertIsNone(flight["estimated_arrival"])
+        self.assertEqual(flight["reported_status"], "Classroom replay status")
+        rendered = render_cards(state)
+        self.assertIn("Arrival from scheduled_arrival", rendered)
+        self.assertIn("Estimated arrival: not provided", rendered)
+        self.assertIn("Margin: 150.0 minutes", rendered)
+
 
 if __name__ == "__main__":
     unittest.main()
