@@ -32,3 +32,37 @@ assessor is supplied until the intended workflow is qualified.
 Environment variable names are listed in `.env.example`; values must remain
 only in the facilitator's own runtime environment. No file is loaded by this
 project to discover credentials.
+
+## Facilitator runtime checkpoint
+
+After managed setup, use two facilitator shells with the same runtime-only
+`BRIEFING_MCP_TOKEN` (at least 32 characters) and the facilitator’s own
+`OPENAI_API_KEY`. Supply those through the facilitator’s existing environment;
+do not save them into `.env` or a transcript. This is a runtime exercise, not a
+source gate; it starts services and makes model calls.
+
+From the example directory, start the constructed replay backend:
+
+```sh
+worker/.venv/bin/python -m briefing
+```
+
+From this `project/` directory in the second shell:
+
+```sh
+.venv/bin/rasa train
+.venv/bin/rasa inspect
+```
+
+These are the installed engine’s normal entry points, not an assertion that
+this complete launch has passed. Use the named constructed replay explicitly:
+“Show the constructed Replay DEMO101.” Expect flight, weather and timeline text
+cards, REPLAY labels, a 90-minute assumed transfer, and a 120-minute margin. Then
+ask for “Replay DEMO101 morning weather”; flight and timeline must retain their
+provenance. A later-arrival revision must replace the affected values. Do not
+supply a real journey to this replay-only backend or accept invented live facts.
+
+Never disclose the briefing capability in the reply. Check the missing/wrong-ID
+refusal and explain that sharing the real ID grants access. A successful launch
+is still subject to the independent class acceptance checks. Stop both runtime
+processes when the exercise is finished.

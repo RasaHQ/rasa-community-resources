@@ -71,6 +71,16 @@ before the real turn context records and delivers the cards. The pin registers
 use that hook. That is adapter and delivery integration evidence, not a complete
 model-driven conversation or a proof of streaming behavior.
 
+A separate keyless conversation control runs the actual Mantle orchestrator,
+skill dispatch, MCP ClientSession/server, Core replay, hooks, tracker and output
+channel. Only the LLM provider factory is replaced with four scripted responses
+(activate, start, get, summary); the HTTP transport stays in process. This proves
+that those pieces connect and that unchecked model numbers are replaced. The
+script chooses the capability from fixture state; it does not prove a model can
+retain it, follow the skill or interpret a traveller’s request. No installed
+engine file is changed. Real model behavior and facilitator acceptance remain
+outstanding.
+
 ## Runtime boundary
 
 The facilitator-only local launcher is `python -m briefing` from this directory,
