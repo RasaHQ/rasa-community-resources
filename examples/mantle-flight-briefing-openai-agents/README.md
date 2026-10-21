@@ -22,11 +22,15 @@ fields and extra arguments are refused rather than silently ignored. **Anyone wi
 revise the briefing, including another conversation.** This is capability
 possession, not engine-sender isolation. Keep IDs out of shared transcripts,
 logs and telemetry. The wired model-response modifier redacts capability-shaped
-text before delivery while preserving tool-call arguments. The application logging helper redacts formatted standard-log messages and
-arguments, and string values present when its first structlog processor runs.
-It does not cover standard-log `extra` fields, exception text or values added by
-later processors. Do not log capabilities through those paths or enable
-request-body/access tracing; this is not a complete telemetry privacy boundary.
+text before delivery while preserving tool-call arguments. The application logging helper redacts key-shaped strings and exact environment
+credential values in formatted standard logs (including extra fields and exception
+text), initial and rendered structlog events, rendered cards and model replies.
+The public MCP boundary refuses credentials in tool arguments or metadata and
+sanitizes validation-error responses. Synthetic-key controls cover these paths;
+this does not certify arbitrary third-party telemetry. Keep request-body/access
+tracing disabled and never paste keys into the conversation. Keys are read only
+from process environment, never from a key file. See the participant key setup
+and doctor in [the project instructions](project/README.md).
 
 Core supplies widget validation, per-widget supersession and the managed Agents
 API wrapper. Model output never supplies the numbers in the cards.

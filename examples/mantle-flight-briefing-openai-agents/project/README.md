@@ -83,3 +83,65 @@ Never disclose the briefing capability in the reply. Check the missing/wrong-ID
 refusal and explain that sharing the real ID grants access. A successful launch
 is still subject to the independent class acceptance checks. Stop both runtime
 processes when the exercise is finished.
+
+## Participant keys and one doctor command
+
+Participants bring no keys. The facilitator hands out OpenAI and Anthropic keys
+in class and shows how to set process environment variables privately. Do not
+paste them into chat, terminal recordings, this repository, `.env`, logs or
+notebooks. The kit does not load `.env`; names-only `.env.example` is documentation.
+`.env`, `.env.*`, `.envrc` and `*.key` are git-ignored. No OAuth, ZEOconnect or
+account login is used by these paths. Seats never receive a key.
+
+Choose the live Mantle provider with **one setting** in `integrations.yml`:
+`llm.model_group: openai` or `llm.model_group: anthropic`. Both declared groups
+reference environment variables rather than literal keys.
+
+| Path | Environment key required | Data / remaining proof |
+| --- | --- | --- |
+| Mantle OpenAI (`gpt-4.1-mini`) | `OPENAI_API_KEY` | Real conversation over constructed replay; facilitator live proof pending |
+| Mantle Anthropic (`claude-sonnet-5-5`) | `ANTHROPIC_API_KEY` | Same constructed replay; facilitator live proof pending |
+| OpenAI managed Agents leg | `OPENAI_API_KEY`, even with Anthropic Mantle | SDK/Core compatibility and facilitator live proof still pending |
+| SCRIPTED ten-turn fallback | neither | Provider responses/capability choice scripted; no model reasoning claim |
+
+From the example directory, on each participant machine:
+
+```sh
+project/.venv/bin/python class_doctor.py
+```
+
+It prints only `SET` or `MISSING` for each key name and the selected live path.
+When a selected key is missing it prints the SCRIPTED fallback and a plain
+refusal, returns nonzero, and makes no network call. To check the fallback:
+
+```sh
+project/.venv/bin/python class_doctor.py --scripted
+project/.venv/bin/python scripted_demo.py
+```
+
+After the facilitator privately sets the selected provider's key in their own
+process environment, they can make one bounded smoke call through Mantle's
+actual configured provider client:
+
+```sh
+project/.venv/bin/python class_doctor.py --probe
+```
+
+Repeat after changing `llm.model_group` to the other provider. The command prints
+only path and `PROBE: PASS` or a generic failure, never response content, key
+values or exception diagnostics. No key or raw log is sent to a seat. Report
+only provider, source head, pass/failure, and whether the actual conversation
+rehearsal passed. A smoke call is not full conversation acceptance.
+
+`--probe-agents` separately targets Core's managed OpenAI Agents adapter. The
+current Mantle lock pins SDK 2.44, which lacks `beta.agents`; SDK 3.36 has that
+namespace but also needs a Core stream-identity compatibility change. This is
+an explicit outstanding dependency, not a working live-leg claim or a reason
+to replace Agents with another API. The probe refuses unsupported runtimes;
+no SDK upgrade or alternate transport should be improvised in the class.
+The labelled scripted fallback remains available.
+
+Provider references: [OpenAI environment-key quickstart](https://developers.openai.com/api/docs/quickstart),
+[managed Agents API contract](https://developers.openai.com/api/docs/guides/agents-api/quickstart),
+and [Anthropic Sonnet 5.5 model identity](https://platform.claude.com/docs/en/models/sonnet-5-5/overview).
+These establish interfaces/model names, not access for a handed-out key.

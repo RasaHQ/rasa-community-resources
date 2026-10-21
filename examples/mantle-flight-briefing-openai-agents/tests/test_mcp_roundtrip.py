@@ -10,9 +10,48 @@ from briefing.identity import SENDER_META
 from briefing.jobs import Jobs
 from briefing.mcp_app import create_app
 from briefing.replay import ReplayRunner
+from project.lib.capability_logging import contains_api_key
 
 
 class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
+    async def test_synthetic_keys_refused_in_meta_and_arguments_without_echo(self):
+        runner = ReplayRunner()
+        jobs = Jobs(runner, replacement_plan=runner.replacement_plan, ownership_mode='capability')
+        token = 'synthetic-transport-with-no-real-authority'
+        app = create_app(jobs, transport_token=token)
+        key = 'sk-' + 'syntheticOnly' * 4
+        async with app._app.router.lifespan_context(app._app):
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url='http://127.0.0.1:8942',
+                    headers={'accept': 'application/json, text/event-stream', 'authorization': 'Bearer ' + token}) as client:
+                for index, (arguments, meta) in enumerate([
+                    ({'action': 'start', 'request': 'Replay DEMO101'}, {'provider_key': key}),
+                    ({'action': 'start', 'request': key}, {}),
+                    ({'action': 'get', 'api_key': key}, {}),
+                ]):
+                    response = await client.post('/mcp', json={'jsonrpc': '2.0', 'id': index + 1,
+                        'method': 'tools/call', 'params': {'name': 'briefing', 'arguments': arguments, '_meta': meta}})
+                    self.assertEqual(response.status_code, 200)
+                    self.assertFalse(contains_api_key(response.text))
+                    self.assertTrue(response.json()['result'].get('isError'))
+                self.assertEqual(jobs._jobs, {})
+
+    async def test_source_card_and_transcript_do_not_echo_synthetic_key(self):
+        from project.lib.card_text import render_cards
+        runner = ReplayRunner()
+        jobs = Jobs(runner, replacement_plan=runner.replacement_plan, ownership_mode='capability')
+        from briefing.jobs import Owner
+        owner = Owner('mantle', 'capability-possession')
+        try:
+            started = await jobs.briefing(owner, action='start', request='Replay DEMO101')
+            await jobs._jobs[started['job_id']].task
+            snapshot = await jobs.briefing(owner, action='get', job_id=started['job_id'])
+            snapshot['cards'][0]['data_ref']['source'] = 'sk-' + 'syntheticOnly' * 4
+            text = render_cards(snapshot)
+            self.assertFalse(contains_api_key(text))
+            self.assertIn('credential redacted', text)
+        finally:
+            await jobs.close()
+
     async def test_one_tool_and_authenticated_two_conversation_boundary(self):
         runner = ReplayRunner()
         jobs = Jobs(runner, replacement_plan=runner.replacement_plan, ownership_mode="capability")

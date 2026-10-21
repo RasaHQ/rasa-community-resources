@@ -4,6 +4,7 @@ These are text cards, not a claim of native arbitrary widget support. An
 interactive client renderer remains a separate capability to demonstrate.
 """
 from zeo_core.contracts.ui.widgets import COMPONENTS, DataRef, WidgetUpsert
+from .capability_logging import redact
 
 
 def _shown(value):
@@ -59,4 +60,4 @@ def render_cards(snapshot: dict) -> str:
             for assumption in ref.assumptions:
                 lines.append(f"Assumption: {assumption.label} = {assumption.value}")
         blocks.append("\n".join(lines))
-    return "\n\n".join(blocks)
+    return redact("\n\n".join(blocks))

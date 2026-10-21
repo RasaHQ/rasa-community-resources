@@ -13,6 +13,7 @@ from mcp.server.fastmcp.tools.base import Tool
 from pydantic import BaseModel, ConfigDict
 
 from briefing.jobs import Jobs
+from project.lib.capability_logging import contains_api_key, redact_api
 
 
 class BriefingResponse(BaseModel):
@@ -49,7 +50,30 @@ class _MantlePeer:
             return
         # Request scope is created by the server, never copied from model data.
         scope = {**scope, "briefing.peer": "mantle"}
-        return await self._app(scope, receive, send)
+        # Protect even SDK validation errors produced before the tool function,
+        # including echoed extra arguments or JSON-RPC metadata. Stateless JSON
+        # responses are buffered to avoid split-chunk credential leakage.
+        start = None
+        chunks = bytearray()
+
+        async def safe_send(message):
+            nonlocal start
+            if message['type'] == 'http.response.start':
+                start = message
+            elif message['type'] == 'http.response.body':
+                chunks.extend(message.get('body', b''))
+                if len(chunks) > 4 * 1024 * 1024:
+                    raise ValueError('public_response_limit')
+                if not message.get('more_body', False):
+                    body = redact_api(chunks.decode('utf-8')).encode('utf-8')
+                    headers = [(k, v) for k, v in start.get('headers', [])
+                               if k.lower() != b'content-length']
+                    await send({**start, 'headers': headers + [(b'content-length', str(len(body)).encode())]})
+                    await send({'type': 'http.response.body', 'body': body})
+            else:
+                await send(message)
+
+        return await self._app(scope, receive, safe_send)
 
 
 def create_app(jobs: Jobs, *, transport_token: str):
@@ -67,12 +91,19 @@ def create_app(jobs: Jobs, *, transport_token: str):
         incoming = context.request
         peer = incoming.scope.get("briefing.peer") if incoming is not None else None
         metadata = context.meta.model_dump(by_alias=True) if context.meta is not None else None
+        if contains_api_key(metadata) or contains_api_key((request, briefing_id, change)):
+            raise ValueError('api_credentials_forbidden_in_mcp')
         result = await jobs.from_transport(peer, metadata, action=action, request=request,
                                            job_id=briefing_id, change=change)
         if "job_id" in result:
             result["briefing_id"] = result.pop("job_id")
         result["binding"] = "capability_id" if jobs.ownership_mode == "capability" else "engine_sender"
-        return BriefingResponse.model_validate(result)
+        # Credentials never belong in cards, errors, questions or MCP results.
+        # Preserve the briefing capability: get/revise need that private ID.
+        clean = redact_api({k: v for k, v in result.items() if k != 'briefing_id'})
+        if 'briefing_id' in result:
+            clean['briefing_id'] = result['briefing_id']
+        return BriefingResponse.model_validate(clean)
 
     tool = Tool.from_function(briefing, description="Start, inspect or revise a briefing using its unguessable briefing_id capability. Possession permits access; this mode is not engine-sender binding. Never supply user or session identity.")
 

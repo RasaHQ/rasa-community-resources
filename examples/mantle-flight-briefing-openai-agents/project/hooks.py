@@ -60,4 +60,4 @@ async def present_source_cards(payload: ModelResponsePayload) -> ModelResponsePa
     cards = _pending_cards.pop(payload.sender_id, None)
     if cards is None:
         return payload
-    return payload.model_copy(update={"text": cards})
+    return payload.model_copy(update={"text": redact(cards)})
