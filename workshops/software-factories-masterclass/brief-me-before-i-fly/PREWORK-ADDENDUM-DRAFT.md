@@ -26,5 +26,5 @@ About the keys: we hand out the API keys in the class. You bring none. When we g
 ---
 
 Notes for the organizer:
-- The earlier pre-work pins e2a286a8; this addendum moves participants to <CLASS_COMMIT>. The factory lock does not change, so the earlier environment stays valid (check: `git diff e2a286a8e496aeee0ad2a695031165361693ea8a <CLASS_COMMIT>, workshops/software-factories-masterclass/factory/uv.lock` prints nothing).
+- The earlier pre-work pins e2a286a8; this addendum moves participants to <CLASS_COMMIT>. The factory lock does not change, so the earlier environment stays valid (check: `git diff e2a286a8e496aeee0ad2a695031165361693ea8a <CLASS_COMMIT> -- workshops/software-factories-masterclass/factory/uv.lock` prints nothing).
 - Not tested on a second machine or on Windows or Linux unless stated here after measurement.
