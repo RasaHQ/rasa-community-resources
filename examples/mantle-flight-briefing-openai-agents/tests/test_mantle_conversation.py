@@ -122,6 +122,11 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                 self.assertNotIn('9999', delivered)
                                 for capability in jobs._jobs:
                                     self.assertNotIn(capability, delivered)
+                                # The facilitator launcher prints these actual
+                                # delivered messages, after the same assertions.
+                                sink = getattr(self, 'transcript_sink', None)
+                                if sink is not None:
+                                    sink.append((text, delivered))
                                 return delivered
 
                             with patch('rasa.mantle.llm.client.LLMClient.from_bootstrap', return_value=provider):

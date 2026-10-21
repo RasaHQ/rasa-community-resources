@@ -37,6 +37,21 @@ project to discover credentials.
 
 ## Facilitator runtime checkpoint
 
+For a **keyless scripted demo**, run from the example directory after managed
+setup and verified Core wheel staging:
+
+```sh
+project/.venv/bin/python scripted_demo.py
+```
+
+This one command runs the same checked ten-turn actual Mantle/MCP/Core harness
+and prints the delivered cards and questions. It needs no model key, user input
+or listening server. The output says SCRIPTED / CONSTRUCTED REPLAY: provider
+responses and capability selection are scripted. It is a classroom replay,
+not proof that a model understands requests, retains IDs or selects tools. A
+failed assertion stops the launcher without presenting a successful transcript.
+
+For the **facilitator's real-model conversation**, use the two-shell path below.
 After managed setup, use two facilitator shells with the same runtime-only
 `BRIEFING_MCP_TOKEN` (at least 32 characters) and the facilitator’s own
 `OPENAI_API_KEY`. Supply those through the facilitator’s existing environment;
