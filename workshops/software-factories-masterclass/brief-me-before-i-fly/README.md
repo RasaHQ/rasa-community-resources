@@ -10,8 +10,8 @@ A Mantle skill (`project/skills/briefing/skill.md`) imports one MCP tool from a 
 It is built separately in the companion example in this repository (not in this folder; nothing here runs against a server).
 The cards are defined by zeocore and drawn by our renderer where Mantle does not render them. **They are not a Mantle feature.**
 
-The feature specification and the acceptance scenarios for the product are `SPEC-brief-me-before-i-fly-v4.md` and
-`ACCEPTANCE-SCENARIOS-v4.md`, with the two JSON schemas, beside this file. The scenarios are the product's contract; the coding agent in the factory never edits them.
+The feature specification and the acceptance scenarios for the product are `SPEC-brief-me-before-i-fly-v5.md` and
+`ACCEPTANCE-SCENARIOS-v5.md`, with the two JSON schemas, beside this file. The scenarios are the product's contract; the coding agent in the factory never edits them.
 
 ## What this folder grades
 
@@ -36,3 +36,5 @@ Expected: 15 tests OK; the baseline is ACCEPT and the fourteen edited variants a
 - The suite reads the skill's wording and the engine's compiled result. It does not show that a model follows the wording.
 - Nothing here exercises the briefing service, the cards' renderer, any data provider, voice or the OpenAI Agents API.
 - A wording check accepts any edit that keeps the checked phrases: that is why the product has its own acceptance scenarios.
+
+`contract/` holds the payload-shape check for the zeocore types the schemas here do not cover (they are envelope-only).

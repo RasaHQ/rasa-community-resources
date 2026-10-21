@@ -35,7 +35,7 @@ Say aloud at the start: the flight is a constructed classroom replay named DEMO1
 - Land it: one conversation, one tool, cards that come from checked data. The rest of the day takes it apart.
 
 ### 13:45 The spec and the scenarios come first (20 min)
-- Show `SPEC-brief-me-before-i-fly-v4.md` sections 3 to 6 and `ACCEPTANCE-SCENARIOS-v4.md`.
+- Show `SPEC-brief-me-before-i-fly-v5.md` sections 3 to 6 and `ACCEPTANCE-SCENARIOS-v5.md`.
 - Say: the spec owner wrote the scenarios before any code. The builder never edits them. Two of them are the operator's own: a delayed quote is labelled delayed and never called real time (M1); a stale weather result cannot overwrite a changed destination's card (S5).
 - Ask each pair to pick one scenario and name the edit to the product that would make it fail.
 
