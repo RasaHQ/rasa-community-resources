@@ -37,10 +37,10 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self):
         await self.jobs.close()
 
-    async def present(self, value, sender='conversation-a'):
+    async def present(self, value, sender='conversation-a', is_error=False):
         result = await run_modify(self.registry, 'tool_result', ToolResultPayload(
             sender_id=sender, tool_name='mcp/briefing:briefing',
-            arguments={'action': 'get'}, value=value))
+            arguments={'action': 'get'}, value=value, is_error=is_error))
         self.assertIsNone(result.control_flow)
         self.assertEqual(result.outcome, "success")
         outgoing = await run_modify(self.registry, 'model_response', ModelResponsePayload(
@@ -123,6 +123,21 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         text = await self.present({'status': 'complete', 'cards': [{'invalid': True}]})
         self.assertIn('could not be validated', text)
         self.assertNotIn('9999', text)
+
+    async def test_error_wrapper_and_empty_results_never_release_model_summary(self):
+        cases = [
+            ({'error': 'unavailable'}, True),
+            ({'result': {'status': 'complete', 'cards': []}}, False),
+            ({'status': 'complete', 'cards': []}, False),
+            ({'status': 'running'}, False),
+            ('not JSON', False),
+            ({'status': 'needs_input', 'needs_input': 'invalid'}, False),
+        ]
+        for value, is_error in cases:
+            with self.subTest(value=value, is_error=is_error):
+                text = await self.present(value, is_error=is_error)
+                self.assertNotIn('9999', text)
+                self.assertIn('could not be validated', text)
 
 
 if __name__ == '__main__':

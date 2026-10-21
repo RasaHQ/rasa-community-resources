@@ -22,8 +22,11 @@ fields and extra arguments are refused rather than silently ignored. **Anyone wi
 revise the briefing, including another conversation.** This is capability
 possession, not engine-sender isolation. Keep IDs out of shared transcripts,
 logs and telemetry. The wired model-response modifier redacts capability-shaped
-text before delivery while preserving tool-call arguments. Standard and structured application logs redact the ID pattern; do not
-configure request-body/access tracing that would capture tool arguments.
+text before delivery while preserving tool-call arguments. The application logging helper redacts formatted standard-log messages and
+arguments, and string values present when its first structlog processor runs.
+It does not cover standard-log `extra` fields, exception text or values added by
+later processors. Do not log capabilities through those paths or enable
+request-body/access tracing; this is not a complete telemetry privacy boundary.
 
 Core supplies widget validation, per-widget supersession and the managed Agents
 API wrapper. Model output never supplies the numbers in the cards.
@@ -81,9 +84,11 @@ from another conversation, and source-card replay. They do not prove the live
 Mantle conversation or provider access. The project interpreter additionally
 exercises the actual pinned Mantle hook loader and runner with constructed Core
 results: it shows source-backed cards, preserves an unaffected timeline across a
-weather revision, and suppresses unchecked model numbers when cards are invalid.
-The engine adapters receive the same serialized JSON result that real MCP
-dispatch produces. The wired model-response modifier replaces free-form numbers
+weather revision, and suppresses unchecked model numbers for invalid, empty, wrapped or error
+briefing results.
+The adapter control supplies constructed JSON directly to the engine adapter;
+it does not by itself prove MCP serialization. The separate conversation control
+below exercises the actual MCP ClientSession/server dispatch path. The wired model-response modifier replaces free-form numbers
 before the real turn context records and delivers the cards. The pin registers
 `outgoing_text` but does not invoke it during delivery, so this project does not
 use that hook. That is adapter and delivery integration evidence, not a complete

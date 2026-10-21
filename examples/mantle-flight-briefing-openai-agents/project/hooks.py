@@ -17,7 +17,9 @@ _pending_cards: dict[str, str] = {}
 async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
     if result.tool_name not in ("briefing", "mcp/briefing:briefing"):
         return result
-    _pending_cards.pop(result.sender_id, None)
+    # Every briefing result owns the next visible response, including failures,
+    # unexpected wrappers and empty cards. Never fall back to model prose.
+    _pending_cards[result.sender_id] = "The source cards could not be validated. This briefing is unavailable."
     value = result.value
     if isinstance(value, str):
         try:
@@ -26,7 +28,7 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
             value = None
     if not result.is_error and isinstance(value, dict) and value.get("status") == "needs_input":
         missing = value.get("needs_input") or {}
-        if missing.get("field") in ("meeting_time", "transfer_minutes") and isinstance(missing.get("question"), str):
+        if isinstance(missing, dict) and missing.get("field") in ("meeting_time", "transfer_minutes") and isinstance(missing.get("question"), str):
             _pending_cards[result.sender_id] = "Constructed REPLAY: " + missing["question"]
         else:
             _pending_cards[result.sender_id] = "The briefing needs input, but its question could not be validated."

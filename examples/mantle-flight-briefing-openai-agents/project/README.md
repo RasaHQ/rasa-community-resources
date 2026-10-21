@@ -11,8 +11,10 @@ Read the [resource status and setup](../README.md) first. This project uses the
 approved capability-ID fallback: start returns a private `briefing_id`; get and
 revise require it. A conversation without that ID is refused. A conversation
 with the actual ID can access the briefing. There is no engine-sender binding,
-listing operation, engine patch or fork. The skill keeps the ID in tool context
-and must not disclose it in the user-facing reply.
+listing operation, engine patch or fork. The skill instructs the model to retain the ID in tool context; this is a prompt
+instruction, not enforced retention. The wired model-response modifier redacts
+capability-shaped text from replies while preserving tool arguments. Real model
+retention and tool selection still require the facilitator rehearsal.
 
 The pinned engine reads `llm.model_group` from `integrations.yml`. Its current
 public documentation's dynamic MCP metadata hook is absent from this pin and
