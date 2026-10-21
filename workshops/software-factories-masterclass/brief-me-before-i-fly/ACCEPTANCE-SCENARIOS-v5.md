@@ -1,6 +1,6 @@
-# Acceptance scenarios v5 for "Brief me before I fly" (owner: rasa-ops; kept apart from the implementation)
+# Acceptance scenarios v5 for "Brief me before I fly" (owner: the specification owner; kept apart from the implementation)
 sow: software-factories-masterclass-SOW-02
-Locked with SPEC-brief-me-before-i-fly-v5.md. v5 adds S17 to S20 and the factory-gate note; v4 changed only S10 from v3 (capability fallback, Architect ans_a6bd4821323124d5). Scenario meanings are unchanged from v2; the tool is now the single briefing(action=start|get|revise) (v2 sha256 8ad308b3ee617c56730f54aa3fa1a356f0f2b51e74b181df02cb3e1819d3483b; v1 ( sha256 d71981eec8bf0612047f401e3932addd56bc3fd2d36d0deb46dbb59eb6841f2a). Each scenario is stated against the public contract only (MCP tools, widget.upsert events, data_ref); none reads implementation internals.
+Locked with SPEC-brief-me-before-i-fly-v5.md. v5 adds S17 to S20 and the factory-gate note; v4 changed only S10 from v3 (capability fallback, decided 2026-10-21). Scenario meanings are unchanged from v2; the tool is now the single briefing(action=start|get|revise) (v2 sha256 8ad308b3ee617c56730f54aa3fa1a356f0f2b51e74b181df02cb3e1819d3483b; v1 ( sha256 d71981eec8bf0612047f401e3932addd56bc3fd2d36d0deb46dbb59eb6841f2a). Each scenario is stated against the public contract only (MCP tools, widget.upsert events, data_ref); none reads implementation internals.
 Tag: [core] act 1, [m] act 2 market, [manual] rehearsal check, not automatable offline. All automatable scenarios run on labelled replay fixtures; live mode is a separate dated check, never a substitute.
 
 ## Core (act 1)
@@ -34,7 +34,7 @@ Known gaps (said aloud): scenarios check contract behaviour on fixtures; they do
 S15 [core] Mantle is the centre. GIVEN the Mantle project, THEN the briefing is reached only through the skill's imported MCP tool or tools, no separate dashboard process serves a UI, and a reader can run the project's own Mantle checks offline (pack suite a6_briefing.py).
 S16 [core] Surface honesty. GIVEN the cards are drawn by a thin renderer, THEN the spoken and written text never say Mantle provides widgets; it says the cards are zeocore-defined and drawn by our renderer unless a Mantle page documents native rendering.
 
-## Added in v5 (operator decision of 15:16Z: participants run the product on handed-out API keys)
+## Added in v5 (decision of 2026-10-21: participants run the product on handed-out API keys)
 S17 [core] Doctor. GIVEN a machine with neither, one, or both of OPENAI_API_KEY and ANTHROPIC_API_KEY set, WHEN the doctor command runs, THEN it prints SET or MISSING for each key and never a value, says which path will run (live OpenAI, live Anthropic or SCRIPTED), and when a needed key is missing refuses with one plain sentence. With no keys it prints MISSING for both and SCRIPTED, and exits without error.
 S18 [core] No key leaves the environment. GIVEN a key-shaped string in the environment, WHEN the scripted replay, the doctor, a failing call and a traceback are produced, THEN no output, log, transcript, card, MCP _meta, saved file or git-tracked file contains it (planted key-shaped canaries are searched for); .env and similar files are git-ignored.
 S19 [core] Provider choice. GIVEN OPENAI_API_KEY only, or ANTHROPIC_API_KEY only, THEN Mantle's model group runs on the matching provider chosen by one documented setting; GIVEN neither, THEN only SCRIPTED runs and says so on screen. Live proof for each provider is a facilitator-environment run, marked NOT_RUN until it exists.

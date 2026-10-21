@@ -1,6 +1,6 @@
-"""Protected contract-level acceptance for the zeocore widget types (owner: rasa-ops). Offline, no key, no network.
+"""Protected contract-level acceptance for the zeocore widget types (owner: the specification owner). Offline, no key, no network.
 
-Run with the Python 3.14 interpreter that has zeocore installed:  python accept_contract.py
+Run with a Python 3.12 interpreter that has the pinned zeocore wheel installed:  python accept_contract.py
 It grades the shared contract only (scenarios S2, S3, S5, S7, M1 and the closed registry); the product has its own scenarios.
 """
 import unittest
@@ -74,7 +74,7 @@ class Contract(unittest.TestCase):
         self.assertEqual(board.cards()["weather"].id, "d-paris")
 
     def test_s5b_changing_one_card_does_not_wipe_the_other_cards(self):
-        """The operator's follow-up 'show tomorrow morning instead' changes weather only; the flight card must stay."""
+        """The organiser's follow-up 'show tomorrow morning instead' changes weather only; the flight card must stay."""
         board = w.WidgetBoard(); board.begin_request("r1")
         board.apply(event("r1", "flight", "flight_status", "d-flight", 1), w.DataRef.model_validate(flight()))
         board.apply(event("r1", "weather", "weather_hourly", "d-wx", 1), w.DataRef.model_validate(weather()))
