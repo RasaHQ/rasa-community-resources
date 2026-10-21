@@ -68,8 +68,8 @@ independent acceptance and the facilitator's actual conversation rehearsal.
 ## Dependency custody and checks
 
 The dev Core wheel is not a public release. Its source and expected bytes are in
-[`worker/core-artifact.json`](worker/core-artifact.json). A supported carrier must
-stage that exact wheel into `worker/inputs/` and verify its hash before setup.
+[`worker/core-artifact.json`](worker/core-artifact.json). The exact class wheel and `SHA256SUMS` ship in `worker/inputs/`. Verify them
+before managed setup; no participant hand-staging or unverified download is needed.
 The same input is used by both resource-owned locks. Never substitute a package
 with the same version label but different bytes.
 

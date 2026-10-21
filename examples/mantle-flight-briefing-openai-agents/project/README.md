@@ -37,8 +37,8 @@ project to discover credentials.
 
 ## Facilitator runtime checkpoint
 
-For a **keyless scripted demo**, run from the example directory after managed
-setup and verified Core wheel staging:
+For a **keyless scripted demo**, run from the example directory after verifying the committed Core wheel checksum and managed
+setup:
 
 ```sh
 project/.venv/bin/python scripted_demo.py
@@ -145,3 +145,56 @@ Provider references: [OpenAI environment-key quickstart](https://developers.open
 [managed Agents API contract](https://developers.openai.com/api/docs/guides/agents-api/quickstart),
 and [Anthropic Sonnet 5.5 model identity](https://platform.claude.com/docs/en/models/sonnet-5-5/overview).
 These establish interfaces/model names, not access for a handed-out key.
+
+## 7. Facilitator live check (15 minutes)
+
+Use the exact source head linked for this run; this checks real Mantle over
+constructed briefing data, not a live flight/weather provider. The managed
+OpenAI Agents leg remains NOT_RUN until its SDK/Core compatibility work is
+received. Keep all keys in the facilitator's process environment. Send no keys,
+raw logs or transcripts to a seat.
+
+1. From the example directory, run `git rev-parse HEAD` and
+   `project/.venv/bin/python class_doctor.py --scripted`. The head must match the
+   linked run candidate; see both key names with SET/MISSING and PATH: SCRIPTED.
+   Missing keys are expected before they are handed out. The managed worker and
+   project environments and committed wheel must already be installed.
+2. With the facilitator's own OpenAI key privately set in OPENAI_API_KEY, select
+   `llm.model_group: openai` in `project/integrations.yml` and run
+   `project/.venv/bin/python class_doctor.py --probe`. Expect PATH: live OPENAI
+   Mantle and PROBE: PASS, without a key value or response dump. A failure stops
+   this live path; it is not a successful conversation proof.
+3. With the facilitator's own Anthropic key privately set in ANTHROPIC_API_KEY,
+   change that same setting to `anthropic` and repeat the doctor --probe command.
+   Expect PATH: live ANTHROPIC Mantle and PROBE: PASS. Choose either successful
+   group for the conversation. Do not save either key into a file.
+4. In the same parent terminal, create an unprinted loopback transport token,
+   start the constructed backend, and launch the ordinary Mantle inspector:
+
+   ```sh
+   export BRIEFING_MCP_TOKEN="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+   project/.venv/bin/python -m briefing &
+   briefing_service_pid=$!
+   (cd project && .venv/bin/rasa train && .venv/bin/rasa inspect)
+   ```
+
+   Expect the inspector conversation and the local backend; no live provider
+   observation is claimed by the backend. This terminal alone owns its token
+   and child process; do not print or copy environment values.
+5. In the inspector send these messages in order: `Show the constructed Replay
+   DEMO101` (three REPLAY cards, 120-minute margin); `Replay DEMO101 morning
+   weather` (flight/timeline unchanged); `Replay DEMO101 later arrival`
+   (30-minute margin); `Replay DEMO101 missing inputs` (meeting question);
+   `tomorrow at five` (question repeated); `2026-10-22T21:00:00Z` (transfer
+   question); `45 minutes` (165-minute margin); `Replay DEMO101 flight
+   unavailable` (incomplete, weather retained, no stale margin); `Replay DEMO101`
+   (recovery, 165-minute margin); `Replay DEMO101 no estimate` (scheduled arrival
+   labelled, absent estimate, 195-minute margin). A real model must choose the
+   offered tool and retain the private ID itself; stop and record any mismatch,
+   invented number or displayed credential rather than calling it a pass.
+6. Stop the inspector, then run `kill "$briefing_service_pid"` in its parent
+   terminal. Return only source head, selected provider, each probe PASS/FAIL,
+   and redacted observations for the sequence. If a key or capability appeared,
+   report the channel and failure without its value. If live setup fails, run
+   `project/.venv/bin/python scripted_demo.py`: expect ten labelled SCRIPTED
+   turns, explicitly record that fallback rather than real-model success.

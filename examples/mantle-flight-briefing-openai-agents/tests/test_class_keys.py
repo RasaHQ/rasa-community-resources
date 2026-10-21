@@ -108,13 +108,23 @@ class ClassKeys(unittest.TestCase):
             self.assertIn('OPENAI_API_KEY: MISSING', text)
             self.assertEqual(before, {x.name: x.read_bytes() for x in p.iterdir()})
         repo = ROOT.parents[1]
-        result = subprocess.run(['git', 'check-ignore', '--stdin'], cwd=repo,
-            input='\n'.join(str(ROOT.relative_to(repo) / name) for name in ('.env', '.env.local', '.envrc', 'private.key')) + '\n',
-            text=True, capture_output=True, check=True)
+        # The finite qualification receives a git archive, not .git metadata.
+        # Exercise Git's real ignore semantics in an owned scratch repository
+        # using the exact shipped root ignore file; do not skip this check.
+        with tempfile.TemporaryDirectory() as git_tmp:
+            subprocess.run(['git', 'init', '-q', git_tmp], capture_output=True, check=True)
+            (Path(git_tmp) / '.gitignore').write_bytes((repo / '.gitignore').read_bytes())
+            result = subprocess.run(['git', 'check-ignore', '--stdin'], cwd=git_tmp,
+                input='\n'.join(str(ROOT.relative_to(repo) / name) for name in ('.env', '.env.local', '.envrc', 'private.key')) + '\n',
+                text=True, capture_output=True, check=True)
         self.assertEqual(len(result.stdout.splitlines()), 4)
-        tracked = subprocess.check_output(['git', 'ls-files', str(ROOT.relative_to(repo))], cwd=repo, text=True)
-        for name in tracked.splitlines():
-            self.assertNotIn(key.encode(), (repo / name).read_bytes())
+        tracked = subprocess.run(['git', 'ls-files', str(ROOT.relative_to(repo))], cwd=repo,
+                                 text=True, capture_output=True)
+        files = ([repo / name for name in tracked.stdout.splitlines()] if tracked.returncode == 0 else
+                 [p for p in ROOT.rglob('*') if p.is_file() and
+                  not {'.venv', '__pycache__'}.intersection(p.relative_to(ROOT).parts)])
+        for source in files:
+            self.assertNotIn(key.encode(), source.read_bytes())
 
     def test_selected_provider_config_is_one_setting_with_env_references(self):
         self.assertEqual(class_doctor.selected_provider(), 'openai')
