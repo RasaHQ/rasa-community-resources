@@ -1,6 +1,6 @@
 # An OpenAI agent behind an MCP server that a Mantle project calls
 
-An offline exercise. Nothing here has run against a model, a licence or a key.
+An offline exercise. Nothing here has run against a model, a license or a key.
 
 A Mantle skill imports `mcp/reviewer:ask_reviewer`. The server behind it (`server/reviewer_server.py`) is where an OpenAI agent would answer. The reviewer's answer is advice. The write that follows (`block_card`) is gated by Mantle's own `requires_confirmation`, and the factory's protected suite is what checks that the gate survives a change.
 
@@ -15,7 +15,7 @@ A Mantle skill imports `mcp/reviewer:ask_reviewer`. The server behind it (`serve
 | `client_probe.py` | Lists and calls the stub server over a real MCP session. |
 | `RESULTS-offline.md` | What the above produced, and what it does not show. |
 
-## Run it (no licence, no key, no network beyond loopback)
+## Run it (no license, no key, no network beyond loopback)
 
 Use the pack's pinned environment (`factory/uv.lock`: `rasa-pro` 3.21.0.dev5, `mcp` 1.28.1, `openai-agents` 0.13.6). From this folder, use the pack's own interpreter `../factory/.venv/bin/python` (this folder has no `pyproject`, so a bare `python` can miss the Mantle packages):
 
@@ -56,4 +56,4 @@ Not yet run in a room.
 
 - Engine, compile time, dev5: a typo in the MCP server id and a typo in a gated tool name are each reported (one finding). A gate with `enabled: false` on the MCP tool, and the three silent removals on the local tool (`enabled: false`, the key omitted, the constraint deleted), compile to no gate with zero findings.
 - The Agents SDK path calls `Runner.run_sync`, which has no timeout of its own; the only bound is the `tool_timeout: 20` on the server entry in `project/integrations.yml`, which was not exercised.
-- Not shown: how the engine treats the gate on the MCP tool in a live conversation, behaviour under a slow or failing server, the OpenAI path, Mantle simulations, evaluation, or a production loop. Those need a Rasa licence and an OpenAI key that this work does not have.
+- Not shown: how the engine treats the gate on the MCP tool in a live conversation, behavior under a slow or failing server, the OpenAI path, Mantle simulations, evaluation, or a production loop. Those need a Rasa license and an OpenAI key that this work does not have.

@@ -15,6 +15,13 @@ install an agent host, call the Broker, or claim an actual Mantle turn. The
 authenticated host integration and producer result contract are still required.
 Do not deploy or treat synthetic results as evidence of a real connection.
 
+`integrations.yml` supplies the model-group configuration required for static
+Mantle project validation. Its key is an environment reference; validation and
+fixture tests make no provider call. The skill discovers its own local
+`show_connection_status` tool without a shared `import_tools` declaration.
+Passing configuration validation does not qualify the authenticated host or
+turn this pilot into a connected demonstration.
+
 ## What the consumer does
 
 The host allocates one `TurnView` per authenticated conversation and calls

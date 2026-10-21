@@ -2,7 +2,7 @@
 
     Author:        Rod Rivera (Claude Code)
     Assessed on:   2026-10-16
-    Assessed by:   Claude Code: offline, on macOS, Python 3.11 and 3.12, no Rasa licence
+    Assessed by:   Claude Code: offline, on macOS, Python 3.11 and 3.12, no Rasa license
     Verified with: rasa-pro 3.21.0.dev5, Python 3.11+, uv
     Audience:      Engineers who build or review agents and want to put an automated check between a coding agent's change and the project the agent changes
     Time:          3 hours in a room; about 90 minutes alone
@@ -39,7 +39,7 @@ Software Factories" on profrod.ai. This pack is the Rasa version.
 Whether a Mantle agent behaves correctly in a conversation. Every check reads
 what the engine compiles and validates from the project files; no model call is
 made. Whether an agent waits for the caller at run time is a separate
-experiment that needs a model and a licence. The eighteen recorded runs are one
+experiment that needs a model and a license. The eighteen recorded runs are one
 attempt per task by two agents on one pre-release engine build; they support
 "these runs were accepted" and nothing about a general pass rate.
 
@@ -59,7 +59,7 @@ exercise runs in a copy of the project; a copied folder is not a sandbox.
 | Path | What it is |
 |---|---|
 | `factory/` | The factory, its tasks, protected acceptance suites, candidates, units and recorded agent runs. `factory/README.md` lists each part |
-| `openai-mcp/` | An optional offline exercise: an OpenAI agent behind an MCP server that a Mantle skill imports, graded by a protected suite. The reviewer is a stub; the OpenAI path and everything needing a key or licence has not run. `openai-mcp/README.md` says what it shows and what it does not |
+| `openai-mcp/` | An optional offline exercise: an OpenAI agent behind an MCP server that a Mantle skill imports, graded by a protected suite. The reviewer is a stub; the OpenAI path and everything needing a key or license has not run. `openai-mcp/README.md` says what it shows and what it does not |
 | `OFFLINE-OPENING.md`, `PREWORK.md`, `factory/rehearse.py` | The two opening blocks without a network, a draft pre-work message for the operator to send, and a script that rehearses the session's commands offline and times each block |
 | `FACILITATOR.md`, `FACILITATOR-CARD.md` | The facilitator's script for the 22 October 2026 session (timed run of show, what to say, show and do, room checklist, fallbacks, what not to claim) and a one-page card |
 
