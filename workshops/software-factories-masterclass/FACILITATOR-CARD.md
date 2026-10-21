@@ -15,8 +15,8 @@ In person, 5 to 40 people, pairs or groups of up to four. Offline by default: no
 | 17:10 | A few runs support a count with an error bar, not a pass rate | What do these runs support? | `measure.py report` over the 18 recorded runs, `needed 0.9`, `policy.py what-if`; the scripted candidates are examples, not results |
 | 17:25 | You leave knowing who may edit the check, where the engine is silent and why advice is not permission | The grader is not the builder's; the engine can be silent; advice is not permission | Nothing |
 
-Landing lines: all three silent-gate candidates pass the builder's tests and are REJECTED by the protected suite. In the vendor block six edits are rejected and one ("Done." replacing the question) is ACCEPTED: a known gap. The recorded report is 18 of 18 accepted, Wilson 95% 0.82 to 1.00; 35 clean runs are needed for a 0.9 lower bound.
+Landing lines: all three silent-gate candidates pass the builder's tests and are REJECTED by the protected suite. In the vendor block six edits are rejected and one ("Done." replacing the question) is ACCEPTED: a known gap. The recorded report is 18 of 18 accepted, Wilson 95% 0.82 to 1.00; 35 clean runs are needed for a Wilson 95% lower bound of 0.9.
 
-If it fails: practised before? move `runs`, `trunk`, `releases`, `approvals` aside (`FACILITATOR.md`, Reset); pair people up; spare laptop; NOT_READY means read the reason aloud (Python or `uv sync`); no block needs wifi; projector down means the printed card and one recorded decision read aloud.
+If it fails: practiced before? move `runs`, `trunk`, `releases`, `approvals` aside (`FACILITATOR.md`, Reset); pair people up; spare laptop; NOT_READY means read the reason aloud (Python or `uv sync`); no block needs wifi; projector down means the printed card and one recorded decision read aloud.
 
 Do not claim: that Mantle agents are safe or unsafe; any pass rate for coding agents; anything about the real vendor agent.

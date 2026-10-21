@@ -64,13 +64,13 @@ All times London. "Say" is what you say, in your words; "Show" is what is on the
 
 ### 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
 
-- Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Then say the opening line you chose in "What this session does not show".
+- Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Then say the opening line you chose in the section about what the session leaves out.
 - Show: the 14:30 section of `OFFLINE-OPENING.md`, online or not. profrod.ai Lesson 1 is background reading for the same idea.
 - Do: Answer the one question in the offline page with your partner.
 
 ### 14:40 A forged pass fools the first factory and is rejected by the second (20 min)
 
-- Say: The forged pass you are about to run is constructed for this exercise; it is not an agent's work. The case it stands for, a defect the agent's own tests missed, is the one in the profrod.ai background lesson, and it is the whole course in one run.
+- Say: The forged pass you're about to run is constructed for this exercise. It isn't an agent's work. The case it stands for is a defect the agent's own tests missed. That's the one in the profrod.ai background lesson, and it's the whole course in one run.
 - Run the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository, online or not. They print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT. This is the only exercise run in the room; profrod.ai Lesson 2 is a different exercise with its own steps and is background reading, not part of this block.
 - If a pair is stuck: the NOT_READY message in the terminal names the cause, almost always Python or the environment. Read it aloud.
 
@@ -94,7 +94,7 @@ Walk the room. Fix any machine that did not run the previous block now.
 
 ### 15:40 A vendor agent's answer is advice, and the write that follows still waits for a person (30 min)
 
-- Say: You cannot put a vendor's agent under your acceptance suite. You can put the line between its answer and your system's next action under it. The vendor's answer is advice; the write that follows still waits for a person.
+- Say: You can't put a vendor's agent under your acceptance suite. You can put the line between its answer and your system's next action under it. The vendor's answer is advice. The write that follows still waits for a person.
 - Show: `openai-mcp/project/skills/review_dispute/skill.md` and `openai-mcp/server/reviewer_server.py`. Say again that the server is a stub and that the OpenAI path has not run.
 - Do, from the `openai-mcp/` folder. Type the pack's interpreter in full: `uv run python` does not work here, because this folder has no `pyproject.toml`, so the interpreter would lack the Mantle packages.
   1. Write down which of the seven edits the suite will reject, and why.
@@ -109,14 +109,14 @@ Walk the room. Fix any machine that did not run the previous block now.
 - Say: Read the diff before you read the summary.
 - Show: one recorded run, for example `agent-runs/claude-code-2026-10-15/claude-a1-block-card-1/`: the final message, the patch, the decision.
 - Do: Each pair reads a different recorded run (there are nine per agent, under `agent-runs/claude-code-2026-10-15/` and `agent-runs/codex-2026-10-15/`) and compares what the agent said with what the diff changed.
-- Say: all 18 recorded runs were accepted. Do not promise the room a failure.
+- Say: all 18 recorded runs were accepted. Don't promise the room a failure.
 - Optional, only if a live run is available and you decide to: one run of a coding agent on task A1 in front of the room, once. It is one run and says nothing about a rate. The plan does not need it. If you do it, you have chosen the "live run" opening and closing lines; if you do not, the "no live run" ones.
 
 ### 16:40 Break (10 min)
 
 ### 16:50 Two changes that pass alone can fail together, and the builder cannot approve its own release (20 min)
 
-- Say: Passing alone says nothing about the trunk. And the builder cannot approve its own work.
+- Say: Passing alone says nothing about the trunk. And the builder can't approve its own work.
 - Do, integration (each candidate is judged first, then merged):
 
       python factory.py tasks/a2-rule-digits.json candidates/rule-digits-good runs/digits-01
@@ -141,7 +141,7 @@ Walk the room. Fix any machine that did not run the previous block now.
 
 ### 17:10 A few runs support a count with an error bar, not a pass rate (15 min)
 
-- Say first: the runs in `factory/runs/` on the room's laptops are hand-written examples (good, tamper, forged, silent-gate), not an agent's work and not a result. The only agent results in the room are the 18 recorded runs. Then you run:
+- Say first: the runs in `factory/runs/` on the room's laptops are hand-written examples (good, tamper, forged, silent-gate). They aren't an agent's work, and they aren't a result. The only agent results in the room are the 18 recorded runs. Then you run:
 
       python measure.py report agent-runs/claude-code-2026-10-15 agent-runs/codex-2026-10-15
       python measure.py needed 0.9
@@ -153,14 +153,14 @@ Walk the room. Fix any machine that did not run the previous block now.
 
 ### 17:25 You leave knowing who may edit the check, where the engine is silent and why advice is not permission (5 min)
 
-- Say: Three things to take: the grader is not the builder's to edit; the engine can be silent where the gate is gone; the vendor's answer is advice. And what we did not do. If there was no live run: "we did not run a live model." If you did the live coding-agent run: "we ran one live coding agent, once, and it says nothing about a rate." Either way: "the vendor agent was a stub."
+- Say: Three things to take. The grader isn't the builder's to edit. The engine can be silent where the gate is gone. The vendor's answer is advice. And what we didn't do. If there was no live run, say: "we didn't run a live model." If you did the live coding-agent run, say: "we ran one live coding agent, once, and it says nothing about a rate." Either way, say: "the vendor agent was a stub."
 - Hand out: the repository link and the commit.
 
 ## If something fails
 
 | What happens | What you do |
 | --- | --- |
-| A laptop will not sync or run | Pair that person with a neighbour, or hand them the spare laptop. |
+| A laptop will not sync or run | Pair that person with a neighbor, or hand them the spare laptop. |
 | A pair gets NOT_READY | Read the reason aloud; it is almost always Python or `uv sync`. |
 | Everything is slow | Skip the stretch tasks, not the "Land it" lines. |
 | The projector or your laptop fails | Use the printed card and the recorded runs under `agent-runs/`; read one decision aloud. |
@@ -170,7 +170,7 @@ Walk the room. Fix any machine that did not run the previous block now.
 
 ## Reset after a practice run
 
-The factory refuses to reuse a run folder (it exits with status 2 and says so), and `trunk/`, `releases/` and `approvals/` keep their state. If you practised in the same checkout, the live 15:00 run fails on a reused name and the 16:50 integration says STALE_BASE on the first candidate. Before class, from `factory/`, move your practice state aside; do not delete anything someone else made:
+The factory refuses to reuse a run folder (it exits with status 2 and says so), and `trunk/`, `releases/` and `approvals/` keep their state. If you practiced in the same checkout, the live 15:00 run fails on a reused name and the 16:50 integration says STALE_BASE on the first candidate. Before class, from `factory/`, move your practice state aside; do not delete anything someone else made:
 
     mv runs runs-practice
     mv trunk trunk-practice
@@ -183,7 +183,7 @@ Skip a line if that folder does not exist. Then create `approvals` again (`mkdir
 
 - Not "Mantle agents are safe" or "unsafe". The checks read compiled configuration. Nothing here tests an agent in conversation with a live model.
 - Not "coding agents are X percent reliable". The pool is two agents on three tasks, on one pre-release engine build (3.21.0.dev5).
-- If the room does not reach 35 clean runs, do not claim a 90 percent lower bound. `measure.py needed 0.9` says how many runs that takes.
+- If the room does not reach 35 clean runs, do not claim a 90 percent lower bound. `measure.py` uses the Wilson 95% interval, and `measure.py needed 0.9` says how many runs that takes.
 - Nothing about the vendor agent's real behavior: the vendor in the room is a stub.
 
 ## After the session
