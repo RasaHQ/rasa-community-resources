@@ -26,6 +26,10 @@ metadata. The existing runtime-only `BRIEFING_MCP_TOKEN` must be supplied to
 the service and its Mantle peer. No credentials are requested from participants
 or from another seat.
 
+The live launcher refuses a nonblank `OPENAI_BASE_URL` or `ANTHROPIC_BASE_URL`
+before constructing a client or opening the listener, without printing its
+value. This kit uses only the providers' default endpoints.
+
 ```sh
 live-worker/.venv/bin/python class_doctor.py --probe-agents
 live-worker/.venv/bin/python -m briefing --live-model

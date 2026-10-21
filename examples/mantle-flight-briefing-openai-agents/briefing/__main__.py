@@ -19,6 +19,9 @@ def main():
     parser.add_argument('--live-model', action='store_true',
                         help='Real managed model with constructed REPLAY source fixtures')
     args = parser.parse_args()
+    if args.live_model and any(os.environ.get(name, '').strip()
+                               for name in ('OPENAI_BASE_URL', 'ANTHROPIC_BASE_URL')):
+        raise SystemExit('Refused: custom provider base URL environment is SET; this kit supports provider defaults only.')
     # Read only the transport credential explicitly provided to this process.
     # No provider key lookup, persistence, token printing or secret discovery.
     token = os.environ.get("BRIEFING_MCP_TOKEN")

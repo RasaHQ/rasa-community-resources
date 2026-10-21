@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from contextlib import redirect_stdout
 import io
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import class_doctor
 
@@ -11,6 +11,39 @@ from briefing.native_runtime import UnsupportedAgentsSDK, native_turn
 
 
 class NativeRuntimeTests(unittest.TestCase):
+    def test_live_service_refuses_base_override_before_client_or_listener_without_echo(self):
+        import briefing.__main__ as service
+        for name in ('OPENAI_BASE_URL', 'ANTHROPIC_BASE_URL'):
+            with self.subTest(variable=name):
+                client = Mock()
+                with patch.dict('os.environ', {name: 'https://canary-custom-endpoint.invalid/private-value',
+                        'BRIEFING_MCP_TOKEN': 'invented-transport-token-for-test',
+                        'BRIEFING_AGENTS_MODEL': 'offline-fixture'}, clear=True), \
+                        patch.dict('sys.modules', {'openai': type('SDK', (), {'OpenAI': client})}), \
+                        patch('sys.argv', ['briefing', '--live-model']), \
+                        patch.object(service.uvicorn, 'run') as listener:
+                    with self.assertRaises(SystemExit) as caught:
+                        service.main()
+                client.assert_not_called()
+                listener.assert_not_called()
+                self.assertIn('Refused: custom provider base URL', str(caught.exception))
+                self.assertNotIn('canary', str(caught.exception))
+                self.assertNotIn('private-value', str(caught.exception))
+
+    def test_scripted_service_does_not_use_provider_client_when_override_is_present(self):
+        import briefing.__main__ as service
+        client = Mock()
+        app = object()
+        with patch.dict('os.environ', {'OPENAI_BASE_URL': 'https://canary.invalid',
+                'BRIEFING_MCP_TOKEN': 'invented-transport-token-for-test'}, clear=True), \
+                patch.dict('sys.modules', {'openai': type('SDK', (), {'OpenAI': client})}), \
+                patch('sys.argv', ['briefing']), \
+                patch.object(service, 'Jobs'), patch.object(service, 'create_app', return_value=app), \
+                patch.object(service.uvicorn, 'run') as listener:
+            service.main()
+        client.assert_not_called()
+        listener.assert_called_once_with(app, host='127.0.0.1', port=8942, log_level='warning')
+
     def test_service_rejects_unknown_arguments_without_echo(self):
         from briefing.__main__ import main
         with patch('sys.argv', ['briefing', '--invented-option', 'sk-canary-do-not-echo']):
