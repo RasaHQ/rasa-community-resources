@@ -11,6 +11,13 @@ from briefing.native_runtime import UnsupportedAgentsSDK, native_turn
 
 
 class NativeRuntimeTests(unittest.TestCase):
+    def test_service_rejects_unknown_arguments_without_echo(self):
+        from briefing.__main__ import main
+        with patch('sys.argv', ['briefing', '--invented-option', 'sk-canary-do-not-echo']):
+            with self.assertRaises(SystemExit) as caught:
+                main()
+        self.assertNotIn('sk-canary', str(caught.exception))
+
     def test_doctor_missing_sdk_refusal_is_plain_and_does_not_echo_error(self):
         output = io.StringIO()
         with patch.dict('os.environ', {'OPENAI_API_KEY': 'invented-canary-for-offline-test'}, clear=True), \

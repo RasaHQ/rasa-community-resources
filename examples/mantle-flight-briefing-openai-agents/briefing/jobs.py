@@ -10,11 +10,10 @@ import asyncio
 import secrets
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, Protocol
 from uuid import uuid4
 
 from zeo_core.contracts.ui.widgets import DataRef, WidgetBoard, WidgetUpsert
-from zeo_core.integrations.agents import TurnResult
 
 from briefing.identity import conversation_identity
 from project.lib.capability_logging import install as install_log_redaction
@@ -22,6 +21,15 @@ from project.lib.capability_logging import install as install_log_redaction
 
 class BriefingRefused(ValueError):
     """Public coded refusal, without source data or provider exception text."""
+
+
+class TurnOutcome(Protocol):
+    session_id: str | None
+    status: str
+    output_text: str
+
+    @property
+    def ok(self) -> bool: ...
 
 
 class NeedsInput(ValueError):
@@ -60,7 +68,7 @@ class Work:
 
 @dataclass(frozen=True)
 class Answer:
-    turn: TurnResult
+    turn: TurnOutcome
     # Component identifiers and DataRefs originate in validated local handlers,
     # never in the specialist's output text.
     cards: dict[str, DataRef]
@@ -82,7 +90,7 @@ class _Job:
     reason: str | None = None
     progress: list[str] = field(default_factory=list)
     cards: list[dict] = field(default_factory=list)
-    turn: TurnResult | None = None
+    turn: TurnOutcome | None = None
     task: asyncio.Task | None = None
     board: WidgetBoard = field(default_factory=WidgetBoard)
     inputs: dict | None = None
@@ -229,7 +237,10 @@ class Jobs:
             required = set(answer.required_components)
             available = {state.component for state in job.board.snapshot()
                          if not state.replaced and state.data_ref.error is None}
-            if answer.turn.ok and required <= available and answer.turn.calls:
+            # Scripted Core turns expose call records; the native SDK path
+            # exposes actual tool names, without call ids or application dedupe.
+            actual_calls = getattr(answer.turn, 'calls', ()) or getattr(answer.turn, 'tools_called', ())
+            if answer.turn.ok and required <= available and actual_calls:
                 job.status = "complete"
                 job.progress.append("Validated source cards ready")
             else:

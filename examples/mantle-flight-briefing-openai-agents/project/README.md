@@ -141,13 +141,13 @@ values or exception diagnostics. No key or raw log is sent to a seat. Report
 only provider, source head, pass/failure, and whether the actual conversation
 rehearsal passed. A smoke call is not full conversation acceptance.
 
-`--probe-agents` separately targets Core's managed OpenAI Agents adapter. The
-current Mantle lock pins SDK 2.44, which lacks `beta.agents`; SDK 3.36 has that
-namespace but also needs a Core stream-identity compatibility change. This is
-an explicit outstanding dependency, not a working live-leg claim or a reason
-to replace Agents with another API. The probe refuses unsupported runtimes;
-no SDK upgrade or alternate transport should be improvised in the class.
-The labelled scripted fallback remains available.
+`--probe-agents` targets Core's native managed OpenAI Agents adapter in the
+[separate live worker](../LIVE-WORKER.md), with OpenAI 3.29.0 and Core dev20.
+Run it with that worker's interpreter. The Mantle project keeps SDK 2.44,
+which lacks `beta.agents`; its interpreter refuses this probe plainly before
+a provider request. The probe does not establish a live briefing workflow.
+No SDK upgrade or alternate transport should be improvised in the class.
+The labelled scripted fallback remains available with Core dev17.
 
 Provider references: [OpenAI environment-key quickstart](https://developers.openai.com/api/docs/quickstart),
 [managed Agents API contract](https://developers.openai.com/api/docs/guides/agents-api/quickstart),
@@ -158,7 +158,7 @@ These establish interfaces/model names, not access for a handed-out key.
 
 Use the exact source head linked for this run; this checks real Mantle over
 constructed briefing data, not a live flight/weather provider. The managed
-OpenAI Agents leg remains NOT_RUN until its SDK/Core compatibility work is
+OpenAI Agents leg remains NOT_RUN until its separate worker qualification is
 received. Keep all keys in the facilitator's process environment. Send no keys,
 raw logs or transcripts to a seat.
 

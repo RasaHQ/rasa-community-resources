@@ -115,10 +115,17 @@ class ReplayRunner:
             return supply
 
         handlers = {"read_" + component: handler(component) for component in payloads}
+        tools = [function_tool(name, "Read the labelled constructed replay fixture",
+                               {"type": "object", "properties": {}, "additionalProperties": False})
+                 for name in handlers]
+        turn = self._invoke(work, tools, handlers)
+        return Answer(turn, cards, inputs=inputs)
+
+    def _invoke(self, work, tools, handlers):
         turn_id = "replay-turn-" + work.request_id
         calls = [{"type": "function_call", "turn_id": turn_id,
-                  "call_id": "call-" + component, "name": "read_" + component, "arguments": {}}
-                 for component in payloads]
+                  "call_id": "call-" + name.removeprefix('read_'), "name": name, "arguments": {}}
+                 for name in handlers]
         action = {"type": "agent.session.requires_action", "required_actions": calls}
         completed = [{"type": "agent.session.turn.output_text.done", "text": "Constructed REPLAY source cards ready."},
                      {"type": "agent.session.turn.completed"}]
@@ -131,9 +138,6 @@ class ReplayRunner:
             # A continuation first receives input.message, then the same local
             # function-result loop. This remains a scripted, not remote, session.
             transport = ScriptedTransport(*scripts, session_id=work.session_id)
-        tools = [function_tool(name, "Read the labelled constructed replay fixture",
-                               {"type": "object", "properties": {}, "additionalProperties": False})
-                 for name in handlers]
         turn = run(transport, agent={"tools": tools}, environment={}, text=work.text,
                    handlers=handlers, session_id=work.session_id)
         # Preserve actual callback records from this Core invocation, never
@@ -141,4 +145,4 @@ class ReplayRunner:
         replies = [event for event in transport.sent if event["type"].endswith("tool_result")]
         if len(replies) != len(calls) or any(not event.get("success") for event in replies):
             raise ValueError("replay_tool_results_incomplete")
-        return Answer(turn, cards, inputs=inputs)
+        return turn

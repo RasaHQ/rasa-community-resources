@@ -7,6 +7,10 @@ Verified with: Python 3.12.13 replay/MCP controls and pinned Mantle hook adapter
 Audience: Practitioners connecting a Mantle conversation to a managed specialist
 Time: not_provided — reader exercise not accepted yet
 
+For the optional real managed model with explicitly constructed source data,
+see [the separate live worker](LIVE-WORKER.md). The guaranteed scripted path
+and its Core dev17 worker remain separate from that opt-in path.
+
 **End-to-end qualification is pending.** The Core-backed replay, authenticated
 MCP request path and fixed text-card renderer pass author controls. The class
 uses the Architect-approved capability-ID fallback because published Mantle
