@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 import re
 
+from briefing.native_runtime import UnsupportedAgentsSDK, native_turn
+
 ROOT = Path(__file__).parent
 KEYS = {'openai': 'OPENAI_API_KEY', 'anthropic': 'ANTHROPIC_API_KEY'}
 
@@ -32,14 +34,11 @@ async def probe_mantle(project):
 
 def probe_agents():
     from openai import OpenAI
-    from zeo_core.integrations.agents import SdkTransport, run
     # Default SDK auth reads OPENAI_API_KEY only in this facilitator process.
     with OpenAI(timeout=20, max_retries=0) as client:
-        transport = SdkTransport(client)  # Coded refusal if beta.agents absent.
-        result = run(transport, agent={'model': 'gpt-4.1-mini',
+        result = native_turn(client, agent={'model': os.environ.get('BRIEFING_AGENTS_MODEL', 'gpt-4.1-mini'),
             'instructions': 'Reply with READY only; no tools or files.'},
-            environment={'type': 'openai_hosted'}, text='Reply with READY only.',
-            deadline_seconds=60)
+            text='Reply with READY only.')
         return result.ok
 
 
@@ -99,6 +98,9 @@ def main(argv=None):
                 from project.lib.capability_logging import install
                 install()
                 ok = probe_agents() if args.probe_agents else asyncio.run(probe_mantle(ROOT / 'project'))
+        except UnsupportedAgentsSDK:
+            print('Refused: the worker SDK lacks client.beta.agents.sessions; use its locked environment.')
+            return 2
         except Exception:
             print('PROBE: FAILED — check provider access and supported runtime; raw diagnostics suppressed.')
             return 1
