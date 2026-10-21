@@ -25,7 +25,8 @@ VARIANTS = {
     "read-tool-gated": BASE.replace("---\n\nBrief the caller", GATE + "---\n\nBrief the caller", 1),
     "typo-server-id": BASE.replace("mcp/briefing:", "mcp/briefng:"),
     "revise-tool-dropped": BASE.replace("  - mcp/briefing:revise_briefing\n", ""),
-    "dashboard-called-mantles": BASE.replace("The cards are drawn by our own dashboard, not by Mantle.", "Mantle draws the cards."),
+    "cards-called-mantles": BASE.replace("The cards are defined by zeocore and drawn by our renderer; say that Mantle does not provide them.", "Mantle draws the cards."),
+    "missing-field-filled": BASE.replace(" Where the data says a time or field is not provided, say it is not provided; never fill it in.", ""),
     "server-off-loopback": {INTEGRATIONS_FILE: INTEGRATIONS.replace("http://127.0.0.1:8951/mcp", "http://briefing.example.com/mcp")},
     "local-tool-code-added": {TOOLS_FILE: "async def noop():\n    return {}\n"},
 }

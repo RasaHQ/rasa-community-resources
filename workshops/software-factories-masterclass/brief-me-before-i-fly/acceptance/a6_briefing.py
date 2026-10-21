@@ -69,8 +69,13 @@ class BriefingSkill(unittest.TestCase):
     def test_an_unavailable_source_is_named_and_no_old_value_is_repeated(self):
         self.assertIn("do not repeat an earlier value as current", body())
 
-    def test_the_dashboard_is_said_to_be_ours_not_mantles(self):
-        self.assertIn("not by mantle", body())
+    def test_the_cards_are_said_to_be_zeocores_and_ours_not_mantles(self):
+        text = body()
+        self.assertIn("defined by zeocore and drawn by our renderer", text)
+        self.assertIn("mantle does not provide them", text)
+
+    def test_a_field_the_data_calls_not_provided_is_never_filled_in(self):
+        self.assertIn("never fill it in", body())
 
 
 if __name__ == "__main__":
