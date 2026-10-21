@@ -1,5 +1,6 @@
 """Log privacy for the explicitly approved capability-id fallback."""
 import io
+import importlib.util
 from contextlib import redirect_stdout
 import logging
 from pathlib import Path
@@ -26,6 +27,7 @@ class CapabilityLogging(unittest.TestCase):
         self.assertNotIn(capability, stream.getvalue())
         self.assertIn("[briefing capability redacted]", stream.getvalue())
 
+    @unittest.skipUnless(importlib.util.find_spec("structlog"), "structured logging belongs to the Mantle project environment")
     def test_structured_console_arguments_are_redacted(self):
         import structlog
         install()
