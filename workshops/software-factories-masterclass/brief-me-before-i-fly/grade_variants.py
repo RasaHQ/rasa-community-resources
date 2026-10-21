@@ -24,6 +24,7 @@ VARIANTS = {
     "needs-input-guessed": BASE.replace("If it returns `needs_input`, ask the caller that one question, then call `briefing` with action `revise` and the answer.", "If it returns `needs_input`, make a sensible guess."),
     "read-tool-gated": BASE.replace("---\n\nBrief the caller", GATE + "---\n\nBrief the caller", 1),
     "typo-server-id": BASE.replace("mcp/briefing:", "mcp/briefng:"),
+    "briefing-id-invented": BASE.replace("Never invent a briefing id: pass back the `briefing_id` that `start` returned.", "Make up a briefing id if you lack one."),
     "second-tool-imported": BASE.replace("  - mcp/briefing:briefing\n", "  - mcp/briefing:briefing\n  - mcp/briefing:revise_briefing\n"),
     "cards-called-mantles": BASE.replace("The cards are defined by zeocore and drawn by our renderer; say that Mantle does not provide them.", "Mantle draws the cards."),
     "missing-field-filled": BASE.replace(" Where the data says a time or field is not provided, say it is not provided; never fill it in.", ""),

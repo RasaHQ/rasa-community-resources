@@ -60,6 +60,10 @@ class BriefingSkill(unittest.TestCase):
         self.assertIn("replayed or delayed", text)
         self.assertIn("never call market data real time", text)
 
+    def test_the_agent_passes_back_the_briefing_id_and_never_invents_one(self):
+        text = body()
+        self.assertIn("never invent a briefing id: pass back the `briefing_id` that `start` returned", text)
+
     def test_missing_input_is_asked_for_then_the_briefing_is_revised(self):
         text = body()
         self.assertIn("if it returns `needs_input`, ask the caller that one question, then call `briefing` with action `revise` and the answer", text)

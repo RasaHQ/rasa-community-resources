@@ -10,8 +10,8 @@ A Mantle skill (`project/skills/briefing/skill.md`) imports one MCP tool from a 
 It is built separately in the companion example in this repository (not in this folder; nothing here runs against a server).
 The cards are defined by zeocore and drawn by our renderer where Mantle does not render them. **They are not a Mantle feature.**
 
-The feature specification and the acceptance scenarios for the product are `SPEC-brief-me-before-i-fly-v3.md` and
-`ACCEPTANCE-SCENARIOS-v3.md`, with the two JSON schemas, beside this file. The scenarios are the product's contract; the coding agent in the factory never edits them.
+The feature specification and the acceptance scenarios for the product are `SPEC-brief-me-before-i-fly-v4.md` and
+`ACCEPTANCE-SCENARIOS-v4.md`, with the two JSON schemas, beside this file. The scenarios are the product's contract; the coding agent in the factory never edits them.
 
 ## What this folder grades
 
@@ -29,7 +29,7 @@ MANTLE_PROJECT=$PWD/project PYTHONPATH=../factory ../factory/.venv/bin/python ac
 ../factory/.venv/bin/python grade_variants.py project
 ```
 
-Expected: 14 tests OK; the baseline is ACCEPT and the thirteen edited variants are REJECT, each naming its failing check.
+Expected: 15 tests OK; the baseline is ACCEPT and the fourteen edited variants are REJECT, each naming its failing check.
 
 ## Limits (said aloud in the session)
 
