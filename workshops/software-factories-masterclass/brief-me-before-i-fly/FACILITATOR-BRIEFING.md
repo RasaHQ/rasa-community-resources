@@ -8,13 +8,13 @@ Status of everything marked [PRODUCT]: depends on the companion `examples/mantle
 ## What you say first, and what you never say
 Say: this is a Rasa-organised class. Rasa Mantle is the centre; a dark software factory is how the Mantle agent is built and extended.
 Never say: that Mantle has widgets or renders cards (it documents no such feature); that the replay is a real flight; that the transfer time is traffic; that delayed market data is real time; that a model follows these instructions (no model has been shown to).
-Say aloud at the start: the flight is a constructed classroom replay named DEMO101; every card says REPLAY; the cards are defined by zeocore's contract and shown as text cards in the conversation; the 90-minute transfer is an assumption.
+Say aloud at the start: if a participant sees SCRIPTED on screen, nothing live ran; the flight is a constructed classroom replay named DEMO101; every card says REPLAY; the cards are defined by zeocore's contract and shown as text cards in the conversation; the 90-minute transfer is an assumption.
 
 ## Before the day (facilitator laptop)
 - Environment as in the companion README: two shells, the same runtime-only `BRIEFING_MCP_TOKEN` (at least 32 characters, never written to a file), the worker interpreter and the project interpreter, both built from the resource-owned locks with the verified dev17 wheel (sha256 724fab71d1472aaf8968c2eea7f63f6a9698850ca169d4c84a6484f0ef6e8f40).
 - Shell 1, from the example folder: `worker/.venv/bin/python -m briefing`. Shell 2, from `project/`: `.venv/bin/rasa train` then `.venv/bin/rasa inspect`.
-- Model key: Mantle's own conversation uses the model group in `project/integrations.yml`, so the live conversation needs the facilitator's OWN `OPENAI_API_KEY` in the shell environment. No seat supplies one and nobody asks the operator for it. If there is no key, show the recorded ten-turn run instead and say it is scripted. [PRODUCT: confirm which path rasa supplies]
-- Participants' prework is unchanged. They have the frozen pack at its pinned commit and its environment. For the 14:05 block they run `git fetch origin` and `git checkout <PINNED_COMMIT>`; the factory lock does not change, so their synced environment stays valid. Check before the day: `git diff e2a286a8e496aeee0ad2a695031165361693ea8a <PINNED_COMMIT> -- workshops/software-factories-masterclass/factory/uv.lock` prints nothing.
+- Keys (operator decision, 15:16Z): participants run the product on keys handed out IN CLASS, read only from the environment: `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY`. Participants bring none. No seat holds, requests or sees a key; the operator hands them out by his own method and revokes them after the class. Never type a key into a file, a chat, an email or a screenshot. The doctor command (rasa's kit, `<DOCTOR>`) prints SET or MISSING for each key, never the value, and says which path will run: live OpenAI, live Anthropic or SCRIPTED. The scripted replay (`<SCRIPTED>`) always works and is labelled SCRIPTED on screen. Say which path is shown, every time.
+- Participants' prework: the earlier one (c894ff24) PLUS the addendum in `PREWORK-ADDENDUM-DRAFT` (class commit, two environments, doctor, scripted replay), which the operator sends before the class. Participants then already hold `<PINNED_COMMIT>` and the two environments. If someone did not run it: they pair with someone who did. Check before the day that the factory lock did not change: `git diff e2a286a8e496aeee0ad2a695031165361693ea8a <PINNED_COMMIT> -- workshops/software-factories-masterclass/factory/uv.lock` prints nothing.
 
 ## Schedule (UTC / London)
 | UTC | London | Min | Block |
@@ -35,12 +35,13 @@ Say aloud at the start: the flight is a constructed classroom replay named DEMO1
 - Land it: one conversation, one tool, cards that come from checked data. The rest of the day takes it apart.
 
 ### 13:45 The spec and the scenarios come first (20 min)
+- Hand out the keys here, one per participant, and run through it together: each types `export OPENAI_API_KEY=...` (or ANTHROPIC) in their own terminal, then the doctor command. Expect SET for that key and the matching live path. Anyone without a key, or whose doctor says MISSING, stays on SCRIPTED. Do not look at anyone's screen when they type a key, and do not read one aloud.
 - Show `SPEC-brief-me-before-i-fly-v5.md` sections 3 to 6 and `ACCEPTANCE-SCENARIOS-v5.md`.
 - Say: the spec owner wrote the scenarios before any code. The builder never edits them. Two of them are the operator's own: a delayed quote is labelled delayed and never called real time (M1); a stale weather result cannot overwrite a changed destination's card (S5).
 - Ask each pair to pick one scenario and name the edit to the product that would make it fail.
 
 ### 14:05 What Mantle compiles can be graded offline (30 min)
-- Participants: `git fetch origin && git checkout <PINNED_COMMIT>`, then from `workshops/software-factories-masterclass/brief-me-before-i-fly`:
+- Participants (already on `<PINNED_COMMIT>` from the addendum), from `workshops/software-factories-masterclass/brief-me-before-i-fly`:
   1. Read `project/skills/briefing/skill.md`.
   2. Write down which of the fourteen edits the suite will reject.
   3. `MANTLE_PROJECT=$PWD/project PYTHONPATH=../factory ../factory/.venv/bin/python acceptance/a6_briefing.py` (15 tests OK), then `../factory/.venv/bin/python grade_variants.py project` (baseline ACCEPT, fourteen REJECT, each with its failing check).
