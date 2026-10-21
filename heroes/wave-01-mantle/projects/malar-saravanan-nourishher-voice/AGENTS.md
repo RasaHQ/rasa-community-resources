@@ -8,13 +8,13 @@ condition-aware support (hypothyroidism, PCOS, type 2 diabetes,
 fertility/preconception). Health context is never required. It evolved in
 place from the earlier condition-only "Sage" build.
 
-No mocking: it is production-grade. Every specific-food number is backed by a
-real `get_food_nutrient_info` (USDA FoodData Central) call rendered as
-separate macro/micro tables (amount + %daily-value, "per 100 g" basis
-stated). Profile, meal logs, and saved plans persist in a real file-backed,
-per-user store (`lib/store.py`, under `data/`). Nothing is seeded or
-fabricated. Lifestyle/activity guidance stays general and non-prescriptive,
-same safety bar as the food guidance.
+Experimental nutrition demo — not production. No mocked nutrient data: every
+specific-food number is backed by a real `get_food_nutrient_info` (USDA
+FoodData Central) call rendered as separate macro/micro tables (amount +
+%daily-value, "per 100 g" basis stated). Profile, meal logs, and saved plans
+persist in a file-backed per-user store (`lib/store.py`, under `data/`).
+Nothing is seeded or fabricated. Lifestyle/activity guidance stays general
+and non-prescriptive, same safety bar as the food guidance.
 
 Pin: `rasa-pro==3.20.0.dev6` — the latest release on PyPI as of this build,
 past the CALM-era → Mantle engine rename (`rasa.calm_v2.*` →
@@ -24,8 +24,8 @@ issues" section of `README.md` for what that migration required and
 what's still open. LLM: OpenAI `gpt-4o` (primary), Groq
 `groq/openai/gpt-oss-120b` (fallback only, via a weighted LiteLLM router — see
 `integrations.yml`). Embeddings: Gemini.
-Scaffold pattern originally copied from the flagship Atlas tutorial project,
-`examples/mantle-voice-agent`.
+Project layout follows common Mantle voice patterns in this catalog; credentials
+always come from this project's `.env.example` only.
 
 ## Layout
 

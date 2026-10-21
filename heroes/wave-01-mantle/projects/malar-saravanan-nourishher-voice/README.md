@@ -20,11 +20,12 @@ natural conversation — with **optional** condition-aware support
 context is never required. Evolved in place from the earlier condition-only
 "Sage" build.
 
-** production-grade.** Nutrient numbers come from the live USDA
-FoodData Central API; profile, meal logs, and saved plans persist in a real
-file-backed per-user store (`lib/store.py`, under `data/`). Nothing is
-seeded or fabricated. A deterministic test suite (`make test`) covers the
-persistence and tool layer with no LLM/network calls.
+**Experimental nutrition demo (local evaluation only).** Not a production
+deployment — Mantle is experimental (see below). For learning and review:
+nutrient numbers come from the live USDA FoodData Central API; profile, meal
+logs, and saved plans persist in a file-backed per-user store (`lib/store.py`,
+under `data/`). Nothing is seeded or fabricated. A deterministic test suite
+(`make test`) covers the persistence and tool layer with no LLM/network calls.
 
 Built during the Rasa Heroes wave-01-mantle cohort. Runs `rasa-pro==3.20.0.dev6`
 — the latest release on PyPI as of the 2026-09-01 migration from this project's
@@ -49,12 +50,9 @@ human/clinician — never an LLM-generated answer.
 - A free Rasa Pro Developer Edition license — [request one here](https://rasa.com/rasa-pro-developer-edition-license-key-request/).
 - API keys for OpenAI (LLM, primary), Groq (LLM, fallback only — see
   [integrations.yml](integrations.yml)), Gemini (embeddings), Deepgram
-  (voice), and optionally USDA FoodData Central. If you already have a
-  working `.env` for another Mantle voice agent in this catalog (e.g.
-  `examples/mantle-voice-agent`), you can copy `RASA_LICENSE` /
-  `GEMINI_API_KEY` / `DEEPGRAM_API_KEY` straight from there — same providers,
-  same setup — but you will still need your own `OPENAI_API_KEY` and
-  `GROQ_API_KEY`.
+  (voice), and optionally USDA FoodData Central. Create **your own** `.env` from
+  this project's [`.env.example`](.env.example) and use **your own** credentials
+  (see Quick start — do not copy `.env` from other catalog projects).
 
 ## Quick start
 
@@ -143,9 +141,11 @@ seed the `session.project.*` flags they gate on.
 
 #### Sample evaluation report (latest run)
 
-Recorded on **2026-09-19** on Windows 11, **Python 3.13.15** (`uv`), **rasa-pro
-3.20.0.dev6**, trained model `models/20260919-221612-sour-serif.tar.gz`. Primary
-LLM: OpenAI `gpt-4o` (Groq fallback configured but not exercised in this run).
+See **[`docs/validation-results.md`](docs/validation-results.md)** for the
+maintainer-facing matrix (including which voice/provider paths are tested vs
+connectivity-only). Summary from **2026-10-21** on Windows 11, **Python 3.13**
+(`uv`), **rasa-pro 3.20.0.dev6**. Primary LLM: OpenAI `gpt-4o` (Groq fallback
+configured; e2e runs on OpenAI-primary).
 
 | Suite | Command | Result | Notes |
 |-------|---------|--------|-------|
