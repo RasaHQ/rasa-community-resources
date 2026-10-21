@@ -15,6 +15,8 @@ from uuid import uuid4
 from zeo_core.contracts.ui.widgets import DataRef, WidgetBoard, WidgetUpsert
 from zeo_core.integrations.agents import TurnResult
 
+from briefing.identity import conversation_identity
+
 
 class BriefingRefused(ValueError):
     """Public coded refusal, without source data or provider exception text."""
@@ -86,6 +88,12 @@ class Jobs:
             # Same response for unknown and another conversation's job.
             raise BriefingRefused("job_unavailable")
         return job
+
+    async def from_transport(self, authenticated_peer: str | None, metadata: dict | None,
+                             **arguments) -> dict:
+        """Private transport entry; only arguments is the public tool payload."""
+        owner = Owner(*conversation_identity(authenticated_peer, metadata))
+        return await self.briefing(owner, **arguments)
 
     async def briefing(self, owner: Owner, *, action: str, request: str | None = None,
                        job_id: str | None = None, change: str | None = None) -> dict:

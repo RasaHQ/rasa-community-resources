@@ -6,6 +6,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from briefing.jobs import Answer, BriefingRefused, Jobs, Owner
+from briefing.identity import IdentityRefused, SENDER_META
 from zeo_core.integrations.agents import TurnResult
 
 
@@ -37,6 +38,16 @@ class JobControls(unittest.IsolatedAsyncioTestCase):
                        {"action": "revise", "job_id": "x"}):
             with self.assertRaises(BriefingRefused):
                 await self.jobs.briefing(self.owner, **kwargs)
+
+    async def test_authenticated_metadata_boundary_preserves_two_conversation_isolation(self):
+        a = {SENDER_META: "conversation-a"}
+        b = {SENDER_META: "conversation-b"}
+        response = await self.jobs.from_transport("mantle-peer", a, action="start", request="Brief my flight")
+        for action, extra in (("get", {}), ("revise", {"change": "Change the flight"})):
+            with self.assertRaisesRegex(BriefingRefused, "job_unavailable"):
+                await self.jobs.from_transport("mantle-peer", b, action=action, job_id=response["job_id"], **extra)
+        with self.assertRaises(IdentityRefused):
+            await self.jobs.from_transport(None, a, action="get", job_id=response["job_id"])
 
     async def test_completed_text_without_cards_and_tool_records_is_not_complete(self):
         async def text_only(work):
