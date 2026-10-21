@@ -1,6 +1,6 @@
 # Offline results: stub reviewer MCP server behind a Mantle skill
 
-Offline run on 2026-10-16. rasa-pro 3.21.0.dev5, openai-agents 0.13.6, mcp 1.28.1, the environment pinned in `../factory/uv.lock`. No licence, no key, no model call, loopback only. The reviewer is a deterministic STUB (every result says backend: stub). The OpenAI Agents SDK path in reviewer_server.py was NOT run.
+Offline run on 2026-10-16. rasa-pro 3.21.0.dev5, openai-agents 0.13.6, mcp 1.28.1, the environment pinned in `../factory/uv.lock`. No license, no key, no model call, loopback only. The reviewer is a deterministic STUB (every result says backend: stub). The OpenAI Agents SDK path in reviewer_server.py was NOT run.
 
 Run: `python -I experiments.py project` (engine variants), `python -I client_probe.py` with `server/reviewer_server.py` running (MCP session).
 
@@ -27,4 +27,4 @@ The Agents SDK refuses an `extra="allow"` pydantic model as `output_type` (UserE
 
 ## Not shown
 
-Runtime behaviour: whether the engine honours a gate on the MCP tool when a conversation runs; behaviour under a slow or failing server; the OpenAI path; simulations, eval, a production loop. Those need a licence and/or a key.
+Runtime behavior: whether the engine honors a gate on the MCP tool when a conversation runs; behavior under a slow or failing server; the OpenAI path; simulations, eval, a production loop. Those need a license and/or a key.

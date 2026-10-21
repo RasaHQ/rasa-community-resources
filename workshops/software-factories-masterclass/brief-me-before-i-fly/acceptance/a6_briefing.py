@@ -1,7 +1,7 @@
 """Acceptance for the travel-briefing project: three MCP tools, honest spoken answers, nothing gated.
 
 Run with MANTLE_PROJECT pointing at the project to grade and the factory folder on PYTHONPATH (for accept_lib.py).
-Offline: no model, licence or network. It grades what Mantle will load, not the briefing service behind it.
+Offline: no model, license or network. It grades what Mantle will load, not the briefing service behind it.
 """
 import unittest
 

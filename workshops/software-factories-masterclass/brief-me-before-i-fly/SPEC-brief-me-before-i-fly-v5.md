@@ -4,7 +4,7 @@ v5 (15:4xZ): fixes the normative references found in review MC120-F1 and F2; add
 v2 text follows. Supersedes v1 (sha256 0dbfeb92c64cadf044f5046c1e16ca288fa14d8b751ab0d1b8c683d4e69dbb78) and the 12:22Z desk-widgets plan.
 CHANGES FROM v1 (change of 2026-10-21 (brief v2, sha256 d6863de69dd7767c47a1c3851ec3ff01fb70e6cd124464d9391c0cf41662d5b5)):
  1. NO separate browser dashboard. The product is a Rasa Mantle agent whose answers carry zeocore-defined widget cards, rendered where Mantle's conversation is shown. Use whatever Mantle renders natively first; a thin client-side renderer only for what it does not; never claim a Mantle widget feature that does not exist.
- 2. Mantle is the centre: skills, flows, MCP imports, responses, voice and its own testing. The OpenAI Agents API is the specialist behind a Mantle-imported MCP tool. The dark factory is how the Mantle agent is built and extended.
+ 2. Mantle is the center: skills, flows, MCP imports, responses, voice and its own testing. The OpenAI Agents API is the specialist behind a Mantle-imported MCP tool. The dark factory is how the Mantle agent is built and extended.
  3. Order: a complete working end-to-end experience first, rehearsed; then the pack breaks it into step-by-step increments.
  4. Provider timestamps: a missing provider update time is represented as unknown, never filled from fetched_at (data_ref.as_of is nullable; see section 4).
 SETTLED in v3: one tool, briefing, with an action argument.
@@ -18,7 +18,7 @@ Core story (act 1): flight status, arrival weather, arrival timeline. Second act
 - Mantle: conversation, clarification, skill routing, spoken responses. Imports the one MCP tool briefing (mcp_servers in integrations.yml, import_tools in the skill).
 - Briefing service (MCP server): the one tool briefing(action=start|get|revise). Owns the mapping briefing_id -> briefing job -> OpenAI session.
 - OpenAI Agents API: multi-source investigation and synthesis. Never asked to produce numbers; numbers come from data_refs.
-- Data adapters: fetch and normalise provider data (flight, weather, market). Each result becomes a data_ref with provenance.
+- Data adapters: fetch and normalize provider data (flight, weather, market). Each result becomes a data_ref with provenance.
 - Widget cards: four predefined components defined by zeocore, carried in the Mantle answer and rendered in the conversation surface. Rendering is native Mantle where it exists; a thin client-side renderer covers the rest. Mantle has no documented arbitrary MCP widget rendering; say so.
 Owners: the specification owner = this spec, the acceptance scenarios, the pack text; rasa = the Mantle agent project, briefing service, adapters and any thin renderer; zeocore = Agents API support and widget-routing types.
 
@@ -43,21 +43,21 @@ Numbers, times and labels shown or spoken come from payload. Components accept o
 
 ## 6. Honesty rules (said aloud in the session; tested)
 1. The widget cards are defined by zeocore and drawn by our renderer where Mantle does not render them natively; they are not a Mantle feature.
-2. Replay data is labelled replay on the card and in speech.
+2. Replay data is labeled replay on the card and in speech.
 3. A transfer time is an assumption, never live traffic.
-4. Delayed market data is labelled delayed and never called real time.
+4. Delayed market data is labeled delayed and never called real time.
 5. A failed source shows an explicit unavailable state with its reason; no stale value is shown as current.
 6. A missing provider field is shown as "not provided"; a missing provider update time is shown as "provider update time not given" beside the retrieval time.
 
 ## 7. Modes
-- Default demo: labelled replay data, complete and rehearsed offline.
+- Default demo: labeled replay data, complete and rehearsed offline.
 - Participants run it (decision of 2026-10-21): on their own laptops, with keys handed out in class and read ONLY from the environment: OPENAI_API_KEY and ANTHROPIC_API_KEY. No OAuth, no hosted connector, no account login, no key in any file the kit ships. Participants bring no key. The OpenAI Agents API part needs OPENAI_API_KEY. Mantle's model group runs on either provider, chosen by one documented setting; Anthropic is a supported choice, not only gpt-4.1-mini.
-- One doctor command per machine prints, for each of the two keys, SET or MISSING (never the value), says which path will run (live OpenAI, live Anthropic, or SCRIPTED), and refuses with one plain sentence when a needed key is missing. The scripted replay stays, labelled SCRIPTED on screen every time, as the fallback.
+- One doctor command per machine prints, for each of the two keys, SET or MISSING (never the value), says which path will run (live OpenAI, live Anthropic, or SCRIPTED), and refuses with one plain sentence when a needed key is missing. The scripted replay stays, labeled SCRIPTED on screen every time, as the fallback.
 - No key in logs, transcripts, tracebacks, cards, MCP _meta, saved files or git; .env and similar files are git-ignored; a key-shaped string in any output fails a test (S18). Contributors never hold, request or see a key; a live proof runs in a facilitator's own environment. A flight provider with schedules may need its own key: the same rule applies and its availability is proven before a live flight demo is promised.
 - Outbound-MCP limit: the Agents API calls MCP tools from OpenAI's side, so a localhost endpoint is unreachable; rasa and zeocore state the chosen route before building around it (reachable authenticated endpoint, function tools in the session, or the service calling the adapters itself). Proposed by the companion's maintainer, confirmed in the zeocore wrapper: application-handled function tools in agent.tools, with the allowlisted names and arguments validated and executed locally and the result returned as agent.session.input.tool_result; no public ingress.
 
 ## 8. The factory, second act (market watchlist)
-Baseline checkpoint = act 1 accepted. Input to the coding agent = this spec sections 3 to 6 for market_watchlist, the data_ref schema, the existing component and adapter examples (flight, weather), and a build and preview command. Protected acceptance = ACCEPTANCE-SCENARIOS-v5.md scenarios M1 to M5 plus the core scenarios S2, S3, S5, S6; the coding agent may not edit acceptance, the registry entries of other components, or the flight and weather adapters. Release gate = observed behaviour through Mantle in the browser. Evidence of completion = the new card appears from a spoken request, with its source, timestamp and acceptance results shown. A completed checkpoint exists for fallback.
+Baseline checkpoint = act 1 accepted. Input to the coding agent = this spec sections 3 to 6 for market_watchlist, the data_ref schema, the existing component and adapter examples (flight, weather), and a build and preview command. Protected acceptance = ACCEPTANCE-SCENARIOS-v5.md scenarios M1 to M5 plus the core scenarios S2, S3, S5, S6; the coding agent may not edit acceptance, the registry entries of other components, or the flight and weather adapters. Release gate = observed behavior through Mantle in the browser. Evidence of completion = the new card appears from a spoken request, with its source, timestamp and acceptance results shown. A completed checkpoint exists for fallback.
 
 ## 9. Out of scope / not claimed
 Real traffic or transit data; trading advice; any claim a model follows wording; Mantle-native widgets unless a Mantle page documents them.

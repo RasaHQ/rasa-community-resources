@@ -20,7 +20,7 @@ imported from a configured server on loopback; nothing is gated (the briefing on
 instructions keep delay claims to the provider's own status, numbers as they appear in the data, the transfer time as an assumption,
 replayed or delayed data said to be so, missing input asked for, no stale value repeated as current, and the cards said to be zeocore's and ours, not Mantle's.
 
-## Run it (no licence, no key, no network)
+## Run it (no license, no key, no network)
 
 From this folder, with the pack's pinned interpreter:
 
