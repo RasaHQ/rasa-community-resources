@@ -1,0 +1,156 @@
+{
+  "scope": "Constructed customer-only service regression. Known contract failure, not a service repair or a model/Strands/Mantle/real-device run.",
+  "date": "2026-10-21",
+  "base_revision": "c03b749916c5f960bc33e617210422b9af95c3f4",
+  "execution_binding": "Base plus staged delta; this subsequently generated receipt is not itself the execution source.",
+  "source_sha256": {
+    "examples/mantle-text-telco-diagnostics-gpt/controls/customer_quotation.py": "0f10ce01cc77e0a62d6da7d1a696e9a1a55d9c601393c2648479e748934331b9",
+    "examples/mantle-text-telco-diagnostics-gpt/tests/test_customer_quotation.py": "574d0a5d7d7e23b805a8d7e7132bd10800effd80741b9e558c7c17350f498751",
+    "examples/mantle-text-telco-diagnostics-gpt/lib/juniper.py": "66ab53d4c3789e3f2440f251a65e835fc1125a6c74ca223ad46449367f40f414",
+    "examples/mantle-text-telco-diagnostics-gpt/lib/fixtures/juniper.json": "31cef5109ac102ea09e99cee36fe265ada1dda586b099b817a7186b7dd0eb19d",
+    "examples/mantle-text-telco-diagnostics-gpt/lib/fixtures/case-contract.json": "1b44ed8f582c1a65e9ed374673df877579e37c250641358e799285c605769ea9"
+  },
+  "runs": {
+    "contract": {
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "/Users/rodbot/.local/share/uv/python/cpython-3.12-macos-aarch64-none/bin/python3.12",
+        "examples/mantle-text-telco-diagnostics-gpt/controls/customer_quotation.py"
+      ],
+      "exit": 1,
+      "start_utc": "2026-10-21T12:09:36.126563+00:00",
+      "end_utc": "2026-10-21T12:09:36.801890+00:00",
+      "log_sha256": "0047edc366918ef378bef840cf6811da79b7ae277aa582586f6e0b0224078916",
+      "staged_delta_sha256": "3d29416d04278da34d0e78b227f75c524b2276fbb9631c11ffe2c71025eb4070",
+      "timed_out": false,
+      "terminal_survivors": 0,
+      "classification": "KNOWN_CONTRACT_FAILURE"
+    },
+    "optimized_contract": {
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "/Users/rodbot/.local/share/uv/python/cpython-3.12-macos-aarch64-none/bin/python3.12",
+        "-O",
+        "examples/mantle-text-telco-diagnostics-gpt/controls/customer_quotation.py"
+      ],
+      "exit": 1,
+      "start_utc": "2026-10-21T12:09:36.115559+00:00",
+      "end_utc": "2026-10-21T12:09:36.767482+00:00",
+      "log_sha256": "0047edc366918ef378bef840cf6811da79b7ae277aa582586f6e0b0224078916",
+      "staged_delta_sha256": "3d29416d04278da34d0e78b227f75c524b2276fbb9631c11ffe2c71025eb4070",
+      "timed_out": false,
+      "terminal_survivors": 0,
+      "classification": "KNOWN_CONTRACT_FAILURE"
+    },
+    "detector_tests": {
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "/Users/rodbot/.local/share/uv/python/cpython-3.12-macos-aarch64-none/bin/python3.12",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "examples/mantle-text-telco-diagnostics-gpt/tests",
+        "-p",
+        "test_customer_quotation.py",
+        "-v"
+      ],
+      "exit": 0,
+      "start_utc": "2026-10-21T12:09:36.122950+00:00",
+      "end_utc": "2026-10-21T12:09:36.774586+00:00",
+      "log_sha256": "f98998b43572106dbead237d10bbd75bb2f9d800050205d4665fd276fca37d0e",
+      "staged_delta_sha256": "3d29416d04278da34d0e78b227f75c524b2276fbb9631c11ffe2c71025eb4070",
+      "timed_out": false,
+      "terminal_survivors": 0,
+      "classification": "DETECTOR_TESTS_PASS_NOT_SERVICE_REPAIR"
+    }
+  },
+  "cases": {
+    "negation": {
+      "commands": [],
+      "customer_words": "Please do not factory reset my shop hub.",
+      "result": {
+        "device_changes": 0,
+        "facts": {
+          "area_outage_checked": true,
+          "disruption_confirmed": false,
+          "recovery_step_scoped": false
+        },
+        "next_step": "The step is not one clearly chosen operation. Ask the customer exactly: \"A reboot briefly interrupts service; a factory reset removes settings. Which action, if any, do you want?\" Then select only what they choose.",
+        "operation_requested": "factory_reset",
+        "reason": "reset_scope_ambiguous",
+        "service_id": "JM-FB-204988",
+        "status": "blocked"
+      },
+      "selection": null
+    },
+    "quotation": {
+      "commands": [],
+      "customer_words": "The specialist said \"factory reset\". What does that mean?",
+      "result": {
+        "address": "Unit 5, Tanner's Yard, Eastvale",
+        "device": {
+          "id": "JM-HUB-9034",
+          "model": "Juniper Hub 6"
+        },
+        "device_changes": 0,
+        "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+        "facts": {
+          "area_outage_checked": true,
+          "disruption_confirmed": false,
+          "recovery_step_scoped": true
+        },
+        "next_step": "Call run_recovery_step with this selection_ref straight away. The engine shows the customer the disruption boundary and asks them to confirm before anything is sent to the device.",
+        "operation": "factory_reset",
+        "selection_ref": "JM-SEL-ABA54AFB",
+        "service_id": "JM-FB-204988",
+        "service_label": "shop fibre",
+        "status": "selected"
+      },
+      "selection": {
+        "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+        "operation": "factory_reset",
+        "selection_ref": "JM-SEL-ABA54AFB",
+        "service_id": "JM-FB-204988",
+        "user_turns_at_selection": 1
+      }
+    },
+    "request": {
+      "commands": [],
+      "customer_words": "I want a factory reset of my shop hub.",
+      "result": {
+        "address": "Unit 5, Tanner's Yard, Eastvale",
+        "device": {
+          "id": "JM-HUB-9034",
+          "model": "Juniper Hub 6"
+        },
+        "device_changes": 0,
+        "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+        "facts": {
+          "area_outage_checked": true,
+          "disruption_confirmed": false,
+          "recovery_step_scoped": true
+        },
+        "next_step": "Call run_recovery_step with this selection_ref straight away. The engine shows the customer the disruption boundary and asks them to confirm before anything is sent to the device.",
+        "operation": "factory_reset",
+        "selection_ref": "JM-SEL-ABA54AFB",
+        "service_id": "JM-FB-204988",
+        "service_label": "shop fibre",
+        "status": "selected"
+      },
+      "selection": {
+        "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+        "operation": "factory_reset",
+        "selection_ref": "JM-SEL-ABA54AFB",
+        "service_id": "JM-FB-204988",
+        "user_turns_at_selection": 1
+      }
+    }
+  }
+}

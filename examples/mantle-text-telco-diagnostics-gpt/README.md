@@ -334,3 +334,38 @@ After the experiment and its jobs finish, retire only its owned environment:
 ```sh
 python3 scripts/workspace.py retire tutorials/frameworks-with-rasa/strands --owner juniper-strands-advice --inactive
 ```
+
+### Known limitation: customer quotations can select a reset
+
+The speaker filter in the Strands advice control is necessary, but it does not
+establish intent. In a constructed customer-only service check on 21 October
+2026, `The specialist said "factory reset". What does that mean?` saves a reset
+selection. `Please do not factory reset my shop hub.` is blocked; an explicit
+request selects. All three have zero commands at selection time. The current
+`customer_named_destructive` predicate recognises a non-negated action mention,
+which is weaker than an explicit request. Confirmation and actual execution
+remain separate; this observation does not show that a command was sent.
+
+From the repository root, use an existing Python 3.12 interpreter; this selected
+service-only control has no third-party dependencies or licence requirement:
+
+```sh
+python3.12 examples/mantle-text-telco-diagnostics-gpt/controls/customer_quotation.py
+```
+
+While the known failure remains, expect exit **1** and
+`KNOWN_CONTRACT_FAILURE: quotation: mentioning a reset is not a request to select it`.
+An import error or timeout is not that result. The JSON shows the selected
+quotation, blocked negation and separate selected request. This detector uses
+explicit raises, including under `python3.12 -O`; the earlier Strands advice
+control still requires assertions enabled.
+
+```sh
+python3.12 -m unittest discover -s examples/mantle-text-telco-diagnostics-gpt/tests -p test_customer_quotation.py -v
+```
+
+The two tests verify that the detector exposes the current failure and that
+selection sends no command. Their passing result is **not** evidence of a
+repaired request classifier. A receiving decision and a separate service repair
+with broader request/quotation controls are still needed. Do not use this
+synthetic predicate as production authorisation.
