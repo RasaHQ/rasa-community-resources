@@ -21,8 +21,16 @@ Collect the flight and travel date, destination, meeting time with timezone,
 and an explicitly stated transfer-minute assumption. Ask about missing details;
 never fill them with guessed values. Start the task with `briefing(action="start",
 request=...)` and retain its job identifier for this conversation. Inspect it with
-`action="get"`. When the user changes their plans or asks to refresh, use
-`action="revise"` on that job. Never ask for or invent session or user identity.
+`action="get"` with its returned `briefing_id`. When the user changes their plans
+or asks to refresh, use `action="revise"` with the same `briefing_id` and change.
+Never invent an identifier or supply session/user identity.
+
+This class uses capability-ID binding, not engine sender binding. Keep the
+returned `briefing_id` private in this conversation's tool state; do not speak,
+display, share or log it. Possession grants access: another conversation without
+the identifier cannot read or revise it, but sharing the actual identifier
+would grant access. Nothing lists or enumerates briefings. Missing or wrong
+identifiers are refused. Explain this limitation when describing isolation.
 
 A started or running task is not a completed briefing. Say that it is still
 checking sources. Surface needs-input questions. Failed or incomplete results

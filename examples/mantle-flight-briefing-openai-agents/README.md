@@ -3,20 +3,26 @@
 Author: Mator Clawson
 Assessed on: not_provided
 Assessed by: not_provided
-Verified with: Python 3.12.13 source/replay controls; Mantle end-to-end not verified
+Verified with: Python 3.12.13 replay/MCP controls and pinned Mantle hook loader/runner; full conversation not verified
 Audience: Practitioners connecting a Mantle conversation to a managed specialist
 Time: not_provided — reader exercise not accepted yet
 
-**Not ready as a complete example.** The Core-backed replay, authenticated MCP
-request path and fixed text-card renderer have passed author controls. The
-pinned Mantle package does not yet implement the hook-to-MCP metadata path
-described in its current documentation. An owning-engine contribution or a
-qualified version containing that path is required before this is a working
-Mantle conversation. Do not remove identity checks to make it run.
+**End-to-end qualification is pending.** The Core-backed replay, authenticated
+MCP request path and fixed text-card renderer pass author controls. The class
+uses the Architect-approved capability-ID fallback because published Mantle
+packages through 3.21.0 do not forward engine identity as MCP metadata. No engine
+patch or fork is required by this fallback.
 
 The product imports exactly one MCP tool,
-`briefing(action=start|get|revise, request?, job_id?, change?)`. The authenticated
-Mantle peer and engine sender identify the conversation outside model arguments.
+`briefing(action=start|get|revise, request?, briefing_id?, change?)`. Start returns
+an unguessable ID with 256 random bits. Get and revise require possession of that
+ID and an authenticated Mantle peer. Missing or wrong IDs are refused; there is
+no enumeration tool. **Anyone with the actual ID and peer access can read or
+revise the briefing, including another conversation.** This is capability
+possession, not engine-sender isolation. Keep IDs out of shared transcripts,
+logs and telemetry. Standard and structured application logs redact the ID pattern; do not
+configure request-body/access tracing that would capture tool arguments.
+
 Core supplies widget validation, per-widget supersession and the managed Agents
 API wrapper. Model output never supplies the numbers in the cards.
 
@@ -48,12 +54,17 @@ root, after the verified input is available:
 ```sh
 python3 scripts/workspace.py start examples/mantle-flight-briefing-openai-agents/worker --owner flight-worker
 python3 scripts/workspace.py start examples/mantle-flight-briefing-openai-agents/project --owner flight-mantle
-examples/mantle-flight-briefing-openai-agents/worker/.venv/bin/python -m unittest discover -s examples/mantle-flight-briefing-openai-agents/tests -v
+examples/mantle-flight-briefing-openai-agents/project/.venv/bin/python -m unittest discover -s examples/mantle-flight-briefing-openai-agents/tests -v
 ```
 
 These checks include the actual MCP ASGI path in process without a listening
-server, cross-conversation refusal and source-card replay. They do not prove
-Mantle metadata propagation or the live product.
+server, missing/wrong capability refusal, deliberate access with a valid capability
+from another conversation, and source-card replay. They do not prove the live
+Mantle conversation or provider access. The project interpreter additionally
+exercises the actual pinned Mantle hook loader and runner with constructed Core
+results: it shows source-backed cards, preserves an unaffected timeline across a
+weather revision, and suppresses unchecked model numbers when cards are invalid.
+That is hook integration evidence, not a full conversational run.
 
 ## Runtime boundary
 
@@ -69,7 +80,7 @@ flight schedules need their own verified provider access. No live API, real
 flight lookup or voice success is claimed here.
 
 The remaining acceptance is an observed Mantle conversation calling this tool,
-showing the validated cards and preserving conversation isolation, followed by
+showing the validated cards and demonstrating the documented capability boundary, followed by
 independent Ops acceptance. Syntax checks, unit tests and this draft PR do not
 complete that outcome.
 

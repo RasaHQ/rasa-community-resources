@@ -1,28 +1,15 @@
-"""Bind MCP ownership to Mantle's engine identity, never model arguments.
+"""Present source-backed text cards; class ownership uses capability IDs.
 
-Pinned-runtime propagation must be verified before claiming this hook works.
-The MCP service independently requires an authenticated Mantle transport peer.
+This pin cannot forward engine identity as MCP metadata. No ownership claim
+is inferred from these presentation hooks. Actual runtime proof is required.
 """
-from rasa.mantle.hooks import (
-    ToolCallPayload, ToolResultPayload, OutgoingTextPayload,
-    modify_tool_call, modify_tool_result, modify_outgoing_text,
-)
+from rasa.mantle.hooks import ToolResultPayload, OutgoingTextPayload, modify_tool_result, modify_outgoing_text
 from lib.card_text import render_cards
+from lib.capability_logging import install as install_log_redaction
+
+install_log_redaction()
 
 _pending_cards: dict[str, str] = {}
-
-
-@modify_tool_call()
-async def bind_briefing_conversation(call: ToolCallPayload) -> ToolCallPayload:
-    if call.tool_name not in ("briefing", "mcp/briefing:briefing"):
-        return call
-    sender = call.sender_id
-    if (not isinstance(sender, str) or not sender.strip() or len(sender) > 200
-            or any(ord(char) < 32 or ord(char) == 127 for char in sender)):
-        # Unexpected modifier errors fail closed in Mantle; do not allow the
-        # original call through or fall back to model-provided identity.
-        raise ValueError("conversation_identity_required")
-    return call.model_copy(update={"metadata": {"rasa.briefing.sender_id": sender}})
 
 
 @modify_tool_result()
@@ -37,7 +24,8 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
             cards = render_cards(result.value)
             status = result.value.get("status")
             prefix = "Briefing complete. " if status == "complete" else "Briefing incomplete; some sources are unavailable. "
-            _pending_cards[result.sender_id] = prefix + "\n\n" + cards
+            boundary = "Access uses possession of a private briefing ID; it is not bound to this conversation. "
+            _pending_cards[result.sender_id] = prefix + boundary + "\n\n" + cards
         except Exception:
             # Tool-result hooks are fail-open in Mantle. Handle bad cards here
             # so the final utterance cannot present an unchecked model summary.

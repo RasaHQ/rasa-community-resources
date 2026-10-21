@@ -7,6 +7,7 @@ it must never construct Owner from the public tool's arguments.
 from __future__ import annotations
 
 import asyncio
+import secrets
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Awaitable, Callable
@@ -16,6 +17,7 @@ from zeo_core.contracts.ui.widgets import DataRef, WidgetBoard, WidgetUpsert
 from zeo_core.integrations.agents import TurnResult
 
 from briefing.identity import conversation_identity
+from project.lib.capability_logging import install as install_log_redaction
 
 
 class BriefingRefused(ValueError):
@@ -74,12 +76,17 @@ class Jobs:
     """In-memory, bounded session demo; shutdown cancels all outstanding jobs."""
 
     def __init__(self, runner: Runner, *, timeout: float = 60, capacity: int = 128,
-                 replacement_plan: Callable[[str], tuple[str, ...] | None] | None = None):
+                 replacement_plan: Callable[[str], tuple[str, ...] | None] | None = None,
+                 ownership_mode: str = "engine"):
         if timeout <= 0 or capacity <= 0:
             raise ValueError("Positive job limits required")
         self._runner, self._timeout, self._capacity = runner, timeout, capacity
         self._jobs: dict[str, _Job] = {}
         self._replacement_plan = replacement_plan
+        if ownership_mode not in ("engine", "capability"):
+            raise ValueError("unsupported_ownership_mode")
+        self.ownership_mode = ownership_mode
+        install_log_redaction()
 
     @staticmethod
     def _snapshot(job: _Job) -> list[dict]:
@@ -116,7 +123,13 @@ class Jobs:
     async def from_transport(self, authenticated_peer: str | None, metadata: dict | None,
                              **arguments) -> dict:
         """Private transport entry; only arguments is the public tool payload."""
-        owner = Owner(*conversation_identity(authenticated_peer, metadata))
+        if self.ownership_mode == "capability":
+            if not authenticated_peer:
+                raise BriefingRefused("authenticated_peer_required")
+            # This is explicitly capability possession, not sender binding.
+            owner = Owner(authenticated_peer, "capability-possession")
+        else:
+            owner = Owner(*conversation_identity(authenticated_peer, metadata))
         return await self.briefing(owner, **arguments)
 
     async def briefing(self, owner: Owner, *, action: str, request: str | None = None,
@@ -127,7 +140,8 @@ class Jobs:
             text = self._text(request)
             if len(self._jobs) >= self._capacity:
                 raise BriefingRefused("job_capacity_reached")
-            job_id = uuid4().hex
+            # 32 random bytes = 256 random bits; UUID4 would supply only122.
+            job_id = "brf_" + secrets.token_urlsafe(32)
             job = _Job(owner, text)
             job.board.begin_request(job.request_id)
             self._jobs[job_id] = job

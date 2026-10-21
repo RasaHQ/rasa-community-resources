@@ -15,7 +15,8 @@ def main():
     if not token:
         raise SystemExit("Set the runtime-only BRIEFING_MCP_TOKEN in both facilitator processes")
     runner = ReplayRunner()
-    app = create_app(Jobs(runner, replacement_plan=runner.replacement_plan), transport_token=token)
+    app = create_app(Jobs(runner, replacement_plan=runner.replacement_plan,
+                          ownership_mode="capability"), transport_token=token)
     uvicorn.run(app, host="127.0.0.1", port=8942, log_level="warning")
 
 

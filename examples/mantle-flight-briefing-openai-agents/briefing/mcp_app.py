@@ -17,7 +17,8 @@ from briefing.jobs import Jobs
 class BriefingResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
     status: str
-    job_id: str | None = None
+    binding: str
+    briefing_id: str | None = None
     revision: int | None = None
     request_id: str | None = None
     progress: list[str] | None = None
@@ -61,16 +62,19 @@ def create_app(jobs: Jobs, *, transport_token: str):
     server = FastMCP("briefing", host="127.0.0.1", port=8942,
                      stateless_http=True, json_response=True, lifespan=lifespan)
 
-    @server.tool(description="Start, inspect or revise this conversation's flight briefing. One task tool; never supply user or session identity.")
+    @server.tool(description="Start, inspect or revise a briefing using its unguessable briefing_id capability. Possession permits access; this mode is not engine-sender binding. Never supply user or session identity.")
     async def briefing(action: Literal["start", "get", "revise"], ctx: Context,
-                       request: str | None = None, job_id: str | None = None,
+                       request: str | None = None, briefing_id: str | None = None,
                        change: str | None = None) -> BriefingResponse:
         context = ctx.request_context
         incoming = context.request
         peer = incoming.scope.get("briefing.peer") if incoming is not None else None
         metadata = context.meta.model_dump(by_alias=True) if context.meta is not None else None
         result = await jobs.from_transport(peer, metadata, action=action, request=request,
-                                           job_id=job_id, change=change)
+                                           job_id=briefing_id, change=change)
+        if "job_id" in result:
+            result["briefing_id"] = result.pop("job_id")
+        result["binding"] = "capability_id" if jobs.ownership_mode == "capability" else "engine_sender"
         return BriefingResponse.model_validate(result)
 
     return _MantlePeer(server.streamable_http_app(), transport_token)
