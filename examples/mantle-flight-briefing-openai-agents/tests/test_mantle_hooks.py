@@ -6,6 +6,7 @@ qualification because they intentionally do not install the Mantle engine.
 from pathlib import Path
 import sys
 import json
+import secrets
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -95,6 +96,16 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         self.assertIn('Margin: 120.0 minutes', delivered)
         self.assertNotIn('9999', delivered)
         self.assertEqual(tracker.latest_bot_utterance.text, delivered)
+
+    async def test_model_cannot_display_capability_but_tool_arguments_remain_usable(self):
+        capability = 'brf_' + secrets.token_urlsafe(32)
+        result = await run_modify(self.registry, 'model_response', ModelResponsePayload(
+            sender_id='new-conversation', text='Your private identifier is ' + capability,
+            tool_calls=[{'id': 'fixture-call', 'tool_name': 'briefing',
+                         'tool_args': {'action': 'get', 'briefing_id': capability}}]))
+        self.assertNotIn(capability, result.payload.text)
+        self.assertIn('redacted', result.payload.text)
+        self.assertEqual(result.payload.tool_calls[0]['tool_args']['briefing_id'], capability)
 
     async def test_bad_card_stops_unchecked_numeric_model_output(self):
         text = await self.present({'status': 'complete', 'cards': [{'invalid': True}]})

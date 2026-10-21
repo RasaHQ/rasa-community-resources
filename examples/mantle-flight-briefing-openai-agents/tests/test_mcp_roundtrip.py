@@ -37,6 +37,7 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
                                          "clientInfo": {"name": "author-control", "version": "1"}})
                 tools = (await rpc("tools/list", {}))["tools"]
                 self.assertEqual([tool["name"] for tool in tools], ["briefing"])
+                self.assertFalse(tools[0]["inputSchema"].get("additionalProperties", True))
                 self.assertFalse({"ctx", "user_id", "session_id", "owner"} &
                                  set(tools[0]["inputSchema"]["properties"]))
 
@@ -54,15 +55,32 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
                 result = await call("conversation-a", {"action": "get", "briefing_id": job_id})
                 self.assertEqual(result["structuredContent"]["status"], "complete")
                 self.assertEqual(len(result["structuredContent"]["cards"]), 3)
+                unchanged = result["structuredContent"]
                 for action, extra in (("get", {}), ("revise", {"change": "Replay DEMO101 later arrival"})):
                     refused = await call("conversation-b", {"action": action, "briefing_id": "made-up-id", **extra})
                     self.assertTrue(refused.get("isError"), refused)
                 absent = await rpc("tools/call", {"name": "briefing", "arguments": {"action": "get"}})
                 self.assertTrue(absent.get("isError"), absent)
+                after_refusals = await call("conversation-a", {"action": "get", "briefing_id": job_id})
+                self.assertEqual(after_refusals["structuredContent"], unchanged)
+                for arguments in (
+                    {"action": "list"},
+                    {"action": "get", "briefing_id": job_id, "job_id": job_id},
+                    {"action": "get", "briefing_id": job_id, "user_id": "invented"},
+                    {"action": "revise", "briefing_id": job_id, "request": "extra", "change": "Replay DEMO101 later arrival"},
+                ):
+                    refused = await call("conversation-b", arguments)
+                    self.assertTrue(refused.get("isError"), "unsupported argument combination was accepted")
                 # The fallback is deliberately weaker: possession of the real
                 # capability grants access even from another conversation.
                 possessed = await call("conversation-b", {"action": "get", "briefing_id": job_id})
                 self.assertEqual(possessed["structuredContent"]["status"], "complete")
+                revised = await call("conversation-b", {"action": "revise", "briefing_id": job_id,
+                                                         "change": "Replay DEMO101 later arrival"})
+                self.assertFalse(revised.get("isError"), revised)
+                await jobs._jobs[job_id].task
+                shared = await call("conversation-b", {"action": "get", "briefing_id": job_id})
+                self.assertEqual(shared["structuredContent"]["revision"], 2)
                 response = await client.post("/mcp", headers={"authorization": "Bearer invalid"}, json={})
                 self.assertEqual(response.status_code, 401)
         await jobs.close()

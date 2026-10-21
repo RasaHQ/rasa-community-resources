@@ -17,10 +17,12 @@ The product imports exactly one MCP tool,
 `briefing(action=start|get|revise, request?, briefing_id?, change?)`. Start returns
 an unguessable ID with 256 random bits. Get and revise require possession of that
 ID and an authenticated Mantle peer. Missing or wrong IDs are refused; there is
-no enumeration tool. **Anyone with the actual ID and peer access can read or
+no enumeration tool. Unsupported actions, obsolete `job_id`, invented identity
+fields and extra arguments are refused rather than silently ignored. **Anyone with the actual ID and peer access can read or
 revise the briefing, including another conversation.** This is capability
 possession, not engine-sender isolation. Keep IDs out of shared transcripts,
-logs and telemetry. Standard and structured application logs redact the ID pattern; do not
+logs and telemetry. The wired model-response modifier redacts capability-shaped
+text before delivery while preserving tool-call arguments. Standard and structured application logs redact the ID pattern; do not
 configure request-body/access tracing that would capture tool arguments.
 
 Core supplies widget validation, per-widget supersession and the managed Agents

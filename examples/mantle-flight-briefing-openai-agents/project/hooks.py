@@ -6,7 +6,7 @@ is inferred from these presentation hooks. Actual runtime proof is required.
 import json
 from rasa.mantle.hooks import ToolResultPayload, ModelResponsePayload, modify_tool_result, modify_model_response
 from lib.card_text import render_cards
-from lib.capability_logging import install as install_log_redaction
+from lib.capability_logging import install as install_log_redaction, redact
 
 install_log_redaction()
 
@@ -42,6 +42,9 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
 
 @modify_model_response()
 async def present_source_cards(payload: ModelResponsePayload) -> ModelResponsePayload:
+    # A model may quote tool context despite instructions. Keep capabilities
+    # out of user-visible prose without changing the actual tool arguments.
+    payload = payload.model_copy(update={"text": redact(payload.text)})
     # Preserve tool-only iterations: a subsequent get may replace pending data.
     if payload.tool_calls and not payload.text:
         return payload
