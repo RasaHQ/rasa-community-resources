@@ -1,31 +1,33 @@
-# Feature specification v2: "Brief me before I fly" (spec owner: rasa-ops)
+# Feature specification v3: "Brief me before I fly" (spec owner: rasa-ops)
 sow: software-factories-masterclass-SOW-02
-v2 locked Wed 21 Oct 2026 12:4xZ. Supersedes v1 (sha256 0dbfeb92c64cadf044f5046c1e16ca288fa14d8b751ab0d1b8c683d4e69dbb78) and the 12:22Z desk-widgets plan.
+v3 locked Wed 21 Oct 2026 12:5xZ. v3 changes ONLY section 3 (one MCP tool, chosen by rasa per the operator's one-tool direction) and the matching pack skill; every scenario keeps its meaning. v2 (sha256 5330a60628e773926615cc1db4a27a323462a60e8879bd68494ab81b6180e8da) and v1 (sha256 0dbfeb92c64cadf044f5046c1e16ca288fa14d8b751ab0d1b8c683d4e69dbb78) are superseded; the 12:22Z desk-widgets plan too.
+v2 text follows. Supersedes v1 (sha256 0dbfeb92c64cadf044f5046c1e16ca288fa14d8b751ab0d1b8c683d4e69dbb78) and the 12:22Z desk-widgets plan.
 CHANGES FROM v1 (operator change of 12:3xZ, brief v2 sha256 d6863de69dd7767c47a1c3851ec3ff01fb70e6cd124464d9391c0cf41662d5b5, Architect msg-architect-20261021T123723Z-081ee3):
  1. NO separate browser dashboard. The product is a Rasa Mantle agent whose answers carry zeocore-defined widget cards, rendered where Mantle's conversation is shown. Use whatever Mantle renders natively first; a thin client-side renderer only for what it does not; never claim a Mantle widget feature that does not exist.
  2. Mantle is the centre: skills, flows, MCP imports, responses, voice and its own testing. The OpenAI Agents API is the specialist behind a Mantle-imported MCP tool. The dark factory is how the Mantle agent is built and extended.
  3. Order: a complete working end-to-end experience first, rehearsed; then the pack breaks it into step-by-step increments.
  4. Provider timestamps: a missing provider update time is represented as unknown, never filled from fetched_at (data_ref.as_of is nullable; see section 4).
-OPEN (Architect to settle with rasa today): the operator's v2 text says one MCP tool; this spec keeps three tools (start_briefing, get_briefing, revise_briefing) because the work is slow. If rasa and the Architect prefer one tool with an action argument, the scenarios are unchanged; only section 3 and the pack skill change.
+SETTLED in v3: one tool, briefing, with an action argument.
 Companion: ACCEPTANCE-SCENARIOS-v1.md (kept apart from the implementation; the builders never receive it as code to edit). Schemas: widget-upsert.schema.json, data-ref.schema.json.
 
 ## 1. Purpose
-A user speaks a travel request. Mantle converses; one OpenAI Agents API session (beta.agents, never the openai-agents SDK) investigates behind the MCP tools; the briefing service validates results; the Mantle answer carries widget cards defined by zeocore and shown where the conversation is shown. The cards carry the detail; speech stays short.
+A user speaks a travel request. Mantle converses; one OpenAI Agents API session (beta.agents, never the openai-agents SDK) investigates behind the MCP tool; the briefing service validates results; the Mantle answer carries widget cards defined by zeocore and shown where the conversation is shown. The cards carry the detail; speech stays short.
 Core story (act 1): flight status, arrival weather, arrival timeline. Second act: market watchlist, added by a coding agent from this spec inside the factory.
 
 ## 2. Components and ownership
 - Mantle: conversation, clarification, skill routing, spoken responses. Imports the three MCP tools (mcp_servers in integrations.yml, import_tools in the skill).
-- Briefing service (MCP server): start_briefing, get_briefing, revise_briefing. Owns the mapping conversation -> briefing job -> OpenAI session.
+- Briefing service (MCP server): the one tool briefing(action=start|get|revise). Owns the mapping conversation -> briefing job -> OpenAI session.
 - OpenAI Agents API: multi-source investigation and synthesis. Never asked to produce numbers; numbers come from data_refs.
 - Data adapters: fetch and normalise provider data (flight, weather, market). Each result becomes a data_ref with provenance.
 - Widget cards: four predefined components defined by zeocore, carried in the Mantle answer and rendered in the conversation surface. Rendering is native Mantle where it exists; a thin client-side renderer covers the rest. Mantle has no documented arbitrary MCP widget rendering; say so.
 Owners: rasa-ops = this spec, the acceptance scenarios, the pack text; rasa = the Mantle agent project, briefing service, adapters and any thin renderer; zeocore = Agents API support and widget-routing types.
 
-## 3. MCP interface (task-oriented; the model never supplies a session or user identifier)
-- start_briefing(request: str) -> {job_id, status: "started"} promptly; the work continues in the background.
-- get_briefing(job_id) -> {status: started|running|needs_input|complete|incomplete|failed, progress: [..], needs_input?: {field, question}, widgets: [widget_id..], reason?}
-- revise_briefing(job_id, change: str) -> {job_id, status, revision}. Applies a follow-up to the existing job (new destination, new time, "refresh", "compare").
-The service resolves the job through the authenticated conversation. A job_id belonging to another conversation is refused.
+## 3. MCP interface (ONE task tool; the model never supplies a session or user identifier)
+briefing(action, request?, job_id?, change?) with action in start | get | revise and strict per-action argument validation:
+- action=start, request: str -> {job_id, status: "started"} promptly; the work continues in the background.
+- action=get, job_id -> {status: started|running|needs_input|complete|incomplete|failed, progress: [..], needs_input?: {field, question}, widgets: [widget_id..], reason?}
+- action=revise, job_id, change: str -> {job_id, status, revision}. Applies a follow-up to the existing job (new destination, new time, "refresh", "compare").
+Any other argument combination is refused. Internal start, get and revise service functions may remain. The service resolves the job through the authenticated conversation. A job_id belonging to another conversation is refused.
 Completion is established by inspecting the saved turn and tool results, never by a stream ending.
 
 ## 4. Widget registry (closed): flight_status, weather_hourly, arrival_timeline, market_watchlist

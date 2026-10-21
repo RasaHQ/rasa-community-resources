@@ -9,7 +9,7 @@ import accept_lib as lib
 import yaml
 
 SKILL = "briefing"
-TOOLS = ["mcp/briefing:start_briefing", "mcp/briefing:get_briefing", "mcp/briefing:revise_briefing"]
+TOOLS = ["mcp/briefing:briefing"]
 
 
 def body():
@@ -28,10 +28,8 @@ class BriefingSkill(unittest.TestCase):
     def test_the_skill_compiles_under_its_own_name(self):
         self.assertEqual(lib.skill(SKILL).id, SKILL)
 
-    def test_all_three_briefing_tools_are_imported(self):
-        names = lib.skill(SKILL).import_tool_names
-        for tool in TOOLS:
-            self.assertIn(tool, names)
+    def test_the_one_briefing_tool_is_imported_and_nothing_else(self):
+        self.assertEqual(sorted(lib.skill(SKILL).import_tool_names), TOOLS)
 
     def test_the_server_is_configured_and_reached_over_http_on_loopback(self):
         found = server()
@@ -64,7 +62,7 @@ class BriefingSkill(unittest.TestCase):
 
     def test_missing_input_is_asked_for_then_the_briefing_is_revised(self):
         text = body()
-        self.assertIn("if it returns `needs_input`, ask the caller that one question, then call `revise_briefing` with the answer", text)
+        self.assertIn("if it returns `needs_input`, ask the caller that one question, then call `briefing` with action `revise` and the answer", text)
 
     def test_an_unavailable_source_is_named_and_no_old_value_is_repeated(self):
         self.assertIn("do not repeat an earlier value as current", body())
