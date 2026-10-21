@@ -37,9 +37,15 @@ def text(value: Any, *, optional: bool = False) -> str | None:
 
 
 def number(value: Any) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise DataUnavailable("Missing or non-finite source number")
-    return float(value)
+    try:
+        result = float(value)
+    except (OverflowError, ValueError) as error:
+        raise DataUnavailable("Source number exceeds supported range") from error
+    if not math.isfinite(result):
+        raise DataUnavailable("Missing or non-finite source number")
+    return result
 
 
 def _time(value: Any, *, optional: bool = False) -> str | None:
@@ -52,6 +58,8 @@ def flight_payload(record: dict) -> dict:
     A transport/session layer must establish flight/date identity before this
     normaliser is called. It must refuse ambiguous matches rather than pick one.
     """
+    if not isinstance(record, dict):
+        raise DataUnavailable("Flight record is unavailable")
     try:
         origin, destination = record["origin"], record["destination"]
         if not isinstance(origin, dict) or not isinstance(destination, dict):
@@ -76,18 +84,24 @@ def flight_payload(record: dict) -> dict:
 
 def weather_payload(response: dict, *, location: str, arrival: str) -> dict:
     """Open-Meteo hourly values requested in UTC, with aligned source arrays."""
-    if response.get("timezone") not in {"UTC", "GMT"} or response.get("utc_offset_seconds") != 0:
+    if not isinstance(response, dict):
+        raise DataUnavailable("Forecast response is unavailable")
+    if response.get("timezone") not in ("UTC", "GMT") or response.get("utc_offset_seconds") != 0:
         raise DataUnavailable("This adapter requires the requested UTC forecast")
     units = response.get("hourly_units", {})
+    if not isinstance(units, dict):
+        raise DataUnavailable("Forecast units are unavailable")
     if (units.get("temperature_2m") != "°C" or
             units.get("precipitation_probability") != "%" or units.get("precipitation") != "mm"):
         raise DataUnavailable("Forecast units do not match the requested units")
     source = response.get("hourly", {})
+    if not isinstance(source, dict):
+        raise DataUnavailable("Hourly forecast is unavailable")
     names = ("time", "temperature_2m", "precipitation_probability", "precipitation")
     arrays = [source.get(name) for name in names]
     if any(not isinstance(values, list) for values in arrays):
         raise DataUnavailable("Hourly forecast arrays are unavailable")
-    if not arrays[0] or len({len(values) for values in arrays}) != 1:
+    if not 1 <= len(arrays[0]) <= 72 or len({len(values) for values in arrays}) != 1:
         raise DataUnavailable("Hourly forecast arrays do not align")
     rows = []
     for raw_time, temperature, probability, rain in zip(*arrays):
@@ -122,6 +136,12 @@ def timeline_payload(*, arrival: str, meeting_time: str, transfer_minutes: int) 
                       {"label": "After assumed transfer", "time": at_meeting.isoformat()},
                       {"label": "Meeting", "time": meeting.isoformat()}],
             "transfer_minutes": {"value": transfer_minutes, "kind": "assumption"},
-            "meeting_time": meeting.isoformat(), "margin_minutes": margin,
-            "calculation_inputs": {"arrival": landed.isoformat(), "transfer_minutes": transfer_minutes,
-                                   "meeting_time": meeting.isoformat()}}
+            "meeting_time": meeting.isoformat(), "margin_minutes": margin}
+
+
+def arrival_input(flight: dict) -> tuple[str, str]:
+    """Choose the provider estimate first, explicitly identifying fallback."""
+    if not isinstance(flight, dict):
+        raise DataUnavailable("Validated flight payload required")
+    field = "estimated_arrival" if flight.get("estimated_arrival") is not None else "scheduled_arrival"
+    return _time(flight.get(field)), field

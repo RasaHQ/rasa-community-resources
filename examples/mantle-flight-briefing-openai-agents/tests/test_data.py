@@ -5,7 +5,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from briefing.data import DataUnavailable, flight_payload, timeline_payload, weather_payload
+from briefing.data import DataUnavailable, arrival_input, flight_payload, number, timeline_payload, weather_payload
 
 
 def flight():
@@ -79,6 +79,29 @@ class NormalisationControls(unittest.TestCase):
 
     def test_boolean_transfer_is_refused(self):
         with self.assertRaises(DataUnavailable): timeline_payload(arrival="2026-10-22T17:00:00Z", meeting_time="2026-10-22T21:00:00Z", transfer_minutes=True)
+
+    def test_updated_arrival_drives_margin_and_identifies_schedule_fallback(self):
+        record = flight()
+        scheduled, label = arrival_input(flight_payload(record))
+        self.assertEqual(label, "scheduled_arrival")
+        record["estimated_in"] = "2026-10-22T19:00:00Z"
+        estimated, label = arrival_input(flight_payload(record))
+        self.assertEqual(label, "estimated_arrival")
+        margins = [timeline_payload(arrival=at, meeting_time="2026-10-22T21:00:00Z", transfer_minutes=90)["margin_minutes"] for at in (scheduled, estimated)]
+        self.assertEqual(margins, [150, 30])
+
+    def test_timeline_has_only_core_component_fields(self):
+        result = timeline_payload(arrival="2026-10-22T17:00:00Z", meeting_time="2026-10-22T21:00:00Z", transfer_minutes=90)
+        self.assertEqual(set(result), {"steps", "transfer_minutes", "meeting_time", "margin_minutes"})
+
+    def test_malformed_provider_objects_fail_as_unavailable(self):
+        for value in (None, [], "bad"):
+            with self.assertRaises(DataUnavailable): flight_payload(value)
+            with self.assertRaises(DataUnavailable): weather_payload(value, location="New York", arrival="2026-10-22T17:00:00Z")
+        for key in ("hourly", "hourly_units"):
+            source = weather(); source[key] = None
+            with self.assertRaises(DataUnavailable): weather_payload(source, location="New York", arrival="2026-10-22T17:00:00Z")
+        with self.assertRaises(DataUnavailable): number(10 ** 1000)
 
 
 if __name__ == "__main__": unittest.main()
