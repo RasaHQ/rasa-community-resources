@@ -1,0 +1,138 @@
+# Brief me before I fly — work in progress
+
+Author: Mator Clawson
+Assessed on: not_provided
+Assessed by: not_provided
+Verified with: Python 3.12.13 replay/MCP controls and pinned Mantle hook adapters and tracker/channel delivery; full conversation not verified
+Audience: Practitioners connecting a Mantle conversation to a managed specialist
+Time: not_provided — reader exercise not accepted yet
+
+**End-to-end qualification is pending.** The Core-backed replay, authenticated
+MCP request path and fixed text-card renderer pass author controls. The class
+uses the Architect-approved capability-ID fallback because published Mantle
+packages through 3.21.0 do not forward engine identity as MCP metadata. No engine
+patch or fork is required by this fallback.
+
+The product imports exactly one MCP tool,
+`briefing(action=start|get|revise, request?, briefing_id?, change?)`. Start returns
+an unguessable ID with 256 random bits. Get and revise require possession of that
+ID and an authenticated Mantle peer. Missing or wrong IDs are refused; there is
+no enumeration tool. Unsupported actions, obsolete `job_id`, invented identity
+fields and extra arguments are refused rather than silently ignored. **Anyone with the actual ID and peer access can read or
+revise the briefing, including another conversation.** This is capability
+possession, not engine-sender isolation. Keep IDs out of shared transcripts,
+logs and telemetry. The wired model-response modifier redacts capability-shaped
+text before delivery while preserving tool-call arguments. The application logging helper redacts key-shaped strings and exact environment
+credential values in formatted standard logs (including extra fields and exception
+text), initial and rendered structlog events, rendered cards and model replies.
+The public MCP boundary refuses credentials in tool arguments or metadata and
+sanitizes validation-error responses. Synthetic-key controls cover these paths;
+this does not certify arbitrary third-party telemetry. Keep request-body/access
+tracing disabled and never paste keys into the conversation. The doctor reads keys only
+from process environment. For the engine launcher set `LITELLM_MODE=PRODUCTION`
+to disable LiteLLM development dotenv loading; other dependency loaders are not
+certified by this control. Thread exceptions, unraisable exceptions and warnings
+are not covered by the application logging hook. See the participant key setup
+and doctor in [the project instructions](project/README.md).
+
+Core supplies widget validation, per-widget supersession and the managed Agents
+API wrapper. Model output never supplies the numbers in the cards.
+
+## Current offline checkpoint
+
+`Replay DEMO101` is constructed classroom data, not an actual flight or a provider
+recording. `Replay DEMO101 later arrival` changes the arrival estimate and margin.
+`Replay DEMO101 morning weather` updates only weather, preserving the flight and
+timeline cards with their own provenance. Every visible card says REPLAY. The
+90-minute transfer is an assumption, never traffic. Missing provider update time
+is distinct from retrieval time.
+
+The backend uses Core's `ScriptedTransport` and actual callback loop. No remote
+agent, weather/flight provider, voice system or model is exercised by those tests.
+The current presentation fallback is fixed text cards in the conversation; it
+is not native Mantle arbitrary widgets or an interactive chart renderer.
+
+The named `Replay DEMO101 missing inputs` exercise starts without a meeting time
+or transfer assumption. Get returns needs_input and a precise question; revise
+with the traveller's answer resumes the same capability. Timezone-free times,
+non-numeric durations and out-of-range durations are asked again, never guessed.
+For an explicitly supplied 21:00Z meeting and 45 minutes, the card margin is
+165 minutes; a later-arrival revision retains those inputs and yields 75.
+Questions are rendered from the service result rather than unchecked model prose.
+
+`Replay DEMO101 flight unavailable` exercises partial failure: the forecast
+remains available without an invented arrival marker, while flight and timeline
+show explicit source errors and empty payloads. Earlier arrival and margin
+values are removed; status is incomplete. The named normal replay exercises
+recovery. Progress entries describe validated components in callback order,
+not unobserved provider activity. These remain author controls requiring Ops'
+independent acceptance and the facilitator's actual conversation rehearsal.
+
+## Dependency custody and checks
+
+The dev Core wheel is not a public release. Its source and expected bytes are in
+[`worker/core-artifact.json`](worker/core-artifact.json). The exact class wheel and `SHA256SUMS` ship in `worker/inputs/`. Verify them
+before managed setup; no participant hand-staging or unverified download is needed.
+The same input is used by both resource-owned locks. Never substitute a package
+with the same version label but different bytes.
+
+Create each environment through the repository's managed helper, from repository
+root, after the verified input is available:
+
+```sh
+python3 scripts/workspace.py start examples/mantle-flight-briefing-openai-agents/worker --owner flight-worker
+python3 scripts/workspace.py start examples/mantle-flight-briefing-openai-agents/project --owner flight-mantle
+examples/mantle-flight-briefing-openai-agents/project/.venv/bin/python -m unittest discover -s examples/mantle-flight-briefing-openai-agents/tests -v
+```
+
+These checks include the actual MCP ASGI path in process without a listening
+server, missing/wrong capability refusal, deliberate access with a valid capability
+from another conversation, and source-card replay. They do not prove the live
+Mantle conversation or provider access. The project interpreter additionally
+exercises the actual pinned Mantle hook loader and runner with constructed Core
+results: it shows source-backed cards, preserves an unaffected timeline across a
+weather revision, and suppresses unchecked model numbers for invalid, empty, wrapped or error
+briefing results.
+The adapter control supplies constructed JSON directly to the engine adapter;
+it does not by itself prove MCP serialization. The separate conversation control
+below exercises the actual MCP ClientSession/server dispatch path. The wired model-response modifier replaces free-form numbers
+before the real turn context records and delivers the cards. The pin registers
+`outgoing_text` but does not invoke it during delivery, so this project does not
+use that hook. That is adapter and delivery integration evidence, not a complete
+model-driven conversation or a proof of streaming behavior.
+
+A separate keyless conversation control runs the actual Mantle orchestrator,
+skill dispatch, MCP ClientSession/server, Core replay, hooks, tracker and output
+channel. Only the LLM provider factory is replaced with scripted responses over ten turns
+(initial briefing, weather and arrival revisions, missing-input questions and
+resumption, source failure, recovery and missing estimate); the HTTP transport stays in process. This proves
+that those pieces connect, that the weather follow-up retains the original
+flight/timeline provenance, and that a later arrival changes the margin from
+120 to 30 minutes while unchecked model numbers are replaced. The
+script chooses the capability from fixture state; it does not prove a model can
+retain it, follow the skill or interpret a traveller’s request. No installed
+engine file is changed. Real model behavior and facilitator acceptance remain
+outstanding. `Replay DEMO101 no estimate` explicitly exercises the scheduled
+arrival fallback, displaying the absent estimate as not provided rather than
+inventing it or a delayed status.
+
+## Runtime boundary
+
+The facilitator-only local launcher is `python -m briefing` from this directory,
+using the worker interpreter. It requires the same runtime-only
+`BRIEFING_MCP_TOKEN` in the launcher and Mantle processes. Do not put its value in
+a file or log. This launcher starts a loopback service and is not a source-only
+test. The current default backend is constructed replay only.
+
+Actual model/provider access uses only the facilitator's own environment. No
+key belongs in this repository, seat mail or a file written by a seat. Live
+flight schedules need their own verified provider access. No live API, real
+flight lookup or voice success is claimed here.
+
+The remaining acceptance is an observed Mantle conversation calling this tool,
+showing the validated cards and demonstrating the documented capability boundary, followed by
+independent Ops acceptance. Syntax checks, unit tests and this draft PR do not
+complete that outcome.
+
+Teaching source follows the repository [license](../../LICENSE); Rasa Pro has
+its own distribution and licensing terms.
