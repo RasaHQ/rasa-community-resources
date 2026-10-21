@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "data_ref",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "source", "fetched_at", "as_of", "replay", "payload"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 80},
+    "source": {"type": "string", "minLength": 1, "maxLength": 120},
+    "fetched_at": {"type": "string", "format": "date-time"},
+    "as_of": {"type": "string", "format": "date-time"},
+    "replay": {"type": "boolean"},
+    "delayed": {"type": ["boolean", "null"]},
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "value", "kind"],
+        "properties": {"label": {"type": "string"}, "value": {"type": ["string", "number"]}, "kind": {"const": "assumption"}}
+      }
+    },
+    "payload": {"type": "object"},
+    "error": {"type": ["object", "null"], "properties": {"reason": {"type": "string"}}}
+  }
+}
