@@ -3,7 +3,8 @@
 This pin cannot forward engine identity as MCP metadata. No ownership claim
 is inferred from these presentation hooks. Actual runtime proof is required.
 """
-from rasa.mantle.hooks import ToolResultPayload, OutgoingTextPayload, modify_tool_result, modify_outgoing_text
+import json
+from rasa.mantle.hooks import ToolResultPayload, ModelResponsePayload, modify_tool_result, modify_model_response
 from lib.card_text import render_cards
 from lib.capability_logging import install as install_log_redaction
 
@@ -17,12 +18,18 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
     if result.tool_name not in ("briefing", "mcp/briefing:briefing"):
         return result
     _pending_cards.pop(result.sender_id, None)
-    if not result.is_error and isinstance(result.value, dict) and result.value.get("cards"):
+    value = result.value
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except (ValueError, TypeError):
+            value = None
+    if not result.is_error and isinstance(value, dict) and value.get("cards"):
         # Build text only from Core-validated references; numbers are never
         # copied from a specialist's or Mantle model's free-form summary.
         try:
-            cards = render_cards(result.value)
-            status = result.value.get("status")
+            cards = render_cards(value)
+            status = value.get("status")
             prefix = "Briefing complete. " if status == "complete" else "Briefing incomplete; some sources are unavailable. "
             boundary = "Access uses possession of a private briefing ID; it is not bound to this conversation. "
             _pending_cards[result.sender_id] = prefix + boundary + "\n\n" + cards
@@ -33,8 +40,11 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
     return result
 
 
-@modify_outgoing_text()
-async def present_source_cards(payload: OutgoingTextPayload) -> OutgoingTextPayload:
+@modify_model_response()
+async def present_source_cards(payload: ModelResponsePayload) -> ModelResponsePayload:
+    # Preserve tool-only iterations: a subsequent get may replace pending data.
+    if payload.tool_calls and not payload.text:
+        return payload
     cards = _pending_cards.pop(payload.sender_id, None)
     if cards is None:
         return payload

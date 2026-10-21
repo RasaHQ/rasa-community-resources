@@ -3,7 +3,7 @@
 Author: Mator Clawson
 Assessed on: not_provided
 Assessed by: not_provided
-Verified with: rasa-pro 3.21.0.dev5 actual hook loader/runner; full conversation not verified
+Verified with: rasa-pro 3.21.0.dev5 actual hook adapters and tracker/channel delivery; full conversation not verified
 Audience: Maintainers qualifying the flight-briefing conversation
 Time: not_provided
 
@@ -18,6 +18,11 @@ The pinned engine reads `llm.model_group` from `integrations.yml`. Its current
 public documentation's dynamic MCP metadata hook is absent from this pin and
 from all nine newer published versions inspected through 3.21.0. That upstream
 capability is a separate future contribution, not a prerequisite for this path.
+
+Presentation uses the engine-wired tool-result and model-response modifiers.
+The latter replaces unchecked model prose with validated source cards before
+non-streaming delivery. It does not rely on the uninvoked outgoing-text hook.
+Streaming and the complete model/tool conversation still require qualification.
 
 The lock points to the verified dev Core wheel in `../worker/inputs/`, not a
 registry release. Source controls do not establish a Mantle conversation,

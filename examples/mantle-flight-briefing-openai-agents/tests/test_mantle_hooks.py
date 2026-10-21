@@ -5,6 +5,7 @@ qualification because they intentionally do not install the Mantle engine.
 """
 from pathlib import Path
 import sys
+import json
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,7 +13,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / 'project')]
 try:
     from rasa.mantle.hooks.loader import load_hooks
     from rasa.mantle.hooks.runner import run_modify
-    from rasa.mantle.hooks import ToolResultPayload, OutgoingTextPayload
+    from rasa.mantle.hooks import ToolResultPayload, ModelResponsePayload
     HAS_MANTLE = True
 except ModuleNotFoundError as exc:
     if exc.name != 'rasa':
@@ -41,7 +42,7 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
             arguments={'action': 'get'}, value=value))
         self.assertIsNone(result.control_flow)
         self.assertEqual(result.outcome, "success")
-        outgoing = await run_modify(self.registry, 'outgoing_text', OutgoingTextPayload(
+        outgoing = await run_modify(self.registry, 'model_response', ModelResponsePayload(
             sender_id=sender, text='Unchecked model says margin 9999 minutes'))
         return outgoing.payload.text
 
@@ -63,9 +64,37 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         await self.jobs._jobs[job_id].task
         updated = await self.jobs.briefing(self.owner, action='get', job_id=job_id)
         self.assertIn('Margin: 120.0 minutes', await self.present(updated))
-        unrelated = await run_modify(self.registry, 'outgoing_text', OutgoingTextPayload(
+        unrelated = await run_modify(self.registry, 'model_response', ModelResponsePayload(
             sender_id='conversation-b', text='No cards here'))
         self.assertEqual(unrelated.payload.text, 'No cards here')
+
+    async def test_engine_adapter_delivery_uses_serialized_tool_result(self):
+        from rasa.core.channels.channel import CollectingOutputChannel
+        from rasa.shared.core.trackers import DialogueStateTracker
+        from rasa.mantle.model_archive.bootstrap import ModelBootstrap
+        from rasa.mantle.state.tracker_handle import make_tracker_handle
+        from rasa.mantle.state.turn import IncomingTurn
+        from rasa.mantle.orchestration.turn_context import MessageTurnContext
+        from rasa.mantle.orchestration.hooks import apply_tool_result_hooks, apply_model_response_hooks
+        started = await self.jobs.briefing(self.owner, action='start', request='Replay DEMO101')
+        await self.jobs._jobs[started['job_id']].task
+        value = await self.jobs.briefing(self.owner, action='get', job_id=started['job_id'])
+        bootstrap = ModelBootstrap(llm={}, hooks=self.registry)
+        tracker = DialogueStateTracker('conversation-a', [])
+        handle = make_tracker_handle(tracker, bootstrap)
+        output = CollectingOutputChannel()
+        async with MessageTurnContext(handle, IncomingTurn(sender_id='conversation-a'),
+                                      output, 'conversation-a') as context:
+            await apply_tool_result_hooks(self.registry, tool_name='briefing',
+                arguments={'action': 'get'}, value=json.dumps(value), is_error=False)
+            response = await apply_model_response_hooks(self.registry,
+                text='Unchecked model says margin 9999 minutes', tool_calls=[], latency_ms=None)
+            await context.send(response.text)
+        # The actual collecting channel splits double-newline paragraphs.
+        delivered = '\n\n'.join(message['text'] for message in output.messages)
+        self.assertIn('Margin: 120.0 minutes', delivered)
+        self.assertNotIn('9999', delivered)
+        self.assertEqual(tracker.latest_bot_utterance.text, delivered)
 
     async def test_bad_card_stops_unchecked_numeric_model_output(self):
         text = await self.present({'status': 'complete', 'cards': [{'invalid': True}]})

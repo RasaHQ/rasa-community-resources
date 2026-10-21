@@ -3,7 +3,7 @@
 Author: Mator Clawson
 Assessed on: not_provided
 Assessed by: not_provided
-Verified with: Python 3.12.13 replay/MCP controls and pinned Mantle hook loader/runner; full conversation not verified
+Verified with: Python 3.12.13 replay/MCP controls and pinned Mantle hook adapters and tracker/channel delivery; full conversation not verified
 Audience: Practitioners connecting a Mantle conversation to a managed specialist
 Time: not_provided — reader exercise not accepted yet
 
@@ -64,7 +64,12 @@ Mantle conversation or provider access. The project interpreter additionally
 exercises the actual pinned Mantle hook loader and runner with constructed Core
 results: it shows source-backed cards, preserves an unaffected timeline across a
 weather revision, and suppresses unchecked model numbers when cards are invalid.
-That is hook integration evidence, not a full conversational run.
+The engine adapters receive the same serialized JSON result that real MCP
+dispatch produces. The wired model-response modifier replaces free-form numbers
+before the real turn context records and delivers the cards. The pin registers
+`outgoing_text` but does not invoke it during delivery, so this project does not
+use that hook. That is adapter and delivery integration evidence, not a complete
+model-driven conversation or a proof of streaming behavior.
 
 ## Runtime boundary
 
