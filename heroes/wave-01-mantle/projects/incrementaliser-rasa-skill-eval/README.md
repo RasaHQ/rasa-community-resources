@@ -14,7 +14,7 @@ Score Mantle example skills with [NVIDIA SkillEvaluator](https://docs.nvidia.com
 
 **Native Mantle** `skill.md` **is not SkillEvaluator input.** Every NVIDIA number is on a projected copy. The pin is `3.20.0.dev6` in `config.yaml`.
 
-The evaluation write-up template is [docs/REPORT.md](docs/REPORT.md). The filled snapshot from the last successful run is [runs/heroes_eval_20260920_182120/REPORT.md](runs/heroes_eval_20260920_182120/REPORT.md) (plots and scores sit beside it). Extra DeepEval tables, rubric criteria, and run inventory live in that file's Appendix.
+The evaluation write-up template is [docs/REPORT.md](docs/REPORT.md). The filled snapshot from the last successful run is [runs/heroes_eval_20260920_182120/REPORT.md](runs/heroes_eval_20260920_182120/REPORT.md) (plots, [`IMPROVER_DELTA.md`](runs/heroes_eval_20260920_182120/IMPROVER_DELTA.md), and unique rewritten `SKILL.md` files sit beside it; see [`runs/heroes_eval_20260920_182120/MANIFEST.md`](runs/heroes_eval_20260920_182120/MANIFEST.md) for the reproducible boundary and the [`heroes-wave-01-full-snapshot`](https://github.com/incrementaliser/rasa-community-resources/tree/heroes-wave-01-full-snapshot/heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval/runs/heroes_eval_20260920_182120) archive branch for raw JSON dumps and deterministic projections). Extra DeepEval tables, rubric criteria, and run inventory live in that file's Appendix.
 
 The root `agent.yml` / `skills/` tree is a **smoke Mantle agent** so catalog CI can `validate_project` this folder. The evaluation work lives in `src/rasa_skill_eval/`.
 
@@ -162,7 +162,8 @@ data/eval/scenarios/ # Rasano + personalization assertion YAML
 data/skills/unslop/  # Unslop improver skill
 corpus/              # Fetched examples (gitignored clones; pins/*.sha committed)
 docs/REPORT.md       # Committed report template (placeholders only)
-runs/heroes_eval_20260920_182120/  # Slim filled snapshot (REPORT, plots, scores)
+docs/ATTRIBUTION.md  # Corpus, prompt skill, and runtime license attribution
+runs/heroes_eval_20260920_182120/  # Slim filled snapshot (REPORT, IMPROVER_DELTA, MANIFEST, plots, unique SKILL.md)
 docs/adr/            # Short architecture decisions
 tests/               # Pytest
 ```
@@ -175,4 +176,4 @@ tests/               # Pytest
 
 ## Heroes submission
 
-This directory is the wave-01-mantle project. Filled numbers: [runs/heroes_eval_20260920_182120/REPORT.md](runs/heroes_eval_20260920_182120/REPORT.md). Methodology: [docs/HEROES_EVAL_BRIEF.md](docs/HEROES_EVAL_BRIEF.md). Module detail: [CODEBASE.md](CODEBASE.md).
+This directory is the wave-01-mantle project. Filled numbers: [runs/heroes_eval_20260920_182120/REPORT.md](runs/heroes_eval_20260920_182120/REPORT.md). Run manifest & reproducible boundary: [runs/heroes_eval_20260920_182120/MANIFEST.md](runs/heroes_eval_20260920_182120/MANIFEST.md). Corpus and license attribution: [docs/ATTRIBUTION.md](docs/ATTRIBUTION.md). Methodology: [docs/HEROES_EVAL_BRIEF.md](docs/HEROES_EVAL_BRIEF.md). Module detail: [CODEBASE.md](CODEBASE.md).
