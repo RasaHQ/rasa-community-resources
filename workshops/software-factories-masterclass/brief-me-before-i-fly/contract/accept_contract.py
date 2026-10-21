@@ -163,9 +163,9 @@ class PayloadShapes(unittest.TestCase):
             data = flight(reported_status=bad)
             self._refused(data, "flight_status")
 
-    def test_f1_known_gap_urls_pass_the_contract_and_are_refused_by_the_product_adapter(self):
+    def test_f1_known_gap_urls_and_a_bare_javascript_scheme_pass_the_contract(self):
         """Documented gap, not a pass: dev17's Text type refuses markup but not URLs or 'javascript:'.
-        The product's briefing/data.py text() refuses '://' at the adapter. If a later wheel refuses URLs, this test fails
+        The product's briefing/data.py text() refuses '://' and markup but NOT a bare 'javascript:', so that string passes both layers. If a later wheel refuses URLs, this test fails
         and must be inverted."""
         for url in ("see https://example.com/x", "javascript:alert(1)"):
             w.DataRef.model_validate(flight(reported_status=url)).check("flight_status")

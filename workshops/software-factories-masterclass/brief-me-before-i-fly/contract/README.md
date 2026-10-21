@@ -13,5 +13,5 @@ Run with any Python 3.12 interpreter that has only that wheel installed (for exa
 python accept_contract.py && python accept_contract_s5e.py
 ```
 
-Known gap, pinned by a test: URLs and `javascript:` in text values pass this contract. The product adapter refuses `://`. If a later wheel closes the gap, `test_f1_known_gap_urls_pass_the_contract...` fails and must be inverted.
+Known gap, pinned by a test: URLs and a bare `javascript:` scheme in text values pass this contract. The product adapter refuses `://` and markup but not a bare `javascript:`, so that string passes both layers. Cards are plain text; no script execution is claimed or possible there. If a later wheel closes the gap, `test_f1_known_gap_urls_and_a_bare_javascript_scheme_pass_the_contract` fails and must be inverted.
 Offline: no key, no network.
