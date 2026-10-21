@@ -107,6 +107,18 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         self.assertIn('redacted', result.payload.text)
         self.assertEqual(result.payload.tool_calls[0]['tool_args']['briefing_id'], capability)
 
+    async def test_missing_input_question_replaces_model_guess(self):
+        result = await run_modify(self.registry, 'tool_result', ToolResultPayload(
+            sender_id='question-conversation', tool_name='briefing', arguments={'action': 'get'},
+            value={'status': 'needs_input', 'needs_input': {'field': 'transfer_minutes',
+                   'question': 'What transfer duration in minutes should I assume?'}}))
+        self.assertIsNone(result.control_flow)
+        answer = await run_modify(self.registry, 'model_response', ModelResponsePayload(
+            sender_id='question-conversation', text='I guessed a 90 minute transfer.'))
+        self.assertIn('What transfer duration', answer.payload.text)
+        self.assertIn('REPLAY', answer.payload.text)
+        self.assertNotIn('90', answer.payload.text)
+
     async def test_bad_card_stops_unchecked_numeric_model_output(self):
         text = await self.present({'status': 'complete', 'cards': [{'invalid': True}]})
         self.assertIn('could not be validated', text)

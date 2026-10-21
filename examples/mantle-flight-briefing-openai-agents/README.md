@@ -42,6 +42,22 @@ agent, weather/flight provider, voice system or model is exercised by those test
 The current presentation fallback is fixed text cards in the conversation; it
 is not native Mantle arbitrary widgets or an interactive chart renderer.
 
+The named `Replay DEMO101 missing inputs` exercise starts without a meeting time
+or transfer assumption. Get returns needs_input and a precise question; revise
+with the traveller's answer resumes the same capability. Timezone-free times,
+non-numeric durations and out-of-range durations are asked again, never guessed.
+For an explicitly supplied 21:00Z meeting and 45 minutes, the card margin is
+165 minutes; a later-arrival revision retains those inputs and yields 75.
+Questions are rendered from the service result rather than unchecked model prose.
+
+`Replay DEMO101 flight unavailable` exercises partial failure: the forecast
+remains available without an invented arrival marker, while flight and timeline
+show explicit source errors and empty payloads. Earlier arrival and margin
+values are removed; status is incomplete. The named normal replay exercises
+recovery. Progress entries describe validated components in callback order,
+not unobserved provider activity. These remain author controls requiring Ops'
+independent acceptance and the facilitator's actual conversation rehearsal.
+
 ## Dependency custody and checks
 
 The dev Core wheel is not a public release. Its source and expected bytes are in

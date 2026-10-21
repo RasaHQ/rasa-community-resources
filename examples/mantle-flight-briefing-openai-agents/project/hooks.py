@@ -24,6 +24,13 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
             value = json.loads(value)
         except (ValueError, TypeError):
             value = None
+    if not result.is_error and isinstance(value, dict) and value.get("status") == "needs_input":
+        missing = value.get("needs_input") or {}
+        if missing.get("field") in ("meeting_time", "transfer_minutes") and isinstance(missing.get("question"), str):
+            _pending_cards[result.sender_id] = "Constructed REPLAY: " + missing["question"]
+        else:
+            _pending_cards[result.sender_id] = "The briefing needs input, but its question could not be validated."
+        return result
     if not result.is_error and isinstance(value, dict) and value.get("cards"):
         # Build text only from Core-validated references; numbers are never
         # copied from a specialist's or Mantle model's free-form summary.

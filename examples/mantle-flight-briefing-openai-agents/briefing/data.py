@@ -82,7 +82,7 @@ def flight_payload(record: dict) -> dict:
         raise DataUnavailable("Flight route is unavailable") from error
 
 
-def weather_payload(response: dict, *, location: str, arrival: str) -> dict:
+def weather_payload(response: dict, *, location: str, arrival: str | None) -> dict:
     """Open-Meteo hourly values requested in UTC, with aligned source arrays."""
     if not isinstance(response, dict):
         raise DataUnavailable("Forecast response is unavailable")
@@ -117,12 +117,12 @@ def weather_payload(response: dict, *, location: str, arrival: str) -> dict:
             raise DataUnavailable("Forecast hours are not strictly increasing")
         rows.append({"time": at.isoformat(), "temp_c": temp,
                      "precip_prob": chance, "precip_mm": amount})
-    arrival_at = instant(arrival).astimezone(timezone.utc).replace(minute=0, second=0, microsecond=0)
-    if arrival_at.isoformat() not in {row["time"] for row in rows}:
+    arrival_at = None if arrival is None else instant(arrival).astimezone(timezone.utc).replace(minute=0, second=0, microsecond=0)
+    if arrival_at is not None and arrival_at.isoformat() not in {row["time"] for row in rows}:
         raise DataUnavailable("Arrival hour is outside the supplied forecast")
     return {"location": text(location), "timezone": "UTC", "valid_from": rows[0]["time"],
             "valid_to": (instant(rows[-1]["time"]) + timedelta(hours=1)).isoformat(),
-            "hourly": rows, "arrival_hour": arrival_at.isoformat()}
+            "hourly": rows, "arrival_hour": None if arrival_at is None else arrival_at.isoformat()}
 
 
 def timeline_payload(*, arrival: str, meeting_time: str, transfer_minutes: int) -> dict:

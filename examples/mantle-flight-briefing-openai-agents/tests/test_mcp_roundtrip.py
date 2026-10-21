@@ -55,6 +55,7 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
                 result = await call("conversation-a", {"action": "get", "briefing_id": job_id})
                 self.assertEqual(result["structuredContent"]["status"], "complete")
                 self.assertEqual(len(result["structuredContent"]["cards"]), 3)
+                self.assertEqual(result["structuredContent"]["progress"][1:4], ["flight", "weather", "timeline"])
                 unchanged = result["structuredContent"]
                 for action, extra in (("get", {}), ("revise", {"change": "Replay DEMO101 later arrival"})):
                     refused = await call("conversation-b", {"action": action, "briefing_id": "made-up-id", **extra})
@@ -81,6 +82,21 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
                 await jobs._jobs[job_id].task
                 shared = await call("conversation-b", {"action": "get", "briefing_id": job_id})
                 self.assertEqual(shared["structuredContent"]["revision"], 2)
+                pending = await call("conversation-a", {"action": "start", "request": "Replay DEMO101 missing inputs"})
+                pending_id = pending["structuredContent"]["briefing_id"]
+                await jobs._jobs[pending_id].task
+                question = await call("conversation-a", {"action": "get", "briefing_id": pending_id})
+                self.assertEqual(question["structuredContent"]["status"], "needs_input")
+                self.assertEqual(question["structuredContent"]["needs_input"]["field"], "meeting_time")
+                for answer in ("2026-10-22T21:00:00Z", "45 minutes"):
+                    resumed = await call("conversation-a", {"action": "revise", "briefing_id": pending_id, "change": answer})
+                    self.assertEqual(resumed["structuredContent"]["briefing_id"], pending_id)
+                    await jobs._jobs[pending_id].task
+                finished = await call("conversation-a", {"action": "get", "briefing_id": pending_id})
+                self.assertEqual(finished["structuredContent"]["status"], "complete")
+                timeline = next(card for card in finished["structuredContent"]["cards"]
+                                if card["event"]["component"] == "arrival_timeline")
+                self.assertEqual(timeline["data_ref"]["payload"]["margin_minutes"], 165)
                 response = await client.post("/mcp", headers={"authorization": "Bearer invalid"}, json={})
                 self.assertEqual(response.status_code, 401)
         await jobs.close()

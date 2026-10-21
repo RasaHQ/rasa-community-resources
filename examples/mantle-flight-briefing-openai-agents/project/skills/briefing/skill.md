@@ -17,6 +17,23 @@ For the replay's weather-only follow-up, use the exact change
 `Replay DEMO101 morning weather`; that selects only the weather card and keeps
 the existing flight and timeline.
 
+For the explicit missing-input replay exercise, start `Replay DEMO101 missing inputs`
+(or `Replay DEMO101 missing meeting` / `Replay DEMO101 missing transfer`). Inspect
+with get. Ask the returned needs_input.question verbatim; do not substitute the
+baseline fixture's meeting or transfer value. Resume the SAME briefing_id with
+revise(change=the traveller's exact answer), then get again. Meeting answers need
+an ISO date/time with timezone, for example the traveller-supplied
+2026-10-22T21:00:00Z; transfer answers need an explicit number of minutes. Invalid
+answers remain needs_input and must be asked again. These are constructed
+scenarios, not a live journey investigation. Later replay revisions retain the
+meeting time and transfer duration the traveller actually supplied.
+
+For the explicit failure rehearsal, revise with `Replay DEMO101 flight unavailable`.
+Weather remains available; flight and arrival timeline become unavailable with
+reasons, no old arrival or margin stays current, and the briefing is incomplete.
+Do not turn the failed source into a claimed completed investigation. Revise
+with the named `Replay DEMO101` to exercise recovery from that fixture failure.
+
 Collect the flight and travel date, destination, meeting time with timezone,
 and an explicitly stated transfer-minute assumption. Ask about missing details;
 never fill them with guessed values. Start the task with `briefing(action="start",

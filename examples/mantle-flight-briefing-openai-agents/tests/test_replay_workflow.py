@@ -62,6 +62,70 @@ class ReplayWorkflow(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(after["weather_hourly"]["data_ref"]["payload"]["arrival_hour"])
         self.assertEqual(len(self.jobs._jobs[job_id].turn.calls), 1)
 
+    async def test_missing_inputs_are_asked_and_same_job_resumes_with_explicit_values(self):
+        started = await self.jobs.briefing(self.owner, action="start", request="Replay DEMO101 missing inputs")
+        job_id = started["job_id"]
+        async def inspect():
+            await self.jobs._jobs[job_id].task
+            return await self.jobs.briefing(self.owner, action="get", job_id=job_id)
+        state = await inspect()
+        self.assertEqual(state["status"], "needs_input")
+        self.assertEqual(state["needs_input"]["field"], "meeting_time")
+        self.assertEqual(state["cards"], [])
+        self.assertIsNone(self.jobs._jobs[job_id].turn)
+        for invalid in ("tomorrow at five", "2026-10-22T21:00:00"):
+            await self.jobs.briefing(self.owner, action="revise", job_id=job_id, change=invalid)
+            state = await inspect()
+            self.assertEqual(state["status"], "needs_input")
+            self.assertEqual(state["needs_input"]["field"], "meeting_time")
+        await self.jobs.briefing(self.owner, action="revise", job_id=job_id, change="2026-10-22T21:00:00Z")
+        state = await inspect()
+        self.assertEqual(state["status"], "needs_input")
+        self.assertEqual(state["needs_input"]["field"], "transfer_minutes")
+        for invalid in ("guess", "-5", "90 hours", "1500 minutes"):
+            await self.jobs.briefing(self.owner, action="revise", job_id=job_id, change=invalid)
+            state = await inspect()
+            self.assertEqual(state["status"], "needs_input")
+            self.assertEqual(state["needs_input"]["field"], "transfer_minutes")
+        resumed = await self.jobs.briefing(self.owner, action="revise", job_id=job_id, change="45 minutes")
+        self.assertEqual(resumed["job_id"], job_id)
+        state = await inspect()
+        self.assertEqual(state["status"], "complete", state)
+        self.assertNotIn("needs_input", state)
+        text = render_cards(state)
+        self.assertIn("Transfer assumption: 45 minutes", text)
+        self.assertIn("Margin: 165.0 minutes", text)
+        await self.jobs.briefing(self.owner, action="revise", job_id=job_id, change="Replay DEMO101 later arrival")
+        later = await inspect()
+        self.assertIn("Margin: 75.0 minutes", render_cards(later))
+        self.assertIn("Transfer assumption: 45 minutes", render_cards(later))
+
+    async def test_flight_failure_keeps_weather_and_replaces_old_values_with_errors(self):
+        job_id, original = await self.start()
+        old_ids = {card["data_ref"]["id"] for card in original["cards"]}
+        await self.jobs.briefing(self.owner, action="revise", job_id=job_id,
+                                change="Replay DEMO101 flight unavailable")
+        await self.jobs._jobs[job_id].task
+        state = await self.jobs.briefing(self.owner, action="get", job_id=job_id)
+        self.assertEqual(state["status"], "incomplete")
+        cards = {card["event"]["component"]: card for card in state["cards"]}
+        for component in ("flight_status", "arrival_timeline"):
+            self.assertEqual(cards[component]["data_ref"]["payload"], {})
+            self.assertIsNotNone(cards[component]["data_ref"]["error"])
+        self.assertEqual(len(cards["weather_hourly"]["data_ref"]["payload"]["hourly"]), 3)
+        self.assertIsNone(cards["weather_hourly"]["data_ref"]["payload"]["arrival_hour"])
+        self.assertFalse(old_ids & {card["data_ref"]["id"] for card in state["cards"]})
+        text = render_cards(state)
+        self.assertIn("Unavailable: Flight source", text)
+        self.assertNotIn("Margin:", text)
+        self.assertNotIn("Estimated arrival:", text)
+        self.assertIn("Weather Hourly", text)
+        await self.jobs.briefing(self.owner, action="revise", job_id=job_id, change="Replay DEMO101")
+        await self.jobs._jobs[job_id].task
+        recovered = await self.jobs.briefing(self.owner, action="get", job_id=job_id)
+        self.assertEqual(recovered["status"], "complete")
+        self.assertIn("Margin: 120.0 minutes", render_cards(recovered))
+
 
 if __name__ == "__main__":
     unittest.main()

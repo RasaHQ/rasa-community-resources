@@ -24,6 +24,20 @@ class BriefingRefused(ValueError):
     """Public coded refusal, without source data or provider exception text."""
 
 
+class NeedsInput(ValueError):
+    """A runner needs an explicit traveller answer before doing more work."""
+
+    def __init__(self, field: str, question: str, inputs: dict):
+        if field not in ("meeting_time", "transfer_minutes"):
+            raise ValueError("unsupported_input_field")
+        if not isinstance(question, str) or not question.strip() or len(question) > 200 or any(
+            part in question for part in ("<", ">", "://", "\x00")
+        ):
+            raise ValueError("invalid_input_question")
+        super().__init__("traveller_input_required")
+        self.field, self.question, self.inputs = field, question, deepcopy(inputs)
+
+
 @dataclass(frozen=True)
 class Owner:
     peer: str
@@ -41,6 +55,7 @@ class Work:
     revision: int
     session_id: str | None
     replaces: tuple[str, ...] | None = None
+    inputs: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -50,6 +65,7 @@ class Answer:
     # never in the specialist's output text.
     cards: dict[str, DataRef]
     required_components: tuple[str, ...] = ("flight_status", "weather_hourly", "arrival_timeline")
+    inputs: dict | None = None
 
 
 Runner = Callable[[Work], Awaitable[Answer]]
@@ -69,6 +85,8 @@ class _Job:
     turn: TurnResult | None = None
     task: asyncio.Task | None = None
     board: WidgetBoard = field(default_factory=WidgetBoard)
+    inputs: dict | None = None
+    needs_input: dict | None = None
     replaces: tuple[str, ...] | None = None
 
 
@@ -153,6 +171,8 @@ class Jobs:
                       "widgets": [c["event"]["widget_id"] for c in job.cards if not c["replaced"]],
                       "cards": deepcopy(job.cards), "revision": job.revision,
                       "request_id": job.request_id}
+            if job.needs_input is not None:
+                result["needs_input"] = deepcopy(job.needs_input)
             if job.reason is not None:
                 result["reason"] = job.reason
             return result
@@ -177,6 +197,7 @@ class Jobs:
             job.revision += 1
             job.text = update
             job.status, job.reason = "started", None
+            job.needs_input = None
             job.cards = self._snapshot(job)
             job.progress = ["Selected cards superseded; refreshing"]
             job.task = asyncio.create_task(self._run(job, job.request_id))
@@ -184,13 +205,15 @@ class Jobs:
         raise BriefingRefused("invalid_action_arguments")
 
     async def _run(self, job: _Job, request_id: str) -> None:
-        work = Work(job.text, request_id, job.revision, job.session_id, job.replaces)
+        work = Work(job.text, request_id, job.revision, job.session_id, job.replaces, deepcopy(job.inputs))
         job.status = "running"
         job.progress.append("Checking sources")
         try:
             answer = await asyncio.wait_for(self._runner(work), self._timeout)
             if job.request_id != request_id:
                 return
+            if answer.inputs is not None:
+                job.inputs = deepcopy(answer.inputs)
             job.turn = answer.turn
             job.session_id = answer.turn.session_id
             for component, reference in answer.cards.items():
@@ -199,6 +222,9 @@ class Jobs:
                                      widget_id=component.replace("_", "-"), component=component,
                                      data_ref=reference.id, revision=work.revision)
                 job.board.apply(event, reference)
+                # Report completed validation stages, not imagined provider work.
+                job.progress.append({"flight_status": "flight", "weather_hourly": "weather",
+                                     "arrival_timeline": "timeline", "market_watchlist": "market"}[component])
             job.cards = self._snapshot(job)
             required = set(answer.required_components)
             available = {state.component for state in job.board.snapshot()
@@ -208,6 +234,13 @@ class Jobs:
                 job.progress.append("Validated source cards ready")
             else:
                 job.status, job.reason = "incomplete", "required_sources_or_completed_tool_turn_missing"
+        except NeedsInput as missing:
+            if job.request_id == request_id:
+                job.status, job.reason = "needs_input", None
+                job.inputs = deepcopy(missing.inputs)
+                job.needs_input = {"field": missing.field, "question": missing.question}
+                job.progress.append("Waiting for traveller input")
+                job.cards = self._snapshot(job)
         except asyncio.CancelledError:
             # Cancellation does not authorize cancelling the remote managed turn;
             # old results remain fenced by request identity.
