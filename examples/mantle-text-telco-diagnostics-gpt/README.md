@@ -323,10 +323,11 @@ not a killed mutation. No mutation is applied to the shipped guard.
 
 The path-free [20 October receipt](controls/receipts/2026-10-20-strands-advice.json)
 records the pinned source, actual native result and assertion failure.
-Strands uses its existing lock and version; no dependency is added. These
-checks do not establish provider behaviour, live Mantle confirmation, or a
-real device action. Rasa-dependent checks still require the example's own
-selected environment; no such qualification is implied by the Strands job.
+Strands uses its existing lock and version; no dependency is added. The
+receipt covers the native direct-tool call and selected synthetic service
+paths. Provider behaviour, Mantle conversations and real device actions need
+separate qualification. Rasa-dependent checks use the example's own selected
+environment.
 
 After the experiment and its jobs finish, retire only its owned environment:
 
