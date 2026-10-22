@@ -15,20 +15,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 
 
-def main(task_path, target):
+def main(task_path, target, pack_root=None, instructions="AGENTS.md"):
     target = Path(target)
     if target.exists():
         print("refusing to reuse a folder; choose a new one", file=sys.stderr)
         return 2
+    root = Path(pack_root).resolve() if pack_root is not None else ROOT
     task = json.loads(Path(task_path).read_text())
-    shutil.copytree(ROOT / "product", target / "product")
+    shutil.copytree(root / "product", target / "product")
     (target / "product" / "skills").mkdir(exist_ok=True)
     (target / "tasks").mkdir()
     # The builder sees the request and the paths it may touch. It does not see which suite will judge it.
     visible = {k: task[k] for k in ("id", "request", "allowed_paths", "excluded")}
-    (target / "tasks" / (task["id"] + ".json")).write_text(json.dumps(visible, indent=2) + "\n")
-    for name in ("AGENTS.md", "CLAUDE.md", "validate.py"):
-        shutil.copyfile(ROOT / "builder" / name, target / name)
+    task_name = Path(task_path).name if pack_root is not None else task["id"] + ".json"
+    (target / "tasks" / task_name).write_text(json.dumps(visible, indent=2) + "\n")
+    shutil.copyfile(root / "builder" / instructions, target / "AGENTS.md")
+    for name in ("CLAUDE.md", "validate.py"):
+        if (root / "builder" / name).is_file():
+            shutil.copyfile(root / "builder" / name, target / name)
     # What this script wrote outside product/, with hashes, so collect.py can tell an untouched copy from an edited one.
     made = sorted(p for p in target.rglob("*") if p.is_file() and "product" not in p.relative_to(target).parts)
     manifest = {p.relative_to(target).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in made}
