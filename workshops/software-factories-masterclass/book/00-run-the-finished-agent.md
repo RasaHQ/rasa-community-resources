@@ -1,8 +1,8 @@
 # Chapter 0: Run the agent you will learn to build
 
-Your flight lands at 5 pm and your meeting is at 6 pm, across town. In about 25 minutes you'll run an agent that answers that from four sources at once, then change how it answers without touching its code.
+Your flight lands at 5 pm and your meeting is at 6 pm, across town. In about 25 minutes, plus the install, you'll run an agent that answers that from four sources at once, then change how it answers without touching its code.
 
-Time: about 25 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), Git, Make, a browser and your free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the sign-up form alone isn't a license. The install needs the internet. After that the exercise runs offline, because the cards are a recording from 22 October 2026.
+Time: about 25 minutes after the install. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), Git, Make, a browser and your free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the sign-up form alone isn't a license. The install needs the internet. After that the exercise runs offline, because the cards are a recording from 22 October 2026.
 
 You're done when `python3 check_demo.py --recorded --transfer-minutes 30` prints `ch00 OK`. If you get stuck, the working code is in `book/ready/ch00`.
 

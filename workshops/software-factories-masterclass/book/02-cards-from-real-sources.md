@@ -34,7 +34,7 @@ cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
    grep -E "^class " briefing/public_sources.py briefing/live_public_sources.py
    ```
 
-   You see `PublicSourcesRunner` and `LivePublicSourcesRunner`. They call the readers and hand each result to a card. The readers themselves come from the Core package that Chapter 0 installed.
+   You see `PublicSourcesRunner` and `LivePublicSourcesRunner`. They call the readers and hand each result to a card. The readers themselves come from `zeocore`, the Python package that holds the card code. Chapter 0 installed it.
 
 2. See which readers the live runner imports:
 
