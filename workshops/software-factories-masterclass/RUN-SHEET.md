@@ -20,14 +20,14 @@ The good change to the market card is one line, because the platform carries the
 | 2 | the briefing agent, port 8942 on the tailnet | the Inspector and the four cards | 17:30 London |
 | 3 | the deck, port 8944 on the tailnet | the slides, read-only | 17:30 London |
 
-All three are readable by any device on the tailnet, and the Inspector on screen 2 is drivable from any tailnet device, which spends your OpenAI key and your Rasa license. Before the day, check the viewer access setting (`BRIEFING_VIEWER_ACCESS`) so that only your own device can drive it, or get the operator's explicit acceptance of the exposure. Keep the room's own devices off the tailnet. The console has no Run button: the builder starts from a terminal command (pending).
+All three are readable by any device on the tailnet, and the Inspector on screen 2 is drivable from any tailnet device, which spends your OpenAI key and your Rasa license. Before the day, make sure only your own device can drive the Inspector (the setting for that is (pending: its name comes from the example's pull request)), or get the operator's explicit acceptance of the exposure. Keep the room's own devices off the tailnet. The console has no Run button: the builder starts from a terminal command (pending).
 
 ## Before the day
 Do these on the facilitator machine, at least a day before and again an hour before.
 - [ ] Clone with Git at the class commit named in the prework mail (`PREWORK.md` in this folder, with its addendum under `brief-me-before-i-fly/`). There is no zip.
 - [ ] Your own license (`RASA_LICENSE`) and OpenAI key (`OPENAI_API_KEY`) are set in your shell. The doctor shows SET or MISSING and never a value. A Deepgram key is optional and only adds voice.
-- [ ] The briefing agent starts from `examples/mantle-flight-briefing-openai-agents/` (`./demo setup`, then `./demo run`, added to the repository with the class pull request for that example) and the doctor is green.
-- [ ] A real flight: ask the agent which flights are in the air headed to New York and pick one of the route-confirmed ones. If you use the fallback, a known callsign with a destination such as "callsign=DLH423 destination=EDDF", pick the airport from the table bundled with that example. Check an hour before, because flights land.
+- [ ] The briefing agent starts from `examples/mantle-flight-briefing-openai-agents/` (`./demo setup`, then `./demo run`: the launcher is added by the class pull request for that example, PR 128, and is not in the repository until it merges) and the doctor is green.
+- [ ] A real flight: ask the agent which flights are in the air headed to New York and pick one of the route-confirmed ones. If you use the fallback, a known callsign with a destination such as "callsign=DLH423 destination=EDDF", pick the airport from the table bundled with that example. The airport table for the fallback is (pending: the file is named when the example's pull request lands). Check an hour before, because flights land.
 - [ ] The offline factory loop runs: copy `book/ready/ch06` to a new folder, set up Python as Chapter 6 says (`uv venv`, `uv pip install zeocore==0.35.4 httpx==0.28.1`), activate it, then `python run_a6.py tasks/a6-market-watchlist.json candidates/market-good` ends in ACCEPT and `candidates/market-shows-live` ends in REJECT. This needs macOS, because the check runs without network access inside `sandbox-exec`. Use the same folder for slide 28.
 - [ ] The three screens load from a second device on the tailnet, and that second device can't type into the Inspector.
 - [ ] The prework mail went out (`PREWORK.md` and its addendum). Its first step is the free Rasa Developer Edition license sign-up. Then Python 3.12 and uv, your own OpenAI key, and a clone with Git.
@@ -51,12 +51,13 @@ If voice isn't verified on the day, type the request and say so. Don't claim voi
 
 ### 14:45 The real question, the factory idea and the two tools (30 min)
 Show: slides 8 to 26 in order. Do: listen. Questions wait for the work block. Each slide has one idea and one picture.
-If you run short, skip in this order: slide 20 (the coin), slide 18 (two good changes clash), slide 19 (the dark factory), then slides 23 and 25. Say the limit aloud on slide 12: a passing check proves only what it checks.
+If you run short, skip in this order: slide 20 (the coin), slide 18 (two good changes clash), slide 19 (the dark factory), then slides 23 and 25. Slide 12 states the limit: a passing check proves only what it checks. Read it aloud.
 
 ### 15:15 We build the factory (30 min)
 Show: slide 27, then slide 28 beside screen 1 (the console) and screen 2.
 Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 27 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 28, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
 The commands for the console and the live builder are (pending). The offline loop is the scripted builder from Chapter 6.
+If the live builder stays in the run: there is no money cap per session, and the cap is the OpenAI project budget. Say the budget figure (pending: from the Architect), and the call limit and the time limit (pending: from the builder's documentation).
 Say, at the end: "Nobody read the change. The gates decided. And the good change was one line, because the platform carries the work."
 
 ### 15:45 Your turn (95 min, with a break)
