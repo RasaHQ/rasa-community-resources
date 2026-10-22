@@ -38,3 +38,14 @@ class LauncherTests(unittest.TestCase):
             self.assertNotIn(':5007',r.text)
 
 if __name__=='__main__':unittest.main()
+
+class MCPPortTests(unittest.TestCase):
+    def test_configured_port_changes_only_factory_connection_and_preserves_token(self):
+        from rasa.mantle.config.mcp import MCPServersSettings
+        original=MCPServersSettings.to_connection_config
+        try:
+            with patch.object(MCPServersSettings,'to_connection_config',return_value={'url':'http://127.0.0.1:8948/mcp','token':'synthetic-token'}):
+                launcher.install_mcp_port(8965)
+                result=MCPServersSettings.to_connection_config(None,'factory')
+                self.assertEqual(result,{'url':'http://127.0.0.1:8965/mcp','token':'synthetic-token'})
+        finally:MCPServersSettings.to_connection_config=original

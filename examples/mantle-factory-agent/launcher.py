@@ -18,9 +18,22 @@ PROJECT = ROOT / 'project'
 PYTHON = PROJECT / '.venv/bin/python'
 
 
+def install_mcp_port(port):
+    """Keep the valid checked-in URL, select the owner port only at connection time."""
+    from rasa.mantle.config.mcp import MCPServersSettings
+    original = MCPServersSettings.to_connection_config
+    def connection(settings, server_id):
+        result = original(settings, server_id)
+        if server_id == 'factory' and result['url'] == 'http://127.0.0.1:8948/mcp':
+            result['url'] = f'http://127.0.0.1:{port}/mcp'
+        return result
+    MCPServersSettings.to_connection_config = connection
+
+
 def inspector():
     sys.path.insert(0, str(ROOT))
     from rasa.__main__ import main
+    install_mcp_port(int(os.environ['FACTORY_MCP_PORT']))
     from rasa.mantle.llm.client import LLMClient
     from scripted import ScriptedClient
     from rasa.core import run
