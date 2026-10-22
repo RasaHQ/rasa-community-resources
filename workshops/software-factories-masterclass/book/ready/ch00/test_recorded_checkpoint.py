@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / 'demo'))
 from briefing.jobs import Jobs, Owner
 from check_demo import inspect_cards
 from recorded_checkpoint import load_recording, make_runner
-from zeo_core.adapters.widget_html import render_snapshot_html
+from zeo_core.adapters.widget_html import render_card_html, render_snapshot_html
 
 
 class RecordedControls(unittest.IsolatedAsyncioTestCase):
@@ -57,6 +57,30 @@ class RecordedControls(unittest.IsolatedAsyncioTestCase):
             finally:
                 await jobs.close()
                 runner.close()
+
+    async def test_real_renderer_requires_answer_content_in_every_card(self):
+        import re
+        _, states = load_recording()
+        rendered = [render_card_html(state) for state in states]
+        self.assertTrue(inspect_cards(''.join(rendered), require_replay=True))
+        self.assertFalse(inspect_cards(''.join(
+            '<article class="zc-card zc-' + state.component + '"></article>'
+            for state in states), require_replay=True))
+        for index, state in enumerate(states):
+            with self.subTest(component=state.component):
+                # Keep the real title/REPLAY badge and provenance while removing
+                # the actual answer; decoration must not satisfy completion.
+                heading = re.search(r'<h3>.*?</h3>', rendered[index], re.S).group()
+                provenance = re.search(r'<p class="zc-attr">.*', rendered[index], re.S).group()
+                empty = '<article class="zc-card zc-' + state.component + '">'
+                for body in ('', '<p> \n </p>', heading + provenance):
+                    changed = list(rendered)
+                    changed[index] = empty + body + '</article>'
+                    self.assertFalse(inspect_cards(''.join(changed), require_replay=True))
+        all_empty = ''.join('<article class="zc-card zc-' + state.component + '">'
+                            + re.search(r'<h3>.*?</h3>', html, re.S).group()
+                            + '</article>' for state, html in zip(states, rendered))
+        self.assertFalse(inspect_cards(all_empty, require_replay=True))
 
     async def test_replay_is_explicit_and_original_recording_is_not_rewritten(self):
         record, cards = load_recording()
