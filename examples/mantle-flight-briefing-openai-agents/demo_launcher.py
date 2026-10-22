@@ -205,6 +205,7 @@ def require_free_ports(host="127.0.0.1"):
     for port in (8942, 5005):
         with socket.socket() as probe:
             try:
+                probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 probe.bind((host, port))
             except OSError:
                 raise DemoError('Port ' + str(port) + ' is in use; stop your earlier demo before ./demo run.') from None

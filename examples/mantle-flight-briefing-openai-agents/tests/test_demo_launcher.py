@@ -83,6 +83,8 @@ class LauncherControls(unittest.TestCase):
                     return self
                 def __exit__(self, *args):
                     pass
+                def setsockopt(self, *args):
+                    pass
                 def bind(self, address):
                     raise OSError('deliberate owned busy listener')
             with patch.object(demo.socket, 'socket', BusySocket):
