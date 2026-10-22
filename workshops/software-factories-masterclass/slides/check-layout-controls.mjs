@@ -25,6 +25,8 @@ svg{width:100%;height:100%}text{font:36px Arial}
 const style = (html, css) => html.replace('</style>', `${css}</style>`);
 const cases = [
   { id: 'good', mutate: h => h, expects: null },
+  { id: 'good-linked-style', mutate: h => h, expects: null, externalStyle: true },
+  { id: 'unbound-local-asset', mutate: h => h.replace('</section>', '<img src="unbound.svg" alt="Test asset"></section>'), expects: 'Image did not load', extraAsset: true },
   { id: 'small-title', mutate: h => style(h, 'h1{font-size:20px}'), expects: 'Small title' },
   { id: 'small-label', mutate: h => style(h, 'text{font-size:12px}'), expects: 'Small label' },
   { id: 'thin-margin', mutate: h => style(h, 'nav{left:0}'), expects: 'safe area' },
@@ -36,6 +38,16 @@ const cases = [
   { id: 'picture-overlap', mutate: h => style(h, 'h1{top:40vh}'), expects: 'Text overlaps picture' },
   { id: 'bullet-list', mutate: h => h.replace('</section>', '<ul><li>Example</li></ul></section>'), expects: 'Bullet/list' },
   { id: 'global-chrome', mutate: h => h.replace('</body>', '<div style="position:fixed;left:0;top:0;font-size:8px">Footer</div></body>'), expects: 'Small label' },
+  { id: 'good-stepped-navigation', mutate: h => {
+    let html = style(h, '.step{display:none}.step.shown{display:initial}');
+    html = html.replace('<text x="100" y="200">Example</text>', '<g class="step" data-s="1"><text x="100" y="200">Example</text></g>');
+    const section = html.match(/<section[\s\S]*?<\/section>/)[0].replace('id="s1" class="slide on"', 'id="s2" class="slide"');
+    return html.replace('</body>', section + `<script>
+      const slides=[...document.querySelectorAll('.slide')];let index=0,shown=0;
+      function paint(){slides.forEach((s,i)=>s.classList.toggle('on',i===index));slides[index].querySelectorAll('.step').forEach(s=>s.classList.toggle('shown',Number(s.dataset.s)<=shown))}
+      document.addEventListener('keydown',e=>{if(e.key==='Home'){index=0;shown=0}else if(e.key==='ArrowRight'){if(shown<1)shown++;else{index=Math.min(index+1,slides.length-1);shown=0}}paint()});paint();
+      </script></body>`);
+  }, expects: null, slides: 2 },
   { id: 'navigation', mutate: h => h.replace('</body>', '<section class="slide" id="s2"><h1>Second slide</h1></section></body>'), expects: 'Navigation showed', slides: 2 },
 ];
 await fs.mkdir(output, { recursive: true });
@@ -44,7 +56,14 @@ for (const c of cases) {
   const dir = path.join(output, c.id);
   await fs.mkdir(dir, { recursive: true });
   const deck = path.join(dir, 'index.html');
-  await fs.writeFile(deck, c.mutate(original));
+  let html = c.mutate(original);
+  if (c.externalStyle) {
+    const style = html.match(/<style>([\s\S]*?)<\/style>/);
+    await fs.writeFile(path.join(dir, 'style.css'), style[1]);
+    html = html.replace(style[0], '<link rel="stylesheet" href="style.css">');
+  }
+  if (c.extraAsset) await fs.writeFile(path.join(dir, 'unbound.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100"/></svg>');
+  await fs.writeFile(deck, html);
   const run = spawnSync(process.execPath, [path.join(here, 'check-layout.mjs'), '--playwright', playwright, '--deck', deck, '--out', dir], { encoding: 'utf8', timeout: 30000 });
   let report;
   try { report = JSON.parse(await fs.readFile(path.join(dir, 'report.json'), 'utf8')); }
@@ -52,7 +71,7 @@ for (const c of cases) {
   const expectedViews = 2 * (c.slides || 1);
   const passed = c.expects
     ? run.status === 1 && report.slides.length === expectedViews && report.slides.filter(s => s.failures.some(f => f.includes(c.expects))).length >= 2
-    : run.status === 0 && report.passed && report.slides.length === expectedViews;
+    : run.status === 0 && report.passed && report.slides.length === expectedViews && (!c.externalStyle || report.localStylesheets.length === 1);
   results.push({ id: c.id, passed, expected: c.expects || 'PASS', exit: run.status,
     rendered: report.slides.length, report: path.join(dir, 'report.json') });
   console.log(`${c.id}: ${passed ? 'PASS' : 'FAIL'}`);

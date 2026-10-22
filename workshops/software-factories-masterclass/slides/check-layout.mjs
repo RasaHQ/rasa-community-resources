@@ -17,14 +17,31 @@ const arg = (name, fallback) => {
 };
 const source = path.resolve(arg('--deck', path.join(here, 'index.html')));
 const output = path.resolve(arg('--out', path.join(process.cwd(), 'slide-layout-evidence')));
+const captureSteps = args.includes('--capture-steps');
 const require = createRequire(import.meta.url);
 const { chromium } = require(arg('--playwright', 'playwright-core'));
 const sourceBytes = await fs.readFile(source);
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
+const localStylesheets = [];
+for (const match of sourceBytes.toString().matchAll(/<link\b[^>]*>/gi)) {
+  const rel = match[0].match(/\brel\s*=\s*["']([^"']+)["']/i)?.[1] || '';
+  if (!rel.toLowerCase().split(/\s+/).includes('stylesheet')) continue;
+  const href = match[0].match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1];
+  if (!href) throw Error('Stylesheet link lacks href');
+  const url = new URL(href, pathToFileURL(source));
+  if (url.protocol !== 'file:') continue; // Rendering rejects network requests.
+  const filename = fileURLToPath(url);
+  if (localStylesheets.some(s => s.path === filename)) continue;
+  const bytes = await fs.readFile(filename);
+  localStylesheets.push({ path: filename, url: url.href, bytes: bytes.length, sha256: sha256(bytes) });
+}
+const boundFiles = new Set([source, ...localStylesheets.map(s => s.path)]);
 await fs.mkdir(output, { recursive: true });
 const report = {
   createdAt: new Date().toISOString(),
   source, sourceSha256: sha256(sourceBytes),
+  localStylesheets,
+  gateSha256: sha256(await fs.readFile(fileURLToPath(import.meta.url))),
   policy: { maximumSlides: 30, maximumBodyWords: 12, marginRatio: 0.06,
     titlePxAt1920: 64, bodyPxAt1920: 36, labelPxAt1920: 28,
     minimumVisualAreaRatio: 0.5, viewports: [[1920, 1080], [1280, 720]],
@@ -46,6 +63,10 @@ try {
         errors.push(`Network request: ${route.request().url()}`);
         return route.abort();
       }
+      if (route.request().url().startsWith('file:') && !boundFiles.has(fileURLToPath(route.request().url()))) {
+        errors.push(`Unbound local asset: ${route.request().url()}`);
+        return route.abort();
+      }
       return route.continue();
     });
     await page.goto(pathToFileURL(source).href, { waitUntil: 'load' });
@@ -57,6 +78,25 @@ try {
     await page.keyboard.press('Home');
     for (let index = 0; index < count; index++) {
       if (index) await page.keyboard.press('ArrowRight');
+      const revealFrames = [];
+      const captureStep = async step => {
+        const filename = `slide-${String(index + 1).padStart(2, '0')}-step-${String(step).padStart(2, '0')}-${width}x${height}.png`;
+        const png = await page.screenshot({ path: path.join(output, filename), animations: 'disabled' });
+        revealFrames.push({ step, screenshot: filename, screenshotSha256: sha256(png) });
+      };
+      // A teaching diagram may reveal several stages before ArrowRight moves
+      // to the next slide. Exercise those stages through the real controls,
+      // then measure the fully revealed composition, not the previous slide.
+      const revealSteps = await page.evaluate(() => {
+        const slide = [...document.querySelectorAll('.slide')].find(s => getComputedStyle(s).display !== 'none');
+        return Math.max(0, ...[...(slide?.querySelectorAll('.step[data-s]') || [])].map(s => Number(s.dataset.s) || 0));
+      });
+      if (revealSteps > 40) throw Error(`Unbounded reveal sequence: ${revealSteps}`);
+      if (captureSteps && revealSteps) await captureStep(0);
+      for (let step = 0; step < revealSteps; step++) {
+        await page.keyboard.press('ArrowRight');
+        if (captureSteps) await captureStep(step + 1);
+      }
       await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
       const metrics = await page.evaluate(({ width, height }) => {
         const visible = el => {
@@ -142,13 +182,31 @@ try {
         }
         const fontFaces = [...document.fonts].map(f => ({ family: f.family, status: f.status }));
         if (fontFaces.some(f => f.status === 'error')) failures.push('An embedded font failed to load');
-        return { id: slide.id, title: slide.querySelector('h1')?.textContent, bodyWords: words.length, visualAreaRatio, text, visuals, fontFaces, failures: [...new Set(failures)] };
+        const contentRects = [...text.map(t => t.rect), ...visuals.filter(v => v.rect).map(v => v.rect)];
+        const marginsPx = { left: Math.min(...contentRects.map(r => r.x)),
+          right: width - Math.max(...contentRects.map(r => r.right)),
+          top: Math.min(...contentRects.map(r => r.y)),
+          bottom: height - Math.max(...contentRects.map(r => r.bottom)) };
+        const marginsFraction = { left: marginsPx.left / width, right: marginsPx.right / width,
+          top: marginsPx.top / height, bottom: marginsPx.bottom / height };
+        const minimumFontPx = Object.fromEntries(['title', 'body', 'label'].map(role => {
+          const values = text.filter(t => t.role === role).map(t => t.actualPx);
+          return [role, values.length ? Math.min(...values) : null];
+        }));
+        const overflowPx = { documentX: Math.max(0, document.documentElement.scrollWidth - width),
+          documentY: Math.max(0, document.documentElement.scrollHeight - height),
+          slideX: Math.max(0, slide.scrollWidth - slide.clientWidth),
+          slideY: Math.max(0, slide.scrollHeight - slide.clientHeight) };
+        const overlapFindings = failures.filter(f => f.startsWith('Overlapping text') || f.startsWith('Text overlaps picture'));
+        return { id: slide.id, title: slide.querySelector('h1')?.textContent, bodyWords: words.length,
+          visualAreaRatio, minimumFontPx, marginsPx, marginsFraction, overflowPx, overlapFindings,
+          text, visuals, fontFaces, failures: [...new Set(failures)] };
       }, { width, height });
       if (metrics.id !== slideIds[index]) metrics.failures.push(`Navigation showed ${metrics.id}, expected ${slideIds[index]}`);
       const filename = `slide-${String(index + 1).padStart(2, '0')}-${width}x${height}.png`;
       await page.screenshot({ path: path.join(output, filename), animations: 'disabled' });
       const screenshot = await fs.readFile(path.join(output, filename));
-      report.slides.push({ index: index + 1, width, height, ...metrics, screenshot: filename, screenshotSha256: sha256(screenshot) });
+      report.slides.push({ index: index + 1, width, height, revealSteps, revealFrames, ...metrics, screenshot: filename, screenshotSha256: sha256(screenshot) });
     }
     report.failures.push(...errors.map(e => `${width}: ${e}`));
     await page.close();
@@ -158,6 +216,11 @@ try {
 } finally {
   await browser.close();
   if (sha256(await fs.readFile(source)) !== report.sourceSha256) report.failures.push('Deck source changed during gate');
+  for (const stylesheet of localStylesheets) {
+    try {
+      if (sha256(await fs.readFile(stylesheet.path)) !== stylesheet.sha256) report.failures.push(`Stylesheet changed during gate: ${stylesheet.path}`);
+    } catch { report.failures.push(`Stylesheet unavailable after gate: ${stylesheet.path}`); }
+  }
   report.failedSlides = report.slides.filter(s => s.failures.length).length;
   report.passed = !report.failures.length && !report.failedSlides;
   await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n');
