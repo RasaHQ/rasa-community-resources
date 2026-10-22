@@ -1,5 +1,4 @@
 """Recorded changes traverse the real Jobs/Core path with sockets refused.
-sow: software-factories-masterclass-SOW-02
 """
 import asyncio
 import socket
