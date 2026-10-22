@@ -25,6 +25,19 @@ class CompletionControls(unittest.TestCase):
                                        '<h3>' + name + '</h3><p> </p>')
                 self.assertFalse(inspect_cards(html))
 
+    def test_bare_replay_badges_are_mode_evidence_not_answers(self):
+        # Exact proofreader replay_badge_only probe: wrapper classes are absent.
+        bare = ''.join('<article class="zc-card zc-' + name + '"><span>REPLAY</span>'
+                       + ('<p>Transfer: 30 min</p>' if name == 'arrival_timeline' else '')
+                       + '</article>' for name in EXPECTED)
+        self.assertFalse(inspect_cards(bare, require_replay=True, transfer_minutes=30))
+        for name in EXPECTED:
+            with self.subTest(card=name):
+                rendered = board().replace('<h3>', '<span>REPLAY</span><h3>')
+                rendered = rendered.replace('<h3>' + name + '</h3><p>source result</p>',
+                                            '<h3>' + name + '</h3><span> REPLAY </span>')
+                self.assertFalse(inspect_cards(rendered, require_replay=True))
+
     def test_recorded_and_public_checks_cannot_accept_each_others_mode(self):
         replay = board().replace('<h3>', '<span>REPLAY</span><h3>')
         self.assertFalse(inspect_cards(replay))
