@@ -159,9 +159,10 @@ not browser or class acceptance. The factory second act and completed market
 card checkpoint must be demonstrated before the class is accepted; the
 launcher does not relabel an old console transcript as that demonstration.
 
-Historical paths remain described in [the project instructions](project/README.md)
-and [the separate managed model worker](LIVE-WORKER.md). Their older wheel and
-two-shell instructions are not this class launcher's setup path.
+See [the Mantle project guide](project/README.md) and
+[the managed specialist worker](LIVE-WORKER.md) for the current boundaries.
+Both use this launcher; historical wheel and two-shell experiments are not the
+class setup path.
 
 Teaching code uses the repository [license](../../LICENSE). Rasa Pro has its own
 terms; any licence requirement is an explicit prerequisite, not a skipped check.
