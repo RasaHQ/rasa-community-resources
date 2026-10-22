@@ -205,3 +205,14 @@ and explicitly disables the hosted environment network. Public source reads
 still run only in the local fixed-host handlers. This bounds the requested
 configuration; provider enforcement of the spending limit has not been proven
 by an over-limit funded test.
+
+
+The upcoming flight-discovery path has a local published-route input in
+`briefing/nyc-routes-vrs-20261022.json`. Its loader verifies a fixed SHA256 before
+parsing. `briefing/nyc-routes-SOURCE.json` records the original public CSV hashes,
+source commit/date and CC0 licence. The 76 KB subset contains 1,762 two-airport
+routes for 16 selected airlines ending at JFK, EWR or LGA. It is incomplete
+coverage, not a live filed-flight-plan or schedule source. No aircraft-owner or
+registration dataset is bundled and runtime loading makes no network request.
+This input is prepared; natural-language flight discovery is not wired into
+this head yet.
