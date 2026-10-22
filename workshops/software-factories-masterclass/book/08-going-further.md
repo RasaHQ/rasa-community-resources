@@ -115,10 +115,10 @@ Automation does not give the proposer permission to weaken its own checks. `poli
 You can also inspect a hypothetical supervision calculation:
 
 ```bash
-python policy.py what-if policy.json 18 18
+python policy.py what-if policy.json 12 12
 ```
 
-It starts `WHAT-IF`: no experiment records were loaded. Even eighteen perfect trials would leave uncertainty about future failures. The calculation uses a **Wilson interval**, a range that reflects sampling uncertainty under assumptions about independent, comparable trials. It cannot repair a biased or selected sample. The policy therefore holds at its initial supervision level in this example. Eligibility under a larger hypothetical count still requires a person to sign a policy change; this command changes no policy.
+It starts `WHAT-IF`: no experiment records were loaded. Even twelve perfect trials would leave uncertainty about future failures. The calculation uses a **Wilson interval**, a range that reflects sampling uncertainty under assumptions about independent, comparable trials. It cannot repair a biased or selected sample. The policy therefore holds at its initial supervision level in this example. Eligibility under a larger hypothetical count still requires a person to sign a policy change; this command changes no policy.
 
 ## If it fails
 

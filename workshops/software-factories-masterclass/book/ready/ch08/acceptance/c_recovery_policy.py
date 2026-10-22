@@ -1,5 +1,4 @@
 """Protected data-only recovery configuration requirements; no candidate code is imported.
-sow: software-factories-masterclass-SOW-02
 """
 import json
 import os
