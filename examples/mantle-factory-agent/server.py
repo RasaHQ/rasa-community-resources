@@ -12,6 +12,7 @@ from starlette.applications import Starlette
 from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Route
 import uvicorn
+import time
 
 
 def audit(peer, component):
@@ -19,6 +20,16 @@ def audit(peer, component):
     if path:
         with open(path, 'a') as f:
             f.write(json.dumps({'at': datetime.now(timezone.utc).isoformat(), 'peer': peer, 'component': component}) + '\n')
+
+
+def record_tool_event(event):
+    """Safe request-kind and gate result evidence, never model input or credentials."""
+    path = os.environ.get('FACTORY_VIEWER_AUDIT')
+    if path:
+        from pathlib import Path
+        target = Path(path).with_name('tool-events.jsonl')
+        with target.open('a') as stream:
+            stream.write(json.dumps({'at': datetime.now(timezone.utc).isoformat(), **event}) + '\n')
 
 
 class Authenticated:
@@ -41,11 +52,12 @@ def mcp_app():
 
     @server.tool()
     async def run_factory(request: str) -> dict:
-        """Judge a supplied attempt using the existing protected gate. No code generation or release."""
+        """Run the factory for one request kind: good builds the three-currency change; ignores-limit checks the supplied bad attempt. Use only good or ignores-limit. The runtime owns paths, builder mode and credentials. Nothing is deployed."""
         import asyncio
         from factory_gate import run_factory as execute
         normalized = ' '.join(request.lower().strip().rstrip('.!?').split())
-        kinds = {'show at most three currencies on the market card': 'good',
+        kinds = {'good': 'good', 'ignores-limit': 'ignores-limit',
+                 'show at most three currencies on the market card': 'good',
                  'show at most 3 currencies on the market card': 'good',
                  'use the attempt that ignores the limit': 'ignores-limit'}
         kind = kinds.get(normalized)
@@ -61,6 +73,8 @@ def mcp_app():
                     'seconds': 0, 'reason': 'Not enough time remains before the preview expiry.'}
         async with busy:
             mode = os.environ.get('FACTORY_BUILDER_MODE', 'SCRIPTED')
+            started = time.monotonic()
+            record_tool_event({'event': 'start', 'kind': kind, 'builder_mode': mode})
             result = await asyncio.to_thread(execute, kind, mode=mode,
                 worker_python=os.environ['FACTORY_WORKER_PYTHON'],
                 evidence_root=os.environ['FACTORY_EVIDENCE_ROOT'],
@@ -68,7 +82,9 @@ def mcp_app():
             # Local evidence and attempt paths never enter the conversation.
             allowed = ('verdict', 'failing_test', 'fingerprint', 'seconds',
                        'mode', 'builder_calls', 'reason')
-            return {key: result[key] for key in allowed if key in result}
+            safe_result = {key: result[key] for key in allowed if key in result}
+            record_tool_event({'event': 'end', 'kind': kind, 'elapsed_seconds': round(time.monotonic() - started, 3), 'result': safe_result})
+            return safe_result
 
     token = os.environ['FACTORY_MCP_TOKEN']
     if len(token) < 32:
@@ -87,6 +103,8 @@ def frontend(host):
         url = f'http://{name}:{inspector_port}/webhooks/inspector/inspect.html?projectUrl=http%3A%2F%2F{name}%3A{inspector_port}'
         mode = os.environ.get('FACTORY_BUILDER_MODE', 'SCRIPTED')
         label = ('Mantle selection SCRIPTED · LIVE OpenAI Agents API builder: gpt-6-astra · expected 15 to 150 US cents per run (estimate, not a cap) · up to 5 minutes · real protected gate · nothing released' if mode == 'LIVE' else 'SCRIPTED tool selection · supplied attempts · real protected gate · no model calls · nothing released')
+        if os.environ.get('FACTORY_MANTLE_MODE', 'SCRIPTED') == 'LIVE':
+            label = 'Live Mantle agent (OpenAI model) · live builder on the OpenAI Agents API · about 1 to 2 minutes and up to about 1.50 USD per build · nothing is deployed'
         return HTMLResponse('<!doctype html><html lang="en"><meta charset="utf-8"><title>Mantle factory agent</title><style>body{margin:0;font:18px system-ui}header{padding:16px;background:#342b67;color:white}iframe{border:0;width:100%;height:85vh}</style><header>' + escape(label) + '</header><iframe allow="microphone; autoplay" title="Mantle factory conversation" src="' + escape(url, quote=True) + '"></iframe></html>')
     return Starlette(routes=[Route('/', index)])
 
