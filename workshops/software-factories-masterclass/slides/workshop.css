@@ -1,1 +1,68 @@
 *{box-sizing:border-box}body{margin:0;background:#181210;color:#181210;font:28px/1.45 Inter,Arial}#stage{width:1600px;height:900px;position:absolute;transform-origin:top left}.slide{display:none;width:1600px;height:900px;position:absolute;background:#FAF6F0;padding:66px 88px 70px}.slide.on{display:block}.brand{height:35px;width:auto}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:38px}.section-name{font:17px 'JetBrains Mono';letter-spacing:1px;color:#524A43}h1{font:400 66px/1.06 Newsreader,Georgia;margin:0;letter-spacing:-1.2px;max-width:1400px}h1 em{font-style:normal;color:#AA1E54}p.subtitle{font-size:27px;margin:20px 0 35px;color:#524A43}.body{height:500px}h2{font:400 36px/1.18 Newsreader;margin:16px 0}p{margin:12px 0}label,.num{font:18px/1.4 'JetBrains Mono';color:#524A43}.num{color:#AA1E54}footer{position:absolute;bottom:32px;left:88px;right:88px;display:flex;justify-content:space-between;font:16px 'JetBrains Mono';color:#524A43}.panels{display:flex;gap:28px;height:390px;margin-top:40px}.panels article{flex:1;border-top:4px solid #E85A91;padding:28px 20px;background:#FFFBF5}.panels p{font-size:27px}.flow,.artifact{display:flex;align-items:center;gap:20px;margin-top:65px}.flow>div,.artifact>div{flex:1;background:#EDE8E0;padding:24px;min-height:260px}.flow p,.artifact p{font-size:24px}.arrow{font-size:42px;color:#AA1E54}.caption{font-size:24px;color:#524A43;margin-top:34px}.hero{display:flex;align-items:center;gap:45px;margin-top:80px}.quote{font:52px/1.2 Newsreader}.hero-line{height:3px;background:#E85A91;flex:1}.hero-result{font:36px/1.5 Inter}.cover h1{font-size:86px}.cover .body{height:400px}.dashboard{display:grid;grid-template-columns:1fr 1fr;gap:22px}.dashboard article{position:relative;border:1px solid #C8C0B6;background:#FFFBF5;padding:25px 30px;height:222px;overflow:hidden}.dashboard h2{font-size:38px;margin:12px 0}.dashboard p{font-size:23px;line-height:1.4}.dashboard svg{position:absolute;right:25px;bottom:18px;width:180px}.rain,.fx{position:absolute;right:35px;bottom:25px;color:#AA1E54;font:50px Newsreader}.fx{font:25px 'JetBrains Mono'}.mini-line{display:none}.pink{background:#FCE7EF!important}.mint{background:#C6FEE1!important}.soft{background:#EDE8E0}.schedule{display:flex;gap:7px;align-items:stretch;margin-top:100px;height:210px}.schedule>div{min-width:110px;padding:22px 12px;font-size:22px}.schedule b{display:block;font:48px Newsreader;margin-top:30px}.lanes{display:grid;gap:26px}.lanes>div{padding:25px 32px;background:#FFFBF5;border-left:6px solid #E85A91}.lanes h2{margin:10px 0}.lanes p{font-size:26px}.lanes label{font-size:17px}table{border-collapse:collapse;width:100%;font-size:25px}th{text-align:left;font:18px 'JetBrains Mono';color:#524A43;background:#EDE8E0}td,th{padding:18px 23px;border-bottom:1px solid #C8C0B6}td:first-child{width:29%;font-weight:600}.code-split{display:grid;grid-template-columns:1.2fr 1fr;gap:50px}.code-split pre{background:#181210;color:#FAF6F0;padding:30px;font:24px/1.6 'JetBrains Mono';margin:0}.small{font-size:21px;color:#524A43}.contrast{display:grid;grid-template-columns:1fr 1fr;gap:50px;padding-top:35px}.contrast>div{padding:30px;background:#FFFBF5}blockquote{margin:22px 0;font:39px/1.25 Newsreader}ul{padding-left:26px;margin:25px 0}li{padding:7px 0;font-size:26px}.boundary{display:flex;align-items:center;gap:25px;margin-top:50px}.build-zone,.verify-zone{flex:1;padding:40px;height:300px;background:#FFFBF5;border:2px solid #C8C0B6}.verify-zone{background:#C6FEE1;border-color:#2B5E47}.boundary-line{border-top:3px dashed #AA1E54;padding-top:12px;font-size:22px}.big-question{font:70px/1.18 Newsreader;margin-top:85px}.share{display:flex;gap:30px;margin-top:65px}.share>div{flex:1;border-top:3px solid #E85A91;padding-top:30px}.share b{font:70px Newsreader;color:#AA1E54}.share h2{font-size:38px}.controls{position:fixed;bottom:7px;right:14px;color:#C8C0B6;font:12px Arial;z-index:9}button{font:inherit;border:0;background:transparent;color:inherit;cursor:pointer}button:focus-visible{outline:2px solid #E85A91}body.notes .slide.on{opacity:.16}#notes{display:none;position:fixed;inset:12%;padding:45px;background:#FFFBF5;z-index:20;font:24px/1.6 Inter;overflow:auto}body.notes #notes{display:block}@media print{@page{size:1600px 900px;margin:0}body{background:white}#stage{position:static;transform:none!important}.slide{display:block!important;position:relative;break-after:page}.controls,#notes{display:none!important}}
+/* Narrow screens (1100px and below): read the same slide in normal document flow.
+ * The landscape and print compositions are unchanged. */
+@media screen and (max-width: 1100px) {
+  html, body { width: 100%; height: auto; overflow-x: hidden; }
+  body { font-size: 17px; line-height: 1.5; }
+  #stage {
+    position: static !important; transform: none !important;
+    width: 100% !important; height: auto !important;
+    left: auto !important; top: auto !important;
+  }
+  .slide {
+    position: relative; width: 100%; height: auto;
+    min-height: 100dvh; padding: 24px 24px 72px;
+  }
+  .slide.on { display: flex; flex-direction: column; }
+  header { gap: 20px; margin-bottom: 28px; }
+  .brand { height: 28px; max-width: 100px; }
+  .section-name { font-size: 12px; }
+  h1, .cover h1 { font-size: clamp(28px, 7vw, 48px); line-height: 1.1; letter-spacing: -.025em; }
+  p.subtitle { font-size: 17px; margin: 18px 0 26px; }
+  .body, .cover .body { height: auto; }
+  h2 { font-size: 26px; margin: 12px 0; }
+  label, .num, .lanes label { font-size: 16px; }
+  .panels, .flow, .artifact, .hero, .share, .boundary {
+    display: flex; flex-direction: column; align-items: stretch;
+    gap: 18px; height: auto; margin-top: 20px;
+  }
+  .panels article, .flow > div, .artifact > div, .contrast > div {
+    padding: 20px; min-height: 0; min-width: 0;
+  }
+  .panels p, .flow p, .artifact p, .lanes p { font-size: 17px; }
+  .arrow { align-self: center; transform: rotate(90deg); font-size: 30px; line-height: 1; }
+  .quote { font-size: 30px; }
+  .hero-result { font-size: 23px; line-height: 1.45; }
+  .hero-line { flex: none; height: 3px; min-height: 3px; }
+  .dashboard, .contrast, .code-split { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .dashboard article { height: auto; min-height: 180px; padding: 20px; }
+  .dashboard h2 { font-size: 28px; }
+  .dashboard p { font-size: 17px; }
+  .dashboard svg { position: static; display: block; width: 100%; height: auto; margin-top: 16px; }
+  .rain, .fx { position: static; font-size: 32px; margin-top: 14px; }
+  .schedule { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); height: auto; gap: 12px; margin-top: 24px; }
+  .schedule > div { min-width: 0; padding: 18px 12px; font-size: 16px; }
+  .schedule b { font-size: 32px; margin-top: 16px; }
+  .lanes { gap: 18px; }
+  .lanes > div { padding: 20px; }
+  table { font-size: 16px; table-layout: fixed; }
+  th { font-size: 16px; }
+  td, th { padding: 12px 8px; overflow-wrap: anywhere; }
+  td:first-child { width: 33%; }
+  .code-split pre { font-size: 16px; line-height: 1.6; padding: 18px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .small { font-size: 16px; }
+  blockquote { font-size: 26px; line-height: 1.3; }
+  li { font-size: 17px; }
+  .contrast { padding-top: 0; }
+  .build-zone, .verify-zone { flex: auto; height: auto; min-height: 160px; padding: 20px; }
+  .boundary-line { font-size: 16px; }
+  .big-question { font-size: 32px; margin-top: 24px; }
+  .share > div { padding-top: 18px; }
+  .share b { font-size: 42px; }
+  .share h2 { font-size: 28px; }
+  .caption { font-size: 16px; margin-top: 24px; }
+  footer { position: static; margin-top: auto; padding-top: 36px; gap: 16px; font-size: 11px; }
+  footer span:first-child { max-width: 75%; }
+  .controls { position: static; display: flex; justify-content: flex-end; gap: 12px; background: #181210; padding: 12px 24px; border-radius: 0; font-size: 16px; }
+  #notes { inset: 6%; padding: 24px; font-size: 18px; }
+}

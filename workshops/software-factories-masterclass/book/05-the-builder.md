@@ -27,10 +27,11 @@ The factory keeps the protected tests outside the scratch copy, where the builde
 
 ## Get the ready folder
 
-Use a fresh folder beside your clone. Run these commands from the folder that contains the clone, rather than from an earlier exercise folder. Change `PACK` to your clone's actual location.
+Use a fresh work folder (`WORK` below), not an earlier exercise folder. Set `PACK` as in Chapter 0.
 
 ```bash
-export PACK=/absolute/path/to/software-factories-masterclass
+export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
 export WORK=~/factory-work/my-factory-ch05
 if [ -e "$WORK" ]; then
   printf '%s\n' 'Refused: that folder already exists. Choose a fresh WORK name.'

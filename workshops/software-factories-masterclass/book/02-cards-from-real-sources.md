@@ -24,7 +24,8 @@ A card built from a recorded example gets the label REPLAY instead, so nobody mi
 ## Get to the folder
 
 ```bash
-export PACK=/absolute/path/to/software-factories-masterclass
+export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
 cd "$PACK/book/ready/ch00/demo"
 ```
 

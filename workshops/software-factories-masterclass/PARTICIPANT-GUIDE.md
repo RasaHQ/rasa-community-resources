@@ -6,14 +6,14 @@ The destination is a **voice factory assistant** that takes a product brief and 
 
 ## Before the lab (5 minutes)
 
-Open a terminal in the unzipped `software-factories-masterclass` folder:
+Open a terminal in the `software-factories-masterclass` folder. After a clone, that is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping, it is the unzipped folder:
 
 ```bash
 export PACK="$PWD"
 python3 --version
 ```
 
-Use Python 3.12. `PACK` always means this folder; keep the terminal open. In a new terminal, set `PACK` again to the full path. Read `PREWORK.md` if you have not installed dependencies.
+Use Python 3.12. `PACK` always means this folder (the `software-factories-masterclass` folder); keep the terminal open. In a new terminal, set `PACK` again to the full path. Read `PREWORK.md` if you have not installed dependencies.
 
 Choose your route:
 
@@ -171,7 +171,7 @@ python show_card.py --offline
 
 Open `card.html`. Expected: three currencies and an explicit sample-data label. `set_limit.py` generates a scripted attempt for this chapter. Do not claim it is your earlier live-generated artifact. To carry that exact artifact, follow chapter 5's transfer instructions and require compatible protected-suite fingerprints.
 
-Repeat integration. Expected: refusal because the base changed. Explain why a attempt tested against yesterday's product cannot simply replace today's product.
+Repeat integration. Expected: refusal because the base changed. Explain why an attempt tested against yesterday's product cannot simply replace today's product.
 
 For the complete target architecture, read `BUILD-CONTRACT.md` and identify which steps your group has evidence for. Finish `group-handoff.md` with the fields below.
 
@@ -230,6 +230,6 @@ For the closing demo, spend 30 seconds on the requirement, 60 on the rejection a
 | Port occupied | Stop your own earlier process with Ctrl-C or `make stop`. |
 | Attempt already exists | Choose a new attempt name. |
 | Source unavailable | Show the reason; use labeled replay for the exercise. |
-| Fingerprints differ | Use a fresh supplied chapter; do not repin tests merely to accept a attempt. |
+| Fingerprints differ | Use a fresh supplied chapter; do not repin tests merely to accept an attempt. |
 
 Further reading: the individual chapters explain each component in more detail. Their older historical experiments remain tied to their own pins. The current technical corrections and evidence are in `TECHNICAL-AUDIT.md`.

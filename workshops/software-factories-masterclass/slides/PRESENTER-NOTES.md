@@ -2,7 +2,7 @@
 
 Arrow keys advance the deck. N toggles notes. The deck works offline. Slides 16, 19 and 20 are optional table-side explanations. Main teaching ends with the group briefing at minute 40.
 
-## 1. A voice agent that builds a voice agent.
+## 1. A software factory that checks an agent’s changes.
 
 Welcome briefly, then move straight to the teaser. The cover describes the target experience. The supplied package does not yet connect the entire voice factory. State the implemented scope before showing anything. Rod Rivera, three-hour masterclass.
 
@@ -76,7 +76,7 @@ Leave this up for Lab B. The existing integration creates a standalone card, not
 
 ## 19. Release the exact artifact that passed.
 
-Optional table-side slide. A attempt accepted before integration may fail after integration. The supplied chapter 7 demonstrates local integration and stale-base refusal; it does not implement live deployment.
+Optional table-side slide. An attempt accepted before integration may fail after integration. The supplied chapter 7 demonstrates local integration and stale-base refusal; it does not implement live deployment.
 
 ## 20. Voice has its own acceptance tests.
 

@@ -22,7 +22,8 @@ If you get stuck, use [the ready folder](ready/ch06) and follow **Get the ready 
 Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into `~/factory-work` (it creates a new folder there, `my-factory-ch06`, and refuses to overwrite an existing one), then set up Python once:
 
 ```bash
-export PACK=/absolute/path/to/software-factories-masterclass   # the unzipped workshop root
+export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
 mkdir -p ~/factory-work && cd ~/factory-work
 [ -e my-factory-ch06 ] && echo "my-factory-ch06 already exists: use it, or move it away first" || cp -R "$PACK"/book/ready/ch06 my-factory-ch06
 ```

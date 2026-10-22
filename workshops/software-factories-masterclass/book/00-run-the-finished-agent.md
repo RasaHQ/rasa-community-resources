@@ -25,18 +25,27 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 
 ## Get the code
 
-1. Clone the repository if needed:
+1. Get the code. The main route is to clone the repository:
 
    ```bash
    git clone https://github.com/RasaHQ/rasa-community-resources.git
    ```
 
-   For the supplied ZIP, run `git init` at the package root and set PACK to that folder. You do not need a remote repository.
-
-2. Set your clone's actual location and install the supplied code:
+   The alternative is the supplied ZIP. Unzip the supplied workshop package and open a terminal in its `software-factories-masterclass` folder. Initialize local Git metadata there so the demo can check that `.env` stays ignored:
 
    ```bash
-   export PACK=/absolute/path/to/software-factories-masterclass
+   git init
+   ```
+
+   No GitHub account, remote repository or commit is needed. Follow [the prework](../PREWORK.md) if you need setup help.
+
+   `PACK` is the `software-factories-masterclass` folder. After a clone it is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping it is the unzipped folder.
+
+2. Set `PACK` and install the supplied code. The first export line is for a clone. If you unzipped, use the commented line instead:
+
+   ```bash
+   export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+   # after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
    cd "$PACK/book/ready/ch00/demo"
    make help
    make setup
@@ -80,7 +89,8 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 3. In a second terminal, check the result before making your change:
 
    ```bash
-   export PACK=/absolute/path/to/software-factories-masterclass
+   export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+   # after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
    cd "$PACK/book/ready/ch00"
    python3 check_demo.py --recorded --transfer-minutes 30
    ```

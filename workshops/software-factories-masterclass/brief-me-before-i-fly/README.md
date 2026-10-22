@@ -24,6 +24,8 @@ replayed or delayed data said to be so, missing input asked for, no stale value 
 
 ## Run it (no license, no key, no network)
 
+First, once, from the `factory/` folder: `uv sync --frozen`. That creates `factory/.venv`, which the commands below use. It needs the internet for the install and nothing after that.
+
 From this folder, with the pack's pinned interpreter:
 
 ```bash
