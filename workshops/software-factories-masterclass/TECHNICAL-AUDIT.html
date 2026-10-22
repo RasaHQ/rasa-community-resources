@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Technical Audit</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="README.html">Start</a> · <a href="PARTICIPANT-GUIDE.html">Participant guide</a> · <a href="slides/index.html">Slides</a> · <a href="TECHNICAL-AUDIT.html">Audit</a></nav><main><h1>Workshop audit and corrections</h1>
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TECHNICAL AUDIT</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="README.html">Start</a> · <a href="PARTICIPANT-GUIDE.html">Short route</a> · <a href="book/README.html">Book</a> · <a href="slides/index.html">Slides</a></nav><main><h1>Workshop audit and corrections</h1>
 <p><strong>Checked 22 October 2026. Verdict: revised teaching materials and corrected scaffold; complete live voice factory not yet demonstrated.</strong></p>
 <p>The original ZIP has 526 files. Review covered the entry points, all nine book chapters, facilitator plans, slide source and rendered deck, dependency manifests, the current travel runtime and its tests, factory driver, and the historical API/SDK examples. All 255 Python files in the revised package parse successfully. Historical fixture outputs are retained as historical evidence, not re-certified against a new engine.</p>
 <h2>The decisive gap</h2>
@@ -94,7 +94,7 @@
 <tr>
 <td>Medium</td>
 <td>Slide prose repeats “You'll understand”, “In short”, “Next”; elementary examples displace the travel task</td>
-<td>Rebuilt 23 slides around concrete travel requirements, failure cases, architecture and evidence</td>
+<td>Rebuilt 29 slides around concrete travel requirements, failure cases, architecture and evidence</td>
 </tr>
 <tr>
 <td>Medium</td>
@@ -109,7 +109,9 @@
 <p><strong>OpenAI.</strong> The current official API documentation uses <code>client.beta.agents.sessions.create</code>. Session tools request application work and receive results; attaching an environment does not automatically put application function handlers inside that environment. The worker's OpenAI 3.36.1 / Core 0.36.2 contract tests pass without a provider request. Mantle retains its compatible OpenAI 2.x client in a separate environment. Do not combine those environments or substitute the Agents SDK sample.</p>
 <p>The API quickstart names application-key permissions <code>api.agents.read</code>, <code>api.agents.write</code> and <code>api.responses.write</code>; the SDK adds the beta header. Neither a ChatGPT subscription nor a key merely being present proves API access. Model availability remains account-specific.</p>
 <p><strong>Source cards.</strong> Flight position is an observation; the landing time is computed. It is not an airline schedule or evidence of a delay. Weather is a forecast, transfer time is an assumption, and FX is daily reference data. The dashboard is custom application code. Neither Mantle nor the Agents API automatically renders it. The revised slides label their example board as an illustration.</p>
-<h2>What was executed here</h2>
+<h2>Earlier review evidence (retained for provenance)</h2>
+<p>The following counts belong to the earlier review, not the current candidate. Current results are in ACCEPTANCE-HANDOFF.md. The operator reports that PR 146 also passed a fresh-clone run with their license; that external live result is distinct from the no-credential checks run here.</p>
+<h3>Earlier checks</h3>
 <table>
 <thead>
 <tr>
@@ -181,13 +183,14 @@
 </tr>
 <tr>
 <td>Slides</td>
-<td>23 rendered; 1600×900 and 1280×720 layout/navigation checks pass; no network asset requests</td>
-<td>Visual review performed; PDF has 23 pages</td>
+<td>29 rendered; 1600×900 and 1280×720 layout/navigation checks pass; no network asset requests</td>
+<td>Visual review performed; PDF has 29 pages</td>
 </tr>
 </tbody>
 </table>
 <p>The initial broad test run in the worker-only environment did not pass: it included Mantle-dependent tests and Unix-domain-socket tests unsupported by this host. These were not relabeled as successes. Relevant tests were then run in the appropriate environment, with results above. The final full-suite run has three failures associated with Unix socket control and one process-group teardown error; the latter passed in the isolated launcher suite but remains unresolved in the combined run. The complete <code>make test</code>/launcher lifecycle and browser microphone path still need the intended workshop machine. See <code>verification/</code> for selected raw results and the final suite status.</p>
-<h2>What remains unverified</h2>
+<h2>Limits of the earlier no-credential review</h2>
+<p>The items below describe what that earlier review did not execute. They do not negate the subsequently reported PR 146 licensed qualification. The current candidate has not repeated the live qualification.</p>
 <ul>
 <li>Live Rasa license acceptance and real microphone / speaker behavior. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested.</li>
 <li>A paid Agents API session, this account's model access and actual cost.</li>

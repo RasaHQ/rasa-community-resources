@@ -1,5 +1,8 @@
 # Your group builds and checks a travel assistant
 
+New to agents? Read the [beginner introduction](BEGINNER-PRIMER.md) first (15–20 minutes). It explains Mantle, tools, Deepgram, the Agents API and the factory using the travel question.
+
+
 You have 110 minutes of lab time, with a 15-minute break to meet another group. Work at your own pace. Your most useful result is a small change that you can explain, reject when wrong, and trace to the version you ran.
 
 The destination is a **voice factory assistant** that takes a product brief and builds a **travel assistant**. The supplied code currently demonstrates the travel assistant and factory separately. You will improve and evaluate those components; the full voice-triggered build/release bridge is an extension described in `BUILD-CONTRACT.md`.
@@ -243,3 +246,7 @@ For the closing demo, spend 30 seconds on the requirement, 60 on the rejection a
 | Fingerprints differ | Use a fresh supplied chapter; do not repin tests merely to accept an attempt. |
 
 Further reading: the individual chapters explain each component in more detail. Their older historical experiments remain tied to their own pins. The current technical corrections and evidence are in `TECHNICAL-AUDIT.md`.
+
+## Explain your result before moving on
+
+Use [LEARNING-CHECKPOINTS.md](LEARNING-CHECKPOINTS.md) for explanation prompts and notes. They cover the difference between a product verdict and chapter completion, source uncertainty, stale integration evidence and duplicate requests.

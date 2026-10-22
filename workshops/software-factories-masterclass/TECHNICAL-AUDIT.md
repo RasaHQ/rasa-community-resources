@@ -36,7 +36,7 @@ Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example 
 | Medium | Long book estimates total more than the available group time | Selected a shorter route with timed checkpoints; retained full chapters for reference |
 | Medium | The card exercise could be confused with building the entire assistant | Explicitly explained scaffold, candidate component and separate integration boundary |
 | Medium | Persona says never admit lack of real-time flight access | Replaced with honest source-unavailability behavior |
-| Medium | Slide prose repeats “You'll understand”, “In short”, “Next”; elementary examples displace the travel task | Rebuilt 23 slides around concrete travel requirements, failure cases, architecture and evidence |
+| Medium | Slide prose repeats “You'll understand”, “In short”, “Next”; elementary examples displace the travel task | Rebuilt 29 slides around concrete travel requirements, failure cases, architecture and evidence |
 | Medium | No self-contained current participant entry point | Added participant guide, troubleshooting, checkpoint evidence and group handoff |
 
 ## Current APIs: what is verified
@@ -51,7 +51,11 @@ The API quickstart names application-key permissions `api.agents.read`, `api.age
 
 **Source cards.** Flight position is an observation; the landing time is computed. It is not an airline schedule or evidence of a delay. Weather is a forecast, transfer time is an assumption, and FX is daily reference data. The dashboard is custom application code. Neither Mantle nor the Agents API automatically renders it. The revised slides label their example board as an illustration.
 
-## What was executed here
+## Earlier review evidence (retained for provenance)
+
+The following counts belong to the earlier review, not the current candidate. Current results are in ACCEPTANCE-HANDOFF.md. The operator reports that PR 146 also passed a fresh-clone run with their license; that external live result is distinct from the no-credential checks run here.
+
+### Earlier checks
 
 | Check | Result | Boundary |
 |---|---|---|
@@ -67,11 +71,13 @@ The API quickstart names application-key permissions `api.agents.read`, `api.age
 | Released source integration | 1 passed | Core 0.36.2, MCP and injected provider responses, four cards |
 | Cross-platform teaching logic | 3-attempt and 1-attempt paths pass | Accepted proposal, rejected baseline, recovery, duplicate suppression; Linux/Python 3.12 execution only |
 | Full Mantle-environment suite | 184 run: 179 passed, 4 failed/error, 1 skipped | Unix sockets denied here; one process teardown failure also remains; see final log |
-| Slides | 23 rendered; 1600×900 and 1280×720 layout/navigation checks pass; no network asset requests | Visual review performed; PDF has 23 pages |
+| Slides | 29 rendered; 1600×900 and 1280×720 layout/navigation checks pass; no network asset requests | Visual review performed; PDF has 29 pages |
 
 The initial broad test run in the worker-only environment did not pass: it included Mantle-dependent tests and Unix-domain-socket tests unsupported by this host. These were not relabeled as successes. Relevant tests were then run in the appropriate environment, with results above. The final full-suite run has three failures associated with Unix socket control and one process-group teardown error; the latter passed in the isolated launcher suite but remains unresolved in the combined run. The complete `make test`/launcher lifecycle and browser microphone path still need the intended workshop machine. See `verification/` for selected raw results and the final suite status.
 
-## What remains unverified
+## Limits of the earlier no-credential review
+
+The items below describe what that earlier review did not execute. They do not negate the subsequently reported PR 146 licensed qualification. The current candidate has not repeated the live qualification.
 
 - Live Rasa license acceptance and real microphone / speaker behavior. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested.
 - A paid Agents API session, this account's model access and actual cost.

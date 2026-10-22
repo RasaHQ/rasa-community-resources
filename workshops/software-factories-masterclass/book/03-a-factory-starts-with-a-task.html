@@ -1,0 +1,92 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>03 a factory starts with a task</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="../README.html">Start</a> · <a href="../PARTICIPANT-GUIDE.html">Short route</a> · <a href="../book/README.html">Book</a> · <a href="../slides/index.html">Slides</a></nav><main><blockquote>
+<p><strong>22 October revision:</strong> Start with <a href="../PARTICIPANT-GUIDE.html">the participant guide</a> for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.</p>
+</blockquote>
+<h1>Chapter 3: A factory starts with a task</h1>
+<p>A team asks a coding agent for a currency card and gets one that looks right, but nobody wrote down what &quot;right&quot; meant. A factory starts with a written request and a list of the files the builder may change. In about 25 minutes you'll set a limit on a currency card and watch a factory accept the result without you writing any code.</p>
+<p>Time: about 25 minutes. You need: a Mac (the check runs in a macOS sandbox), Python 3.12, uv and the repository cloned in Chapter 0. No key or account.</p>
+<p>You're done when the check at the end prints a line that starts with <code>ch03 OK</code>. If you get stuck, start again from <code>book/ready/ch03</code> in a fresh folder.</p>
+<h2>Words used in this chapter</h2>
+<ul>
+<li><strong>Factory:</strong> a set of steps that turns a written request into a checked change, the same way every time.</li>
+<li><strong>Task:</strong> the written request, plus the list of files the builder may change.</li>
+<li><strong>Allowed paths:</strong> the only places the builder may change. Anything else is refused.</li>
+<li><strong>Builder:</strong> the coding agent that makes the change. In Chapter 5 it runs on the OpenAI Agents API. Here you use the <strong>scripted builder</strong>, a stand-in that needs no model and no key.</li>
+</ul>
+<h2>Get the ready folder</h2>
+<p>Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into <code>~/factory-work</code> (it creates a new folder there, <code>my-factory-ch03</code>, and refuses to overwrite an existing one), then set up Python once:</p>
+<pre><code class="language-bash">export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
+mkdir -p ~/factory-work &amp;&amp; cd ~/factory-work
+[ -e my-factory-ch03 ] &amp;&amp; echo &quot;my-factory-ch03 already exists: use it, or move it away first&quot; || cp -R &quot;$PACK&quot;/book/ready/ch03 my-factory-ch03
+</code></pre>
+<pre><code class="language-bash">cd my-factory-ch03
+uv venv --python 3.12 .venv
+source .venv/bin/activate
+uv pip install zeocore==0.35.6 httpx==0.28.1
+</code></pre>
+<h2>See how it works</h2>
+<ol>
+<li>
+<p>Look at the task. It is a plain text file:</p>
+<pre><code class="language-bash">cat tasks/a6-market-watchlist.json
+</code></pre>
+<p>It holds the request in words, the <strong>allowed paths</strong> (two places) and the fingerprints of the files that will judge the work. Open <code>tasks/a6-market-watchlist.json</code> and read each field.</p>
+</li>
+<li>
+<p>Look at the baseline. This is the product with no market card yet:</p>
+<pre><code class="language-bash">cat product/briefing/market_card.py
+</code></pre>
+<p>It has one function, <code>market_card</code>, and it says the card isn't built yet. A builder's job is to fill it in.</p>
+</li>
+<li>
+<p>See a finished factory judge an attempt for this task. The attempt in <code>candidates/market-good</code> is a good one:</p>
+<pre><code class="language-bash">python run_a6.py tasks/a6-market-watchlist.json candidates/market-good
+</code></pre>
+<p>You see <code>ACCEPT - protected acceptance passed (Ran 14 tests ...)</code>. You didn't write any code. The task asked, an attempt answered and the gates decided.</p>
+</li>
+</ol>
+<h2>Now change it</h2>
+<p>Your task is a variation of the first one: the market card, limited to the number of currencies you choose. The tests for it are already written and locked (Chapter 4 shows how). You choose the limit, the builder makes an attempt and the gates decide. You write no code.</p>
+<ol>
+<li>
+<p>Choose a limit from 1 to 3 and set it in your task. This sets 2:</p>
+<pre><code class="language-bash">python set_limit.py 2
+</code></pre>
+<p>(You can also open <code>tasks/b-limit-currencies.json</code> and change the line <code>&quot;limit&quot;: null</code> yourself.)</p>
+</li>
+<li>
+<p>Ask the scripted builder for an attempt. It reads your task, writes only the allowed files and never sees the tests:</p>
+<pre><code class="language-bash">python scripted_builder.py tasks/b-limit-currencies.json attempts/mine
+</code></pre>
+<p>(The live builder from Chapter 5 does the same job with the OpenAI Agents API. This offline builder lets everyone finish without a key.)</p>
+</li>
+<li>
+<p>Let the gates decide:</p>
+<pre><code class="language-bash">python run_a6.py tasks/b-limit-currencies.json attempts/mine
+</code></pre>
+<p>You see <code>ACCEPT - protected acceptance passed (Ran 6 tests ...)</code>.</p>
+</li>
+</ol>
+<h2>You are done when</h2>
+<p>From inside <code>my-factory-ch03</code>, with your environment active, this prints a line that starts with <code>ch03 OK</code>:</p>
+<pre><code class="language-bash">python - &lt;&lt;'EOF'
+import json, subprocess, sys
+t = json.load(open(&quot;tasks/b-limit-currencies.json&quot;))
+assert isinstance(t[&quot;limit&quot;], int) and 1 &lt;= t[&quot;limit&quot;] &lt;= 3, &quot;set your limit first&quot;
+r = subprocess.run([sys.executable, &quot;run_a6.py&quot;, &quot;tasks/b-limit-currencies.json&quot;, &quot;attempts/mine&quot;], capture_output=True, text=True)
+assert r.returncode == 0 and r.stdout.startswith(&quot;ACCEPT&quot;), r.stdout + r.stderr
+print(&quot;ch03 OK: the builder's attempt for your task is accepted, with a limit of&quot;, t[&quot;limit&quot;])
+EOF
+</code></pre>
+<p>It passes only when your limit is set and the builder's attempt for your task is accepted. At the start of this chapter <code>limit</code> is empty and there is no attempt, so it fails.</p>
+<h2>If it fails</h2>
+<ul>
+<li><code>could not run: this check needs macOS</code>: the gate needs a Mac. Pair with someone on a Mac, or follow along on screen.</li>
+<li><code>limit</code> still says <code>null</code>: run step 1.</li>
+<li><code>No such file</code>: run the command from inside <code>my-factory-ch03</code>.</li>
+<li><code>could not run: the protected file ... does not match</code>: you changed a file under <code>acceptance/</code>. Copy the ready folder again.</li>
+</ul>
+<h2>What you just learned</h2>
+<p>A factory works from a written task: the request, the files the builder may change, and the fingerprints of the files that judge the work. You changed the task, and the gates decided without you reading the code.</p>
+<p>Next: <a href="04-acceptance-before-code.html">Chapter 4</a> shows the tests that judge the change, and how they are locked before any work starts.</p>
+</main></html>

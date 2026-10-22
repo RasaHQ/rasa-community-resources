@@ -12,7 +12,7 @@ From this checkout, create your private credential file and fill in your own val
 then install and start the demo:
 
 ```sh
-cd examples/mantle-flight-briefing-openai-agents
+cd workshops/software-factories-masterclass/book/ready/ch00/demo
 make env
 # Fill in your own values in .env with a text editor.
 make setup
@@ -23,15 +23,14 @@ For a new checkout after the class PR is merged:
 
 ```sh
 git clone https://github.com/RasaHQ/rasa-community-resources.git
-cd rasa-community-resources/examples/mantle-flight-briefing-openai-agents
+cd rasa-community-resources/workshops/software-factories-masterclass/book/ready/ch00/demo
 make env
 # Fill in your own values in .env with a text editor.
 make setup
 make run
 ```
 
-Use a Git clone; ZIP downloads are unsupported because the credential tracking
-and ignore checks require Git. Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
+Use a Git clone, or initialize Git at the workshop root after unzipping (`git init`) so credential tracking and ignore checks work. Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
 `RASA_LICENSE` (the free Developer Edition licence) in the example-root `.env` or your shell, including in scripted mode;
 the launcher never bypasses the engine licence check. Model and voice keys are
 optional for the scripted text path. Before class, [sign up for your own free
@@ -98,9 +97,8 @@ styles and SVG; it loads no remote browser assets.
 
 Only the facilitator or participant supplies keys in the ignored example-root
 `.env` or their shell. Never paste values into chat, committed files, URLs or logs. There is no
-seat-operated live model or voice proof here. The selected model group remains
-in `project/integrations.yml`; choose `openai` or `anthropic` there before a live
-run with the matching environment key. A key for the other group alone does
+seat-operated live model or voice proof here. Chapter 0 uses Rasa Pro 3.21.0. Select `openai` or `anthropic` in
+`project/agent.yml` under `orchestrator.model_group` before a live run with the matching environment key. A key for the other group alone does
 not establish readiness.
 
 Voice uses Deepgram Flux and Aura-2 through the maintained project integration.

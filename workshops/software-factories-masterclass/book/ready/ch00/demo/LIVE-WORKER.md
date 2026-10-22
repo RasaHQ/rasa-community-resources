@@ -8,7 +8,7 @@ run `make setup`, then `make run`. It owns the worker, authenticated MCP transpo
 actual Mantle Inspector and shutdown. Do not combine the launcher with an older
 two-shell backend or a manually staged development wheel.
 
-The current `worker` installs Core and the managed Agents SDK from its committed
+The current `worker` installs Core and the OpenAI Python client for the Agents API from its committed
 registry lock. `worker/core-artifact.json` records the exact published wheel and
 hash; `worker/uv.lock` records its dependency closure. The separate Mantle project
 has its own compatible SDK. Historical experiments in `live-worker/` are not the

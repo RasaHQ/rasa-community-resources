@@ -1,0 +1,133 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>00 run the finished agent</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="../README.html">Start</a> · <a href="../PARTICIPANT-GUIDE.html">Short route</a> · <a href="../book/README.html">Book</a> · <a href="../slides/index.html">Slides</a></nav><main><blockquote>
+<p><strong>22 October revision:</strong> Start with <a href="../PARTICIPANT-GUIDE.html">the participant guide</a> for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.</p>
+</blockquote>
+<h1>Chapter 0: Run the agent you will learn to build</h1>
+<p>Picture a flight that lands at 5 pm, with a meeting at 6 pm across town. In about 20 minutes, after a first install, you'll run an agent that answers that from four sources at once, then change how it answers without touching its code.</p>
+<p>Time: about 5 minutes for the first install, then about 20 minutes. You need: Python 3.12, <a href="https://docs.astral.sh/uv/">uv</a>, Git, Make, a browser and your free <a href="https://rasa.com/rasa-pro-developer-edition-license-key-request">Rasa Developer Edition license</a>. Submitting the sign-up form alone isn't a license. The install needs the internet. After that the exercise runs offline, because the cards are a recording from 22 October 2026. Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example in <code>examples/</code> stays on 3.21.0.dev5 today.</p>
+<p>You're done when <code>python3 check_demo.py --recorded --transfer-minutes 30</code> prints <code>ch00 OK</code>. If you get stuck, the working code is in <code>book/ready/ch00</code>.</p>
+<h2>What you are looking at</h2>
+<p><strong>Rasa Mantle</strong> runs the conversation: instructions, tool requests and answers. A <strong>tool</strong> is a function the agent can ask to run. This agent's briefing tool produces four cards:</p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>What it tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flight</td>
+<td>Aircraft position and a computed landing estimate</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>The forecast around the estimated arrival</td>
+</tr>
+<tr>
+<td>Timeline</td>
+<td>Whether arrival and an assumed transfer fit the meeting</td>
+</tr>
+<tr>
+<td>Currency</td>
+<td>Daily reference rates and their changes</td>
+</tr>
+</tbody>
+</table>
+<p>The position, forecast and rates were recorded on <strong>22 October 2026</strong>, so every card says <strong>REPLAY</strong>. The timeline is computed from those and from the meeting time and travel time you give. In this exercise “tomorrow” means 23 October 2026.</p>
+<p><strong>SCRIPTED</strong> means teaching code picks which tool to call. The agent engine and the cards are the real ones.</p>
+<h2>Get the code</h2>
+<ol>
+<li>
+<p>Get the code. The main route is to clone the repository:</p>
+<pre><code class="language-bash">git clone https://github.com/RasaHQ/rasa-community-resources.git
+</code></pre>
+<p>The alternative is the supplied ZIP. Unzip the supplied workshop package and open a terminal in its <code>software-factories-masterclass</code> folder. Initialize local Git metadata there so the demo can check that <code>.env</code> stays ignored:</p>
+<pre><code class="language-bash">git init
+</code></pre>
+<p>No GitHub account, remote repository or commit is needed. Follow <a href="../PREWORK.md">the prework</a> if you need setup help.</p>
+<p><code>PACK</code> is the <code>software-factories-masterclass</code> folder. After a clone it is <code>rasa-community-resources/workshops/software-factories-masterclass</code>. After unzipping it is the unzipped folder.</p>
+</li>
+<li>
+<p>Set <code>PACK</code> and install the supplied code. The first export line is for a clone. If you unzipped, use the commented line instead:</p>
+<pre><code class="language-bash">export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
+cd &quot;$PACK/book/ready/ch00/demo&quot;
+make help
+make setup
+make env
+</code></pre>
+<p>Setup installs two Python 3.12 environments with pinned versions. <code>make env</code> creates a private <code>.env</code> file only if none exists, and never overwrites one.</p>
+</li>
+<li>
+<p>Open <code>.env</code> in your editor. Put your issued license after <code>RASA_LICENSE=</code> and leave model and voice entries empty for this exercise. Never paste a key into a chat, a URL or a terminal command, and never commit <code>.env</code>.</p>
+<pre><code class="language-bash">make doctor
+</code></pre>
+<p>You should see key <strong>names</strong> marked SET or MISSING, never values, and <code>Readiness check passed.</code> Missing model and voice keys are expected here. Fix any other error before you continue.</p>
+</li>
+</ol>
+<h2>See how it works</h2>
+<ol>
+<li>
+<p>Start the <strong>recorded</strong> sources through the normal agent launcher:</p>
+<pre><code class="language-bash">BRIEFING_RECORDED=1 make run-scripted
+</code></pre>
+<p>The terminal explicitly says <code>recorded sources (REPLAY)</code>. Keep it running. Open <a href="http://127.0.0.1:8942/">the local agent page</a> after it reports ready. This is the real Mantle Inspector, with the cards beside it.</p>
+</li>
+<li>
+<p>Use the flight included in the recording:</p>
+<pre><code class="language-text">United 1162 to EWR
+</code></pre>
+<p>When asked for your meeting, answer:</p>
+<pre><code class="language-text">The 6 pm meeting tomorrow.
+</code></pre>
+<p>Four REPLAY cards appear. Read where each card says its data came from, and when it was recorded. The starting time to get from Newark to your meeting is <strong>90 minutes</strong>. That is a planning assumption, not traffic data.</p>
+</li>
+<li>
+<p>In a second terminal, check the result before making your change:</p>
+<pre><code class="language-bash">export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
+cd &quot;$PACK/book/ready/ch00&quot;
+python3 check_demo.py --recorded --transfer-minutes 30
+</code></pre>
+<p>This must fail with <code>NOT DONE</code> and exit 1. The four cards are there, but the 90 minutes doesn't match the 30 you're about to ask for. If the demo isn't running, the command also fails, because it can't reach the page.</p>
+</li>
+</ol>
+<h2>Now change it</h2>
+<p>In the running conversation, ask:</p>
+<pre><code class="language-text">Allow 30 minutes to get into town.
+</code></pre>
+<p>The agent revises the timeline through its briefing tool. The flight, weather and currency cards stay the same, and so does your meeting. You don't edit any file.</p>
+<p>You can ask for <strong>120 minutes</strong> instead. Use <code>--transfer-minutes 120</code> in the check.</p>
+<h2>You are done when</h2>
+<p>From the second terminal, run your chosen check again:</p>
+<pre><code class="language-bash">python3 check_demo.py --recorded --transfer-minutes 30
+</code></pre>
+<p>It must exit 0 and print <code>ch00 OK</code>. That means the page shows four REPLAY cards and your new travel time. An empty board, a repeated card, three cards, an unavailable card or the old 90 minutes can't pass. Also check that the flight and meeting stayed the same.</p>
+<p>Stop your own demo with Ctrl-C in its launcher terminal, or <code>make stop</code> from its <code>demo</code> folder. Do not kill someone else's process to free a port.</p>
+<h2>Optional: try current public sources</h2>
+<p>After the recorded exercise, stop it. Run without the recorded flag:</p>
+<pre><code class="language-bash">make run-scripted
+</code></pre>
+<p>This needs the internet, and still makes no paid model request. Ask “I'm heading to New York. Which flights are already in the air?”, choose an actually returned flight, then state your meeting and transfer allowance. It searches a set of published New York routes. If none matches, give a flight you know is in the air. The recorded flight isn't in the air now.</p>
+<p>Live positions, forecasts, computed estimates and daily rates carry different labels. A source that is down shows a reason, never an invented value. <code>python3 check_demo.py</code> without <code>--recorded</code> checks four available cards for this extra. You don't need it to finish the chapter.</p>
+<h2>If it fails</h2>
+<ul>
+<li><strong>License missing or refused:</strong> use the issued license, not the sign-up confirmation. Do not share its value in a support report.</li>
+<li><strong>The check still says NOT DONE:</strong> read the four cards. Each must say REPLAY, and the timeline must show your requested 30 or 120 minutes. Make the request in the conversation.</li>
+<li><strong>A port is occupied:</strong> stop your own earlier run with <code>make stop</code>. The launcher doesn't stop anyone else's.</li>
+<li><strong><code>.env</code> refused:</strong> move it out of your clone, run <code>make env</code> to create a fresh one, put each key on its own line, and run <code>chmod 600 .env</code>. Never commit it.</li>
+<li><strong>A live source is unavailable:</strong> return to the recorded exercise rather than calling an unavailable card complete.</li>
+<li><strong>You need help:</strong> share the error sentence, your Python version and the command you ran. Never share your <code>.env</code> or your keys.</li>
+</ul>
+<h2>Good to know</h2>
+<ul>
+<li>The later chapters that run protected checks (3 to 7) need a Mac, because they use <code>sandbox-exec</code>. This chapter was run on macOS with Python 3.12. Other systems haven't been tried. Pair with someone on a Mac if you need to.</li>
+<li>No model is reasoning in this exercise. Teaching code picks the tools, and the recorded data never opens a connection to a source or a model.</li>
+<li>A present license must still be accepted when the agent engine starts, so a passing <code>make doctor</code> doesn't guarantee a start.</li>
+<li>Spoken input is not part of this chapter. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. Seeing text cards doesn't show that voice works.</li>
+<li>Model or voice demonstrations are not part of this book's checks. They need a reviewed plan with a named model, limits and an expected cost.</li>
+</ul>
+<h2>What you just learned</h2>
+<p>You ran an agent that builds a four-card briefing from public data, and you changed its answer by asking in plain words. Every value on a card says where it came from.</p>
+<p>Next: <a href="01-what-a-mantle-agent-is.html">Chapter 1</a> shows the files that make this conversation work.</p>
+</main></html>
