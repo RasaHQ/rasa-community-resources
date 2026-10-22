@@ -6,7 +6,7 @@ failure so the normal inspector text path remains available.
 """
 import os
 
-VOICE_OFF_TEXT = 'Voice is off; set DEEPGRAM_API_KEY in your environment to enable it, or continue with text.'
+VOICE_OFF_TEXT = 'Voice is off; set DEEPGRAM_API_KEY and use make run-voice to enable it, or continue with text.'
 VOICE_FAILED_TEXT = 'Voice could not connect; continuing with text.'
 
 

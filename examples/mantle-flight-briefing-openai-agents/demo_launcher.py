@@ -27,7 +27,7 @@ import tomllib
 from urllib.parse import urlsplit
 from urllib.request import ProxyHandler, build_opener
 from voice_config import VOICE_OFF_TEXT
-from demo_host import validate_host, require_viewer_access
+from demo_host import validate_host, require_viewer_access, runtime_ports
 
 ROOT = Path(__file__).resolve().parent
 PROJECT = ROOT / 'project'
@@ -295,7 +295,7 @@ def setup():
 
 
 def require_free_ports(host="127.0.0.1"):
-    for port in (8942, 5005):
+    for port in runtime_ports():
         with socket.socket() as probe:
             try:
                 probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -323,7 +323,7 @@ def start_inspector(children, env, mode):
     argv = [str(python_at(PROJECT)), str(Path(__file__).resolve()), '_inspector', mode]
     process = children.start(argv, cwd=PROJECT, env=env)
     try:
-        wait_http(process, 'http://' + env.get('BRIEFING_DEMO_HOST', '127.0.0.1') + ':5005/webhooks/inspector/inspect.html', timeout=90)
+        wait_http(process, 'http://' + env.get('BRIEFING_DEMO_HOST', '127.0.0.1') + ':' + str(runtime_ports()[1]) + '/webhooks/inspector/inspect.html', timeout=90)
         return process, env
     except DemoError:
         if not env.get('DEEPGRAM_API_KEY', '').strip():
@@ -333,7 +333,7 @@ def start_inspector(children, env, mode):
         text_env.pop('DEEPGRAM_API_KEY', None)
         print(VOICE_FAILED_TEXT, flush=True)
         process = children.start(argv, cwd=PROJECT, env=text_env)
-        wait_http(process, 'http://' + env.get('BRIEFING_DEMO_HOST', '127.0.0.1') + ':5005/webhooks/inspector/inspect.html', timeout=90)
+        wait_http(process, 'http://' + env.get('BRIEFING_DEMO_HOST', '127.0.0.1') + ':' + str(runtime_ports()[1]) + '/webhooks/inspector/inspect.html', timeout=90)
         return process, text_env
 
 
@@ -346,7 +346,7 @@ def configure_native_sources(environment, scripted):
     return True
 
 
-def run_demo(scripted=False, host="127.0.0.1"):
+def run_demo(scripted=False, host="127.0.0.1", voice=False):
     try:
         require_viewer_access(host)
     except ValueError:
@@ -358,8 +358,8 @@ def run_demo(scripted=False, host="127.0.0.1"):
     require_free_ports(host)
     env = child_environment()
     env['BRIEFING_DEMO_HOST'] = host
-    force_scripted = scripted
-    scripted = scripted or not any(env.get(k, '').strip() for k in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY'))
+    force_scripted = scripted and not voice
+    scripted = scripted or voice or not any(env.get(k, '').strip() for k in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY'))
     if scripted:
         for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY'):
             env.pop(key, None)
@@ -368,6 +368,11 @@ def run_demo(scripted=False, host="127.0.0.1"):
     print('RASA_LICENSE: ' + ('SET' if env.get('RASA_LICENSE', '').strip() else 'MISSING'), flush=True)
     if not env.get('RASA_LICENSE', '').strip():
         raise DemoError('Get your free Rasa Developer Edition licence at https://rasa.com/rasa-pro-developer-edition-license-key-request and set RASA_LICENSE in the example .env or your shell before rerunning ./demo run.')
+    voice_key = env.pop('DEEPGRAM_API_KEY', '')
+    if not voice:
+        voice_key = ''
+    if voice and not voice_key:
+        raise DemoError('Voice requires DEEPGRAM_API_KEY in the example .env; use make run-scripted for text without it.')
     env['BRIEFING_MCP_TOKEN'] = secrets.token_urlsafe(32)
     from demo_make import CheckoutControl
     control = CheckoutControl(ROOT)
@@ -381,13 +386,13 @@ def run_demo(scripted=False, host="127.0.0.1"):
         control.start()
         print(SCRIPTED_LABEL if scripted else 'LIVE model mode; public source data stays separate from model prose.', flush=True)
         for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'DEEPGRAM_API_KEY'):
-            print(key + ': ' + ('SET' if env.get(key, '').strip() else 'MISSING'), flush=True)
+            print(key + ': ' + ('SET' if (voice_key if key == 'DEEPGRAM_API_KEY' else env.get(key, '')).strip() else 'MISSING'), flush=True)
         doctor = [str(python_at(PROJECT)), str(ROOT / 'class_doctor.py')]
         if scripted:
             doctor.append('--scripted')
         completed(children, doctor, cwd=ROOT, env=env, timeout=30,
                   failure='The selected model path is not ready; set its key in your terminal or use ./demo run --scripted.')
-        if not env.get('DEEPGRAM_API_KEY', '').strip():
+        if not voice_key.strip():
             print(VOICE_OFF_TEXT, flush=True)
         completed(children, [str(python_at(PROJECT)), '-m', 'rasa', 'train'],
                   cwd=PROJECT, env=env, timeout=180,
@@ -396,12 +401,15 @@ def run_demo(scripted=False, host="127.0.0.1"):
         print('Managed Agents API selects real public-source tools.' if managed_sources
               else SCRIPTED_LABEL, flush=True)
         service = children.start([str(python_at(WORKER)), '-m', 'briefing', '--public-sources', '--host', host], cwd=ROOT, env=env)
-        wait_http(service, 'http://' + host + ':8942/cards')
+        wait_http(service, 'http://' + host + ':' + str(runtime_ports()[0]) + '/cards')
         mode = 'scripted' if scripted else 'live'
-        inspector, inspector_env = start_inspector(children, env, mode)
-        print('Open the demo: http://' + host + ':8942/', flush=True)
-        print('Cards diagnostic: http://' + host + ':8942/cards', flush=True)
-        print('Mantle Inspector diagnostic: http://' + host + ':5005/webhooks/inspector/inspect.html', flush=True)
+        inspector_env = dict(env)
+        if voice_key:
+            inspector_env['DEEPGRAM_API_KEY'] = voice_key
+        inspector, inspector_env = start_inspector(children, inspector_env, mode)
+        print('Open the demo: http://' + host + ':' + str(runtime_ports()[0]) + '/', flush=True)
+        print('Cards diagnostic: http://' + host + ':' + str(runtime_ports()[0]) + '/cards', flush=True)
+        print('Mantle Inspector diagnostic: http://' + host + ':' + str(runtime_ports()[1]) + '/webhooks/inspector/inspect.html', flush=True)
         print('Open the page and ask, for example: Which flights are in the air heading to New York?', flush=True)
         print('Choose a flight, then say when your meeting is, for example tomorrow at 6 pm.', flush=True)
         print('Press Ctrl-C here to stop both services and their children.', flush=True)
@@ -637,7 +645,7 @@ def install_mcp_host(host):
     def connection(settings, server_id):
         result = original(settings, server_id)
         if server_id == 'briefing' and result['url'] == 'http://127.0.0.1:8942/mcp':
-            result['url'] = 'http://' + validate_host(host) + ':8942/mcp'
+            result['url'] = 'http://' + validate_host(host) + ':' + str(runtime_ports()[0]) + '/mcp'
         return result
     MCPServersSettings.to_connection_config = connection
 
@@ -657,6 +665,9 @@ def inspector(mode):
     else:
         voice = voice_channels(os.environ)
     install_voice_channels(voice)
+    if voice:
+        import voice_patch
+        voice_patch.install()
     if mode == 'scripted':
         from rasa.mantle.llm.client import LLMClient
         LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())
@@ -665,7 +676,7 @@ def inspector(mode):
     if os.environ.get('BRIEFING_VIEWER_AUDIT'):
         from viewer_audit import install_inspector_audit
         install_inspector_audit()
-    sys.argv = ['rasa', 'inspect', '--interface', host, '--port', '5005', '--quiet']
+    sys.argv = ['rasa', 'inspect', '--interface', host, '--port', str(runtime_ports()[1]), '--quiet']
     rasa_main()
 
 
@@ -681,8 +692,15 @@ def main(argv=None):
             parser = SafeRunParser(add_help=False)
             parser.add_argument('--host', default=os.environ.get('BRIEFING_VIEWER_HOST', '127.0.0.1'))
             parser.add_argument('--scripted', action='store_true')
+            parser.add_argument('--voice', action='store_true')
+            parser.add_argument('--port', type=int)
+            parser.add_argument('--inspector-port', type=int)
             args = parser.parse_args(argv[1:])
-            run_demo(scripted=args.scripted, host=args.host)
+            if args.port is not None:
+                os.environ['BRIEFING_PAGE_PORT'] = str(args.port)
+            if args.inspector_port is not None:
+                os.environ['BRIEFING_INSPECTOR_PORT'] = str(args.inspector_port)
+            run_demo(scripted=args.scripted, host=args.host, **({'voice': True} if args.voice else {}))
         elif argv in (['_inspector', 'scripted'], ['_inspector', 'live']):
             inspector(argv[1])
         else:

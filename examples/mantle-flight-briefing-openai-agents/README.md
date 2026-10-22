@@ -98,11 +98,10 @@ styles and SVG; it loads no remote browser assets.
 
 ## Optional live model and voice
 
-Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested.
+Use `make run-voice` for the patched Deepgram path described below. Earlier unpatched recorded-audio attempts failed after selection; their failure remains recorded. The physical microphone path is unqualified.
 
 Only the facilitator or participant supplies keys in the ignored example-root
-`.env` or their shell. Never paste values into chat, committed files, URLs or logs. There is no
-seat-operated live model or voice proof here. The selected model group remains
+`.env` or their shell. Never paste values into chat, committed files, URLs or logs. The local voice command uses scripted selection; the separate live-model path uses the selected model group
 in `project/integrations.yml`; choose `openai` or `anthropic` there before a live
 run with the matching environment key. A key for the other group alone does
 not establish readiness.
@@ -110,14 +109,14 @@ not establish readiness.
 This example folder is pinned to and tested on Rasa Pro 3.21.0.dev5. The current Mantle docs describe 3.21.0.dev12, where the model is set in agent.yml under orchestrator.model_group. Use this pack's files today. The workshop's Chapter 0 runs on Rasa Pro 3.21.0.
 
 Voice uses Deepgram Flux and Aura-2 through the maintained project integration.
-Without `DEEPGRAM_API_KEY`, the launcher prints “Voice is off; set DEEPGRAM_API_KEY in your environment to enable it, or continue with text.”
+Voice is opt-in: supply `DEEPGRAM_API_KEY` and run `make run-voice`. Ordinary `make run` leaves voice off.
 Voice must not block the cards or scripted path. The owner-supplied Flux/Aura-2
 configuration is merged only in the Inspector process, without writing keys.
 If the voice-configured Inspector cannot start, the launcher stops its owned
 process group and retries the actual Inspector once in text mode, leaving the
 source service running. `--scripted` disables model
 and voice credentials in its children. Actual voice failure fallback and spoken
-weather scenario S13 require the operator's live check; no voice PASS is claimed.
+weather scenario S13 require the operator's live check. Audio-file proof does not qualify a physical microphone.
 The owner-maintained doctor prints only SET or MISSING for credential names.
 
 The launcher reads only `RASA_LICENSE`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`
@@ -231,3 +230,26 @@ registry locks. The actual installed reader, real MCP requests, numbered flight
 selection, natural meeting input and four graphical cards pass an injected-provider
 integration control. No live provider/model, browser or voice acceptance is inferred
 from that control. Final consumer review and preview rehearsal remain required.
+
+## Voice, locally
+
+Run on your own Mac from this example directory. Keep the terminal running.
+
+```sh
+make env
+# Edit the ignored .env: set RASA_LICENSE and DEEPGRAM_API_KEY.
+make setup
+make run-voice
+```
+
+Open http://127.0.0.1:8942 in Chrome, allow microphone access, then start the voice conversation. Ask which flights are in the air heading to New York; confirm the suggested flight; say “six PM tomorrow”. The page should show four source cards. Local loopback supports browser microphone access without tailnet, TLS or browser flags.
+
+Voice uses Deepgram and explicitly scripted Mantle tool selection with real public sources. No OpenAI key is needed for this command. Only the Inspector child receives the Deepgram key. `make run-scripted` remains a text path without voice or model calls; `make run` retains the separate model path with voice disabled. File-audio tests passed on the patched runtime; a physical microphone still needs permission and device testing on your Mac.
+
+If the default ports are occupied:
+
+```sh
+BRIEFING_PAGE_PORT=8960 BRIEFING_INSPECTOR_PORT=5020 make run-voice
+```
+
+Use the printed page address. Stop the processes with Ctrl-C. Voice includes the pinned-engine in-memory repair in `voice_patch.py`; no installed package is edited.
