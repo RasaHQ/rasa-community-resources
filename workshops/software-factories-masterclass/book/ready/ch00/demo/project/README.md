@@ -22,7 +22,7 @@ and prints the combined page address. Ctrl-C stops its own processes. Do not
 start a second manual backend or supply a transport token yourself.
 
 Both environments use registry artifacts recorded in their locks. The worker
-has the managed Agents SDK; Mantle keeps its separate compatible SDK. Their
+has the OpenAI Python client for the Agents API; Mantle keeps its separate compatible OpenAI client. Their
 exact Core artifact is recorded in `../worker/core-artifact.json`.
 
 The actual Inspector requires your `RASA_LICENSE`, including in scripted mode.

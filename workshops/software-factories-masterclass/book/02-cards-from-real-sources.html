@@ -1,0 +1,83 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>02 cards from real sources</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="../README.html">Start</a> · <a href="../PARTICIPANT-GUIDE.html">Short route</a> · <a href="../book/README.html">Book</a> · <a href="../slides/index.html">Slides</a></nav><main><blockquote>
+<p><strong>22 October revision:</strong> Start with <a href="../PARTICIPANT-GUIDE.html">the participant guide</a> for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.</p>
+</blockquote>
+<h1>Chapter 2: Cards from real sources</h1>
+<p>Picture a card that says &quot;live&quot; beside a rate that updates once a day. A traveler trusts it and plans around it. In about 10 minutes you'll find the code that stops that, by labeling every card with where its data came from and how fresh it is.</p>
+<p>Time: about 10 minutes. You need: the Chapter 0 ready folder and a terminal. You only read files here, so there's no key or account. This chapter has no &quot;Now change it&quot; step. That step comes after the class.</p>
+<p>You're done when the listing command at the end prints <code>ch02 OK</code>. If you get stuck, open <code>book/ready/ch00/demo</code> and run the commands from there.</p>
+<h2>Where a card's data comes from</h2>
+<p>The agent never writes the numbers on a card. A <strong>reader</strong> is code that fetches one kind of data from a public source, such as the position of a plane or a weather forecast. The briefing has four readers, one for each card:</p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>Reader</th>
+<th>Label on the card</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flight</td>
+<td>Reads an aircraft's observed position</td>
+<td>PROVIDER DATA</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>Reads the forecast near the landing time</td>
+<td>PROVIDER DATA</td>
+</tr>
+<tr>
+<td>Timeline</td>
+<td>Computes your margin from the landing estimate, your meeting and the travel allowance</td>
+<td>COMPUTED</td>
+</tr>
+<tr>
+<td>Currency</td>
+<td>Reads daily exchange reference rates</td>
+<td>PROVIDER DATA</td>
+</tr>
+</tbody>
+</table>
+<p>A card built from a recorded example gets the label REPLAY instead, so nobody mistakes it for live data.</p>
+<h2>Get to the folder</h2>
+<pre><code class="language-bash">export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
+cd &quot;$PACK/book/ready/ch00/demo&quot;
+</code></pre>
+<h2>See how it works</h2>
+<ol>
+<li>
+<p>Find the code in this folder that asks the readers for data:</p>
+<pre><code class="language-bash">grep -E &quot;^class &quot; briefing/public_sources.py briefing/live_public_sources.py
+</code></pre>
+<p>You see <code>PublicSourcesRunner</code> and <code>LivePublicSourcesRunner</code>. They call the readers and hand each result to a card. The readers themselves come from <code>zeocore</code>, the Python package that holds the card code. Chapter 0 installed it.</p>
+</li>
+<li>
+<p>See which readers the live runner imports:</p>
+<pre><code class="language-bash">grep -E &quot;^from zeo_core.integrations.briefing_sources&quot; briefing/live_public_sources.py
+</code></pre>
+<p>Each line names a reader module, such as <code>flight</code> and <code>timeline</code>.</p>
+</li>
+<li>
+<p>Find the label rules:</p>
+<pre><code class="language-bash">grep -n 'label = ' project/lib/card_text.py
+</code></pre>
+<p>You see one line that chooses REPLAY, COMPUTED or the provider label, which the card shows as PROVIDER DATA. The label depends on where the data came from, never on how the agent describes it.</p>
+</li>
+<li>
+<p>Find the freshness lines:</p>
+<pre><code class="language-bash">grep -n &quot;Freshness:&quot; project/lib/card_text.py
+</code></pre>
+<p>Each kind of card says how fresh its data is, in its own words. The flight card says it is a live position. The weather card says it is a forecast, not an observation. The timeline says it is computed. A replay card has no freshness line, because it makes no claim about now.</p>
+</li>
+</ol>
+<p>Now follow one card. A reader fetches data and records where it came from. The card text adds the label and the freshness line. A missing source gives an unavailable card with a reason, never an invented value.</p>
+<h2>You are done when</h2>
+<p>Run this in the <code>demo</code> folder:</p>
+<pre><code class="language-bash">( set -e; ls -1 project/skills/briefing/skill.md briefing/mcp_app.py briefing/public_sources.py project/lib/card_text.py; echo &quot;ch02 OK&quot; )
+</code></pre>
+<p>It lists the skill, the tool, one reader runner and the card text rules, then prints <code>ch02 OK</code>. It checks that the files are present. Reading them is your part.</p>
+<h2>What you just learned</h2>
+<p>Every card carries a label that says where its data came from, and most carry a line that says how fresh it is. A source that is down gives an unavailable card with a reason, never an invented value.</p>
+<p>Next: <a href="03-a-factory-starts-with-a-task.html">Chapter 3</a> starts the factory itself, with a task and tests that judge the change.</p>
+</main></html>

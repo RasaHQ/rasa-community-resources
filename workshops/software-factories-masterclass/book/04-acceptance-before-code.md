@@ -2,7 +2,7 @@
 
 # Chapter 4: Acceptance before code
 
-A coding agent reports that its change works, and it wrote the tests that say so. The builder may read public acceptance criteria and development tests. It must not control the verifier or its verdict. In about 30 minutes you'll lock the tests before any work starts, so the builder never sees them and can't change them, and then watch the factory accept an attempt against them.
+A coding agent reports that its change works, and it wrote the tests that say so. The builder may see example tests. It never sees or edits the acceptance tests that decide. In about 30 minutes you'll lock the tests before any work starts, so the builder never sees them and can't change them, and then watch the factory accept an attempt against them.
 
 Time: about 30 minutes. You need: a Mac (the check runs in a macOS sandbox), Python 3.12 and uv. Chapter 3 first is useful but not required, because this chapter has its own ready folder. No key or account.
 
@@ -121,6 +121,6 @@ It passes only when the fingerprints match, the tests fail on the baseline for t
 
 ## What you just learned
 
-The tests that judge a change are written first and locked by a fingerprint, so the builder can't read them or bend them. The factory accepted the attempt only because it passed those tests.
+The acceptance tests stay outside the builder workspace. Sandbox permissions control access; fingerprints detect changes but do not prevent reading or editing by themselves. The factory accepted the attempt only because it passed those tests.
 
 Next: [Chapter 5](05-the-builder.md) puts a real builder, a confined coding agent, behind the same gates.
