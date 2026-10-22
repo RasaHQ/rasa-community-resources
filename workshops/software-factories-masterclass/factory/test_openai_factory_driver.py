@@ -139,6 +139,7 @@ class DriverControls(unittest.TestCase):
         self.assertNotIn('spend_control', calls[0])
         self.assertEqual(calls[0]['deadline_seconds'], 120)
         self.assertEqual(calls[0]['environment'], {'type': 'none'})
+        self.assertEqual(calls[0]['agent']['service_tier'], 'default')
         self.assertEqual([e['action'] for e in events], ['session_started', 'write_file', 'session_finished'])
         self.assertNotIn('REFERENCE = True', json.dumps(events))
 
@@ -171,6 +172,49 @@ class DriverControls(unittest.TestCase):
         driver.native_builder(object(), task=task, workspace=self.workspace,
                               event=lambda **values: None, model='scripted', invoke=invoke,
                               tool_factory=lambda *args: {})
+
+    def test_usage_receipt_keeps_only_numeric_metrics_without_session_or_text(self):
+        requests = []
+        session = SimpleNamespace(usage=SimpleNamespace(input_tokens=100, output_tokens=20, total_tokens=120,
+            input_tokens_details=SimpleNamespace(cached_tokens=10), output_tokens_details=SimpleNamespace(reasoning_tokens=5)),
+            agent=SimpleNamespace(service_tier='default'), spend_control=SimpleNamespace(consumed=1),
+            raw_text='not-public-model-text')
+        def retrieve(session_id, **kwargs):
+            requests.append((session_id, kwargs))
+            return session
+        client = SimpleNamespace(beta=SimpleNamespace(agents=SimpleNamespace(sessions=SimpleNamespace(retrieve=retrieve))))
+        receipt = driver.record_usage(client, SimpleNamespace(session_id='private-session-id'), self.root, mode='LIVE_NATIVE')
+        self.assertEqual(receipt['status'], 'RECORDED_BEST_EFFORT')
+        self.assertEqual(receipt['reasoning_output_tokens'], 5)
+        self.assertEqual(requests, [('private-session-id', {'timeout': 20})])
+        stored = (self.root / 'usage.json').read_text()
+        self.assertNotIn('private-session-id', stored)
+        self.assertNotIn('not-public-model-text', stored)
+        self.assertIsNone(receipt['actual_billed_cost_cents'])
+
+    def test_scripted_usage_never_reads_provider_and_invalid_counters_are_not_invented(self):
+        from unittest.mock import Mock
+        client = Mock()
+        receipt = driver.record_usage(client, SimpleNamespace(session_id='scripted'), self.root, mode='SCRIPTED')
+        client.beta.agents.sessions.retrieve.assert_not_called()
+        self.assertEqual(receipt['provider_calls'], 0)
+        session = SimpleNamespace(usage=SimpleNamespace(input_tokens=True, output_tokens='20', total_tokens=None))
+        client.beta.agents.sessions.retrieve.return_value = session
+        receipt = driver.record_usage(client, SimpleNamespace(session_id='owned'), self.root, mode='LIVE_NATIVE')
+        self.assertEqual(receipt['status'], 'USAGE_NOT_AVAILABLE')
+        self.assertIsNone(receipt['input_tokens'])
+        self.assertIsNone(receipt['output_tokens'])
+
+    def test_usage_permission_refusal_keeps_code_not_exception_text(self):
+        class Refusal(Exception):
+            status_code = 403
+            code = 'insufficient_permissions'
+        def retrieve(*args, **kwargs):
+            raise Refusal('private-provider-body-not-recorded')
+        client = SimpleNamespace(beta=SimpleNamespace(agents=SimpleNamespace(sessions=SimpleNamespace(retrieve=retrieve))))
+        receipt = driver.record_usage(client, SimpleNamespace(session_id='owned'), self.root, mode='LIVE_NATIVE')
+        self.assertEqual(receipt['provider_detail'], 'http_403 code=insufficient_permissions')
+        self.assertNotIn('private-provider-body', (self.root / 'usage.json').read_text())
 
     def test_missing_sandbox_stops_before_any_native_request(self):
         run = self.root / 'no-sandbox'

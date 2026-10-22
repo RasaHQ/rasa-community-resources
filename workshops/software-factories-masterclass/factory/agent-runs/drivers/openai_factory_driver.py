@@ -8,6 +8,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path, PurePosixPath
 import stat
 import sys
@@ -236,7 +237,7 @@ def native_builder(client, *, task, workspace, event, model, invoke=None, tool_f
         event(stage='builder', status='RUNNING', action='session_started', max_calls=30,
               deadline_seconds=120, timeout_seconds=20, provider_session_cap=False,
               local_estimate_limit_cents=spend_limit_cents, estimated_cents_per_call=estimated_cents_per_call)
-        result = invoke(client, agent={'model': model, 'tools': tools,
+        result = invoke(client, agent={'model': model, 'service_tier': 'default', 'tools': tools,
                         'instructions': 'Read AGENTS.md and the visible task. Change only allowed paths. '
                         'Use only these file tools. No shell, network or protected suite is available. '
                         'The existing independent factory will verify the result; do not claim ACCEPT.'},
@@ -279,6 +280,50 @@ def validate_scratch(workspace, task, task_filename=None):
             raise ValueError('scratch_size_limit')
     if json.loads((root / 'tasks' / (task_filename or task_name + '.json')).read_text()) != visible:
         raise ValueError('visible_task_must_match')
+
+
+def coded_provider_detail(error):
+    parts = []
+    status = getattr(error, 'status_code', None)
+    if type(status) is int and 100 <= status <= 599:
+        parts.append('http_' + str(status))
+    for name in ('code', 'param', 'type'):
+        value = getattr(error, name, None)
+        if isinstance(value, str) and re.fullmatch(r'[A-Za-z0-9_.\[\]-]{1,64}', value):
+            parts.append(name + '=' + value)
+    return redact(' '.join(parts)) or None
+
+
+def record_usage(client, turn, directory, *, mode):
+    """One own-session metadata read; persist numeric usage, never session or text."""
+    receipt = {'status': 'NOT_RECORDED', 'actual_billed_cost_cents': None}
+    if mode == 'SCRIPTED':
+        receipt.update(status='SCRIPTED_NO_PROVIDER', provider_calls=0)
+    else:
+        session_id = getattr(turn, 'session_id', None)
+        sessions = getattr(getattr(getattr(client, 'beta', None), 'agents', None), 'sessions', None)
+        retrieve = getattr(sessions, 'retrieve', None)
+        if isinstance(session_id, str) and session_id and callable(retrieve):
+            try:
+                session = retrieve(session_id, timeout=20)
+                usage = getattr(session, 'usage', None)
+                def count(value):
+                    return value if type(value) is int and 0 <= value <= 10 ** 12 else None
+                numbers = {name: count(getattr(usage, name, None))
+                           for name in ('input_tokens', 'output_tokens', 'total_tokens')}
+                numbers['cached_input_tokens'] = count(getattr(getattr(usage, 'input_tokens_details', None), 'cached_tokens', None))
+                numbers['reasoning_output_tokens'] = count(getattr(getattr(usage, 'output_tokens_details', None), 'reasoning_tokens', None))
+                receipt.update(numbers)
+                receipt['status'] = ('RECORDED_BEST_EFFORT' if all(numbers[key] is not None for key in
+                                     ('input_tokens', 'output_tokens', 'total_tokens')) else 'USAGE_NOT_AVAILABLE')
+                tier = getattr(getattr(session, 'agent', None), 'service_tier', None)
+                receipt['service_tier'] = tier if tier in ('auto', 'default', 'flex', 'priority', 'fast', 'ultrafast') else None
+                receipt['provider_reported_consumed_cents'] = count(getattr(getattr(session, 'spend_control', None), 'consumed', None))
+            except Exception as error:
+                receipt.update(status='USAGE_READ_FAILED', provider_detail=coded_provider_detail(error))
+    receipt['note'] = 'API usage is best effort. Recorded consumption is not a final invoice; billed cost is not observed here.'
+    (Path(directory) / 'usage.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    return receipt
 
 
 def execute(task_path, workspace, run_directory, *, client, model, invoke=None, tool_factory=None,
@@ -329,9 +374,13 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
         native_status = native_status if native_status in ('completed', 'failed', 'cancelled', 'incomplete') else 'not_recorded'
         native_error = getattr(turn, 'error_code', None)
         native_error = native_error if isinstance(native_error, str) and native_error.replace('_', '').isalnum() and len(native_error) < 100 else None
-        (directory / 'native.json').write_text(json.dumps({'status': native_status, 'error_code': native_error,
+        detail = getattr(turn, 'provider_detail', None)
+        if not isinstance(detail, str) or not re.fullmatch(r'(?:http_[1-5][0-9]{2}|(?:code|param|type)=[A-Za-z0-9_.\[\]-]{1,64})(?: (?:code|param|type)=[A-Za-z0-9_.\[\]-]{1,64})*', detail):
+            detail = None
+        (directory / 'native.json').write_text(redact(json.dumps({'status': native_status, 'error_code': native_error, 'provider_detail': detail,
             'ok': bool(turn.ok), 'tools_called': [name for name in getattr(turn, 'tools_called', ())
-               if name in ('list_files', 'read_file', 'write_file')]}))
+               if name in ('list_files', 'read_file', 'write_file')]})))
+        record_usage(client, turn, directory, mode=mode)
         if native_status != 'completed':
             event(stage='builder', status='FAIL', action='session_not_completed')
             save('BUILDER_INCOMPLETE')

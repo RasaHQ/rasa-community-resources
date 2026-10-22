@@ -111,3 +111,17 @@ reasons as separate offline teaching attempts, without claiming model results.
 The A6 verifier requires macOS sandbox-exec. The profile declares this
 requirement; missing support returns exit2 before any model request or test,
 without judging the attempt.
+
+The native request explicitly selects Standard processing (`service_tier=default`)
+so its stated price assumptions are reproducible. After Core returns and file
+tools close, the driver makes at most one read of its own session metadata,
+with a 20-second timeout. `usage.json` keeps only numeric token counts, a known
+service tier and any best-effort consumed-cents value. It stores no session ID,
+provider text or headers. SCRIPTED runs make no metadata request.
+
+Usage is best effort and may be absent or change. `actual_billed_cost_cents`
+remains unrecorded: API consumption and a rate-based calculation are not a final
+invoice. Reconcile the account usage separately. A refused metadata read keeps
+only its HTTP status and bounded code/parameter/type; it does not trigger a
+retry or change the protected decision. Core's bounded provider detail is also
+retained for failed native sessions, without the raw exception message.
