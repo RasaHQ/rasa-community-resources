@@ -129,9 +129,20 @@ two-shell instructions are not this class launcher's setup path.
 Teaching code uses the repository [license](../../LICENSE). Rasa Pro has its own
 terms; any licence requirement is an explicit prerequisite, not a skipped check.
 
-For the operator's Mac mini tailnet view, use
-`./demo run --host 100.123.206.49` and open
-`http://mac-mini.tail29b7b0.ts.net:8942/` from that tailnet. Both services bind
-only that assigned address; default launch stays on 127.0.0.1. The display is
-shared with tailnet viewers, not private per browser. MCP still needs the
-runtime transport token. No public interface or wildcard host is accepted.
+For a temporary tailnet viewer, set `BRIEFING_VIEWER_HOST` in the terminal to
+this host's assigned address inside 100.64.0.0/10. Optionally set
+`BRIEFING_VIEWER_NAME` to its `*.ts.net` name, then use `./demo run` (or pass
+`--host` with that address). Open `http://YOUR_VIEWER_NAME:8942/` from the
+allowed device. Without these options, launch stays on 127.0.0.1. Neither
+service binds to a wildcard or public address. MCP still requires its runtime
+authentication token.
+
+**Tailnet access:** Inspector on port 5005 has no authentication of its own.
+Any tailnet device that can reach it can drive the agent using the running
+facilitator's model key and licence. Before enabling this viewer, restrict the
+Tailscale ACL to the operator's device, or obtain the operator's explicit
+acceptance of this temporary exposure. Then record that condition in the
+terminal with `BRIEFING_VIEWER_ACCESS=operator-device-acl` or
+`BRIEFING_VIEWER_ACCESS=operator-accepted`. This declaration does not configure
+an ACL; the launcher refuses a tailnet start without it. The card display is shared with those
+viewers, not private per browser. No keys belong in a URL or repository file.

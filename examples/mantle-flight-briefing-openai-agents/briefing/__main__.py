@@ -21,8 +21,10 @@ def main():
                        help='SCRIPTED tool control with real keyless public source references')
     modes.add_argument('--live-model', action='store_true',
                         help='Real managed model with constructed REPLAY source fixtures')
-    parser.add_argument('--host', default='127.0.0.1', choices=('127.0.0.1', '100.123.206.49'))
+    parser.add_argument('--host', default=os.environ.get('BRIEFING_VIEWER_HOST', '127.0.0.1'))
     args = parser.parse_args()
+    from demo_host import require_viewer_access
+    require_viewer_access(args.host)
     if args.live_model and any(os.environ.get(name, '').strip()
                                for name in ('OPENAI_BASE_URL', 'ANTHROPIC_BASE_URL')):
         raise SystemExit('Refused: custom provider base URL environment is SET; this kit supports provider defaults only.')

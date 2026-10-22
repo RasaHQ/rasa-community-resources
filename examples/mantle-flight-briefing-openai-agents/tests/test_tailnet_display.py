@@ -6,15 +6,18 @@ from unittest.mock import patch
 import httpx
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from briefing.board_display import BoardDisplay
-from demo_host import validate_host
+from demo_host import validate_host, require_viewer_access
 import demo_launcher as demo
 
 
 class TailnetDisplay(unittest.IsolatedAsyncioTestCase):
     async def test_explicit_bind_renders_matching_iframe_and_csp(self):
         for host, peer, browser in [('127.0.0.1', '127.0.0.1', '127.0.0.1'),
-                ('100.123.206.49', '100.64.0.2', 'mac-mini.tail29b7b0.ts.net')]:
+                ('100.64.0.10', '100.64.0.2', 'demo.example.ts.net')]:
             app = BoardDisplay(None, render_current=lambda: '<p>Validated cards</p>', host=host)
+            name_patch = patch.dict('os.environ', {'BRIEFING_VIEWER_NAME': 'demo.example.ts.net'})
+            name_patch.start()
+            self.addCleanup(name_patch.stop)
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app, client=(peer, 1234)),
                                          base_url='http://' + browser + ':8942') as client:
                 response = await client.get('/')
@@ -26,7 +29,7 @@ class TailnetDisplay(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual((await client.get('/', headers={'Origin': 'http://evil.invalid'})).status_code, 403)
 
     async def test_tailnet_never_accepts_public_peer_or_loopback_remote_peer(self):
-        for host, peer in [('100.123.206.49', '203.0.113.2'), ('127.0.0.1', '100.64.0.2')]:
+        for host, peer in [('100.64.0.10', '203.0.113.2'), ('127.0.0.1', '100.64.0.2')]:
             app = BoardDisplay(None, render_current=lambda: '', host=host)
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app, client=(peer, 1234)),
                                          base_url='http://' + host + ':8942') as client:
@@ -34,10 +37,20 @@ class TailnetDisplay(unittest.IsolatedAsyncioTestCase):
 
     def test_launcher_keeps_default_and_accepts_only_assigned_tailnet(self):
         for argv, host in [(['run'], '127.0.0.1'),
-                           (['run', '--host', '100.123.206.49'], '100.123.206.49')]:
+                           (['run', '--host', '100.64.0.10'], '100.64.0.10')]:
             with patch.object(demo, 'run_demo') as run:
                 self.assertEqual(demo.main(argv), 0)
                 run.assert_called_once_with(scripted=False, host=host)
         for host in ['0.0.0.0', '203.0.113.2', 'evil.invalid']:
             with self.assertRaises(ValueError):
                 validate_host(host)
+
+
+    def test_tailnet_requires_recorded_operator_access_condition(self):
+        with patch.dict('os.environ', {}, clear=True):
+            require_viewer_access('127.0.0.1')
+            with self.assertRaises(ValueError):
+                require_viewer_access('100.64.0.10')
+        for condition in ('operator-device-acl', 'operator-accepted'):
+            with patch.dict('os.environ', {'BRIEFING_VIEWER_ACCESS': condition}):
+                require_viewer_access('100.64.0.10')

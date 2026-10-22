@@ -22,7 +22,7 @@ import tomllib
 from urllib.parse import urlsplit
 from urllib.request import ProxyHandler, build_opener
 from voice_config import VOICE_OFF_TEXT
-from demo_host import validate_host
+from demo_host import validate_host, require_viewer_access
 
 ROOT = Path(__file__).resolve().parent
 PROJECT = ROOT / 'project'
@@ -222,7 +222,10 @@ def start_inspector(children, env, mode):
 
 
 def run_demo(scripted=False, host="127.0.0.1"):
-    validate_host(host)
+    try:
+        require_viewer_access(host)
+    except ValueError:
+        raise DemoError('Tailnet Inspector has no authentication; confirm the operator-device ACL or explicit operator acceptance in BRIEFING_VIEWER_ACCESS before launch.') from None
     if os.name != 'posix':
         raise DemoError('Use macOS, Linux or WSL for this process-group launcher.')
     if not all(python_at(d).is_file() for d in (PROJECT, WORKER)):
@@ -393,7 +396,7 @@ def install_voice_channels(voice):
 
 class SafeRunParser(argparse.ArgumentParser):
     def error(self, message):
-        raise DemoError('Use ./demo run [--scripted] [--host 100.123.206.49].')
+        raise DemoError('Use ./demo run [--scripted] [--host TAILNET_ADDRESS].')
 
 
 def install_mcp_host(host):
@@ -439,7 +442,7 @@ def main(argv=None):
             setup()
         elif argv and argv[0] == 'run':
             parser = SafeRunParser(add_help=False)
-            parser.add_argument('--host', default='127.0.0.1', choices=('127.0.0.1', '100.123.206.49'))
+            parser.add_argument('--host', default=os.environ.get('BRIEFING_VIEWER_HOST', '127.0.0.1'))
             parser.add_argument('--scripted', action='store_true')
             args = parser.parse_args(argv[1:])
             run_demo(scripted=args.scripted, host=args.host)
