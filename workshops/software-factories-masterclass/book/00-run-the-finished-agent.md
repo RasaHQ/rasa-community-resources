@@ -1,8 +1,8 @@
 # Chapter 0: Run the agent you will learn to build
 
-Your flight lands at 5 pm and your meeting is at 6 pm, across town. In about 25 minutes, plus the install, you'll run an agent that answers that from four sources at once, then change how it answers without touching its code.
+Your flight lands at 5 pm and your meeting is at 6 pm, across town. In about 20 minutes, after a first install, you'll run an agent that answers that from four sources at once, then change how it answers without touching its code.
 
-Time: about 25 minutes after the install. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), Git, Make, a browser and your free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the sign-up form alone isn't a license. The install needs the internet. After that the exercise runs offline, because the cards are a recording from 22 October 2026.
+Time: about 5 minutes for the first install, then about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), Git, Make, a browser and your free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the sign-up form alone isn't a license. The install needs the internet. After that the exercise runs offline, because the cards are a recording from 22 October 2026.
 
 You're done when `python3 check_demo.py --recorded --transfer-minutes 30` prints `ch00 OK`. If you get stuck, the working code is in `book/ready/ch00`.
 
@@ -126,9 +126,9 @@ Live positions, forecasts, computed estimates and daily rates carry different la
 - **License missing or refused:** use the issued license, not the sign-up confirmation. Do not share its value in a support report.
 - **The check still says NOT DONE:** read the four cards. Each must say REPLAY, and the timeline must show your requested 30 or 120 minutes. Make the request in the conversation.
 - **A port is occupied:** stop your own earlier run with `make stop`. The launcher doesn't stop anyone else's.
-- **Unsafe or tracked `.env`:** keep only the four template names, one assignment each, in a regular ignored file. `chmod 600 .env` repairs permissions. Never force tracked credentials past the check.
+- **`.env` refused:** move the file aside, run `make env` to create a fresh one, put each key on its own line, and run `chmod 600 .env`. Never commit it.
 - **A live source is unavailable:** return to the recorded exercise rather than calling an unavailable card complete.
-- **You need help:** share the fixed error sentence, Python version and command. Never share `.env`, headers or private briefing identifiers.
+- **You need help:** share the error sentence, your Python version and the command you ran. Never share your `.env` or your keys.
 
 ## Good to know
 
