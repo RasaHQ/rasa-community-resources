@@ -239,5 +239,31 @@ class MantleVoiceConfig(unittest.TestCase):
         self.assertIn('enabled', voice['inspector'])
 
 
+class InspectorVoiceSeam(unittest.TestCase):
+    def test_real_channel_resolver_sees_patch_even_when_imported_first(self):
+        from rasa.core.config.channel_loading import resolve_channels_config
+        from rasa.mantle.config import channels
+        voice = {'inspector': {'enabled': True,
+            'asr': {'name': 'deepgram', 'language_map': {'en': {'model': 'flux-general-en'}}},
+            'tts': {'name': 'deepgram', 'language_map': {'en': {'model': 'aura-2-andromeda-en'}}}}}
+        with tempfile.TemporaryDirectory(dir=ROOT / '.demo-cache') as directory:
+            root = Path(directory)
+            (root / 'integrations.yml').write_text('channels:\n  rest: {}\n')
+            skill = root / 'skills' / 'briefing'
+            skill.mkdir(parents=True)
+            (skill / 'skill.md').write_text('# Briefing\n')
+            with patch.object(channels, 'load_integration_channels', channels.load_integration_channels):
+                demo.install_voice_channels(voice)
+                config = resolve_channels_config(project_root=root)
+            inspector = config.channels['inspector']
+            self.assertEqual(inspector['asr']['name'], 'deepgram')
+            self.assertEqual(inspector['asr']['language_map']['en']['model'], 'flux-general-en')
+            self.assertEqual(inspector['tts']['name'], 'deepgram')
+            self.assertEqual(inspector['tts']['language_map']['en']['model'], 'aura-2-andromeda-en')
+            self.assertNotIn('enabled', inspector)
+            self.assertIn('rest', config.channels)
+            self.assertEqual(config.config_file_path, root / 'integrations.yml')
+
+
 if __name__ == '__main__':
     unittest.main()

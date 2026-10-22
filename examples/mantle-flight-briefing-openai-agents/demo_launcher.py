@@ -372,6 +372,16 @@ def merge_voice_channels(values, voice):
     return result
 
 
+def install_voice_channels(voice):
+    """Patch the common Mantle channel loader in this Inspector child only."""
+    if voice:
+        from rasa.mantle.config import channels
+        original = channels.load_integration_channels
+        def runtime_channels(project_root=None):
+            return merge_voice_channels(original(project_root), voice)
+        channels.load_integration_channels = runtime_channels
+
+
 def inspector(mode):
     # Import the normal entrypoint before touching the pinned factory seam.
     sys.path[:0] = [str(ROOT), str(PROJECT)]
@@ -386,12 +396,7 @@ def inspector(mode):
         voice = {}
     else:
         voice = voice_channels(os.environ)
-    if voice:
-        from rasa.mantle.config import channels
-        original = channels.load_integration_channels
-        def runtime_channels(project_root=None):
-            return merge_voice_channels(original(project_root), voice)
-        channels.load_integration_channels = runtime_channels
+    install_voice_channels(voice)
     if mode == 'scripted':
         from rasa.mantle.llm.client import LLMClient
         LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())
