@@ -50,7 +50,7 @@ cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
    grep -n 'label = ' project/lib/card_text.py
    ```
 
-   You see one line that chooses REPLAY, COMPUTED or PROVIDER DATA. The label depends on where the data came from, never on how the agent describes it.
+   You see one line that chooses REPLAY, COMPUTED or the provider label, which the card shows as PROVIDER DATA. The label depends on where the data came from, never on how the agent describes it.
 
 4. Find the freshness lines:
 
