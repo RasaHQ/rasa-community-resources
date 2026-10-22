@@ -1,6 +1,6 @@
 # Your group builds and checks a travel assistant
 
-New to agents? Read the [beginner introduction](BEGINNER-PRIMER.md) first (15–20 minutes). It explains Mantle, tools, Deepgram, the Agents API and the factory using the travel question.
+New to agents? Read the [beginner introduction](BEGINNER-PRIMER.md) first (15 to 20 minutes). It explains Mantle, tools, Deepgram, the Agents API and the factory using the travel question.
 
 
 You have 110 minutes of lab time, with a 15-minute break to meet another group. Work at your own pace. Your most useful result is a small change that you can explain, reject when wrong, and trace to the version you ran.
@@ -22,7 +22,7 @@ Choose your route:
 
 | Route | You need | You will run |
 |---|---|---|
-| A: travel scaffold and coding factory | A Mac for code gates; Python 3.12, uv, Git, Make; issued free Rasa Developer Edition license; provider keys only for optional live runs | Travel assistant, Agents API builder, rejection and local integration |
+| A: travel scaffold and coding factory | A Mac for code gates; Python 3.12, uv, Git, Make; issued free Rasa Developer Edition license; an OpenAI API key (Rasa Mantle has no model of its own: in live mode it asks a language model, OpenAI by default, to understand what you type and to choose a tool; the scripted mode runs without a key, because teaching code chooses the tools); other provider keys only for optional live runs | Travel assistant, Agents API builder, rejection and local integration |
 | B: data-only factory | Any machine with Python 3.12 only (3.13 and 3.14 stop with NOT_READY); commands below use a POSIX shell, and Windows is untested | Acceptance, rejection, retry limits and duplicate suppression, with scripted proposals |
 
 If setup is still blocking you after ten minutes, use B and pair with an A group for the typed travel demonstration. A file-presence check is not evidence that an agent works.

@@ -41,7 +41,7 @@ coverage and the current finder-release integration checkpoint.
 Use only your own example-root ignored `.env` or process environment. Never put
 credentials in chat, URLs, MCP arguments, committed files or logs. Setup and
 offline tests do not require `.env`. The launcher handles runtime dotenv loading;
-model selection stays in `integrations.yml`, with environment references.
+model selection is in `agent.yml` under `orchestrator.model_group`, and model definitions remain in `integrations.yml`, with environment references.
 
 The class uses capability possession: `briefing` returns a private identifier
 needed by get/revise, and discovery returns one for numbered selection. Sharing

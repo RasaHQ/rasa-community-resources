@@ -8,7 +8,7 @@ Today: build, reject and accept a change. Next: build it by voice.
 
 Your flight lands at 5 pm. Your meeting across town starts at 6 pm. Will you make it? To find out, you would open a flight tracker, a weather site, a map and a currency converter, and still have to work out the answer yourself.
 
-An AI agent can help answer that question in one place. In this workshop you run such an agent: it shows four cards, for the flight, the weather at landing, your arrival timeline and the exchange rate. The timeline uses your transfer allowance; it is an estimate, not a live route prediction.
+An AI agent can help answer that question in one place. In this workshop you run such an agent: it shows four cards, for the flight, the weather at landing, your arrival timeline and the exchange rate. The timeline uses your transfer allowance. It is an estimate, not a live route prediction.
 
 Then comes the harder question. Coding agents can change software for you, but they also tell you a change works when it doesn't. Nobody has time to read every line they write. So how do you let an agent change your agent safely?
 
@@ -31,7 +31,8 @@ You need:
 - A laptop. Chapters 3 to 7 need a Mac for the protective code checks. No Mac? Pair with someone who has one, or follow **Track B** in the participant guide: Python 3.12 only; 3.13 and 3.14 stop with NOT_READY. Windows is untested.
 - Python 3.12, [uv](https://docs.astral.sh/uv/), Git and Make.
 - A free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Request it first: the form's confirmation page is not the key, and the key reaches you after you submit.
-- An OpenAI key is **not** needed for the default exercises. Chapter 5 has an optional paid live builder using the Agents API and `gpt-6-astra`.
+- An OpenAI API key for live mode. Rasa Mantle has no model of its own: in live mode it asks a language model, OpenAI by default, to understand what you type and to choose a tool. Chapter 0 starts in scripted mode, where teaching code chooses the tools, so leave the key empty there.
+- Chapter 5 has an optional paid live builder using the Agents API and `gpt-6-astra`.
 
 Get your own copy. On GitHub, click **Fork** on [RasaHQ/rasa-community-resources](https://github.com/RasaHQ/rasa-community-resources), then clone your fork:
 
@@ -74,15 +75,16 @@ In Track A checkpoint 3, the supplied task has `"limit": 2`. Its first build can
 
 ## What this workshop does not show yet
 
+- With a model choosing the tools, the travel agent was slow to answer in our rehearsal on 22 October. The scripted mode is the reliable path today.
 - Tool selection is **scripted** in the exercises so results are repeatable. Source data may be fetched, recorded or unavailable; read the card's label.
 - **Voice:** on 22 October a recorded-audio test failed on the second turn. Type your requests. Microphone use is untested.
 - The travel agent and coding builder run separately. Asking the travel agent to change its own code is not a completed capability.
 - The full journey, where you **ask by voice** for a new agent and the factory builds and releases it, is the next step. [BUILD-CONTRACT.md](BUILD-CONTRACT.md) describes what it needs.
 
-Chapter 0 runs on **Rasa Pro 3.21.0**. The standalone example in `examples/` stays on **3.21.0.dev5**. This candidate preserves those tested baseline pins.
+Chapter 0 runs on **Rasa Pro 3.21.0**. The standalone example in `examples/` stays on **3.21.0.dev5**.
 
 ## For facilitators
 
-Use the [run sheet](RUN-SHEET.md), [presenter notes](slides/PRESENTER-NOTES.md), [slides](slides/index.html) and [PDF](slides/masterclass-slides.pdf). The [technical audit](TECHNICAL-AUDIT.md) distinguishes tests run here from earlier course-team evidence. [Learning checkpoints](LEARNING-CHECKPOINTS.md) provide explanation prompts; [acceptance handoff](ACCEPTANCE-HANDOFF.md) records the exact baseline and proposed changes.
+Use the [run sheet](RUN-SHEET.md), [presenter notes](slides/PRESENTER-NOTES.md), [slides](slides/index.html) and [PDF](slides/masterclass-slides.pdf). The [technical audit](TECHNICAL-AUDIT.md) distinguishes tests run here from earlier course-team evidence. [Learning checkpoints](LEARNING-CHECKPOINTS.md) provide explanation prompts.
 
 Other folders (`openai-mcp/`, `brief-me-before-i-fly/`, `archive/`) are earlier material and are not required. The standalone travel agent has its own [self-paced guide](../../examples/mantle-flight-briefing-openai-agents/SELF-PACED-GUIDE.md).
