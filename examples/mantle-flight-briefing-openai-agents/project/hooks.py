@@ -40,7 +40,10 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
         return result
     if not result.is_error and isinstance(value, dict) and value.get("status") == "needs_input":
         missing = value.get("needs_input") or {}
-        if isinstance(missing, dict) and missing.get("field") in ("meeting_time", "transfer_minutes", "destination", "flight") and isinstance(missing.get("question"), str):
+        if isinstance(missing, dict) and missing.get("field") in ("meeting_time", "transfer_minutes", "destination", "flight") and isinstance(missing.get("question"), str) and (
+                0 < len(missing["question"]) <= 200
+                and missing["question"].isprintable()
+                and not any(marker in missing["question"] for marker in ("<", ">", "://"))):
             _pending_cards[result.sender_id] = missing["question"]
         else:
             _pending_cards[result.sender_id] = "The briefing needs input, but its question could not be validated."

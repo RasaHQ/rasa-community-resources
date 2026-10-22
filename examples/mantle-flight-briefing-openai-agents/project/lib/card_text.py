@@ -37,8 +37,14 @@ def render_cards(snapshot: dict) -> str:
                 lines.append("Freshness: daily reference rate, not a live quote; publication day " + ref.payload["quote_date"])
             elif ref.delayed:
                 lines.append("Freshness: delayed")
+            elif event.component == "weather_hourly":
+                lines.append("Freshness: forecast; see provider update and forecast hour, not a live observation")
+            elif event.component == "arrival_timeline":
+                lines.append("Freshness: computed from the referenced arrival, meeting time and travel assumption; not a live observation")
+            elif event.component == "flight_status":
+                lines.append("Freshness: live position; see observation age and provider update")
             else:
-                lines.append("Freshness: live, observed at or near retrieval")
+                lines.append("Freshness: see provider timestamp; update cadence not established")
         if ref.error is not None:
             lines.append(f"Unavailable: {ref.error.reason}")
         else:

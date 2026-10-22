@@ -235,6 +235,33 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('test-only-capability', reply.response_text())
 
 
+    async def test_scripted_unknown_flight_uses_actual_finder_tool(self):
+        text = "I am heading to New York. Which flights are already in the air?"
+        response = await self.call([{'role': 'user', 'content': text}], ['briefing', 'find_flights'])
+        self.assertEqual(response.tool_calls[0].tool_name, 'find_flights')
+        self.assertEqual(response.tool_calls[0].tool_args, {'destination': text})
+
+    async def test_scripted_choice_uses_only_returned_discovery_and_valid_index(self):
+        previous = {'status': 'found', 'discovery_id': 'brf_synthetic_discovery', 'candidates': [{}, {}]}
+        for choice, expected in [('the second one', 2), ('1', 1)]:
+            response = await self.call([{'role': 'tool', 'content': json.dumps(previous)},
+                {'role': 'user', 'content': choice}], ['briefing', 'find_flights'])
+            self.assertEqual(response.tool_calls[0].tool_args, {'action': 'start', 'request': choice,
+                'discovery_id': previous['discovery_id'], 'choice': expected})
+        for answer in ['the fifth one', 'yes', 'invented flight']:
+            response = await self.call([{'role': 'tool', 'content': json.dumps(previous)},
+                {'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
+            self.assertFalse(response.tool_calls)
+            self.assertIn('Which flight', response.response_text())
+
+    async def test_scripted_new_turns_do_not_exhaust_a_lifetime_call_counter(self):
+        client = demo.ScriptedClient()
+        for _ in range(15):
+            result = await client.acompletion([{'role': 'user', 'content': 'Lufthansa 400 to JFK'}],
+                tools=[{'function': {'name': 'briefing'}}])
+            self.assertEqual(result.tool_calls[0].tool_args['action'], 'start')
+
+
 class ActualMCPResponseShapes(unittest.IsolatedAsyncioTestCase):
     async def test_terminal_get_without_repeated_capability_stops_the_loop(self):
         client = demo.ScriptedClient()

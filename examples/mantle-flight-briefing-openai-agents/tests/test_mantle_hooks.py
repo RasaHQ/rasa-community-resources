@@ -125,6 +125,16 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('Briefing needs input', answer.payload.text)
         self.assertNotIn('90', answer.payload.text)
 
+    async def test_unbounded_or_markup_missing_question_never_reaches_speech(self):
+        for question in ('A' * 201, '<script>injected</script>', 'Go to https://evil.invalid', 'two\nlines', ''):
+            with self.subTest(question=question[:20]):
+                text = await self.present({'status': 'needs_input', 'needs_input': {
+                    'field': 'meeting_time', 'question': question}})
+                self.assertIn('could not be validated', text)
+                self.assertNotIn('evil.invalid', text)
+                self.assertNotIn('<script>', text)
+                self.assertLess(len(text), 200)
+
     async def test_running_source_job_gives_a_status_next_step_without_model_values(self):
         text = await self.present({'status': 'running', 'progress': ['Checking sources']})
         self.assertIn('still checking sources', text)

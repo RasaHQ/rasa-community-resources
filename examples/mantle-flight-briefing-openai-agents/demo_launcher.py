@@ -402,8 +402,8 @@ def run_demo(scripted=False, host="127.0.0.1"):
         print('Open the demo: http://' + host + ':8942/', flush=True)
         print('Cards diagnostic: http://' + host + ':8942/cards', flush=True)
         print('Mantle Inspector diagnostic: http://' + host + ':5005/webhooks/inspector/inspect.html', flush=True)
-        print('Enter your journey: callsign=TEST123 meeting=2026-10-22T21:00:00Z transfer=45', flush=True)
-        print('TEST123 is syntax, not a promised airborne flight. Use an actual callsign for available flight data.', flush=True)
+        print('Start with: I am heading to New York. Which flights are already in the air?', flush=True)
+        print('Choose a flight, then say when your meeting is, for example tomorrow at 6 pm.', flush=True)
         print('Press Ctrl-C here to stop both services and their children.', flush=True)
         while True:
             if service.poll() is not None:
@@ -441,7 +441,7 @@ def tool_record(value):
         except ValueError:
             return None
     if isinstance(value, dict):
-        if value.get('status') in ('started', 'running', 'queued', 'complete', 'incomplete', 'needs_input', 'failed'):
+        if value.get('status') in ('started', 'running', 'queued', 'complete', 'incomplete', 'needs_input', 'failed', 'found', 'no_results', 'unavailable'):
             return value
         for key in ('structuredContent', 'content', 'text', 'value'):
             found = tool_record(value.get(key))
@@ -472,10 +472,11 @@ class ScriptedClient:
         previous = [v for v in previous if v]
         offered = {t.get('function', {}).get('name') for t in kwargs.get('tools') or []}
         briefing = next((n for n in offered if n in ('briefing', 'mcp/briefing:briefing')), None)
+        finder = next((n for n in offered if n in ('find_flights', 'mcp/briefing:find_flights')), None)
         def reply(name, args):
             return LLMResponse(id='scripted', choices=[], created=0,
                 tool_calls=[LLMToolCall(id='script-' + str(self.count), tool_name=name, tool_args=args)])
-        if self.count > 12:
+        if len(current) > 12:
             return LLMResponse(id='scripted', choices=['SCRIPTED: the source check has not completed. Please retry explicitly.'], created=0)
         if not briefing:
             if 'activate' in offered:
@@ -492,6 +493,23 @@ class ScriptedClient:
             return LLMResponse(id='scripted', choices=['SCRIPTED: read the validated source cards and any missing-input question.'], created=0)
         text = str(messages[latest].get('content', '')) if users else ''
         capability = next((v['briefing_id'] for v in reversed(previous) if isinstance(v.get('briefing_id'), str)), None)
+        from briefing.traveller import destination_hint, flight_number
+        destination = destination_hint(text)
+        wants_search = any(phrase in text.lower() for phrase in ('which flights', 'find flights', 'look for flights', 'don’t know', "don't know"))
+        if finder and destination and flight_number(text) is None and (not capability or wants_search):
+            return reply(finder, {'destination': text})
+        discovery = next((v for v in reversed(previous) if isinstance(v.get('discovery_id'), str)
+                          and v.get('status') == 'found'), None)
+        if discovery and not capability:
+            import re
+            words = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5}
+            match = re.fullmatch(r'(?:the )?(first|second|third|fourth|fifth|[1-5])(?: one| flight)?[.!]?', text.strip().lower())
+            choice = (words.get(match[1]) or int(match[1])) if match else None
+            if choice is not None and choice <= len(discovery.get('candidates', [])):
+                return reply(briefing, {'action': 'start', 'request': text,
+                    'discovery_id': discovery['discovery_id'], 'choice': choice})
+            if flight_number(text) is None:
+                return LLMResponse(id='scripted', choices=['SCRIPTED: Which flight would you like? Say the first, second, third, fourth or fifth one from the choices.'], created=0)
         if capability:
             if text.strip().lower() in ('status', 'get', 'show cards', 'check'):
                 return reply(briefing, {'action': 'get', 'briefing_id': capability})
