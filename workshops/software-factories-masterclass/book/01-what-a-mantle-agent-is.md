@@ -22,11 +22,11 @@ A **tool** is a function the agent can ask to run. The agent does not read fligh
 
 ## Get to the folder
 
-Set `PACK` as in Chapter 0 (use one of the two lines), then go to the ready folder from Chapter 0:
+Set `PACK` as in Chapter 0 (the clone line, or the commented ZIP line), then go to the ready folder from Chapter 0:
 
 ```bash
 export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
-export PACK=/absolute/path/to/software-factories-masterclass   # after unzipping
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
 cd "$PACK/book/ready/ch00/demo"
 ```
 

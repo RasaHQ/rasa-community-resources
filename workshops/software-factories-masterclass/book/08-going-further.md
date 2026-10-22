@@ -29,10 +29,11 @@ You will change a JSON setting that controls how many attempts the factory allow
 
 ## Get the ready folder
 
-Set `PACK` to your clone. Run the whole block from a terminal:
+Set `PACK` as in Chapter 0. Run the whole block from a terminal:
 
 ```bash
-export PACK=/absolute/path/to/software-factories-masterclass
+export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
 export WORK=~/factory-work/my-factory-ch08
 if [ -e "$WORK" ]; then
   printf '%s\n' 'Refused: that folder already exists. Choose a fresh WORK name.'

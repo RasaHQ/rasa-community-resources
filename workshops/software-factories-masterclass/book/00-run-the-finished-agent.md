@@ -41,11 +41,11 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 
    `PACK` is the `software-factories-masterclass` folder. After a clone it is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping it is the unzipped folder.
 
-2. Set `PACK` and install the supplied code. Use one of the two export lines:
+2. Set `PACK` and install the supplied code. The first export line is for a clone. If you unzipped, use the commented line instead:
 
    ```bash
    export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
-   export PACK=/absolute/path/to/software-factories-masterclass   # after unzipping
+   # after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
    cd "$PACK/book/ready/ch00/demo"
    make help
    make setup
@@ -90,7 +90,7 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 
    ```bash
    export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
-   export PACK=/absolute/path/to/software-factories-masterclass   # after unzipping
+   # after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
    cd "$PACK/book/ready/ch00"
    python3 check_demo.py --recorded --transfer-minutes 30
    ```

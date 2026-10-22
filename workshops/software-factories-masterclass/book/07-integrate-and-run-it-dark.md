@@ -22,7 +22,8 @@ If you get stuck, use [the ready folder](ready/ch07) and follow **Get the ready 
 Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into `~/factory-work` (it creates a new folder there, `my-factory-ch07`, and refuses to overwrite an existing one), then set up Python once:
 
 ```bash
-export PACK=/absolute/path/to/software-factories-masterclass   # the unzipped workshop root
+export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
 mkdir -p ~/factory-work && cd ~/factory-work
 [ -e my-factory-ch07 ] && echo "my-factory-ch07 already exists: use it, or move it away first" || cp -R "$PACK"/book/ready/ch07 my-factory-ch07
 ```
@@ -59,7 +60,7 @@ uv pip install zeocore==0.35.6 httpx==0.28.1
 
 ## Now change it
 
-Repeat the integration for your chosen currency limit, starting from a clean product. Use the same terminal as before, so that `PACK` is still set (if it isn't, run `export PACK=/absolute/path/to/software-factories-masterclass` again).
+Repeat the integration for your chosen currency limit, starting from a clean product. Use the same terminal as before, so that `PACK` is still set (if it isn't, run `export PACK=/path/to/the/unzipped/software-factories-masterclass` again).
 
 The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first by replacing the 2 below with your number. This also makes the builder's attempt again for the new number:
    ```bash
