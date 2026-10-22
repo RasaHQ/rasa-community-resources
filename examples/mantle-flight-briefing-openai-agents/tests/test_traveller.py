@@ -79,6 +79,21 @@ class TravellerControls(unittest.TestCase):
         self.assertNotIn('destination', caught.exception.inputs)
         self.assertEqual(caught.exception.inputs['callsign'], 'DLH400')
 
+    def test_travel_allowance_never_reads_half_or_decimal_as_a_larger_integer(self):
+        original = journey('Lufthansa 400 to JFK, meeting tomorrow at 6 pm', now=NOW)
+        for words, minutes in [('half an hour', 30), ('an hour', 60),
+                               ('1 hour and 30 minutes', 90), ('an hour and a half', 90),
+                               ('45 minutes', 45)]:
+            changed = journey('allow ' + words + ' to get into town', original, now=NOW)
+            self.assertEqual(changed['transfer_minutes'], minutes)
+            self.assertEqual(changed['callsign'], original['callsign'])
+            self.assertEqual(changed['meeting_time'], original['meeting_time'])
+        for words in ['1.5 hours', '1,5 hours', '-30 minutes', '25 hours']:
+            with self.subTest(words=words), self.assertRaises(TravellerQuestion) as caught:
+                journey('allow ' + words + ' to get into town', original, now=NOW)
+            self.assertEqual(caught.exception.field, 'transfer_minutes')
+            self.assertNotIn('transfer_minutes', caught.exception.inputs)
+
     def test_ambiguous_meeting_revision_clears_old_time_and_resumes_same_flight(self):
         original = journey('Lufthansa 400 to JFK, meeting tomorrow at 6 pm', now=NOW)
         for change in ['move my meeting to tomorrow morning',

@@ -174,13 +174,20 @@ def transfer_time(text):
     value = normalized(text)
     if not re.search(r'\b(allow|transfer|airport|into town|city|getting|journey|drive|taxi)\b', value):
         return None
-    match = re.search(r'\b([0-9]{1,4})\s*(minute|hour)s?\b', value)
-    if match:
-        minutes = int(match[1]) * (60 if match[2] == 'hour' else 1)
+    # Never read the tail of a decimal or negative duration as a whole number.
+    if re.search(r'(?:[0-9]+[.,][0-9]+|[-−]\s*[0-9]+)\s*(?:minutes?|hours?)\b', value):
+        return None
+    if re.search(r'\b(?:an|one) hour and (?:a )?half\b|\bone and a half hours?\b', value):
+        return 90
+    if re.search(r'\bhalf (?:an? )?hour\b', value):
+        return 30
+    parts = list(re.finditer(r'(?<![0-9.])([0-9]{1,4})\s*(minute|hour)s?\b', value))
+    if parts:
+        minutes = sum(int(part[1]) * (60 if part[2] == 'hour' else 1) for part in parts)
         return minutes if 0 <= minutes <= 1440 else None
     if re.search(r'\b(?:an|one) hour\b', value):
         return 60
-    return 30 if 'half an hour' in value else None
+    return None
 
 
 def journey(text, previous=None, *, now=None):
