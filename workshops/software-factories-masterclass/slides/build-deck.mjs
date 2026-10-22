@@ -49,13 +49,13 @@ add(1, 'Today (UTC): *see it*, *learn it*, *build it*.', 'Break 15:30.', scene('
 add(2, 'Watch the agent answer Sam.', 'Type: Which flights are headed to New York?', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
 add(2, 'Every card says *where it came from*.', 'Every value is labeled.', scene('Four labels',
   row([{ label: 'Source', cls: 'panel-mint' }, { label: 'Computed', cls: 'panel-gold' }, { label: 'Recording', cls: 'panel-pink' }, { label: 'Failed', cls: 'panel-orange' }], { y: 130, h: 400, gap: 30, arrows: false })));
-add(2, 'Four *honest* cards. Next: trust.', 'Next: trust.', traveller({ connected: true, title: 'Four honest cards' }));
+add(2, 'Four *honest* cards. Next: trust.', 'Sam can trust each value.', traveller({ connected: true, title: 'Four honest cards' }));
 // ---- Part 3: the real question
-add(3, 'A coding agent *reports* success.', 'A claim.', scene('You ask, the coding agent edits files and says it worked',
+add(3, 'A coding agent *reports* success.', 'It changes files, then says it worked.', scene('You ask, the coding agent edits files and says it worked',
   icon('person', 200, 250, 2) + text(200, 420, 'You', 'large-label') + arrow(340, 300, 140)
   + rect(520, 140, 380, 360, 'panel-ink') + icon('builder', 710, 290, 2, 'icon-light') + text(710, 450, 'Coding agent', 'large-label on-dark')
   + arrow(930, 300, 140) + rect(1100, 140, 300, 360, 'panel') + icon('task', 1250, 290, 1.8) + text(1250, 450, 'Files', 'large-label')
-  + rect(1180, 540, 440, 90, 'panel-pink', 45) + text(1400, 600, '“It worked”', 'large-label pink-ink')));
+  + rect(1180, 540, 440, 90, 'panel-pink', 45)));
 add(3, 'Nobody can *read* every change.', 'Ten times the code.', scene('Ten agents write ten times the code',
   Array.from({ length: 10 }, (_, i) => rect(80 + i * 110, 120 + (i % 3) * 40, 90, 150, 'panel', 10)).join('') + icon('person', 1400, 450, 2) + text(840, 560, 'Ten agents', 'large-label')));
 add(3, 'A *test* checks a known answer.', '', scene('add(2, 2) must give 4',
@@ -74,27 +74,27 @@ add(4, 'The builder works in a *spare copy*.', 'The builder makes the change.', 
   rect(60, 150, 440, 360, 'panel') + text(280, 340, 'Product', 'large-label') + arrow(520, 330, 100)
   + rect(660, 150, 440, 360, 'panel-gold') + icon('builder', 880, 280, 1.6) + text(880, 450, 'Copy', 'large-label') + arrow(1120, 330, 100)
   + rect(1260, 200, 360, 260, 'panel-mint') + text(1440, 315, 'Changed', 'large-label') + text(1440, 375, 'lines', 'large-label')));
-add(4, '*Hidden* tests come first.', 'Written first.', protectedWorkbench({ labels: ['Builder', 'Change', 'Hidden tests', 'Decision'], title: 'The builder cannot see the protected tests' }));
+add(4, 'Tests come first, *hidden* from the builder.', 'Like an exam.', protectedWorkbench({ labels: ['Builder', 'Change', 'Hidden tests', 'Decision'], title: 'The builder cannot see the protected tests' }));
 add(4, 'A *fingerprint* shows a changed test.', 'One letter changes it.', scene('Same file, different fingerprint',
   rect(80, 130, 660, 400, 'panel-mint') + text(410, 250, 'tests', 'large-label') + text(410, 420, 'ab12', 'display pink-ink')
   + rect(940, 130, 660, 400, 'panel-orange') + text(1270, 250, 'tests', 'large-label') + text(1270, 420, '9f3c', 'display pink-ink')));
-add(4, 'Every request ends in *three answers*.', '', decision({ labels: ['Accept', 'Reject', 'Could not run'], title: 'Accept, reject or could not run' }));
+add(4, 'Every request ends in *three answers*.', 'Could not run: a machine problem.', decision({ labels: ['Accept', 'Reject', 'Could not run'], title: 'Accept, reject or could not run' }));
 add(4, 'Two good changes can *clash*.', 'Replay the checks.', scene('Change two erases change one',
   rect(60, 250, 260, 160, 'panel') + text(190, 345, 'Base', 'large-label') + arrow(340, 300, 120) + line('M340 360C440 360 440 470 520 470', 'route')
   + rect(540, 90, 400, 200, 'panel-mint') + text(740, 205, 'Change 1', 'large-label') + rect(540, 400, 400, 200, 'panel-mint') + text(740, 515, 'Change 2', 'large-label')
   + arrow(980, 330, 120) + rect(1140, 230, 480, 200, 'panel-orange') + text(1380, 345, 'Gone', 'large-label')));
-add(4, 'A dark factory has *one reviewer*: tests.', 'Nobody reads each change.', scene('One lit window labeled tests',
+add(4, 'A dark factory has *one reviewer*: tests.', 'Lights off. Nobody reads each change.', scene('One lit window labeled tests',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + rect(540, 130, 600, 400, 'panel-gold') + text(840, 355, 'Tests', 'large-label ink') + icon('person', 1400, 330, 1.8, 'icon-light') + text(1400, 460, 'Person', 'large-label on-dark')), 'dark');
-add(4, 'A few wins are *not a guarantee*.', 'Not a guarantee yet.', scene('Three heads in a row',
+add(4, 'A few wins are *not a guarantee*.', 'Three heads in a row prove nothing.', scene('Three heads in a row',
   [0, 1, 2].map(i => circle(260 + i * 260, 250, 100, 'panel-gold') + text(260 + i * 260, 285, 'H', 'display')).join('') + text(1230, 330, '?', 'display pink-ink')));
 // ---- Part 5: the two tools
-add(5, '*Rasa Mantle* is where our agent lives.', 'Where our agent lives.', scene('Files become a running agent',
+add(5, '*Rasa Mantle* is where our agent lives.', 'A folder of files you can read.', scene('Files become a running agent',
   rect(60, 150, 440, 360, 'panel') + icon('task', 280, 280, 1.7) + text(280, 450, 'Files', 'large-label') + arrow(520, 330, 100)
   + rect(660, 150, 440, 360, 'panel-pink') + text(880, 345, 'Rasa Mantle', 'large-label') + arrow(1120, 330, 100)
   + rect(1260, 150, 360, 360, 'panel-mint') + icon('person', 1440, 280, 1.7) + text(1440, 450, 'Agent', 'large-label')));
-add(5, 'The agent calls *tools*.', 'MCP: a standard way to offer tools.', scene('Skill, agent, tool, cards',
+add(5, 'The agent calls *tools*.', 'A skill says when. MCP offers the tools.', scene('Skill, agent, tool, cards',
   row([{ label: 'Skill' }, { label: 'Agent', cls: 'panel-pink' }, { label: 'Tool' }, { label: 'Cards', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
-add(5, 'The *inspector* shows what the agent did.', 'See what the agent did.', scene('Chat on the left, steps on the right',
+add(5, 'The *inspector* shows what the agent did.', 'Chat on the left, steps on the right.', scene('Chat on the left, steps on the right',
   rect(60, 60, 740, 540, 'panel') + text(430, 150, 'Chat', 'large-label') + rect(880, 60, 740, 540, 'panel-mint') + text(1250, 150, 'Steps', 'large-label')));
 add(5, 'The builder runs on *OpenAI’s Agents API*.', 'An API lets one program ask another.', scene('The builder asks, our code runs it',
   row([{ label: 'Builder', icon: 'builder' }, { label: 'Asks' }, { label: 'Our code', cls: 'panel-gold' }, { label: 'Result', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
@@ -102,7 +102,7 @@ add(5, 'A run has *limits* and a secret key.', 'A key is a paid-service password
   row([{ label: 'Time' }, { label: 'Tool calls' }, { label: 'Key', cls: 'panel-pink' }], { y: 150, h: 360, gap: 70, arrows: false })));
 add(5, 'Mantle is home. The API is the *builder*.', 'Next: we build.', tools({ labels: ['Rasa Mantle', 'Agent', 'OpenAI Agents API', 'Builder'], title: 'Mantle is home and the API is the builder' }));
 // ---- Part 6: we build the factory
-add(6, 'We build the factory in *five parts*.', '', chapters({ labels: ['Task', 'Tests', 'Builder', 'Checks', 'Integrate'], title: 'Five parts, five chapters' }));
+add(6, 'We build the factory in *five parts*.', 'Book chapters', chapters({ labels: ['Task', 'Tests', 'Builder', 'Checks', 'Integrate'], title: 'Five parts, five chapters' }));
 add(6, 'Judge a *good* change and a *bad* one.', '', scene('Run the gate on a good change and a bad one',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 110, '$ cd workshops/software-factories-masterclass/factory/a6-market-watchlist', 'mono on-dark', 'start')
   + text(60, 270, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-good', 'mono on-dark', 'start') + icon('check', 160, 350, 1.1, 'success').replace('icon success', 'icon" style="stroke:#C6FEE1;stroke-width:9')
