@@ -19,7 +19,7 @@ Choose your route:
 
 | Route | You need | You will run |
 |---|---|---|
-| A: travel scaffold and coding factory | A Mac for code gates; Python 3.12, uv, Git, Make; issued Rasa license; provider keys only for optional live runs | Travel assistant, Agents API builder, rejection and local integration |
+| A: travel scaffold and coding factory | A Mac for code gates; Python 3.12, uv, Git, Make; issued free Rasa Developer Edition license; provider keys only for optional live runs | Travel assistant, Agents API builder, rejection and local integration |
 | B: data-only factory | Any machine with Python 3.12 only (3.13 and 3.14 stop with NOT_READY); commands below use a POSIX shell, and Windows is untested | Acceptance, rejection, retry limits and duplicate suppression, with scripted proposals |
 
 If setup is still blocking you after ten minutes, use B and pair with an A group for the typed travel demonstration. A file-presence check is not evidence that an agent works.
