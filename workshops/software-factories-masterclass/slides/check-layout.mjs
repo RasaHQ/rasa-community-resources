@@ -44,7 +44,7 @@ const report = {
   gateSha256: sha256(await fs.readFile(fileURLToPath(import.meta.url))),
   policy: { maximumSlides: 30, maximumBodyWords: 12, marginRatio: 0.06,
     titlePxAt1920: 64, bodyPxAt1920: 36, labelPxAt1920: 28,
-    minimumVisualAreaRatioLandscape: 0.45, landscapeFromAspect: 1.3, minimumPictureTextPx: 14, viewports: [[1920, 1080], [1512, 982], [1440, 900], [1366, 768], [1280, 800], [1280, 720], [390, 844]],
+    minimumVisualAreaRatioLandscape: 0.45, landscapeFromAspect: 1.3, minimumPictureTextPx: 14, minimumPictureTextPxPortrait: 16, viewports: [[1920, 1080], [1512, 982], [1440, 900], [1366, 768], [1280, 800], [1280, 720], [390, 844]],
     words: 'All visible instructional text including diagram labels and links; excludes title and persistent breadcrumb/navigation only.',
     visualArea: 'Bounding union of visible diagram marks or image, clipped to slide. Empty SVG containers do not count.',
     limitations: 'Geometry cannot judge pedagogic meaning or illustration quality. Independent visual and read-aloud review remain required.' },
@@ -180,12 +180,12 @@ try {
           const iw = Math.min(x.right, y.right) - Math.max(x.x, y.x), ih = Math.min(x.bottom, y.bottom) - Math.max(x.y, y.y);
           if (iw > 2 && ih > 2 && iw * ih > .12 * x.width * x.height) failures.push(`Text overlaps picture: ${t.value}`);
         }
-        // Visual-area rule (Architect ruling, 11:18Z): the aim is large pictures, not one fixed share.
-        // Landscape (aspect >= 1.3): the picture covers at least 45% of the slide.
-        // Portrait or phone (aspect < 1.3): the picture is full width and has no area minimum.
-        // Text inside every picture stays at least 14 CSS px on screen at every size.
+        // Visual-area rule (Architect ruling 11:18Z, portrait clause amended 11:29Z): the aim is large pictures, not one fixed share.
+        // Landscape (aspect >= 1.3): the picture covers at least 45% of the slide, and text inside it is at least 14 CSS px.
+        // Portrait or phone (aspect < 1.3): no area minimum. The picture may pan sideways inside its own box, and text inside it is at least 16 CSS px.
+        // Slide titles and text never pan or clip, at any size. Only the on-screen part of a panning picture is judged for the safe area.
         if (width / height >= 1.3 && visualAreaRatio < .45 - .001) failures.push(`Picture area ${(visualAreaRatio * 100).toFixed(1)}% < 45%`);
-        for (const t of text.filter(t => t.inVisual)) if (t.actualPx < 14 - .25) failures.push(`Picture text ${t.actualPx.toFixed(1)}px < 14px: ${t.value}`);
+        { const minPx = width / height >= 1.3 ? 14 : 16; for (const t of text.filter(t => t.inVisual)) if (t.actualPx < minPx - (minPx === 16 ? 0 : .25)) failures.push(`Picture text ${t.actualPx.toFixed(1)}px < ${minPx}px: ${t.value}`); }
         if (document.documentElement.scrollWidth > width + 1 || document.documentElement.scrollHeight > height + 1 || bounds.left < -1 || bounds.top < -1 || bounds.right > width + 1 || bounds.bottom > height + 1) failures.push('Slide or document overflows viewport');
         if (slide.scrollWidth > slide.clientWidth + 1 || slide.scrollHeight > slide.clientHeight + 1) failures.push('Slide content overflows its own box');
         for (const image of document.querySelectorAll('img,svg.logo, .logo-corner')) {

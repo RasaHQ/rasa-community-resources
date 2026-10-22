@@ -41,23 +41,23 @@ Times are London, with UTC in brackets. "Show" is on screen and "Do" is what the
 
 | Clock | Min | Block | Slides |
 | --- | --- | --- | --- |
-| 14:30 (13:30) | 15 | The problem and the finished agent | 1 to 7 |
-| 14:45 (13:45) | 30 | The real question, the factory idea and the two tools | 8 to 24 |
-| 15:15 (14:15) | 30 | We build the factory | 25 to 27 |
-| 15:45 (14:45) | 95 | Your turn, with a break from 16:30 to 16:45 | 28 and 29 |
+| 14:30 (13:30) | 10 | The problem and the finished agent | 1 to 7 |
+| 14:40 (13:40) | 25 | The real question, the factory idea and the two tools | 8 to 24 |
+| 15:05 (14:05) | 10 | We build the factory | 25 to 27 |
+| 15:15 (14:15) | 125 | Your turn in small groups at your own pace, with a break from 16:30 to 16:45 | 28 and 29 |
 | 17:20 (16:20) | 10 | Close | 30 |
 
-### 14:30 The problem and the finished agent (15 min)
+### 14:30 The problem and the finished agent (10 min)
 Show: slides 1 to 4 (the plan, Sam and the agent), then slide 5 with screen 2, then slides 6 and 7. Do: watch.
 Slide 5 reads "A script picks the tools". The example is the approved PR 128 head c6596de1 on Core 0.36.3. Its rehearsal ran the greeting, three source-backed choices, the first pick, the 6 pm meeting tomorrow and four available cards in 2.4 seconds from the pick. The sources are real and are not a recording. Voice: not tested end to end. A spoken-file check heard the question and spoke the answer, but did not hear "that one". Type the request. Say: "The data is real. The choice of tools is scripted. Later you'll see a recording of the model building." Ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. Point out that the transfer time is a labeled assumption, then change it by saying so. If the scripted opening wasn't frozen and rehearsed, run the recorded opening and say it is a recording.
 If voice isn't verified on the day, type the request and say so. Don't claim voice that you didn't see work.
 
-### 14:45 The real question, the factory idea and the two tools (30 min)
+### 14:40 The real question, the factory idea and the two tools (25 min)
 Show: slides 8 to 24 in order. Each part has a short title and, where needed, one spoken sentence. Do: listen. Questions wait for the work block. Each slide has one idea and one picture.
-If you run short, skip in this order: slide 19 (the coin), slide 17 (two good changes clash), slide 18 (the dark factory), then slide 23. If you skip slide 23, say its two points aloud: a run has limits (time and tool calls), and a key stays in your shell or a Git-ignored `.env` file. The book's setup step says it too. Slide 11 states the limit: a passing check proves only what it checks. Read it aloud.
+To fit 25 minutes, spend about a minute on each of slides 9, 10, 12, 13, 15, 20, 21 and 22, and about two minutes on slides 11, 14, 16 and 24. If you still run short, skip in this order: slide 19 (the coin), slide 17 (two good changes clash), slide 18 (the dark factory), then slide 23. If you skip slide 23, say its two points aloud: a run has limits (time and tool calls), and a key stays in your shell or a Git-ignored `.env` file. The book's setup step says it too. Slide 11 states the limit: a passing check proves only what it checks. Read it aloud.
 
-### 15:15 We build the factory (30 min)
-Show: slide 25, then slide 26 beside screen 1 (the console) and screen 2, then slide 27.
+### 15:05 We build the factory (10 min)
+Show: slide 25, then slide 26 beside screen 1 (the console) and screen 2, then slide 27. This block is 10 minutes: the recording of the funded build plus the live scripted run.
 Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 25 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 26, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
 The console and the builder driver come with the factory console pull request (PR 133). Their shapes, to recheck against that pull request before class, run from `factory/`: the offline scripted builder, `python agent-runs/drivers/qualify_scripted_builder.py <pack folder> <work folder>`, with a new work folder each run; the console, `python factory_console.py <work folder>/run --port 8943`, started before the driver, which serves on 127.0.0.1 only (for the tailnet screen add `--host <tailnet address>` and `--expires-at <the end of the class as an ISO time with its zone>`, plus the required `--viewer-access` declaration described below, or show the console from your own screen); and the live builder only after you have stated its expected cost, with `python agent-runs/drivers/openai_factory_driver.py <task> <prepared scratch folder> <new run folder> --model <model> --pack-root <A6 pack folder> --environment environment-a6.json --no-session-cap --expected-cost-cents-min <min> --expected-cost-cents-max <max>`. The expected cost is a range you state and not a cap. Prepare the scratch folder first with `scratch.py`, which never copies the protected tests. Keys are never put on a command line.
 For a tailnet console, `--viewer-access operator-device-acl` declares that an actual access list already limits the audience. Alternatively, `--viewer-access operator-accepted` requires the operator's explicit acceptance of the wider audience. Neither flag creates an access list. A tailnet launch without the declaration is refused. For this event the expiry is `2026-10-22T16:30:00Z`. Keep the existing preview running; do not start another process on its occupied port.
@@ -75,7 +75,7 @@ Say these two limits in plain words before the build:
 No funded builder run happens live today. The room sees the recording of one. If a live funded run is ever added, it is bounded locally (steps, a time limit and one model), and the hard cap is the project budget in the OpenAI account. Before the class, check in the account that the project budget enforces a hard limit and doesn't only send alerts (https://developers.openai.com/api/docs/guides/spend-limits). A hard limit can overshoot slightly. State the expected cost and say the budget figure (pending: from the Architect). Each run is limited to 16 tool calls, a 60 second deadline and 20 second timeouts in the class example, and 30 tool calls and a 120 second deadline in the factory builder. Recheck the limits if either pull request changes before the class.
 Say, at the end: "Nobody read the change. The gates decided. And the good change was one line, because the platform carries the work."
 
-### 15:45 Your turn (95 min, with a break)
+### 15:15 Your turn in small groups (125 min, with a break)
 Show: slide 28 and leave it up. At 16:30 show slide 29 (the break). At 16:45 go back to slide 28. Do: everyone works through the book, alone or in groups of up to four, from Chapter 0, then the short Chapters 1 and 2 (reading only, their change steps follow after the class), then Chapter 3. Each chapter has a ready folder, so anyone can start at any chapter.
 Break: 16:30 to 16:45, with refreshments. Chat and networking are part of the plan.
 Your job: walk the room. The three common stops are a missing license (point to the sign-up), a key that isn't set (the doctor shows SET or MISSING, never the value) and a clone made as a zip (clone with Git instead). Tell people that a live flight or a live builder run is an extra, and that the "done when" checks in Chapters 1 to 8 work offline after the one-time install. Chapter 0 needs the license and an internet connection for the install, then runs on recorded data. Only its optional live-source extra needs the internet while it runs.
