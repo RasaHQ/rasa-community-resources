@@ -20,7 +20,7 @@ The good change to the market card is one line, because the platform carries the
 | 2 | the briefing agent, port 8942 on the tailnet | the Inspector and the four cards | 17:30 London |
 | 3 | the deck, port 8944 on the tailnet | the slides, read-only | 17:30 London |
 
-All three are readable by any device on the tailnet, and the Inspector on screen 2 is drivable from any tailnet device, which spends your OpenAI key and your Rasa license. Before the day, make sure only your own device can drive the Inspector (the setting for that is (pending: its name comes from the example's pull request)), or get the operator's explicit acceptance of the exposure. Keep the room's own devices off the tailnet. The console has no Run button: the builder starts from a terminal command (pending).
+All three are readable by any device on the tailnet, and the Inspector on screen 2 is drivable from any tailnet device, which spends your OpenAI key and your Rasa license. Before the day, declare who may drive the Inspector with the setting `BRIEFING_VIEWER_ACCESS` (in the class example's pull request, PR 128). Its value is `operator-device-acl` after an access list limits the ports to your device, or `operator-accepted` with the operator's explicit acceptance. The setting declares the choice and does not set up the access list for you, and a tailnet launch is refused without one of the two values. Recheck its name and values if that pull request changes before the class. Keep the room's own devices off the tailnet. The console has no Run button: the builder starts from a terminal command (pending).
 
 ## Before the day
 Do these on the facilitator machine, at least a day before and again an hour before.
@@ -57,7 +57,7 @@ If you run short, skip in this order: slide 19 (the coin), slide 17 (two good ch
 Show: slide 25, then slide 26 beside screen 1 (the console) and screen 2, then slide 27.
 Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 25 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 26, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
 The commands for the console and the live builder are (pending). The offline loop is the scripted builder from Chapter 6.
-If the live builder stays in the run: there is no money cap per session, and the cap is the OpenAI project budget. Say the budget figure (pending: from the Architect), and the call limit and the time limit (pending: from the builder's documentation).
+If the live builder stays in the run: there is no money cap per session, and the cap is the OpenAI project budget. Say the budget figure (pending: from the Architect). The limits are 30 tool calls per session, a 120 second deadline and a 20 second transport timeout for the builder, and 16 tool calls, a 60 second deadline and a 20 second timeout per turn for the class example. Recheck them if either pull request changes before the class.
 Say, at the end: "Nobody read the change. The gates decided. And the good change was one line, because the platform carries the work."
 
 ### 15:45 Your turn (95 min, with a break)
