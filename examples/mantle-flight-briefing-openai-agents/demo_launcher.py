@@ -517,6 +517,9 @@ class ScriptedClient:
                     break
                 if query:
                     break
+            if query and previous and previous[-1].get('status') == 'unsupported_destination':
+                return LLMResponse(id='scripted', choices=["No problem. You don't need to answer the flight-number question again. "
+                    "This demo can discover New York flights only. You can try New York, or stop here without choosing a flight."], created=0)
             if finder and query:
                 return reply(finder, {'destination': query}, "I'll look for flights heading to " + query + " now.")
         if finder and query and flight_number(text) is None and (not capability or wants_search or destination is None):

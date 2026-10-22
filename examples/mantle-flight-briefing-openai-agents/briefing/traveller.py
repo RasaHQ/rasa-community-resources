@@ -297,7 +297,10 @@ def discover(sources, destination):
 def discovery_notice(value):
     """Speech is rendered only from bounded local reader results, never model prose."""
     if value.get('status') == 'unsupported_destination':
-        return value['message']
+        message = value.get('message')
+        if not isinstance(message, str) or not 0 < len(message) <= 500 or not message.isprintable() or any(marker in message for marker in ('<', '>', '://')):
+            raise ValueError('invalid_discovery_message')
+        return message
     if value.get('status') == 'needs_input':
         question = value.get('needs_input', {}).get('question', '')
         if isinstance(question, str) and 0 < len(question) <= 200 and not any(x in question for x in ('<', '>', '://')):

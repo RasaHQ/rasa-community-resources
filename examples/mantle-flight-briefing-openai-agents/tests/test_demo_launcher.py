@@ -259,6 +259,15 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
                 'candidates': [], 'message': 'Published routes cover New York only.'})}], ['briefing', 'find_flights'])
         self.assertFalse(response.tool_calls)
 
+    async def test_repeated_negative_after_uncovered_search_does_not_search_or_ask_again(self):
+        response = await self.call([{'role': 'user', 'content': 'flight to London tonight'},
+            {'role': 'tool', 'content': json.dumps({'status': 'unsupported_destination', 'candidates': [],
+                'message': 'Published routes cover New York only.'})},
+            {'role': 'user', 'content': 'no'}], ['briefing', 'find_flights'])
+        self.assertFalse(response.tool_calls)
+        self.assertIn("don't need to answer", response.response_text())
+        self.assertNotIn('?', response.response_text())
+
     async def test_negative_flight_answers_reuse_last_stated_destination(self):
         for destination in ('London', 'New York', 'Reykjavik'):
             for answer in ('no', "no, i don't know", 'no idea', 'not sure', 'I do not know'):
