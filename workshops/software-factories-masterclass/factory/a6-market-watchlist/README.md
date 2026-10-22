@@ -69,6 +69,7 @@ market_watchlist reference and draws the card itself. Anything but exactly one r
 N1 needs a machine with `sandbox-exec`. Without it `run_a6.py` prints `could not run: this check needs macOS` and exits 2, before any test runs (`test_run_a6.py` checks this). The factory runs on the facilitator's Mac; if a class laptop lacks it, run the gate on the facilitator's Mac and say so.
 
 `run_a6.py` is a local stand-in for the factory's gate. Exit 0 ACCEPT, 1 REJECT, 2 could not run.
+Exit 2 means it could not run; a REJECT that names an import error is a setup problem.
 The child process and the sandbox keep candidate code out of the process that decides, and with no network it cannot
 reach anything else. A candidate that prints extra lines is refused. A forger who rebuilt a valid card for every scenario
 would still pass, so the protected suite and the pins are a gate, not a proof. Say so in class.
