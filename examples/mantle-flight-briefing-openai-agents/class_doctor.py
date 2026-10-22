@@ -59,7 +59,7 @@ def main(argv=None):
     except ValueError:
         print('Refused: use only the documented doctor options; supply keys in the environment.')
         return 2
-    for name in (*KEYS.values(), 'DEEPGRAM_API_KEY'):
+    for name in (*KEYS.values(), 'DEEPGRAM_API_KEY', 'RASA_LICENSE'):
         print(name + ': ' + ('SET' if os.environ.get(name, '').strip() else 'MISSING'))
     if os.environ.get('DEEPGRAM_API_KEY', '').strip():
         print('VOICE: key present for Flux / Aura-2; readiness only, no voice call made.')

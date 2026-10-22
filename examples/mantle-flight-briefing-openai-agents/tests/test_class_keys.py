@@ -85,6 +85,17 @@ class ClassKeys(unittest.TestCase):
                 logger.removeHandler(handler)
             assert_no_fragments(self, out.getvalue(), key)
 
+    def test_license_is_readiness_only_and_does_not_select_a_live_model(self):
+        canary = 'synthetic-license-only-7b1d3f5a9c02468e'
+        code, text = self.doctor(env={'RASA_LICENSE': canary})
+        self.assertEqual(code, 0)
+        self.assertIn('RASA_LICENSE: SET', text)
+        self.assertIn('PATH: SCRIPTED', text)
+        self.assertNotIn(canary, text)
+        code, text = self.doctor()
+        self.assertEqual(code, 0)
+        self.assertIn('RASA_LICENSE: MISSING', text)
+
     def test_both_provider_settings_and_environment_only_readiness(self):
         for provider, variable in class_doctor.KEYS.items():
             with self.subTest(provider=provider), patch.object(class_doctor, 'selected_provider', return_value=provider):
