@@ -3,10 +3,10 @@
 sow: software-factories-masterclass-SOW-02
 
 Thursday 22 October 2026, 14:30 to 17:30 London (13:30 to 16:30 UTC), in person, three hours. The organizer decides by 10:00 UTC on Thursday 22 October: the live check or the scripted path. Run the frozen plan in `../FACILITATOR.md` at its pinned commit only if neither works, and then say nothing about this one.
-Status of everything marked [PRODUCT]: depends on the companion `examples/mantle-flight-briefing-openai-agents` being merged and pinned, and on one clean facilitator rehearsal. The commits to use are named in the next section.
+Everything marked [PRODUCT] uses the companion example `examples/mantle-flight-briefing-openai-agents`, which is merged. The participant commit and the optional facilitator commit are named in the next section. If the new session isn't selected, use the frozen pack at `95512574`.
 
 ## Which commit is which
-Participants use the class commit `74adca16483ed8444a2c89121bc63cc4bac52332`. The prework addendum names it. The facilitator's live check uses main `66c5d71eb79961e5af6ad86eafdd7693b7e244bc` and follows section 7 of the project README at that commit. The live Agents API leg isn't run in class, as section 7 says. If the facilitator is on the newer commit, nothing changes for participants.
+Participants use the class commit `74adca16483ed8444a2c89121bc63cc4bac52332`. The prework addendum names it. The facilitator's live check uses main `66c5d71eb79961e5af6ad86eafdd7693b7e244bc` and follows section 7 of the project README at that commit. The managed OpenAI Agents leg is NOT_RUN until its worker qualification arrives, as section 7 says. If it is still NOT_RUN on Thursday, say so in class. Participants stay on `74adca16`. Don't tell them to update. The clean-clone checks passed at each commit separately.
 
 ## What you say first, and what you never say
 Say: this is a Rasa-organized class. Rasa Mantle is the center. A dark software factory is how the Mantle agent is built and extended.
@@ -17,7 +17,7 @@ Say aloud at the start: If you see SCRIPTED on your screen, nothing live ran. Th
 - Environment as in the companion README: two shells, the same runtime-only `BRIEFING_MCP_TOKEN` (at least 32 characters, never written to a file), the worker interpreter and the project interpreter, both built from the resource-owned locks with the verified dev17 wheel (sha256 724fab71d1472aaf8968c2eea7f63f6a9698850ca169d4c84a6484f0ef6e8f40).
 - Shell 1, from the example folder: `worker/.venv/bin/python -m briefing`. Shell 2, from `project/`: `.venv/bin/rasa train` then `.venv/bin/rasa inspect`.
 - Keys (decision of 2026-10-21): participants run the product on keys handed out IN CLASS, read only from the environment: `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY`. Participants bring none. No contributor holds, requests or sees a key; the organizer hands them out by his own method and revokes them after the class. Never type a key into a file, a chat, an email or a screenshot. The doctor command (`class_doctor.py` in the example folder, run with the project interpreter) prints SET or MISSING for each key, never the value, and says which path will run: live OpenAI, live Anthropic or SCRIPTED. The scripted replay (`scripted_demo.py`, same folder and interpreter) always works and is labeled SCRIPTED on screen. Say which path is shown, every time.
-- Participants' prework: the earlier one (c894ff24) PLUS the addendum in `PREWORK-ADDENDUM-DRAFT` (the class commit, two environments, `class_doctor.py --scripted`, `scripted_demo.py`), which the organizer sends before the class. Participants then already hold `74adca16483ed8444a2c89121bc63cc4bac52332` and the two environments. If someone did not run it: they pair with someone who did. Check before the day that the factory lock did not change: `git diff e2a286a8e496aeee0ad2a695031165361693ea8a 74adca16483ed8444a2c89121bc63cc4bac52332 -- workshops/software-factories-masterclass/factory/uv.lock` prints nothing.
+- Participants' prework: the earlier one (c894ff24) PLUS the addendum `PREWORK-ADDENDUM-FINAL-74adca16-v2.md` (the class commit, two environments, `class_doctor.py --scripted`, `scripted_demo.py`), which the organizer sends only if the new session is selected. Participants then already hold `74adca16483ed8444a2c89121bc63cc4bac52332` and the two environments. If someone did not run it: they pair with someone who did. Check before the day that the factory lock did not change: `git diff e2a286a8e496aeee0ad2a695031165361693ea8a 74adca16483ed8444a2c89121bc63cc4bac52332 -- workshops/software-factories-masterclass/factory/uv.lock` prints nothing.
 
 ## Schedule (UTC / London)
 | UTC | London | Min | Block |
@@ -29,7 +29,7 @@ Say aloud at the start: If you see SCRIPTED on your screen, nothing live ran. Th
 | 14:45 | 15:45 | 30 | A specialist behind one tool is advice, and its numbers are checked |
 | 15:15 | 16:15 | 25 | The honesty rules are acceptance scenarios |
 | 15:40 | 16:40 | 10 | Break |
-| 15:50 | 16:50 | 30 | The second act: a coding agent adds the market watchlist |
+| 15:50 | 16:50 | 30 | The second act: the next feature, specified before it's built |
 | 16:20 | 17:20 | 10 | What this does not show |
 
 ### 13:30 The whole thing, end to end (15 min) [PRODUCT]
@@ -51,19 +51,20 @@ Say aloud at the start: If you see SCRIPTED on your screen, nothing live ran. Th
 - Land it: the engine reports nothing about wording; the protected suite does. A wording check accepts any edit that keeps the checked phrases: find one it accepts. It grades what Mantle will load, not the server, the data or a model.
 
 ### 14:45 A specialist behind one tool is advice (30 min) [PRODUCT]
-- Show the one tool `briefing(action=start|get|revise)` and the OpenAI Agents API behind it through zeocore (the API, never the SDK). Say which path runs: scripted transport or the facilitator's own key. Nothing here has run against the real service before today.
+- Show the one tool `briefing(action=start|get|revise)` and the Core boundary behind it. At the participant commit the specialist transport is scripted. A real Mantle model over those replay results is a separate check. Show a real managed OpenAI Agents run only if the organizer chose the separate live worker and that exact path has passed the facilitator check. Name the path you're showing. Keep the REPLAY labels on the constructed flight data even if a model or a managed agent is live. Don't transfer offline or Mantle evidence to the managed Agents leg. Nothing here has run against the real Agents service before today.
 - Show that numbers on the cards come from validated data, not from the model's prose: the unchecked `9999` case in the author's control is replaced by the checked card.
 - Land it: the specialist investigates; the application validates; the card is the evidence. The briefing id is a capability: whoever holds it can read the briefing, and it is not engine-sender isolation.
 
 ### 15:15 The honesty rules are acceptance scenarios (25 min) [PRODUCT]
-- Run the product acceptance against the running service (facilitator only): `BRIEFING_MCP_TOKEN=... .venv/bin/python accept_product.py` (10 tests OK at the pinned head). Then run the mutant: force the timeline to the scheduled arrival and show S5 and S7 fail.
-- Run the contract check on the Core wheel (12 tests OK, then the S5e addendum): a bare-string `replaces` was a real defect in the first wheel.
-- Land it: a scenario written before the code is the only review a dark factory has.
+- Show the recorded product acceptance results for the class commit: 10 of 10 checks passed on the running replay service, through its public MCP tool only. They are the author's recorded results, and the test file isn't in this repository, so don't run it in class. For the actual Mantle conversation check, follow section 7 of the companion project README and record what you see. Don't show a mutant unless you can name its command and the checks that fail.
+- Run the contract checks on the pinned Core wheel, from this folder, with the worker interpreter: `../../../examples/mantle-flight-briefing-openai-agents/worker/.venv/bin/python -B contract/accept_contract.py` (20 tests) and the same with `contract/accept_contract_s5e.py` (2 tests). A bare-string `replaces` value was a defect in the first wheel.
+- Land it: protected scenarios give the factory a repeatable acceptance check. Independent review and the receiving workflow still need their own evidence.
 
-### 15:50 The second act: a coding agent adds the market watchlist (30 min) [PRODUCT]
-- Input to the coding agent: spec sections 3 to 6 for `market_watchlist`, the data contract, the flight and weather adapters as examples, a build and preview command. Protected acceptance: M1 to M5 and S2, S3, S5, S6. The agent may not edit acceptance, the registry or the other adapters (M4, checked by hash).
-- Show a completed checkpoint first, then the agent's change, then the gate. Evidence of completion: the watchlist card appears from a request in the Mantle conversation, with its source, its quote time and the word delayed.
-- If the live agent run fails, show the completed checkpoint and say it is a checkpoint.
+### 15:50 The second act: the next feature, specified before it's built (30 min) [PRODUCT]
+- Say first: the market watchlist is the next feature. No adapter and no coding-agent run for it exist in this repository yet. This block teaches the specification of a feature that isn't built yet.
+- Show the closed `market_watchlist` component in the spec and the five market scenarios M1 to M5. Show the factory gate: M1 to M5 plus S2, S3, S5 and S6.
+- Ask each pair to write down what a coding agent's change must do to pass the five scenarios, and which edit to the acceptance files or the other adapters the gate would catch (M4, checked by hash).
+- Land it: the spec owner writes the gate before any code, and the builder can't edit it.
 
 ### 16:20 What this does not show (10 min)
 - Say: This is replay data of a constructed flight. We make no claim about model behavior. There is no live traffic. The cards aren't a Mantle feature. We had no live Agents API result before today, unless the facilitator's own run showed one. Voice isn't evidence.

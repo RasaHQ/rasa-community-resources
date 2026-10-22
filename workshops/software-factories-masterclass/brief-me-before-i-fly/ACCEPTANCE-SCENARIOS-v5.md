@@ -19,7 +19,7 @@ S12 [core] No secrets. GIVEN the repository, fixtures, logs and recorded outputs
 S13 [manual] Voice and cards share one conversation. GIVEN a spoken weather request to the Mantle agent, THEN the matching card appears in that conversation only. This is the main integration risk; rehearse it, state the evidence level aloud.
 S14 [manual] Live mode. GIVEN the facilitator's own key, THEN one request completes through zeocore and the Agents API. NOT_RUN labeled if unavailable; the replay demo is the default.
 
-## Act 2: market_watchlist (added by the coding agent)
+## Act 2: market_watchlist (target, not built yet)
 M1 [m] Delayed is labeled. GIVEN a quote data_ref with delayed=true, THEN the card shows "delayed" with quote_time and the spoken answer never says real time or live.
 M2 [m] Symbols are configured. GIVEN a symbol not in the configured watchlist, THEN no row is added and the user is told it is not on the list.
 M3 [m] Compare uses data. GIVEN "compare the first two", THEN the figures shown come from the two payload rows, not recomputed by the model.
@@ -27,7 +27,7 @@ M4 [m] Registry closed. GIVEN the coding agent's change, THEN the registry still
 M5 [m] Market status. GIVEN market_status is closed, THEN the card says closed and shows the last quote time, not the current time.
 
 ## Factory gate
-ACCEPT only if S2, S3, S5, S6, M1 to M5 pass offline on the candidate. The browser observation (the new card appears from a spoken or typed request through Mantle, with source and timestamp) is recorded by the facilitator; automated results alone are intermediate evidence.
+STATUS on 2026-10-22: the market act has no implementation yet, so M1 to M5 have not been run against any build. ACCEPT only if S2, S3, S5, S6, M1 to M5 pass offline on the candidate. The browser observation (the new card appears from a spoken or typed request through Mantle, with source and timestamp) is recorded by the facilitator; automated results alone are intermediate evidence.
 Known gaps (said aloud): scenarios check contract behavior on fixtures; they do not show that a model follows instructions, that a live provider is correct, or that real traffic would allow the margin shown.
 
 ## Added in v2

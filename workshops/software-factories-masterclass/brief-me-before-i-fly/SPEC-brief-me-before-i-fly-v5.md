@@ -12,7 +12,7 @@ Companion: ACCEPTANCE-SCENARIOS-v5.md (kept apart from the implementation; the b
 
 ## 1. Purpose
 A user speaks a travel request. Mantle converses; one OpenAI Agents API session (beta.agents, never the openai-agents SDK) investigates behind the MCP tool; the briefing service validates results; the Mantle answer carries widget cards defined by zeocore and shown where the conversation is shown. The cards carry the detail; speech stays short.
-Core story (act 1): flight status, arrival weather, arrival timeline. Second act: market watchlist, added by a coding agent from this spec inside the factory.
+Core story (act 1): flight status, arrival weather, arrival timeline. Second act (not built yet): the market watchlist, to be added by a coding agent from this spec inside the factory.
 
 ## 2. Components and ownership
 - Mantle: conversation, clarification, skill routing, spoken responses. Imports the one MCP tool briefing (mcp_servers in integrations.yml, import_tools in the skill).
@@ -57,7 +57,7 @@ Numbers, times and labels shown or spoken come from payload. Components accept o
 - Outbound-MCP limit: the Agents API calls MCP tools from OpenAI's side, so a localhost endpoint is unreachable; rasa and zeocore state the chosen route before building around it (reachable authenticated endpoint, function tools in the session, or the service calling the adapters itself). Proposed by the companion's maintainer, confirmed in the zeocore wrapper: application-handled function tools in agent.tools, with the allowlisted names and arguments validated and executed locally and the result returned as agent.session.input.tool_result; no public ingress.
 
 ## 8. The factory, second act (market watchlist)
-Baseline checkpoint = act 1 accepted. Input to the coding agent = this spec sections 3 to 6 for market_watchlist, the data_ref schema, the existing component and adapter examples (flight, weather), and a build and preview command. Protected acceptance = ACCEPTANCE-SCENARIOS-v5.md scenarios M1 to M5 plus the core scenarios S2, S3, S5, S6; the coding agent may not edit acceptance, the registry entries of other components, or the flight and weather adapters. Release gate = observed behavior through Mantle in the browser. Evidence of completion = the new card appears from a spoken request, with its source, timestamp and acceptance results shown. A completed checkpoint exists for fallback.
+STATUS on 2026-10-22: this second act is NOT BUILT. No market adapter, no completed checkpoint and no coding-agent run exist in the repository. The text below is the target specification, not a description of finished work. Baseline checkpoint = act 1 accepted. Input to the coding agent = this spec sections 3 to 6 for market_watchlist, the data_ref schema, the existing component and adapter examples (flight, weather), and a build and preview command. Protected acceptance = ACCEPTANCE-SCENARIOS-v5.md scenarios M1 to M5 plus the core scenarios S2, S3, S5, S6; the coding agent may not edit acceptance, the registry entries of other components, or the flight and weather adapters. Release gate = observed behavior through Mantle in the browser. Evidence of completion = the new card appears from a spoken request, with its source, timestamp and acceptance results shown. A completed checkpoint for fallback does not exist yet.
 
 ## 9. Out of scope / not claimed
 Real traffic or transit data; trading advice; any claim a model follows wording; Mantle-native widgets unless a Mantle page documents them.
