@@ -1,5 +1,9 @@
 # Chapter 0: Run the agent you will learn to build
 
+Sam's flight lands at 5 pm and the meeting is at 6 pm, across town. Four websites give four answers, and none says whether Sam makes it. This chapter runs the agent that answers all four at once, so you know what the rest of the book builds.
+
+Time: about 25 minutes. You need: Python 3.12, uv, Git, Make and your Rasa Developer Edition license. You're done when `python3 check_demo.py --recorded --transfer-minutes 30` prints `ch00 OK`. If you get stuck, the working code is in `book/ready/ch00` and the checks at the end of this chapter tell you what is missing.
+
 **Goal:** see four recorded source cards, then ask the actual agent to change its airport-to-city allowance without editing code.
 
 **You need first:** a Git clone of this repository, Python 3.12, [uv](https://docs.astral.sh/uv/), Make, a browser and an issued [free Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the form alone is not a license. Installation needs internet access. After installation, this chapter's core exercise uses recorded data and needs no live source, model key or voice key.

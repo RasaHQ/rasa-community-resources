@@ -1,5 +1,9 @@
 # Chapter 4: Acceptance before code
 
+A coding agent reports that its change works, and it wrote the tests that say so. Tests the builder can read, the builder can bend. This chapter fixes the tests before any work starts, so the builder never sees them and can't change them.
+
+Time: about 30 minutes. You need: a Mac, Python 3.12 and uv. No key or account. You're done when the check at the end prints a line that starts with `ch04 OK`. If you get stuck, start again from `book/ready/ch04` in a fresh folder.
+
 **Goal:** see the tests that judge a change, written before any work, lock them for your own task and watch the factory accept the builder's attempt.
 
 **You need first:** Chapter 3, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).

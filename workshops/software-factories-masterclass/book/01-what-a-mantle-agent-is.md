@@ -1,5 +1,9 @@
 # Chapter 1: What a Rasa Mantle agent is
 
+A traveler asks the agent a plain question and four cards come back. One file told the agent what to ask, and another fetched the flight. If you can't point to them, you can't fix the agent when it misbehaves. This chapter shows where each part lives.
+
+Time: about 10 minutes. You need: the Chapter 0 ready folder and a terminal. No key or account. You're done when the listing command at the end prints `ch01 OK`. If you get stuck, open `book/ready/ch00/demo` and run the commands from there.
+
 **Goal:** find the three parts of the briefing agent in its folder, and say in plain words what each one does.
 
 **You need first:** Chapter 0, so that the briefing agent's ready folder is on your computer. You only read files here. Nothing runs, and no key or account is needed.

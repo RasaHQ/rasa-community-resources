@@ -4,6 +4,10 @@ A hands-on book that takes you from a running Rasa Mantle agent to a dark softwa
 card for that agent. You can follow it alone from a clone of this repository. You do not need to have attended
 the workshop.
 
+A coding agent says its change works, and you have no time to read every line it changed. A software factory checks the change for you, with tests the agent never sees. You build one here, chapter by chapter, and watch it accept a good change and reject a bad one.
+
+Time: each chapter opens with its own estimate. Chapters 0 to 4 take about 25, 10, 10, 25 and 30 minutes. Every chapter ends with a check that prints `chNN OK`, so you always know whether you're done. If a chapter goes wrong, start it again from its ready folder.
+
 ## What you need first
 
 - Python 3.12 and [uv](https://docs.astral.sh/uv/)

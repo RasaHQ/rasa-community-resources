@@ -1,5 +1,9 @@
 # Chapter 3: A factory starts with a task
 
+A team asks a coding agent for a currency card and gets one back that looks right. Nobody wrote down what "right" meant, so nobody can say whether it is. A factory starts with a written request and a list of the files the builder may change. This chapter has you write one.
+
+Time: about 25 minutes. You need: a Mac, Python 3.12 and uv. No key or account. You're done when the check at the end prints a line that starts with `ch03 OK`. If you get stuck, start again from `book/ready/ch03` in a fresh folder.
+
 **Goal:** see how a factory is told what to build, then change the task yourself and watch the factory accept the result.
 
 **You need first:** Chapter 0 (the repository cloned), Python 3.12 and uv. This chapter needs macOS for the gate (see the README).

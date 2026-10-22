@@ -1,5 +1,9 @@
 # Chapter 2: Cards from real sources
 
+Picture a card that says "live" beside a rate that updates once a day. A traveler trusts it and plans around it. Every card here follows a label rule that says where the data came from and how fresh it is. This chapter shows you the code that applies the rule.
+
+Time: about 10 minutes. You need: the Chapter 0 ready folder and a terminal. No key or account. You're done when the listing command at the end prints `ch02 OK`. If you get stuck, open `book/ready/ch00/demo` and run the commands from there.
+
 **Goal:** look at one card, find the code that fetched its data, and read the rules that label it.
 
 **You need first:** Chapter 1, and the ready folder from Chapter 0. You only read files here. Nothing runs, and no key or account is needed.
