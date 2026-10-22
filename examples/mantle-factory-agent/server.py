@@ -105,6 +105,8 @@ def frontend(host):
         label = ('Mantle selection SCRIPTED · LIVE OpenAI Agents API builder: gpt-6-astra · expected 15 to 150 US cents per run (estimate, not a cap) · up to 5 minutes · real protected gate · nothing released' if mode == 'LIVE' else 'SCRIPTED tool selection · supplied attempts · real protected gate · no model calls · nothing released')
         if os.environ.get('FACTORY_MANTLE_MODE', 'SCRIPTED') == 'LIVE':
             label = 'Live Mantle agent (OpenAI model) · live builder on the OpenAI Agents API · about 1 to 2 minutes and up to about 1.50 USD per build · nothing is deployed'
+            if mode != 'LIVE':
+                label = 'Live Mantle agent (OpenAI model) · SCRIPTED builder with supplied attempts · real protected gate · nothing is deployed'
         return HTMLResponse('<!doctype html><html lang="en"><meta charset="utf-8"><title>Mantle factory agent</title><style>body{margin:0;font:18px system-ui}header{padding:16px;background:#342b67;color:white}iframe{border:0;width:100%;height:85vh}</style><header>' + escape(label) + '</header><iframe allow="microphone; autoplay" title="Mantle factory conversation" src="' + escape(url, quote=True) + '"></iframe></html>')
     return Starlette(routes=[Route('/', index)])
 

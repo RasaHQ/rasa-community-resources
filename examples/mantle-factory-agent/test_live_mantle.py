@@ -31,3 +31,13 @@ class LiveMantleTests(unittest.TestCase):
         child=MagicMock();child.stdout=io.BytesIO((secret+' '+secret[3:11]+'\n').encode());log=io.BytesIO()
         launcher.capture_log(child,log,{'OPENAI_API_KEY':secret})
         self.assertNotIn(secret.encode(),log.getvalue());self.assertNotIn(secret[3:11].encode(),log.getvalue())
+
+class LiveBannerTests(unittest.TestCase):
+    def test_live_mantle_with_scripted_builder_does_not_claim_live_build(self):
+        from server import frontend
+        from starlette.testclient import TestClient
+        with patch.dict(os.environ, {'FACTORY_ALLOWED_PEERS':'testclient','FACTORY_MANTLE_MODE':'LIVE','FACTORY_BUILDER_MODE':'SCRIPTED'}, clear=True):
+            page=TestClient(frontend('127.0.0.1')).get('/')
+            self.assertIn('Live Mantle agent (OpenAI model)',page.text)
+            self.assertIn('SCRIPTED builder with supplied attempts',page.text)
+            self.assertNotIn('live builder on the OpenAI Agents API',page.text)
