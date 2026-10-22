@@ -205,7 +205,7 @@ our qualification. To use another compatible specialist model, set
 Without an OpenAI key, source tool selection is explicitly SCRIPTED; an OpenAI
 key with the default native model enables the combined Agents/public-source path.
 
-The source worker pins OpenAI 3.36.1 and Core 0.35.6. The specialist explicitly
+The source worker pins OpenAI 3.36.1 and Core 0.36.0. The specialist explicitly
 disables the hosted environment network; public reads remain in local fixed-host
 handlers. It does **not** send `spend_control`: the actual service rejected that
 field even though this SDK exposes it. There is no per-session monetary cap in
@@ -220,7 +220,8 @@ source commit/date and CC0 licence. The 76 KB subset contains 1,762 two-airport
 routes for 16 selected airlines ending at JFK, EWR or LGA. It is incomplete
 coverage, not a live filed-flight-plan or schedule source. No aircraft-owner or
 registration dataset is bundled and runtime loading makes no network request.
-**Integration checkpoint:** the traveller workflow is implemented locally; the
-finder requires Core PR 172's reviewed registry release before the final worker
-pin, source integration qualification and preview restart. Current offline MCP
-controls inject search results and are not evidence of live discovery acceptance.
+**Integration checkpoint:** the published Core 0.36.0 finder is pinned in both
+registry locks. The actual installed reader, real MCP requests, numbered flight
+selection, natural meeting input and four graphical cards pass an injected-provider
+integration control. No live provider/model, browser or voice acceptance is inferred
+from that control. Final consumer review and preview rehearsal remain required.
