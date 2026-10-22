@@ -124,7 +124,7 @@ It starts `WHAT-IF`: these are numbers you supplied, not measured results. It en
 
 ## If it fails
 
-- **NOT_READY:** use Python 3.12. A setup problem is not a verdict on the change.
+- **NOT_READY:** use Python 3.12. A setup problem is not a verdict on the change. This checkpoint calls a setup failure NOT_READY; earlier chapters call it “could not run”. Neither means REJECT.
 - **An attempt or measurement folder already exists:** keep it and start the chapter in a fresh `WORK` folder. Do not erase evidence to obtain a cleaner result.
 - **ESCALATE with one attempt:** that is expected. Run the completion check. To explore three attempts, start a fresh folder and request 3.
 - **A proposal changed after ACCEPT:** let the builder make a fresh proposal in a fresh exercise folder. Do not edit the protected tests or ledger to make the completion check pass.
