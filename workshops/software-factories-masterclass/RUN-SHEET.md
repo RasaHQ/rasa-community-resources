@@ -8,7 +8,7 @@ Status: DRAFT. The times assume 180 minutes. If the event is set to 190, add the
 1. They saw the finished agent brief a traveler, with four cards, and every value on a card said where it came from.
 2. They know the factory loop: a task, protected acceptance written first, a change made in a spare copy, an independent check and a recorded decision.
 3. They watched the factory judge changes, and they saw a bad change stopped by a named check.
-4. They have a book they can work through alone, from a clone, where each chapter shows a working part and then asks them to change it through the factory.
+4. They have a book they can work through alone from a clone, with supplied checkpoints and factory exercises.
 
 ## The one lesson to say twice
 The good change to the market card is one line, because the platform carries the work. The lesson is the gates.
