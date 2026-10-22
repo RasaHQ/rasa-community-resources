@@ -50,7 +50,7 @@ Times are London, with UTC in brackets. "Show" is on screen and "Do" is what the
 ### 14:30 The problem and the finished agent (15 min)
 Show: slides 1 to 4 (the plan, Sam and the agent), then slide 5 with screen 2, then slides 6 and 7. Do: watch.
 Which opening runs is named at 08:15 UTC (pending). Keep both ready, with the deck head that matches.
-Opening A, scripted: slide 5 reads "A script picks the tools" (deck head 9c866309). Say: "The data is real. The choice of tools is scripted, and I'll show the live builder later." Ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. Point out that the transfer time is a labeled assumption, then change it by saying so. If the scripted opening wasn't frozen and rehearsed, run the recorded opening and say it is a recording.
+Opening A, scripted: slide 5 reads "A script picks the tools" (deck head 9c866309). The example is the approved PR 128 head c6596de1 on Core 0.36.3. Its rehearsal ran the greeting, three source-backed choices, the first pick, the 6 pm meeting tomorrow and four available cards in 2.4 seconds from the pick. The sources are real and are not a recording. Voice is not qualified: type the request. Say: "The data is real. The choice of tools is scripted, and I'll show the live builder later." Ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. Point out that the transfer time is a labeled assumption, then change it by saying so. If the scripted opening wasn't frozen and rehearsed, run the recorded opening and say it is a recording.
 Opening B, live: slide 5 reads "Flights to New York?" (deck head 013efc87, the approved text). The same steps, but the agent picks the tools. Say nothing about scripting. If the live opening misbehaves, switch to opening A or the recorded opening and say which one it is.
 If voice isn't verified on the day, type the request and say so. Don't claim voice that you didn't see work.
 
@@ -63,6 +63,10 @@ Show: slide 25, then slide 26 beside screen 1 (the console) and screen 2, then s
 Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 25 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 26, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
 The console and the builder driver come with the factory console pull request (PR 133). Their shapes, to recheck against that pull request before class, run from `factory/`: the offline scripted builder, `python agent-runs/drivers/qualify_scripted_builder.py <pack folder> <work folder>`, with a new work folder each run; the console, `python factory_console.py <work folder>/run --port 8943`, started before the driver, which serves on 127.0.0.1 only (for the tailnet screen add `--host <tailnet address>` and `--expires-at <the end of the class as an ISO time with its zone>`, plus the required `--viewer-access` declaration described below, or show the console from your own screen); and the live builder only after you have stated its expected cost, with `python agent-runs/drivers/openai_factory_driver.py <task> <prepared scratch folder> <new run folder> --model <model> --pack-root <A6 pack folder> --environment environment-a6.json --no-session-cap --expected-cost-cents-min <min> --expected-cost-cents-max <max>`. The expected cost is a range you state and not a cap. Prepare the scratch folder first with `scratch.py`, which never copies the protected tests. Keys are never put on a command line.
 For a tailnet console, `--viewer-access operator-device-acl` declares that an actual access list already limits the audience. Alternatively, `--viewer-access operator-accepted` requires the operator's explicit acceptance of the wider audience. Neither flag creates an access list. A tailnet launch without the declaration is refused. For this event the expiry is `2026-10-22T16:30:00Z`. Keep the existing preview running; do not start another process on its occupied port.
+
+Say these two limits in plain words before the build:
+- "The factory builds and tests the market card. You see the recorded build and a live safe run. Today it does not install the new card into the running demo."
+- "Chapters 1 and 2 are short concept chapters. They have no change exercise today."
 
 ### Qualification already completed, and what it does not establish
 
@@ -93,6 +97,8 @@ Show: slide 30. Say what they built and where to go next: the book chapters, and
 | The tailnet drops | Open the deck from the file in the repository. It needs no network. |
 
 ## What this day does not show
+- It doesn't install the factory's new market card into the running demo. The factory builds and tests the card, and the room sees the recorded build and a live safe run.
+- Chapters 1 and 2 have no change exercise today. They show the parts and where card data comes from.
 - It doesn't prove the factory is right. It shows a gate that catches the failures it checks for. An attempt that printed a hand-made valid card for every scenario would still pass.
 - It doesn't show spoken input unless it worked in front of you, and it doesn't show a live flight unless one was airborne.
 - The no-network check needs `sandbox-exec`, so it runs on a Mac.
