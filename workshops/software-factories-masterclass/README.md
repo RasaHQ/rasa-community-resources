@@ -14,7 +14,7 @@ The answer you will build is a **software factory**: a fixed set of steps that t
 
 ## What you will be able to do afterwards
 
-- Run an AI agent built with Rasa Mantle, and change how it behaves just by asking it.
+- Run an AI agent built with Rasa Mantle, and change its answer just by asking, for example by giving yourself more time to reach your meeting.
 - Write a request for a change that a machine can check.
 - Protect the tests that decide, so the agent making the change can't quietly bend them.
 - Read a factory's decision, and explain why ACCEPT or REJECT was the right answer.
