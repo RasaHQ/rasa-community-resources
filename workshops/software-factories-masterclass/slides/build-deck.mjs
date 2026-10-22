@@ -40,18 +40,18 @@ const add = (part, title, body, svg, cls = '') => S.push({ part, title, body, sv
 const PARTS = ['The problem', 'The finished agent', 'The real question', 'The factory idea', 'The two tools', 'We build the factory', 'Your turn', 'Close'];
 
 // ---- Part 1: the problem
-add(1, 'Build a *factory* that builds your agent.', 'You’ll understand: Sam’s problem.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
-add(1, 'Today in London: *see it*, *learn it*, *build it*.', '', scene('The plan for the day',
+add(1, 'Build a *factory* that builds your agent.', 'You’ll understand: why one glance beats four websites.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
+add(1, 'Today in London: *see it*, *learn it*, *build it*.', 'Break 16:30.', scene('The plan for the day',
   row([{ label: '14:30', sub: 'See' }, { label: '14:45', sub: 'Learn' }, { label: '15:15', sub: 'Build' }, { label: '15:45', sub: 'Practice' }, { label: '17:20', sub: 'Close' }], { y: 150, h: 360, gap: 30 })));
 add(1, 'Meet *Sam*, due in New York tonight.', 'Will I make my meeting?', traveller({ title: 'Sam needs four checks' }));
 add(1, 'An *agent* decides what to do, then does it.', 'In short: one agent. Next: watch it.', traveller({ connected: true, title: 'One agent answers all four' }));
 // ---- Part 2: the finished agent
-add(2, 'Watch the agent answer Sam.', 'You’ll understand: cards. Which flights go to New York?', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
+add(2, 'Watch the agent answer Sam.', 'You’ll understand: each value’s source. Flights to New York?', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
 add(2, 'Every card says *where it came from*.', 'Every value is labeled.', scene('Four labels',
   row([{ label: 'Source', cls: 'panel-mint' }, { label: 'Computed', cls: 'panel-gold' }, { label: 'Recording', cls: 'panel-pink' }, { label: 'Failed', cls: 'panel-orange' }], { y: 130, h: 400, gap: 30, arrows: false })));
-add(2, 'Four *honest* cards. Next: trust.', 'In short: honest cards. Next: trust.', traveller({ connected: true, title: 'Four honest cards' }));
+add(2, 'Four *honest* cards.', 'In short: honest cards. Next: trust.', traveller({ connected: true, title: 'Four honest cards' }));
 // ---- Part 3: the real question
-add(3, 'A *coding agent* changes files, then reports success.', 'You’ll understand: tests. It says it worked.', scene('You ask, the coding agent edits files and says it worked',
+add(3, 'A *coding agent* changes files, then reports success.', 'You’ll understand: why we can’t trust it.', scene('You ask, the coding agent edits files and says it worked',
   icon('person', 200, 250, 2) + text(200, 420, 'You', 'large-label') + arrow(340, 300, 140)
   + rect(520, 140, 380, 360, 'panel-ink') + icon('builder', 710, 290, 2, 'icon-light') + text(710, 450, 'Coding agent', 'large-label on-dark')
   + arrow(930, 300, 140) + rect(1100, 140, 300, 360, 'panel') + icon('task', 1250, 290, 1.8) + text(1250, 450, 'Files', 'large-label')
@@ -67,7 +67,7 @@ add(3, 'An *acceptance test* checks the request.', 'Tests what was asked.', scen
 add(3, 'We can’t read it all, so *tests decide*.', 'In short: a check proves only what it checks. Next: the factory.', scene('Claim and evidence',
   rect(80, 120, 700, 420, 'panel-orange') + icon('stop', 430, 330, 2.4) + rect(900, 120, 700, 420, 'panel-mint') + icon('check', 1250, 330, 2.4, 'success')));
 // ---- Part 4: the factory idea
-add(4, 'A software factory repeats *four steps*.', 'You’ll understand: four steps.', pipeline({ labels: ['Task', 'Change', 'Check', 'Decision'], highlight: 2, title: 'Task, change, check, decision' }));
+add(4, 'A software factory repeats *four steps*.', 'You’ll understand: request to checked change.', scene('Task, change, check, decision', row([{ label: 'Task' }, { label: 'Change' }, { label: 'Check', cls: 'panel-pink' }, { label: 'Decision', cls: 'panel-mint' }], { y: 150, h: 360, gap: 40 })));
 add(4, 'The builder works in a *spare copy*.', 'The builder makes the change.', scene('Only the changed lines come back',
   rect(60, 150, 440, 360, 'panel') + text(280, 340, 'Product', 'large-label') + arrow(520, 330, 100)
   + rect(660, 150, 440, 360, 'panel-gold') + icon('builder', 880, 280, 1.6) + text(880, 450, 'Copy', 'large-label') + arrow(1120, 330, 100)
@@ -83,10 +83,10 @@ add(4, 'Two good changes can *clash*.', 'Replay the checks.', scene('Change two 
   + arrow(980, 330, 120) + rect(1140, 230, 480, 200, 'panel-orange') + text(1380, 345, 'Gone', 'large-label')));
 add(4, 'A dark factory has *one reviewer*: tests.', 'Lights off. Nobody reads each change.', scene('One lit window labeled tests',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + rect(540, 130, 600, 400, 'panel-gold') + text(840, 355, 'Tests', 'large-label ink') + icon('person', 1400, 330, 1.8, 'icon-light') + text(1400, 460, 'Person', 'large-label on-dark')), 'dark');
-add(4, 'A few wins *aren’t a guarantee*.', 'In short: few wins prove little. Next: tools.', scene('Three heads in a row',
+add(4, 'A few wins *aren’t a guarantee*.', 'In short: three heads prove nothing. Next: tools.', scene('Three heads in a row',
   [0, 1, 2].map(i => circle(260 + i * 260, 250, 100, 'panel-gold') + text(260 + i * 260, 285, 'H', 'display')).join('') + text(1230, 330, '?', 'display pink-ink')));
 // ---- Part 5: the two tools
-add(5, '*Rasa Mantle* is where our agent lives.', 'You’ll understand: both tools.', scene('Files become a running agent',
+add(5, '*Rasa Mantle* is where our agent lives.', 'You’ll understand: where agent and builder live.', scene('Files become a running agent',
   rect(60, 150, 440, 360, 'panel') + icon('task', 280, 280, 1.7) + text(280, 450, 'Files', 'large-label') + arrow(520, 330, 100)
   + rect(660, 150, 440, 360, 'panel-pink') + text(880, 345, 'Rasa Mantle', 'large-label') + arrow(1120, 330, 100)
   + rect(1260, 150, 360, 360, 'panel-mint') + icon('person', 1440, 280, 1.7) + text(1440, 450, 'Agent', 'large-label')));
@@ -98,7 +98,7 @@ add(5, 'A run has *limits* and a secret key.', 'A key is a paid-service password
   row([{ label: 'Time' }, { label: 'Tool calls' }, { label: 'Key', cls: 'panel-pink' }], { y: 150, h: 360, gap: 70, arrows: false })));
 add(5, 'Mantle is home. The API is the *builder*.', 'In short: home and builder. Next: build.', tools({ labels: ['Mantle', 'Agent', 'Agents API', 'Builder'], title: 'Mantle is home and the API is the builder' }));
 // ---- Part 6: we build the factory
-add(6, 'We build the factory in *five parts*.', 'You’ll understand: five parts. Book chapters.', scene('Five parts, five chapters',
+add(6, 'We build the factory in *five parts*.', 'You’ll understand: five parts, in book order.', scene('Five parts, five chapters',
   row([{ label: 'Task' }, { label: 'Tests' }, { label: 'Builder' }, { label: 'Checks' }, { label: 'Integrate', cls: 'panel-pink' }], { y: 150, h: 360, gap: 30 })));
 add(6, 'In your chapter 6 folder: judge a *good* change and a *bad* one.', '', scene('Run the gate on a good change and a bad one',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 110, '$ source .venv/bin/activate', 'mono on-dark', 'start')
@@ -113,7 +113,7 @@ add(7, 'Set up once, then follow the *book*.', 'You’ll understand: the book.',
 add(7, 'Take a *break*, then work through the book.', 'Break 16:30 to 16:45. In short: chapter 0 first. Next: close.', scene('A break for refreshments',
   rect(520, 120, 640, 420, 'panel-gold') + line('M1160 220h110a70 70 0 0 1 0 140h-110', 'route') + line('M600 560h480', 'line') + line('M680 40c-30 40 30 40 0 80 M840 40c-30 40 30 40 0 80 M1000 40c-30 40 30 40 0 80', 'route')));
 // ---- Part 8: close
-add(8, 'One agent, built by a *factory you trust*.', 'You’ll understand: it all. In short: tests first. Next: the book.', traveller({ labels: ['', '', '', ''], connected: true, title: 'One agent, four cards, one factory' }));
+add(8, 'One agent, built by a *factory you trust*.', 'You’ll understand: the whole story. In short: tests first. Next: the book.', traveller({ labels: ['', '', '', ''], connected: true, title: 'One agent, four cards, one factory' }));
 
 const CSS = fs.readFileSync('visual-system.css', 'utf8');
 const face = (family, file, weight, style = 'normal') => `@font-face{font-family:'${family}';font-weight:${weight};font-style:${style};font-display:swap;src:url(data:font/woff2;base64,${fs.readFileSync('fonts/' + file).toString('base64')}) format('woff2')}`;
