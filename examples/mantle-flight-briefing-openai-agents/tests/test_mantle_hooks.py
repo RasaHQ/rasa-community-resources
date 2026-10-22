@@ -120,6 +120,13 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         self.assertIn('Briefing needs input', answer.payload.text)
         self.assertNotIn('90', answer.payload.text)
 
+    async def test_running_source_job_gives_a_status_next_step_without_model_values(self):
+        text = await self.present({'status': 'running', 'progress': ['Checking sources']})
+        self.assertIn('still checking sources', text)
+        self.assertIn('say status', text)
+        self.assertNotIn('9999', text)
+        self.assertNotIn('complete', text)
+
     async def test_bad_card_stops_unchecked_numeric_model_output(self):
         text = await self.present({'status': 'complete', 'cards': [{'invalid': True}]})
         self.assertIn('could not be validated', text)
@@ -130,7 +137,6 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
             ({'error': 'unavailable'}, True),
             ({'result': {'status': 'complete', 'cards': []}}, False),
             ({'status': 'complete', 'cards': []}, False),
-            ({'status': 'running'}, False),
             ('not JSON', False),
             ({'status': 'needs_input', 'needs_input': 'invalid'}, False),
         ]

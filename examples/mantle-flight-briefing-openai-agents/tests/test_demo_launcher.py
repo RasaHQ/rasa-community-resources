@@ -267,3 +267,46 @@ class InspectorVoiceSeam(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+@unittest.skipUnless(__import__('importlib').util.find_spec('rasa'), 'Mantle project interpreter required')
+class ActualVoiceLoaderSeam(unittest.TestCase):
+    def test_actual_channel_building_observes_inspector_runtime_patch(self):
+        from rasa.core.agent import Agent
+        from rasa.core.config.channel_loading import resolve_channels_config
+        from rasa.mantle.config import channels
+        from rasa.mantle.llm.client import LLMClient
+        observed = []
+        def normal_entrypoint():
+            observed.append(resolve_channels_config(project_root=demo.PROJECT))
+        original = channels.load_integration_channels
+        with patch.object(channels, 'load_integration_channels', original), \
+                patch.object(LLMClient, 'from_bootstrap'), \
+                patch('rasa.__main__.main', side_effect=normal_entrypoint), \
+                patch.object(sys, 'argv', []), \
+                patch.dict(os.environ, {'DEEPGRAM_API_KEY': 'synthetic-voice-config-only', 'BRIEFING_MCP_TOKEN': 'synthetic-voice-loader-token-only', 'LITELLM_MODE': 'PRODUCTION'}, clear=True):
+            demo.inspector('scripted')
+        self.assertEqual(len(observed), 1)
+        actual = observed[0].channels['inspector']
+        self.assertEqual(actual['asr']['name'], 'deepgram')
+        self.assertEqual(actual['asr']['language_map']['en']['model'], 'flux-general-en')
+        self.assertEqual(actual['tts']['name'], 'deepgram')
+        self.assertEqual(actual['tts']['language_map']['en']['model'], 'aura-2-andromeda-en')
+        self.assertNotIn('synthetic-voice-config-only', json.dumps(actual))
+
+    def test_actual_channel_building_is_keyless_without_expanding_other_integrations(self):
+        from rasa.core.agent import Agent
+        from rasa.core.config.channel_loading import resolve_channels_config
+        from rasa.mantle.config import channels
+        from rasa.mantle.llm.client import LLMClient
+        observed = []
+        def normal_entrypoint():
+            observed.append(resolve_channels_config(project_root=demo.PROJECT))
+        original = channels.load_integration_channels
+        with patch.object(channels, 'load_integration_channels', original), \
+                patch.object(LLMClient, 'from_bootstrap'), \
+                patch('rasa.__main__.main', side_effect=normal_entrypoint), \
+                patch.object(sys, 'argv', []), \
+                patch.dict(os.environ, {'LITELLM_MODE': 'PRODUCTION'}, clear=True):
+            demo.inspector('scripted')
+        self.assertEqual(observed[0].channels, {})

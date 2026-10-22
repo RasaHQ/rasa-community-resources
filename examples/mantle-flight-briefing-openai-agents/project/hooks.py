@@ -26,6 +26,9 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
             value = json.loads(value)
         except (ValueError, TypeError):
             value = None
+    if not result.is_error and isinstance(value, dict) and value.get("status") in ("started", "running"):
+        _pending_cards[result.sender_id] = "The briefing is still checking sources; say status in a moment."
+        return result
     if not result.is_error and isinstance(value, dict) and value.get("status") == "needs_input":
         missing = value.get("needs_input") or {}
         if isinstance(missing, dict) and missing.get("field") in ("meeting_time", "transfer_minutes") and isinstance(missing.get("question"), str):

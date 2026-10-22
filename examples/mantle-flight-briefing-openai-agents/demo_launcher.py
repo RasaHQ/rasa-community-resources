@@ -21,6 +21,7 @@ import time
 import tomllib
 from urllib.parse import urlsplit
 from urllib.request import ProxyHandler, build_opener
+from voice_config import VOICE_OFF_TEXT
 
 ROOT = Path(__file__).resolve().parent
 PROJECT = ROOT / 'project'
@@ -205,7 +206,7 @@ def start_inspector(children, env, mode):
     argv = [str(python_at(PROJECT)), str(Path(__file__).resolve()), '_inspector', mode]
     process = children.start(argv, cwd=PROJECT, env=env)
     try:
-        wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=90)
+        wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=5 if env.get('DEEPGRAM_API_KEY', '').strip() else 90)
         return process, env
     except DemoError:
         if not env.get('DEEPGRAM_API_KEY', '').strip():
@@ -259,7 +260,7 @@ def run_demo(scripted=False):
         completed(children, doctor, cwd=ROOT, env=env, timeout=30,
                   failure='The selected model path is not ready; set its key in your terminal or use ./demo run --scripted.')
         if not env.get('DEEPGRAM_API_KEY', '').strip():
-            print('Voice is off; continue in text.', flush=True)
+            print(VOICE_OFF_TEXT, flush=True)
         completed(children, [str(python_at(PROJECT)), '-m', 'rasa', 'train'],
                   cwd=PROJECT, env=env, timeout=180,
                   failure='Mantle training failed; check the class project and its locked release before running again.')
@@ -374,12 +375,17 @@ def merge_voice_channels(values, voice):
 
 def install_voice_channels(voice):
     """Patch the common Mantle channel loader in this Inspector child only."""
-    if voice:
-        from rasa.mantle.config import channels
-        original = channels.load_integration_channels
-        def runtime_channels(project_root=None):
-            return merge_voice_channels(original(project_root), voice)
-        channels.load_integration_channels = runtime_channels
+    from rasa.mantle.config import channels
+    from rasa.shared.utils.yaml import read_yaml_file
+    def runtime_channels(project_root=None):
+        # The pinned loader expands unrelated model credentials before selecting
+        # channels. This example owns static channel settings, so select that
+        # section first and retain the engine's normal parser and validation.
+        raw = read_yaml_file(Path(project_root or PROJECT) / 'integrations.yml',
+                             expand_env_vars=False)
+        declared = raw.get('channels') or {}
+        return merge_voice_channels(channels.parse_channels(declared), voice)
+    channels.load_integration_channels = runtime_channels
 
 
 def inspector(mode):

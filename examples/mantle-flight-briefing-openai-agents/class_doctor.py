@@ -61,6 +61,7 @@ def main(argv=None):
         return 2
     for name in (*KEYS.values(), 'DEEPGRAM_API_KEY', 'RASA_LICENSE'):
         print(name + ': ' + ('SET' if os.environ.get(name, '').strip() else 'MISSING'))
+    print('Request your free Developer Edition licence at https://rasa.com/rasa-pro-developer-edition-license-key-request and set RASA_LICENSE only in your terminal.')
     if os.environ.get('DEEPGRAM_API_KEY', '').strip():
         print('VOICE: key present for Flux / Aura-2; readiness only, no voice call made.')
     else:
