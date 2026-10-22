@@ -11,7 +11,7 @@ def require_agents_sessions(client):
         raise UnsupportedAgentsSDK('The worker SDK lacks client.beta.agents.sessions; use its locked environment.')
 
 
-def native_turn(client, *, agent, text, handlers=None, invoke=None):
+def native_turn(client, *, agent, text, handlers=None, invoke=None, max_calls=16):
     """Start a fresh bounded session; Core owns collection, guards and turn success.
 
     Revisions must carry the prior validated brief in text, never reuse a native
@@ -22,6 +22,6 @@ def native_turn(client, *, agent, text, handlers=None, invoke=None):
     if invoke is None:
         from zeo_core.integrations.agents import run_native
         invoke = run_native
-    return invoke(client, agent=agent, environment={'type': 'openai_hosted'},
-                  text=text, handlers=handlers, max_calls=16, max_events=10000,
+    return invoke(client, agent=agent, environment={'type': 'openai_hosted', 'network': {'access': 'disabled'}},
+                  text=text, handlers=handlers, max_calls=max_calls, max_events=10000,
                   deadline_seconds=60, timeout=20)
