@@ -117,7 +117,8 @@ add(7, 'Take a *break*, then work through the book.', 'Break 16:30 to 16:45. In 
 // ---- Part 8: close
 add(8, 'One agent, built by a *factory you trust*.', 'You’ll understand: the whole story. In short: tests first. Next: the book.', traveller({ labels: ['', '', '', ''], connected: true, title: 'One agent, four cards, one factory' }));
 
-const CSS = fs.readFileSync('visual-system.css', 'utf8');
+const CSS = fs.readFileSync(fs.existsSync('style.css') ? 'style.css' : 'visual-system.css', 'utf8');
+S.forEach((s, i) => { const f = `art/${String(i + 1).padStart(2, '0')}.svg`; if (fs.existsSync(f)) s.svg = fs.readFileSync(f, 'utf8').trim(); });
 const face = (family, file, weight, style = 'normal') => `@font-face{font-family:'${family}';font-weight:${weight};font-style:${style};font-display:swap;src:url(data:font/woff2;base64,${fs.readFileSync('fonts/' + file).toString('base64')}) format('woff2')}`;
 const FACES = [face('Inter', 'Inter-Regular.woff2', 400), face('Inter', 'Inter-Medium.woff2', 500), face('Newsreader', 'Newsreader-Regular.woff2', 400), face('Newsreader', 'Newsreader-Italic.woff2', 400, 'italic'), face('JetBrains Mono', 'JetBrainsMono-Regular.woff2', 400)].join('');
 const em = t => esc(t).replace(/\*(.+?)\*/g, '<em>$1</em>');
