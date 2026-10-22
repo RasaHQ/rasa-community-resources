@@ -118,7 +118,9 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                 delivered = '\n\n'.join(message['text'] for message in output.messages[before:])
                                 self.assertEqual(provider.plan, [], 'turn ended before fixture actions completed')
                                 if cards:
-                                    self.assertIn('not bound to this conversation', delivered)
+                                    self.assertIn('panel on the right', delivered)
+                                    self.assertLess(len(delivered), 180)
+                                    self.assertNotIn('Margin:', delivered)
                                 self.assertNotIn('9999', delivered)
                                 for capability in jobs._jobs:
                                     self.assertNotIn(capability, delivered)
@@ -129,19 +131,23 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                     sink.append((text, delivered))
                                 return delivered
 
+                            def panel_details():
+                                from project.lib.card_text import render_cards
+                                return render_cards({'cards': list(jobs._jobs.values())[-1].cards})
+
                             with patch('rasa.mantle.llm.client.LLMClient.from_bootstrap', return_value=provider):
                                 first = await run_turn('Show the constructed Replay DEMO101', [
                                     ('activate', {'target_id': 'briefing'}),
                                     ('briefing', {'action': 'start', 'request': 'Replay DEMO101'}),
                                     ('briefing', {'action': 'get'})])
                                 self.assertEqual(provider.count, 4)
-                                self.assertIn('Margin: 120.0 minutes', first)
+                                self.assertIn('Margin: 120.0 minutes', panel_details())
                                 original = {card['event']['component']: card for card in next(iter(jobs._jobs.values())).cards}
                                 weather = await run_turn('Replay DEMO101 morning weather', [
                                     ('briefing', {'action': 'revise', 'change': 'Replay DEMO101 morning weather'}),
                                     ('briefing', {'action': 'get'})])
                                 self.assertEqual(provider.count, 7)
-                                self.assertIn('Margin: 120.0 minutes', weather)
+                                self.assertIn('Margin: 120.0 minutes', panel_details())
                                 revised = {card['event']['component']: card for card in next(iter(jobs._jobs.values())).cards}
                                 for component in ('flight_status', 'arrival_timeline'):
                                     self.assertEqual(original[component], revised[component])
@@ -151,8 +157,8 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                     ('briefing', {'action': 'revise', 'change': 'Replay DEMO101 later arrival'}),
                                     ('briefing', {'action': 'get'})])
                                 self.assertEqual(provider.count, 10)
-                                self.assertIn('Margin: 30.0 minutes', later)
-                                self.assertNotIn('Margin: 120.0 minutes', later)
+                                self.assertIn('Margin: 30.0 minutes', panel_details())
+                                self.assertNotIn('Margin: 120.0 minutes', panel_details())
                                 question = await run_turn('Show the missing-input replay', [
                                     ('briefing', {'action': 'start', 'request': 'Replay DEMO101 missing inputs'}),
                                     ('briefing', {'action': 'get'})], cards=False)
@@ -169,26 +175,26 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                     elif reply.endswith('Z'):
                                         self.assertIn('transfer duration', answer)
                                     else:
-                                        self.assertIn('Margin: 165.0 minutes', answer)
-                                        self.assertIn('Transfer assumption: 45 minutes', answer)
+                                        self.assertIn('Margin: 165.0 minutes', panel_details())
+                                        self.assertIn('Transfer assumption: 45 minutes', panel_details())
                                 failure = await run_turn('Show the flight-source failure replay', [
                                     ('briefing', {'action': 'revise', 'change': 'Replay DEMO101 flight unavailable'}),
                                     ('briefing', {'action': 'get'})])
-                                self.assertIn('Briefing incomplete', failure)
-                                self.assertIn('Unavailable: Flight source', failure)
-                                self.assertIn('Weather Hourly', failure)
-                                self.assertNotIn('Margin:', failure)
+                                self.assertIn('Some briefing sources are unavailable', failure)
+                                self.assertIn('Unavailable: Flight source', panel_details())
+                                self.assertIn('Weather Hourly', panel_details())
+                                self.assertNotIn('Margin:', panel_details())
                                 recovered = await run_turn('Recover the named replay', [
                                     ('briefing', {'action': 'revise', 'change': 'Replay DEMO101'}),
                                     ('briefing', {'action': 'get'})])
-                                self.assertIn('Briefing complete', recovered)
-                                self.assertIn('Margin: 165.0 minutes', recovered)
+                                self.assertIn('briefing is ready', recovered)
+                                self.assertIn('Margin: 165.0 minutes', panel_details())
                                 scheduled = await run_turn('Use the no-estimate replay', [
                                     ('briefing', {'action': 'revise', 'change': 'Replay DEMO101 no estimate'}),
                                     ('briefing', {'action': 'get'})])
-                                self.assertIn('Arrival from scheduled_arrival', scheduled)
-                                self.assertIn('Estimated arrival: not provided', scheduled)
-                                self.assertIn('Margin: 195.0 minutes', scheduled)
+                                self.assertIn('Arrival from scheduled_arrival', panel_details())
+                                self.assertIn('Estimated arrival: not provided', panel_details())
+                                self.assertIn('Margin: 195.0 minutes', panel_details())
                                 self.assertEqual(provider.count, 31)
                             await runtime.close()
         finally:

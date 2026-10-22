@@ -2,8 +2,10 @@
 
 sow: software-factories-masterclass-SOW-02
 """
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import chdir, redirect_stdout, redirect_stderr
 import io
+import errno
+import socket
 import json
 import os
 from pathlib import Path
@@ -95,7 +97,7 @@ class FriendlyMake(unittest.TestCase):
             commands.perform('env')
 
     def test_operating_targets_require_env_before_any_child(self):
-        for target in ('setup', 'doctor', 'run', 'run-scripted', 'test'):
+        for target in ('doctor', 'run', 'run-scripted'):
             with self.subTest(target=target), patch.object(demo.Children, 'start') as start:
                 with self.assertRaisesRegex(demo.DemoError, 'Run make env first'):
                     self.output(target)
@@ -121,6 +123,12 @@ class FriendlyMake(unittest.TestCase):
             self.assertIn('http://100.64.0.10:8942/', output)
 
     def test_make_setup_and_test_never_read_participant_values(self):
+        # Setup and tests also work before make env.
+        with patch.object(demo, 'setup') as setup:
+            self.output('setup')
+            setup.assert_called_once_with()
+        with patch.object(commands, 'project_python', return_value=Path(sys.executable)), patch.object(demo, 'completed'):
+            self.output('test')
         self.output('env')
         # A synthetic invalid assignment proves these paths do not parse values.
         (self.root / '.env').write_text('UNKNOWN=synthetic-not-for-builds\n')
@@ -213,6 +221,43 @@ class FriendlyMake(unittest.TestCase):
         with self.assertRaises(demo.DemoError), patch.object(commands.os, 'kill') as kill:
             commands.stop_checkout(self.root)
         kill.assert_not_called()
+
+    def test_crashed_private_socket_is_recovered_and_can_restart(self):
+        with chdir(self.root):
+            path = commands.runtime_directory(self.root) / 'control.sock'
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as crashed:
+                crashed.bind(commands.control_address(self.root))
+                path.chmod(0o600)
+            with patch.object(commands.os, 'kill') as kill:
+                self.assertIn('stale control socket', self.output('stop'))
+                kill.assert_not_called()
+            self.assertFalse(path.exists())
+            control = commands.CheckoutControl(self.root)
+            control.start()
+            control.close()
+            self.assertFalse(path.exists())
+
+    def test_timeout_permission_and_changed_socket_never_unlink(self):
+        with chdir(self.root):
+            path = commands.runtime_directory(self.root) / 'control.sock'
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as crashed:
+                crashed.bind(commands.control_address(self.root))
+                path.chmod(0o600)
+            for error in (TimeoutError(), PermissionError(errno.EACCES, 'denied')):
+                with self.subTest(error=type(error).__name__), patch.object(commands.socket, 'socket') as factory:
+                    factory.return_value.__enter__.return_value.connect.side_effect = error
+                    with self.assertRaises(demo.DemoError):
+                        commands.stop_checkout(self.root)
+                    self.assertTrue(path.exists())
+            def replace_socket(*args):
+                path.unlink()
+                path.write_text('replacement must survive')
+                raise ConnectionRefusedError(errno.ECONNREFUSED, 'refused')
+            with patch.object(commands.socket, 'socket') as factory:
+                factory.return_value.__enter__.return_value.connect.side_effect = replace_socket
+                with self.assertRaises(demo.DemoError):
+                    commands.stop_checkout(self.root)
+            self.assertEqual(path.read_text(), 'replacement must survive')
 
     def test_real_stop_contacts_only_own_checkout_socket(self):
         source = str(SOURCE)

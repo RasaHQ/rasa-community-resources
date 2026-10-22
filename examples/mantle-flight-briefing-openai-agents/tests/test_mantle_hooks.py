@@ -54,17 +54,19 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         await self.jobs._jobs[job_id].task
         value = await self.jobs.briefing(self.owner, action='get', job_id=job_id)
         text = await self.present(value)
-        self.assertIn('Margin: 120.0 minutes', text)
-        self.assertEqual(text.count('[REPLAY]'), 3)
-        self.assertIn('not bound to this conversation', text)
+        self.assertIn('panel on the right', text)
+        self.assertNotIn('120.0', text)
+        self.assertLess(len(text), 180)
+        self.assertNotIn('[REPLAY]', text)
+        self.assertNotIn('Card request:', text)
         self.assertNotIn('9999', text)
         await self.jobs.briefing(self.owner, action='revise', job_id=job_id,
                                 change='Replay DEMO101 morning weather')
         pending = await self.jobs.briefing(self.owner, action='get', job_id=job_id)
-        self.assertIn('superseded; replacement pending', await self.present(pending))
+        self.assertIn('updating', await self.present(pending))
         await self.jobs._jobs[job_id].task
         updated = await self.jobs.briefing(self.owner, action='get', job_id=job_id)
-        self.assertIn('Margin: 120.0 minutes', await self.present(updated))
+        self.assertIn('panel on the right', await self.present(updated))
         unrelated = await run_modify(self.registry, 'model_response', ModelResponsePayload(
             sender_id='conversation-b', text='No cards here'))
         self.assertEqual(unrelated.payload.text, 'No cards here')
@@ -93,7 +95,9 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
             await context.send(response.text)
         # The actual collecting channel splits double-newline paragraphs.
         delivered = '\n\n'.join(message['text'] for message in output.messages)
-        self.assertIn('Margin: 120.0 minutes', delivered)
+        self.assertIn('panel on the right', delivered)
+        self.assertNotIn('120.0', delivered)
+        self.assertNotIn('Card request:', delivered)
         self.assertNotIn('9999', delivered)
         self.assertEqual(tracker.latest_bot_utterance.text, delivered)
 

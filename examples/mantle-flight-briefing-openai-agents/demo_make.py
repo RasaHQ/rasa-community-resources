@@ -2,6 +2,7 @@
 
 sow: software-factories-masterclass-SOW-02
 """
+import errno
 import json
 import os
 from pathlib import Path
@@ -138,7 +139,24 @@ def stop_checkout(root):
             time.sleep(0.05)
         if path.exists():
             raise demo.DemoError('The checkout has not finished stopping; do not start another demo yet.')
-    except OSError:
+    except OSError as exc:
+        if exc.errno == errno.ECONNREFUSED:
+            # A crashed launcher leaves a socket inode, never a PID to signal.
+            # Recheck the exact private inode after the failed connection so a
+            # replaced path, symlink or foreign object cannot be removed.
+            try:
+                current = path.lstat()
+            except FileNotFoundError:
+                print('The stopped demo control socket is already gone.', flush=True)
+                return
+            identity = lambda item: (item.st_dev, item.st_ino, item.st_uid, item.st_mode)
+            if (identity(current) == identity(info)
+                    and stat.S_ISSOCK(current.st_mode)
+                    and current.st_uid == os.getuid()
+                    and stat.S_IMODE(current.st_mode) == 0o600):
+                path.unlink()
+                print('Removed the crashed demo’s stale control socket; no process was signalled.', flush=True)
+                return
         raise demo.DemoError('The checkout control socket is stale or unavailable; no process was signalled.') from None
 
 
@@ -226,7 +244,7 @@ def create_env():
 
 def ready_environment(*, credentials=True):
     demo = launcher()
-    if not (demo.ROOT / '.env').exists():
+    if credentials and not (demo.ROOT / '.env').exists():
         raise demo.DemoError('Run make env first, then fill in your own credential values.')
     return demo.child_environment(credentials=credentials)
 

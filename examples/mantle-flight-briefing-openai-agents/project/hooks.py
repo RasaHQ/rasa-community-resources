@@ -1,4 +1,4 @@
-"""Present source-backed text cards; class ownership uses capability IDs.
+"""Present short validated panel notices; class ownership uses capability IDs.
 
 This pin cannot forward engine identity as MCP metadata. No ownership claim
 is inferred from these presentation hooks. Actual runtime proof is required.
@@ -40,11 +40,16 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
         # Build text only from Core-validated references; numbers are never
         # copied from a specialist's or Mantle model's free-form summary.
         try:
-            cards = render_cards(value)
-            status = value.get("status")
-            prefix = "Briefing complete. " if status == "complete" else "Briefing incomplete; some sources are unavailable. "
-            boundary = "Access uses possession of a private briefing ID; it is not bound to this conversation. "
-            _pending_cards[result.sender_id] = prefix + boundary + "\n\n" + cards
+            # Validate every reference before announcing the panel. Detailed
+            # values and provenance belong to the graphical cards, not speech.
+            render_cards(value)
+            if any(card.get("replaced") is True for card in value["cards"]):
+                text = "Your briefing is updating. Check the panel on the right for the current cards."
+            elif value.get("status") == "complete":
+                text = "Your briefing is ready in the panel on the right. Check the cards for source details and assumptions."
+            else:
+                text = "Some briefing sources are unavailable. Check the panel on the right for the available cards and reasons."
+            _pending_cards[result.sender_id] = text
         except Exception:
             # Tool-result hooks are fail-open in Mantle. Handle bad cards here
             # so the final utterance cannot present an unchecked model summary.
