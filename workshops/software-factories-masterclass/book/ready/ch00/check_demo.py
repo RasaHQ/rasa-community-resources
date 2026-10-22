@@ -1,5 +1,4 @@
 """Read the local product page; four empty or unavailable cards are not completion.
-sow: software-factories-masterclass-SOW-02
 """
 from html.parser import HTMLParser
 import argparse

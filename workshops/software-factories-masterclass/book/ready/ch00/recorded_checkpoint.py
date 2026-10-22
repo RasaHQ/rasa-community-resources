@@ -1,5 +1,4 @@
 """Recorded sources for the normal Mantle/MCP workflow; no alternate renderer.
-sow: software-factories-masterclass-SOW-02
 """
 from datetime import datetime
 import hashlib
