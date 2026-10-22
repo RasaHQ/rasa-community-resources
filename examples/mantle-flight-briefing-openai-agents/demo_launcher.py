@@ -22,6 +22,7 @@ import tomllib
 from urllib.parse import urlsplit
 from urllib.request import ProxyHandler, build_opener
 from voice_config import VOICE_OFF_TEXT
+from demo_host import validate_host
 
 ROOT = Path(__file__).resolve().parent
 PROJECT = ROOT / 'project'
@@ -178,11 +179,11 @@ def setup():
         children.close()
 
 
-def require_free_ports():
+def require_free_ports(host="127.0.0.1"):
     for port in (8942, 5005):
         with socket.socket() as probe:
             try:
-                probe.bind(('127.0.0.1', port))
+                probe.bind((host, port))
             except OSError:
                 raise DemoError('Port ' + str(port) + ' is in use; stop your earlier demo before ./demo run.') from None
 
@@ -206,7 +207,7 @@ def start_inspector(children, env, mode):
     argv = [str(python_at(PROJECT)), str(Path(__file__).resolve()), '_inspector', mode]
     process = children.start(argv, cwd=PROJECT, env=env)
     try:
-        wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=90)
+        wait_http(process, 'http://' + env.get('BRIEFING_DEMO_HOST', '127.0.0.1') + ':5005/webhooks/inspector/inspect.html', timeout=90)
         return process, env
     except DemoError:
         if not env.get('DEEPGRAM_API_KEY', '').strip():
@@ -216,17 +217,19 @@ def start_inspector(children, env, mode):
         text_env.pop('DEEPGRAM_API_KEY', None)
         print(VOICE_FAILED_TEXT, flush=True)
         process = children.start(argv, cwd=PROJECT, env=text_env)
-        wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=90)
+        wait_http(process, 'http://' + env.get('BRIEFING_DEMO_HOST', '127.0.0.1') + ':5005/webhooks/inspector/inspect.html', timeout=90)
         return process, text_env
 
 
-def run_demo(scripted=False):
+def run_demo(scripted=False, host="127.0.0.1"):
+    validate_host(host)
     if os.name != 'posix':
         raise DemoError('Use macOS, Linux or WSL for this process-group launcher.')
     if not all(python_at(d).is_file() for d in (PROJECT, WORKER)):
         raise DemoError('Run ./demo setup before ./demo run.')
-    require_free_ports()
+    require_free_ports(host)
     env = child_environment()
+    env['BRIEFING_DEMO_HOST'] = host
     force_scripted = scripted
     scripted = scripted or not any(env.get(k, '').strip() for k in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY'))
     if scripted:
@@ -264,13 +267,13 @@ def run_demo(scripted=False):
         completed(children, [str(python_at(PROJECT)), '-m', 'rasa', 'train'],
                   cwd=PROJECT, env=env, timeout=180,
                   failure='Mantle training failed; check the class project and its locked release before running again.')
-        service = children.start([str(python_at(WORKER)), '-m', 'briefing', '--public-sources'], cwd=ROOT, env=env)
-        wait_http(service, 'http://127.0.0.1:8942/cards')
+        service = children.start([str(python_at(WORKER)), '-m', 'briefing', '--public-sources', '--host', host], cwd=ROOT, env=env)
+        wait_http(service, 'http://' + host + ':8942/cards')
         mode = 'scripted' if scripted else 'live'
         inspector, inspector_env = start_inspector(children, env, mode)
-        print('Open the demo: http://127.0.0.1:8942/', flush=True)
-        print('Cards diagnostic: http://127.0.0.1:8942/cards', flush=True)
-        print('Mantle Inspector diagnostic: http://127.0.0.1:5005/webhooks/inspector/inspect.html', flush=True)
+        print('Open the demo: http://' + host + ':8942/', flush=True)
+        print('Cards diagnostic: http://' + host + ':8942/cards', flush=True)
+        print('Mantle Inspector diagnostic: http://' + host + ':5005/webhooks/inspector/inspect.html', flush=True)
         print('Enter your journey: callsign=TEST123 meeting=2026-10-22T21:00:00Z transfer=45', flush=True)
         print('TEST123 is syntax, not a promised airborne flight. Use an actual callsign for available flight data.', flush=True)
         print('Press Ctrl-C here to stop both services and their children.', flush=True)
@@ -388,6 +391,23 @@ def install_voice_channels(voice):
     channels.load_integration_channels = runtime_channels
 
 
+class SafeRunParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise DemoError('Use ./demo run [--scripted] [--host 100.123.206.49].')
+
+
+def install_mcp_host(host):
+    """Runtime endpoint selection; preserve parser, token placeholder and auth."""
+    from rasa.mantle.config.mcp import MCPServersSettings
+    original = MCPServersSettings.to_connection_config
+    def connection(settings, server_id):
+        result = original(settings, server_id)
+        if server_id == 'briefing' and result['url'] == 'http://127.0.0.1:8942/mcp':
+            result['url'] = 'http://' + validate_host(host) + ':8942/mcp'
+        return result
+    MCPServersSettings.to_connection_config = connection
+
+
 def inspector(mode):
     # Import the normal entrypoint before touching the pinned factory seam.
     sys.path[:0] = [str(ROOT), str(PROJECT)]
@@ -406,7 +426,9 @@ def inspector(mode):
     if mode == 'scripted':
         from rasa.mantle.llm.client import LLMClient
         LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())
-    sys.argv = ['rasa', 'inspect', '--interface', '127.0.0.1', '--port', '5005', '--quiet']
+    host = validate_host(os.environ.get('BRIEFING_DEMO_HOST', '127.0.0.1'))
+    install_mcp_host(host)
+    sys.argv = ['rasa', 'inspect', '--interface', host, '--port', '5005', '--quiet']
     rasa_main()
 
 
@@ -415,8 +437,12 @@ def main(argv=None):
     try:
         if argv == ['setup']:
             setup()
-        elif argv in (['run'], ['run', '--scripted']):
-            run_demo(scripted='--scripted' in argv)
+        elif argv and argv[0] == 'run':
+            parser = SafeRunParser(add_help=False)
+            parser.add_argument('--host', default='127.0.0.1', choices=('127.0.0.1', '100.123.206.49'))
+            parser.add_argument('--scripted', action='store_true')
+            args = parser.parse_args(argv[1:])
+            run_demo(scripted=args.scripted, host=args.host)
         elif argv in (['_inspector', 'scripted'], ['_inspector', 'live']):
             inspector(argv[1])
         else:

@@ -128,3 +128,10 @@ two-shell instructions are not this class launcher's setup path.
 
 Teaching code uses the repository [license](../../LICENSE). Rasa Pro has its own
 terms; any licence requirement is an explicit prerequisite, not a skipped check.
+
+For the operator's Mac mini tailnet view, use
+`./demo run --host 100.123.206.49` and open
+`http://mac-mini.tail29b7b0.ts.net:8942/` from that tailnet. Both services bind
+only that assigned address; default launch stays on 127.0.0.1. The display is
+shared with tailnet viewers, not private per browser. MCP still needs the
+runtime transport token. No public interface or wildcard host is accepted.

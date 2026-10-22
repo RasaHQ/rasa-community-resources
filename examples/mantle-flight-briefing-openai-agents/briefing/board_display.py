@@ -4,10 +4,13 @@ No job identifier or credential is accepted by this endpoint. The service
 selects its current classroom board internally. This wrapper starts no server.
 """
 from collections.abc import Callable
+from urllib.parse import quote
+from demo_host import validate_host, display_hosts, allowed_client
 
 
 class BoardDisplay:
-    def __init__(self, app, *, render_current: Callable[[], str]):
+    def __init__(self, app, *, render_current: Callable[[], str], host="127.0.0.1"):
+        self._host = validate_host(host)
         self._app = app
         self._render_current = render_current
 
@@ -18,8 +21,9 @@ class BoardDisplay:
         hosts = [v.decode('ascii', errors='replace') for k, v in headers if k.lower() == b'host']
         origins = [v.decode('ascii', errors='replace') for k, v in headers if k.lower() == b'origin']
         host = hosts[0] if len(hosts) == 1 else ''
-        valid_host = host == '127.0.0.1' or (host.startswith('127.0.0.1:') and host[10:].isdigit())
-        local_client = (scope.get('client') or ('', 0))[0] == '127.0.0.1'
+        valid_host = any(host == candidate or (host.startswith(candidate + ':')
+                         and host[len(candidate) + 1:].isdigit()) for candidate in display_hosts(self._host))
+        local_client = allowed_client((scope.get('client') or ('', 0))[0], self._host)
         same_origin = not origins or origins == ['http://' + host]
         dashboard = scope.get('path') == '/'
         status = 200
@@ -30,7 +34,7 @@ class BoardDisplay:
             status = 400
         else:
             try:
-                body = DASHBOARD if dashboard else self._render_current().encode('utf-8')
+                body = dashboard_html(self._host) if dashboard else self._render_current().encode('utf-8')
             except Exception:
                 # Never echo a rendering exception, source record or capability.
                 status = 503
@@ -41,7 +45,7 @@ class BoardDisplay:
             (b'referrer-policy', b'no-referrer'),
             (b'x-content-type-options', b'nosniff'),
             (b'content-security-policy',
-             b"default-src 'none'; style-src 'unsafe-inline'; frame-src 'self' http://127.0.0.1:5005; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+             ("default-src 'none'; style-src 'unsafe-inline'; frame-src 'self' http://" + self._host + ":5005; frame-ancestors 'none'; base-uri 'none'; form-action 'none'").encode()
              if dashboard else b"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'"),
         ]
         if status == 200 and not dashboard:
@@ -62,3 +66,9 @@ iframe{border:1px solid #d3d7df;border-radius:8px;background:white;width:100%;he
 <iframe title="Mantle conversation" src="http://127.0.0.1:5005/webhooks/inspector/inspect.html?projectUrl=http%3A%2F%2F127.0.0.1%3A5005"></iframe>
 <iframe title="Validated source cards" src="/cards"></iframe>
 </main></body></html>"""
+
+
+def dashboard_html(host):
+    validate_host(host)
+    return DASHBOARD.replace(b'127.0.0.1', host.encode()).replace(
+        b'http%3A%2F%2F127.0.0.1%3A5005', quote('http://' + host + ':5005', safe='').encode())

@@ -21,6 +21,7 @@ def main():
                        help='SCRIPTED tool control with real keyless public source references')
     modes.add_argument('--live-model', action='store_true',
                         help='Real managed model with constructed REPLAY source fixtures')
+    parser.add_argument('--host', default='127.0.0.1', choices=('127.0.0.1', '100.123.206.49'))
     args = parser.parse_args()
     if args.live_model and any(os.environ.get(name, '').strip()
                                for name in ('OPENAI_BASE_URL', 'ANTHROPIC_BASE_URL')):
@@ -55,9 +56,9 @@ def main():
             return client
         runner = LiveFixtureRunner(client_factory, model=model)
     app = create_app(Jobs(runner, replacement_plan=runner.replacement_plan,
-                          ownership_mode="capability"), transport_token=token)
+                          ownership_mode="capability"), transport_token=token, host=args.host)
     try:
-        uvicorn.run(app, host="127.0.0.1", port=8942, log_level="warning")
+        uvicorn.run(app, host=args.host, port=8942, log_level="warning")
     finally:
         if args.public_sources:
             runner.close()

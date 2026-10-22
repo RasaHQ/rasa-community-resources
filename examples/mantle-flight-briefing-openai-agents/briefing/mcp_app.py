@@ -119,7 +119,10 @@ class _MantlePeer:
         return await self._app(scope, inspected_receive, safe_send)
 
 
-def create_app(jobs: Jobs, *, transport_token: str):
+def create_app(jobs: Jobs, *, transport_token: str, host="127.0.0.1"):
+    from demo_host import validate_host, display_hosts
+    from mcp.server.transport_security import TransportSecuritySettings
+    validate_host(host)
     async def briefing(action: Literal["start", "get", "revise"], ctx: Context,
                        request: str | None = None, briefing_id: str | None = None,
                        change: str | None = None) -> BriefingResponse:
@@ -150,7 +153,11 @@ def create_app(jobs: Jobs, *, transport_token: str):
 
     tool.fn_metadata.arg_model = StrictArguments
     tool.parameters = StrictArguments.model_json_schema(by_alias=True)
-    server = FastMCP("briefing", tools=[tool], host="127.0.0.1", port=8942,
+    server = FastMCP("briefing", tools=[tool], host=host, port=8942,
+                     transport_security=TransportSecuritySettings(
+                         enable_dns_rebinding_protection=True,
+                         allowed_hosts=[value + ":*" for value in display_hosts(host)],
+                         allowed_origins=["http://" + value + ":*" for value in display_hosts(host)]),
                      stateless_http=True, json_response=True)
     def render_current_board():
         # One renderer, owned by Core. No local HTML/card implementation.
@@ -173,5 +180,5 @@ def create_app(jobs: Jobs, *, transport_token: str):
 
     app.router.lifespan_context = application_lifespan
     peer = _MantlePeer(app, transport_token)
-    peer._display = BoardDisplay(peer._app, render_current=render_current_board)
+    peer._display = BoardDisplay(peer._app, render_current=render_current_board, host=host)
     return peer
