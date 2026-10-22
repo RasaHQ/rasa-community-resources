@@ -104,6 +104,13 @@ async def main():
                 assert jobs.display_place().code == 'JFK'
                 assert 'New York' in page and 'local time' in page
                 assert 'forecast, issued' in page
+                assert page.count('as of 08:00 at JFK') >= 2
+                # Viewing later does not silently turn snapshot-relative time
+                # into a fresh observation. The visible reference stays fixed.
+                now += timedelta(hours=2)
+                later_page = (await client.get('/cards')).text
+                assert later_page == page
+                assert 'as of 10:00 at JFK' not in later_page
                 timeline = next(c for c in final['cards'] if c['event']['component'] == 'arrival_timeline')
                 assert any(a['label'] == 'airport_city_planning_allowance' for a in timeline['data_ref']['assumptions'])
                 assert 'ASSUMPTION' in page and 'not live traffic' in page
