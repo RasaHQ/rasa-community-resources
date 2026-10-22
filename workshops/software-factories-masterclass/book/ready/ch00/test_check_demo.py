@@ -16,6 +16,15 @@ class CompletionControls(unittest.TestCase):
         self.assertFalse(inspect_cards(board(EXPECTED[:3])))
         self.assertFalse(inspect_cards(board(EXPECTED[:3] + (EXPECTED[0],))))
 
+    def test_empty_answers_cannot_pass_with_titles_and_provenance(self):
+        empty = board().replace('<p>source result</p>', '<p> \n </p><p class="zc-prov">fetched 07:00 UTC</p>')
+        self.assertFalse(inspect_cards(empty))
+        for name in EXPECTED:
+            with self.subTest(card=name):
+                html = board().replace('<h3>' + name + '</h3><p>source result</p>',
+                                       '<h3>' + name + '</h3><p> </p>')
+                self.assertFalse(inspect_cards(html))
+
     def test_recorded_and_public_checks_cannot_accept_each_others_mode(self):
         replay = board().replace('<h3>', '<span>REPLAY</span><h3>')
         self.assertFalse(inspect_cards(replay))

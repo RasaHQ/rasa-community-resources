@@ -15,19 +15,30 @@ class Cards(HTMLParser):
         super().__init__()
         self.current = None
         self.cards = []
+        self.elements = []
 
     def handle_starttag(self, tag, attributes):
         attrs = dict(attributes)
         classes = attrs.get('class', '').split()
         if tag == 'article' and 'zc-card' in classes:
             self.current = {'component': next((name for name in EXPECTED if 'zc-' + name in classes), None),
-                            'unavailable': 'zc-unavailable' in classes, 'replay': False, 'text': []}
-        if self.current is not None and 'zc-unavail' in classes:
-            self.current['unavailable'] = True
+                            'unavailable': 'zc-unavailable' in classes, 'replay': False, 'text': [], 'answer': []}
+            self.elements = []
+        if self.current is not None:
+            if 'zc-unavail' in classes:
+                self.current['unavailable'] = True
+            # A heading, freshness badge or provenance alone is not an answer.
+            metadata = tag in ('h3', 'title', 'th', 'style', 'script', 'details') or any(
+                name in ('zc-prov', 'zc-attr', 'zc-fresh', 'zc-tag') for name in classes)
+            if tag not in ('area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+                           'link', 'meta', 'param', 'source', 'track', 'wbr'):
+                self.elements.append((tag, metadata))
 
     def handle_data(self, text):
         if self.current is not None:
             self.current['text'].append(text)
+            if not any(metadata for _, metadata in self.elements):
+                self.current['answer'].append(text)
             if text.strip() == 'REPLAY':
                 self.current['replay'] = True
 
@@ -35,6 +46,12 @@ class Cards(HTMLParser):
         if tag == 'article' and self.current is not None:
             self.cards.append(self.current)
             self.current = None
+            self.elements = []
+        elif self.current is not None:
+            for index in range(len(self.elements) - 1, -1, -1):
+                if self.elements[index][0] == tag:
+                    del self.elements[index:]
+                    break
 
 
 def inspect_cards(html, *, require_replay=False, transfer_minutes=None):
@@ -42,7 +59,9 @@ def inspect_cards(html, *, require_replay=False, transfer_minutes=None):
     parser.feed(html)
     components = [card['component'] for card in parser.cards]
     if (None in components or len(components) != 4 or sorted(components) != sorted(EXPECTED)
-            or any(card['unavailable'] for card in parser.cards)):
+            or any(card['unavailable'] or not any(
+                character.isalnum() for character in ''.join(card['answer']))
+                   for card in parser.cards)):
         return False
     if require_replay and not all(card['replay'] for card in parser.cards):
         return False
