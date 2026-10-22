@@ -31,7 +31,7 @@ You need:
 - A laptop. Chapters 3 to 7 need a Mac for the protective code checks. No Mac? Pair with someone who has one, or follow **Track B** in the participant guide: Python 3.12 only; 3.13 and 3.14 stop with NOT_READY. Windows is untested.
 - Python 3.12, [uv](https://docs.astral.sh/uv/), Git and Make.
 - A free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Request it first: the form's confirmation page is not the key, and the key reaches you after you submit.
-- An OpenAI API key. Rasa Mantle has no model of its own: in live mode it asks a language model, OpenAI by default, to understand what you type and to choose a tool. The scripted mode (chapter 0 and the other exercises) runs without a key, because teaching code chooses the tools, so you can start while your key is being set up.
+- An OpenAI API key for live mode. Rasa Mantle has no model of its own: in live mode it asks a language model, OpenAI by default, to understand what you type and to choose a tool. Chapter 0 starts in scripted mode, where teaching code chooses the tools, so leave the key empty there.
 - Chapter 5 has an optional paid live builder using the Agents API and `gpt-6-astra`.
 
 Get your own copy. On GitHub, click **Fork** on [RasaHQ/rasa-community-resources](https://github.com/RasaHQ/rasa-community-resources), then clone your fork:
