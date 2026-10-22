@@ -27,7 +27,7 @@ Do these on the facilitator machine, at least a day before and again an hour bef
 - [ ] Clone with Git at the class commit named in the prework mail (`PREWORK.md` in this folder, with its addendum under `brief-me-before-i-fly/`). There is no zip.
 - [ ] Your own license (`RASA_LICENSE`) and OpenAI key (`OPENAI_API_KEY`) are set in your shell. The doctor shows SET or MISSING and never a value. A Deepgram key is optional and only adds voice.
 - [ ] The briefing agent starts from `examples/mantle-flight-briefing-openai-agents/` (`./demo setup`, then `./demo run`: the launcher is added by the class pull request for that example, PR 128, and is not in the repository until it merges) and the doctor is green.
-- [ ] The opening is the natural conversation: ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. The agent assumes a typical transfer time and labels it as an assumption: say "make the transfer an hour" to revise it. This must be frozen and rehearsed by 08:30 UTC. If it isn't, the fallback is the labeled SCRIPTED opening, a recorded flight with its scripted label said aloud. Check an hour before, because flights land. The airport table for a stated destination is (pending: the file is named when the example's pull request lands).
+- [ ] The opening runs the labeled SCRIPTED selector over the real public sources. The data is real and teaching code makes the tool choices, so say so plainly: slide 5 says it too. Ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. The agent assumes a typical transfer time and labels it as an assumption: say "make the transfer an hour" to revise it. This must be frozen and rehearsed by 08:30 UTC. If it isn't, the fallback is the recorded opening, a recorded flight with its REPLAY label said aloud. The OpenAI Agents API is shown live later, in the factory part. Check an hour before, because flights land. The airport table for a stated destination is (pending: the file is named when the example's pull request lands).
 - [ ] The offline factory loop runs: copy `book/ready/ch06` to a new folder, set up Python as Chapter 6 says (`uv venv`, `uv pip install zeocore==0.35.6 httpx==0.28.1`), activate it, then `python run_a6.py tasks/a6-market-watchlist.json candidates/market-good` ends in ACCEPT and `candidates/market-shows-live` ends in REJECT. This needs macOS, because the check runs without network access inside `sandbox-exec`. Use the same folder for slide 26.
 - [ ] The three screens load from a second device on the tailnet, and that second device can't type into the Inspector.
 - [ ] The prework mail went out (`PREWORK.md` and its addendum). Its first step is the free Rasa Developer Edition license sign-up. Then Python 3.12 and uv, your own OpenAI key, and a clone with Git.
@@ -49,7 +49,7 @@ Times are London, with UTC in brackets. "Show" is on screen and "Do" is what the
 
 ### 14:30 The problem and the finished agent (15 min)
 Show: slides 1 to 4 (the plan, Sam and the agent), then slide 5 with screen 2, then slides 6 and 7. Do: watch.
-Ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. Point out that the transfer time is a labeled assumption, then change it by saying so. If the natural conversation wasn't frozen and rehearsed, run the labeled SCRIPTED opening and say it is scripted.
+Say: "The data is real. The choice of tools is scripted, and I'll show the live builder later." Ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. Point out that the transfer time is a labeled assumption, then change it by saying so. If the scripted opening wasn't frozen and rehearsed, run the recorded opening and say it is a recording.
 If voice isn't verified on the day, type the request and say so. Don't claim voice that you didn't see work.
 
 ### 14:45 The real question, the factory idea and the two tools (30 min)
@@ -76,7 +76,7 @@ Show: slide 30. Say what they built and where to go next: the book chapters, and
 | What fails | What you do |
 | --- | --- |
 | Voice | Type the request. Say voice wasn't shown today. |
-| No flight is airborne, or the route is empty | Run the labeled SCRIPTED opening and say it is scripted. If a source is down, the cards say unavailable with a reason. That is the honest state, so show it and say why. |
+| No flight is airborne, or the route is empty | Run the recorded opening and say it is a recording. If a source is down, the cards say unavailable with a reason. That is the honest state, so show it and say why. |
 | A public source is slow | Wait once, then continue with the recorded four cards and say they're recorded. |
 | The live builder fails | Run the scripted builder from Chapter 6 and the finished four-card version. Say clearly that these are a scripted builder and a finished version. |
 | The console fails | Run the offline loop from a terminal with `run_a6.py` and show the decision lines. |
