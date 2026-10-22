@@ -2,7 +2,7 @@
 
 **Goal:** look at one card, find the code that fetched its data, and read the rules that label it.
 
-**You need first:** Chapter 1, and the checkpoint folder from Chapter 0. You only read files here. Nothing runs, and no key or account is needed.
+**You need first:** Chapter 1, and the ready folder from Chapter 0. You only read files here. Nothing runs, and no key or account is needed.
 
 This chapter is short on purpose. It shows you where a card's data comes from. A later "Now change it" step, where you add one field to a card and check the label rules, follows after the class.
 

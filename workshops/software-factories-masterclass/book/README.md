@@ -32,7 +32,7 @@ Each chapter builds on the one before it, and every chapter has its own ready fo
 
 | Chapter | Title | You build | You are done when |
 | --- | --- | --- | --- |
-| [0](00-run-the-finished-agent.md) | Run the finished agent | Clone, set up and run the briefing agent, and see its four cards | The doctor passes and the four recorded cards show (a live flight is the extra, not the check) |
+| [0](00-run-the-finished-agent.md) | Run the agent you will learn to build | Run the recorded briefing agent, see four REPLAY cards, then ask it to change its transfer allowance | `ch00 OK`: `check_demo.py` shows four REPLAY cards and your 30 minute allowance |
 | [1](01-what-a-mantle-agent-is.md) | What a Rasa Mantle agent is | Find the agent, the skill and the tool in the folder (short chapter: the change step follows after the class) | `ch01 OK`: you can point to the agent, the skill and the tool |
 | [2](02-cards-from-real-sources.md) | Cards from real sources | Find where one card's data comes from and the rules that label it (short chapter: the change step follows after the class) | `ch02 OK`: you can point to the skill, the tool and one reader |
 | [3](03-a-factory-starts-with-a-task.md) | A factory starts with a task | See a task judged, then set your own limit and let the builder's attempt be judged | `ch03 OK`: the builder's attempt for your task is accepted |

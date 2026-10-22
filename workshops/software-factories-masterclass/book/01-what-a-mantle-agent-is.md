@@ -2,7 +2,7 @@
 
 **Goal:** find the three parts of the briefing agent in its folder, and say in plain words what each one does.
 
-**You need first:** Chapter 0, so that the briefing agent's checkpoint folder is on your computer. You only read files here. Nothing runs, and no key or account is needed.
+**You need first:** Chapter 0, so that the briefing agent's ready folder is on your computer. You only read files here. Nothing runs, and no key or account is needed.
 
 This chapter is short on purpose. It shows you the parts. A later "Now change it" step, where you change one part and check it, follows after the class.
 
@@ -20,7 +20,7 @@ A **tool** is a function the agent can ask to run. The agent does not read fligh
 
 ## Get to the folder
 
-Set `REPO` to your clone, then go to the checkpoint folder from Chapter 0:
+Set `REPO` to your clone, then go to the ready folder from Chapter 0:
 
 ```bash
 export REPO=~/rasa-community-resources
@@ -71,7 +71,7 @@ Run this in the `demo` folder:
 ( set -e; ls -1 project/agent.yml project/skills/briefing/skill.md briefing/mcp_app.py; echo "ch01 OK" )
 ```
 
-It lists the agent, the skill and the tool, then prints `ch01 OK`. If a file is missing, you are in the wrong folder or Chapter 0's checkpoint is incomplete. Run the `cd` command above again.
+It lists the agent, the skill and the tool, then prints `ch01 OK`. If a file is missing, you are in the wrong folder or Chapter 0's ready folder is incomplete. Run the `cd` command above again.
 
 You can now point to the agent, the skill and the tool in the folder.
 
