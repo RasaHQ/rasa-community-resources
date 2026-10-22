@@ -247,6 +247,9 @@ def journey(text, previous=None, *, now=None):
         inputs.pop('transfer_minutes', None)
         inputs['awaiting'] = 'transfer_minutes'
         raise TravellerQuestion('transfer_minutes', 'How long should I allow to get from the airport to your meeting?', inputs)
+    if minutes is None and inputs.get('awaiting') == 'transfer_minutes':
+        raise TravellerQuestion('transfer_minutes',
+            "I need an airport-to-meeting allowance in minutes or hours; for example, 'allow 30 minutes'.", inputs)
     if minutes is not None:
         inputs['transfer_minutes'] = minutes
         inputs['transfer_assumed'] = False
@@ -257,7 +260,10 @@ def journey(text, previous=None, *, now=None):
     inputs.pop('awaiting', None)
     if 'meeting_time' not in inputs:
         inputs['awaiting'] = 'meeting_time'
-        raise TravellerQuestion('meeting_time', 'When is your meeting? Tell me the day and time; I’ll use the destination’s local time.', inputs)
+        question = ('To check whether you will make it, I need the meeting day and local time; for example, tomorrow at 6 pm.'
+                    if previous and previous.get('awaiting') == 'meeting_time' and unknown_flight(text)
+                    else 'When is your meeting? Tell me the day and time; I’ll use the destination’s local time.')
+        raise TravellerQuestion('meeting_time', question, inputs)
     return inputs
 
 

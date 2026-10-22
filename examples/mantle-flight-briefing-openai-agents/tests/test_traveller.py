@@ -30,6 +30,30 @@ class TravellerControls(unittest.TestCase):
             self.assertNotIn('Do you know', notice)
             self.assertEqual(result['candidates'], [])
 
+    def test_uncertain_meeting_answer_keeps_flight_and_explains_required_input(self):
+        with self.assertRaises(TravellerQuestion) as first:
+            journey('Lufthansa 400 to JFK', now=NOW)
+        with self.assertRaises(TravellerQuestion) as followup:
+            journey('not sure', first.exception.inputs, now=NOW)
+        self.assertEqual(followup.exception.field, 'meeting_time')
+        self.assertEqual(followup.exception.inputs['callsign'], 'DLH400')
+        self.assertNotEqual(first.exception.question, followup.exception.question)
+        self.assertNotIn('meeting_time', followup.exception.inputs)
+
+    def test_uncertain_transfer_answer_never_restores_default_allowance(self):
+        original = journey('Lufthansa 400 to JFK, meeting tomorrow at 6 pm', now=NOW)
+        with self.assertRaises(TravellerQuestion) as invalid:
+            journey('Allow bananas minutes to get into town', original, now=NOW)
+        with self.assertRaises(TravellerQuestion) as followup:
+            journey('no', invalid.exception.inputs, now=NOW)
+        self.assertEqual(followup.exception.field, 'transfer_minutes')
+        self.assertNotIn('transfer_minutes', followup.exception.inputs)
+        self.assertEqual(followup.exception.inputs['callsign'], original['callsign'])
+        self.assertEqual(followup.exception.inputs['meeting_time'], original['meeting_time'])
+        self.assertNotEqual(invalid.exception.question, followup.exception.question)
+        corrected = journey('30 minutes', followup.exception.inputs, now=NOW)
+        self.assertEqual(corrected['transfer_minutes'], 30)
+
     def test_airport_city_and_airline_words_are_resolved_in_code(self):
         self.assertEqual(destination_hint('I am heading to JFK'), 'KJFK')
         self.assertEqual(destination_hint('New York'), 'New York')
