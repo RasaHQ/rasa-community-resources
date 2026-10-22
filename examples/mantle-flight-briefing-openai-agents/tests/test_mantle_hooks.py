@@ -57,6 +57,7 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         self.assertIn('panel on the right', text)
         self.assertNotIn('120.0', text)
         self.assertLess(len(text), 180)
+        self.assertIn('Replay:', text)
         self.assertNotIn('[REPLAY]', text)
         self.assertNotIn('Card request:', text)
         self.assertNotIn('9999', text)

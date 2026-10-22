@@ -49,6 +49,8 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
                 text = "Your briefing is ready in the panel on the right. Check the cards for source details and assumptions."
             else:
                 text = "Some briefing sources are unavailable. Check the panel on the right for the available cards and reasons."
+            if any(card.get("data_ref", {}).get("replay") is True for card in value["cards"]):
+                text = "Replay: " + text
             _pending_cards[result.sender_id] = text
         except Exception:
             # Tool-result hooks are fail-open in Mantle. Handle bad cards here
