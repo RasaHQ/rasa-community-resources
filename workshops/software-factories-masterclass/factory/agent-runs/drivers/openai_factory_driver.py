@@ -310,7 +310,14 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
         (directory / 'console.json').write_text(redact(json.dumps(record, indent=2)) + '\n')
     save('BUILDER_RUNNING')
     try:
-        installed, problems = module('factory').prepare(environment_path or FACTORY / 'environment.json')
+        factory = module('factory')
+        profile_path = environment_path or FACTORY / 'environment.json'
+        if factory.sandbox_unavailable(profile_path):
+            event(stage='verification', status='NOT_READY', action='requires_macos_sandbox')
+            save('NOT_READY')
+            print('could not run: this check needs macOS (sandbox-exec). The attempt was not judged.')
+            return 2
+        installed, problems = factory.prepare(profile_path)
         if problems:
             event(stage='verification', status='NOT_READY', action='environment_not_ready')
             save('NOT_READY')

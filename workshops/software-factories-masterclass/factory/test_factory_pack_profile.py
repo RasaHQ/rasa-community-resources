@@ -48,6 +48,16 @@ class PackControls(unittest.TestCase):
             with self.subTest(limit=invalid), self.assertRaises(ValueError):
                 scratch.visible_task({**task, 'limit': invalid})
 
+    def test_missing_required_sandbox_is_not_a_candidate_rejection(self):
+        self.environment.write_text('{"requires_sandbox_exec":true}')
+        with patch.object(factory.platform, 'system', return_value='Linux'), \
+                patch.object(factory, 'run_tests') as tests:
+            code = factory.main(self.task_path, self.candidate, self.root / 'no-sandbox',
+                                pack_root=self.pack, environment_path=self.environment, strict=True)
+        self.assertEqual(code, 2)
+        tests.assert_not_called()
+        self.assertFalse((self.root / 'no-sandbox/decision.json').exists())
+
     def test_a6_profile_requires_supported_stable_core_and_records_actual_version(self):
         profile = Path(factory.__file__).with_name('environment-a6.json')
         with patch.object(factory.platform, 'python_version_tuple', return_value=('3', '12', '0')), \

@@ -172,11 +172,21 @@ class DriverControls(unittest.TestCase):
                               event=lambda **values: None, model='scripted', invoke=invoke,
                               tool_factory=lambda *args: {})
 
+    def test_missing_sandbox_stops_before_any_native_request(self):
+        run = self.root / 'no-sandbox'
+        factory = SimpleNamespace(sandbox_unavailable=lambda path: True)
+        with patch.object(driver, 'module', return_value=factory), patch.object(driver, 'native_builder') as native:
+            code = driver.execute(self.task_path, self.workspace, run, client=object(), model='never-called')
+        self.assertEqual(code, 2)
+        native.assert_not_called()
+        self.assertEqual(json.loads((run / 'console.json').read_text())['state'], 'NOT_READY')
+        self.assertFalse((run / 'verification').exists())
+
     def test_noncompleted_session_never_collects_or_accepts_partial_edits(self):
         for status in ('incomplete', 'failed', 'cancelled', None):
             with self.subTest(status=status):
                 run = self.root / ('stopped-' + str(status))
-                factory = SimpleNamespace(prepare=lambda path: ('injected', []))
+                factory = SimpleNamespace(prepare=lambda path: ('injected', []), sandbox_unavailable=lambda path: False)
                 with patch.object(driver, 'module', return_value=factory) as load, \
                         patch.object(driver, 'native_builder', return_value=SimpleNamespace(ok=False, status=status)):
                     code = driver.execute(self.task_path, self.workspace, run, client=object(), model='injected')
@@ -200,7 +210,7 @@ class DriverControls(unittest.TestCase):
                 Path(verification).mkdir()
                 (Path(verification) / 'decision.json').write_text(json.dumps({'decision': 'ACCEPT' if code == 0 else 'REJECT'}))
                 return code
-            modules = {'collect': SimpleNamespace(main=collect), 'factory': SimpleNamespace(main=factory, prepare=lambda path: ('injected', []))}
+            modules = {'collect': SimpleNamespace(main=collect), 'factory': SimpleNamespace(main=factory, prepare=lambda path: ('injected', []), sandbox_unavailable=lambda path: False)}
             with patch.object(driver, 'module', side_effect=lambda name: modules[name]), \
                     patch.object(driver, 'native_builder', return_value=SimpleNamespace(ok=True, status='completed')):
                 result = driver.execute(self.task_path, self.workspace, run, client=object(), model='injected')

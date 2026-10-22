@@ -35,8 +35,7 @@ and a 20-second transport timeout. It uses `environment={"type":"none"}` so no
 hosted shell/network is implicitly granted; this environment with function tools
 still needs the owner’s bounded live qualification. There is no automatic
 fallback. The CLI requires `--no-session-cap` and an expected cost range in USD cents,
-stated before execution. There is no per-session money cap. The real hard cap
-is the funded OpenAI project's budget, controlled by its account owner. The
+stated before execution. There is no per-session money cap. An account owner can configure an enforced hard project or organization spend limit; a budget alert alone does not stop traffic. Enforcement can lag slightly, so recorded spend may exceed that configured amount. See the [spend-limit guide](https://developers.openai.com/api/docs/guides/spend-limits). The
 provider rejected `spend_control` in a bounded consuming run on 2026-10-22;
 this driver never sends that field, including through Core 0.35.4.
 Use one named model, no retry loop and the local bounds above. Run at most
@@ -108,3 +107,7 @@ The read-only viewer can compare up to four explicit prior teaching run
 directories with repeated `--comparison-run DIRECTORY`. These paths are host
 configuration, never URL parameters. The page shows their actual decisions and
 reasons as separate offline teaching attempts, without claiming model results.
+
+The A6 verifier requires macOS sandbox-exec. The profile declares this
+requirement; missing support returns exit2 before any model request or test,
+without judging the attempt.
