@@ -16,7 +16,10 @@ def main():
             raise SystemExit('Use only --live-model; supply credentials in the facilitator environment.')
 
     parser = SafeParser(description=__doc__)
-    parser.add_argument('--live-model', action='store_true',
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument('--public-sources', action='store_true',
+                       help='SCRIPTED tool control with real keyless public source references')
+    modes.add_argument('--live-model', action='store_true',
                         help='Real managed model with constructed REPLAY source fixtures')
     args = parser.parse_args()
     if args.live_model and any(os.environ.get(name, '').strip()
@@ -28,6 +31,12 @@ def main():
     if not token:
         raise SystemExit("Set the runtime-only BRIEFING_MCP_TOKEN in both facilitator processes")
     runner = ReplayRunner()
+    if args.public_sources:
+        try:
+            from briefing.public_sources import PublicSourcesRunner
+            runner = PublicSourcesRunner()
+        except ImportError:
+            raise SystemExit('Public sources need the reviewed adapter release; update the locked Core pin after it is published.') from None
     if args.live_model:
         from briefing.live import LiveFixtureRunner
         from openai import OpenAI
@@ -47,7 +56,11 @@ def main():
         runner = LiveFixtureRunner(client_factory, model=model)
     app = create_app(Jobs(runner, replacement_plan=runner.replacement_plan,
                           ownership_mode="capability"), transport_token=token)
-    uvicorn.run(app, host="127.0.0.1", port=8942, log_level="warning")
+    try:
+        uvicorn.run(app, host="127.0.0.1", port=8942, log_level="warning")
+    finally:
+        if args.public_sources:
+            runner.close()
 
 
 if __name__ == "__main__":
