@@ -650,6 +650,14 @@ def inspector(mode):
             cleanup.callback(setattr, bootstrap, 'resolve_integration_llm_config', bootstrap.resolve_integration_llm_config)
             LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())
             bootstrap.resolve_integration_llm_config = lambda agent, project_root: {}
+            from rasa.mantle.config.a2a_server import MantleA2AConfigSource
+            original_a2a = MantleA2AConfigSource._read_raw_block
+            # The shipped demo has no A2A server. Stable Mantle otherwise
+            # expands unrelated model placeholders just to discover absence.
+            def declared_a2a_only(source):
+                return original_a2a(source) if source.is_declared() else None
+            cleanup.callback(setattr, MantleA2AConfigSource, '_read_raw_block', original_a2a)
+            MantleA2AConfigSource._read_raw_block = declared_a2a_only
         rasa_main()
 
 
