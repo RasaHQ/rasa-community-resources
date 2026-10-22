@@ -81,6 +81,9 @@ Break: 16:30 to 16:45, with refreshments. Chat and networking are part of the pl
 Your job: walk the room. The three common stops are a missing license (point to the sign-up), a key that isn't set (the doctor shows SET or MISSING, never the value) and a clone made as a zip (clone with Git instead). Tell people that a live flight or a live builder run is an extra, and that the "done when" checks in Chapters 1 to 8 work offline after the one-time install. Chapter 0 needs the license and an internet connection for the install, then runs on recorded data. Only its optional live-source extra needs the internet while it runs.
 Say once at the start: "Keys and the license stay in your own shell or your own Git-ignored .env. Never put one in a tracked file, a tool result, a report or a chat."
 
+### Track B for people with no Mac or no accounts
+If someone has no Mac, or has no license or key yet, point them to "No Mac or no accounts? Track B" in `book/README.md`. It runs chapter 8's ready folder as a small factory and takes about 20 minutes. It needs Python 3.12 and uv, and nothing after the install. Say it plainly: it checks a proposal as data and never runs generated code, so it doesn't give the isolation that the macOS sandbox gives in chapters 3 to 7. Windows is untested. They can pair with a Mac user for chapters 3 to 7 later.
+
 ### 17:20 Close (10 min)
 Show: slide 30. Say what they built and where to go next: the book chapters, and the course "Towards Dark Software Factories" on profrod.ai. Ask what stopped them, and note it for the book.
 

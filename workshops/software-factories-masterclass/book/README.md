@@ -47,6 +47,42 @@ Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so o
 
 The book teaches the factory one part per chapter. The finished factory in `../factory/` is the reference result you can compare with.
 
+## No Mac or no accounts? Track B
+
+You can still run a small factory without a Mac, a license or any key. Track B uses the ready folder from chapter 8. It needs Python 3.12 and uv, and nothing else after the install. The factory checks a proposal as data. It never runs generated Python, so it doesn't need the macOS sandbox. That also means it doesn't give you the isolation that chapters 3 to 7 give you on a Mac. Windows is untested.
+
+Time: about 20 minutes. You're done when `python lesson.py check` prints `ch08 OK`.
+
+```bash
+export REPO=~/rasa-community-resources
+export WORK=~/factory-work/track-b
+if [ -e "$WORK" ]; then
+  printf '%s\n' 'Refused: that folder already exists. Choose a fresh WORK name.'
+else
+  mkdir -p ~/factory-work &&
+  cp -R "$REPO/workshops/software-factories-masterclass/book/ready/ch08" "$WORK" &&
+  cd "$WORK" &&
+  uv venv --python 3.12 .venv &&
+  . .venv/bin/activate
+fi
+```
+
+Then run these seven commands, one at a time:
+
+```bash
+python lesson.py see
+python set_request.py 3
+python lesson.py build
+python lesson.py measure
+python lesson.py recover
+python lesson.py recover
+python lesson.py check
+```
+
+You see an accepted proposal and a rejected original baseline. One simulated crash is followed by an accepted retry. The second `recover` runs zero further attempts. The last command prints `ch08 OK`. The two measured cases are chosen teaching cases, not a success rate.
+
+Then repeat in a fresh folder. Change `WORK` to `~/factory-work/track-b-1` in the first block, and use `python set_request.py 1` as the second command. Recovery now stops after the first simulated crash with exit code 4, and `python lesson.py check` still passes, because stopping is the result you asked for. Chapter 8 explains each step.
+
 ## What to know before you start
 
 - Chapters 3 to 7 run their protected checks on macOS, because the no-network check uses `sandbox-exec`. On Linux or Windows, pair with someone on a Mac, or follow along on screen. Chapter 0 was run on macOS, and other systems haven't been tried. Chapters 1 and 2 only read files, and chapter 8 uses only Python's standard library. On another system the gate says `could not run: this check needs macOS` and exits 2 before it judges anything, so a good attempt is never shown as rejected.
