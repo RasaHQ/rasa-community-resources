@@ -40,24 +40,22 @@ const add = (part, title, body, svg, cls = '') => S.push({ part, title, body, sv
 const PARTS = ['The problem', 'The finished agent', 'The real question', 'The factory idea', 'The two tools', 'We build the factory', 'Your turn', 'Close'];
 
 // ---- Part 1: the problem
-add(1, 'Build a *factory* that builds your agent.', 'Agents you can trust.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
-add(1, 'Meet *Sam*, due in New York tonight.', 'Will I make my meeting?', traveller({ title: 'Sam needs four checks' }));
-add(1, 'An *agent* can do Sam’s four checks.', 'An agent decides, then does.', traveller({ connected: true, title: 'One agent answers all four' }));
-add(1, 'Today in London: *see it*, *learn it*, *build it*.', 'Break 16:30.', scene('The plan for the day',
+add(1, 'Build a *factory* that builds your agent.', 'You’ll understand: Sam’s problem.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
+add(1, 'Today in London: *see it*, *learn it*, *build it*.', '', scene('The plan for the day',
   row([{ label: '14:30', sub: 'See' }, { label: '14:45', sub: 'Learn' }, { label: '15:15', sub: 'Build' }, { label: '15:45', sub: 'Practice' }, { label: '17:20', sub: 'Close' }], { y: 150, h: 360, gap: 30 })));
+add(1, 'Meet *Sam*, due in New York tonight.', 'Will I make my meeting?', traveller({ title: 'Sam needs four checks' }));
+add(1, 'An *agent* decides what to do, then does it.', 'In short: one agent. Next: watch it.', traveller({ connected: true, title: 'One agent answers all four' }));
 // ---- Part 2: the finished agent
-add(2, 'Watch the agent answer Sam.', 'Type: Which flights are headed to New York?', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
+add(2, 'Watch the agent answer Sam.', 'You’ll understand: cards. Which flights go to New York?', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
 add(2, 'Every card says *where it came from*.', 'Every value is labeled.', scene('Four labels',
   row([{ label: 'Source', cls: 'panel-mint' }, { label: 'Computed', cls: 'panel-gold' }, { label: 'Recording', cls: 'panel-pink' }, { label: 'Failed', cls: 'panel-orange' }], { y: 130, h: 400, gap: 30, arrows: false })));
-add(2, 'Four *honest* cards. Next: trust.', 'Sam can trust each value.', traveller({ connected: true, title: 'Four honest cards' }));
+add(2, 'Four *honest* cards. Next: trust.', 'In short: honest cards. Next: trust.', traveller({ connected: true, title: 'Four honest cards' }));
 // ---- Part 3: the real question
-add(3, 'A coding agent *reports* success.', 'It changes files, then says it worked.', scene('You ask, the coding agent edits files and says it worked',
+add(3, 'A *coding agent* changes files, then reports success.', 'You’ll understand: tests. It says it worked.', scene('You ask, the coding agent edits files and says it worked',
   icon('person', 200, 250, 2) + text(200, 420, 'You', 'large-label') + arrow(340, 300, 140)
   + rect(520, 140, 380, 360, 'panel-ink') + icon('builder', 710, 290, 2, 'icon-light') + text(710, 450, 'Coding agent', 'large-label on-dark')
   + arrow(930, 300, 140) + rect(1100, 140, 300, 360, 'panel') + icon('task', 1250, 290, 1.8) + text(1250, 450, 'Files', 'large-label')
   + rect(1180, 540, 440, 90, 'panel-pink', 45)));
-add(3, 'Nobody can *read* every change.', 'More agents, more code to read.', scene('Many agents write a lot of code',
-  Array.from({ length: 10 }, (_, i) => rect(80 + i * 110, 120 + (i % 3) * 40, 90, 150, 'panel', 10)).join('') + icon('person', 1400, 450, 2) + text(840, 560, 'Many agents', 'large-label')));
 add(3, 'A *test* checks a known answer.', '', scene('add(2, 2) must give 4',
   rect(60, 170, 460, 320, 'panel') + text(290, 310, 'add(2, 2)', 'large-label') + arrow(540, 330, 140)
   + rect(720, 80, 380, 200, 'panel-mint') + text(910, 205, '4 pass', 'large-label') + rect(720, 380, 380, 200, 'panel-orange') + text(910, 505, '5 fail', 'large-label')
@@ -66,10 +64,10 @@ add(3, 'An *acceptance test* checks the request.', 'Tests what was asked.', scen
   rect(60, 150, 420, 360, 'panel-pink') + text(270, 340, 'Request', 'large-label') + arrow(500, 330, 110)
   + rect(640, 60, 640, 540, 'panel') + ['Rows', 'Labels', 'Day', 'Source'].map((t, i) => icon('check', 720, 150 + i * 120, 0.8, 'success') + text(830, 165 + i * 120, t, 'large-label', 'start')).join('')
   + arrow(1300, 330, 100) + rect(1440, 220, 200, 220, 'panel-mint') + text(1540, 345, 'Pass', 'large-label')));
-add(3, 'We can’t read it all, so *tests decide*.', 'A passing check proves only what it checks.', scene('Claim and evidence',
-  rect(80, 120, 700, 420, 'panel-orange') + text(430, 350, 'Claim', 'large-label') + rect(900, 120, 700, 420, 'panel-mint') + text(1250, 350, 'Evidence', 'large-label')));
+add(3, 'We can’t read it all, so *tests decide*.', 'In short: a check proves only what it checks. Next: the factory.', scene('Claim and evidence',
+  rect(80, 120, 700, 420, 'panel-orange') + icon('stop', 430, 330, 2.4) + rect(900, 120, 700, 420, 'panel-mint') + icon('check', 1250, 330, 2.4, 'success')));
 // ---- Part 4: the factory idea
-add(4, 'A software factory repeats *four steps*.', 'Sam’s request rides through.', pipeline({ labels: ['Task', 'Change', 'Check', 'Decision'], highlight: 2, title: 'Task, change, check, decision' }));
+add(4, 'A software factory repeats *four steps*.', 'You’ll understand: four steps.', pipeline({ labels: ['Task', 'Change', 'Check', 'Decision'], highlight: 2, title: 'Task, change, check, decision' }));
 add(4, 'The builder works in a *spare copy*.', 'The builder makes the change.', scene('Only the changed lines come back',
   rect(60, 150, 440, 360, 'panel') + text(280, 340, 'Product', 'large-label') + arrow(520, 330, 100)
   + rect(660, 150, 440, 360, 'panel-gold') + icon('builder', 880, 280, 1.6) + text(880, 450, 'Copy', 'large-label') + arrow(1120, 330, 100)
@@ -85,35 +83,37 @@ add(4, 'Two good changes can *clash*.', 'Replay the checks.', scene('Change two 
   + arrow(980, 330, 120) + rect(1140, 230, 480, 200, 'panel-orange') + text(1380, 345, 'Gone', 'large-label')));
 add(4, 'A dark factory has *one reviewer*: tests.', 'Lights off. Nobody reads each change.', scene('One lit window labeled tests',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + rect(540, 130, 600, 400, 'panel-gold') + text(840, 355, 'Tests', 'large-label ink') + icon('person', 1400, 330, 1.8, 'icon-light') + text(1400, 460, 'Person', 'large-label on-dark')), 'dark');
-add(4, 'A few wins *aren’t a guarantee*.', 'Three heads in a row prove nothing.', scene('Three heads in a row',
+add(4, 'A few wins *aren’t a guarantee*.', 'In short: few wins prove little. Next: tools.', scene('Three heads in a row',
   [0, 1, 2].map(i => circle(260 + i * 260, 250, 100, 'panel-gold') + text(260 + i * 260, 285, 'H', 'display')).join('') + text(1230, 330, '?', 'display pink-ink')));
 // ---- Part 5: the two tools
-add(5, '*Rasa Mantle* is where our agent lives.', 'A folder of files you can read.', scene('Files become a running agent',
+add(5, '*Rasa Mantle* is where our agent lives.', 'You’ll understand: both tools.', scene('Files become a running agent',
   rect(60, 150, 440, 360, 'panel') + icon('task', 280, 280, 1.7) + text(280, 450, 'Files', 'large-label') + arrow(520, 330, 100)
   + rect(660, 150, 440, 360, 'panel-pink') + text(880, 345, 'Rasa Mantle', 'large-label') + arrow(1120, 330, 100)
   + rect(1260, 150, 360, 360, 'panel-mint') + icon('person', 1440, 280, 1.7) + text(1440, 450, 'Agent', 'large-label')));
 add(5, 'The agent calls *tools*.', 'A skill says when. A tool does the work.', scene('Skill, agent, tool',
   row([{ label: 'Skill' }, { label: 'Agent', cls: 'panel-pink' }, { label: 'Tool', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
-add(5, 'The *inspector* shows what the agent did.', 'Chat on the left, steps on the right.', scene('Chat on the left, steps on the right',
-  rect(60, 60, 740, 540, 'panel') + text(430, 150, 'Chat', 'large-label') + rect(880, 60, 740, 540, 'panel-mint') + text(1250, 150, 'Steps', 'large-label')));
 add(5, 'The builder runs on *OpenAI’s Agents API*.', 'An API lets one program ask another.', scene('The builder asks, our code runs it',
   row([{ label: 'Builder', icon: 'builder' }, { label: 'Asks' }, { label: 'Our code', cls: 'panel-gold' }, { label: 'Result', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
 add(5, 'A run has *limits* and a secret key.', 'A key is a paid-service password.', scene('Time, tool calls and a key',
   row([{ label: 'Time' }, { label: 'Tool calls' }, { label: 'Key', cls: 'panel-pink' }], { y: 150, h: 360, gap: 70, arrows: false })));
-add(5, 'Mantle is home. The API is the *builder*.', 'Next: we build.', tools({ labels: ['Rasa Mantle', 'Agent', 'OpenAI Agents API', 'Builder'], title: 'Mantle is home and the API is the builder' }));
+add(5, 'Mantle is home. The API is the *builder*.', 'In short: home and builder. Next: build.', tools({ labels: ['Mantle', 'Agent', 'Agents API', 'Builder'], title: 'Mantle is home and the API is the builder' }));
 // ---- Part 6: we build the factory
-add(6, 'We build the factory in *five parts*.', 'Book chapters', chapters({ labels: ['Task', 'Tests', 'Builder', 'Checks', 'Integrate'], title: 'Five parts, five chapters' }));
+add(6, 'We build the factory in *five parts*.', 'You’ll understand: five parts. Book chapters.', scene('Five parts, five chapters',
+  row([{ label: 'Task' }, { label: 'Tests' }, { label: 'Builder' }, { label: 'Checks' }, { label: 'Integrate', cls: 'panel-pink' }], { y: 150, h: 360, gap: 30 })));
 add(6, 'In your chapter 6 folder: judge a *good* change and a *bad* one.', '', scene('Run the gate on a good change and a bad one',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 110, '$ source .venv/bin/activate', 'mono on-dark', 'start')
   + text(60, 270, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-good', 'mono on-dark', 'start') + icon('check', 160, 350, 1.1, 'success').replace('icon success', 'icon" style="stroke:#C6FEE1;stroke-width:9')
   + text(60, 500, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-shows-live', 'mono on-dark', 'start') + icon('stop', 160, 580, 1.0, '').replace('icon ', 'icon" style="stroke:#FFB28C;stroke-width:9')), 'dark');
+add(6, 'The gates decided, and nobody read the change.', 'In short: the gates decided. Next: your turn.', scene('The gates decide before integration', row([{ label: 'Request' }, { label: 'Gates', cls: 'panel-pink' }, { label: 'Integrated', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
 // ---- Part 7: your turn
-add(7, 'Set up once, then follow the *book*.', 'Chapter 0 first.', scene('Clone the repository and open the book',
+add(7, 'Set up once, then follow the *book*.', 'You’ll understand: the book.', scene('Clone the repository and open the book',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 140, '$ git clone https://github.com/RasaHQ/rasa-community-resources.git', 'mono on-dark', 'start')
   + text(60, 280, '$ cd rasa-community-resources/workshops/software-factories-masterclass/book', 'mono on-dark', 'start')
   + text(60, 450, 'license: rasa.com/rasa-pro-developer-edition-license-key-request', 'mono pink-ink', 'start').replace('class="mono pink-ink"', 'class="mono" style="fill:#F096B9"')), 'dark');
+add(7, 'Take a *break*, then work through the book.', 'Break 16:30 to 16:45. In short: chapter 0 first. Next: close.', scene('A break for refreshments',
+  rect(520, 120, 640, 420, 'panel-gold') + line('M1160 220h110a70 70 0 0 1 0 140h-110', 'route') + line('M600 560h480', 'line') + line('M680 40c-30 40 30 40 0 80 M840 40c-30 40 30 40 0 80 M1000 40c-30 40 30 40 0 80', 'route')));
 // ---- Part 8: close
-add(8, 'One agent, built by a *factory you trust*.', 'Write the tests first.', traveller({ connected: true, title: 'One agent, four cards, one factory' }));
+add(8, 'One agent, built by a *factory you trust*.', 'You’ll understand: it all. In short: tests first. Next: the book.', traveller({ labels: ['', '', '', ''], connected: true, title: 'One agent, four cards, one factory' }));
 
 const CSS = fs.readFileSync('visual-system.css', 'utf8');
 const face = (family, file, weight, style = 'normal') => `@font-face{font-family:'${family}';font-weight:${weight};font-style:${style};font-display:swap;src:url(data:font/woff2;base64,${fs.readFileSync('fonts/' + file).toString('base64')}) format('woff2')}`;
@@ -124,7 +124,7 @@ const seen = {};
 const html = S.map((s, i) => {
   seen[s.part] = (seen[s.part] || 0) + 1;
   const prog = Array.from({ length: 8 }, (_, k) => `<i class="${k + 1 === s.part ? 'active' : ''}"></i>`).join('');
-  return `<section class="slide${s.cls ? ' ' + s.cls : ''}${i === 0 ? ' on' : ''}" id="s${i + 1}"><nav class="crumb" aria-label="Where you are"><span>Part ${s.part} of 8 · ${esc(PARTS[s.part - 1])} · Slide ${seen[s.part]} of ${counts[s.part]}</span><span class="progress">${prog}</span></nav><h1>${em(s.title)}</h1>${s.body ? `<p class="words" data-slide-chrome-no>${esc(s.body)}</p>` : ''}<div class="scene">${s.svg}</div></section>`;
+  return `<section class="slide${s.cls ? ' ' + s.cls : ''}${i === 0 ? ' on' : ''}" id="s${i + 1}"><nav class="crumb" aria-label="Where you are"><span>Part ${s.part} of 8 · ${esc(PARTS[s.part - 1])} · ${seen[s.part]} of ${counts[s.part]}</span><span class="progress">${prog}</span></nav><h1>${em(s.title)}</h1>${s.body ? `<p class="words" data-slide-chrome-no>${esc(s.body)}</p>` : ''}<div class="scene">${s.svg}</div></section>`;
 }).join('\n');
 const JS = `const slides=[...document.querySelectorAll('.slide')];let current=0;
 function show(n){current=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>s.classList.toggle('on',i===current));history.replaceState(null,'','#'+(current+1))}
