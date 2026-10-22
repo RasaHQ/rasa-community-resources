@@ -402,7 +402,7 @@ def run_demo(scripted=False, host="127.0.0.1"):
         print('Open the demo: http://' + host + ':8942/', flush=True)
         print('Cards diagnostic: http://' + host + ':8942/cards', flush=True)
         print('Mantle Inspector diagnostic: http://' + host + ':5005/webhooks/inspector/inspect.html', flush=True)
-        print('Start with: I am heading to New York. Which flights are already in the air?', flush=True)
+        print('Open the page and ask, for example: Which flights are in the air heading to New York?', flush=True)
         print('Choose a flight, then say when your meeting is, for example tomorrow at 6 pm.', flush=True)
         print('Press Ctrl-C here to stop both services and their children.', flush=True)
         while True:
