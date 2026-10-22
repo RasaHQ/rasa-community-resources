@@ -72,7 +72,7 @@ NOT_READY means no usable verdict was obtained. It never means ACCEPT, and a liv
 
 ## Voice
 
-Voice was not tested for this agent. In the travel demo, a test with recorded audio did not pass on the second turn, so type your requests.
+Use the opt-in local command below. A patched runtime completed a Deepgram audio-file request and LIVE gate ACCEPT; the physical microphone remains unqualified. Earlier unpatched travel failures remain recorded.
 
 ## Troubleshooting
 
