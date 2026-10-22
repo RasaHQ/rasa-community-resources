@@ -1,24 +1,40 @@
-# Participant pre-work: draft message for the operator to send
+# Setup before the workshop
 
-DRAFT, not sent. This pack does not message participants. The operator decides whether, when and how to send it, and who the participants are.
+Bring a laptop, headphones and a charger. Work in groups of three or four. One working machine per group is enough.
 
----
+## Accounts for the voice and live-builder route
 
-Subject: Before Thursday 22 October: 15 minutes, once, on the laptop you will bring
+- An issued Rasa Developer Edition licence (`RASA_LICENSE`). Request it at https://rasa.com/rasa-pro-developer-edition-license-key-request . A submitted form is not an issued licence.
+- An OpenAI API application key with Agents session read/write and model inference permissions. The official Agents quickstart names `api.agents.read`, `api.agents.write`, and `api.responses.write`. ChatGPT access alone does not establish API access.
+- A Deepgram key (`DEEPGRAM_API_KEY`) for speech recognition and synthesis.
+- Python 3.12, uv, Git and Make. The existing code-verification labs require macOS. Other participants use the data-only track or join a Mac group. Native Windows launcher support is not established; use a group machine for that route.
 
-Please do this once before the session, with a normal internet connection. It downloads about 750 MB. In the room we will not do it.
+Check the account's available credits and enforceable limits before paid work. Call-count and time limits are not a dollar cap. This package has no per-session money cap. Do not retry paid builds in a loop.
 
-1. Install `git` and `uv` if you do not have them, and use Python 3.11 or 3.12.
-2. Clone the repository: `git clone https://github.com/RasaHQ/rasa-community-resources` and note the commit shown by `git log -1`. [Operator: replace with the exact commit participants should use.]
-3. In `workshops/software-factories-masterclass/factory`, run `uv sync --frozen`.
-4. Run `uv run python factory.py tasks/a1-block-card.json candidates/block-card-good runs/check`. You should see `ACCEPT - protected acceptance passed`.
-5. If step 4 does not print ACCEPT, bring the laptop anyway and tell us what it printed. We will pair you with someone.
+## Using this ZIP
 
-A copy of the environment made on another computer may not work on yours: it is tied to the operating system and Python version. Please run the commands yourself.
+Unzip it. Open a terminal in the resulting `software-factories-masterclass` directory. Initialize a local repository so the demo can check that `.env` is untracked and ignored:
 
----
+```bash
+git init
+```
 
-Notes for the operator:
+This creates local Git metadata only; no GitHub account, commit or push is needed. Do not run `git add .` after entering credentials.
 
-- A pre-synced folder on a USB drive is a fallback only. It is tied to the operating system of the machine that made it, and has not been tested on a second machine.
-- `factory/rehearse.py` runs every command of the session in order, offline, and prints the time and result of each block. Run it on the machine you will present from.
+```bash
+cd book/ready/ch00/demo
+make env
+make setup
+```
+
+Open the new `.env` in your own editor and fill in the licence, OpenAI key and Deepgram key. Anthropic is optional and not required for this workshop. Leave the template committed only with blank values. Then:
+
+```bash
+make doctor
+```
+
+It prints credential names and readiness, never their values. It does not prove account access or working speech. The facilitator rehearsal checks those. Setup can take several minutes and downloads a substantial dependency tree; do it before arriving.
+
+## No accounts or unsupported machine?
+
+Install Python 3.12. Open `PARTICIPANT-GUIDE.md` and use Track B. You can run a genuine acceptance/recovery exercise with no extra packages. It does not call Mantle, Deepgram or OpenAI; pair for that part of the experience.

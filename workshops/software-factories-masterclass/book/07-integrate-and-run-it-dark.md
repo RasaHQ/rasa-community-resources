@@ -1,3 +1,5 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 7: Integrate and run it dark
 
 A teammate fixes the currency card while your builder is still working. Both changes can pass their own tests, yet installing the later change could overwrite the earlier fix. Before copying an accepted change into the product, check which product it was tested against.
@@ -20,9 +22,9 @@ If you get stuck, use [the ready folder](ready/ch07) and follow **Get the ready 
 Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into `~/factory-work` (it creates a new folder there, `my-factory-ch07`, and refuses to overwrite an existing one), then set up Python once:
 
 ```bash
-export REPO=~/rasa-community-resources   # the folder where you cloned the repository
+export PACK=/absolute/path/to/software-factories-masterclass   # the unzipped workshop root
 mkdir -p ~/factory-work && cd ~/factory-work
-[ -e my-factory-ch07 ] && echo "my-factory-ch07 already exists: use it, or move it away first" || cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch07 my-factory-ch07
+[ -e my-factory-ch07 ] && echo "my-factory-ch07 already exists: use it, or move it away first" || cp -R "$PACK"/book/ready/ch07 my-factory-ch07
 ```
 
 ```bash
@@ -57,7 +59,7 @@ uv pip install zeocore==0.35.6 httpx==0.28.1
 
 ## Now change it
 
-Repeat the integration for your chosen currency limit, starting from a clean product. Use the same terminal as before, so that `REPO` is still set (if it isn't, run `export REPO=~/rasa-community-resources` again).
+Repeat the integration for your chosen currency limit, starting from a clean product. Use the same terminal as before, so that `PACK` is still set (if it isn't, run `export PACK=/absolute/path/to/software-factories-masterclass` again).
 
 The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first by replacing the 2 below with your number. This also makes the builder's attempt again for the new number:
    ```bash
@@ -67,7 +69,7 @@ The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 
 1. Reset the product to the baseline and clear the earlier results:
    ```bash
    rm -rf product decisions base.json card.html
-   cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch07/product product
+   cp -R "$PACK"/book/ready/ch07/product product
    ```
 
 2. Integrate the attempt that was accepted for your task, and draw the card:

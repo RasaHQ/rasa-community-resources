@@ -1,3 +1,5 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 6: The gates and the decision
 
 A traveler sees a daily exchange rate labeled as live and plans a purchase around it. The card looks plausible, but its claim is wrong. You need a gate that rejects it and says which requirement failed.
@@ -20,9 +22,9 @@ If you get stuck, use [the ready folder](ready/ch06) and follow **Get the ready 
 Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into `~/factory-work` (it creates a new folder there, `my-factory-ch06`, and refuses to overwrite an existing one), then set up Python once:
 
 ```bash
-export REPO=~/rasa-community-resources   # the folder where you cloned the repository
+export PACK=/absolute/path/to/software-factories-masterclass   # the unzipped workshop root
 mkdir -p ~/factory-work && cd ~/factory-work
-[ -e my-factory-ch06 ] && echo "my-factory-ch06 already exists: use it, or move it away first" || cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch06 my-factory-ch06
+[ -e my-factory-ch06 ] && echo "my-factory-ch06 already exists: use it, or move it away first" || cp -R "$PACK"/book/ready/ch06 my-factory-ch06
 ```
 
 ```bash

@@ -1,3 +1,5 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 1: What a Rasa Mantle agent is
 
 A traveler asks the agent a plain question and four cards come back. One file told the agent what to ask, and another fetched the flight. In about 10 minutes you'll find both, and the third part that ties them together, so you know where to look when the agent misbehaves.
@@ -20,11 +22,11 @@ A **tool** is a function the agent can ask to run. The agent does not read fligh
 
 ## Get to the folder
 
-Set `REPO` to your clone, then go to the ready folder from Chapter 0:
+Set `PACK` to your clone, then go to the ready folder from Chapter 0:
 
 ```bash
-export REPO=~/rasa-community-resources
-cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
+export PACK=/absolute/path/to/software-factories-masterclass
+cd "$PACK/book/ready/ch00/demo"
 ```
 
 ## See how it works

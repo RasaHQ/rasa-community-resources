@@ -1,0 +1,163 @@
+[
+  {
+    "title": "A voice agent that<br><em>builds a voice agent.</em>",
+    "sub": "Dark software factories with Rasa Mantle, Deepgram and the OpenAI Agents API",
+    "body": "<div class=\"hero\"><div class=\"quote\">\u201cBuild me an assistant<br>for my next flight.\u201d</div><div class=\"hero-line\"></div><div class=\"hero-result\">A checked build.<br>A working preview.<br>A conversation you can try.</div></div>",
+    "notes": "Welcome briefly, then move straight to the teaser. The cover describes the target experience. The supplied package does not yet connect the entire voice factory. State the implemented scope before showing anything. Rod Rivera, three-hour masterclass.",
+    "kind": "cover"
+  },
+  {
+    "title": "\u201cWill I make my meeting?\u201d",
+    "sub": "A question that needs more than a flight number.",
+    "body": "<div class=\"dashboard\"><article><label>FLIGHT \u00b7 ILLUSTRATIVE</label><h2>Landing 17:00</h2><p>Computed estimate<br>Check the source timestamp</p><svg viewBox=\"0 0 420 100\"><path d=\"M10 75Q180 -20 410 55\" fill=\"none\" stroke=\"#AA1E54\" stroke-width=\"4\" stroke-dasharray=\"8 8\"/><circle cx=\"10\" cy=\"75\" r=\"8\" fill=\"#181210\"/><circle cx=\"410\" cy=\"55\" r=\"8\" fill=\"#181210\"/></svg></article><article><label>WEATHER \u00b7 ILLUSTRATIVE</label><h2>Light rain</h2><p>Arrival-time forecast<br>A forecast is not an observation</p><div class=\"rain\">\u2602</div></article><article class=\"pink\"><label>MEETING \u00b7 COMPUTED EXAMPLE</label><h2>30 minutes late</h2><p>17:00 landing + 90 min transfer<br>18:00 meeting, same local date</p><div class=\"mini-line\"><b>17:00</b><span></span><b>18:30</b></div></article><article><label>CURRENCY</label><h2>Daily reference</h2><p>Publication date and source<br>Unavailable when the source fails</p><div class=\"fx\">EUR / USD</div></article></div>",
+    "notes": "Show the real travel demo now. This slide is an illustration, never a screenshot or current travel data. Use a live returned flight or explicitly labelled replay. Change the transfer to two hours. Show what stayed unchanged. The timeline assumes one local date; real implementation must use timezone-aware timestamps.",
+    "kind": ""
+  },
+  {
+    "title": "The screen makes the answer inspectable.",
+    "sub": "A useful teaser shows both a success and a failure.",
+    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Ask by voice</h2><p>Choose a flight. Give a meeting time. Hear a brief answer.</p></article><article><span class=\"num\">02</span><h2>Change one assumption</h2><p>Increase the transfer allowance. Watch only the timeline change.</p></article><article><span class=\"num\">03</span><h2>Lose one source</h2><p>Show weather as unavailable. Keep the other cards useful.</p></article></div>",
+    "notes": "Finish the 10-minute teaser. If using scripted tool selection or recorded data, say so. A card should show source/freshness, and estimates must not masquerade as airline schedules. Show the factory verdict separately if the end-to-end bridge is unavailable.",
+    "kind": ""
+  },
+  {
+    "title": "Most of today belongs to your group.",
+    "sub": "110 minutes building, 15 minutes meeting other builders.",
+    "body": "<div class=\"schedule\"><div style=\"flex:10\" class=\"soft\">Demo<br><b>10</b></div><div style=\"flex:20\" class=\"soft\">Concepts<br><b>20</b></div><div style=\"flex:10\" class=\"soft\">Groups<br><b>10</b></div><div style=\"flex:55\" class=\"pink\">Lab A<br><b>55</b></div><div style=\"flex:15\" class=\"mint\">Meet<br><b>15</b></div><div style=\"flex:55\" class=\"pink\">Lab B<br><b>55</b></div><div style=\"flex:15\" class=\"soft\">Share<br><b>15</b></div></div><p class=\"caption\">Minutes from start to finish: 180. The guide lets you work at your own pace.</p>",
+    "notes": "Use elapsed time. Explain the two lab blocks and the break. Do not teach every reference chapter on stage. There are 125 minutes for group work and networking.",
+    "kind": ""
+  },
+  {
+    "title": "Two agents have different jobs.",
+    "sub": "The factory creates the product. The traveller uses the product.",
+    "body": "<div class=\"lanes\"><div><label>BUILD TIME \u00b7 TARGET ARCHITECTURE</label><h2>You describe a product</h2><p>Factory voice assistant \u2192 build worker \u2192 independent checks \u2192 released preview</p></div><div><label>RUN TIME \u00b7 TRAVEL SCAFFOLD</label><h2>You ask about a trip</h2><p>Travel voice assistant \u2192 source tools \u2192 validated data \u2192 visual cards</p></div></div><p class=\"caption\">The attached scaffold and builder currently run separately. Their automatic release bridge is extension work.</p>",
+    "notes": "This distinction is essential. The existing travel specialist choosing source tools is not the coding builder. Identify the missing bridge explicitly. Ask the room: which agent needs permission to change files?",
+    "kind": ""
+  },
+  {
+    "title": "Each part has a clear responsibility.",
+    "sub": "The cards and factory controller are application code.",
+    "body": "<table><tr><th>Part</th><th>Its job</th></tr><tr><td>Rasa Mantle</td><td>Run the conversation, skills and tool constraints</td></tr><tr><td>Deepgram</td><td>Turn speech into text and text into speech</td></tr><tr><td>OpenAI Agents API</td><td>Run a durable builder session and its managed harness</td></tr><tr><td>Factory controller</td><td>Scope work, verify a candidate and decide release</td></tr><tr><td>Source adapters + visual UI</td><td>Fetch data and render trustworthy cards</td></tr></table>",
+    "notes": "Spend two minutes here. Mantle is the orchestrator in Rasa; the Agents API is a managed service, not another local library. Deepgram is the speech provider. Neither provider automatically supplies this dashboard.",
+    "kind": ""
+  },
+  {
+    "title": "The Agents API runs the builder session.",
+    "sub": "Python\u2019s OpenAI client is the transport used by this implementation.",
+    "body": "<div class=\"code-split\"><pre>from openai import OpenAI\n\nclient = OpenAI()\nclient.beta.agents.sessions.create(\n    agent={...},\n    environment={...},\n    input=task,\n    stream=True,\n)</pre><div><h2>Four things to follow</h2><p>Agent configuration<br>Execution environment<br>Session identity<br>Events and final status</p><p class=\"small\">Conceptual excerpt, not a complete runnable script.<br>The separate <code>openai-agents</code> framework is the Agents SDK.</p></div></div>",
+    "notes": "Use official Agents API terminology. Explain that the openai Python client can expose beta.agents without importing Agent or Runner from the Agents SDK. Complete code is in the chapter 5 driver via zeocore. Do not run this abbreviated snippet.",
+    "kind": ""
+  },
+  {
+    "title": "MCP is the connection to your application.",
+    "sub": "A tool call needs a contract, a result and a failure path.",
+    "body": "<div class=\"flow\"><div><span class=\"num\">01</span><h2>Mantle skill</h2><p>Requests a bounded operation</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">02</span><h2>MCP service</h2><p>Validates arguments; starts a job</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">03</span><h2>Build worker</h2><p>Uses the Agents API</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">04</span><h2>Job result</h2><p>Returns status and evidence</p></div></div>",
+    "notes": "This slide is the target factory connection. The shipped travel service already exposes source tools over MCP, but it does not expose submit_build/get_build/cancel_build. Those are proposed application tools in BUILD-CONTRACT.md. Long builds should return a job ID quickly.",
+    "kind": ""
+  },
+  {
+    "title": "A brief becomes a testable request.",
+    "sub": "\u201cMake it better\u201d leaves the builder guessing.",
+    "body": "<div class=\"contrast\"><div><label>PRODUCT REQUEST</label><blockquote>\u201cShow only two currencies, with the reference date. If rates fail, say they are unavailable.\u201d</blockquote></div><div><label>ACCEPTANCE EXAMPLES</label><ul><li>Four input rates produce two rows.</li><li>The publication date is visible.</li><li>Daily rates never say \u201clive\u201d.</li><li>Source failure produces no invented rate.</li></ul></div></div>",
+    "notes": "Give the group a concrete feature from the existing code. Public requirements and public tests are useful to the builder. Protect the evaluator from writes; hiding every test is not the defining idea.",
+    "kind": ""
+  },
+  {
+    "title": "The builder cannot grade its own homework.",
+    "sub": "An independent verifier checks the proposed artifact.",
+    "body": "<div class=\"boundary\"><div class=\"build-zone\"><label>BUILDER WORKSPACE</label><h2>Task + product files</h2><p>Allowed changes only<br>Development tests available</p></div><div class=\"boundary-line\">candidate</div><div class=\"verify-zone\"><label>VERIFIER WORKSPACE</label><h2>Protected acceptance</h2><p>Independent result<br>Task and artifact fingerprints</p></div></div><p class=\"caption\">A copied directory is not an operating-system sandbox. Protect execution as well as files.</p>",
+    "notes": "Explain both logical separation and actual execution isolation. Hashes detect mismatches but are not permissions. The existing Python code gate uses macOS sandbox-exec; the fallback checks JSON as data.",
+    "kind": ""
+  },
+  {
+    "title": "A completed session still needs a decision.",
+    "sub": "A setup failure is different from a bad product.",
+    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>ACCEPT</h2><p>The candidate passed the specified checks. Release checks still follow.</p></article><article><span class=\"num\">02</span><h2>REJECT</h2><p>A product requirement failed. Change the proposal and try again.</p></article><article><span class=\"num\">03</span><h2>NOT_READY</h2><p>A dependency, account or verifier failed. No product verdict exists.</p></article></div>",
+    "notes": "Ask for examples of each result. A timed-out API request cannot be labelled REJECT solely because the provider failed. Passing a suite is bounded evidence, not proof of all future behavior.",
+    "kind": ""
+  },
+  {
+    "title": "Dark factories need an explicit release policy.",
+    "sub": "People define the standards and own exceptions.",
+    "body": "<div class=\"flow\"><div><span class=\"num\">01</span><h2>Requirements</h2><p>People specify acceptable behavior</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">02</span><h2>Build + checks</h2><p>Automation produces evidence</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">03</span><h2>Release gate</h2><p>Policy permits or stops a release</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">04</span><h2>Monitor</h2><p>Failures trigger rollback or escalation</p></div></div>",
+    "notes": "Define dark factory as reducing routine manual intervention within a bounded workflow. Tests are not the only possible control; policies, human escalation, monitoring and rollback matter. The workshop is an introduction, not proof of unattended production readiness.",
+    "kind": ""
+  },
+  {
+    "title": "Your group owns one small change.",
+    "sub": "Driver, requirements owner, evaluator. Rotate after the break.",
+    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Write examples</h2><p>Choose a visible feature. Predict the failure cases.</p></article><article><span class=\"num\">02</span><h2>Run the factory</h2><p>Keep the task, candidate and recorded verdict together.</p></article><article><span class=\"num\">03</span><h2>Show the result</h2><p>Demonstrate a rejection and explain what you released.</p></article></div>",
+    "notes": "This begins the ten-minute group briefing. Groups of three or four. An optional observer records evidence and visits another group. Participants use PARTICIPANT-GUIDE.md; stop installing after ten minutes of lab time.",
+    "kind": ""
+  },
+  {
+    "title": "One guide, two routes.",
+    "sub": "Choose the route your machine can run today.",
+    "body": "<table><tr><th>Route</th><th>Requirements</th><th>Outcome</th></tr><tr><td>A \u00b7 Travel + code</td><td>Mac for code gates; licence; provider keys for live voice</td><td>Voice scaffold, builder, rejection, local card integration</td></tr><tr><td>B \u00b7 Factory method</td><td>Python 3.12; no provider accounts</td><td>Acceptance, recovery and duplicate suppression</td></tr><tr><td>Work together</td><td>One prepared machine per group</td><td>Everyone writes examples and evaluates results</td></tr></table>",
+    "notes": "Be transparent: B does not use the three providers. It keeps people actively learning rather than watching failed installs. A includes separate components; the full bridge remains extension work.",
+    "kind": ""
+  },
+  {
+    "title": "Lab A: a brief and a first candidate.",
+    "sub": "55 minutes. Open PARTICIPANT-GUIDE.md.",
+    "body": "<div class=\"flow\"><div><span class=\"num\">01</span><h2>10 min</h2><p>Brief + failure examples</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">02</span><h2>15 min</h2><p>Travel experience or fallback</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">03</span><h2>25 min</h2><p>One bounded builder attempt</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">04</span><h2>5 min</h2><p>Record evidence</p></div></div>",
+    "notes": "Leave this slide up during Lab A. Participants can vary their pace. On A, first run scripted to verify setup, then a live Agents API run when access and budget are ready. On B, run the recovery exercise and design travel cases. Do not interrupt with mini lectures.",
+    "kind": ""
+  },
+  {
+    "title": "A source label changes what the answer means.",
+    "sub": "The same number can have very different authority.",
+    "body": "<table><tr><th>Card / value</th><th>Meaning</th><th>What to show</th></tr><tr><td>Aircraft position</td><td>An observation at a timestamp</td><td>Source and observed time</td></tr><tr><td>Arrival time</td><td>Computed estimate</td><td>Method and uncertainty</td></tr><tr><td>Weather</td><td>Forecast for a place and time</td><td>Forecast time and provider</td></tr><tr><td>Transfer</td><td>Planning assumption</td><td>Editable allowance</td></tr><tr><td>Currency</td><td>Daily reference rate</td><td>Publication date; never live trading</td></tr></table>",
+    "notes": "Optional table-side slide. Return to lab work. Do not describe the position-based ETA as a published airline schedule or claim a delay without an authoritative status source.",
+    "kind": ""
+  },
+  {
+    "title": "Meet another group.",
+    "sub": "15 minutes. Bring back one failure your tests missed.",
+    "body": "<div class=\"big-question\">\u201cWhat would make your<br>assistant confidently wrong?\u201d</div><p class=\"caption\">Trade an example. Explain how you would detect it. Swap roles when you return.</p>",
+    "notes": "Networking break. Encourage a concrete failure rather than a general product pitch. Example: daylight-saving transition, stale flight observation, ambiguous meeting date, or source outage.",
+    "kind": ""
+  },
+  {
+    "title": "Lab B: rejection, integration and handoff.",
+    "sub": "55 minutes. Finish with evidence you can show.",
+    "body": "<div class=\"flow\"><div><span class=\"num\">01</span><h2>20 min</h2><p>Reject a misleading candidate</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">02</span><h2>25 min</h2><p>Integrate and inspect output</p></div><span class=\"arrow\">\u2192</span><div><span class=\"num\">03</span><h2>10 min</h2><p>Prepare a two-minute demo</p></div></div>",
+    "notes": "Leave this up for Lab B. The existing integration creates a standalone card, not a new live Mantle release. Groups should label their evidence accurately and identify the missing production step.",
+    "kind": ""
+  },
+  {
+    "title": "Release the exact artifact that passed.",
+    "sub": "A changed base or changed candidate invalidates earlier evidence.",
+    "body": "<div class=\"artifact\"><div><label>TESTED CANDIDATE</label><h2>Digest A</h2><p>Task + verifier + results</p></div><span class=\"arrow\">\u2192</span><div class=\"pink\"><label>RELEASE CHECK</label><h2>Still digest A?</h2><p>Same base? Smoke tests pass?</p></div><span class=\"arrow\">\u2192</span><div><label>RUNNING PRODUCT</label><h2>Verified version</h2><p>Preview + rollback reference</p></div></div><p class=\"caption\">The full voice factory also needs a start-and-smoke-test release worker.</p>",
+    "notes": "Optional table-side slide. A candidate accepted before integration may fail after integration. The supplied chapter 7 demonstrates local integration and stale-base refusal; it does not implement live deployment.",
+    "kind": ""
+  },
+  {
+    "title": "Voice has its own acceptance tests.",
+    "sub": "Passing text tests leaves important behavior untested.",
+    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>A short reply</h2><p>Does \u201cyes\u201d become the right confirmed action?</p></article><article><span class=\"num\">02</span><h2>An interruption</h2><p>Does playback stop while the user changes the request?</p></article><article><span class=\"num\">03</span><h2>A failed source</h2><p>Does speech explain the problem while the board keeps useful data?</p></article></div>",
+    "notes": "Optional. Check ASR, TTS, timing, interruption and state retention. The version update uses deepgram_flux for Flux ASR and deepgram for Aura-2 TTS. If voice falls back to text, mark voice incomplete.",
+    "kind": ""
+  },
+  {
+    "title": "Your demo starts with the requirement.",
+    "sub": "Two minutes per group. Show the failure as well as the success.",
+    "body": "<div class=\"share\"><div><b>30 s</b><h2>The request</h2></div><div><b>60 s</b><h2>The rejected case<br>and the result</h2></div><div><b>30 s</b><h2>The next test</h2></div></div><p class=\"caption\">Include your mode: LIVE, SCRIPTED or REPLAY. Name any step you did not run.</p>",
+    "notes": "Start closing at minute 165. Take three two-minute demos and use remaining time for discussion. Ask which exact output each group checked. Do not rank groups by number of generated lines or green tests.",
+    "kind": ""
+  },
+  {
+    "title": "The next step is the complete build-to-voice journey.",
+    "sub": "One spoken brief should lead to a checked, usable preview.",
+    "body": "<div class=\"lanes\"><div><label>ALREADY REPRESENTED IN THE PACK</label><h2>Travel scaffold + separate builder</h2><p>Source tools, cards, scoped changes, acceptance and local integration.</p></div><div class=\"pink\"><label>REMAINING INTEGRATION</label><h2>Voice factory + durable jobs + release</h2><p>Build tool, status, cancellation, exact-artifact launch and voice smoke tests.</p></div></div>",
+    "notes": "Close honestly. Reference BUILD-CONTRACT.md for the remaining implementation and scenarios. A scaffold-based factory is valid, but we must say what the scaffold supplied and what the builder changed.",
+    "kind": ""
+  },
+  {
+    "title": "One question to take back to work.",
+    "sub": "Your answer determines where to automate next.",
+    "body": "<div class=\"big-question\">\u201cWhat evidence would let us<br>release this change<br>without reading every line?\u201d</div><p class=\"caption\">Start with one bounded change. Keep the rejected cases.</p>",
+    "notes": "Invite one answer. End with a concrete next step: choose one small recurring change in their own system and write independent acceptance examples before building it.",
+    "kind": "closing"
+  }
+]

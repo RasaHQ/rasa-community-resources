@@ -1,0 +1,219 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Technical Audit</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="README.html">Start</a> · <a href="PARTICIPANT-GUIDE.html">Participant guide</a> · <a href="slides/index.html">Slides</a> · <a href="TECHNICAL-AUDIT.html">Audit</a></nav><main><h1>Workshop audit and corrections</h1>
+<p><strong>Checked 22 October 2026. Verdict: revised teaching materials and corrected scaffold; complete live voice factory not yet demonstrated.</strong></p>
+<p>The original ZIP has 526 files. Review covered the entry points, all nine book chapters, facilitator plans, slide source and rendered deck, dependency manifests, the current travel runtime and its tests, factory driver, and the historical API/SDK examples. All 255 Python files in the revised package parse successfully. Historical fixture outputs are retained as historical evidence, not re-certified against a new engine.</p>
+<h2>The decisive gap</h2>
+<p>The request describes a voice agent that builds and launches a second, visual voice agent. The supplied pack has:</p>
+<ol>
+<li>A Mantle travel assistant with a source-tool MCP service, graphical cards, optional Deepgram speech, and an optional Agents API source specialist.</li>
+<li>A separate factory that edits a currency-card Python component using an Agents API builder.</li>
+<li>Local integration that renders a standalone card.</li>
+</ol>
+<p>There is no factory voice skill connected to a build-job MCP service and no demonstrated exact-artifact launch into a new voice assistant. The travel MCP service exposes <code>find_flights</code> and <code>briefing</code>; its start/get/revise operations manage <strong>briefings</strong>, not software builds. Chapter 7 explicitly says its page does not install the card into the running agent.</p>
+<p>The revised materials make that distinction visible. <code>BUILD-CONTRACT.md</code> describes the missing integration and 17 acceptance scenarios. It is a specification, not an implemented test suite.</p>
+<h2>Findings and disposition</h2>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Finding in the supplied pack</th>
+<th>Correction or remaining work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Blocker</td>
+<td>The advertised voice-to-build-to-voice journey is absent</td>
+<td>Clearly disclosed; specified build service, job lifecycle, release worker and acceptance scenarios</td>
+</tr>
+<tr>
+<td>Blocker</td>
+<td>Travel project pins Rasa Pro 3.21.0.dev5 and uses the old <code>integrations.yml</code> <code>llm:</code> selection</td>
+<td>Migrated current scaffold to <strong>3.21.0</strong>, moved selection to <code>agent.yml</code> <code>orchestrator.model_group</code>, regenerated its lock</td>
+</tr>
+<tr>
+<td>Blocker</td>
+<td>Flux ASR uses <code>name: deepgram</code>, which selects Nova in 3.21.0</td>
+<td>Changed to <code>deepgram_flux</code>; retained <code>deepgram</code> for Aura-2 TTS; validated with installed engine configuration</td>
+</tr>
+<tr>
+<td>High</td>
+<td>Doctor reads old <code>llm.model_group</code>; its live Agents probe defaults to gpt-4.1-mini although the pack says that model was refused by the service</td>
+<td>Doctor now reads the selected agent group and defaults the Agents probe to gpt-6-astra, matching the supplied worker and official quickstart. Live account access is still unverified</td>
+</tr>
+<tr>
+<td>High</td>
+<td>Current engine requires an AgentSpec in ModelBootstrap and a new resolver signature</td>
+<td>Updated doctor probe and relevant fixtures; scripted real-engine conversation passes</td>
+</tr>
+<tr>
+<td>High</td>
+<td><code>openai-mcp</code> imports <code>Agent</code> / <code>Runner</code> from <code>agents</code> and pins <code>openai-agents</code></td>
+<td>Explicitly labelled historical <strong>Agents SDK</strong> appendix, removed from main route; current builder uses <code>client.beta.agents.sessions</code> through the OpenAI client/Core adapter</td>
+</tr>
+<tr>
+<td>High</td>
+<td>Run sheet, facilitator script and deck describe different agendas and different demos</td>
+<td>Replaced with one elapsed-time schedule: 125 minutes of lab and networking</td>
+</tr>
+<tr>
+<td>High</td>
+<td>“Only reviewer: tests” and hidden-tests-as-definition oversimplify the factory</td>
+<td>Replaced with independently controlled verification, explicit release policy, monitoring and escalation; secrecy is optional additional protection</td>
+</tr>
+<tr>
+<td>High</td>
+<td>Chapters 3–7 require macOS sandbox-exec, despite a general laptop workshop</td>
+<td>Explicit platform selection; working standard-library data-only route for other machines; no sandbox check removed</td>
+</tr>
+<tr>
+<td>High</td>
+<td>ZIP instructions tell participants the ZIP cannot work and reference a different repository layout</td>
+<td>Added local <code>git init</code> route preserving credential checks, package-relative guide, and corrected book path conventions</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Test assumes a <code>.gitignore</code> outside the packaged layout</td>
+<td>Added package ignore rules and corrected the test's root calculation</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Long book estimates total more than the available group time</td>
+<td>Selected a shorter route with timed checkpoints; retained full chapters for reference</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>The card exercise could be confused with building the entire assistant</td>
+<td>Explicitly explained scaffold, candidate component and separate integration boundary</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Persona says never admit lack of real-time flight access</td>
+<td>Replaced with honest source-unavailability behavior</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Slide prose repeats “You'll understand”, “In short”, “Next”; elementary examples displace the travel task</td>
+<td>Rebuilt 23 slides around concrete travel requirements, failure cases, architecture and evidence</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>No self-contained current participant entry point</td>
+<td>Added participant guide, troubleshooting, checkpoint evidence and group handoff</td>
+</tr>
+</tbody>
+</table>
+<h2>Current APIs: what is verified</h2>
+<p><strong>Mantle.</strong> PyPI reports Rasa Pro 3.21.0; the Mantle changelog identifies it as the first official open beta released 20 October 2026. Unreleased changes are not assumed present. The current travel project now validates with zero authoring findings on the installed 3.21.0 engine. This is authoring validation, not a licence check or proof of every runtime path.</p>
+<p><strong>Deepgram.</strong> Some current tutorial/reference snippets still show the older Flux ASR selector. The release changelog says to use <code>deepgram_flux</code>; installed 3.21.0 code confirms the distinct Nova/Flux engines and rejects a Flux model under the Nova selector. This revision follows the release and installed engine. It uses Flux recognition and Aura-2 speech synthesis, not Flux TTS. Actual audio still requires a live rehearsal.</p>
+<p><strong>OpenAI.</strong> The current official API documentation uses <code>client.beta.agents.sessions.create</code>. Session tools request application work and receive results; attaching an environment does not automatically put application function handlers inside that environment. The worker's OpenAI 3.36.1 / Core 0.36.2 contract tests pass without a provider request. Mantle retains its compatible OpenAI 2.x client in a separate environment. Do not combine those environments or substitute the Agents SDK sample.</p>
+<p>The API quickstart names application-key permissions <code>api.agents.read</code>, <code>api.agents.write</code> and <code>api.responses.write</code>; the SDK adds the beta header. Neither a ChatGPT subscription nor a key merely being present proves API access. Model availability remains account-specific.</p>
+<p><strong>Source cards.</strong> Flight position is an observation; the landing time is computed. It is not an airline schedule or evidence of a delay. Weather is a forecast, transfer time is an assumption, and FX is daily reference data. The dashboard is custom application code. Neither Mantle nor the Agents API automatically renders it. The revised slides label their example board as an illustration.</p>
+<h2>What was executed here</h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python syntax</td>
+<td>255 files parse</td>
+<td>No runtime claim</td>
+</tr>
+<tr>
+<td>Original project under Rasa 3.21.0</td>
+<td>Reproduced unexpected_llm and missing orchestrator.model_group findings</td>
+<td>Confirms the migration was needed</td>
+</tr>
+<tr>
+<td>Revised project authoring validation</td>
+<td>0 findings</td>
+<td>No model, licence or voice request</td>
+</tr>
+<tr>
+<td>Deepgram configuration tests</td>
+<td>3 passed</td>
+<td>Installed schema validation, no audio</td>
+</tr>
+<tr>
+<td>Doctor / credential controls</td>
+<td>18 passed</td>
+<td>Synthetic credentials only</td>
+</tr>
+<tr>
+<td>Launcher tests</td>
+<td>46 passed</td>
+<td>Includes real channel parsing; no full live launch</td>
+</tr>
+<tr>
+<td>Mantle hook tests</td>
+<td>8 passed</td>
+<td>Validated output hooks, synthetic source data</td>
+</tr>
+<tr>
+<td>Scripted Mantle conversation</td>
+<td>1 passed</td>
+<td>Actual orchestration + in-process MCP + replay cards, scripted model replies</td>
+</tr>
+<tr>
+<td>Installed native Agents contract</td>
+<td>3 passed</td>
+<td>Actual SDK/Core surface, injected transport, no billed API call</td>
+</tr>
+<tr>
+<td>Released source integration</td>
+<td>1 passed</td>
+<td>Core 0.36.2, MCP and injected provider responses, four cards</td>
+</tr>
+<tr>
+<td>Cross-platform teaching logic</td>
+<td>3-attempt and 1-attempt paths pass</td>
+<td>Accepted proposal, rejected baseline, recovery, duplicate suppression; Linux/Python 3.12 execution only</td>
+</tr>
+<tr>
+<td>Full Mantle-environment suite</td>
+<td>184 run: 179 passed, 4 failed/error, 1 skipped</td>
+<td>Unix sockets denied here; one process teardown failure also remains; see final log</td>
+</tr>
+<tr>
+<td>Slides</td>
+<td>23 rendered; 1600×900 and 1280×720 layout/navigation checks pass; no network asset requests</td>
+<td>Visual review performed; PDF has 23 pages</td>
+</tr>
+</tbody>
+</table>
+<p>The initial broad test run in the worker-only environment did not pass: it included Mantle-dependent tests and Unix-domain-socket tests unsupported by this host. These were not relabelled as successes. Relevant tests were then run in the appropriate environment, with results above. The final full-suite run has three failures associated with Unix socket control and one process-group teardown error; the latter passed in the isolated launcher suite but remains unresolved in the combined run. The complete <code>make test</code>/launcher lifecycle and browser microphone path still need the intended workshop machine. See <code>verification/</code> for selected raw results and the final suite status.</p>
+<h2>What remains unverified</h2>
+<ul>
+<li>Live Rasa licence acceptance and real microphone / speaker behavior.</li>
+<li>A paid Agents API session, this account's model access and actual cost.</li>
+<li>Current flight, forecast and exchange-rate service availability.</li>
+<li>Fresh setup and full launcher lifecycle on the facilitator's Mac; Unix-domain sockets are denied on this execution host.</li>
+<li>macOS sandbox-exec factory chapters and actual live-built artifact integration.</li>
+<li>The complete factory voice interface, durable build jobs, cancellation, automatic release and rollback.</li>
+<li>Native Windows launcher support. The JSON recovery route is portable in design but was executed here on Linux only.</li>
+</ul>
+<p>No provider credentials were requested or used, and no billed provider run was performed.</p>
+<h2>Teaching and brand changes</h2>
+<p>The deck retains Rasa's warm cream/ink composition, uses the official horizontal logo and documented open fallback fonts (Newsreader, Inter, JetBrains Mono). Pink marks emphasis. Status is always expressed in words, not color alone. The new deck includes concrete travel examples, API/SDK distinction, build-time versus run-time architecture, group instructions and presenter notes. It is a brand adaptation, not a newly approved corporate template.</p>
+<p>The main session ends its teaching at minute 40. Lab A is 55 minutes, networking is 15, Lab B is 55. Groups finish with one requirement, one rejection, one accepted output and one limitation. Statistical confidence intervals and historical compiler defects move out of the main route.</p>
+<h2>Source references</h2>
+<p>Checked 22 October 2026. These are external references, not vendored documentation.</p>
+<ul>
+<li>Mantle overview: https://mantle.rasa.com/</li>
+<li>Mantle changelog: https://mantle.rasa.com/changelog</li>
+<li>Agent configuration: https://mantle.rasa.com/reference/agent-yml</li>
+<li>Runtime integrations: https://mantle.rasa.com/reference/integrations-yml</li>
+<li>Speech provider reference (contains older examples; use release-specific verification): https://mantle.rasa.com/reference/speech-providers</li>
+<li>PyPI release metadata: https://pypi.org/pypi/rasa-pro/json</li>
+<li>Agents API overview: https://developers.openai.com/api/docs/guides/agents-api/overview</li>
+<li>Agents API quickstart: https://developers.openai.com/api/docs/guides/agents-api/quickstart</li>
+<li>Session lifecycle: https://developers.openai.com/api/docs/guides/agents-api/sessions</li>
+<li>Function tools: https://developers.openai.com/api/docs/guides/agents-api/tools/functions</li>
+<li>Rasa brand system and exact logo asset: https://github.com/RasaHQ/brand ; <code>assets/logos/digital/rasa-logo-horizontal-ink.svg</code></li>
+</ul>
+<p>Historical results remain tied to the old project pins. Their presence in this package does not certify current behavior. The original top-level plans and slide source are preserved under <code>archive/2026-10-22-original/</code>.</p>
+</main></html>

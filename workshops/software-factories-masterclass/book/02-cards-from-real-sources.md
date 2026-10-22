@@ -1,3 +1,5 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 2: Cards from real sources
 
 Picture a card that says "live" beside a rate that updates once a day. A traveler trusts it and plans around it. In about 10 minutes you'll find the code that stops that, by labeling every card with where its data came from and how fresh it is.
@@ -22,8 +24,8 @@ A card built from a recorded example gets the label REPLAY instead, so nobody mi
 ## Get to the folder
 
 ```bash
-export REPO=~/rasa-community-resources
-cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
+export PACK=/absolute/path/to/software-factories-masterclass
+cd "$PACK/book/ready/ch00/demo"
 ```
 
 ## See how it works

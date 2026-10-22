@@ -1,3 +1,5 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 3: A factory starts with a task
 
 A team asks a coding agent for a currency card and gets one that looks right, but nobody wrote down what "right" meant. A factory starts with a written request and a list of the files the builder may change. In about 25 minutes you'll set a limit on a currency card and watch a factory accept the result without you writing any code.
@@ -18,9 +20,9 @@ You're done when the check at the end prints a line that starts with `ch03 OK`. 
 Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into `~/factory-work` (it creates a new folder there, `my-factory-ch03`, and refuses to overwrite an existing one), then set up Python once:
 
 ```bash
-export REPO=~/rasa-community-resources   # the folder where you cloned the repository
+export PACK=/absolute/path/to/software-factories-masterclass   # the unzipped workshop root
 mkdir -p ~/factory-work && cd ~/factory-work
-[ -e my-factory-ch03 ] && echo "my-factory-ch03 already exists: use it, or move it away first" || cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch03 my-factory-ch03
+[ -e my-factory-ch03 ] && echo "my-factory-ch03 already exists: use it, or move it away first" || cp -R "$PACK"/book/ready/ch03 my-factory-ch03
 ```
 
 ```bash

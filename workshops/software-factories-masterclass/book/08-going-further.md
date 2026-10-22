@@ -1,3 +1,5 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 8: Measure results and recover without guessing
 
 A worker crashes before it records a verdict. Your team needs the change finished, but retrying without checking the earlier result could repeat work that already happened. Set a retry allowance and see when the factory stops and asks for help.
@@ -27,16 +29,16 @@ You will change a JSON setting that controls how many attempts the factory allow
 
 ## Get the ready folder
 
-Set `REPO` to your clone. Run the whole block from a terminal:
+Set `PACK` to your clone. Run the whole block from a terminal:
 
 ```bash
-export REPO=~/rasa-community-resources
+export PACK=/absolute/path/to/software-factories-masterclass
 export WORK=~/factory-work/my-factory-ch08
 if [ -e "$WORK" ]; then
   printf '%s\n' 'Refused: that folder already exists. Choose a fresh WORK name.'
 else
   mkdir -p ~/factory-work &&
-  cp -R "$REPO/workshops/software-factories-masterclass/book/ready/ch08" "$WORK" &&
+  cp -R "$PACK/book/ready/ch08" "$WORK" &&
   cd "$WORK" &&
   uv venv --python 3.12 .venv &&
   . .venv/bin/activate
