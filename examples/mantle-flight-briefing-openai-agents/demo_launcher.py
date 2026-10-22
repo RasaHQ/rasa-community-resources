@@ -545,11 +545,31 @@ class ScriptedClient:
             words = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5}
             match = re.fullmatch(r'(?:the )?(first|second|third|fourth|fifth|[1-5])(?: one| flight)?[.!]?', text.strip().lower())
             choice = (words.get(match[1]) or int(match[1])) if match else None
+            selected = flight_number(text)
+            if selected:
+                choice = next((row.get('choice') for row in discovery['candidates']
+                               if row.get('callsign') == selected), choice)
+            # A positive short answer refers only to the named suggestion from
+            # this exact search. A rejected suggestion is no longer implicit.
+            offered_at = max((i for i, message in enumerate(messages[:latest])
+                if message.get('role') == 'tool' and (tool_record(message.get('content')) or {}).get('discovery_id') == discovery['discovery_id']), default=-1)
+            declined = any(message.get('role') == 'user' and unknown_flight(str(message.get('content', '')))
+                           for message in messages[offered_at + 1:latest]) if offered_at >= 0 else False
+            if text.strip().lower().rstrip('.!?') in ('yes', 'that one', 'yes that one') and not declined:
+                from briefing.traveller import discovery_notice, suggested_flight
+                try:
+                    discovery_notice(discovery)  # Same validated notice as the presentation hook.
+                    suggestion = suggested_flight(discovery)
+                except ValueError:
+                    suggestion = None
+                choice = suggestion['choice'] if suggestion else None
             if choice is not None and choice <= len(discovery.get('candidates', [])):
                 return reply(briefing, {'action': 'start', 'request': text,
                     'discovery_id': discovery['discovery_id'], 'choice': choice})
             if flight_number(text) is None:
-                return LLMResponse(id='scripted', choices=['SCRIPTED: Which flight would you like? Say the first, second, third, fourth or fifth one from the choices.'], created=0)
+                question = ("I won't select a flight without your choice. Tell me its list number or flight number when you are ready."
+                            if declined else "Which flight is yours? Say a list number, such as the second one, or its flight number.")
+                return LLMResponse(id='scripted', choices=[question], created=0)
         if capability:
             if text.strip().lower() in ('status', 'get', 'show cards', 'check'):
                 return reply(briefing, {'action': 'get', 'briefing_id': capability})

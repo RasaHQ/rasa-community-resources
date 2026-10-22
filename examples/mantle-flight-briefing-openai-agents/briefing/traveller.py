@@ -300,6 +300,22 @@ def discover(sources, destination):
     return result
 
 
+def suggested_flight(value):
+    """Suggest only a complete, validated search; earliest computed landing wins."""
+    if value.get('status') != 'found' or value.get('partial') is True:
+        return None
+    rows = value.get('candidates')
+    if not isinstance(rows, list) or not 1 <= len(rows) <= 5:
+        return None
+    for number, row in enumerate(rows, 1):
+        if not isinstance(row, dict) or type(row.get('choice')) is not int or row['choice'] != number:
+            return None
+        minutes = row.get('landing_estimate_minutes')
+        if isinstance(minutes, bool) or not isinstance(minutes, (int, float)) or not math.isfinite(minutes) or not 0 <= minutes <= 1440:
+            return None
+    return min(rows, key=lambda row: (row['landing_estimate_minutes'], row['choice']))
+
+
 def discovery_notice(value):
     """Speech is rendered only from bounded local reader results, never model prose."""
     if value.get('status') == 'unsupported_destination':
@@ -335,7 +351,11 @@ def discovery_notice(value):
     date = value.get('source_date', '')
     if re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', date) is None:
         raise ValueError('invalid_route_date')
-    lines.append('Which one would you like? Routes are published data dated ' + date + '; positions are live. Landing estimates are computed from position and speed, not airline times.')
+    suggestion = suggested_flight(value)
+    if suggestion is not None:
+        destination = airport_row(suggestion['destination'])['iata_code']
+        lines.append(f"My suggestion is {flight_name(suggestion['callsign'])} to {destination}, because its computed landing estimate is soonest among these flights: about {suggestion['landing_estimate_minutes']} minutes. Is that your flight?")
+    lines.append('You can also choose a list number or flight number. Routes are published data dated ' + date + '; positions are live. Landing estimates are computed from position and speed, not airline times.')
     if value.get('partial'):
         lines.append('This search is partial; more flights may be present. Do you know the airline or flight number?')
     return '\n'.join(lines)

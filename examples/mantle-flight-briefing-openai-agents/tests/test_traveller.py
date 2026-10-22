@@ -30,6 +30,19 @@ class TravellerControls(unittest.TestCase):
             self.assertNotIn('Do you know', notice)
             self.assertEqual(result['candidates'], [])
 
+    def test_suggestion_is_earliest_estimate_with_stable_tie_and_no_partial_guess(self):
+        from briefing.traveller import suggested_flight
+        value = {'status': 'found', 'partial': False, 'candidates': [
+            {'choice': 1, 'landing_estimate_minutes': 25}, {'choice': 2, 'landing_estimate_minutes': 10}]}
+        self.assertEqual(suggested_flight(value)['choice'], 2)
+        value['candidates'][0]['landing_estimate_minutes'] = 10
+        self.assertEqual(suggested_flight(value)['choice'], 1)
+        value['partial'] = True
+        self.assertIsNone(suggested_flight(value))
+        value['partial'] = False
+        value['candidates'][0]['landing_estimate_minutes'] = float('nan')
+        self.assertIsNone(suggested_flight(value))
+
     def test_uncertain_meeting_answer_keeps_flight_and_explains_required_input(self):
         with self.assertRaises(TravellerQuestion) as first:
             journey('Lufthansa 400 to JFK', now=NOW)
