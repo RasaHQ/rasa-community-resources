@@ -60,7 +60,7 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
    make doctor
    ```
 
-   You should see key **names** marked SET or MISSING, never values, and `Readiness check passed.` Missing model and voice keys are expected here. Fix any other error before you continue.
+   You should see key **names** marked SET or MISSING, never values, and `Readiness check passed.` Missing model and voice keys are expected in this scripted exercise. Fix any other error before you continue.
 
 ## See how it works
 
