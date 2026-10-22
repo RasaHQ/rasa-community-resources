@@ -197,5 +197,10 @@ class SpokenMeetingHours(unittest.TestCase):
                       'six or seven pm tomorrow', 'sixteen pm tomorrow', 'someone pm tomorrow',
                       'half six pm tomorrow', 'half past six pm tomorrow',
                       'quarter to six pm tomorrow', 'a quarter past 6pm tomorrow',
-                      'half 6 pm tomorrow', 'quarter to 18:00 tomorrow']:
+                      'half 6 pm tomorrow', 'quarter to 18:00 tomorrow',
+                      'past six pm tomorrow', 'past 6 pm tomorrow',
+                      'to six pm tomorrow', 'to 6 pm tomorrow',
+                      'till six pm tomorrow', 'till 6 pm tomorrow',
+                      'before six pm tomorrow', 'before 6 pm tomorrow',
+                      'after six pm tomorrow', 'after 6 pm tomorrow']:
             self.assertIsNone(meeting_time(words, airport_row('KEWR'), now))

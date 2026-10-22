@@ -157,6 +157,10 @@ def meeting_time(text, airport, now):
                     'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
                     'eleven': 11, 'twelve': 12}
     hour_words = r'(?:' + '|'.join(spoken_hours) + r')'
+    # Relative clock modifiers need clarification, not a guessed bare hour.
+    if re.search(r'\b(?:past|to|till|before|after)\s+(?:'
+                 + hour_words + r'|[0-9]{1,2}(?::[0-9]{2})?)\b', value):
+        return None
     if (re.search(r'\b(?:around|about|approximately)\s+' + hour_words + r'\b', value)
             or re.search(r'\b' + hour_words + r'\s+or\s+' + hour_words + r'\b', value)):
         return None
