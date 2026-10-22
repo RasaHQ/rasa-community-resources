@@ -13,7 +13,7 @@
 
 ## Get the ready folder
 
-Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter next to your clone (it creates a new folder, `my-factory-ch07`), then set up Python once:
+Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into `~/factory-work` (it creates a new folder there, `my-factory-ch07`, and refuses to overwrite an existing one), then set up Python once:
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
@@ -55,7 +55,7 @@ uv pip install zeocore==0.35.4 httpx==0.28.1
 
 Now do the same for your own task, from a clean product. Use the same terminal as before, so that `REPO` is still set (if it isn't, run `export REPO=~/rasa-community-resources` again).
 
-The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first. This also makes the builder's attempt again for the new number:
+The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first by replacing the 2 below with your number. This also makes the builder's attempt again for the new number:
    ```bash
    python set_limit.py 2
    ```
