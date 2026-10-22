@@ -65,7 +65,7 @@ The console and the builder driver come with the factory console pull request (P
 For a tailnet console, `--viewer-access operator-device-acl` declares that an actual access list already limits the audience. Alternatively, `--viewer-access operator-accepted` requires the operator's explicit acceptance of the wider audience. Neither flag creates an access list. A tailnet launch without the declaration is refused. For this event the expiry is `2026-10-22T16:30:00Z`. Keep the existing preview running; do not start another process on its occupied port.
 
 Say these two limits in plain words before the build:
-- "The factory builds and tests the market card. You see the recorded build and a live safe run. Today it does not install the new card into the running demo."
+- "The factory builds and tests the market card. You see the recorded build and a live safe run. Today it doesn't install the new card into the running demo."
 - "Chapters 1 and 2 are short concept chapters. They have no change exercise today."
 
 ### Qualification already completed, and what it does not establish
