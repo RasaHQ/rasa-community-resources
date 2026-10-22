@@ -11,6 +11,7 @@ from pathlib import Path
 import socket
 import sys
 import tempfile
+from types import SimpleNamespace
 import time
 import unittest
 from unittest.mock import patch
@@ -36,6 +37,17 @@ class LauncherControls(unittest.TestCase):
                 (directory / 'uv.lock').write_text('[[package]]\nname="zeocore"\nversion="1.0"\nsource='+source+'\n')
                 with self.assertRaises(demo.DemoError):
                     demo.registry_lock(directory)
+
+    def test_setup_discovers_existing_python_before_redirected_runtime_data(self):
+        results = [SimpleNamespace(returncode=0, stdout=sys.executable + '\n'), SimpleNamespace(returncode=0)]
+        with patch.dict(os.environ, {'XDG_DATA_HOME': '/existing-python-data'}), \
+                patch.object(demo.subprocess, 'run', side_effect=results) as run, \
+                patch.object(demo, 'completed'), \
+                patch.object(demo.shutil, 'which', return_value='/installed/uv'):
+            demo.setup()
+        self.assertEqual(run.call_args_list[0].kwargs['env']['XDG_DATA_HOME'], '/existing-python-data')
+        self.assertIn('--no-python-downloads', run.call_args_list[0].args[0])
+        self.assertNotEqual(demo.child_environment()['XDG_DATA_HOME'], '/existing-python-data')
 
     def test_missing_setup_has_fixed_error_no_traceback(self):
         output = io.StringIO()

@@ -135,8 +135,16 @@ def setup():
     for directory in (WORKER, PROJECT):
         registry_lock(directory)
     env = child_environment()
+    # Locate an EXISTING managed interpreter in the caller's normal data home.
+    # Runtime data remains redirected; discovery never downloads or installs.
+    find_env = env.copy()
+    for name in ('XDG_DATA_HOME', 'UV_PYTHON_INSTALL_DIR'):
+        if name in os.environ:
+            find_env[name] = os.environ[name]
+        else:
+            find_env.pop(name, None)
     result = subprocess.run(['uv', 'python', 'find', '3.12', '--no-python-downloads'],
-                            env=env, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                            env=find_env, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                             text=True, timeout=20)
     if result.returncode or not Path(result.stdout.strip()).is_file():
         raise DemoError('Install Python 3.12, then run ./demo setup again.')
