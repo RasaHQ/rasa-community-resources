@@ -111,6 +111,7 @@ class Jobs:
         self._runner, self._timeout, self._capacity = runner, timeout, capacity
         self._jobs: dict[str, _Job] = {}
         self._display_job: _Job | None = None
+        self._display_owner: Owner | None = None
         self._discoveries = {}
         self._display_discovery = None
         self._replacement_plan = replacement_plan
@@ -235,6 +236,7 @@ class Jobs:
                 self._discoveries[key] = (owner, time.monotonic(), candidates)
                 result["discovery_id"] = key
             self._display_job = None
+            self._display_owner = owner
             self._display_discovery = deepcopy({k: v for k, v in result.items() if k != 'discovery_id'})
             return result
         if action == "start" and request is not None and job_id is None and change is None:
@@ -258,12 +260,18 @@ class Jobs:
             job.board.begin_request(job.request_id)
             self._jobs[job_id] = job
             self._display_job = job
+            self._display_owner = owner
             self._display_discovery = None
             job.task = asyncio.create_task(self._run(job, job.request_id))
             return {"job_id": job_id, "status": "started"}
         if action == "get" and job_id is not None and request is None and change is None:
             job = self._owned(owner, job_id)
-            self._display_job = job
+            # Polling an older job in this conversation must not roll the
+            # shared display back past a newer discovery/start/revision.
+            if self._display_owner != owner:
+                self._display_job = job
+                self._display_owner = owner
+                self._display_discovery = None
             result = {"status": job.status, "progress": list(job.progress),
                       "widgets": [c["event"]["widget_id"] for c in job.cards if not c["replaced"]],
                       "cards": deepcopy(job.cards), "revision": job.revision,
@@ -282,6 +290,7 @@ class Jobs:
                 if not targets or len(set(targets)) != len(targets) or not set(targets) <= known:
                     raise BriefingRefused("invalid_replacement_targets")
             self._display_job = job
+            self._display_owner = owner
             if job.task is not None:
                 job.task.cancel()
             # Rotate identity before spawning; even an uncancellable old worker
@@ -357,6 +366,7 @@ class Jobs:
                 job.cards = self._snapshot(job)
 
     async def close(self) -> None:
+        self._display_owner = None
         self._display_job = None
         self._display_discovery = None
         self._discoveries.clear()

@@ -62,6 +62,20 @@ class JobControls(unittest.IsolatedAsyncioTestCase):
             with self.assertRaises(BriefingRefused):
                 await self.jobs.briefing(self.owner, **kwargs)
 
+    async def test_polling_old_opening_job_does_not_replace_newer_selected_board(self):
+        from briefing.replay import ReplayRunner
+        self.jobs = Jobs(ReplayRunner())
+        old = await self.jobs.briefing(self.owner, action='start', request='Replay DEMO101 missing meeting')
+        await self.jobs._jobs[old['job_id']].task
+        selected = await self.jobs.briefing(self.owner, action='start', request='Replay DEMO101')
+        await self.jobs._jobs[selected['job_id']].task
+        current = self.jobs.display_snapshot()
+        self.assertEqual(len(current), 3)
+        old_state = await self.jobs.briefing(self.owner, action='get', job_id=old['job_id'])
+        self.assertEqual(old_state['status'], 'needs_input')
+        self.assertEqual(self.jobs.display_snapshot(), current)
+        self.assertEqual(self.jobs.display_title(), 'Flight briefing')
+
     async def test_authenticated_metadata_boundary_preserves_two_conversation_isolation(self):
         a = {SENDER_META: "conversation-a"}
         b = {SENDER_META: "conversation-b"}
