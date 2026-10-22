@@ -2,7 +2,7 @@
 
 **Goal:** see four recorded source cards, then ask the actual agent to change its airport-to-city allowance without editing code.
 
-**You need first:** a Git clone of this repository, Python 3.12, [uv](https://docs.astral.sh/uv/), Make, a browser and an issued [free Rasa Developer Edition licence](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the form alone is not a licence. Installation needs internet access. After installation, this chapter's core exercise uses recorded data and needs no live source, model key or voice key.
+**You need first:** a Git clone of this repository, Python 3.12, [uv](https://docs.astral.sh/uv/), Make, a browser and an issued [free Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the form alone is not a license. Installation needs internet access. After installation, this chapter's core exercise uses recorded data and needs no live source, model key or voice key.
 
 The Python-product factory exercises later in the book require a Mac with `sandbox-exec`. Pair with a Mac user for those checks if needed. This chapter is qualified on macOS/Python 3.12; other operating systems have not been qualified.
 
@@ -43,13 +43,13 @@ In this exercise, the position, forecast and reference rates were recorded on **
 
    Setup installs two locked Python 3.12 environments without passing participant keys to package build tools. `make env` creates a private `.env` only if absent; it never overwrites earlier values.
 
-3. Open `.env` in your editor. Put your issued licence after `RASA_LICENSE=` and leave model and voice entries empty for this exercise. Never paste a credential into chat, URLs, task files or a terminal command. Do not commit `.env`.
+3. Open `.env` in your editor. Put your issued license after `RASA_LICENSE=` and leave model and voice entries empty for this exercise. Never paste a credential into chat, URLs, task files or a terminal command. Do not commit `.env`.
 
    ```bash
    make doctor
    ```
 
-   You should see credential **names** marked SET or MISSING, never values, and `Readiness check passed.` A present licence still must be accepted when the real engine starts. Missing model and voice keys are expected. Fix a prerequisite error before continuing.
+   You should see credential **names** marked SET or MISSING, never values, and `Readiness check passed.` A present license still must be accepted when the real engine starts. Missing model and voice keys are expected. Fix a prerequisite error before continuing.
 
 ## See how it works
 
@@ -125,7 +125,7 @@ For model reasoning or voice demonstrations, use the facilitator's separately re
 
 ## If it fails
 
-- **Licence missing or refused:** use the issued licence, not the sign-up confirmation. Do not share its value in a support report.
+- **License missing or refused:** use the issued license, not the sign-up confirmation. Do not share its value in a support report.
 - **The check still says NOT DONE:** read the four cards. Each must say REPLAY, and the timeline must show your requested 30 or 120 minutes. Make the request through the conversation.
 - **A port is occupied:** stop your own earlier checkpoint with `make stop`. The launcher does not stop another checkout.
 - **Unsafe or tracked `.env`:** keep only the four template names, one assignment each, in a regular ignored file. `chmod 600 .env` repairs permissions. Never force tracked credentials past the check.
