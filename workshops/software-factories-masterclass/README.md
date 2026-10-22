@@ -10,6 +10,8 @@ You ask an agent to brief you before a flight. It shows four cards: the flight, 
 
 ## Start here
 
+This pack is pinned to and tested on Rasa Pro 3.21.0.dev5. The current Mantle docs describe 3.21.0.dev12, where the model is set in `agent.yml` under `orchestrator.model_group` instead of in `integrations.yml`. Follow this pack’s files, not the current docs, for today’s exercises.
+
 Open the [book](book/README.md) and begin with Chapter 0. Each chapter gives you the files, commands and completion check for its exercise.
 
 - [Slides](slides/): open `slides/index.html` for the classroom presentation.
@@ -24,3 +26,5 @@ You won’t see a live model choosing tools. The session shows a recording of th
 ## Earlier material in this folder
 
 `FACILITATOR.md`, `FACILITATOR-CARD.md`, `OFFLINE-OPENING.md`, `PREWORK.md`, `brief-me-before-i-fly/` and `openai-mcp/` belong to the earlier version and are not used today. The [run sheet](RUN-SHEET.md) replaces those session instructions.
+
+`openai-mcp/` uses the OpenAI Agents SDK, a separate library. This course uses the OpenAI Agents API.
