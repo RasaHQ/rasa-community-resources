@@ -505,7 +505,11 @@ class ScriptedClient:
         from briefing.traveller import destination_request, unknown_flight
         wants_search = any(phrase in text.lower() for phrase in ('which flights', 'find flights', 'look for flights'))
         query = destination_request(text)
-        if unknown_flight(text):
+        last_result = previous[-1] if previous else {}
+        missing = last_result.get('needs_input')
+        awaiting_flight = (last_result.get('status') == 'needs_input'
+                           and isinstance(missing, dict) and missing.get('field') == 'flight')
+        if unknown_flight(text) and (awaiting_flight or last_result.get('status') == 'unsupported_destination'):
             # A short answer belongs to the traveller's last stated destination,
             # not a fresh parse of "no". Do not infer a destination from a flight.
             for message in reversed(messages[:latest]):

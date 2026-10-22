@@ -268,6 +268,21 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         self.assertIn("don't need to answer", response.response_text())
         self.assertNotIn('?', response.response_text())
 
+    async def test_negative_nonflight_answers_preserve_selected_journey(self):
+        for field in ('meeting_time', 'transfer_minutes'):
+            for answer in ('no', 'not sure', 'no idea', "I don't know"):
+                messages = [{'role': 'user', 'content': 'flight to New York tonight'},
+                    {'role': 'tool', 'content': json.dumps({'status': 'needs_input',
+                        'briefing_id': 'synthetic-old-opening', 'needs_input': {'field': 'flight'}})},
+                    {'role': 'user', 'content': 'the first one'},
+                    {'role': 'tool', 'content': json.dumps({'status': 'needs_input',
+                        'briefing_id': 'synthetic-selected-journey', 'needs_input': {'field': field}})},
+                    {'role': 'user', 'content': answer}]
+                response = await self.call(messages, ['briefing', 'find_flights'])
+                self.assertEqual(response.tool_calls[0].tool_name, 'briefing')
+                self.assertEqual(response.tool_calls[0].tool_args,
+                    {'action': 'revise', 'briefing_id': 'synthetic-selected-journey', 'change': answer})
+
     async def test_negative_flight_answers_reuse_last_stated_destination(self):
         for destination in ('London', 'New York', 'Reykjavik'):
             for answer in ('no', "no, i don't know", 'no idea', 'not sure', 'I do not know'):
