@@ -82,8 +82,8 @@ async def main():
                 assert jobs.display_place() is None
                 assert 'Lufthansa 400' in page and 'CC0-1.0' in page
                 assert search['discovery_id'] not in page and 'PRIVATE CANARY' not in page
-                now += timedelta(seconds=30)
-                tick[0] += 30
+                now += timedelta(seconds=180)
+                tick[0] += 180
                 started = await call('briefing', {'action':'start','request':'the second one',
                     'discovery_id':search['discovery_id'],'choice':2})
                 key = started['briefing_id']
@@ -106,7 +106,7 @@ async def main():
                 assert jobs.display_place().code == 'JFK'
                 assert 'New York' in page and 'local time' in page
                 assert 'forecast, issued' in page
-                assert page.count('as of 08:00 at JFK') >= 2
+                assert page.count('as of 08:03 at JFK') >= 2
                 # Viewing later does not silently turn snapshot-relative time
                 # into a fresh observation. The visible reference stays fixed.
                 now += timedelta(hours=2)
