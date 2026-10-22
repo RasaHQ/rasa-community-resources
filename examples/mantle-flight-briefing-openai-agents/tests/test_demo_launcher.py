@@ -291,7 +291,9 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
     async def test_spoken_confirmation_rejects_negatives_and_number_overrides(self):
         search = self.suggested_search()
         for answer in ('yes no', 'that is not mine', 'yeah no United 57',
-                       'yes second one', 'that flight 3', 'yes two', 'yes one'):
+                       'yes second one', 'that flight 3', 'yes two', 'yes one',
+                       "that isn't the one", "that one isn't right",
+                       "yeah, I'd prefer another", "that's too early", 'yes but cheaper'):
             response = await self.call([{'role': 'tool', 'content': json.dumps(search)},
                 {'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
             self.assertFalse(response.tool_calls, answer)

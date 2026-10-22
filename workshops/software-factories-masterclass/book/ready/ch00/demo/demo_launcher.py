@@ -461,9 +461,11 @@ def speech_confirmation(text):
     import re
     from briefing.traveller import flight_number
     words = re.findall(r"[a-z]+|[0-9]+", text.casefold())
-    if not words or words[0] not in ('yes', 'yeah', 'that'):
+    if not words or words[0] not in ('yes', 'yeah', 'yep', 'that'):
         return False
-    if any(word in ('no', 'not', 'never', 'dont', 'don') for word in words):
+    allowed = {'yes', 'yeah', 'yep', 'sure', 'ok', 'okay', 'that', 'this', 'the',
+               'one', 'is', 'it', 's', 'please', 'correct', 'right', 'sounds', 'good', 'works'}
+    if any(word not in allowed for word in words):
         return False
     if flight_number(text) is not None:
         return False
