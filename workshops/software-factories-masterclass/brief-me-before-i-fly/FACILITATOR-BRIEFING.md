@@ -61,7 +61,7 @@ Say aloud at the start: If you see SCRIPTED on your screen, nothing live ran. Th
 - Land it: protected scenarios give the factory a repeatable acceptance check. Independent review and the receiving workflow still need their own evidence.
 
 ### 15:50 The second act: the next feature, specified before it's built (30 min) [PRODUCT]
-- Say first: the market watchlist is the next feature. No adapter and no coding-agent run for it exist in this repository yet. This block teaches the specification, not a finished build.
+- Say first: the market watchlist is the next feature. No adapter and no coding-agent run for it exist in this repository yet. This block teaches the specification of a feature that isn't built yet.
 - Show the closed `market_watchlist` component in the spec and the five market scenarios M1 to M5. Show the factory gate: M1 to M5 plus S2, S3, S5 and S6.
 - Ask each pair to write down what a coding agent's change must do to pass the five scenarios, and which edit to the acceptance files or the other adapters the gate would catch (M4, checked by hash).
 - Land it: the spec owner writes the gate before any code, and the builder can't edit it.

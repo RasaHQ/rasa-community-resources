@@ -27,7 +27,7 @@ M4 [m] Registry closed. GIVEN the coding agent's change, THEN the registry still
 M5 [m] Market status. GIVEN market_status is closed, THEN the card says closed and shows the last quote time, not the current time.
 
 ## Factory gate
-ACCEPT only if S2, S3, S5, S6, M1 to M5 pass offline on the candidate. The browser observation (the new card appears from a spoken or typed request through Mantle, with source and timestamp) is recorded by the facilitator; automated results alone are intermediate evidence.
+STATUS on 2026-10-22: the market act has no implementation yet, so M1 to M5 have not been run against any build. ACCEPT only if S2, S3, S5, S6, M1 to M5 pass offline on the candidate. The browser observation (the new card appears from a spoken or typed request through Mantle, with source and timestamp) is recorded by the facilitator; automated results alone are intermediate evidence.
 Known gaps (said aloud): scenarios check contract behavior on fixtures; they do not show that a model follows instructions, that a live provider is correct, or that real traffic would allow the margin shown.
 
 ## Added in v2
