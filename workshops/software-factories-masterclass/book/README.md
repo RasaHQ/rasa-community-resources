@@ -35,8 +35,8 @@ Each chapter builds on the one before it, and every chapter after Chapter 0 can 
 | [0](00-run-the-finished-agent.md) | Run the finished agent | Clone, set up and run the briefing agent, and see its four cards | The doctor passes and the four recorded cards show (a live flight is the extra, not the check) |
 | [1](01-what-a-mantle-agent-is.md) | What a Rasa Mantle agent is | Read and change the briefing skill and its tool | The changed skill trains and its test passes |
 | [2](02-cards-from-real-sources.md) | Cards from real sources | How cards, the renderer and the four public readers fit together | The card test passes with the label rules held |
-| [3](03-a-factory-starts-with-a-task.md) | A factory starts with a task | The task for the market card and the baseline it applies to | The task loads and its pins check out |
-| [4](04-acceptance-before-code.md) | Acceptance before code | The protected suite for the market card, written before any candidate | The suite fails on the baseline, for the right reasons |
+| [3](03-a-factory-starts-with-a-task.md) | A factory starts with a task | The task for the market card and the baseline it applies to | The task loads and its allowed paths exist in the baseline |
+| [4](04-acceptance-before-code.md) | Acceptance before code | The protected suite for the market card, written before any candidate | The pins match the protected files, and the suite fails on the baseline for the right reasons |
 | [5](05-the-builder.md) | The builder, on the OpenAI Agents API | A builder session with file tools confined to a scratch copy | The builder produces a candidate change in an offline run, and a live run is the extra |
 | [6](06-the-gates-and-the-decision.md) | The gates and the decision | The gate runner and the recorded decision | The good candidate is ACCEPTed and each bad one REJECTed, offline |
 | [7](07-integrate-and-run-it-dark.md) | Integrate and run it dark | Integration, then the whole loop | The offline run ends in ACCEPT and the market card shows in your agent |
