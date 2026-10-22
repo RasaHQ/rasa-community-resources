@@ -1,21 +1,17 @@
 # Chapter 3: A factory starts with a task
 
-A team asks a coding agent for a currency card and gets one back that looks right. Nobody wrote down what "right" meant, so nobody can say whether it is. A factory starts with a written request and a list of the files the builder may change. This chapter has you write one.
+A team asks a coding agent for a currency card and gets one back that looks right. Nobody wrote down what "right" meant, so nobody can say whether it is. A factory starts with a written request and a list of the files the builder may change. In about 25 minutes you'll set a limit on a currency card and watch a factory accept the result without you writing any code.
 
-Time: about 25 minutes. You need: a Mac, Python 3.12 and uv. No key or account. You're done when the check at the end prints a line that starts with `ch03 OK`. If you get stuck, start again from `book/ready/ch03` in a fresh folder.
+Time: about 25 minutes. You need: a Mac (the check runs in a macOS sandbox), Python 3.12, uv and the repository cloned in Chapter 0. No key or account.
 
-**Goal:** see how a factory is told what to build, then change the task yourself and watch the factory accept the result.
-
-**You need first:** Chapter 0 (the repository cloned), Python 3.12 and uv. This chapter needs macOS for the gate (see the README).
+You're done when the check at the end prints a line that starts with `ch03 OK`. If you get stuck, start again from `book/ready/ch03` in a fresh folder.
 
 ## Words used in this chapter
 
 - **Factory:** a set of steps that turns a written request into a checked change, the same way every time.
 - **Task:** the written request, plus the list of files the builder may change.
 - **Allowed paths:** the only places the builder may change. Anything else is refused.
-- **Baseline:** the product as it is before the change, with no market card yet.
 - **Builder:** the coding agent that makes the change. In Chapter 5 it runs on the OpenAI Agents API. Here you use the **scripted builder**, a stand-in that needs no model and no key.
-- **Limit:** in this chapter, the number of currencies your market card may show.
 
 ## Get the ready folder
 
@@ -33,6 +29,7 @@ uv venv --python 3.12 .venv
 source .venv/bin/activate
 uv pip install zeocore==0.35.6 httpx==0.28.1
 ```
+
 ## See how it works
 
 
@@ -57,7 +54,7 @@ uv pip install zeocore==0.35.6 httpx==0.28.1
 
 ## Now change it
 
-Your task is a variation of the first one: the market card, but limited to a number of currencies. The tests for it are already written and locked (Chapter 4 shows how). You choose the limit, the builder makes an attempt and the gates decide. You write no code.
+Your task is a variation of the first one: the market card, limited to the number of currencies you choose. The tests for it are already written and locked (Chapter 4 shows how). You choose the limit, the builder makes an attempt and the gates decide. You write no code.
 
 1. Choose a limit from 1 to 3 and set it in your task. This sets 2:
    ```bash
@@ -101,3 +98,9 @@ It passes only when your limit is set and the builder's attempt for your task is
 - `limit` still says `null`: run step 1.
 - `No such file`: run the command from inside `my-factory-ch03`.
 - `could not run: the protected file ... does not match`: you changed a file under `acceptance/`. Copy the ready folder again.
+
+## What you just learned
+
+A factory works from a written task: the request, the files the builder may change, and the fingerprints of the files that judge the work. You changed the task, and the gates decided without you reading the code.
+
+Next: [Chapter 4](04-acceptance-before-code.md) shows the tests that judge the change, and how they are locked before any work starts.

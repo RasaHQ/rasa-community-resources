@@ -1,14 +1,10 @@
 # Chapter 1: What a Rasa Mantle agent is
 
-A traveler asks the agent a plain question and four cards come back. One file told the agent what to ask, and another fetched the flight. If you can't point to them, you can't fix the agent when it misbehaves. This chapter shows where each part lives.
+A traveler asks the agent a plain question and four cards come back. One file told the agent what to ask, and another fetched the flight. In about 10 minutes you'll find both, and the third part that ties them together, so you know where to look when the agent misbehaves.
 
-Time: about 10 minutes. You need: the Chapter 0 ready folder and a terminal. No key or account. You're done when the listing command at the end prints `ch01 OK`. If you get stuck, open `book/ready/ch00/demo` and run the commands from there.
+Time: about 10 minutes. You need: the Chapter 0 ready folder and a terminal. You only read files here, so there's no key or account. This chapter has no "Now change it" step. That step comes after the class.
 
-**Goal:** find the three parts of the briefing agent in its folder, and say in plain words what each one does.
-
-**You need first:** Chapter 0, so that the briefing agent's ready folder is on your computer. You only read files here. Nothing runs, and no key or account is needed.
-
-This chapter is short on purpose. It shows you the parts. A later "Now change it" step, where you change one part and check it, follows after the class.
+You're done when the listing command at the end prints `ch01 OK`. If you get stuck, open `book/ready/ch00/demo` and run the commands from there.
 
 ## The three parts
 
@@ -77,8 +73,8 @@ Run this in the `demo` folder:
 
 It lists the agent, the skill and the tool, then prints `ch01 OK`. If a file is missing, you are in the wrong folder or Chapter 0's ready folder is incomplete. Run the `cd` command above again.
 
-You can now point to the agent, the skill and the tool in the folder.
+## What you just learned
 
-## What comes next
+A Rasa Mantle agent is a folder of plain files: who the assistant is, what it should do, and which tools it can call. The cards come from the tool, never from the agent's own words.
 
-The "Now change it" half of this chapter, where you change the skill and check it, follows after the class. Chapter 2 shows where the cards get their data.
+Next: [Chapter 2](02-cards-from-real-sources.md) shows where the cards get their data.

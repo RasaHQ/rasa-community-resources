@@ -41,7 +41,7 @@ Each chapter builds on the one before it, and every chapter has its own ready fo
 | [2](02-cards-from-real-sources.md) | Cards from real sources | Find where one card's data comes from and the rules that label it (short chapter: the change step follows after the class) | `ch02 OK`: you can point to the skill, the tool and one reader |
 | [3](03-a-factory-starts-with-a-task.md) | A factory starts with a task | See a task judged, then set your own limit and let the builder's attempt be judged | `ch03 OK`: the builder's attempt for your task is accepted |
 | [4](04-acceptance-before-code.md) | Acceptance before code | See the tests that judge the card, lock them for your task and watch them accept the attempt | `ch04 OK`: the tests fail on the baseline for the right reasons, the fingerprints match and the attempt is accepted |
-| [5](05-the-builder.md) | The builder, on the OpenAI Agents API | A builder session with file tools confined to a scratch copy | The builder produces a candidate change in an offline run, and a live run is the extra |
+| [5](05-the-builder.md) | The builder, on the OpenAI Agents API | A builder session with file tools confined to a scratch copy | The builder produces a change you can check in an offline run, and a live run is the extra |
 | [6](06-the-gates-and-the-decision.md) | The gates and the decision | The gate runner and the recorded decision | `ch06 OK`: the builder's attempt for your task is accepted and the bad one is rejected, offline |
 | [7](07-integrate-and-run-it-dark.md) | Integrate and run it dark | Integration, then the whole loop | `ch07 OK`: your change is integrated and the card shows your number of currencies, offline |
 | [8](08-going-further.md) | Going further | Policy, measurement, recovery and escalation | The measure and recover commands run on your own factory |
@@ -53,7 +53,7 @@ Every chapter ships its own working code in a ready folder under `ready/`, so no
 
 Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so on), next to your clone and outside it, copied from the chapter's ready folder. `REPO` in the commands means the folder where you cloned this repository, for example `export REPO=~/rasa-community-resources`.
 
-## Honest limits
+## What to know before you start
 
 - Chapters 3 to 7 run their protected checks on macOS. On Linux or Windows, pair with someone on a Mac, or follow along on screen. Everything else works on any laptop. The reason is that the no-network check uses `sandbox-exec`. On another system the gate says `could not run: this check needs macOS` and exits 2 before it judges anything, so a good attempt is never shown as rejected.
 - A factory that accepts a change has judged it against the tests you wrote. It has not proved the change is right.
