@@ -19,7 +19,7 @@ S12 [core] No secrets. GIVEN the repository, fixtures, logs and recorded outputs
 S13 [manual] Voice and cards share one conversation. GIVEN a spoken weather request to the Mantle agent, THEN the matching card appears in that conversation only. This is the main integration risk; rehearse it, state the evidence level aloud.
 S14 [manual] Live mode. GIVEN the facilitator's own key, THEN one request completes through zeocore and the Agents API. NOT_RUN labeled if unavailable; the replay demo is the default.
 
-## Act 2: market_watchlist (added by the coding agent)
+## Act 2: market_watchlist (target, not built yet)
 M1 [m] Delayed is labeled. GIVEN a quote data_ref with delayed=true, THEN the card shows "delayed" with quote_time and the spoken answer never says real time or live.
 M2 [m] Symbols are configured. GIVEN a symbol not in the configured watchlist, THEN no row is added and the user is told it is not on the list.
 M3 [m] Compare uses data. GIVEN "compare the first two", THEN the figures shown come from the two payload rows, not recomputed by the model.

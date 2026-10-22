@@ -12,7 +12,7 @@ Companion: ACCEPTANCE-SCENARIOS-v5.md (kept apart from the implementation; the b
 
 ## 1. Purpose
 A user speaks a travel request. Mantle converses; one OpenAI Agents API session (beta.agents, never the openai-agents SDK) investigates behind the MCP tool; the briefing service validates results; the Mantle answer carries widget cards defined by zeocore and shown where the conversation is shown. The cards carry the detail; speech stays short.
-Core story (act 1): flight status, arrival weather, arrival timeline. Second act: market watchlist, added by a coding agent from this spec inside the factory.
+Core story (act 1): flight status, arrival weather, arrival timeline. Second act (not built yet): the market watchlist, to be added by a coding agent from this spec inside the factory.
 
 ## 2. Components and ownership
 - Mantle: conversation, clarification, skill routing, spoken responses. Imports the one MCP tool briefing (mcp_servers in integrations.yml, import_tools in the skill).
