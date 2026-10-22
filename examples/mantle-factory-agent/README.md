@@ -97,3 +97,19 @@ For an isolated local review while the class preview is running, choose distinct
 ```
 
 Open http://127.0.0.1:8960/ for that run. Keep the same license and expiry requirements.
+
+## Voice, locally
+
+From this example directory on your own Mac:
+
+```sh
+./demo setup
+# Create an ignored .env containing your RASA_LICENSE and DEEPGRAM_API_KEY.
+./demo run --voice --env-file .env
+```
+
+Open http://127.0.0.1:8947 in Chrome, allow microphone access, and start the voice conversation. Say “show at most three currencies on the market card”. SCRIPTED builder mode demonstrates the protected gate without a model key or funded builder call. The Inspector alone receives the Deepgram key; training, entry and MCP children do not. Text remains available without that key by omitting `--voice`. Voice is opt-in and uses the pinned-engine repair in `voice_patch.py` without editing installed packages.
+
+For the LIVE builder, first run `./demo setup-live`, add OPENAI_API_KEY to the same owner file, then use `./demo run --voice --builder-mode LIVE --env-file .env`. This makes a funded builder attempt; Mantle selection stays SCRIPTED. Only the builder child receives OpenAI credentials. The existing run-count and deadline bounds still apply.
+
+If the ports are occupied, add `--entry-port 8964 --inspector-port 5024 --mcp-port 8965` and use the printed page address. The launcher stops at the printed expiry (default 16:30 UTC today) or Ctrl-C; after that time supply `--expires-at` with a future UTC timestamp. Loopback needs no tailnet, TLS or Chrome flags. Audio-file speech completed a LIVE gate ACCEPT on the patched runtime; physical microphone permission/device behavior must still be checked locally.
