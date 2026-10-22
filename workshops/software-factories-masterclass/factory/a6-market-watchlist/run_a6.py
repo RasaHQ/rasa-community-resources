@@ -2,6 +2,7 @@
 """Local stand-in for the factory's gate on task A6, for the teaching pack. The real driver is the factory's.
 
     python run_a6.py tasks/a6-market-watchlist.json candidates/market-good
+    python run_a6.py tasks/a6-market-watchlist.json baseline        # the product with nothing built: REJECT
 Gates in order: protected files (hash and presence), allowed paths, the protected acceptance suite.
 Exit 0 ACCEPT, 1 REJECT, 2 could not run.
 """
@@ -23,19 +24,20 @@ def sha(path):
 
 def main(task_path, candidate):
     task = json.loads(Path(task_path).read_text())
-    candidate = Path(candidate)
+    baseline = candidate == "baseline"  # judge the product as it is, with no candidate change
+    candidate = ROOT / "candidates" / "_baseline_none" if baseline else Path(candidate)
     reasons = []
     pinned = [task["acceptance"], *task.get("support", [])]
     for item in pinned:
         if sha(ROOT / item["path"]) != item["sha256"]:
             print("could not run: the protected file", item["path"], "does not match its pin"); return 2
     for item in pinned:
-        if (candidate / item["path"]).exists():
+        if not baseline and (candidate / item["path"]).exists():
             reasons.append("protected file edited: " + item["path"])
-    links = [str(p.relative_to(candidate)) for p in candidate.rglob("*") if p.is_symlink()]
+    links = [] if baseline else [str(p.relative_to(candidate)) for p in candidate.rglob("*") if p.is_symlink()]
     if links:
         print("REJECT - the candidate contains symbolic links:", ", ".join(links)); return 1
-    changed = [str(p.relative_to(candidate)) for p in candidate.rglob("*") if p.is_file() and "__pycache__" not in p.parts]
+    changed = [] if baseline else [str(p.relative_to(candidate)) for p in candidate.rglob("*") if p.is_file() and "__pycache__" not in p.parts]
     for rel in changed:
         if rel in [i["path"] for i in pinned]:
             continue
@@ -46,7 +48,8 @@ def main(task_path, candidate):
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp) / "product"
         shutil.copytree(ROOT / "product", work)
-        shutil.copytree(candidate / "product", work, dirs_exist_ok=True)
+        if not baseline:
+            shutil.copytree(candidate / "product", work, dirs_exist_ok=True)
         done = subprocess.run([sys.executable, "-I", str(ROOT / task["acceptance"]["path"])], capture_output=True, text=True,
                               env={"PATH": "/usr/bin:/bin", "PRODUCT_PROJECT": str(work), "PYTHONDONTWRITEBYTECODE": "1"}, timeout=180)
         tail = done.stderr.strip().splitlines()
