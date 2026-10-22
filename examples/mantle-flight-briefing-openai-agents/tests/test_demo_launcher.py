@@ -211,6 +211,18 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         reply = await self.call([{'role': 'user', 'content': text}], ['briefing'])
         self.assertEqual(reply.tool_calls[0].tool_args, {'action': 'start', 'request': text})
 
+    async def test_ambiguous_airports_reach_backend_without_inventing_destination(self):
+        text = 'JFK or Newark'
+        initial = await self.call([{'role': 'user', 'content': text}], ['briefing', 'find_flights'])
+        self.assertEqual(initial.tool_calls[0].tool_args, {'action': 'start', 'request': text})
+        previous = [{'role': 'tool', 'content': json.dumps({'briefing_id': 'synthetic-owner-job', 'status': 'needs_input'})}]
+        followup = await self.call(previous + [{'role': 'user', 'content': text}], ['briefing', 'find_flights'])
+        self.assertEqual(followup.tool_calls[0].tool_args,
+            {'action': 'revise', 'briefing_id': 'synthetic-owner-job', 'change': text})
+        resumed = await self.call(previous + [{'role': 'user', 'content': 'Newark'}], ['briefing'])
+        self.assertEqual(resumed.tool_calls[0].tool_args,
+            {'action': 'revise', 'briefing_id': 'synthetic-owner-job', 'change': 'Newark'})
+
     async def test_scripted_get_uses_actual_tool_capability(self):
         reply = await self.call([
             {'role': 'user', 'content': 'weather'},

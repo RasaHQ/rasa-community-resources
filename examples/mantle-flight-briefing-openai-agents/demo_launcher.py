@@ -493,8 +493,15 @@ class ScriptedClient:
             return LLMResponse(id='scripted', choices=['SCRIPTED: read the validated source cards and any missing-input question.'], created=0)
         text = str(messages[latest].get('content', '')) if users else ''
         capability = next((v['briefing_id'] for v in reversed(previous) if isinstance(v.get('briefing_id'), str)), None)
-        from briefing.traveller import destination_hint, flight_number
-        destination = destination_hint(text)
+        from briefing.traveller import destination_hint, flight_number, TravellerQuestion
+        try:
+            destination = destination_hint(text)
+        except TravellerQuestion:
+            # Let the backend ask its ordinary clarification. Preserve the
+            # exact ambiguous words, including during a selected journey.
+            if capability:
+                return reply(briefing, {'action': 'revise', 'briefing_id': capability, 'change': text})
+            return reply(briefing, {'action': 'start', 'request': text})
         wants_search = any(phrase in text.lower() for phrase in ('which flights', 'find flights', 'look for flights', 'don’t know', "don't know"))
         if finder and destination and flight_number(text) is None and (not capability or wants_search):
             return reply(finder, {'destination': text})
