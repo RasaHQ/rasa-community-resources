@@ -85,7 +85,7 @@ add(4, 'Two good changes can *clash*.', 'Replay the checks.', scene('Change two 
   + arrow(980, 330, 120) + rect(1140, 230, 480, 200, 'panel-orange') + text(1380, 345, 'Gone', 'large-label')));
 add(4, 'A dark factory has *one reviewer*: tests.', 'Lights off. Nobody reads each change.', scene('One lit window labeled tests',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + rect(540, 130, 600, 400, 'panel-gold') + text(840, 355, 'Tests', 'large-label ink') + icon('person', 1400, 330, 1.8, 'icon-light') + text(1400, 460, 'Person', 'large-label on-dark')), 'dark');
-add(4, 'A few wins are *not a guarantee*.', 'Three heads in a row prove nothing.', scene('Three heads in a row',
+add(4, 'A few wins *aren’t a guarantee*.', 'Three heads in a row prove nothing.', scene('Three heads in a row',
   [0, 1, 2].map(i => circle(260 + i * 260, 250, 100, 'panel-gold') + text(260 + i * 260, 285, 'H', 'display')).join('') + text(1230, 330, '?', 'display pink-ink')));
 // ---- Part 5: the two tools
 add(5, '*Rasa Mantle* is where our agent lives.', 'A folder of files you can read.', scene('Files become a running agent',
@@ -124,7 +124,7 @@ const seen = {};
 const html = S.map((s, i) => {
   seen[s.part] = (seen[s.part] || 0) + 1;
   const prog = Array.from({ length: 8 }, (_, k) => `<i class="${k + 1 === s.part ? 'active' : ''}"></i>`).join('');
-  return `<section class="slide${s.cls ? ' ' + s.cls : ''}${i === 0 ? ' on' : ''}" id="s${i + 1}"><nav class="crumb" aria-label="Where you are"><span>Part ${s.part} of 8 · ${esc(PARTS[s.part - 1])}</span><span class="progress">${prog}</span></nav><h1>${em(s.title)}</h1>${s.body ? `<p class="words" data-slide-chrome-no>${esc(s.body)}</p>` : ''}<div class="scene">${s.svg}</div></section>`;
+  return `<section class="slide${s.cls ? ' ' + s.cls : ''}${i === 0 ? ' on' : ''}" id="s${i + 1}"><nav class="crumb" aria-label="Where you are"><span>Part ${s.part} of 8 · ${esc(PARTS[s.part - 1])} · Slide ${seen[s.part]} of ${counts[s.part]}</span><span class="progress">${prog}</span></nav><h1>${em(s.title)}</h1>${s.body ? `<p class="words" data-slide-chrome-no>${esc(s.body)}</p>` : ''}<div class="scene">${s.svg}</div></section>`;
 }).join('\n');
 const JS = `const slides=[...document.querySelectorAll('.slide')];let current=0;
 function show(n){current=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>s.classList.toggle('on',i===current));history.replaceState(null,'','#'+(current+1))}
