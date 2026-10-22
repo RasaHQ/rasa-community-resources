@@ -47,7 +47,7 @@ The book builds the factory from an empty folder, one part per chapter. The fini
 ## How each chapter works
 Every chapter ships its own working code in a ready folder under `ready/`, so nobody starts from zero. A chapter has three parts: **See how it works**, where you run the code, watch what happens and read the two or three files that matter. **Now change it**, where you ask for a change (in a factory, by changing the task) and the gates decide, with no code written by hand. And **You are done when**, a real command that passes.
 
-Chapters 3, 4, 6 and 7 work in a folder called `my-factory`, next to your clone and outside it, copied from the chapter's ready folder. `REPO` in the commands means the folder where you cloned this repository, for example `export REPO=~/rasa-community-resources`.
+Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so on), next to your clone and outside it, copied from the chapter's ready folder. `REPO` in the commands means the folder where you cloned this repository, for example `export REPO=~/rasa-community-resources`.
 
 ## Honest limits
 

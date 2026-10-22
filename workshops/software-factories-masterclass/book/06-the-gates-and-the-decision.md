@@ -18,14 +18,14 @@ Every chapter has a finished, working folder. Copy the one for this chapter next
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
-cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch06 my-factory
+cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch06 my-factory-ch06
 ```
 
 ```bash
-cd my-factory
+cd my-factory-ch06
 uv venv --python 3.12 .venv
 source .venv/bin/activate
-uv pip install zeocore==0.35.4 httpx
+uv pip install zeocore==0.35.4 httpx==0.28.1
 ```
 ## See how it works
 
@@ -69,13 +69,13 @@ Now ask for the change: have a builder make an attempt for your task, and let th
 
 ## You are done when
 
-From inside `my-factory`, with your environment active, this prints `ch06 OK`:
+From inside `my-factory-ch06`, with your environment active, this prints a line that starts with `ch06 OK`:
 
 ```bash
 T=tasks/b-limit-currencies.json
 python run_a6.py $T attempts/mine > /dev/null \
- && ! python run_a6.py $T attempts/b-ignores-limit > /dev/null \
- && echo "ch6 OK"
+ && { python run_a6.py $T attempts/b-ignores-limit > /dev/null; [ $? -eq 1 ]; } \
+ && echo "ch06 OK"
 ```
 
 At the start of this chapter there is no attempt for your task, so it fails. It passes only when your attempt is accepted and the bad one is rejected.

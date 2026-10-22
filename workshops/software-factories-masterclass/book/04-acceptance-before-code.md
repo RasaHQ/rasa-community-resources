@@ -17,14 +17,14 @@ Every chapter has a finished, working folder. Copy the one for this chapter next
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
-cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch04 my-factory
+cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch04 my-factory-ch04
 ```
 
 ```bash
-cd my-factory
+cd my-factory-ch04
 uv venv --python 3.12 .venv
 source .venv/bin/activate
-uv pip install zeocore==0.35.4 httpx
+uv pip install zeocore==0.35.4 httpx==0.28.1
 ```
 ## See how it works
 
@@ -68,7 +68,7 @@ Your task's tests are written. You lock them, so that nobody can change them wit
 
 ## You are done when
 
-From inside `my-factory`, with your environment active, this prints `ch04 OK`:
+From inside `my-factory-ch04`, with your environment active, this prints a line that starts with `ch04 OK`:
 
 ```bash
 python - <<'EOF'
@@ -80,7 +80,7 @@ for item in [t["acceptance"], *t["support"]]:
 r = subprocess.run([sys.executable, "-I", t["acceptance"]["path"]], capture_output=True, text=True,
                    env={"PATH": "/usr/bin:/bin", "PRODUCT_PROJECT": os.path.abspath("product")})
 assert r.returncode != 0 and "FAILED" in r.stderr and "test_b1" in r.stderr, r.stderr[-300:]
-print("ch4 OK: the fingerprints match and the tests fail on the baseline")
+print("ch04 OK: the fingerprints match and the tests fail on the baseline")
 EOF
 ```
 
@@ -88,6 +88,6 @@ At the start of this chapter the fingerprints in your task are empty, so it fail
 
 ## If it fails
 
-- `sandbox-exec: command not found`: the network check needs macOS. Read this chapter beside `book/ready/ch4`.
+- `sandbox-exec: command not found`: the network check needs macOS. Read this chapter beside `book/ready/ch04`.
 - `No module named zeo_core`: activate the environment and install `zeocore==0.35.4`.
 - Fingerprint mismatch: you changed a protected file after locking. Lock again.

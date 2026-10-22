@@ -18,14 +18,14 @@ Every chapter has a finished, working folder. Copy the one for this chapter next
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
-cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch03 my-factory
+cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch03 my-factory-ch03
 ```
 
 ```bash
-cd my-factory
+cd my-factory-ch03
 uv venv --python 3.12 .venv
 source .venv/bin/activate
-uv pip install zeocore==0.35.4 httpx
+uv pip install zeocore==0.35.4 httpx==0.28.1
 ```
 ## See how it works
 
@@ -69,10 +69,10 @@ Your task is a variation of the first one: the market card, but limited to a num
 
 ## You are done when
 
-From inside `my-factory`, with your environment active, this prints `ch03 OK`:
+From inside `my-factory-ch03`, with your environment active, this prints a line that starts with `ch03 OK`:
 
 ```bash
-python -c "import json, pathlib; t = json.load(open('tasks/b-limit-currencies.json')); assert isinstance(t['limit'], int) and 1 <= t['limit'] <= 3; assert 'limit' in t['request']; assert all(pathlib.Path(p).exists() for p in t['allowed_paths']); print('ch3 OK')"
+python -c "import json, pathlib; t = json.load(open('tasks/b-limit-currencies.json')); assert isinstance(t['limit'], int) and 1 <= t['limit'] <= 3; assert 'limit' in t['request']; assert all(pathlib.Path(p).exists() for p in t['allowed_paths']); print('ch03 OK')"
 ```
 
 At the start of this chapter `limit` is empty, so it fails.
@@ -80,4 +80,4 @@ At the start of this chapter `limit` is empty, so it fails.
 ## If it fails
 
 - `limit` still says `null`: set it to 1, 2 or 3 and save the file.
-- `No such file`: run the command from inside `my-factory`.
+- `No such file`: run the command from inside `my-factory-ch03`.

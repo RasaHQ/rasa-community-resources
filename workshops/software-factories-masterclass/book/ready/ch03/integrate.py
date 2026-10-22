@@ -25,8 +25,15 @@ def main(argv):
         (ROOT / "base.json").write_text(json.dumps({TRACKED: fingerprint(ROOT / TRACKED)}, indent=2) + "\n")
         print("recorded the base product")
         return 0
+    if len(argv) != 2:
+        print("could not run: usage is integrate.py <task> <attempt folder>")
+        return 2
     task_path, candidate = argv
-    base = json.loads((ROOT / "base.json").read_text())
+    try:
+        base = json.loads((ROOT / "base.json").read_text())
+    except (OSError, ValueError):
+        print("could not run: there is no base.json. Run: python integrate.py --record-base")
+        return 2
     # 1. the gate must say ACCEPT
     gate = subprocess.run([sys.executable, str(ROOT / "run_a6.py"), task_path, candidate], capture_output=True, text=True)
     if gate.returncode != 0:
@@ -38,6 +45,15 @@ def main(argv):
         return 1
     # 3. copy the allowed files in, then replay the checks on the integrated product
     task = json.loads((ROOT / task_path).read_text())
+    saved = {}
+    for rel in task["allowed_paths"]:
+        target = ROOT / rel
+        if target.is_dir():
+            for f in target.rglob("*"):
+                if f.is_file() and "__pycache__" not in f.parts:
+                    saved[f] = f.read_bytes()
+        elif target.exists():
+            saved[target] = target.read_bytes()
     for rel in task["allowed_paths"]:
         src = Path(candidate) / rel
         if src.is_dir():
@@ -46,12 +62,24 @@ def main(argv):
             shutil.copy2(src, ROOT / rel)
     replay = subprocess.run([sys.executable, "-I", str(ROOT / task["acceptance"]["path"])], capture_output=True, text=True,
                             env={"PATH": "/usr/bin:/bin", "PRODUCT_PROJECT": str(ROOT / "product"), "PYTHONDONTWRITEBYTECODE": "1"})
-    ok = replay.returncode == 0 and replay.stderr.strip().splitlines()[-1] == "OK"
+    lines = replay.stderr.strip().splitlines()
+    ok = replay.returncode == 0 and bool(lines) and lines[-1] == "OK"
+    if not ok:
+        # the replay failed: put every file back exactly as it was, and remove files the change added
+        for rel in task["allowed_paths"]:
+            target = ROOT / rel
+            if target.is_dir():
+                for f in list(target.rglob("*")):
+                    if f.is_file() and "__pycache__" not in f.parts and f not in saved:
+                        f.unlink()
+        for f, data in saved.items():
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_bytes(data)
     record = {"decision": "INTEGRATED" if ok else "ROLLED BACK", "candidate": str(candidate),
               "protected_suite_sha256": fingerprint(ROOT / task["acceptance"]["path"]), "tracked_file_sha256": fingerprint(ROOT / TRACKED)}
     (ROOT / "decisions").mkdir(exist_ok=True)
     (ROOT / "decisions" / "integration.json").write_text(json.dumps(record, indent=2) + "\n")
-    print(record["decision"], "-", "the checks replayed on the integrated product" if ok else "the replay failed")
+    print(record["decision"], "-", "the checks replayed on the integrated product" if ok else "the replay failed, so the change was taken out again")
     return 0 if ok else 1
 
 

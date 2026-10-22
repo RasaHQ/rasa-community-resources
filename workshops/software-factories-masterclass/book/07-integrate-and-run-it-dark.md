@@ -17,14 +17,14 @@ Every chapter has a finished, working folder. Copy the one for this chapter next
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
-cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch07 my-factory
+cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch07 my-factory-ch07
 ```
 
 ```bash
-cd my-factory
+cd my-factory-ch07
 uv venv --python 3.12 .venv
 source .venv/bin/activate
-uv pip install zeocore==0.35.4 httpx
+uv pip install zeocore==0.35.4 httpx==0.28.1
 ```
 ## See how it works
 
@@ -52,7 +52,7 @@ uv pip install zeocore==0.35.4 httpx
 
 ## Now change it
 
-Now do the same for your own task, from a clean product.
+Now do the same for your own task, from a clean product. Use the same terminal as before, so that `REPO` is still set (if it isn't, run `export REPO=~/rasa-community-resources` again).
 
 1. Reset the product to the baseline and clear the earlier results:
    ```bash
@@ -71,7 +71,7 @@ Now do the same for your own task, from a clean product.
 
 ## You are done when
 
-From inside `my-factory`, with your environment active, this prints `ch07 OK`:
+From inside `my-factory-ch07`, with your environment active, this prints a line that starts with `ch07 OK`:
 
 ```bash
 grep -q INTEGRATED decisions/integration.json \
@@ -81,7 +81,7 @@ import json, re
 limit = json.load(open("tasks/b-limit-currencies.json"))["limit"]
 rows = set(re.findall(r"EUR[A-Z]{3}", open("card.html").read()))
 assert len(rows) == limit, rows
-print("ch7 OK: the card shows", limit, "currencies")
+print("ch07 OK: the card shows", limit, "currencies")
 EOF
 ```
 
