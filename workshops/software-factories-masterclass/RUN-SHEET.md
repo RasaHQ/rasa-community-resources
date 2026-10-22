@@ -1,14 +1,14 @@
 # Run sheet: the three hours (software factories masterclass)
 
-Thursday 22 October 2026, 13:30 to 16:30 UTC (14:30 to 17:30 London time), in person. You are the facilitator. This sheet runs the day. The slides are `slides/index.html`, the book is `book/`, and the factory is `factory/`.
+Thursday 22 October 2026, 14:30 to 17:30 London time (13:30 to 16:30 UTC), in person. You are the facilitator. This sheet runs the day. The slides are `slides/index.html` (30 slides, arrow keys), the book is `book/` and the factory is `factory/`.
 
-Status: DRAFT. The times assume 180 minutes. If the event is set to 190, add the ten minutes to Block 5. Lines marked (pending) wait for the factory console and its driver, and are filled in when they land.
+Status: DRAFT. The times assume 180 minutes. If the event is set to 190, add the ten minutes to the work block. Lines marked (pending) wait for the factory console and its driver, and are filled in when they land.
 
 ## What the room leaves with
-1. They saw the finished agent brief a traveler by voice, with four cards, and every value on a card said where it came from.
-2. They know the dark software factory loop: a task, a protected acceptance written first, an isolated change, an independent check and a recorded decision.
-3. They watched a factory get built in front of them, and they saw the market card appear in the agent without anyone reading the builder's code.
-4. They have a book they can work through alone, from a clone, that builds the same factory step by step.
+1. They saw the finished agent brief a traveler, with four cards, and every value on a card said where it came from.
+2. They know the factory loop: a task, protected acceptance written first, a change made in a spare copy, an independent check and a recorded decision.
+3. They watched the factory judge changes, and they saw a bad change stopped by a named check.
+4. They have a book they can work through alone, from a clone, where each chapter shows a working part and then asks them to change it through the factory.
 
 ## The one lesson to say twice
 The good change to the market card is one line, because the platform carries the work. The lesson is the gates.
@@ -16,78 +16,70 @@ The good change to the market card is one line, because the platform carries the
 ## Three screens
 | Screen | Address | Shows | Until |
 | --- | --- | --- | --- |
-| 1 | the factory console, port 8943 on the tailnet (pending) | the factory being built and run | 16:30 UTC |
-| 2 | the briefing agent, port 8942 on the tailnet | the Inspector and the four cards | 16:30 UTC |
-| 3 | the deck, port 8944 on the tailnet | the slides, read-only | 16:30 UTC |
+| 1 | the factory console, port 8943 on the tailnet (pending) | the factory run, read-only | 17:30 London |
+| 2 | the briefing agent, port 8942 on the tailnet | the Inspector and the four cards | 17:30 London |
+| 3 | the deck, port 8944 on the tailnet | the slides, read-only | 17:30 London |
 
-All three are readable by any device on the tailnet, and the Inspector on screen 2 is drivable from any tailnet device, which spends your OpenAI key and your Rasa license. Before the day, check the viewer access setting (`BRIEFING_VIEWER_ACCESS`) so that only your own device can drive it, or get the operator's explicit acceptance of the exposure. Keep the room's own devices off the tailnet.
+All three are readable by any device on the tailnet, and the Inspector on screen 2 is drivable from any tailnet device, which spends your OpenAI key and your Rasa license. Before the day, check the viewer access setting (`BRIEFING_VIEWER_ACCESS`) so that only your own device can drive it, or get the operator's explicit acceptance of the exposure. Keep the room's own devices off the tailnet. The console has no Run button: the builder starts from a terminal command (pending).
 
 ## Before the day
 Do these on the facilitator machine, at least a day before and again an hour before.
 - [ ] Clone with Git at the class commit named in the prework mail (`PREWORK.md` in this folder, with its addendum under `brief-me-before-i-fly/`). There is no zip.
 - [ ] Your own license (`RASA_LICENSE`) and OpenAI key (`OPENAI_API_KEY`) are set in your shell. The doctor shows SET or MISSING and never a value. A Deepgram key is optional and only adds voice.
-- [ ] The briefing agent starts from `examples/mantle-flight-briefing-openai-agents/` (`./demo setup`, then `./demo run`, which are added to the repository with the class pull request for that example) and the doctor is green.
-- [ ] A real flight: pick a callsign that is airborne now from the public source, and, if you use the fallback sentence, a destination airport from the airport table bundled with that example. Rehearse the sentence you will say or type, for example "callsign=DLH423 destination=EDDF". Re-check an hour before, because flights land.
-- [ ] The factory loop runs offline: from `factory/a6-market-watchlist/`, `python run_a6.py tasks/a6-market-watchlist.json candidates/market-good` ends in ACCEPT, and each of the three bad candidates ends in REJECT. This needs macOS, because the check runs without network access inside `sandbox-exec`.
+- [ ] The briefing agent starts from `examples/mantle-flight-briefing-openai-agents/` (`./demo setup`, then `./demo run`, added to the repository with the class pull request for that example) and the doctor is green.
+- [ ] A real flight: ask the agent which flights are in the air headed to New York and pick one of the route-confirmed ones. If you use the fallback, a known callsign with a destination such as "callsign=DLH423 destination=EDDF", pick the airport from the table bundled with that example. Check an hour before, because flights land.
+- [ ] The offline factory loop runs: copy `book/ready/ch06` to a new folder, set up Python as Chapter 6 says (`uv venv`, `uv pip install zeocore==0.35.4 httpx==0.28.1`), activate it, then `python run_a6.py tasks/a6-market-watchlist.json candidates/market-good` ends in ACCEPT and `candidates/market-shows-live` ends in REJECT. This needs macOS, because the check runs without network access inside `sandbox-exec`. Use the same folder for slide 28.
 - [ ] The three screens load from a second device on the tailnet, and that second device can't type into the Inspector.
 - [ ] The prework mail went out (`PREWORK.md` and its addendum). Its first step is the free Rasa Developer Edition license sign-up. Then Python 3.12 and uv, your own OpenAI key, and a clone with Git.
 - [ ] Decide your fallbacks (see "If something fails") and say them aloud once.
 
 ## Run of show
-All times UTC. "Say" is yours in your own words, "Show" is on screen, "Do" is what the room does.
+Times are London, with UTC in brackets. "Show" is on screen and "Do" is what the room does. The slides carry the idea, so you can teach from them alone.
 
-| Clock | Min | Block |
-| --- | --- | --- |
-| 13:30 | 15 | 1. The end result |
-| 13:45 | 30 | 2 and 3. The ideas and the two tools |
-| 14:15 | 30 | 4. We build the factory |
-| 14:45 | 95 | 5. On your own, with a break |
-| 16:20 | 10 | 6. Close |
+| Clock | Min | Block | Slides |
+| --- | --- | --- | --- |
+| 14:30 (13:30) | 15 | The problem and the finished agent | 1 to 7 |
+| 14:45 (13:45) | 30 | The real question, the factory idea and the two tools | 8 to 26 |
+| 15:15 (14:15) | 30 | We build the factory | 27 and 28 |
+| 15:45 (14:45) | 95 | Your turn, with a break from 16:30 to 16:45 | 29 |
+| 17:20 (16:20) | 10 | Close | 30 |
 
-### 13:30 The end result (15 min)
-Show: slides 1 to 8 (parts 1 and 2), with screen 2 for the demo on slide 6. Do: nothing yet, just watch.
-Say: "Here's what you'll be able to build by the end of today. I'll talk to the agent." Start the way a traveler would, by asking which flights are in the air headed to New York, pick one of the route-confirmed candidates it lists ("the second one"), then answer its meeting and transfer questions. A known callsign with a destination, for example "callsign=DLH423 destination=EDDF", is the fallback. Name each card as it appears and the label on it: PROVIDER DATA, COMPUTED, REPLAY or unavailable.
-Watch for: the flight card, the weather at the destination, the arrival timeline and the market watchlist. Say aloud that a rate on the market card is a daily reference rate, not a live quote.
+### 14:30 The problem and the finished agent (15 min)
+Show: slides 1 to 4 (Sam, the agent and the plan), then slide 5 with screen 2, then slides 6 and 7. Do: watch.
+Ask the agent which flights are in the air headed to New York, pick one of the route-confirmed flights it lists, then answer its meeting and transfer questions. Name each card as it appears and the label on it: source, computed, recording or failed. Say that a rate on the market card is a daily reference rate, not a live quote.
 If voice isn't verified on the day, type the request and say so. Don't claim voice that you didn't see work.
 
-### 13:45 The ideas and the two tools (30 min)
-Show: the deck, parts 3, 4 and 5 (slides 9 to 37). Do: listen. Questions wait for Block 5. Every part opens with a where-we-are slide and ends with a recap that says what comes next, and each new word is defined with a small example before it is used.
-Part 3 is slides 9 to 14, part 4 is slides 15 to 27 and part 5 is slides 28 to 37. The deck teaches from zero, so it holds more slides than 30 minutes allows at a steady pace. If you run short, skip in this order: the sampling slide (26), the clash slide (22), the escalation slide (24), then slides 33 to 35 in part 5. Skip the definition slides for words the room already knows, and say so. The timing is open with the Architect.
-Say the limit aloud on slide 25: a passing check proves only what it checks.
+### 14:45 The real question, the factory idea and the two tools (30 min)
+Show: slides 8 to 26 in order. Do: listen. Questions wait for the work block. Each slide has one idea and one picture.
+If you run short, skip in this order: slide 20 (the coin), slide 18 (two good changes clash), slide 19 (the dark factory), then slides 23 and 25. Say the limit aloud on slide 12: a passing check proves only what it checks.
 
-### 14:15 We build the factory (30 min)
-Show: slides 38 to 44 on screen 3, screen 1 (the console) and screen 2 side by side. Say: "Nothing here is magic. I'll build it in the order of the book, and then we run it."
-| Min | Part | What you do and say |
-| --- | --- | --- |
-| 4 | The task | The prompt, the two allowed paths and the pins. Book chapter 3. |
-| 6 | The acceptance | The protected suite, written before any code, and the baseline failing it for the right reasons. Chapter 4. |
-| 6 | The builder | An OpenAI Agents API session whose file tools reach only a scratch copy. Chapter 5. |
-| 7 | The gates and the decision | The good candidate is ACCEPTed. The three bad ones are stopped: a rate shown as live, an invented rate when the source fails, an edited protected suite. Chapter 6. |
-| 7 | Integration, then run | ACCEPT integrates the change, the agent restarts and the fourth card appears on screen 2. Chapter 7. |
-The commands for the console and the live builder are (pending). The offline loop is `python run_a6.py` as in "Before the day".
-Say, once the card appears: "Nobody read the builder's code. The gates decided. And the change was one line, because the platform carries the work."
+### 15:15 We build the factory (30 min)
+Show: slide 27, then slide 28 beside screen 1 (the console) and screen 2.
+Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 27 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 28, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
+The commands for the console and the live builder are (pending). The offline loop is the scripted builder from Chapter 6.
+Say, at the end: "Nobody read the change. The gates decided. And the good change was one line, because the platform carries the work."
 
-### 14:45 On your own (95 min, with a break)
-Show: slides 45 to 49 (part 7, with the exact commands, ending on the pause slide). Do: everyone works through the book, alone or in groups of up to four, from chapter 0. Anyone can start at any chapter from its checkpoint.
-Break: 15:30 to 15:45, with refreshments. Chat and networking are part of the plan.
+### 15:45 Your turn (95 min, with a break)
+Show: slide 29 and leave it up. Do: everyone works through the book, alone or in groups of up to four, from Chapter 0. Each chapter has a ready folder, so anyone can start at any chapter.
+Break: 16:30 to 16:45, with refreshments. Chat and networking are part of the plan.
 Your job: walk the room. The three common stops are a missing license (point to the sign-up), a key that isn't set (the doctor shows SET or MISSING, never the value) and a clone made as a zip (clone with Git instead). Tell people that a live flight or a live builder run is an extra, and that every "done when" check works offline.
 Say once at the start: "Keys and the license stay in your own shell or your own Git-ignored .env. Never put one in a tracked file, a tool result, a report or a chat."
 
-### 16:20 Close (10 min)
-Show: slides 50 to 52 (part 8). Leave the three glossary slides (53 to 55) up during the break. Say what they built and where to go next: the book chapters, and the course "Towards Dark Software Factories" on profrod.ai. Ask what stopped them, and note it for the book.
+### 17:20 Close (10 min)
+Show: slide 30. Say what they built and where to go next: the book chapters, and the course "Towards Dark Software Factories" on profrod.ai. Ask what stopped them, and note it for the book.
 
 ## If something fails
 | What fails | What you do |
 | --- | --- |
 | Voice | Type the request. Say voice wasn't shown today. |
-| No flight is airborne, or the route is empty | Use the callsign with a stated destination. If the source is down, the cards say unavailable with a reason. That is the honest state, so show it and say why. |
+| No flight is airborne, or the route is empty | Use the known callsign with a stated destination. If the source is down, the cards say unavailable with a reason. That is the honest state, so show it and say why. |
 | A public source is slow | Wait once, then continue with the recorded four cards and say they're recorded. |
-| The live builder fails | Run the recorded builder runs and the finished four-card version. Say clearly that these are recorded runs and a finished version. |
+| The live builder fails | Run the scripted builder from Chapter 6 and the finished four-card version. Say clearly that these are a scripted builder and a finished version. |
 | The console fails | Run the offline loop from a terminal with `run_a6.py` and show the decision lines. |
 | The tailnet drops | Open the deck from the file in the repository. It needs no network. |
 
 ## What this day does not show
-- It doesn't prove the factory is right. It shows a gate that catches the failures it checks for. A candidate that printed a hand-made valid card for every scenario would still pass.
+- It doesn't prove the factory is right. It shows a gate that catches the failures it checks for. An attempt that printed a hand-made valid card for every scenario would still pass.
 - It doesn't show spoken input unless it worked in front of you, and it doesn't show a live flight unless one was airborne.
 - The no-network check needs `sandbox-exec`, so it runs on a Mac.
-- The class pages are readable by any device on the tailnet until they're stopped at 16:30 UTC.
+- The class pages are readable by any device on the tailnet until they're stopped at 17:30 London time.
