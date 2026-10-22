@@ -25,13 +25,21 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 
 ## Get the code
 
-1. Get the code. Clone the repository:
+1. Get the code. The main route is to clone the repository:
 
    ```bash
    git clone https://github.com/RasaHQ/rasa-community-resources.git
    ```
 
-   If you have the supplied ZIP instead, unzip it and run `git init` in the unzipped folder, because the demo checks that `.env` is untracked. You don't need a remote repository. `PACK` is the `software-factories-masterclass` folder. After a clone it is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping it is the unzipped folder.
+   The alternative is the supplied ZIP. Unzip the supplied workshop package and open a terminal in its `software-factories-masterclass` folder. Initialize local Git metadata there so the demo can check that `.env` stays ignored:
+
+   ```bash
+   git init
+   ```
+
+   No GitHub account, remote repository or commit is needed. Follow [the prework](../PREWORK.md) if you need setup help.
+
+   `PACK` is the `software-factories-masterclass` folder. After a clone it is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping it is the unzipped folder.
 
 2. Set `PACK` and install the supplied code. Use one of the two export lines:
 
