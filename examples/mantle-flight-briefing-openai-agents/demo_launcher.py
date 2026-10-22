@@ -15,8 +15,12 @@ import secrets
 import shutil
 import signal
 import socket
+import stat
 import subprocess
 import sys
+
+if __name__ == '__main__':
+    sys.modules.setdefault('demo_launcher', sys.modules[__name__])
 import time
 import threading
 import tomllib
@@ -68,6 +72,22 @@ def registry_lock(directory):
 PARTICIPANT_KEYS = frozenset(('RASA_LICENSE', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'DEEPGRAM_API_KEY'))
 
 
+def check_dotenv_git(root, environment, *, require_ignored):
+    git_env = {key: value for key, value in environment.items() if not key.startswith('GIT_')}
+    git_env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
+    prefix = ['git', '-C', str(root)]
+    def status(arguments):
+        return subprocess.run(prefix + arguments, env=git_env, stdout=subprocess.DEVNULL,
+                              stderr=subprocess.DEVNULL, timeout=10).returncode
+    tracked = status(['ls-files', '--error-unmatch', '--', '.env'])
+    if tracked == 0:
+        raise DemoError('The example .env is tracked by Git; remove it from the index before running the demo.')
+    if tracked != 1:
+        raise DemoError('Git could not verify that the example .env is untracked; use a Git checkout and retry.')
+    if require_ignored and status(['check-ignore', '--quiet', '--', '.env']) != 0:
+        raise DemoError('The example .env must be ignored by Git before use; restore the example .gitignore and retry.')
+
+
 def participant_environment(environment, root=None, project=None, worker=None):
     """Read only the guarded example-root file, without expanding or exporting."""
     root = ROOT if root is None else Path(root)
@@ -82,25 +102,22 @@ def participant_environment(environment, root=None, project=None, worker=None):
                 if directory == root and candidate.name == '.env':
                     continue
                 raise DemoError('Keep participant credentials only in the example-root .env or your shell; remove other runtime dotenv files.')
-        git_env = {key: value for key, value in environment.items() if not key.startswith('GIT_')}
-        git_env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
-        tracked = subprocess.run(['git', '--literal-pathspecs', '-C', str(root), 'ls-files',
-                                  '--error-unmatch', '--', '.env'],
-                                 env=git_env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                                 timeout=10)
-        if tracked.returncode == 0:
-            raise DemoError('The example .env is tracked by Git; remove it from the index before running the demo.')
-        if tracked.returncode != 1:
-            raise DemoError('Git could not verify that the example .env is untracked; use a Git checkout and retry.')
         path = root / '.env'
-        if path.is_symlink():
-            raise DemoError('Use a regular example-root .env file, not a symbolic link.')
-        if not path.exists():
+        check_dotenv_git(root, environment, require_ignored=path.exists() or path.is_symlink())
+        if not path.exists() and not path.is_symlink():
             return env
-        with path.open('rb') as stream:
-            raw = stream.read(65537)
-        if len(raw) > 65536:
-            raise DemoError('The example .env is too large; keep only the four documented credential lines.')
+        info = path.lstat()
+        if not stat.S_ISREG(info.st_mode) or info.st_mode & 0o022:
+            raise DemoError('Use a regular, non-symlink .env without group or world write access; run chmod 600 .env.')
+        descriptor = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+        with os.fdopen(descriptor, 'rb') as stream:
+            opened = os.fstat(stream.fileno())
+            if (not stat.S_ISREG(opened.st_mode) or opened.st_mode & 0o022
+                    or (opened.st_dev, opened.st_ino) != (info.st_dev, info.st_ino)):
+                raise DemoError('The example .env changed or is unsafe; use a regular private file and retry.')
+            raw = stream.read(4097)
+        if len(raw) > 4096:
+            raise DemoError('The example .env is too large; keep it within 4 KiB and the four documented credential lines.')
         text = raw.decode('utf-8')
         seen = set()
         for raw_line in text.splitlines():
@@ -121,7 +138,7 @@ def participant_environment(environment, root=None, project=None, worker=None):
                     raise DemoError('Use one single-line assignment per credential in the example .env.')
                 value = value[1:-1]
             # Values are literal. No interpolation, escaping or shell evaluation.
-            if name not in env:
+            if not env.get(name, '').strip():
                 env[name] = value
         return env
     except DemoError:
@@ -239,6 +256,9 @@ def setup():
         raise DemoError('Install uv, then run ./demo setup again.')
     for directory in (WORKER, PROJECT):
         registry_lock(directory)
+    from demo_make import check_environment_target, mark_environment
+    for directory in (WORKER, PROJECT):
+        check_environment_target(directory)
     env = child_environment()
     # Locate an EXISTING managed interpreter in the caller's normal data home.
     # Runtime data remains redirected; discovery never downloads or installs.
@@ -265,6 +285,7 @@ def setup():
             completed(children, ['uv', 'sync', '--frozen', '--project', str(directory),
                       '--python', interpreter, '--no-python-downloads'], cwd=ROOT, env=env,
                       timeout=600, failure='Setup could not install the locked release; check network access to PyPI and rerun ./demo setup.')
+            mark_environment(directory)
         print('Both Python 3.12 environments are installed. Run ./demo run.', flush=True)
     finally:
         children.close()
@@ -336,6 +357,8 @@ def run_demo(scripted=False, host="127.0.0.1"):
     if not env.get('RASA_LICENSE', '').strip():
         raise DemoError('Get your free Rasa Developer Edition licence at https://rasa.com/rasa-pro-developer-edition-license-key-request and set RASA_LICENSE in the example .env or your shell before rerunning ./demo run.')
     env['BRIEFING_MCP_TOKEN'] = secrets.token_urlsafe(32)
+    from demo_make import CheckoutControl
+    control = CheckoutControl(ROOT)
     children = Children()
     previous = {}
     def interrupt(_signum, _frame):
@@ -343,6 +366,7 @@ def run_demo(scripted=False, host="127.0.0.1"):
     for sig in (signal.SIGINT, signal.SIGTERM):
         previous[sig] = signal.signal(sig, interrupt)
     try:
+        control.start()
         print(SCRIPTED_LABEL if scripted else 'LIVE model mode; public source data stays separate from model prose.', flush=True)
         for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'DEEPGRAM_API_KEY'):
             print(key + ': ' + ('SET' if env.get(key, '').strip() else 'MISSING'), flush=True)
@@ -385,7 +409,10 @@ def run_demo(scripted=False, host="127.0.0.1"):
         try:
             signal.signal(signal.SIGINT, signal.SIG_IGN)
             signal.signal(signal.SIGTERM, signal.SIG_IGN)
-            children.close()
+            try:
+                children.close()
+            finally:
+                control.close()
         finally:
             for sig, handler in previous.items():
                 signal.signal(sig, handler)
@@ -527,7 +554,10 @@ def inspector(mode):
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     try:
-        if argv == ['setup']:
+        if len(argv) == 2 and argv[0] == 'make-target':
+            from demo_make import perform
+            perform(argv[1])
+        elif argv == ['setup']:
             setup()
         elif argv and argv[0] == 'run':
             parser = SafeRunParser(add_help=False)

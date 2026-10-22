@@ -8,15 +8,15 @@ Audience: Practitioners connecting Rasa Mantle to a managed specialist
 Time: Allow time for the first dependency download
 
 **Draft class head: the complete path is awaiting independent acceptance.**
-From this checkout, copy the credential template and fill in your own values,
-then run setup and start the demo:
+From this checkout, create your private credential file and fill in your own values,
+then install and start the demo:
 
 ```sh
 cd examples/mantle-flight-briefing-openai-agents
-cp .env.example .env
+make env
 # Fill in your own values in .env with a text editor.
-./demo setup
-./demo run
+make setup
+make run
 ```
 
 For a new checkout after the class PR is merged:
@@ -24,10 +24,10 @@ For a new checkout after the class PR is merged:
 ```sh
 git clone https://github.com/RasaHQ/rasa-community-resources.git
 cd rasa-community-resources/examples/mantle-flight-briefing-openai-agents
-cp .env.example .env
+make env
 # Fill in your own values in .env with a text editor.
-./demo setup
-./demo run
+make setup
+make run
 ```
 
 Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
@@ -111,11 +111,23 @@ and `DEEPGRAM_API_KEY` from this one `.env`; any other assignment is refused.
 Use single-line `NAME=value` entries, optionally enclosing a value in matching
 single or double quotes, with comments on separate lines. Values stay literal:
 there is no variable expansion or shell evaluation. A shell variable takes
-precedence, including an explicitly empty shell value. The launcher passes
-values only to its child processes and leaves your shell unchanged. Git-tracked
-`.env` files, symlinks and runtime dotenv files in `project/` or `worker/` are
-refused. Never commit `.env`; keep the empty `.env.example` as the shared template.
+precedence only when that shell value is non-empty; an empty shell value uses
+the file. The launcher passes values only to its child processes and leaves your shell unchanged. Git-tracked
+`.env` files, files not ignored by Git, files larger than 4 KiB,
+group/world-writable files, symlinks and runtime dotenv files in `project/` or
+`worker/` are refused. Never commit `.env`; keep the empty `.env.example` as the shared template.
 Implicit engine and uv dotenv loading stays disabled.
+
+Run `make help` for the ordered commands. `make env` copies the empty template
+only if `.env` is absent, makes it private (mode 600), and prints the credential
+names and sign-up links. `make doctor` checks readiness without printing values;
+`make run-scripted` starts the labelled text fallback; `make test` runs offline
+controls without participant keys. `make stop` contacts only this checkout’s
+private control socket and lets its launcher stop both child process groups.
+`make clean` removes only the local worker/project `.venv` directories marked by
+this checkout’s successful setup. It preserves `.env`, caches, models, other
+files and other checkouts; it refuses unmarked environments and a running demo.
+The `./demo setup` and `./demo run` commands remain available underneath Make.
 
 ## Provenance, access and remaining checks
 

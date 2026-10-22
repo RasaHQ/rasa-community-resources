@@ -8,4 +8,5 @@ if ! python3 -c 'import sys; sys.exit(sys.version_info < (3, 11))' 2>/dev/null; 
     echo 'Use Python 3.12 as python3, then run ./demo setup.' >&2
     exit 1
 fi
-exec python3 "$(dirname "$0")/demo_launcher.py" "$@"
+cd "$(dirname "$0")" || exit 1
+exec python3 demo_launcher.py "$@"

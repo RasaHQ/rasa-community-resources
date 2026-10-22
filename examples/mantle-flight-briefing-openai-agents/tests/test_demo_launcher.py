@@ -43,6 +43,7 @@ class LauncherControls(unittest.TestCase):
         with patch.dict(os.environ, {'XDG_DATA_HOME': '/existing-python-data'}), \
                 patch.object(demo.subprocess, 'run', side_effect=results) as run, \
                 patch.object(demo, 'completed'), \
+                patch('demo_make.mark_environment'), \
                 patch.object(demo, 'participant_environment', side_effect=lambda env: dict(env)), \
                 patch.object(demo.shutil, 'which', return_value='/installed/uv'):
             demo.setup()
@@ -364,6 +365,7 @@ class ParticipantDotenv(unittest.TestCase):
         self.worker.mkdir()
         demo.subprocess.run(['git', 'init', '-q', str(self.root)], check=True,
                             stdout=demo.subprocess.DEVNULL, stderr=demo.subprocess.DEVNULL)
+        (self.root / '.gitignore').write_text('.env\n')
         self.path = self.root / '.env'
         self.synthetic = 'fixture-only-do-not-echo-43b02a'
 
@@ -381,12 +383,13 @@ class ParticipantDotenv(unittest.TestCase):
         self.assertEqual(result['ANTHROPIC_API_KEY'], 'fixture-anthropic')
         self.assertEqual(result['DEEPGRAM_API_KEY'], '')
 
-    def test_shell_presence_wins_including_explicit_empty_without_mutation(self):
+    def test_nonempty_shell_wins_and_empty_uses_file_without_mutation(self):
         self.path.write_text('RASA_LICENSE=file-only\nOPENAI_API_KEY=file-only\n')
         original = {'RASA_LICENSE': 'shell-only', 'OPENAI_API_KEY': '', 'UNRELATED': 'keep'}
         before = dict(os.environ)
         result = self.load(original)
-        self.assertEqual(result, original)
+        self.assertEqual(result, {**original, 'OPENAI_API_KEY': 'file-only'})
+        self.assertEqual(original['OPENAI_API_KEY'], '')
         self.assertIsNot(result, original)
         self.assertEqual(os.environ, before)
 
@@ -401,7 +404,7 @@ class ParticipantDotenv(unittest.TestCase):
         for raw in [(self.synthetic + '\n').encode(),
                     ('RASA_LICENSE=' + self.synthetic + '\nRASA_LICENSE=again\n').encode(),
                     ('RASA_LICENSE="' + self.synthetic + '\n').encode(),
-                    b'RASA_LICENSE=\xff', b'#' + b'x' * 65536]:
+                    b'RASA_LICENSE=\xff', b'#' + b'x' * 4096]:
             with self.subTest(kind=raw[:1]):
                 self.path.write_bytes(raw)
                 with self.assertRaises(demo.DemoError) as error:
@@ -410,7 +413,7 @@ class ParticipantDotenv(unittest.TestCase):
 
     def test_tracked_file_refused_before_reading_even_if_worktree_deleted(self):
         self.path.write_text('RASA_LICENSE=' + self.synthetic + '\n')
-        demo.subprocess.run(['git', '-C', str(self.root), 'add', '.env'], check=True,
+        demo.subprocess.run(['git', '-C', str(self.root), 'add', '-f', '.env'], check=True,
                             stdout=demo.subprocess.DEVNULL, stderr=demo.subprocess.DEVNULL)
         self.path.unlink()
         with self.assertRaises(demo.DemoError) as error:
@@ -420,10 +423,29 @@ class ParticipantDotenv(unittest.TestCase):
 
     def test_git_redirect_cannot_bypass_tracking_check(self):
         self.path.write_text('RASA_LICENSE=fixture\n')
-        demo.subprocess.run(['git', '-C', str(self.root), 'add', '.env'], check=True,
+        demo.subprocess.run(['git', '-C', str(self.root), 'add', '-f', '.env'], check=True,
                             stdout=demo.subprocess.DEVNULL, stderr=demo.subprocess.DEVNULL)
         with self.assertRaises(demo.DemoError):
             self.load({'GIT_INDEX_FILE': str(self.root / 'missing-index')})
+
+    def test_unignored_and_group_world_writable_and_nonregular_refused(self):
+        self.path.write_text('RASA_LICENSE=fixture-only\n')
+        (self.root / '.gitignore').unlink()
+        with self.assertRaises(demo.DemoError):
+            self.load()
+        (self.root / '.gitignore').write_text('.env\n')
+        for mode in (0o620, 0o602):
+            self.path.chmod(mode)
+            with self.assertRaises(demo.DemoError):
+                self.load()
+        self.path.unlink()
+        self.path.mkdir()
+        with self.assertRaises(demo.DemoError):
+            self.load()
+        self.path.rmdir()
+        os.mkfifo(self.path)
+        with self.assertRaises(demo.DemoError):
+            self.load()
 
     def test_git_failure_is_fixed_refusal(self):
         with patch.object(demo.subprocess, 'run', return_value=SimpleNamespace(returncode=128)):
