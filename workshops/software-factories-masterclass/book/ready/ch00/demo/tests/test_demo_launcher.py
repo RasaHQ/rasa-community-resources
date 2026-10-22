@@ -521,7 +521,14 @@ class ActualVoiceLoaderSeam(unittest.TestCase):
         from rasa.mantle.config import channels
         from rasa.mantle.llm.client import LLMClient
         observed = []
+        from rasa.mantle.model_archive import bootstrap
+        original_resolver = bootstrap.resolve_integration_llm_config
+        original_client = LLMClient.__dict__['from_bootstrap']
         def normal_entrypoint():
+            # Real stable-engine resolver normally expands provider credentials
+            # before the provider factory. The scripted child needs neither.
+            self.assertEqual(bootstrap.resolve_integration_llm_config(None, demo.PROJECT), {})
+            self.assertIsInstance(LLMClient.from_bootstrap(None), demo.ScriptedClient)
             observed.append(resolve_channels_config(project_root=demo.PROJECT))
         original = channels.load_integration_channels
         with patch.object(channels, 'load_integration_channels', original), \
@@ -531,6 +538,8 @@ class ActualVoiceLoaderSeam(unittest.TestCase):
                 patch.dict(os.environ, {'LITELLM_MODE': 'PRODUCTION'}, clear=True):
             demo.inspector('scripted')
         self.assertEqual(observed[0].channels, {})
+        self.assertIs(bootstrap.resolve_integration_llm_config, original_resolver)
+        self.assertIs(LLMClient.__dict__['from_bootstrap'], original_client)
 
 
 class InspectorReadinessBudget(unittest.TestCase):

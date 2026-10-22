@@ -8,6 +8,7 @@ actual engine orchestration, MCP, hooks and the Inspector channel.
 from __future__ import annotations
 
 import argparse
+from contextlib import ExitStack
 import json
 import os
 from pathlib import Path
@@ -632,16 +633,24 @@ def inspector(mode):
     else:
         voice = voice_channels(os.environ)
     install_voice_channels(voice)
-    if mode == 'scripted':
-        from rasa.mantle.llm.client import LLMClient
-        LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())
     host = validate_host(os.environ.get('BRIEFING_DEMO_HOST', '127.0.0.1'))
     install_mcp_host(host)
     if os.environ.get('BRIEFING_VIEWER_AUDIT'):
         from viewer_audit import install_inspector_audit
         install_inspector_audit()
     sys.argv = ['rasa', 'inspect', '--interface', host, '--port', '5005', '--quiet']
-    rasa_main()
+    with ExitStack() as cleanup:
+        if mode == 'scripted':
+            from rasa.mantle.llm.client import LLMClient
+            from rasa.mantle.model_archive import bootstrap
+            # Stable Mantle resolves provider credentials before constructing
+            # its client. This labelled scripted child has no provider client
+            # or credential; supply only the deterministic selection seam.
+            cleanup.callback(setattr, LLMClient, 'from_bootstrap', LLMClient.__dict__['from_bootstrap'])
+            cleanup.callback(setattr, bootstrap, 'resolve_integration_llm_config', bootstrap.resolve_integration_llm_config)
+            LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())
+            bootstrap.resolve_integration_llm_config = lambda agent, project_root: {}
+        rasa_main()
 
 
 def main(argv=None):
