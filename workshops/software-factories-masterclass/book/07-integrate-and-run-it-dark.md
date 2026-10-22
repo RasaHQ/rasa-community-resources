@@ -4,6 +4,8 @@ A teammate fixes the currency card while your builder is still working. Both cha
 
 Time: about 15 minutes after installation. You need: Chapter 6, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).
 
+You're done when `ch07 OK` confirms that your change is integrated and the card shows your requested number of currencies with the sample-data label.
+
 If you get stuck, use [the ready folder](ready/ch07) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used in this chapter
@@ -106,8 +108,6 @@ It passes only when your change is integrated and the card shows your number of 
 ## Good to know
 
 The page uses the bundled sample exchange rates. It checks the card after local integration; it does not install a card into the class's running agent.
-
-You're done when `ch07 OK` confirms that your change is integrated and the card shows your requested number of currencies with the sample-data label.
 
 ## What you just learned
 

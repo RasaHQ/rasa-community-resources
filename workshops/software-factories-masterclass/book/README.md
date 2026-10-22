@@ -6,13 +6,13 @@ the workshop.
 
 A coding agent says its change works, and you have no time to read every line it changed. A software factory checks the change for you, with tests the agent never sees. You build one here, chapter by chapter, and watch it accept a good change and reject a bad one.
 
-Time: each chapter opens with its own estimate. Chapter 0 takes about 5 minutes to install and then about 20, and chapters 1 to 4 take about 10, 10, 25 and 30. Every chapter ends with a check that prints `chNN OK`, so you always know whether you're done. If a chapter goes wrong, start it again from its ready folder.
+Time: each chapter opens with its own estimate. Chapter 0 takes about 5 minutes to install and then about 20. Chapters 1 to 8 take about 10, 10, 25, 30, 20, 15, 15 and 20. Every chapter ends with a check that prints `chNN OK`, so you always know whether you're done. If a chapter goes wrong, start it again from its ready folder.
 
 ## What you need first
 
 - Python 3.12 and [uv](https://docs.astral.sh/uv/)
-- A free Rasa Developer Edition license, set as `RASA_LICENSE` in your own terminal
-- Your own OpenAI API key, set as `OPENAI_API_KEY` in your own terminal
+- A free Rasa Developer Edition license for chapter 0, set as `RASA_LICENSE` in your own terminal
+- An OpenAI API key, set as `OPENAI_API_KEY`, only if you want the optional live builder run in chapter 5. Every `chNN OK` check runs without it.
 - A Deepgram key is optional and only adds voice
 - About 3 GB of disk space and a network connection for the first install
 
@@ -22,15 +22,14 @@ Clone this repository with Git. A ZIP download is not supported.
 
 ## How the chapters work
 
-Every chapter has the same parts:
+Every chapter opens with a short scene, then a **Time** line and what you need. After that it has the same parts:
 
-1. **Goal**, in one sentence, and **You need first**, which names the earlier chapters it builds on.
-2. **Steps**, numbered, each with the exact command and what you should see.
-3. **You are done when**, a real command that passes. If it does not pass, you are not done.
-4. **Ready folder**, the working code for that chapter under `ready/`, so you can start at any chapter
-   without doing the earlier ones.
+1. **See how it works.** Run the working code, watch what happens and read the two or three files that matter.
+2. **Now change it.** Ask for a change. In a factory you do that by changing the task, and the gates decide, with no code written by hand. Chapters 1 and 2 are short reading chapters, and their change step follows after the class.
+3. **You're done when.** A real command that prints `chNN OK`. In chapters 3 to 8 it fails before you make your change and passes after.
+4. **If you get stuck.** The working code for the chapter is in its ready folder under `ready/`, so you can start any chapter without doing the earlier ones. Chapters 1 and 2 use the chapter 0 folder.
 
-Each chapter builds on the one before it, and every chapter has its own ready folder, so you can start at any chapter. Each "you are done when" check fails in the chapter's ready folder and passes after you make the change.
+Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so on), next to your clone and outside it, copied from the chapter's ready folder. `REPO` in the commands means the folder where you cloned this repository, for example `export REPO=~/rasa-community-resources`.
 
 ## The chapters
 
@@ -46,16 +45,11 @@ Each chapter builds on the one before it, and every chapter has its own ready fo
 | [7](07-integrate-and-run-it-dark.md) | Integrate and run it dark | Integration, then the whole loop | `ch07 OK`: your change is integrated and the card shows your number of currencies, offline |
 | [8](08-going-further.md) | Going further | Policy, measurement, recovery and escalation | The measure and recover commands run on your own factory |
 
-The book teaches the factory one part per chapter. In each chapter you first see a working part run, then you change your own task and the factory's gates decide. The finished factory in `../factory/` is the reference result you can compare with.
-
-## How each chapter works
-Every chapter ships its own working code in a ready folder under `ready/`, so nobody starts from zero. A chapter has three parts: **See how it works**, where you run the code, watch what happens and read the two or three files that matter. **Now change it**, where you ask for a change (in a factory, by changing the task) and the gates decide, with no code written by hand. And **You are done when**, a real command that passes.
-
-Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so on), next to your clone and outside it, copied from the chapter's ready folder. `REPO` in the commands means the folder where you cloned this repository, for example `export REPO=~/rasa-community-resources`.
+The book teaches the factory one part per chapter. The finished factory in `../factory/` is the reference result you can compare with.
 
 ## What to know before you start
 
-- Chapters 3 to 7 run their protected checks on macOS. On Linux or Windows, pair with someone on a Mac, or follow along on screen. Everything else works on any laptop. The reason is that the no-network check uses `sandbox-exec`. On another system the gate says `could not run: this check needs macOS` and exits 2 before it judges anything, so a good attempt is never shown as rejected.
+- Chapters 3 to 7 run their protected checks on macOS, because the no-network check uses `sandbox-exec`. On Linux or Windows, pair with someone on a Mac, or follow along on screen. Chapter 0 was run on macOS, and other systems haven't been tried. Chapters 1 and 2 only read files, and chapter 8 uses only Python's standard library. On another system the gate says `could not run: this check needs macOS` and exits 2 before it judges anything, so a good attempt is never shown as rejected.
 - A factory that accepts a change has judged it against the tests you wrote. It has not proved the change is right.
 - Chapters 3, 4, 6 and 7 build the factory step by step. The finished factory is in `../factory/` and the task is in `../factory/a6-market-watchlist/`.
 - Live data and voice depend on public sources and your own keys, and they can fail on the day. Each chapter says
