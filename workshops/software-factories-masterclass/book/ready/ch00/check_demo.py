@@ -36,7 +36,7 @@ class Cards(HTMLParser):
     def handle_data(self, text):
         if self.current is not None:
             self.current['text'].append(text)
-            if not any(metadata for _, metadata in self.elements):
+            if text.strip() != 'REPLAY' and not any(metadata for _, metadata in self.elements):
                 self.current['answer'].append(text)
             if text.strip() == 'REPLAY':
                 self.current['replay'] = True
