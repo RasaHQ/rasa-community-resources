@@ -161,6 +161,20 @@ class DriverControls(unittest.TestCase):
                                   tool_factory=lambda *args: {})
         self.assertEqual(called, [])
 
+    def test_noncompleted_session_never_collects_or_accepts_partial_edits(self):
+        for status in ('incomplete', 'failed', 'cancelled', None):
+            with self.subTest(status=status):
+                run = self.root / ('stopped-' + str(status))
+                factory = SimpleNamespace(prepare=lambda path: ('injected', []))
+                with patch.object(driver, 'module', return_value=factory) as load, \
+                        patch.object(driver, 'native_builder', return_value=SimpleNamespace(ok=False, status=status)):
+                    code = driver.execute(self.task_path, self.workspace, run, client=object(), model='injected')
+                self.assertEqual(code, 2)
+                self.assertEqual(load.call_count, 1)  # environment preflight only
+                self.assertEqual(json.loads((run / 'console.json').read_text())['state'], 'BUILDER_INCOMPLETE')
+                self.assertFalse((run / 'candidate').exists())
+                self.assertFalse((run / 'verification').exists())
+
     def test_host_reuses_collect_factory_and_preserves_each_exit_code(self):
         for code in range(5):
             run = self.root / ('run-' + str(code))
@@ -177,7 +191,7 @@ class DriverControls(unittest.TestCase):
                 return code
             modules = {'collect': SimpleNamespace(main=collect), 'factory': SimpleNamespace(main=factory, prepare=lambda path: ('injected', []))}
             with patch.object(driver, 'module', side_effect=lambda name: modules[name]), \
-                    patch.object(driver, 'native_builder', return_value=SimpleNamespace(ok=True)):
+                    patch.object(driver, 'native_builder', return_value=SimpleNamespace(ok=True, status='completed')):
                 result = driver.execute(self.task_path, self.workspace, run, client=object(), model='injected')
             self.assertEqual(result, code)
             self.assertEqual([name for name, _ in called], ['collect', 'factory'])

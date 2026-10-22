@@ -73,7 +73,7 @@ def qualify(pack, evidence):
     client = SimpleNamespace(beta=SimpleNamespace(agents=SimpleNamespace(sessions=sessions)))
     code = driver.execute(task, workspace, evidence / 'run', client=client,
                           model='SCRIPTED-no-model-request', pack_root=pack,
-                          environment_path=driver.FACTORY / 'environment-a6.json', spend_limit_cents=200)
+                          environment_path=driver.FACTORY / 'environment-a6.json', spend_limit_cents=200, mode='SCRIPTED')
     (evidence / 'scripted-control.json').write_text(json.dumps({
         'mode': 'SCRIPTED SDK-shaped stream through actual Core run_native',
         'model_generated_code': False, 'provider_calls': 0,

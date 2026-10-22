@@ -38,8 +38,8 @@ fallback. A requested provider-side spend cap of 1–200 USD cents is required
 (USD 2 requested maximum); the driver refuses before a session if Core lacks `spend_limit_cents`.
 Core 0.35.4 exposes that parameter; Core 0.35.2 alone does not. The
 request field is verified from the released SDK and official API reference;
-provider enforcement has not been demonstrated by a funded run. No expected
-or observed live cost is claimed yet. The host then invokes the existing
+the service rejected this field in the consuming owner’s bounded run on 2026-10-22 (HTTP 400, unknown spend_control). No funded retry is authorized by this driver; the live path awaits an explicit replacement-budget ruling. No expected
+or observed live cost is claimed yet. A failed, cancelled, incomplete or unrecorded session stops with exit 2 and BUILDER_INCOMPLETE: it cannot collect or ACCEPT a partial change. Only a completed session proceeds. The host then invokes the existing
 `collect.py` and `factory.py`, preserving exit codes 0–4. The prepared scratch
 must contain the visible task and `.scratch.json`; a repository checkout or
 workspace containing acceptance files is refused.
@@ -73,8 +73,13 @@ outside the protected sandbox. The profile is a compatibility window; the
 actual distribution versions and profile hash are recorded, while installation
 still belongs to the receiving owner’s pinned worker environment.
 
-Remaining end-to-end qualification: run the three teaching rejects with the
-qualified Core worker, and bind the product owner’s gated-diff integration hook
+Observed offline qualification: the actual A6 pack’s good candidate ACCEPTs and all three teaching candidates REJECT with the qualified Core worker. The labelled SDK-shaped stream also traverses actual Core 0.35.4, confined file writes, collection and the real protected gate with ACCEPT, without a provider call. Run that control with a fresh evidence directory:
+
+```sh
+python agent-runs/drivers/qualify_scripted_builder.py A6_PACK NEW_EVIDENCE
+```
+
+This is SCRIPTED teaching code, not a model result. The console labels it accordingly. Remaining end-to-end qualification: bind the product owner’s gated-diff integration hook
 to a scripted builder → real factory ACCEPT → actual briefing HTTP restart
 regression. A generic injected callback or the console page is not that F7 proof.
 

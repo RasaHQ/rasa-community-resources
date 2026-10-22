@@ -31,6 +31,19 @@ class ConsoleControls(unittest.TestCase):
         self.assertNotIn('<script>', render(state))
         self.assertIn('NOT RUN', render(state))
 
+    def test_brand_tokens_fallbacks_scripted_label_and_pause_are_visible(self):
+        state = snapshot(self.root)
+        state['mode'] = 'SCRIPTED'
+        page = render(state, refresh=False)
+        self.assertIn('#FAF6F0', page)
+        self.assertIn('#181210', page)
+        self.assertIn('Newsreader,Georgia,serif', page)
+        self.assertIn('SCRIPTED control', page)
+        self.assertIn('no model request', page)
+        self.assertNotIn('http-equiv="refresh"', page)
+        self.assertNotIn('@font-face', page)
+        self.assertNotIn('<script', page)
+
     def test_existing_factory_decision_checks_diff_and_integration_are_read(self):
         decision = {'decision': 'REJECT', 'reasons': ['protected acceptance failed'], 'checks': [
             {'name': 'protected acceptance', 'passed': False, 'summary': 'FAILED', 'output': 'never shown raw log'}]}
@@ -71,7 +84,7 @@ class ConsoleControls(unittest.TestCase):
         thread.start()
         try:
             client = http.client.HTTPConnection('127.0.0.1', server.server_port, timeout=3)
-            for url, expected in [('/', 200), ('/state.json', 200), ('/../outside', 404), ('/.env', 404), ('/?key=fixture', 404)]:
+            for url, expected in [('/', 200), ('/paused', 200), ('/state.json', 200), ('/../outside', 404), ('/.env', 404), ('/?key=fixture', 404)]:
                 client.request('GET', url)
                 response = client.getresponse()
                 self.assertEqual(response.status, expected)

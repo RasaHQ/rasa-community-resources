@@ -279,7 +279,7 @@ def validate_scratch(workspace, task, task_filename=None):
 
 
 def execute(task_path, workspace, run_directory, *, client, model, invoke=None, tool_factory=None,
-            pack_root=None, environment_path=None, spend_limit_cents=200):
+            pack_root=None, environment_path=None, spend_limit_cents=200, mode='LIVE_NATIVE'):
     pack_root = Path(pack_root).resolve() if pack_root is not None else FACTORY
     task = json.loads(Path(task_path).read_text())
     validate_scratch(workspace, task, Path(task_path).name)
@@ -295,7 +295,7 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
     task_snapshot.chmod(0o400)
     event = event_writer(directory)
     visible = {key: task[key] for key in ('id', 'request', 'allowed_paths', 'excluded')}
-    record = {'schema': 'mantle-factory-console-v1', 'state': 'BUILDER_RUNNING', 'task': visible,
+    record = {'schema': 'mantle-factory-console-v1', 'state': 'BUILDER_RUNNING', 'mode': mode, 'task': visible,
               'prepared': ['Prepared scratch product', 'Task allowed-path contract',
                            'Existing collect.py and factory.py', 'Independent protected suite outside builder scratch'],
               'task_sha256': hashlib.sha256(Path(task_path).read_bytes()).hexdigest()}
@@ -319,6 +319,10 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
         (directory / 'native.json').write_text(json.dumps({'status': native_status, 'error_code': native_error,
             'ok': bool(turn.ok), 'tools_called': [name for name in getattr(turn, 'tools_called', ())
                if name in ('list_files', 'read_file', 'write_file')]}))
+        if native_status != 'completed':
+            event(stage='builder', status='FAIL', action='session_not_completed')
+            save('BUILDER_INCOMPLETE')
+            return 2
         event(stage='collect', status='RUNNING')
         collected = module('collect').main(workspace, directory / 'candidate', directory / 'review', pack_root=pack_root)
         if collected != 0:
