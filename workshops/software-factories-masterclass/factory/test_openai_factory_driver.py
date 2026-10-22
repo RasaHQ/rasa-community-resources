@@ -269,7 +269,8 @@ class DriverControls(unittest.TestCase):
         with self.assertRaises(ValueError):
             driver.execute(self.task_path, self.workspace, self.workspace / 'evidence', client=object(), model='injected')
 
-    def integration_run(self, name, *, hook=None, code=0, decision=None, status='completed', ok=True):
+    def integration_run(self, name, *, hook=None, code=0, decision=None, status='completed', ok=True,
+                        read_integration=True):
         """Inject the gate boundary, retaining real candidate bytes/digest custody."""
         directory = self.root / name
         digest_tree = driver.module('factory').digest_tree
@@ -295,7 +296,8 @@ class DriverControls(unittest.TestCase):
                 patch.object(driver, 'native_builder', return_value=SimpleNamespace(ok=ok, status=status)):
             result = driver.execute(self.task_path, self.workspace, directory, client=object(), model='injected',
                                     mode='SCRIPTED', integration_hook=hook)
-        return result, directory, json.loads((directory / 'integration.json').read_text())
+        record = json.loads((directory / 'integration.json').read_text()) if read_integration else None
+        return result, directory, record
 
     @staticmethod
     def owner_record(directory):
@@ -391,6 +393,50 @@ class DriverControls(unittest.TestCase):
             _, _, record = self.integration_run('owner-' + status, hook=hook)
             self.assertEqual(record['status'], status)
             self.assertIsNone(record['integrated_head'])
+
+    def test_integration_artifact_failure_preserves_gate_verdict_and_marks_console_failed(self):
+        from factory_console import snapshot, render
+        original = driver.integration_status
+        for phase in ('open', 'after-write'):
+            calls = []
+            outside = self.root / ('outside-' + phase)
+            outside.write_text('owner bytes must remain unchanged')
+
+            def hook(directory):
+                calls.append(directory)
+                receipt = self.owner_record(directory)
+                if phase == 'open':
+                    (directory / 'integration.json').unlink()
+                    (directory / 'integration.json').symlink_to(outside)
+                return receipt
+
+            def write_record(directory, callback=None):
+                receipt = original(directory, callback)
+                if callback is not None and phase == 'after-write':
+                    raise OSError('private-filesystem-detail-must-not-be-recorded')
+                return receipt
+
+            with patch.object(driver, 'integration_status', side_effect=write_record):
+                result, directory, _ = self.integration_run('write-failure-' + phase, hook=hook,
+                                                             read_integration=False)
+            self.assertEqual(result, 0)
+            self.assertEqual(calls, [directory.resolve()])
+            self.assertEqual(outside.read_text(), 'owner bytes must remain unchanged')
+            public = json.loads((directory / 'console.json').read_text())
+            self.assertEqual(public['state'], 'ACCEPT')
+            self.assertEqual(public['integration'], {
+                'status': 'FAILED', 'reason_code': 'integration_record_write_failed'})
+            self.assertEqual(json.loads((directory / 'verification/decision.json').read_text())['decision'], 'ACCEPT')
+            view = snapshot(directory)
+            self.assertEqual(view['decision']['decision'], 'ACCEPT')
+            self.assertEqual(view['integration'], public['integration'])
+            page = render(view)
+            self.assertIn('integration_record_write_failed', page)
+            self.assertNotIn('APPLIED_RESTARTED', page)
+            self.assertNotIn('private-filesystem-detail', page)
+            events = [json.loads(line) for line in (directory / 'events.jsonl').read_text().splitlines()]
+            self.assertEqual(events[-1], {'stage': 'integration', 'status': 'FAILED',
+                                         'action': 'integration_record_write_failed'})
 
     def test_integration_rejects_credentials_and_never_follows_artifact_symlink(self):
         secret = 'synthetic-integration-credential-12345678'

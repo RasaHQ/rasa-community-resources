@@ -67,6 +67,10 @@ def snapshot(root):
     decision = json_artifact(Path(root) / 'verification', 'decision.json')
     review = json_artifact(Path(root) / 'review', 'review.json')
     integration = json_artifact(root, 'integration.json')
+    fallback = public.get('integration')
+    if (isinstance(fallback, dict) and fallback.get('status') == 'FAILED'
+            and fallback.get('reason_code') == 'integration_record_write_failed'):
+        integration = fallback
     events = []
     for line in (read_artifact(root, 'events.jsonl') or '').splitlines()[-200:]:
         try:
@@ -84,7 +88,9 @@ def snapshot(root):
             'checks': [{key: check.get(key) for key in ('name', 'passed', 'summary')}
                        for check in checks if isinstance(check, dict)],
             'decision': {key: decision.get(key) for key in ('decision', 'reasons', 'acceptance_sha256')},
-            'integration': {key: integration.get(key) for key in ('status', 'decision', 'reason', 'head') if key in integration}}
+            'integration': {key: integration.get(key) for key in
+                            ('status', 'decision', 'reason', 'head', 'reason_code', 'candidate_digest',
+                             'baseline_head', 'integrated_head', 'receipt_ref') if key in integration}}
 
 
 # Supplied Rasa brand tokens v0.2.0: semantic web palette and font stacks.

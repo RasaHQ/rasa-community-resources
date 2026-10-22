@@ -476,7 +476,15 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
         event(stage='decision', status={0: 'ACCEPT', 1: 'REJECT', 2: 'ERROR', 3: 'NOT_READY', 4: 'ESCALATE'}.get(code, 'ERROR'))
         save({0: 'ACCEPT', 1: 'REJECT', 2: 'ERROR', 3: 'NOT_READY', 4: 'ESCALATE'}.get(code, 'ERROR'))
         if code == 0 and integration_hook is not None:
-            receipt = integration_status(directory, integration_hook)
+            try:
+                receipt = integration_status(directory, integration_hook)
+            except OSError:
+                # The protected verdict is already durable. An owner-record
+                # write failure must not turn it into a builder/gate failure or
+                # leave a stale APPLIED_RESTARTED assertion on the console.
+                receipt = {'status': 'FAILED', 'reason_code': 'integration_record_write_failed'}
+            record['integration'] = receipt
+            save('ACCEPT')
             event(stage='integration', status=receipt['status'], action=receipt['reason_code'])
         return code
     except Exception as error:

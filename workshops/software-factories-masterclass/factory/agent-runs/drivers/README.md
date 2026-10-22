@@ -45,6 +45,13 @@ credential-bearing records fail validation. Callback exceptions produce only
 `FAILED` / `integration_hook_failed`, without exception text or retry. Writes
 refuse a symlink at the integration artifact.
 
+If the integration artifact cannot be written after protected ACCEPT, the
+driver preserves the factory's exit code and records `FAILED` /
+`integration_record_write_failed` in `console.json`. The viewer gives that
+failure precedence over an older integration artifact, including a previously
+written `APPLIED_RESTARTED` assertion. The receiver is not retried, and raw
+filesystem exception text is not recorded.
+
 The protected factory exit code remains its own verdict. Inspect the separate
 integration status: an ACCEPT with a FAILED receiver is not a product success.
 The receiver is trusted host code and must bound its own synchronous apply,
