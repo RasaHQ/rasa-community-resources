@@ -56,6 +56,13 @@ class TravellerControls(unittest.TestCase):
         self.assertEqual(transfer_time('allow 45 minutes for the taxi'), 45)
 
     def test_missing_or_ambiguous_details_get_ordinary_questions(self):
+        with self.assertRaises(TravellerQuestion) as opening:
+            journey('hello', now=NOW)
+        greeting = opening.exception.question
+        self.assertIn('where it is, the weather when you land', greeting)
+        self.assertIn('whether you\'ll make your meeting, and the exchange rate', greeting)
+        self.assertTrue(greeting.endswith('Where are you heading?'))
+        self.assertLessEqual(len(greeting), 200)
         for text in ['hello', 'New York', 'Lufthansa 400 to JFK', 'Lufthansa 400 to London']:
             with self.subTest(text=text), self.assertRaises(TravellerQuestion) as caught:
                 journey(text, now=NOW)

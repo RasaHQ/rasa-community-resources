@@ -13,6 +13,7 @@ from briefing.published_routes import load_routes
 
 REFERENCE = Path(__file__).with_name('traveller-reference-20261022.json')
 REFERENCE_SHA256 = 'a2a034c8770c4bccae8ba1fa71737f16a6ed433280b255b7429c422cf555222a'
+GREETING = "Hi, I can brief you on a flight: where it is, the weather when you land, whether you'll make your meeting, and the exchange rate. Where are you heading?"
 
 
 class TravellerQuestion(ValueError):
@@ -212,7 +213,7 @@ def journey(text, previous=None, *, now=None):
             hint = published.destination
             inputs['destination_hint'] = hint
     if not hint:
-        raise TravellerQuestion('destination', 'Where are you flying to?', inputs)
+        raise TravellerQuestion('destination', GREETING, inputs)
     if not inputs.get('callsign'):
         raise TravellerQuestion('flight', 'Do you know the airline or flight number? I can also look for flights already in the air.', inputs)
     airport = _airport_for(hint, inputs['callsign'], inputs)
