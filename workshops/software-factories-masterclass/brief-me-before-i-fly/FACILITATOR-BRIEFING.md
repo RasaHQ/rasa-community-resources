@@ -2,7 +2,7 @@
 
 sow: software-factories-masterclass-SOW-02
 
-Thursday 22 October 2026, 14:30 to 17:30 London (13:30 to 16:30 UTC), in person, three hours. If the Wednesday 19:00 UTC rehearsal is not green by 21:00 UTC, run the frozen plan in `../FACILITATOR.md` at its pinned commit instead and say nothing about this one.
+Thursday 22 October 2026, 14:30 to 17:30 London (13:30 to 16:30 UTC), in person, three hours. The organizer decides by 10:00 UTC on Thursday 22 October: the live check or the scripted path. Run the frozen plan in `../FACILITATOR.md` at its pinned commit only if neither works, and then say nothing about this one.
 Status of everything marked [PRODUCT]: depends on the companion `examples/mantle-flight-briefing-openai-agents` being merged and pinned, and on one clean facilitator rehearsal. The commits to use are named in the next section.
 
 ## Which commit is which
