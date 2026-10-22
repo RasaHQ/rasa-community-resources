@@ -30,6 +30,36 @@ cd rasa-community-resources/workshops/software-factories-masterclass
 export PACK=&quot;$PWD&quot;
 </code></pre>
 <p>This folder is the one the book calls <code>PACK</code>. Everything here is plain Markdown and code, so you can open it in your editor and point your coding agent, such as Claude Code or Codex, at a chapter. Keep the deciding acceptance tests outside the builder's readable and writable workspace. Your changes stay in your fork.</p>
+<h2>Where everything is</h2>
+<p>You will spend most of your time in four places:</p>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="PARTICIPANT-GUIDE.html"><code>PARTICIPANT-GUIDE.md</code></a></td>
+<td>The guided path through the class, with checkpoints. Start here if you have about two hours.</td>
+</tr>
+<tr>
+<td><a href="book/README.html"><code>book/</code></a></td>
+<td>The self-paced course. One file per chapter, from <code>00-run-the-finished-agent.md</code> to <code>08-going-further.md</code>.</td>
+</tr>
+<tr>
+<td><code>book/ready/</code></td>
+<td>Ready-made starting folders for chapter 0 and chapters 3 to 8 (<code>ch00</code>, <code>ch03</code> … <code>ch08</code>). Chapters 1 and 2 only read files and use the chapter 0 folder. If a chapter goes wrong, start again from its ready folder, as the chapter's &quot;Get the ready folder&quot; step shows.</td>
+</tr>
+<tr>
+<td><a href="../../examples/README.md"><code>../../examples/</code></a></td>
+<td>The two finished agents from the class, each with its own README: the <a href="../../examples/mantle-flight-briefing-openai-agents/README.md">travel agent</a> and the <a href="../../examples/mantle-factory-agent/README.md">dark software factory</a>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Where are the exercises?</strong> Each chapter is an exercise. Open a chapter file, run what &quot;See how it works&quot; tells you to run, then do the task under <strong>&quot;Now change it&quot;</strong>. Chapters 1 and 2 have no change step: you read the agent's files and run a listing command. &quot;You are done when&quot; tells you how to check your work; most chapters end with a check that prints <code>chNN OK</code>. If something fails, read &quot;If it fails&quot; in the same chapter.</p>
+<p>To learn on your own, go through the chapters in order, from 0 to 8. Each one builds on the one before. You can point your own coding agent at a chapter file, but keep the acceptance tests out of its reach: that is the point of chapter 4.</p>
 <h2>Choose how you want to learn</h2>
 <p><strong>In the room, or with about two hours:</strong> follow the <a href="PARTICIPANT-GUIDE.html">participant guide</a>. It tells you what to run, what you should see and what to do if you don't.</p>
 <p><strong>On your own, at your own pace (about three hours):</strong> work through <a href="book/README.html">the book</a>, one chapter at a time. Each chapter introduces the problem, gives you something to run and asks you to change it. Ready-made folders let you restart. Chapter checks tell you when you've met the learning goal; a factory ACCEPT alone does not always mean a chapter is done.</p>
@@ -103,7 +133,7 @@ export PACK=&quot;$PWD&quot;
 <ul>
 <li>With a model choosing the tools, the travel agent was slow to answer in our rehearsal on 22 October. The scripted mode is the reliable path today.</li>
 <li>Tool selection is <strong>scripted</strong> in the exercises so results are repeatable. Source data may be fetched, recorded or unavailable; read the card's label.</li>
-<li><strong>Voice:</strong> on 22 October a recorded-audio test failed on the second turn. Type your requests. Microphone use is untested.</li>
+<li><strong>Voice:</strong> both finished agents can now be spoken to on your own Mac, with your own Deepgram key: <code>make run-voice</code> for the <a href="../../examples/mantle-flight-briefing-openai-agents/README.md">travel agent</a> and <code>./demo run --voice --env-file .env</code> for the <a href="../../examples/mantle-factory-agent/README.md">factory</a>. Recorded-audio tests passed on 22 October; your own microphone is the first live test, so typing stays the reliable path.</li>
 <li>The travel agent and coding builder run separately. Asking the travel agent to change its own code is not a completed capability.</li>
 <li>The full journey, where you <strong>ask by voice</strong> for a new agent and the factory builds and releases it, is the next step. <a href="BUILD-CONTRACT.html">BUILD-CONTRACT.md</a> describes what it needs.</li>
 </ul>
@@ -111,4 +141,7 @@ export PACK=&quot;$PWD&quot;
 <h2>For facilitators</h2>
 <p>Use the <a href="RUN-SHEET.html">run sheet</a>, <a href="slides/PRESENTER-NOTES.md">presenter notes</a>, <a href="slides/index.html">slides</a> and <a href="slides/masterclass-slides.pdf">PDF</a>. The <a href="TECHNICAL-AUDIT.html">technical audit</a> distinguishes tests run here from earlier course-team evidence. <a href="LEARNING-CHECKPOINTS.html">Learning checkpoints</a> provide explanation prompts.</p>
 <p>Other folders (<code>openai-mcp/</code>, <code>brief-me-before-i-fly/</code>, <code>archive/</code>) are earlier material and are not required. The standalone travel agent has its own <a href="../../examples/mantle-flight-briefing-openai-agents/SELF-PACED-GUIDE.md">self-paced guide</a>.</p>
+<ul>
+<li>Want to ask for a change and watch the factory decide? See the <a href="../../examples/mantle-factory-agent/README.md">Mantle factory agent</a>.</li>
+</ul>
 </main></html>
