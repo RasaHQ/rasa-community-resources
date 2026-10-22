@@ -45,7 +45,7 @@ const PARTS = ['The problem', 'The finished agent', 'The real question', 'The fa
 // ---- Part 1: the problem
 add(1, 'Build a *factory* that builds your agent.', 'One screen answers what four websites can’t.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
 add(1, 'Today in London: *see it*, *learn it*, *build it*.', 'Break 16:30.', scene('The plan for the day',
-  row([{ label: '14:30', sub: 'See' }, { label: '14:45', sub: 'Learn' }, { label: '15:15', sub: 'Build' }, { label: '15:45', sub: 'Practice' }, { label: '17:20', sub: 'Close' }], { y: 150, h: 360, gap: 30 })));
+  row([{ label: '14:30', sub: 'See' }, { label: '14:40', sub: 'Learn' }, { label: '15:05', sub: 'Build' }, { label: '15:15', sub: 'Practice' }, { label: '17:20', sub: 'Close' }], { y: 150, h: 360, gap: 30 })));
 add(1, 'Meet *Sam*, due in New York tonight.', 'Will I make my meeting?', traveller({ title: 'Sam needs four checks' }));
 add(1, 'An *agent* decides what to do, then does it.', '', traveller({ connected: true, title: 'One agent answers all four' }));
 // ---- Part 2: the finished agent
