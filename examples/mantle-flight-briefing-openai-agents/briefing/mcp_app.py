@@ -120,13 +120,6 @@ class _MantlePeer:
 
 
 def create_app(jobs: Jobs, *, transport_token: str):
-    @asynccontextmanager
-    async def lifespan(server):
-        try:
-            yield {}
-        finally:
-            await jobs.close()
-
     async def briefing(action: Literal["start", "get", "revise"], ctx: Context,
                        request: str | None = None, briefing_id: str | None = None,
                        change: str | None = None) -> BriefingResponse:
@@ -158,12 +151,27 @@ def create_app(jobs: Jobs, *, transport_token: str):
     tool.fn_metadata.arg_model = StrictArguments
     tool.parameters = StrictArguments.model_json_schema(by_alias=True)
     server = FastMCP("briefing", tools=[tool], host="127.0.0.1", port=8942,
-                     stateless_http=True, json_response=True, lifespan=lifespan)
+                     stateless_http=True, json_response=True)
     def render_current_board():
         # One renderer, owned by Core. No local HTML/card implementation.
         from zeo_core.adapters.widget_html import render_snapshot_html
         return render_snapshot_html(jobs.display_snapshot(), document=True, title=jobs.display_title())
 
-    peer = _MantlePeer(server.streamable_http_app(), transport_token)
+    app = server.streamable_http_app()
+    original_lifespan = app.router.lifespan_context
+
+    @asynccontextmanager
+    async def application_lifespan(application):
+        # FastMCP's protocol lifespan runs for stateless requests. A request
+        # finishing must not cancel background jobs or erase the visible board.
+        # The ASGI application's shutdown owns all job cleanup instead.
+        try:
+            async with original_lifespan(application) as state:
+                yield state
+        finally:
+            await jobs.close()
+
+    app.router.lifespan_context = application_lifespan
+    peer = _MantlePeer(app, transport_token)
     peer._display = BoardDisplay(peer._app, render_current=render_current_board)
     return peer
