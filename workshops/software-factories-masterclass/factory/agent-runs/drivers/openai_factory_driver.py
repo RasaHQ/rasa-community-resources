@@ -6,7 +6,6 @@ The model never receives a shell, a network tool, a protected suite or verifier 
 import argparse
 import hashlib
 import importlib.util
-import inspect
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -17,6 +16,7 @@ import threading
 FACTORY = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(FACTORY))
 from factory_console import redact
+from scratch import visible_task
 
 
 def open_only(function):
@@ -206,18 +206,21 @@ def runtime_bindings():
     return run_native, function_tool
 
 
-def native_builder(client, *, task, workspace, event, model, invoke=None, tool_factory=None, spend_limit_cents=200, task_filename=None):
-    injected = invoke is not None
+def native_builder(client, *, task, workspace, event, model, invoke=None, tool_factory=None, spend_limit_cents=None, estimated_cents_per_call=None, task_filename=None):
     if invoke is None or tool_factory is None:
         run_native, function_tool = runtime_bindings()
         invoke = run_native if invoke is None else invoke
         tool_factory = function_tool if tool_factory is None else tool_factory
-    if type(spend_limit_cents) is not int or not 1 <= spend_limit_cents <= 200:
-        raise ValueError('spend_limit_must_be_1_to_200_cents')
-    signature = inspect.signature(invoke)
-    if 'spend_limit_cents' not in signature.parameters and not (injected and any(
-            p.kind == inspect.Parameter.VAR_KEYWORD for p in signature.parameters.values())):
-        raise ValueError('released_native_spend_guard_required')
+    # Architect04:32: the service rejects spend_control. This is only a
+    # caller-supplied estimate check; the provider project budget is the money cap.
+    if (spend_limit_cents is None) != (estimated_cents_per_call is None):
+        raise ValueError('local_spend_limit_and_estimate_required_together')
+    if spend_limit_cents is not None:
+        if (type(spend_limit_cents) is not int or not 1 <= spend_limit_cents <= 200
+                or type(estimated_cents_per_call) is not int or not 1 <= estimated_cents_per_call <= 200):
+            raise ValueError('invalid_local_spend_estimate')
+        if 30 * estimated_cents_per_call > spend_limit_cents:
+            raise ValueError('local_spend_estimate_over_limit')
     files = ConfinedFiles(workspace, task, event, task_filename=task_filename)
     try:
         schemas = {
@@ -229,16 +232,17 @@ def native_builder(client, *, task, workspace, event, model, invoke=None, tool_f
         }
         tools = [tool_factory(name, 'Access only the prepared builder scratch copy within the task scope.', schema)
                  for name, schema in schemas.items()]
-        visible = {key: task[key] for key in ('id', 'request', 'allowed_paths', 'excluded')}
-        event(stage='builder', status='RUNNING', action='session_started')
+        visible = visible_task(task)
+        event(stage='builder', status='RUNNING', action='session_started', max_calls=30,
+              deadline_seconds=120, timeout_seconds=20, provider_session_cap=False,
+              local_estimate_limit_cents=spend_limit_cents, estimated_cents_per_call=estimated_cents_per_call)
         result = invoke(client, agent={'model': model, 'tools': tools,
                         'instructions': 'Read AGENTS.md and the visible task. Change only allowed paths. '
                         'Use only these file tools. No shell, network or protected suite is available. '
                         'The existing independent factory will verify the result; do not claim ACCEPT.'},
                         environment={'type': 'none'}, text=json.dumps(visible),
                         handlers={name: getattr(files, name) for name in schemas},
-                        max_calls=30, max_events=10000, deadline_seconds=120, timeout=20,
-                        spend_limit_cents=spend_limit_cents)
+                        max_calls=30, max_events=10000, deadline_seconds=120, timeout=20)
         event(stage='builder', status='PASS' if result.ok else 'FAIL', action='session_finished')
         return result
     finally:
@@ -250,8 +254,7 @@ def validate_scratch(workspace, task, task_filename=None):
     root = Path(workspace)
     if root.is_symlink() or not root.is_dir() or not (root / '.scratch.json').is_file():
         raise ValueError('prepared_scratch_manifest_required')
-    visible = {'id': task['id'], 'request': task['request'],
-               'allowed_paths': task['allowed_paths'], 'excluded': task['excluded']}
+    visible = visible_task(task)
     task_name = task['id']
     ConfinedFiles.parts(task_name)
     if '/' in task_name:
@@ -279,7 +282,7 @@ def validate_scratch(workspace, task, task_filename=None):
 
 
 def execute(task_path, workspace, run_directory, *, client, model, invoke=None, tool_factory=None,
-            pack_root=None, environment_path=None, spend_limit_cents=200, mode='LIVE_NATIVE'):
+            pack_root=None, environment_path=None, spend_limit_cents=None, estimated_cents_per_call=None, expected_cost_cents=None, mode='LIVE_NATIVE'):
     pack_root = Path(pack_root).resolve() if pack_root is not None else FACTORY
     task = json.loads(Path(task_path).read_text())
     validate_scratch(workspace, task, Path(task_path).name)
@@ -290,12 +293,15 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
     if scratch == directory.resolve() or directory.resolve().is_relative_to(scratch):
         raise ValueError('records_must_be_outside_builder_scratch')
     directory.mkdir(parents=True, mode=0o700)
-    task_snapshot = directory / 'task.json'
+    (directory / 'task').mkdir()
+    task_snapshot = directory / 'task' / Path(task_path).name
     task_snapshot.write_text(json.dumps(task, indent=2) + '\n')
     task_snapshot.chmod(0o400)
     event = event_writer(directory)
-    visible = {key: task[key] for key in ('id', 'request', 'allowed_paths', 'excluded')}
+    visible = visible_task(task)
     record = {'schema': 'mantle-factory-console-v1', 'state': 'BUILDER_RUNNING', 'mode': mode, 'task': visible,
+              'bounds': {'provider_session_cap': False, 'max_calls': 30, 'deadline_seconds': 120,
+                         'timeout_seconds': 20, 'expected_cost_cents': expected_cost_cents},
               'prepared': ['Prepared scratch product', 'Task allowed-path contract',
                            'Existing collect.py and factory.py', 'Independent protected suite outside builder scratch'],
               'task_sha256': hashlib.sha256(Path(task_path).read_bytes()).hexdigest()}
@@ -311,7 +317,7 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
             return 3
         turn = native_builder(client, task=task, workspace=workspace, event=event, model=model,
                        invoke=invoke, tool_factory=tool_factory, spend_limit_cents=spend_limit_cents,
-                       task_filename=Path(task_path).name)
+                       estimated_cents_per_call=estimated_cents_per_call, task_filename=Path(task_path).name)
         native_status = getattr(turn, 'status', 'not_recorded')
         native_status = native_status if native_status in ('completed', 'failed', 'cancelled', 'incomplete') else 'not_recorded'
         native_error = getattr(turn, 'error_code', None)
@@ -353,8 +359,14 @@ def main(argv=None):
     parser.add_argument('--model', required=True)
     parser.add_argument('--pack-root', help='Owning factory pack root; use the A6 subdirectory for A6.')
     parser.add_argument('--environment', help='Verifier profile; A6 uses factory/environment-a6.json.')
-    parser.add_argument('--spend-limit-cents', type=int, required=True, help='Requested provider spend cap, 1 to 200 USD cents.')
+    parser.add_argument('--spend-limit-cents', type=int, help='Optional LOCAL estimate limit, not a money cap (1 to 200 cents).')
+    parser.add_argument('--estimated-cents-per-call', type=int, help='Caller estimate; max_calls times this must fit the local estimate limit.')
+    parser.add_argument('--no-session-cap', action='store_true', required=True, help='Explicitly accept that no per-session provider money cap is sent.')
+    parser.add_argument('--expected-cost-cents-min', type=int, required=True, help='Stated expected range, not a cap.')
+    parser.add_argument('--expected-cost-cents-max', type=int, required=True, help='Stated expected range, not a cap.')
     args = parser.parse_args(argv)
+    if not 0 <= args.expected_cost_cents_min <= args.expected_cost_cents_max:
+        parser.error('Expected cost range must be ordered and nonnegative.')
     if not os.environ.get('OPENAI_API_KEY', '').strip():
         print('Set OPENAI_API_KEY in the driver process environment; no value is printed.')
         return 3
@@ -364,7 +376,9 @@ def main(argv=None):
         with OpenAI(api_key=os.environ['OPENAI_API_KEY'], base_url='https://api.openai.com/v1',
                     max_retries=0, http_client=DefaultHttpxClient(trust_env=False)) as client:
             code = execute(args.task, args.workspace, args.run_directory, client=client, model=args.model,
-                           pack_root=args.pack_root, environment_path=args.environment, spend_limit_cents=args.spend_limit_cents)
+                           pack_root=args.pack_root, environment_path=args.environment, spend_limit_cents=args.spend_limit_cents,
+                           estimated_cents_per_call=args.estimated_cents_per_call,
+                           expected_cost_cents=[args.expected_cost_cents_min, args.expected_cost_cents_max])
         print('Factory run finished with exit code ' + str(code) + '; inspect the read-only run evidence.')
         return code
     except Exception:

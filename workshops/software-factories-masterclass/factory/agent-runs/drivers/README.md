@@ -13,7 +13,7 @@ accepted on the command line. The client uses the first-party API, no ambient
 proxy or alternate base URL, and no SDK retry.
 
 ```sh
-python agent-runs/drivers/openai_factory_driver.py TASK.json PREPARED_SCRATCH NEW_RUN --model MODEL --spend-limit-cents 200
+python agent-runs/drivers/openai_factory_driver.py TASK.json PREPARED_SCRATCH NEW_RUN --model MODEL --no-session-cap --expected-cost-cents-min MIN --expected-cost-cents-max MAX
 python factory_console.py NEW_RUN --port 8943
 ```
 
@@ -34,12 +34,21 @@ One `run_native` call has 30 tool calls, 10,000 events, a 120-second deadline
 and a 20-second transport timeout. It uses `environment={"type":"none"}` so no
 hosted shell/network is implicitly granted; this environment with function tools
 still needs the owner’s bounded live qualification. There is no automatic
-fallback. A requested provider-side spend cap of 1–200 USD cents is required
-(USD 2 requested maximum); the driver refuses before a session if Core lacks `spend_limit_cents`.
-Core 0.35.4 exposes that parameter; Core 0.35.2 alone does not. The
-request field is verified from the released SDK and official API reference;
-the service rejected this field in the consuming owner’s bounded run on 2026-10-22 (HTTP 400, unknown spend_control). No funded retry is authorized by this driver; the live path awaits an explicit replacement-budget ruling. No expected
-or observed live cost is claimed yet. A failed, cancelled, incomplete or unrecorded session stops with exit 2 and BUILDER_INCOMPLETE: it cannot collect or ACCEPT a partial change. Only a completed session proceeds. The host then invokes the existing
+fallback. The CLI requires `--no-session-cap` and an expected cost range in USD cents,
+stated before execution. There is no per-session money cap. The real hard cap
+is the funded OpenAI project's budget, controlled by its account owner. The
+provider rejected `spend_control` in a bounded consuming run on 2026-10-22;
+this driver never sends that field, including through Core 0.35.4.
+Architect's 04:32Z ruling permits one named model, no retry loop, the local
+bounds above and at most three funded builder sessions per seat per rehearsal.
+Keep a rehearsal session ledger and inspect the actual usage afterward. Do not
+substitute an invented price estimate: the MIN/MAX arguments must be supplied
+from the facilitator's stated plan. These numbers are expectations, not caps.
+An optional `--spend-limit-cents LIMIT --estimated-cents-per-call ESTIMATE`
+checks `30 * ESTIMATE <= LIMIT` locally before a request. Both must be supplied
+together; this is caller-provided estimation only and sends no spend parameter.
+No paid run or observed live cost is claimed by this source qualification.
+A failed, cancelled, incomplete or unrecorded session stops with exit 2 and BUILDER_INCOMPLETE: it cannot collect or ACCEPT a partial change. Only a completed session proceeds. The host then invokes the existing
 `collect.py` and `factory.py`, preserving exit codes 0–4. The prepared scratch
 must contain the visible task and `.scratch.json`; a repository checkout or
 workspace containing acceptance files is refused.
@@ -88,3 +97,9 @@ defines `spend_control` in USD cents and requires initial input with environment
 `none`. The [session guide](https://developers.openai.com/api/docs/guides/agents-api/sessions)
 distinguishes a completed turn from a successful tool result. These describe
 the API contract; the factory’s acceptance still comes from its protected checks.
+
+For the chapter's task B, the public task also contains a validated currency
+limit from 1 to 3. It is visible in the scratch task and native prompt; protected
+paths and fingerprints remain excluded. The verifier gets its own exact host
+task snapshot beside the protected tests. The offline qualifier accepts
+`--task TASK --scripted-candidate ATTEMPT` for that ready folder.

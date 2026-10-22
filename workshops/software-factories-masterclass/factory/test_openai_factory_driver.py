@@ -135,31 +135,42 @@ class DriverControls(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0]['max_calls'], 30)
-        self.assertEqual(calls[0]['spend_limit_cents'], 200)
+        self.assertNotIn('spend_limit_cents', calls[0])
+        self.assertNotIn('spend_control', calls[0])
         self.assertEqual(calls[0]['deadline_seconds'], 120)
         self.assertEqual(calls[0]['environment'], {'type': 'none'})
         self.assertEqual([e['action'] for e in events], ['session_started', 'write_file', 'session_finished'])
         self.assertNotIn('REFERENCE = True', json.dumps(events))
 
-    def test_production_generic_kwargs_do_not_prove_a_spend_guard(self):
+    def test_local_estimate_is_checked_without_sending_any_provider_cap(self):
         calls = []
-        def unproven(client, **kwargs):
-            calls.append(True)
-        with patch.object(driver, 'runtime_bindings', return_value=(unproven, lambda *args: {})):
-            with self.assertRaisesRegex(ValueError, 'spend_guard'):
-                driver.native_builder(object(), task=self.task, workspace=self.workspace,
-                                      event=lambda **values: None, model='injected')
+        def invoke(client, **kwargs):
+            calls.append(kwargs)
+            return SimpleNamespace(ok=True)
+        options = dict(client=object(), task=self.task, workspace=self.workspace,
+                       event=lambda **values: None, model='scripted', invoke=invoke,
+                       tool_factory=lambda *args: {})
+        for limit, estimate in ((None, 1), (200, None), (29, 1), (True, 1), (200, False)):
+            with self.subTest(limit=limit, estimate=estimate), self.assertRaises(ValueError):
+                driver.native_builder(**options, spend_limit_cents=limit, estimated_cents_per_call=estimate)
         self.assertEqual(calls, [])
+        driver.native_builder(**options, spend_limit_cents=30, estimated_cents_per_call=1)
+        driver.native_builder(**options)
+        self.assertEqual(len(calls), 2)
+        for call in calls:
+            self.assertNotIn('spend_limit_cents', call)
+            self.assertNotIn('spend_control', call)
 
-    def test_missing_native_spend_parameter_refuses_before_any_session(self):
-        called = []
-        def old_core(client, *, agent, environment, text, handlers, max_calls, max_events, deadline_seconds, timeout):
-            called.append(True)
-        with self.assertRaisesRegex(ValueError, 'spend_guard'):
-            driver.native_builder(object(), task=self.task, workspace=self.workspace,
-                                  event=lambda **values: None, model='injected', invoke=old_core,
-                                  tool_factory=lambda *args: {})
-        self.assertEqual(called, [])
+    def test_native_prompt_exposes_public_limit_without_verifier_metadata(self):
+        task = {**self.task, 'limit': 2}
+        def invoke(client, **kwargs):
+            visible = json.loads(kwargs['text'])
+            self.assertEqual(visible['limit'], 2)
+            self.assertNotIn('acceptance', visible)
+            return SimpleNamespace(ok=True)
+        driver.native_builder(object(), task=task, workspace=self.workspace,
+                              event=lambda **values: None, model='scripted', invoke=invoke,
+                              tool_factory=lambda *args: {})
 
     def test_noncompleted_session_never_collects_or_accepts_partial_edits(self):
         for status in ('incomplete', 'failed', 'cancelled', None):

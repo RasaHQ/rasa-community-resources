@@ -38,6 +38,16 @@ class PackControls(unittest.TestCase):
         (self.candidate / 'product/briefing').mkdir(parents=True)
         (self.candidate / 'product/briefing/market.py').write_text('ready = True\n')
 
+    def test_task_b_limit_is_visible_but_protected_metadata_is_not(self):
+        task = {**self.task, 'limit': 2}
+        visible = scratch.visible_task(task)
+        self.assertEqual(visible['limit'], 2)
+        self.assertNotIn('acceptance', visible)
+        self.assertNotIn('support', visible)
+        for invalid in (None, True, 0, 4, '2'):
+            with self.subTest(limit=invalid), self.assertRaises(ValueError):
+                scratch.visible_task({**task, 'limit': invalid})
+
     def test_a6_profile_requires_supported_stable_core_and_records_actual_version(self):
         profile = Path(factory.__file__).with_name('environment-a6.json')
         with patch.object(factory.platform, 'python_version_tuple', return_value=('3', '12', '0')), \
@@ -64,10 +74,15 @@ class PackControls(unittest.TestCase):
         self.assertEqual(collect.main(workspace, output, review, pack_root=self.pack), 0)
         self.assertEqual(json.loads((review / 'review.json').read_text())['files_changed'], ['product/briefing/market.py'])
 
+    def inspect_task_snapshot(self, test_path, project, workspace, **kwargs):
+        copied = Path(workspace) / 'tasks' / self.task_path.name
+        self.assertEqual(copied.read_bytes(), self.task_path.read_bytes())
+        return {'passed': True, 'summary': 'OK', 'output': ''}
+
     def test_same_factory_records_pack_baseline_pin_diff_and_strict_protected_gate(self):
         run = self.root / 'run'
         with patch.object(factory, 'prepare', return_value=({'zeocore': '0.35.2'}, [])), \
-                patch.object(factory, 'run_tests', return_value={'passed': True, 'summary': 'OK', 'output': ''}) as gate:
+                patch.object(factory, 'run_tests', side_effect=self.inspect_task_snapshot) as gate:
             self.assertEqual(factory.main(self.task_path, self.candidate, run,
                                           environment_path=self.environment, pack_root=self.pack, strict=True), 0)
         decision = json.loads((run / 'decision.json').read_text())

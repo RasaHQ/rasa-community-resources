@@ -48,10 +48,10 @@ class ScriptedSessions:
         self.actions = actions
         self.calls = 0
 
-    def create(self, *, agent, environment, input, stream, tool_handlers, timeout, spend_control):
+    def create(self, *, agent, environment, input, stream, tool_handlers, timeout, **kwargs):
         self.calls += 1
         if (environment != {'type': 'none'} or stream is not True or timeout != 20
-                or spend_control != {'limit': 200}):
+                or 'spend_control' in kwargs):
             raise ValueError('native_request_contract_changed')
         if {tool['name'] for tool in agent['tools']} != {'list_files', 'read_file', 'write_file'}:
             raise ValueError('unexpected_native_tools')
@@ -60,22 +60,22 @@ class ScriptedSessions:
         return ScriptedStream(tool_handlers, self.actions)
 
 
-def qualify(pack, evidence):
+def qualify(pack, evidence, *, task_path=None, teaching_candidate=None):
     pack, evidence = Path(pack).resolve(), Path(evidence).resolve()
     if evidence.exists():
         raise ValueError('fresh_evidence_directory_required')
     evidence.mkdir(parents=True)
-    task = pack / 'tasks/a6-market-watchlist.json'
+    task = Path(task_path).resolve() if task_path else pack / 'tasks/a6-market-watchlist.json'
     workspace = evidence / 'scratch'
     driver.module('scratch').main(task, workspace, pack_root=pack, instructions='AGENTS-a6.md')
-    teaching = pack / 'candidates/market-good'
+    teaching = Path(teaching_candidate).resolve() if teaching_candidate else pack / 'candidates/market-good'
     actions = [{'path': str(path.relative_to(teaching)), 'text': path.read_text()}
                for path in driver.module('factory').files_in(teaching)]
     sessions = ScriptedSessions(actions)
     client = SimpleNamespace(beta=SimpleNamespace(agents=SimpleNamespace(sessions=sessions)))
     code = driver.execute(task, workspace, evidence / 'run', client=client,
                           model='SCRIPTED-no-model-request', pack_root=pack,
-                          environment_path=driver.FACTORY / 'environment-a6.json', spend_limit_cents=200, mode='SCRIPTED')
+                          environment_path=driver.FACTORY / 'environment-a6.json', expected_cost_cents=[0, 0], mode='SCRIPTED')
     (evidence / 'scripted-control.json').write_text(json.dumps({
         'mode': 'SCRIPTED SDK-shaped stream through actual Core run_native',
         'model_generated_code': False, 'provider_calls': 0,
@@ -88,9 +88,11 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('pack_root')
     parser.add_argument('new_evidence_directory')
+    parser.add_argument('--task', help='Explicit public teaching task, for example task B.')
+    parser.add_argument('--scripted-candidate', help='Explicit offline teaching attempt; never a model result.')
     args = parser.parse_args(argv)
     try:
-        code = qualify(args.pack_root, args.new_evidence_directory)
+        code = qualify(args.pack_root, args.new_evidence_directory, task_path=args.task, teaching_candidate=args.scripted_candidate)
         print('SCRIPTED native-to-factory control exit: ' + str(code) + '; no provider call or product integration claimed.')
         return code
     except Exception:

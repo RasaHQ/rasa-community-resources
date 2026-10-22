@@ -15,6 +15,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 
 
+def visible_task(task):
+    """Public builder contract; never include verifier paths or fingerprints."""
+    visible = {key: task[key] for key in ('id', 'request', 'allowed_paths', 'excluded')}
+    if 'limit' in task:
+        limit = task['limit']
+        if type(limit) is not int or not 1 <= limit <= 3:
+            raise ValueError('public_currency_limit_must_be_1_to_3')
+        visible['limit'] = limit
+    return visible
+
+
 def main(task_path, target, pack_root=None, instructions="AGENTS.md"):
     target = Path(target)
     if target.exists():
@@ -26,7 +37,7 @@ def main(task_path, target, pack_root=None, instructions="AGENTS.md"):
     (target / "product" / "skills").mkdir(exist_ok=True)
     (target / "tasks").mkdir()
     # The builder sees the request and the paths it may touch. It does not see which suite will judge it.
-    visible = {k: task[k] for k in ("id", "request", "allowed_paths", "excluded")}
+    visible = visible_task(task)
     task_name = Path(task_path).name if pack_root is not None else task["id"] + ".json"
     (target / "tasks" / task_name).write_text(json.dumps(visible, indent=2) + "\n")
     shutil.copyfile(root / "builder" / instructions, target / "AGENTS.md")

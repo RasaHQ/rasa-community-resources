@@ -166,6 +166,11 @@ def main(task_path, candidate_dir, run_dir, environment_path=None, pack_root=Non
             # 4. Independent verification: the protected suite and its helper, copied from the factory.
             protected = Path(scratch) / "protected"
             protected.mkdir()
+            # Some protected suites read public task parameters beside themselves.
+            # Use the exact host snapshot, never a candidate-supplied tasks directory.
+            if strict:
+                (Path(scratch) / "tasks").mkdir()
+                shutil.copyfile(task_path, Path(scratch) / "tasks" / Path(task_path).name)
             for path in [acceptance, *support]:
                 shutil.copyfile(path, protected / path.name)
             verdict = run_tests(protected / acceptance.name, project, scratch, strict=strict)
