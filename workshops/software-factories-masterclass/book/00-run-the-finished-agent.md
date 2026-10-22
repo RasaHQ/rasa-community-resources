@@ -147,7 +147,7 @@ Live positions, forecasts, computed estimates and daily rates carry different la
 - The later chapters that run protected checks (3 to 7) need a Mac, because they use `sandbox-exec`. This chapter was run on macOS with Python 3.12. Other systems haven't been tried. Pair with someone on a Mac if you need to.
 - No model is reasoning in this exercise. Teaching code picks the tools, and the recorded data never opens a connection to a source or a model.
 - A present license must still be accepted when the agent engine starts, so a passing `make doctor` doesn't guarantee a start.
-- Spoken input is not part of this chapter. Seeing text cards doesn't show that voice works.
+- Spoken input is not part of this chapter. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. Seeing text cards doesn't show that voice works.
 - Model or voice demonstrations are not part of this book's checks. They need a reviewed plan with a named model, limits and an expected cost.
 
 ## What you just learned

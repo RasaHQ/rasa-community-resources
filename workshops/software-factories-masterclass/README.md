@@ -17,7 +17,7 @@ The target experience is a spoken product request, a builder session, independen
 
 ## What is demonstrated
 
-The teaser uses typed requests. Tool selection is scripted. Sources are either explicitly labeled REPLAY or current public sources. Voice has not been tested end to end. The live Agents API builder is an optional paid extension, with the default model **gpt-6-astra**. The `openai-agents` SDK appendix is not the API implementation used here.
+The teaser uses typed requests. Tool selection is scripted. Sources are either explicitly labeled REPLAY or current public sources. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. The live Agents API builder is an optional paid extension, with the default model **gpt-6-astra**. The `openai-agents` SDK appendix is not the API implementation used here.
 
 The built card is not automatically installed in the running travel demo. A complete voice-triggered build and release remains extension work. [BUILD-CONTRACT.md](BUILD-CONTRACT.md) defines that work without claiming it exists.
 

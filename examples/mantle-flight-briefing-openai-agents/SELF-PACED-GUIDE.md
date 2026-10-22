@@ -1,6 +1,6 @@
 # Run, inspect and challenge the travel assistant
 
-Allow 30 to 45 minutes after installation. Use Python 3.12, uv, Git and Make. A Rasa license is required even for scripted text. Voice has not been tested end to end.
+Allow 30 to 45 minutes after installation. Use Python 3.12, uv, Git and Make. A Rasa license is required even for scripted text. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested.
 
 ## 1. Start with typed, scripted requests
 
@@ -30,7 +30,7 @@ In another new conversation, request New York. Decline the suggested flight, the
 
 Read README and LIVE-WORKER before entering additional private keys. `make run` can use available model credentials and may incur cost. The Agents API default is gpt-6-astra. An expected cost range is not a spending cap. Use one bounded attempt and inspect its status before retrying.
 
-Deepgram adds speech input and output. Test microphone permission, audible output, a short confirmation and interruption separately. Text success is not a voice pass. Keep the pinned runtime's configuration; the latest Mantle schema is different.
+Deepgram adds speech input and output. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. If you try it, test microphone permission, audible output, a short confirmation and interruption separately. Text success is not a voice pass. Keep the pinned runtime's configuration; the latest Mantle schema is different.
 
 ## 5. Apply the factory method
 

@@ -62,7 +62,7 @@ For today's checkpoint, use typed requests and recorded sources. Run:
 BRIEFING_RECORDED=1 make run-scripted
 ```
 
-Open http://127.0.0.1:8942/ after the launcher reports ready. Type the three recorded prompts below. Voice is optional extension work and has not been tested end to end.
+Open http://127.0.0.1:8942/ after the launcher reports ready. Type the three recorded prompts below. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. Voice is optional extension work.
 
 Record what you typed, what changed on screen, which sources supplied the values, and the SCRIPTED / REPLAY mode. Optional voice testing belongs after the core exercise; test audible output, short answers and interruptions separately.
 

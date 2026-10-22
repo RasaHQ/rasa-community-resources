@@ -23,8 +23,8 @@ Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example 
 | Priority | Finding in the supplied pack | Correction or remaining work |
 |---|---|---|
 | Blocker | The advertised voice-to-build-to-voice journey is absent | Clearly disclosed; specified build service, job lifecycle, release worker and acceptance scenarios |
-| Blocker | Travel project pins Rasa Pro 3.21.0.dev5 and uses the old `integrations.yml` `llm:` selection | Migrated current scaffold to **3.21.0**, moved selection to `agent.yml` `orchestrator.model_group`, regenerated its lock |
-| Blocker | Flux ASR uses `name: deepgram`, which selects Nova in 3.21.0 | Changed to `deepgram_flux`; retained `deepgram` for Aura-2 TTS; validated with installed engine configuration |
+| Blocker | Travel project pins Rasa Pro 3.21.0.dev5 and uses the old `integrations.yml` `llm:` selection | Migrated the chapter 0 scaffold (`book/ready/ch00`, PR 146) to **3.21.0**, moved selection to `agent.yml` `orchestrator.model_group`, regenerated its lock. This is true for `book/ready/ch00` only. The standalone example in `examples/` stays on 3.21.0.dev5 today |
+| Blocker | Flux ASR uses `name: deepgram`, which selects Nova in 3.21.0 | In the chapter 0 scaffold, changed to `deepgram_flux`; retained `deepgram` for Aura-2 TTS; validated with installed engine configuration |
 | High | Doctor reads old `llm.model_group`; its live Agents probe defaults to gpt-4.1-mini although the pack says that model was refused by the service | Doctor now reads the selected agent group and defaults the Agents probe to gpt-6-astra, matching the supplied worker and official quickstart. Live account access is still unverified |
 | High | Current engine requires an AgentSpec in ModelBootstrap and a new resolver signature | Updated doctor probe and relevant fixtures; scripted real-engine conversation passes |
 | High | `openai-mcp` imports `Agent` / `Runner` from `agents` and pins `openai-agents` | Explicitly labeled historical **Agents SDK** appendix, removed from main route; current builder uses `client.beta.agents.sessions` through the OpenAI client/Core adapter |
@@ -73,7 +73,7 @@ The initial broad test run in the worker-only environment did not pass: it inclu
 
 ## What remains unverified
 
-- Live Rasa license acceptance and real microphone / speaker behavior.
+- Live Rasa license acceptance and real microphone / speaker behavior. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested.
 - A paid Agents API session, this account's model access and actual cost.
 - Current flight, forecast and exchange-rate service availability.
 - Fresh setup and full launcher lifecycle on the facilitator's Mac; Unix-domain sockets are denied on this execution host.

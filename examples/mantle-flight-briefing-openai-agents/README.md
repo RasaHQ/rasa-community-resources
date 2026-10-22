@@ -98,6 +98,8 @@ styles and SVG; it loads no remote browser assets.
 
 ## Optional live model and voice
 
+Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested.
+
 Only the facilitator or participant supplies keys in the ignored example-root
 `.env` or their shell. Never paste values into chat, committed files, URLs or logs. There is no
 seat-operated live model or voice proof here. The selected model group remains
