@@ -263,11 +263,11 @@ def discovery_notice(value):
                 raise ValueError('invalid_discovery_value')
         airport_row(row['destination'])
         origin = reference()['origin_cities'].get(row['origin'], {}).get('city', row['origin'])
-        lines.append(f"{number}. {flight_name(row['callsign'])} from {origin}, estimated landing in about {row['landing_estimate_minutes']} minutes.")
+        lines.append(f"{number}. {flight_name(row['callsign'])}, from {origin} to New York per published route data, estimated landing in about {row['landing_estimate_minutes']} minutes.")
     date = value.get('source_date', '')
     if re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', date) is None:
         raise ValueError('invalid_route_date')
     lines.append('Which one would you like? Routes are published data dated ' + date + '; positions are live. Landing estimates are computed from position and speed, not airline times.')
     if value.get('partial'):
-        lines.append('This search is partial; more flights may be present.')
+        lines.append('This search is partial; more flights may be present. Do you know the airline or flight number?')
     return '\n'.join(lines)

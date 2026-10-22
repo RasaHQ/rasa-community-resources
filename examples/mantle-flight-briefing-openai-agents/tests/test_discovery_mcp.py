@@ -113,9 +113,11 @@ class DiscoveryMCP(unittest.IsolatedAsyncioTestCase):
         self.assertIn('United Airlines 57', text)
         self.assertIn('computed from position and speed', text)
         self.assertIn('2026-10-22', text)
+        self.assertIn('to New York per published route data', text)
         value['partial'] = True
         self.assertIn('some flights', discovery_notice(value))
         self.assertIn('search is partial', discovery_notice(value))
+        self.assertIn('Do you know the airline or flight number?', discovery_notice(value))
         value.update(status='no_results', candidates=[])
         self.assertNotIn('No matching', discovery_notice(value))
         value['partial'] = False
