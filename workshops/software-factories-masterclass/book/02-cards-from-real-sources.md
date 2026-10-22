@@ -12,10 +12,10 @@ The agent never writes the numbers on a card. A **reader** is code that fetches 
 
 | Card | Reader | Label on the card |
 |---|---|---|
-| Flight | Reads an aircraft's observed position | Provider data |
-| Weather | Reads the forecast near the landing time | Provider data |
+| Flight | Reads an aircraft's observed position | PROVIDER DATA |
+| Weather | Reads the forecast near the landing time | PROVIDER DATA |
 | Timeline | Computes your margin from the landing estimate, your meeting and the travel allowance | COMPUTED |
-| Currency | Reads daily exchange reference rates | Provider data |
+| Currency | Reads daily exchange reference rates | PROVIDER DATA |
 
 A card built from a recorded example gets the label REPLAY instead, so nobody mistakes it for live data.
 
@@ -50,7 +50,7 @@ cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
    grep -n 'label = ' project/lib/card_text.py
    ```
 
-   You see one line that chooses REPLAY, COMPUTED or Provider data. The label depends on where the data came from, never on how the agent describes it.
+   You see one line that chooses REPLAY, COMPUTED or PROVIDER DATA. The label depends on where the data came from, never on how the agent describes it.
 
 4. Find the freshness lines:
 

@@ -13,7 +13,7 @@ A **Rasa Mantle agent** is a folder of plain files. Rasa Mantle reads them and r
 | Part | What it does | File in the folder |
 |---|---|---|
 | **Agent** | Says who the assistant is and how it talks | `project/agent.yml` |
-| **Skill** | Says what to do for a traveller, and which tools it may call | `project/skills/briefing/skill.md` |
+| **Skill** | Says what to do for a traveler, and which tools it may call | `project/skills/briefing/skill.md` |
 | **Tool** | A function the agent can ask to run, such as "find flights" | `briefing/mcp_app.py` |
 
 A **tool** is a function the agent can ask to run. The agent does not read flight data itself. It asks a tool, and the tool returns the answer.
@@ -43,7 +43,7 @@ cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
    cat project/skills/briefing/skill.md
    ```
 
-   Look for three kinds of sentence. Some say when to call a tool. Some say what never to do, such as never inventing a flight. Some say how to talk to the traveller, such as asking "Where are you flying to?" instead of asking for a technical code.
+   Look for three kinds of sentence. Some say when to call a tool. Some say what never to do, such as never inventing a flight. Some say how to talk to the traveler, such as asking "Where are you flying to?" instead of asking for a technical code.
 
 3. Find the two tools in the code:
 
@@ -61,7 +61,7 @@ cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
 
    You see three lines. The first defines the helper. The other two are the calls for the two tools, and the sentence inside each call is the tool's description. The agent reads that sentence to decide when to call the tool.
 
-Now you can follow one question. The traveller says where they are heading. The skill says to call `find_flights`. The tool returns choices. The traveller picks one, and the skill says to call `briefing`. The cards come from the tool, never from the agent's own words.
+Now you can follow one question. The traveler says where they are heading. The skill says to call `find_flights`. The tool returns choices. The traveler picks one, and the skill says to call `briefing`. The cards come from the tool, never from the agent's own words.
 
 ## You are done when
 
