@@ -12,5 +12,5 @@ Status: outline. The steps, commands and expected output are written when this c
 ## You are done when
 The changed skill trains, and its test passes.
 
-## Checkpoint
-`checkpoints/ch1/`.
+## Ready folder
+`ready/ch01/`, the working code for this chapter (to be added with the chapter).

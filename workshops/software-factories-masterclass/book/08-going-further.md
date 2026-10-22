@@ -12,5 +12,5 @@ Status: outline. The steps are written when this chapter is filled in.
 ## You are done when
 The measure and recover commands run on your own factory, offline.
 
-## Checkpoint
-`checkpoints/ch8/`.
+## Ready folder
+`ready/ch08/`, the working code for this chapter (to be added with the chapter).

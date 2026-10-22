@@ -12,5 +12,5 @@ Status: outline. The steps, commands and expected output are written when this c
 ## You are done when
 The card test passes, with the label rules held: one provenance label per card, and one freshness line on every card that isn't a replay (a replay card has none). A computed value carries its own marker, which names the inputs.
 
-## Checkpoint
-`checkpoints/ch2/`.
+## Ready folder
+`ready/ch02/`, the working code for this chapter (to be added with the chapter).

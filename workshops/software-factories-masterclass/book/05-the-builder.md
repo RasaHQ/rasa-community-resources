@@ -12,5 +12,5 @@ Status: outline. The steps are written when this chapter is filled in.
 ## You are done when
 The builder produces a candidate change inside the allowed files and nowhere else.
 
-## Checkpoint
-`checkpoints/ch5/`.
+## Ready folder
+`ready/ch05/`, the working code for this chapter (to be added with the chapter).

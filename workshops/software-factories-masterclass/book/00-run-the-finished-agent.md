@@ -12,5 +12,5 @@ Status: outline. The steps, commands and expected output are written when this c
 ## You are done when
 The doctor passes (it shows your license and key as SET, never the values), and the four recorded cards show. Running it on a live flight is the extra, because no flight is guaranteed to be airborne when you read this. The exact doctor command is written in the steps when this chapter is filled in.
 
-## Checkpoint
-`checkpoints/ch0/`, the finished agent as you just ran it.
+## Ready folder
+`ready/ch00/`, the working code for this chapter (to be added with the chapter).
