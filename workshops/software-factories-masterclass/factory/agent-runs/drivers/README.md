@@ -39,8 +39,8 @@ stated before execution. There is no per-session money cap. The real hard cap
 is the funded OpenAI project's budget, controlled by its account owner. The
 provider rejected `spend_control` in a bounded consuming run on 2026-10-22;
 this driver never sends that field, including through Core 0.35.4.
-Architect's 04:32Z ruling permits one named model, no retry loop, the local
-bounds above and at most three funded builder sessions per seat per rehearsal.
+Use one named model, no retry loop and the local bounds above. Run at most
+three funded builder sessions during a rehearsal.
 Keep a rehearsal session ledger and inspect the actual usage afterward. Do not
 substitute an invented price estimate: the MIN/MAX arguments must be supplied
 from the facilitator's stated plan. These numbers are expectations, not caps.
