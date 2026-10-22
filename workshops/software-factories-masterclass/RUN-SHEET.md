@@ -59,45 +59,6 @@ If you run short, skip in this order: slide 19 (the coin), slide 17 (two good ch
 ### 15:15 We build the factory (30 min)
 Show: slide 25, then slide 26 beside screen 1 (the console) and screen 2, then slide 27.
 Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 25 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 26, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
-The console and the builder driver come with the factory console pull request (PR 133). Their shapes, to recheck against that pull request before class, run from `factory/`: the offline scripted builder, `python agent-runs/drivers/qualify_scripted_builder.py <pack folder> <work folder>`, with a new work folder each run; the console, `python factory_console.py <work folder>/run --port 8943`, started before the driver, which serves on 127.0.0.1 only (for the tailnet screen add `--host <tailnet address>` and `--expires-at <the end of the class as an ISO time with its zone>`, or show the console from your own screen); and the live builder only after you have stated its expected cost, with `python agent-runs/drivers/openai_factory_driver.py <task> <prepared scratch folder> <new run folder> --model <model> --no-session-cap --expected-cost-cents-min <min> --expected-cost-cents-max <max>`. The expected cost is a range you state and not a cap. Prepare the scratch folder first with `scratch.py`, which never copies the protected tests. Keys are never put on a command line. The console has no Run button: the builder starts from a terminal command (pending).
-
-## Before the day
-Do these on the facilitator machine, at least a day before and again an hour before.
-- [ ] Clone with Git at the class commit named in the prework mail (`PREWORK.md` in this folder, with its addendum under `brief-me-before-i-fly/`). There is no zip.
-- [ ] Your own license (`RASA_LICENSE`) and OpenAI key (`OPENAI_API_KEY`) are set in your shell. The doctor shows SET or MISSING and never a value. A Deepgram key is optional and only adds voice.
-- [ ] The briefing agent starts from `examples/mantle-flight-briefing-openai-agents/` (`./demo setup`, then `./demo run`: the launcher is added by the class pull request for that example, PR 128, and is not in the repository until it merges) and the doctor is green.
-- [ ] A real flight: ask the agent in plain words, for example "flight to New York with Lufthansa tonight" or "which flights are in the air headed to New York". Pick one of the route-confirmed flights it lists ("the second one"), then say your meeting time at the destination in local time. The agent assumes a typical transfer time and labels it as an assumption: say "make the transfer an hour" to revise it. Check an hour before, because flights land. The airport table for a stated destination is (pending: the file is named when the example's pull request lands).
-- [ ] The offline factory loop runs: copy `book/ready/ch06` to a new folder, set up Python as Chapter 6 says (`uv venv`, `uv pip install zeocore==0.35.4 httpx==0.28.1`), activate it, then `python run_a6.py tasks/a6-market-watchlist.json candidates/market-good` ends in ACCEPT and `candidates/market-shows-live` ends in REJECT. This needs macOS, because the check runs without network access inside `sandbox-exec`. Use the same folder for slide 26.
-- [ ] The three screens load from a second device on the tailnet, and that second device can't type into the Inspector.
-- [ ] The prework mail went out (`PREWORK.md` and its addendum). Its first step is the free Rasa Developer Edition license sign-up. Then Python 3.12 and uv, your own OpenAI key, and a clone with Git.
-- [ ] Decide your fallbacks (see "If something fails") and say them aloud once.
-
-## Rehearsal and freeze
-Before the event the team runs this sheet in order against versions that are then frozen, with no one testing it for the first time on the day. Rehearsal is 07:30 to 08:30 UTC: the opening demo, the deck read aloud and timed, the live factory build and run, and every book chapter from a clean clone by someone other than its author. Each failure is fixed or cut with a plain note. The freeze is at 08:30 UTC, after which only rehearsal fixes go in. At about 09:10 UTC the facilitator receives the links, the rehearsal result and what needs a decision.
-
-## Run of show
-Times are London, with UTC in brackets. "Show" is on screen and "Do" is what the room does. The slides carry the idea, so you can teach from them alone.
-
-| Clock | Min | Block | Slides |
-| --- | --- | --- | --- |
-| 14:30 (13:30) | 15 | The problem and the finished agent | 1 to 7 |
-| 14:45 (13:45) | 30 | The real question, the factory idea and the two tools | 8 to 24 |
-| 15:15 (14:15) | 30 | We build the factory | 25 to 27 |
-| 15:45 (14:45) | 95 | Your turn, with a break from 16:30 to 16:45 | 28 and 29 |
-| 17:20 (16:20) | 10 | Close | 30 |
-
-### 14:30 The problem and the finished agent (15 min)
-Show: slides 1 to 4 (the plan, Sam and the agent), then slide 5 with screen 2, then slides 6 and 7. Do: watch.
-Ask in plain words, for example "flight to New York with Lufthansa tonight", pick one of the route-confirmed flights it lists, then say your meeting time at the destination in local time. Point out that the transfer time is a labeled assumption, then change it by saying so. Name each card as it appears and the label on it: source, computed, recording or failed. Say that a rate on the market card is a daily reference rate, not a live quote.
-If voice isn't verified on the day, type the request and say so. Don't claim voice that you didn't see work.
-
-### 14:45 The real question, the factory idea and the two tools (30 min)
-Show: slides 8 to 24 in order. Each part opens with what the room will understand and closes with an in-short line and what comes next. Do: listen. Questions wait for the work block. Each slide has one idea and one picture.
-If you run short, skip in this order: slide 19 (the coin), slide 17 (two good changes clash), slide 18 (the dark factory), then slide 23. If you skip slide 23, say its two points aloud: a run has limits (time and tool calls), and a key stays in your shell or a Git-ignored `.env` file. The book's setup step says it too. Slide 11 states the limit: a passing check proves only what it checks. Read it aloud.
-
-### 15:15 We build the factory (30 min)
-Show: slide 25, then slide 26 beside screen 1 (the console) and screen 2, then slide 27.
-Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 25 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 26, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
 The console and the builder driver come with the factory console pull request (PR 133). Their shapes, to recheck against that pull request before class, run from `factory/`: the offline scripted builder, `python agent-runs/drivers/qualify_scripted_builder.py <pack folder> <work folder>`, with a new work folder each run; the console, `python factory_console.py <work folder>/run --port 8943`, started before the driver; and the live builder only after you have stated its expected cost, `python agent-runs/drivers/openai_factory_driver.py <task> <scratch> <run> --model <model> --pack-root <pack folder> --environment environment-a6.json`. Keys are never put on a command line. The console has no Run button, so you start each from a terminal. The offline path shows a scripted label, makes no provider call and doesn't integrate or restart the agent.
 If the live builder stays in the run: there is no money cap per session, because the provider refuses one. The OpenAI project budget is the real cap. Each run is limited to 16 tool calls, a 60 second deadline and 20 second timeouts in the class example, and 30 tool calls and a 120 second deadline in the factory builder. Say a local cost check only if the frozen class example really passes an estimate, and call it a check before starting, on our own estimate. Say the budget figure (pending: from the Architect). Recheck the limits if either pull request changes before the class.
 Say, at the end: "Nobody read the change. The gates decided. And the good change was one line, because the platform carries the work."
