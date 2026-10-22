@@ -3,6 +3,36 @@
 The task, the prepared platform and the protected acceptance for the second screen of the class. The files here
 extend the factory in `workshops/software-factories-masterclass/factory`; they are not a second factory.
 
+## Run the protected checks
+
+Use **macOS and CPython 3.12**. The checks use the same Python interpreter as
+`run_a6.py`, so install the card library in that environment before running them.
+From your repository clone:
+
+```bash
+cd workshops/software-factories-masterclass/factory/a6-market-watchlist
+uv venv --python 3.12 .venv
+source .venv/bin/activate
+uv pip install zeocore==0.35.6 httpx==0.28.1
+```
+
+Installation needs internet access. After that, these checks use sample source
+responses and need no model key, Rasa license or provider request. Keep this
+environment separate from the briefing agent's own locked environments.
+
+```bash
+python run_a6.py tasks/a6-market-watchlist.json candidates/market-good
+python run_a6.py tasks/a6-market-watchlist.json candidates/market-shows-live
+python run_a6.py tasks/a6-market-watchlist.json baseline
+```
+
+Run the commands one at a time. The good proposal prints `ACCEPT` and
+`Ran 14 tests`, with exit code 0. The proposal that calls a daily rate live prints
+`REJECT` and names checks including `test_k3`, with exit code 1. The unfinished
+baseline also exits 1 and names failed card checks, including `test_k1` and
+`test_k2`. An import failure or missing sandbox is a setup problem, not evidence
+that the product was correctly rejected.
+
 ## What the builder gets
 The prompt is the `request` in `tasks/a6-market-watchlist.json`. The platform is already built and accepted:
 zeocore's card contracts, renderer and four source readers (the ECB daily reference-rate reader included), the
