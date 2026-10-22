@@ -43,18 +43,18 @@ const add = (part, title, body, svg, cls = '') => S.push({ part, title, body, sv
 const PARTS = ['The problem', 'The finished agent', 'The real question', 'The factory idea', 'The two tools', 'We build the factory', 'Your turn', 'Close'];
 
 // ---- Part 1: the problem
-add(1, 'Build a *factory* that builds your agent.', 'You’ll understand: why one glance beats four websites.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
+add(1, 'Build a *factory* that builds your agent.', 'One screen answers what four websites can’t.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
 add(1, 'Today in London: *see it*, *learn it*, *build it*.', 'Break 16:30.', scene('The plan for the day',
   row([{ label: '14:30', sub: 'See' }, { label: '14:45', sub: 'Learn' }, { label: '15:15', sub: 'Build' }, { label: '15:45', sub: 'Practice' }, { label: '17:20', sub: 'Close' }], { y: 150, h: 360, gap: 30 })));
 add(1, 'Meet *Sam*, due in New York tonight.', 'Will I make my meeting?', traveller({ title: 'Sam needs four checks' }));
-add(1, 'An *agent* decides what to do, then does it.', 'In short: one agent. Next: watch it.', traveller({ connected: true, title: 'One agent answers all four' }));
+add(1, 'An *agent* decides what to do, then does it.', '', traveller({ connected: true, title: 'One agent answers all four' }));
 // ---- Part 2: the finished agent
-add(2, 'Watch the agent answer Sam.', 'You’ll understand: sources. A script picks the tools.', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
+add(2, 'Watch the agent answer Sam.', 'A script picks the tools. The data is real.', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
 add(2, 'Every card says *where it came from*.', 'Every value is labeled.', scene('Four labels',
   row([{ label: 'Source', cls: 'panel-mint' }, { label: 'Computed', cls: 'panel-gold' }, { label: 'Recording', cls: 'panel-pink' }, { label: 'Failed', cls: 'panel-orange' }], { y: 130, h: 400, gap: 30, arrows: false, steps: true })));
-add(2, 'Four *honest* cards.', 'In short: honest cards. Next: trust.', traveller({ connected: true, title: 'Four honest cards' }));
+add(2, 'Four cards, and each says *where it came from*.', '', traveller({ connected: true, title: 'Four honest cards' }));
 // ---- Part 3: the real question
-add(3, 'A *coding agent* edits files, then says it worked.', 'You’ll understand: why we can’t trust it.', scene('You ask, the coding agent edits files and says it worked',
+add(3, 'A *coding agent* edits files, then says it worked.', '', scene('You ask, the coding agent edits files and says it worked',
   step(1, icon('person', 200, 250, 2) + text(200, 420, 'You', 'large-label') + arrow(340, 300, 140))
   + step(2, rect(520, 140, 380, 360, 'panel-ink') + icon('builder', 710, 290, 2, 'icon-light') + text(710, 450, 'Coding agent', 'large-label on-dark') + arrow(930, 300, 140))
   + step(3, rect(1100, 140, 300, 360, 'panel') + icon('task', 1250, 290, 1.8) + text(1250, 450, 'Files', 'large-label') + rect(1180, 540, 440, 90, 'panel-pink', 45))));
@@ -62,33 +62,33 @@ add(3, 'A *test* checks a known answer.', '', scene('add(2, 2) must give 4',
   step(1, rect(60, 170, 460, 320, 'panel') + text(290, 310, 'add(2, 2)', 'large-label') + arrow(540, 330, 140))
   + step(2, rect(720, 80, 380, 200, 'panel-mint') + text(910, 205, '4 pass', 'large-label') + rect(720, 380, 380, 200, 'panel-orange') + text(910, 505, '5 fail', 'large-label') + arrow(1120, 330, 100))
   + step(3, rect(1240, 170, 380, 320, 'panel-pink') + icon('test', 1430, 300, 1.8) + text(1430, 450, 'Test', 'large-label'))));
-add(3, 'An *acceptance test* checks the request.', 'Tests what was asked.', scene('A request is checked against a list',
+add(3, 'An *acceptance test* checks what you asked for.', '', scene('A request is checked against a list',
   step(1, rect(60, 150, 420, 360, 'panel-pink') + text(270, 340, 'Request', 'large-label') + arrow(500, 330, 110))
   + step(2, rect(640, 60, 640, 540, 'panel') + ['Rows', 'Labels', 'Day', 'Source'].map((t, i) => icon('check', 720, 150 + i * 120, 0.8, 'success') + text(830, 165 + i * 120, t, 'large-label', 'start')).join('') + arrow(1300, 330, 100))
   + step(3, rect(1440, 220, 200, 220, 'panel-mint') + text(1540, 345, 'Pass', 'large-label'))));
-add(3, 'We can’t read it all, so *tests decide*.', 'In short: a check proves only what it checks. Next: the factory.', scene('Claim and evidence',
+add(3, 'We can’t read it all, so *tests decide*.', 'A passing check proves only what it checks.', scene('Claim and evidence',
   step(1, rect(80, 120, 700, 420, 'panel-orange') + icon('stop', 430, 330, 2.4)) + step(2, rect(900, 120, 700, 420, 'panel-mint') + icon('check', 1250, 330, 2.4, 'success'))));
 // ---- Part 4: the factory idea
-add(4, 'A software factory repeats *four steps*.', 'You’ll understand: request to checked change.', scene('Task, change, check, decision', row([{ label: 'Task' }, { label: 'Change' }, { label: 'Check', cls: 'panel-pink' }, { label: 'Decision', cls: 'panel-mint' }], { y: 150, h: 360, gap: 40, steps: true })));
-add(4, 'The builder works in a *spare copy*.', 'The builder makes the change.', scene('Only the changed lines come back',
+add(4, 'A software factory repeats *four steps*.', '', scene('Task, change, check, decision', row([{ label: 'Task' }, { label: 'Change' }, { label: 'Check', cls: 'panel-pink' }, { label: 'Decision', cls: 'panel-mint' }], { y: 150, h: 360, gap: 40, steps: true })));
+add(4, 'The builder works in a *spare copy*.', 'The real product stays safe.', scene('Only the changed lines come back',
   rect(60, 150, 440, 360, 'panel') + text(280, 340, 'Product', 'large-label')
   + step(1, arrow(520, 330, 100) + rect(660, 150, 440, 360, 'panel-gold') + icon('builder', 880, 280, 1.6) + text(880, 450, 'Copy', 'large-label'))
   + step(2, arrow(1120, 330, 100) + rect(1260, 200, 360, 260, 'panel-mint') + text(1440, 315, 'Changed', 'large-label') + text(1440, 375, 'lines', 'large-label'))));
 add(4, 'Tests come first, *hidden* from the builder.', 'Like an exam.', protectedWorkbench({ labels: ['Builder', 'Change', 'Hidden tests', 'Decision'], title: 'The builder cannot see the protected tests' }));
-add(4, 'A *fingerprint* shows a changed test.', 'One letter changes it.', scene('Same file, different fingerprint',
+add(4, 'A *fingerprint* shows a changed test.', 'Change one letter and it changes.', scene('Same file, different fingerprint',
   rect(80, 130, 660, 400, 'panel-mint') + text(410, 250, 'tests', 'large-label') + text(410, 420, 'ab12', 'display pink-ink')
   + step(1, rect(940, 130, 660, 400, 'panel-orange') + text(1270, 250, 'tests', 'large-label') + text(1270, 420, '9f3c', 'display pink-ink'))));
-add(4, 'Every request ends in *three answers*.', 'Could not run: a machine problem.', decision({ labels: ['Accept', 'Reject', 'Could not run'], title: 'Accept, reject or could not run' }));
-add(4, 'Two good changes can *clash*.', 'Replay the checks.', scene('Change two erases change one',
+add(4, 'Every request ends in *three answers*.', 'Could not run means a machine problem.', decision({ labels: ['Accept', 'Reject', 'Could not run'], title: 'Accept, reject or could not run' }));
+add(4, 'Two good changes can *clash*.', 'So the earlier checks run again.', scene('Change two erases change one',
   rect(60, 250, 260, 160, 'panel') + text(190, 345, 'Base', 'large-label') + arrow(340, 300, 120) + line('M340 360C440 360 440 470 520 470', 'route')
   + rect(540, 90, 400, 200, 'panel-mint') + text(740, 205, 'Change 1', 'large-label') + rect(540, 400, 400, 200, 'panel-mint') + text(740, 515, 'Change 2', 'large-label')
   + step(1, arrow(980, 330, 120) + rect(1140, 230, 480, 200, 'panel-orange') + text(1380, 345, 'Gone', 'large-label'))));
-add(4, 'A dark factory has *one reviewer*: tests.', 'Lights off. Nobody reads each change.', scene('One lit window labeled tests',
+add(4, 'In a dark factory, *tests* are the only reviewer.', 'Lights off. Nobody reads each change.', scene('One lit window labeled tests',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + rect(540, 130, 600, 400, 'panel-gold') + text(840, 355, 'Tests', 'large-label ink') + step(1, icon('person', 1400, 330, 1.8, 'icon-light') + text(1400, 460, 'Person', 'large-label on-dark'))), 'dark');
-add(4, 'A few wins *aren’t a guarantee*.', 'In short: three heads prove nothing. Next: tools.', scene('Three heads in a row',
+add(4, 'Three good runs *don’t prove* the fourth will pass.', '', scene('Three heads in a row',
   [0, 1, 2].map(i => circle(260 + i * 260, 250, 100, 'panel-gold') + text(260 + i * 260, 285, 'H', 'display')).join('') + step(1, text(1230, 330, '?', 'display pink-ink'))));
 // ---- Part 5: the two tools
-add(5, '*Rasa Mantle* is where our agent lives.', 'You’ll understand: where agent and builder live.', scene('Files become a running agent',
+add(5, '*Rasa Mantle* is where our agent lives.', 'It runs from a folder of files.', scene('Files become a running agent',
   rect(60, 150, 440, 360, 'panel') + icon('task', 280, 280, 1.7) + text(280, 450, 'Files', 'large-label')
   + step(1, arrow(520, 330, 100) + rect(660, 150, 440, 360, 'panel-pink') + text(880, 345, 'Rasa Mantle', 'large-label'))
   + step(2, arrow(1120, 330, 100) + rect(1260, 150, 360, 360, 'panel-mint') + icon('person', 1440, 280, 1.7) + text(1440, 450, 'Agent', 'large-label'))));
@@ -98,24 +98,24 @@ add(5, 'The builder runs on *OpenAI’s Agents API*.', 'An API lets one program 
   row([{ label: 'Builder', icon: 'builder' }, { label: 'Asks' }, { label: 'Our code', cls: 'panel-gold' }, { label: 'Result', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70, steps: true })));
 add(5, 'A run has *limits* and a secret key.', 'A key is a paid-service password.', scene('Time, tool calls and a key',
   row([{ label: 'Time' }, { label: 'Tool calls' }, { label: 'Key', cls: 'panel-pink' }], { y: 150, h: 360, gap: 70, arrows: false, steps: true })));
-add(5, 'Mantle is home. The API is the *builder*.', 'In short: home and builder. Next: build.', tools({ labels: ['Mantle', 'Agent', 'Agents API', 'Builder'], title: 'Mantle is home and the API is the builder' }));
+add(5, '*Mantle* runs the agent. The *Agents API* runs the builder.', '', tools({ labels: ['Mantle', 'Agent', 'Agents API', 'Builder'], title: 'Mantle is home and the API is the builder' }));
 // ---- Part 6: we build the factory
-add(6, 'We build the factory in *five parts*.', 'You’ll understand: five parts, in book order.', scene('Five parts, five chapters',
+add(6, 'We build the factory in *five parts*.', 'Each part has a book chapter.', scene('Five parts, five chapters',
   row([{ label: 'Task' }, { label: 'Tests' }, { label: 'Builder' }, { label: 'Checks' }, { label: 'Integrate', cls: 'panel-pink' }], { y: 150, h: 360, gap: 30, steps: true })));
 add(6, 'In your chapter 6 folder: judge a *good* change and a *bad* one.', '', scene('Run the gate on a good change and a bad one',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 110, '$ source .venv/bin/activate', 'mono on-dark', 'start')
   + step(1, text(60, 270, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-good', 'mono on-dark', 'start') + icon('check', 160, 350, 1.1, 'success').replace('icon success', 'icon" style="stroke:#C6FEE1;stroke-width:9'))
   + step(2, text(60, 500, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-shows-live', 'mono on-dark', 'start') + icon('stop', 160, 580, 1.0, '').replace('icon ', 'icon" style="stroke:#FFB28C;stroke-width:9'))), 'dark');
-add(6, 'The gates decide what *goes in*.', 'In short: gates decide first. Next: your turn.', scene('The gates decide what goes in', row([{ label: 'Request' }, { label: 'Gates', cls: 'panel-pink' }, { label: 'If accepted', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70, steps: true })));
+add(6, 'The gates decide what *goes in*.', '', scene('The gates decide what goes in', row([{ label: 'Request' }, { label: 'Gates', cls: 'panel-pink' }, { label: 'If accepted', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70, steps: true })));
 // ---- Part 7: your turn
-add(7, 'Set up once, then follow the *book*.', 'You’ll understand: the book.', scene('Clone the repository and open the book',
+add(7, 'Set up once, then follow the *book*.', '', scene('Clone the repository and open the book',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 140, '$ git clone https://github.com/RasaHQ/rasa-community-resources.git', 'mono on-dark', 'start')
   + step(1, text(60, 280, '$ cd rasa-community-resources/workshops/software-factories-masterclass/book', 'mono on-dark', 'start'))
   + step(2, text(60, 450, 'license: rasa.com/rasa-pro-developer-edition-license-key-request', 'mono pink-ink', 'start').replace('class="mono pink-ink"', 'class="mono" style="fill:#F096B9"'))), 'dark');
-add(7, 'Take a *break*, then work through the book.', 'Break 16:30 to 16:45. In short: chapter 0 first. Next: close.', scene('A break for refreshments',
+add(7, 'Take a *break*, then work through the book.', 'Break 16:30 to 16:45. Start with chapter 0.', scene('A break for refreshments',
   rect(520, 120, 640, 420, 'panel-gold') + line('M1160 220h110a70 70 0 0 1 0 140h-110', 'route') + line('M600 560h480', 'line') + line('M680 40c-30 40 30 40 0 80 M840 40c-30 40 30 40 0 80 M1000 40c-30 40 30 40 0 80', 'route')));
 // ---- Part 8: close
-add(8, 'One agent, built by a *factory you trust*.', 'You’ll understand: the whole story. In short: tests first. Next: the book.', traveller({ labels: ['', '', '', ''], connected: true, title: 'One agent, four cards, one factory' }));
+add(8, 'One agent, built by a *factory you trust*.', 'Start with chapter 0 of the book.', traveller({ labels: ['', '', '', ''], connected: true, title: 'One agent, four cards, one factory' }));
 
 const CSS = fs.readFileSync(fs.existsSync('style.css') ? 'style.css' : 'visual-system.css', 'utf8');
 S.forEach((s, i) => { const f = `art/${String(i + 1).padStart(2, '0')}.svg`; if (fs.existsSync(f)) s.svg = fs.readFileSync(f, 'utf8').trim(); });
@@ -135,7 +135,7 @@ document.addEventListener('keydown',e=>{if(['ArrowRight','ArrowDown','PageDown',
 document.addEventListener('click',e=>{if(e.target.closest('a'))return;show(current+(e.clientX<innerWidth/3?-1:1))});
 addEventListener('hashchange',()=>show(Number(location.hash.slice(1))-1||0));show(Number(location.hash.slice(1))-1||0);`;
 const JS = fs.readFileSync('reveal-navigation.js', 'utf8');
-const EXTRA = `.step-navigation .step{opacity:0;transition:opacity .25s}.step-navigation .step.shown{opacity:1}@media (prefers-reduced-motion:reduce){.step-navigation .step{transition:none}}` + `.slide .words{position:absolute;left:6.25vw;right:6.25vw;top:23.6vh;margin:0;font:400 2.0833vw/1.2 var(--sans)}.dark .words{color:var(--cream)}` + `@media screen{.slide.on{display:grid;grid-template-rows:auto minmax(0,1fr);box-sizing:border-box;padding:12.75vh 6.25vw 7.4vh}.slide .head{min-height:18.73vh}.slide .head h1{position:static;margin:0}.slide .head .words{position:static;margin:max(1vh,calc(10.85vh - 4.3333vw)) 0 0}.slide.on .scene{position:static;width:100%;height:100%;min-height:0}}`;
+const EXTRA = `.step-navigation .step{opacity:0;transition:opacity .25s}.step-navigation .step.shown{opacity:1}@media (prefers-reduced-motion:reduce){.step-navigation .step{transition:none}}` + `.slide .words{position:absolute;left:6.25vw;right:6.25vw;top:23.6vh;margin:0;font:400 2.0833vw/1.2 var(--sans)}.dark .words{color:var(--cream)}` + `@media screen{.slide.on{display:grid;grid-template-rows:auto minmax(0,1fr);box-sizing:border-box;padding:12.75vh 6.25vw 7.4vh}.slide .head{min-height:18.73vh}.slide .head h1{position:static;margin:0}.slide .head .words{position:static;margin:max(1vh,calc(10.85vh - 4.3333vw)) 0 0}.slide.on .scene{position:static;width:100%;height:100%;min-height:0}.slide .head h1{font:400 clamp(26px,4.166667vw,104px)/1.04 var(--serif)}.slide .head .words{font:400 clamp(15px,2.0833vw,52px)/1.2 var(--sans)}.slide .crumb{font-size:clamp(11px,1.666667vw,42px)}}@media screen and (max-aspect-ratio:1/1){.slide.on{align-content:start}.slide.on .scene{height:auto}.scene svg{height:auto}}`;
 const page = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Software factories masterclass</title><!-- Fonts: Inter, Newsreader and JetBrains Mono, Latin subsets, SIL Open Font License 1.1 (see FONT-LICENSES.txt beside this file). The Rasa brand fonts are not redistributable. --><style>${FACES}${CSS}${EXTRA}</style></head><body>${html}<script>${JS}</script></body></html>`;
 fs.writeFileSync('index.html', page);
 console.log(S.length, 'slides,', page.length, 'bytes');

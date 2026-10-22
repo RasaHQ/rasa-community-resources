@@ -44,7 +44,7 @@ const report = {
   gateSha256: sha256(await fs.readFile(fileURLToPath(import.meta.url))),
   policy: { maximumSlides: 30, maximumBodyWords: 12, marginRatio: 0.06,
     titlePxAt1920: 64, bodyPxAt1920: 36, labelPxAt1920: 28,
-    minimumVisualAreaRatio: 0.5, minimumVisualAreaAppliesFromAspect: 1.7, viewports: [[1920, 1080], [1512, 982], [1440, 900], [1280, 800], [1280, 720]],
+    minimumVisualAreaRatio: 0.5, minimumVisualAreaAppliesFromAspect: 1.7, viewports: [[1920, 1080], [1512, 982], [1440, 900], [1366, 768], [1280, 800], [1280, 720], [390, 844]],
     words: 'All visible instructional text including diagram labels and links; excludes title and persistent breadcrumb/navigation only.',
     visualArea: 'Bounding union of visible diagram marks or image, clipped to slide. Empty SVG containers do not count.',
     limitations: 'Geometry cannot judge pedagogic meaning or illustration quality. Independent visual and read-aloud review remain required.' },
