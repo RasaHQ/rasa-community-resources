@@ -61,7 +61,7 @@ If the live builder stays in the run: there is no money cap per session, and the
 Say, at the end: "Nobody read the change. The gates decided. And the good change was one line, because the platform carries the work."
 
 ### 15:45 Your turn (95 min, with a break)
-Show: slide 28 and leave it up. At 16:30 show slide 29 (the break). Do: everyone works through the book, alone or in groups of up to four, from Chapter 0. Each chapter has a ready folder, so anyone can start at any chapter.
+Show: slide 28 and leave it up. At 16:30 show slide 29 (the break), and after the break go back to slide 28. Do: everyone works through the book, alone or in groups of up to four, from Chapter 0. Each chapter has a ready folder, so anyone can start at any chapter.
 Break: 16:30 to 16:45, with refreshments. Chat and networking are part of the plan.
 Your job: walk the room. The three common stops are a missing license (point to the sign-up), a key that isn't set (the doctor shows SET or MISSING, never the value) and a clone made as a zip (clone with Git instead). Tell people that a live flight or a live builder run is an extra, and that every "done when" check works offline.
 Say once at the start: "Keys and the license stay in your own shell or your own Git-ignored .env. Never put one in a tracked file, a tool result, a report or a chat."
