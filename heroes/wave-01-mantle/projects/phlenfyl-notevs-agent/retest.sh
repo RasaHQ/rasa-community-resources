@@ -11,13 +11,20 @@
 # throwaway copies of this folder, so it never touches this folder's models/,
 # a running start.sh, or NoteVs's own agent on 5005. Tool calls are pointed at
 # an unreachable NoteVs URL on purpose, so no real notes are read or changed.
-# Costs a handful of LLM calls (one chat message per run, four runs).
+# Costs a handful of LLM calls (RETEST_TRIES first messages, default 3, in
+# each of runs A, C and D).
+# Each message waits RETEST_COOLDOWN seconds (default 65) first: one Mantle
+# call is ~3k input tokens, and Groq's free tier allows 7k per minute, so
+# back-to-back runs otherwise fail with RateLimitError, not the behaviour
+# under test. Any LLM error is printed with the run's output.
 set -uo pipefail
 cd "$(dirname "$0")"
 SRC="$PWD"
 OUT="$SRC/evidence.txt"
 PORT="${RETEST_PORT:-5055}"
 MESSAGE="list my notes"
+COOLDOWN="${RETEST_COOLDOWN:-65}"
+TRIES="${RETEST_TRIES:-3}"
 FOLDER="/tmp/notevs-retest-folder"
 
 if [ ! -d .venv ]; then
@@ -47,7 +54,45 @@ export NOTEVS_CALL_URL="http://127.0.0.1:9/call"
 source .venv/bin/activate
 WORK="$(mktemp -d)"
 SERVER_PID=""
-cleanup() { stop_server; rm -rf "$WORK"; }
+# `rasa run --debug` logs the provider API key in its LLM request lines, so
+# the kept copy is redacted first.
+keep_logs() {
+  # Logs and trackers only (the project copies would read as extra
+  # projects), redacted inside $WORK and moved into place only if redaction
+  # succeeded: a failure keeps nothing.
+  local tmp="$WORK/redacted"
+  rm -rf "$SRC/retest-logs" "$tmp"
+  mkdir -p "$tmp"
+  cp "$WORK"/*.log "$WORK"/*.json "$tmp/" 2>/dev/null
+  if python3 - "$tmp" "$SRC/.env" <<'PY'
+import os, pathlib, re, sys
+tmp, env_file = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+name = re.compile(r"KEY|TOKEN|SECRET|PASSWORD|LICENSE", re.I)
+values = {v for k, v in os.environ.items() if name.search(k)}
+if env_file.is_file():
+    for line in env_file.read_text().splitlines():
+        k, sep, v = line.partition("=")
+        if sep and name.search(k):
+            values.add(v.strip().strip("'\""))
+values = sorted((v for v in values if len(v) >= 8), key=len, reverse=True)
+tokens = re.compile(r"gsk_[A-Za-z0-9]{16,}|sk-[A-Za-z0-9_-]{16,}|(?i:bearer)\s+[A-Za-z0-9._~+/=-]{16,}")
+fields = re.compile(r"""(?i)(["']?(?:api_key|token|secret|password|authorization)["']?\s*[:=]\s*["'])[^"']{8,}(["'])""")
+for f in tmp.iterdir():
+    s = f.read_text(errors="replace")
+    for v in values:
+        s = s.replace(v, "<redacted>")
+    s = tokens.sub("<redacted>", s)
+    s = fields.sub(r"\1<redacted>\2", s)
+    f.write_text(s)
+PY
+  then
+    mv "$tmp" "$SRC/retest-logs"
+  else
+    rm -rf "$tmp"
+    echo "log redaction failed: no logs kept" >&2
+  fi
+}
+cleanup() { stop_server; keep_logs; rm -rf "$WORK"; }
 trap cleanup EXIT
 
 : > "$OUT"
@@ -82,7 +127,7 @@ train() {
 start_server() {
   local dir="$1" name="$2"
   log "\$ rasa run --enable-api --port $PORT --debug   (in $name copy)"
-  (cd "$dir" && exec rasa run --enable-api --port "$PORT" --debug) > "$WORK/$name.run.log" 2>&1 &
+  (cd "$dir" && PYTHONUNBUFFERED=1 exec rasa run --enable-api --port "$PORT" --debug) > "$WORK/$name.run.log" 2>&1 &
   SERVER_PID=$!
   for _ in $(seq 1 180); do
     if ! kill -0 "$SERVER_PID" 2>/dev/null; then
@@ -114,43 +159,57 @@ stop_server() {
   fi
 }
 
-# Sends MESSAGE as the very first message of a brand-new conversation, then
-# dumps what the bot replied and the conversation's tracker events.
+# Sends MESSAGE as the very first message of TRIES brand-new conversations
+# and prints one line per try: the bot reply, which flows/skills started,
+# which tools ran, the project.folder_path slot, and any LLM error the server
+# logged during that turn. Several tries, because the LLM's choice (route,
+# answer directly, or emit a malformed tool call) varies from call to call.
 first_message() {
-  local name="$1" sender="retest-$1-$(date +%s)"
-  log "\$ curl -X POST http://localhost:$PORT/webhooks/rest/webhook -d '{\"sender\": \"$sender\", \"message\": \"$MESSAGE\"}'"
-  log "--- bot reply ---"
-  curl -s -X POST "http://localhost:$PORT/webhooks/rest/webhook" \
-    -H "Content-Type: application/json" \
-    -d "{\"sender\": \"$sender\", \"message\": \"$MESSAGE\"}" | tee -a "$OUT"
-  log ""
-  curl -s "http://localhost:$PORT/conversations/$sender/tracker" > "$WORK/$name.tracker.json"
-  log "--- tracker events (event type + name fields, in order) ---"
-  python3 - "$WORK/$name.tracker.json" <<'PY' | tee -a "$OUT"
-import json, sys
+  local name="$1" i sender before reply
+  log "\$ curl -X POST http://localhost:$PORT/webhooks/rest/webhook -d '{\"sender\": \"<new id each try>\", \"message\": \"$MESSAGE\"}'   x$TRIES"
+  for i in $(seq 1 "$TRIES"); do
+    sleep "$COOLDOWN"
+    sender="retest-$name-$i-$(date +%s)"
+    before=$(wc -l < "$WORK/$name.run.log")
+    reply=$(curl -s -X POST "http://localhost:$PORT/webhooks/rest/webhook" \
+      -H "Content-Type: application/json" \
+      -d "{\"sender\": \"$sender\", \"message\": \"$MESSAGE\"}")
+    sleep 2
+    curl -s "http://localhost:$PORT/conversations/$sender/tracker" > "$WORK/$name.$i.tracker.json"
+    tail -n +"$((before + 1))" "$WORK/$name.run.log" > "$WORK/$name.$i.turn.log"
+    python3 - "$i" "$reply" "$WORK/$name.$i.tracker.json" "$WORK/$name.$i.turn.log" <<'PY2' | tee -a "$OUT"
+import json, re, sys
+i, reply, tracker, turn_log = sys.argv[1:5]
 try:
-    t = json.load(open(sys.argv[1]))
-except Exception as e:
-    print(f"(could not read tracker: {e})"); sys.exit()
-for e in t.get("events", []):
-    keep = {k: v for k, v in e.items()
-            if k not in ("timestamp", "metadata", "parse_data", "input_channel", "message_id")
-            and v not in (None, "", [], {})}
-    print(json.dumps(keep, default=str)[:300])
-print("--- slots ---")
-for k, v in sorted((t.get("slots") or {}).items()):
-    if v not in (None, "", [], {}):
-        print(f"{k} = {json.dumps(v, default=str)[:200]}")
-PY
-  log "--- debug log lines mentioning skills/tools ---"
-  grep -iE "skill|tool|list_notes|note_management|session_start|utter_greet" "$WORK/$name.run.log" \
-    | grep -v -i "api_key" | tail -40 | tee -a "$OUT"
-  log "--- folder_path in tracker? ---"
-  if grep -q "$FOLDER" "$WORK/$name.tracker.json"; then
-    log "YES — '$FOLDER' appears in the tracker"
-  else
-    log "NO — '$FOLDER' does not appear in the tracker"
-  fi
+    texts = [m.get("text", "") for m in json.loads(reply)]
+except Exception:
+    texts = [reply]
+text = " / ".join(t.replace("\n", " ") for t in texts)
+try:
+    t = json.load(open(tracker))
+except Exception:
+    t = {"events": [], "slots": {}}
+flows = [e["flow_id"] for e in t["events"] if e["event"] == "flow_started"]
+tools = [e["tool_name"] for e in t["events"] if e["event"] == "mcp_tool_executed"]
+folder = (t.get("slots") or {}).get("project.folder_path")
+# Every LLM call this turn: what came back (text / tool calls) or the error,
+# whatever its type, so a provider failure can't pass for engine behaviour.
+calls = []
+for line in open(turn_log):
+    if '"calm_v2.llm.response"' in line:
+        m = re.search(r'"tool_names": (\[[^\]]*\])', line)
+        calls.append("tools=" + (m.group(1) if m else "[]")
+                     + (" +text" if '"has_text": true' in line else ""))
+    elif '"calm_v2.orchestrator.llm_error"' in line:
+        m = re.search(r"Original error: ([\w.]+)", line)
+        c = re.search(r'\\"code\\":\\"(\w+)\\"', line)
+        calls.append("ERROR " + (m.group(1).split(".")[-1] if m else "?")
+                     + (f"({c.group(1)})" if c else ""))
+print(f"try {i}: flows={flows} tools={tools} folder_path={folder!r}")
+print(f"        llm calls: {calls or 'none logged'}")
+print(f"        reply: {text[:160]!r}")
+PY2
+  done
 }
 
 section "Environment"
@@ -194,7 +253,7 @@ fi
 stop_server
 log "--- log lines mentioning the bind / crash ---"
 grep -iE "EADDRINUSE|address already in use|errno 48|errno 98|voice_channel|inspector|server is up and running|Traceback|Error" \
-  "$WORK/inspector_on.run.log" | grep -v -i "api_key" | tail -25 | tee -a "$OUT"
+  "$WORK/inspector_on.run.log" | grep -v -i -e "api_key" -e "langfuse" | tail -25 | tee -a "$OUT"
 
 # --- Claim 1: without the session-start override -----------------------------
 section "Claim 1 — first message WITHOUT the session-start override (compare with Run A)"
@@ -207,7 +266,7 @@ fi
 stop_server
 
 # --- Claim 3: without memory.yml ---------------------------------------------
-section "Claim 3 — WITHOUT memory.yml (compare 'folder_path in tracker?' with Run A)"
+section "Claim 3 — WITHOUT memory.yml (Run A trains and sets project.folder_path)"
 D="$(make_copy no_memory)"
 rm -f "$D/memory.yml"
 log "changed in this copy: removed memory.yml"
@@ -217,4 +276,4 @@ fi
 stop_server
 
 section "Done"
-log "Full logs were in $WORK (deleted on exit). Evidence written to: $OUT"
+log "Evidence written to: evidence.txt (full logs, secrets redacted, in retest-logs/ — git-ignored)"

@@ -2,10 +2,12 @@
 
 ```text
 Author:        Damilola P
-Assessed on:   2026-09-20
+Assessed on:   2026-10-22
 Assessed by:   Damilola P
 Verified with: rasa-pro 3.19.0.dev5, Python 3.10-3.13, uv
 Wave:          wave-01-mantle
+Audience:      Developers building tool-calling Mantle agents against a local service
+Time:          20–30 minutes (uv sync + first chat), plus ~12 minutes for ./retest.sh
 ```
 
 A local, Rasa Mantle-powered conversational agent for talking to your
@@ -66,32 +68,85 @@ notevs-agent (this project)
 
 ## What this project found
 
-- **The session-start turn used to swallow the user's first message.**
+Each claim below is re-checked by `./retest.sh`; the run and its output
+are under "Evidence" further down.
+
+- **The session-start turn swallows the user's first message.**
   Mantle's built-in `default_session_start` skill only ever greets — its
   own description promises to "handle the first request" too, but its
   steps don't. `skills/default_session_start/skill.md` here overrides it
-  with a single `noop` step straight to `END`. Confirmed live (a direct,
-  unprimed REST call to a brand-new session) that this lets the very
-  first real message reach the right skill and call its tool in the same
-  turn.
-- **`inspector.enabled: true` in `integrations.yml` crashes `rasa run`.**
-  `inspector` is for the separate interactive `rasa inspect` command
-  only; enabled alongside `channels.rest`, `rasa run` tries to bind a
-  second listener on the same port right after the REST channel's own
-  listener has already bound it — an immediate `EADDRINUSE` crash on
-  every start. Kept off here; nothing in this project uses Mantle's own
-  voice channel.
+  with a single `noop` step straight to `END`, so the very first real
+  message goes to the LLM router and can activate the right skill in the
+  same turn. *Reproduced 2026-10-22:* 3/3 first messages routed with the
+  override, 0/3 without it. Whether the activated skill then calls its
+  tool depends on the model — see the caveat under "Evidence".
+- **Correction: `inspector.enabled: true` does not crash `rasa run`.**
+  An earlier version of this README blamed an `EADDRINUSE` crash on
+  `0.0.0.0:5005` (2026-08-18) on enabling the inspector channel next to
+  `channels.rest`. The 2026-10-22 retest did not reproduce that: both
+  channels loaded and the server stayed up. The actual cause was that
+  the NoteVs extension's own agent was already listening on 5005, so a
+  second `rasa run` on the default port could not bind. If you run this
+  project while NoteVs's agent is up, pass a different `--port`.
+  Inspector stays off here only because nothing in this project uses
+  Mantle's voice channel.
 - **`memory.yml`** declares real, framework-visible project memory
-  (`folder_path`) — confirmed against the installed engine's own schema
-  loader that a project-root `memory.yml` is auto-discovered by filename
-  convention, and that a tool with no memory.yml of its own can still
-  write a project-scoped field.
+  (`folder_path`). A project-root `memory.yml` is picked up by filename,
+  and tools in skills with no `memory.yml` of their own write it as
+  `project.folder_path`. Without it, `rasa train` refuses the project
+  (`calm_v2.validation.tools.undeclared_memory_write`).
+  *Reproduced 2026-10-22.*
 - **Groq model availability shifts under you.** This project was
   re-pinned mid-build after Groq discontinued `qwen/qwen3.6-27b`
   (confirmed via a live `model_not_found` error and a live
   `GET /openai/v1/models` check against the account's actual key) in
   favor of `qwen/qwen3.8-27b`. Docs pages aren't ground truth for what a
   given account can actually call — the models endpoint is.
+
+## Evidence
+
+Re-run on 2026-10-22 against the installed engine, `3.19.0.dev5`
+(Python 3.12.13, macOS arm64), with Groq `qwen/qwen3.8-27b`, from the
+commit that adds this section. Full output: [`evidence.txt`](evidence.txt).
+
+```bash
+uv sync                 # installs the pinned engine from uv.lock
+cp .env.example .env    # RASA_LICENSE + GROQ_API_KEY
+./retest.sh             # ~12 min; writes evidence.txt
+```
+
+`retest.sh` trains throwaway copies of this folder and serves them on
+port 5055, so it never touches `models/` or a NoteVs agent on 5005. Tool
+calls go to an unreachable NoteVs URL on purpose, so no real notes are
+read. Each chat run sends `list my notes` as the first message of three
+brand-new conversations, 65 s apart (Groq's free tier allows 7k input
+tokens a minute and one Mantle call is ~3k). For every LLM call it
+prints what came back, or the provider error.
+
+| Claim | Copy under test | Expected | Observed |
+| --- | --- | --- | --- |
+| Session start | as committed | first message routed to a skill | 3/3: `activate notes_qa` |
+| Session start | `skills/default_session_start/` removed | built-in greeting consumes the message | 3/3: `greet` step only, no skill or tool; replies like "Hey, I'd like to see a list of my current notes." |
+| Inspector + REST | `channels.inspector.enabled: true` | old claim: `EADDRINUSE` crash | **no crash**: both channels loaded, server stayed up (the 2026-08-18 crash was port 5005 already taken; see correction above) |
+| Project memory | as committed | tools write `project.folder_path` | slot set to `NOTEVS_FOLDER_PATH` in the 2 turns that ran a note tool |
+| Project memory | `memory.yml` removed | write rejected | `rasa train` exits 1: `calm_v2.validation.tools.undeclared_memory_write` |
+
+**Caveat — model behaviour, not engine behaviour.** In the "as committed"
+runs, `notes_qa` called `list_notes` in 2 of 3 tries. In the third, the
+model answered with four note titles it made up instead of calling the
+tool. Earlier runs the same day also hit Groq `tool_use_failed` (a
+malformed `activate` call) and per-minute rate limits; both end the turn
+with an empty reply. The router behaviour above held in every run whose
+LLM call succeeded.
+
+**Not retested:** the Groq model-availability notes are the author's
+historical observations.
+
+The source-level memory check (no licence or LLM needed) gives the same
+answer: in `3.19.0.dev5`, `memory.yml` is in the engine's
+`V2_SNAPSHOT_SOURCE_FILES`, `MemoryManager.set` resolves `folder_path`
+to `project.folder_path` from each of the three skills, and the same
+write raises `MemoryWriteError` when the project schema is empty.
 
 ## LLM provider
 

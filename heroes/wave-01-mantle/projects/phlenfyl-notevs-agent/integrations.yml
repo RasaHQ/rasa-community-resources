@@ -66,16 +66,12 @@ llm:
 
 # CONFIRMED 2026-08-18: `rasa run` does read this `channels.rest` block —
 # the REST webhook agentPanel.ts talks to comes up fine on its own.
-# `inspector.enabled: true` is what broke it: inspector is meant only for
-# the separate interactive `rasa inspect` debug command, but with it also
-# enabled here, `rasa run` starts a *second* voice_stream/inspector
-# listener on the same host:port right after the REST channel's own
-# listener has already bound it — log shows "Rasa server is up and
-# running" immediately followed by inspector's "voice_channel.initialized"
-# then an EADDRINUSE crash trying to bind 0.0.0.0:5005 again. We never use
-# Rasa's own voice channel anyway (see voice.ts — STT/TTS go through Groq
-# from the extension host, specifically to avoid this channel), so
-# inspector has nothing to do in a `rasa run` process and stays off.
+# Corrected 2026-10-22: an EADDRINUSE crash on 0.0.0.0:5005 seen on
+# 2026-08-18 was first blamed on `inspector.enabled: true`. It wasn't —
+# the NoteVs extension's own agent already held 5005. retest.sh shows
+# `rasa run` stays up with inspector enabled. We never use Rasa's own
+# voice channel anyway (see voice.ts — STT/TTS go through Groq from the
+# extension host), so inspector has nothing to do here and stays off.
 channels:
   rest:
     enabled: true
