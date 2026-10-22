@@ -81,4 +81,4 @@ Chapter 0 runs on Rasa Pro 3.21.0. The standalone example in `examples/` stays o
 
 Use the [run sheet](RUN-SHEET.md) for timing and the [presenter notes](slides/PRESENTER-NOTES.md) for each slide. The slides are in `slides/index.html` and as a [PDF](slides/masterclass-slides.pdf). The [technical audit](TECHNICAL-AUDIT.md) lists exactly what was tested.
 
-Other folders here (`factory/`, `openai-mcp/`, `brief-me-before-i-fly/`, `archive/`) are earlier material and are not needed for this workshop. The standalone version of the travel agent, with its own [self-paced guide](../../examples/mantle-flight-briefing-openai-agents/SELF-PACED-GUIDE.md), is in `examples/mantle-flight-briefing-openai-agents/`.
+Other folders here (`openai-mcp/`, `brief-me-before-i-fly/`, `archive/`) are earlier material and are not needed for this workshop. The standalone version of the travel agent, with its own [self-paced guide](../../examples/mantle-flight-briefing-openai-agents/SELF-PACED-GUIDE.md), is in `examples/mantle-flight-briefing-openai-agents/`.
