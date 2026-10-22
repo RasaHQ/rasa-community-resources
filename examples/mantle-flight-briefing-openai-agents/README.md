@@ -1,141 +1,121 @@
 # Brief me before I fly — work in progress
 
-Author: Mator Clawson
+Author: Mator Clawson, rasa-bench
 Assessed on: not_provided
-Assessed by: not_provided
-Verified with: Python 3.12.13 replay/MCP controls and pinned Mantle hook adapters and tracker/channel delivery; full conversation not verified
-Audience: Practitioners connecting a Mantle conversation to a managed specialist
-Time: not_provided — reader exercise not accepted yet
+Assessed by: not_provided — independent fresh-clone acceptance pending
+Verified with: Python 3.12, the committed registry locks; complete demo qualification pending
+Audience: Practitioners connecting Rasa Mantle to a managed specialist
+Time: Allow time for the first dependency download
 
-For the optional real managed model with explicitly constructed source data,
-see [the separate live worker](LIVE-WORKER.md). The guaranteed scripted path
-and its historical development worker remain separate from that opt-in path.
-
-**End-to-end qualification is pending.** The Core-backed replay, authenticated
-MCP request path and fixed text-card renderer pass author controls. The class
-uses the Architect-approved capability-ID fallback because published Mantle
-packages through 3.21.0 do not forward engine identity as MCP metadata. No engine
-patch or fork is required by this fallback.
-
-The product imports exactly one MCP tool,
-`briefing(action=start|get|revise, request?, briefing_id?, change?)`. Start returns
-an unguessable ID with 256 random bits. Get and revise require possession of that
-ID and an authenticated Mantle peer. Missing or wrong IDs are refused; there is
-no enumeration tool. Unsupported actions, obsolete `job_id`, invented identity
-fields and extra arguments are refused rather than silently ignored. **Anyone with the actual ID and peer access can read or
-revise the briefing, including another conversation.** This is capability
-possession, not engine-sender isolation. Keep IDs out of shared transcripts,
-logs and telemetry. The wired model-response modifier redacts capability-shaped
-text before delivery while preserving tool-call arguments. The application logging helper redacts key-shaped strings and exact environment
-credential values in formatted standard logs (including extra fields and exception
-text), initial and rendered structlog events, rendered cards and model replies.
-The public MCP boundary refuses credentials in tool arguments or metadata and
-sanitizes validation-error responses. Synthetic-key controls cover these paths;
-this does not certify arbitrary third-party telemetry. Keep request-body/access
-tracing disabled and never paste keys into the conversation. The doctor reads keys only
-from process environment. For the engine launcher set `LITELLM_MODE=PRODUCTION`
-to disable LiteLLM development dotenv loading; other dependency loaders are not
-certified by this control. Thread exceptions, unraisable exceptions and warnings
-are not covered by the application logging hook. See the participant key setup
-and doctor in [the project instructions](project/README.md).
-
-Core supplies widget validation, per-widget supersession and the managed Agents
-API wrapper. Model output never supplies the numbers in the cards.
-
-## Current offline checkpoint
-
-`Replay DEMO101` is constructed classroom data, not an actual flight or a provider
-recording. `Replay DEMO101 later arrival` changes the arrival estimate and margin.
-`Replay DEMO101 morning weather` updates only weather, preserving the flight and
-timeline cards with their own provenance. Every visible card says REPLAY. The
-90-minute transfer is an assumption, never traffic. Missing provider update time
-is distinct from retrieval time.
-
-The backend uses Core's `ScriptedTransport` and actual callback loop. No remote
-agent, weather/flight provider, voice system or model is exercised by those tests.
-The current presentation fallback is fixed text cards in the conversation; it
-is not native Mantle arbitrary widgets or an interactive chart renderer.
-
-The named `Replay DEMO101 missing inputs` exercise starts without a meeting time
-or transfer assumption. Get returns needs_input and a precise question; revise
-with the traveller's answer resumes the same capability. Timezone-free times,
-non-numeric durations and out-of-range durations are asked again, never guessed.
-For an explicitly supplied 21:00Z meeting and 45 minutes, the card margin is
-165 minutes; a later-arrival revision retains those inputs and yields 75.
-Questions are rendered from the service result rather than unchecked model prose.
-
-`Replay DEMO101 flight unavailable` exercises partial failure: the forecast
-remains available without an invented arrival marker, while flight and timeline
-show explicit source errors and empty payloads. Earlier arrival and margin
-values are removed; status is incomplete. The named normal replay exercises
-recovery. Progress entries describe validated components in callback order,
-not unobserved provider activity. These remain author controls requiring Ops'
-independent acceptance and the facilitator's actual conversation rehearsal.
-
-## Dependency custody and checks
-
-Both resource-owned locks now use `zeocore==0.33.0` from PyPI, with registry
-artifact hashes in `uv.lock` and [`worker/core-artifact.json`](worker/core-artifact.json).
-This release includes the shared graphical renderer; the proposed real-source
-adapters require their own reviewed release. The unified setup/run launcher is
-still unfinished, so this draft is not a first-user-ready demo.
-
-Create each isolated environment from repository root:
+**Draft class head: the complete path is awaiting independent acceptance.**
+From this checkout, the two commands are:
 
 ```sh
-python3 scripts/workspace.py start examples/mantle-flight-briefing-openai-agents/worker --owner flight-worker
-python3 scripts/workspace.py start examples/mantle-flight-briefing-openai-agents/project --owner flight-mantle
-examples/mantle-flight-briefing-openai-agents/project/.venv/bin/python -m unittest discover -s examples/mantle-flight-briefing-openai-agents/tests -v
+cd examples/mantle-flight-briefing-openai-agents
+./demo setup
+./demo run
 ```
 
-These checks include the actual MCP ASGI path in process without a listening
-server, missing/wrong capability refusal, deliberate access with a valid capability
-from another conversation, and source-card replay. They do not prove the live
-Mantle conversation or provider access. The project interpreter additionally
-exercises the actual pinned Mantle hook loader and runner with constructed Core
-results: it shows source-backed cards, preserves an unaffected timeline across a
-weather revision, and suppresses unchecked model numbers for invalid, empty, wrapped or error
-briefing results.
-The adapter control supplies constructed JSON directly to the engine adapter;
-it does not by itself prove MCP serialization. The separate conversation control
-below exercises the actual MCP ClientSession/server dispatch path. The wired model-response modifier replaces free-form numbers
-before the real turn context records and delivers the cards. The pin registers
-`outgoing_text` but does not invoke it during delivery, so this project does not
-use that hook. That is adapter and delivery integration evidence, not a complete
-model-driven conversation or a proof of streaming behavior.
+For a new checkout after the class PR is merged:
 
-A separate keyless conversation control runs the actual Mantle orchestrator,
-skill dispatch, MCP ClientSession/server, Core replay, hooks, tracker and output
-channel. Only the LLM provider factory is replaced with scripted responses over ten turns
-(initial briefing, weather and arrival revisions, missing-input questions and
-resumption, source failure, recovery and missing estimate); the HTTP transport stays in process. This proves
-that those pieces connect, that the weather follow-up retains the original
-flight/timeline provenance, and that a later arrival changes the margin from
-120 to 30 minutes while unchecked model numbers are replaced. The
-script chooses the capability from fixture state; it does not prove a model can
-retain it, follow the skill or interpret a traveller’s request. No installed
-engine file is changed. Real model behavior and facilitator acceptance remain
-outstanding. `Replay DEMO101 no estimate` explicitly exercises the scheduled
-arrival fallback, displaying the absent estimate as not provided rather than
-inventing it or a delayed status.
+```sh
+git clone https://github.com/RasaHQ/rasa-community-resources.git
+cd rasa-community-resources/examples/mantle-flight-briefing-openai-agents
+./demo setup
+./demo run
+```
 
-## Runtime boundary
+Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
+`RASA_LICENSE` in your own terminal environment, including in scripted mode;
+the launcher never bypasses the engine licence check. Model and voice keys are
+optional for the scripted text path. See the repository's developer-licence
+instructions if you do not have a Rasa Pro licence.
 
-The facilitator-only local launcher is `python -m briefing` from this directory,
-using the worker interpreter. It requires the same runtime-only
-`BRIEFING_MCP_TOKEN` in the launcher and Mantle processes. Do not put its value in
-a file or log. This launcher starts a loopback service and is not a source-only
-test. The current default backend is constructed replay only.
+ Setup creates separate worker and Mantle
+`.venv` environments from their committed locks. Both install `zeocore` from
+PyPI; no private wheel, sibling checkout or editable source is used. Setup is
+safe to repeat. A missing prerequisite stops with a sentence naming the fix.
 
-Actual model/provider access uses only the facilitator's own environment. No
-key belongs in this repository, seat mail or a file written by a seat. Live
-flight schedules need their own verified provider access. No live API, real
-flight lookup or voice success is claimed here.
+## Open the actual Mantle inspector and the card page
 
-The remaining acceptance is an observed Mantle conversation calling this tool,
-showing the validated cards and demonstrating the documented capability boundary, followed by
-independent Ops acceptance. Syntax checks, unit tests and this draft PR do not
-complete that outcome.
+Run starts the public-source briefing service and the actual `rasa inspect`
+server. It trains the project first, prints both loopback URLs when ready, and
+keeps ownership of the processes. Open the printed inspector URL to chat and
+the card-page URL beside it. Press Ctrl-C in the launcher terminal to stop both
+services and their children. If either port is occupied, the launcher refuses;
+it does not stop another user's service.
 
-Teaching source follows the repository [license](../../LICENSE); Rasa Pro has
-its own distribution and licensing terms.
+With a Rasa Pro licence and no model keys, the Inspector uses
+**SCRIPTED tool selection**. The pinned
+engine, skill execution, MCP requests, hooks and browser Inspector are real;
+the selection of tools is deterministic and is not model reasoning. This is
+separate from `scripted_demo.py`, the historical console-only replay harness.
+
+For an explicitly keyless run even when your shell has model keys:
+
+```sh
+./demo run --scripted
+```
+
+In the Inspector, supply your own explicit journey, using this syntax:
+
+```text
+callsign=TEST123 meeting=2026-10-22T21:00:00Z transfer=45
+```
+
+`TEST123` illustrates the syntax, not a promised airborne flight. Replace it
+with a real callsign. The meeting includes its date and timezone. Transfer is
+an assumption in minutes, never a traffic observation. A follow-up such as
+`transfer=60` revises the same briefing. Missing or invalid inputs are asked
+for; the launcher does not guess a journey.
+
+The four cards are flight position with a computed arrival estimate, hourly
+weather, the arrival/transfer/meeting timeline, and a currency watchlist. Market
+values are daily reference rates, not live stock quotes. Source outages and
+missing observations show unavailable reasons rather than invented values.
+See [source choices and attribution](SOURCE-CHOICES.md). Values come from source
+handlers, never from model prose. The card page uses Core's renderer, inline
+styles and SVG; it loads no remote browser assets.
+
+## Optional live model and voice
+
+Only the facilitator or participant supplies keys, in their own terminal
+environment. Do not paste values into chat, files, URLs or logs. There is no
+seat-operated live model or voice proof here. The selected model group remains
+in `project/integrations.yml`; choose `openai` or `anthropic` there before a live
+run with the matching environment key. A key for the other group alone does
+not establish readiness.
+
+Voice uses Deepgram Flux and Aura-2 through the maintained project integration.
+Without `DEEPGRAM_API_KEY`, the launcher prints “Voice is off; continue in text.”
+Voice must not block the cards or scripted path. `--scripted` disables model
+and voice credentials in its children. Actual voice failure fallback and spoken
+weather scenario S13 require the operator's live check; no voice PASS is claimed.
+The owner-maintained doctor prints only SET or MISSING for credential names.
+
+## Provenance, access and remaining checks
+
+The service runs with a private, fresh `BRIEFING_MCP_TOKEN` passed only to its
+children. A private briefing ID permits get/revise access. Possession is not
+engine-sender isolation; never share or log that ID. Existing hooks protect its
+presentation. No listing or enumeration tool is provided.
+
+This launcher does not implement an alternate inspector, a provider API, a
+credential store or a card renderer. Its scripted provider is installed only
+in the child process at the pinned engine's LLM-client factory. No installed
+engine file is edited. Unsupported engine or Core releases fail startup rather
+than opening a replacement chat page.
+
+The source-adapter/renderer release pin, owner engine/voice configuration,
+independent clean-clone run, four-card screenshots, second-act checkpoint and
+operator live check remain receiving gates. A passing launcher unit test is
+not browser or class acceptance. The factory second act and completed market
+card checkpoint must be demonstrated before the class is accepted; the
+launcher does not relabel an old console transcript as that demonstration.
+
+Historical paths remain described in [the project instructions](project/README.md)
+and [the separate managed model worker](LIVE-WORKER.md). Their older wheel and
+two-shell instructions are not this class launcher's setup path.
+
+Teaching code uses the repository [license](../../LICENSE). Rasa Pro has its own
+terms; any licence requirement is an explicit prerequisite, not a skipped check.
