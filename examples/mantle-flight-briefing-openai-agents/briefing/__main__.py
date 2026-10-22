@@ -25,7 +25,9 @@ def main():
     args = parser.parse_args()
     from demo_host import require_viewer_access
     require_viewer_access(args.host)
-    if args.live_model and any(os.environ.get(name, '').strip()
+    managed_sources = (args.public_sources and bool(os.environ.get('OPENAI_API_KEY', '').strip())
+                       and bool(os.environ.get('BRIEFING_AGENTS_MODEL', '').strip()))
+    if (args.live_model or managed_sources) and any(os.environ.get(name, '').strip()
                                for name in ('OPENAI_BASE_URL', 'ANTHROPIC_BASE_URL')):
         raise SystemExit('Refused: custom provider base URL environment is SET; this kit supports provider defaults only.')
     # Read only the transport credential explicitly provided to this process.
@@ -40,8 +42,9 @@ def main():
             runner = PublicSourcesRunner()
         except ImportError:
             raise SystemExit('Public sources need the reviewed adapter release; update the locked Core pin after it is published.') from None
-    if args.live_model:
+    if args.live_model or managed_sources:
         from briefing.live import LiveFixtureRunner
+        from briefing.live_public_sources import LivePublicSourcesRunner
         from openai import OpenAI
         from briefing.native_runtime import require_agents_sessions
         model = os.environ.get('BRIEFING_AGENTS_MODEL', '').strip()
@@ -56,7 +59,11 @@ def main():
                 client.close()
                 raise
             return client
-        runner = LiveFixtureRunner(client_factory, model=model)
+        if managed_sources:
+            runner.close()
+            runner = LivePublicSourcesRunner(client_factory, model=model)
+        else:
+            runner = LiveFixtureRunner(client_factory, model=model)
     app = create_app(Jobs(runner, replacement_plan=runner.replacement_plan,
                           ownership_mode="capability"), transport_token=token, host=args.host)
     try:

@@ -78,8 +78,66 @@ class StatedDestinationMCP(unittest.IsolatedAsyncioTestCase):
                                          'Arrival weather', 'Arrival timeline', 'Market watchlist'):
                                 self.assertIn(text, page.text)
                             self.assertNotIn(start['briefing_id'], page.text)
+                            self.assertNotIn('9999', page.text)
                             self.assertEqual({r.url.host for r in requests},
                                              {'api.adsb.lol', 'api.met.no', 'data-api.ecb.europa.eu'})
         finally:
             await jobs.close()
+            runner.close()
+
+
+class RecordedManagedDestinationMCP(StatedDestinationMCP):
+    @staticmethod
+    def runner_type(sources):
+        from types import SimpleNamespace
+        from test_installed_native_contract import Sessions, Stream
+        from briefing.live_public_sources import LivePublicSourcesRunner
+        class RecordedStream(Stream):
+            def get_final_result(self):
+                self.final_collected = True
+                return SimpleNamespace(session_id='synthetic-managed-session',
+                                       output_text='Unchecked model margin and temperature 9999')
+        class RecordedSessions(Sessions):
+            def create(self, **kwargs):
+                if kwargs['agent']['model'] != 'offline-recorded-model':
+                    raise AssertionError('wrong model')
+                tools = kwargs['agent']['tools']
+                for tool in tools:
+                    if tool['parameters']['properties']['destination']['enum'] != ['EGLL']:
+                        raise AssertionError('destination schema must be bound to explicit traveller input')
+                self.stream = RecordedStream(kwargs['tool_handlers'], 1)
+                return self.stream
+        class Client:
+            def __init__(self):
+                self.beta = SimpleNamespace(agents=SimpleNamespace(sessions=RecordedSessions()))
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                pass
+        return LivePublicSourcesRunner(Client, model='offline-recorded-model', sources=sources)
+
+
+class ManagedSelectionControls(unittest.IsolatedAsyncioTestCase):
+    async def test_native_completion_without_source_callbacks_never_fabricates_cards(self):
+        from types import SimpleNamespace
+        from briefing.live_public_sources import LivePublicSourcesRunner
+        from briefing.jobs import Work
+        class Client:
+            beta = SimpleNamespace(agents=SimpleNamespace(sessions=SimpleNamespace(create=lambda: None)))
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                pass
+        def invoke(*args, **kwargs):
+            return SimpleNamespace(ok=True, status='completed', session_id='synthetic-no-callback',
+                                   output_text='Invented model values 9999', tools_called=())
+        sources, requests = fixture_sources()
+        runner = LivePublicSourcesRunner(Client, model='offline-control', sources=sources, invoke=invoke)
+        try:
+            answer = await runner(Work('callsign=TEST123 destination=LHR meeting=2026-10-22T06:00:00Z transfer=45',
+                                       'request', 1, None))
+            self.assertEqual(answer.cards, {})
+            self.assertEqual(requests, [])
+            self.assertEqual(len(answer.required_components), 4)
+        finally:
             runner.close()

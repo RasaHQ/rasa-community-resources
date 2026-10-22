@@ -81,30 +81,48 @@ class PublicSourcesRunner:
         return await asyncio.to_thread(self._read, work, inputs)
 
     def _read(self, work, inputs):
-        destination = {}
-        if inputs.get('destination'):
-            from briefing.airports import stated_destination
-            destination['stated_destination'] = stated_destination(inputs['destination'])
-        references = self.sources.read_briefing(
-            inputs['callsign'], transfer_minutes=inputs['transfer_minutes'],
-            meeting_time=datetime.fromisoformat(inputs['meeting_time']),
-            currencies=('USD', 'GBP'), **destination)
-        if set(references) != set(COMPONENTS):
-            raise ValueError('source_components_incomplete')
         cards = {}
+        read_reference = self._source_reader(inputs)
 
         def handler(component):
             def supply(arguments):
-                if dict(arguments):
+                arguments = dict(arguments)
+                if set(arguments) - {'destination'} or (
+                        arguments and arguments.get('destination') != inputs.get('destination')):
                     raise ValueError('unexpected_source_arguments')
-                reference = references[component].check(component)
+                reference = read_reference(component).check(component)
                 cards[component] = reference
-                return {'data_ref': reference.model_dump()}
+                return {'data_ref': reference.model_dump(mode='json')}
             return supply
-        handlers = {'read_' + component: handler(component) for component in references}
+        handlers = {'read_' + component: handler(component) for component in COMPONENTS}
+        properties = {}
+        if inputs.get('destination'):
+            properties['destination'] = {'type': 'string', 'enum': [inputs['destination']],
+                'description': 'Destination explicitly stated by the traveller; never infer one.'}
         tools = [function_tool(name, 'Read a validated public source reference',
-                 {'type': 'object', 'properties': {}, 'additionalProperties': False})
+                 {'type': 'object', 'properties': properties, 'additionalProperties': False})
                  for name in handlers]
+        turn = self._invoke(work, tools, handlers)
+        return Answer(turn, cards, required_components=tuple(COMPONENTS), inputs=inputs)
+
+    def _source_reader(self, inputs):
+        references = {}
+        def read(component):
+            if not references:
+                destination = {}
+                if inputs.get('destination'):
+                    from briefing.airports import stated_destination
+                    destination['stated_destination'] = stated_destination(inputs['destination'])
+                references.update(self.sources.read_briefing(
+                    inputs['callsign'], transfer_minutes=inputs['transfer_minutes'],
+                    meeting_time=datetime.fromisoformat(inputs['meeting_time']),
+                    currencies=('USD', 'GBP'), **destination))
+                if set(references) != set(COMPONENTS):
+                    raise ValueError('source_components_incomplete')
+            return references[component]
+        return read
+
+    def _invoke(self, work, tools, handlers):
         turn_id = 'source-' + work.request_id
         calls = [{'type': 'function_call', 'turn_id': turn_id,
                   'call_id': 'call-' + name, 'name': name, 'arguments': {}}
@@ -120,7 +138,7 @@ class PublicSourcesRunner:
         replies = [event for event in transport.sent if event['type'].endswith('tool_result')]
         if len(replies) != len(calls) or any(not event.get('success') for event in replies):
             raise ValueError('source_tool_results_incomplete')
-        return Answer(turn, cards, required_components=tuple(references), inputs=inputs)
+        return turn
 
     def close(self):
         self.sources.close()
