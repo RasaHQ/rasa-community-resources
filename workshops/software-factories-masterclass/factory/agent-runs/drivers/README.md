@@ -55,7 +55,7 @@ workspace containing acceptance files is refused.
 
 For the temporary class preview, pass the actual tailnet address at runtime
 with `--host` and an aware `--expires-at` no later than the authorized class end.
-No tailnet hostname or address is committed. Localhost is the default; public
+Declare `--viewer-access operator-device-acl` or `operator-accepted` for a tailnet preview. This declaration does not enforce a device ACL; the actual audience restriction remains a separate operator/network control. No tailnet hostname or address is committed. Localhost is the default; public
 and wildcard binds are refused. The preview shuts down at its expiry. Anyone
 who can reach the listener can read the displayed run evidence.
 
@@ -103,3 +103,8 @@ limit from 1 to 3. It is visible in the scratch task and native prompt; protecte
 paths and fingerprints remain excluded. The verifier gets its own exact host
 task snapshot beside the protected tests. The offline qualifier accepts
 `--task TASK --scripted-candidate ATTEMPT` for that ready folder.
+
+The read-only viewer can compare up to four explicit prior teaching run
+directories with repeated `--comparison-run DIRECTORY`. These paths are host
+configuration, never URL parameters. The page shows their actual decisions and
+reasons as separate offline teaching attempts, without claiming model results.

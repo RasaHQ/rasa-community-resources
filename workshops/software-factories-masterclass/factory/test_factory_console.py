@@ -79,7 +79,7 @@ class ConsoleControls(unittest.TestCase):
         self.assertNotIn(synthetic[5:13], output)
 
     def test_real_http_has_only_read_endpoints_and_no_path_escape(self):
-        server = server_for(self.root, port=0)
+        server = server_for(self.root, port=0, comparisons=[self.root])
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
@@ -90,7 +90,9 @@ class ConsoleControls(unittest.TestCase):
                 self.assertEqual(response.status, expected)
                 if expected == 200:
                     self.assertEqual(response.getheader('Cache-Control'), 'no-store')
-                response.read()
+                body = response.read()
+                if url == "/state.json":
+                    self.assertEqual(json.loads(body)["comparisons"][0]["label"], self.root.name)
             client.request('POST', '/', body='execute')
             response = client.getresponse()
             self.assertEqual(response.status, 405)
@@ -111,6 +113,20 @@ class ConsoleControls(unittest.TestCase):
             server.server_close()
         (self.root / 'verification' / 'decision.json').write_text('{"checks":null}')
         self.assertEqual(snapshot(self.root)['checks'], [])
+
+    def test_explicit_comparisons_are_read_only_and_escape_failure_reasons(self):
+        state = snapshot(self.root)
+        state['comparisons'] = [{'label': 'market-shows-live', 'decision': {'decision': 'REJECT', 'reasons': ['<script>bad</script>']}}]
+        page = render(state)
+        self.assertIn('Compare the checked teaching attempts', page)
+        self.assertIn('market-shows-live', page)
+        self.assertIn('&lt;script&gt;', page)
+        self.assertNotIn('<script>', page)
+        with self.assertRaises(ValueError):
+            server_for(self.root, port=0, comparisons=[self.root] * 5)
+        expiry = datetime(2026, 10, 22, 16, 30, tzinfo=timezone.utc)
+        with self.assertRaisesRegex(ValueError, 'audience'):
+            server_for(self.root, host='100.64.0.7', port=0, expires_at=expiry)
 
     def test_bind_and_expiry_are_enforced(self):
         for host in ('0.0.0.0', '8.8.8.8', '::', 'localhost'):

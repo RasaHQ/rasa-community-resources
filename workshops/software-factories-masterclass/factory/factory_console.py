@@ -99,7 +99,7 @@ h1,h2{font-family:"STK Bureau Serif",Newsreader,Georgia,serif;font-weight:400;li
 h1{font-size:clamp(34px,4vw,60px);max-width:980px;margin:16px 0 24px}h2{font-size:32px;margin:0 0 16px}
 p{max-width:820px}a{color:var(--rasa-link);text-underline-offset:4px}a:focus-visible,summary:focus-visible{outline:3px solid var(--rasa-link);outline-offset:4px}
 .eyebrow{font-family:"STK Bureau Sans Mono","JetBrains Mono",ui-monospace,monospace;font-size:13px;text-transform:uppercase;letter-spacing:.06em}
-.lead{font-size:20px}.muted{color:var(--rasa-muted-ink)}section{border-top:1px solid var(--rasa-border);padding:32px 0;min-width:0}
+.lead{font-size:20px}.muted{color:var(--rasa-muted-ink)}section{border-top:1px solid var(--rasa-border);padding:32px 0;min-width:0;overflow-wrap:anywhere}
 .flow{list-style:none;padding:24px;margin:32px 0;background:var(--rasa-muted);border-radius:16px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}
 .flow li{position:relative}.flow strong,.flow span{display:block}.flow span{font-size:15px;color:var(--rasa-muted-ink)}.flow li:not(:last-child):after{content:"→";position:absolute;right:-16px;top:0;color:var(--rasa-link)}
 .chip{display:inline-block;padding:4px 12px;border-radius:4px;background:var(--rasa-subtle);color:var(--rasa-muted-ink);font-size:15px;font-weight:600}
@@ -145,6 +145,14 @@ def render(state, *, refresh=True):
         if check.get('summary'):
             checks += '<div class="path">' + escape(check['summary']) + '</div>'
         checks += '</li>'
+    examples = ''
+    for example in state.get('comparisons', []):
+        verdict = example['decision'].get('decision')
+        examples += '<li><strong>' + escape(example['label']) + '</strong> ' + chip(verdict or 'NOT DECIDED',
+                    True if verdict == 'ACCEPT' else False if verdict == 'REJECT' else None)
+        examples += '<ul>' + ''.join('<li>' + escape(reason) + '</li>' for reason in (example['decision'].get('reasons') or [])) + '</ul></li>'
+    comparison_section = ('<section><h2>Compare the checked teaching attempts</h2><p>These are separate offline teaching attempts, '
+                          'checked by the real protected gates. They are not model results.</p><ul>' + examples + '</ul></section>') if examples else ''
     decision = state['decision'].get('decision')
     verdict = ('The change meets the written checks.' if decision == 'ACCEPT' else
                'The change did not meet the written checks; the assistant stays unchanged.' if decision == 'REJECT' else
@@ -187,13 +195,14 @@ def render(state, *, refresh=True):
         + (checks or '<li>' + chip('NOT RUN') + '</li>') + '</ul></section>'
         + '<section><h2>Make the decision visible</h2>' + chip(decision or 'NOT DECIDED', True if decision == 'ACCEPT' else False if decision == 'REJECT' else None)
         + '<p>' + verdict + '</p><ul>' + ''.join('<li>' + escape(reason) + '</li>' for reason in (state['decision'].get('reasons') or [])) + '</ul></section>'
+        + comparison_section
         + '<section><h2>Update the running assistant only after acceptance</h2><p>Acceptance permits integration: applying exactly the checked change. '
         + 'A rejected change must leave the running assistant untouched.</p>' + block(integration or {'status': 'NOT RECORDED'}) + '</section>'
         + '<footer>Read-only evidence view. Devices or local processes that can reach this listener can read it. '
         + 'This page cannot run a builder or approve a change. Font files are not downloaded.</footer></main></html>')
 
 
-def server_for(root, host='127.0.0.1', port=8943, *, expires_at=None, clock=None):
+def server_for(root, host='127.0.0.1', port=8943, *, expires_at=None, clock=None, comparisons=(), viewer_access=None):
     address = ipaddress.ip_address(host)
     tailnet = address in ipaddress.ip_network('100.64.0.0/10')
     if host != '127.0.0.1' and not tailnet:
@@ -202,6 +211,13 @@ def server_for(root, host='127.0.0.1', port=8943, *, expires_at=None, clock=None
         raise ValueError('Use a timezone-aware preview expiry.')
     if tailnet and (expires_at is None or expires_at.tzinfo is None or expires_at > PREVIEW_END):
         raise ValueError('The tailnet preview must expire by the authorized class end.')
+    if tailnet and viewer_access not in ('operator-device-acl', 'operator-accepted'):
+        raise ValueError('Declare the authorized preview audience; this does not enforce a device ACL.')
+    if len(comparisons) > 4:
+        raise ValueError('At most four explicit teaching comparisons are supported.')
+    comparisons = tuple(Path(path) for path in comparisons)
+    if any(path.is_symlink() or not path.is_dir() for path in comparisons):
+        raise ValueError('Teaching comparisons must be explicit regular run directories.')
     root = Path(root)
     if root.is_symlink() or (root.exists() and not root.is_dir()):
         raise ValueError('Choose one regular factory run directory or its future path.')
@@ -219,6 +235,7 @@ def server_for(root, host='127.0.0.1', port=8943, *, expires_at=None, clock=None
                 self.send_error(404)
                 return
             state = snapshot(root)
+            state['comparisons'] = [{'label': path.name, 'decision': snapshot(path)['decision']} for path in comparisons]
             body = (redact(json.dumps(state)).encode() if self.path == '/state.json'
                     else render(state, refresh=self.path != '/paused').encode())
             self.send_response(200)
@@ -244,12 +261,15 @@ def main(argv=None):
     parser.add_argument('--host', default='127.0.0.1')
     parser.add_argument('--port', type=int, default=8943)
     parser.add_argument('--expires-at', help='Aware ISO timestamp; required for the tailnet preview.')
+    parser.add_argument('--comparison-run', action='append', default=[], help='Explicit prior offline teaching run directory (at most four).')
+    parser.add_argument('--viewer-access', choices=('operator-device-acl', 'operator-accepted'), help='Tailnet audience declaration; does not enforce an ACL.')
     args = parser.parse_args(argv)
     try:
         expiry = datetime.fromisoformat(args.expires_at.replace('Z', '+00:00')) if args.expires_at else None
         if expiry is not None and (expiry.tzinfo is None or expiry <= datetime.now(timezone.utc)):
             raise ValueError('Use a future, timezone-aware preview expiry.')
-        server = server_for(args.run_directory, args.host, args.port, expires_at=expiry)
+        server = server_for(args.run_directory, args.host, args.port, expires_at=expiry,
+                            comparisons=args.comparison_run, viewer_access=args.viewer_access)
         if expiry is not None:
             timer = threading.Timer((expiry - datetime.now(timezone.utc)).total_seconds(), server.shutdown)
             timer.daemon = True
