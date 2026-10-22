@@ -9,7 +9,7 @@ Time: not_provided — reader exercise not accepted yet
 
 For the optional real managed model with explicitly constructed source data,
 see [the separate live worker](LIVE-WORKER.md). The guaranteed scripted path
-and its Core dev17 worker remain separate from that opt-in path.
+and its historical development worker remain separate from that opt-in path.
 
 **End-to-end qualification is pending.** The Core-backed replay, authenticated
 MCP request path and fixed text-card renderer pass author controls. The class
@@ -74,14 +74,13 @@ independent acceptance and the facilitator's actual conversation rehearsal.
 
 ## Dependency custody and checks
 
-The dev Core wheel is not a public release. Its source and expected bytes are in
-[`worker/core-artifact.json`](worker/core-artifact.json). The exact class wheel and `SHA256SUMS` ship in `worker/inputs/`. Verify them
-before managed setup; no participant hand-staging or unverified download is needed.
-The same input is used by both resource-owned locks. Never substitute a package
-with the same version label but different bytes.
+Both resource-owned locks now use `zeocore==0.33.0` from PyPI, with registry
+artifact hashes in `uv.lock` and [`worker/core-artifact.json`](worker/core-artifact.json).
+This release includes the shared graphical renderer; the proposed real-source
+adapters require their own reviewed release. The unified setup/run launcher is
+still unfinished, so this draft is not a first-user-ready demo.
 
-Create each environment through the repository's managed helper, from repository
-root, after the verified input is available:
+Create each isolated environment from repository root:
 
 ```sh
 python3 scripts/workspace.py start examples/mantle-flight-briefing-openai-agents/worker --owner flight-worker

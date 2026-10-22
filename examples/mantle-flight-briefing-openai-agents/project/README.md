@@ -26,8 +26,7 @@ The latter replaces unchecked model prose with validated source cards before
 non-streaming delivery. It does not rely on the uninvoked outgoing-text hook.
 Streaming and the complete model/tool conversation still require qualification.
 
-The lock points to the verified dev Core wheel in `../worker/inputs/`, not a
-registry release. Source controls do not establish a Mantle conversation,
+The lock pins `zeocore==0.33.0` from PyPI with its registry artifact hashes. Source controls do not establish a Mantle conversation,
 widget rendering, voice or a live Agents API result. No assessment date or
 assessor is supplied until the intended workflow is qualified.
 
@@ -37,8 +36,7 @@ environment values. For engine dotenv controls and their limits, see below.
 
 ## Facilitator runtime checkpoint
 
-For a **keyless scripted demo**, run from the example directory after verifying the committed Core wheel checksum and managed
-setup:
+For a **keyless scripted demo**, run from the example directory after managed locked setup:
 
 ```sh
 project/.venv/bin/python scripted_demo.py
@@ -147,7 +145,7 @@ Run it with that worker's interpreter. The Mantle project keeps SDK 2.44,
 which lacks `beta.agents`; its interpreter refuses this probe plainly before
 a provider request. The probe does not establish a live briefing workflow.
 No SDK upgrade or alternate transport should be improvised in the class.
-The labelled scripted fallback remains available with Core dev17.
+The labelled scripted fallback remains available on the released Core pin.
 
 Provider references: [OpenAI environment-key quickstart](https://developers.openai.com/api/docs/quickstart),
 [managed Agents API contract](https://developers.openai.com/api/docs/guides/agents-api/quickstart),
@@ -166,7 +164,7 @@ raw logs or transcripts to a seat.
    `project/.venv/bin/python class_doctor.py --scripted`. The head must match the
    linked run candidate; see both key names with SET/MISSING and PATH: SCRIPTED.
    Missing keys are expected before they are handed out. The managed worker and
-   project environments and committed wheel must already be installed.
+   project environments must already be installed from their registry locks.
 2. With the facilitator's own OpenAI key privately set in OPENAI_API_KEY, select
    `llm.model_group: openai` in `project/integrations.yml` and run
    `project/.venv/bin/python class_doctor.py --probe`. Expect PATH: live OPENAI
