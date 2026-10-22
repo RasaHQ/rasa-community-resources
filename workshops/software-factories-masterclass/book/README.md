@@ -31,7 +31,7 @@ Every chapter opens with a short scene, then a **Time** line and what you need. 
 3. **You're done when.** A real command that prints `chNN OK`. In chapters 3 to 8 it fails before you make your change and passes after.
 4. **If you get stuck.** The working code for the chapter is in its ready folder under `ready/`, so you can start any chapter without doing the earlier ones. Chapters 1 and 2 use the chapter 0 folder.
 
-Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so on), next to your clone and outside it, copied from the chapter's ready folder. `PACK` in the commands means the root of the unzipped workshop package, for example `export PACK=/absolute/path/to/software-factories-masterclass`.
+Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so on), next to your clone and outside it, copied from the chapter's ready folder. `PACK` is the `software-factories-masterclass` folder. After a clone it is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping it is the unzipped folder. For example, `export PACK=~/rasa-community-resources/workshops/software-factories-masterclass` after a clone, or `export PACK=/absolute/path/to/software-factories-masterclass` after unzipping.
 
 ## The chapters
 

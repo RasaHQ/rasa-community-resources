@@ -31,12 +31,13 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
    git clone https://github.com/RasaHQ/rasa-community-resources.git
    ```
 
-   If you have the supplied ZIP instead, unzip it and run `git init` in the unzipped folder, because the demo checks that `.env` is untracked. You don't need a remote repository. In this book, `PACK` always means the folder you cloned or unzipped.
+   If you have the supplied ZIP instead, unzip it and run `git init` in the unzipped folder, because the demo checks that `.env` is untracked. You don't need a remote repository. `PACK` is the `software-factories-masterclass` folder. After a clone it is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping it is the unzipped folder.
 
-2. Set `PACK` to that folder and install the supplied code:
+2. Set `PACK` and install the supplied code. Use one of the two export lines:
 
    ```bash
-   export PACK=/absolute/path/to/software-factories-masterclass
+   export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+   export PACK=/absolute/path/to/software-factories-masterclass   # after unzipping
    cd "$PACK/book/ready/ch00/demo"
    make help
    make setup
@@ -80,7 +81,8 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 3. In a second terminal, check the result before making your change:
 
    ```bash
-   export PACK=/absolute/path/to/software-factories-masterclass
+   export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+   export PACK=/absolute/path/to/software-factories-masterclass   # after unzipping
    cd "$PACK/book/ready/ch00"
    python3 check_demo.py --recorded --transfer-minutes 30
    ```

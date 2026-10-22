@@ -6,14 +6,14 @@ The destination is a **voice factory assistant** that takes a product brief and 
 
 ## Before the lab (5 minutes)
 
-Open a terminal in the unzipped `software-factories-masterclass` folder:
+Open a terminal in the `software-factories-masterclass` folder. After a clone, that is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping, it is the unzipped folder:
 
 ```bash
 export PACK="$PWD"
 python3 --version
 ```
 
-Use Python 3.12. `PACK` always means this folder; keep the terminal open. In a new terminal, set `PACK` again to the full path. Read `PREWORK.md` if you have not installed dependencies.
+Use Python 3.12. `PACK` always means this folder (the `software-factories-masterclass` folder); keep the terminal open. In a new terminal, set `PACK` again to the full path. Read `PREWORK.md` if you have not installed dependencies.
 
 Choose your route:
 
