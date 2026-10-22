@@ -146,7 +146,7 @@ class Jobs:
         if job is None:
             return 'Ready. Waiting for a briefing.'
         if job.status in ('started', 'running'):
-            return 'Running. Checking the public sources.'
+            return 'Checking the flight... the weather... the rate...'
         if job.needs_input:
             return 'Waiting for your answer in the conversation.'
         return 'Ready for another briefing.'

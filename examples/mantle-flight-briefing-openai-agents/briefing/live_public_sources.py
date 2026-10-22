@@ -1,4 +1,6 @@
 """Managed Agents callbacks read real public sources; prose never makes a card."""
+from concurrent.futures import ThreadPoolExecutor
+from threading import RLock
 from datetime import datetime
 import json
 
@@ -19,7 +21,11 @@ class LivePublicSourcesRunner(PublicSourcesRunner):
         # The model selects the tools. Dependencies share one validated flight
         # observation, but a market-only selection never contacts ADSB or MET.
         cache = {}
+        flight_lock = RLock()
         def observed():
+            with flight_lock:
+                return observed_once()
+        def observed_once():
             if 'flight' not in cache:
                 destination = {}
                 if inputs.get('destination'):
@@ -55,13 +61,27 @@ class LivePublicSourcesRunner(PublicSourcesRunner):
         return read
 
     def _invoke(self, work, tools, handlers):
+        # One model-selected tool starts a coherent four-card read. Independent
+        # callbacks run concurrently; weather/timeline share one fresh flight.
+        # No callback means no source request and no fabricated cards.
+        from zeo_core.integrations.agents import function_tool
+        tool_name = 'read_briefing'
+        def read_all(arguments):
+            with ThreadPoolExecutor(max_workers=4, thread_name_prefix='briefing-source') as pool:
+                pending = {name: pool.submit(handler, arguments)
+                           for name, handler in handlers.items()}
+                return {name: future.result() for name, future in pending.items()}
+        aggregate_tool = function_tool(tool_name,
+            'Read the flight, weather, rate and computed timeline for this journey',
+            tools[0]['parameters'])
         # A fresh native session for every revision; no legacy session reuse.
         with self.client_factory() as client:
-            return native_turn(client, agent={'model': self.model, 'tools': tools,
-                'instructions': 'Read each offered public source tool once to build all four cards. '
-                                'Tools return validated observations or honest unavailable results. '
+            return native_turn(client, agent={'model': self.model, 'tools': [aggregate_tool],
+                'instructions': 'Call read_briefing once to build all four cards. '
+                                'It reads independent public sources concurrently and returns '
+                                'validated observations or honest unavailable results. '
                                 'Never invent values or retry unavailable sources. '
-                                'Finish with a short completion message after the tools.'},
+                                'Finish with a short completion message after the tool.'},
                 text=json.dumps({'request': work.text, 'journey': work.inputs or {}},
                                 allow_nan=False, separators=(',', ':')),
-                handlers=handlers, invoke=self.invoke, max_calls=8)
+                handlers={tool_name: read_all}, invoke=self.invoke, max_calls=1)

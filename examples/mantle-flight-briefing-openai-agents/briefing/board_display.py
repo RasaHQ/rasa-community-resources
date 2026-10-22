@@ -145,3 +145,11 @@ def start_panel(status, *, discovery=None):
 <p>The details appear here. Keep chatting in your own words beside this panel.</p>
 </body></html>"""
     return brand_document(document)
+
+
+def progress_document(document, status):
+    """Transport progress beside Core cards; never alter a validated value."""
+    if not status.startswith('Checking the flight'):
+        return document
+    from html import escape
+    return document.replace('<body>', '<body><p role="status">' + escape(status) + '</p>', 1)
