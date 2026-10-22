@@ -98,11 +98,10 @@ styles and SVG; it loads no remote browser assets.
 
 ## Optional live model and voice
 
-Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested.
+Use `make run-voice` for the patched Deepgram path described below. Earlier unpatched recorded-audio attempts failed after selection; their failure remains recorded. The physical microphone path is unqualified.
 
 Only the facilitator or participant supplies keys in the ignored example-root
-`.env` or their shell. Never paste values into chat, committed files, URLs or logs. There is no
-seat-operated live model or voice proof here. The selected model group remains
+`.env` or their shell. Never paste values into chat, committed files, URLs or logs. The local voice command uses scripted selection; the separate live-model path uses the selected model group
 in `project/integrations.yml`; choose `openai` or `anthropic` there before a live
 run with the matching environment key. A key for the other group alone does
 not establish readiness.
@@ -110,14 +109,14 @@ not establish readiness.
 This example folder is pinned to and tested on Rasa Pro 3.21.0.dev5. The current Mantle docs describe 3.21.0.dev12, where the model is set in agent.yml under orchestrator.model_group. Use this pack's files today. The workshop's Chapter 0 runs on Rasa Pro 3.21.0.
 
 Voice uses Deepgram Flux and Aura-2 through the maintained project integration.
-Without `DEEPGRAM_API_KEY`, the launcher prints “Voice is off; set DEEPGRAM_API_KEY in your environment to enable it, or continue with text.”
+Voice is opt-in: supply `DEEPGRAM_API_KEY` and run `make run-voice`. Ordinary `make run` leaves voice off.
 Voice must not block the cards or scripted path. The owner-supplied Flux/Aura-2
 configuration is merged only in the Inspector process, without writing keys.
 If the voice-configured Inspector cannot start, the launcher stops its owned
 process group and retries the actual Inspector once in text mode, leaving the
 source service running. `--scripted` disables model
 and voice credentials in its children. Actual voice failure fallback and spoken
-weather scenario S13 require the operator's live check; no voice PASS is claimed.
+weather scenario S13 require the operator's live check. Audio-file proof does not qualify a physical microphone.
 The owner-maintained doctor prints only SET or MISSING for credential names.
 
 The launcher reads only `RASA_LICENSE`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`
