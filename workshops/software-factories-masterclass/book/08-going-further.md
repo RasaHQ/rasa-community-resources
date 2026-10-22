@@ -112,13 +112,15 @@ This exits 0 and prints `ch08 OK`: your proposal received protected ACCEPT, the 
 
 Automation does not give the proposer permission to weaken its own checks. `policy.json` lists protected paths, and `policy.py` illustrates how a proposal touching those paths is sent for independent review. These files explain the supervision policy; they are not an access-control boundary.
 
-You can also inspect a hypothetical supervision calculation:
+Imagine twelve changes that all work for the same common request. A thirteenth request might use a date format none of those changes covered. Twelve successes do not show how often unfamiliar requests will fail.
+
+You can inspect that hypothetical example without running more builders:
 
 ```bash
 python policy.py what-if policy.json 12 12
 ```
 
-It starts `WHAT-IF`: no experiment records were loaded. Even twelve perfect trials would leave uncertainty about future failures. The calculation uses a **Wilson interval**, a range that reflects sampling uncertainty under assumptions about independent, comparable trials. It cannot repair a biased or selected sample. The policy therefore holds at its initial supervision level in this example. Eligibility under a larger hypothetical count still requires a person to sign a policy change; this command changes no policy.
+It starts `WHAT-IF`: these are numbers you supplied, not measured results. It ends `HOLD at L0`, meaning a person must still read every accepted change before release. The line called `Wilson lower bound` is a cautious estimate of the success rate, rather than the observed twelve out of twelve. It assumes each attempt is a separate, comparable test; it cannot make a selected set of easy examples representative of other requests. Even if you supply larger numbers, a person must approve any change to that supervision rule. This command changes no policy.
 
 ## If it fails
 
