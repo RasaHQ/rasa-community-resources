@@ -9,7 +9,7 @@ The target experience is a spoken product request, a builder session, independen
 
 ## What changed
 
-- One three-hour schedule: 10-minute teaser, 20-minute concepts, 10-minute group briefing, 80-minute lab, 15-minute networking break, 30-minute lab, 15-minute demos.
+- One three-hour schedule: 10-minute teaser, 20-minute concepts, 10-minute group briefing, 55-minute lab, 15-minute networking break, 55-minute lab, 15-minute demos.
 - A participant route with checkpoints, expected results, recovery instructions and a path for participants without macOS.
 - The travel scaffold now targets Rasa Pro **3.21.0**. Its model group is selected in `agent.yml`; Flux recognition uses `deepgram_flux`. Its dependency lock is regenerated.
 - The Agents API and Agents SDK are clearly distinguished. Python's `openai` client can call the Agents API; that does not make it the `openai-agents` framework.

@@ -7,9 +7,9 @@ Use elapsed time. If the booked start is 14:30 London, the finish is 17:30. This
 | 00–10 | 14:30–14:40 | Teaser: the finished travel experience, then the build loop | Typed question (voice is optional and untested today), visual cards, one rejected change. Identify live, replay and scripted parts before showing them. |
 | 10–30 | 14:40–15:00 | Concepts, slides 4–12 | Participants can explain the two agents, independent verification and release boundary. |
 | 30–40 | 15:00–15:10 | Form groups of 3–4; open the guide; choose track | One driver, one requirements owner, one evaluator, optional observer. |
-| 40–120 | 15:10–16:30 | Lab A at each group's pace | Brief, acceptance examples, first attempt and recorded verdict. |
-| 120–135 | 16:30–16:45 | Break and meet another group | Each group exchanges one failure case. |
-| 135–165 | 16:45–17:15 | Lab B at each group's pace | A rejection, revised attempt, integration evidence and a handoff. |
+| 40–95 | 15:10–16:05 | Lab A at each group's pace | Brief, acceptance examples, first attempt and recorded verdict. |
+| 95–110 | 16:05–16:20 | Break and meet another group | Each group exchanges one failure case. |
+| 110–165 | 16:20–17:15 | Lab B at each group's pace | A rejection, revised attempt, integration evidence and a handoff. |
 | 165–180 | 17:15–17:30 | Three short group demos and closing discussion | Show the requirement, failed case, result and remaining limitation. |
 
 110 minutes of lab plus 15 minutes of networking = 125 minutes, 69% of the session. Do not add a second lecture during the labs. Optional appendix slides answer questions at tables.
