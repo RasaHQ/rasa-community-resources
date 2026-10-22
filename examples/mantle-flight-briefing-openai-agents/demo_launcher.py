@@ -498,9 +498,16 @@ class ScriptedClient:
         wants_search = any(phrase in text.lower() for phrase in ('which flights', 'find flights', 'look for flights', 'don’t know', "don't know"))
         if finder and destination and flight_number(text) is None and (not capability or wants_search):
             return reply(finder, {'destination': text})
-        discovery = next((v for v in reversed(previous) if isinstance(v.get('discovery_id'), str)
-                          and v.get('status') == 'found'), None)
-        if discovery and not capability:
+        # The Inspector's opening question can create an empty briefing before
+        # flight discovery. Choose from a newer search instead of revising that
+        # older job; subsequent answers use the selected flight's newer job.
+        capability_index = max((i for i, value in enumerate(previous)
+                                if isinstance(value.get('briefing_id'), str)), default=-1)
+        discovery_index = max((i for i, value in enumerate(previous)
+                               if isinstance(value.get('discovery_id'), str)
+                               and value.get('status') == 'found'), default=-1)
+        discovery = previous[discovery_index] if discovery_index >= 0 else None
+        if discovery and discovery_index > capability_index:
             import re
             words = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5}
             match = re.fullmatch(r'(?:the )?(first|second|third|fourth|fifth|[1-5])(?: one| flight)?[.!]?', text.strip().lower())

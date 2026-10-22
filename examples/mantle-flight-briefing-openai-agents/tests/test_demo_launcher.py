@@ -254,6 +254,30 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
             self.assertFalse(response.tool_calls)
             self.assertIn('Which flight', response.response_text())
 
+    async def test_new_discovery_choice_supersedes_the_empty_opening_briefing(self):
+        # The real Inspector starts an empty briefing to ask its opening question.
+        # Its older capability must not turn a subsequent flight choice into a
+        # revision of that empty job. These are actual tracker JSON result shapes.
+        messages = [
+            {'role': 'tool', 'content': json.dumps({'status': 'started', 'briefing_id': 'synthetic-empty-opening'})},
+            {'role': 'tool', 'content': json.dumps({'status': 'needs_input', 'needs_input': {'field': 'destination'}})},
+            {'role': 'user', 'content': 'Which flights are in the air heading to New York?'},
+            {'role': 'tool', 'content': json.dumps({'status': 'found', 'discovery_id': 'synthetic-new-search', 'candidates': [{}, {}]})},
+            {'role': 'user', 'content': 'the second one'},
+        ]
+        response = await self.call(messages, ['briefing', 'find_flights'])
+        self.assertEqual(response.tool_calls[0].tool_args, {'action': 'start',
+            'request': 'the second one', 'discovery_id': 'synthetic-new-search', 'choice': 2})
+        # Once that selection starts its own job, later answers revise it.
+        messages.extend([
+            {'role': 'tool', 'content': json.dumps({'status': 'started', 'briefing_id': 'synthetic-selected-flight'})},
+            {'role': 'tool', 'content': json.dumps({'status': 'needs_input', 'needs_input': {'field': 'meeting_time'}})},
+            {'role': 'user', 'content': 'the 6 pm meeting tomorrow'},
+        ])
+        response = await self.call(messages, ['briefing', 'find_flights'])
+        self.assertEqual(response.tool_calls[0].tool_args, {'action': 'revise',
+            'briefing_id': 'synthetic-selected-flight', 'change': 'the 6 pm meeting tomorrow'})
+
     async def test_scripted_new_turns_do_not_exhaust_a_lifetime_call_counter(self):
         client = demo.ScriptedClient()
         for _ in range(15):
