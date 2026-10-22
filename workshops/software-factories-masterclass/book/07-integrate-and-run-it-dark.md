@@ -17,7 +17,8 @@ Every chapter has a finished, working folder, so you don't need the earlier chap
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
-cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch07 my-factory-ch07
+mkdir -p ~/factory-work && cd ~/factory-work
+[ -e my-factory-ch07 ] && echo "my-factory-ch07 already exists: use it, or move it away first" || cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch07 my-factory-ch07
 ```
 
 ```bash
@@ -42,7 +43,7 @@ uv pip install zeocore==0.35.4 httpx==0.28.1
    python show_card.py --offline
    ```
 
-   You see `recorded the base product`, then `INTEGRATED - the checks replayed on the integrated product`, then `wrote card.html`. Open `card.html` in a browser: the market card with four currencies. The page is titled a recorded example, because `show_card.py` draws it from a recorded answer from 2026-10-21 so that it works offline. It isn't live data.
+   You see `recorded the base product`, then `INTEGRATED - the checks replayed on the integrated product`, then `wrote card.html`. Open `card.html` in a browser: the market card with four currencies. The page is titled "sample numbers, not live", because `show_card.py` draws it from a small bundled sample of exchange-rate data so that it works offline. The numbers are made up for the exercise. They aren't real rates.
 3. Try the same integration again:
    ```bash
    python integrate.py tasks/a6-market-watchlist.json candidates/market-good
@@ -72,7 +73,7 @@ The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 
    python show_card.py --offline
    ```
 
-   You see `INTEGRATED`, then `wrote card.html`. Open `card.html`: the market card shows exactly the number of currencies you asked for, and the page is titled a recorded example.
+   You see `INTEGRATED`, then `wrote card.html`. Open `card.html`: the market card shows exactly the number of currencies you asked for, and the page says it uses sample numbers.
 
 ## You are done when
 
@@ -87,8 +88,8 @@ limit = json.load(open("tasks/b-limit-currencies.json"))["limit"]
 page = open("card.html").read()
 rows = set(re.findall(r"EUR[A-Z]{3}", page))
 assert len(rows) == limit, rows
-assert "recorded example, not live" in page
-print("ch07 OK: the card shows", limit, "currencies and says it is a recorded example")
+assert "sample numbers, not live" in page
+print("ch07 OK: the card shows", limit, "currencies and says it uses sample numbers")
 EOF
 ```
 

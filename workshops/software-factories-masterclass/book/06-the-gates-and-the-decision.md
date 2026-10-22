@@ -17,7 +17,8 @@ Every chapter has a finished, working folder, so you don't need the earlier chap
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
-cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch06 my-factory-ch06
+mkdir -p ~/factory-work && cd ~/factory-work
+[ -e my-factory-ch06 ] && echo "my-factory-ch06 already exists: use it, or move it away first" || cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch06 my-factory-ch06
 ```
 
 ```bash
@@ -59,7 +60,6 @@ The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 
 
 1. Run the scripted builder. It reads the limit from your task and writes an attempt, with no model call:
    ```bash
-   python set_limit.py 2
    python scripted_builder.py tasks/b-limit-currencies.json attempts/mine
    ```
 

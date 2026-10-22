@@ -19,7 +19,8 @@ Every chapter has a finished, working folder, so you don't need the earlier chap
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
-cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch03 my-factory-ch03
+mkdir -p ~/factory-work && cd ~/factory-work
+[ -e my-factory-ch03 ] && echo "my-factory-ch03 already exists: use it, or move it away first" || cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch03 my-factory-ch03
 ```
 
 ```bash

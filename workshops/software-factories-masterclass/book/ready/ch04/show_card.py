@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draw the market card from your product, using a recorded answer from the ECB, and write card.html.
+"""Draw the market card from your product, using a small bundled sample in the shape of the ECB's answer, and write card.html.
 
     python show_card.py --offline
 """
@@ -28,15 +28,15 @@ CSV = ("FREQ,CURRENCY,CURRENCY_DENOM,EXR_TYPE,EXR_SUFFIX,TIME_PERIOD,OBS_VALUE\n
 
 def main():
     if "--offline" not in sys.argv:
-        print("Use --offline: this chapter draws the card from a recorded answer, so it needs no network.")
+        print("Use --offline: this chapter draws the card from a bundled sample, so it needs no network.")
         return 2
     transport = httpx.MockTransport(lambda request: httpx.Response(200, text=CSV, headers={"Content-Type": "text/csv"}))
     http = H.PublicSourceHTTP(transport=transport, clock=lambda: NOW, monotonic=lambda: 1000.0, sleep=lambda s: None)
     sources = PublicBriefingSources(http, clock=lambda: NOW)
     ref = market_card(sources, ["USD", "GBP", "JPY", "CHF"])
     card = CardState(widget_id="market-watchlist", component="market_watchlist", revision=1, request_id="r1", replaced=False, data_ref=ref)
-    Path("card.html").write_text(render_snapshot_html([card], document=True, title="Market watchlist (a recorded example, not live)"))
-    print("wrote card.html: a recorded exchange-rate answer from 2026-10-21, not live data. Open it in a browser.")
+    Path("card.html").write_text(render_snapshot_html([card], document=True, title="Market watchlist (sample numbers, not live)"))
+    print("wrote card.html: it uses a small bundled sample of exchange-rate data with made-up numbers, not live data. Open it in a browser.")
     return 0
 
 

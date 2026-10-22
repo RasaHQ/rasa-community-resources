@@ -17,7 +17,8 @@ Every chapter has a finished, working folder, so you don't need the earlier chap
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
-cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch04 my-factory-ch04
+mkdir -p ~/factory-work && cd ~/factory-work
+[ -e my-factory-ch04 ] && echo "my-factory-ch04 already exists: use it, or move it away first" || cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch04 my-factory-ch04
 ```
 
 ```bash
@@ -92,7 +93,9 @@ for item in [t["acceptance"], *t["support"]]:
 env = {"PATH": "/usr/bin:/bin", "PRODUCT_PROJECT": os.path.abspath("product")}
 r = subprocess.run([sys.executable, "-I", t["acceptance"]["path"]], capture_output=True, text=True, env=env)
 failing = set(re.findall(r"^FAIL: (test_b\d)", r.stderr, re.M))
-assert failing == {"test_b1", "test_b2", "test_b3", "test_b4", "test_b5"}, "setup problem or unexpected failures: " + r.stderr[-300:]
+lines = r.stderr.strip().splitlines()
+assert r.returncode == 1 and "Ran 6 tests" in r.stderr and lines[-1] == "FAILED (failures=5)" and "ERROR:" not in r.stderr, "setup problem or unexpected result: " + r.stderr[-300:]
+assert failing == {"test_b1", "test_b2", "test_b3", "test_b4", "test_b5"}, "unexpected failures: " + str(failing)
 g = subprocess.run([sys.executable, "run_a6.py", "tasks/b-limit-currencies.json", "attempts/mine"], capture_output=True, text=True)
 assert g.returncode == 0 and g.stdout.startswith("ACCEPT"), g.stdout + g.stderr
 print("ch04 OK: the tests fail on the baseline for the right reasons, and the builder's attempt is accepted")

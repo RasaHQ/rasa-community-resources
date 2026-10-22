@@ -26,7 +26,7 @@ Every chapter has the same parts:
 4. **Ready folder**, the working code for that chapter under `ready/`, so you can start at any chapter
    without doing the earlier ones.
 
-Each chapter builds on the one before it, and every chapter after Chapter 0 can start from the earlier checkpoint. Each "you are done when" check fails at the chapter's start checkpoint and passes at its end.
+Each chapter builds on the one before it, and every chapter has its own ready folder, so you can start at any chapter. Each "you are done when" check fails in the chapter's ready folder and passes after you make the change.
 
 ## The chapters
 
