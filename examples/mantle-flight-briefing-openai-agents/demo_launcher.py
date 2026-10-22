@@ -304,7 +304,7 @@ def tool_record(value):
         except ValueError:
             return None
     if isinstance(value, dict):
-        if isinstance(value.get('briefing_id'), str) and 'status' in value:
+        if value.get('status') in ('started', 'running', 'queued', 'complete', 'incomplete', 'needs_input', 'failed'):
             return value
         for key in ('structuredContent', 'content', 'text', 'value'):
             found = tool_record(value.get(key))
@@ -348,11 +348,17 @@ class ScriptedClient:
             result = current[-1]
             if result.get('status') in ('started', 'running', 'queued'):
                 await asyncio.sleep(0.2)
-                return reply(briefing, {'action': 'get', 'briefing_id': result['briefing_id']})
+                capability = next((v['briefing_id'] for v in reversed(previous + current) if isinstance(v.get('briefing_id'), str)), None)
+                if capability is None:
+                    return LLMResponse(id='scripted', choices=['SCRIPTED: the source check has no usable private job state.'], created=0)
+                return reply(briefing, {'action': 'get', 'briefing_id': capability})
             return LLMResponse(id='scripted', choices=['SCRIPTED: read the validated source cards and any missing-input question.'], created=0)
         text = str(messages[latest].get('content', '')) if users else ''
-        if previous:
-            return reply(briefing, {'action': 'revise', 'briefing_id': previous[-1]['briefing_id'], 'change': text})
+        capability = next((v['briefing_id'] for v in reversed(previous) if isinstance(v.get('briefing_id'), str)), None)
+        if capability:
+            if text.strip().lower() in ('status', 'get', 'show cards', 'check'):
+                return reply(briefing, {'action': 'get', 'briefing_id': capability})
+            return reply(briefing, {'action': 'revise', 'briefing_id': capability, 'change': text})
         return reply(briefing, {'action': 'start', 'request': text})
 
 

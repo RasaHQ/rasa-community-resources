@@ -196,5 +196,35 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('test-only-capability', reply.response_text())
 
 
+class ActualMCPResponseShapes(unittest.IsolatedAsyncioTestCase):
+    async def test_terminal_get_without_repeated_capability_stops_the_loop(self):
+        client = demo.ScriptedClient()
+        response = await client.acompletion([
+            {'role': 'user', 'content': 'callsign=TEST123'},
+            {'role': 'tool', 'content': json.dumps({'briefing_id': 'actual-start-capability', 'status': 'started'})},
+            {'role': 'tool', 'content': json.dumps({'status': 'incomplete', 'cards': [], 'reason': 'source unavailable'})},
+        ], tools=[{'function': {'name': 'briefing'}}])
+        self.assertFalse(response.tool_calls)
+        self.assertIn('validated source cards', response.response_text())
+
+    async def test_running_get_reuses_the_capability_from_start(self):
+        response = await demo.ScriptedClient().acompletion([
+            {'role': 'user', 'content': 'callsign=TEST123'},
+            {'role': 'tool', 'content': json.dumps({'briefing_id': 'actual-start-capability', 'status': 'started'})},
+            {'role': 'tool', 'content': json.dumps({'status': 'running', 'progress': ['Checking sources']})},
+        ], tools=[{'function': {'name': 'briefing'}}])
+        self.assertEqual(response.tool_calls[0].tool_args,
+                         {'action': 'get', 'briefing_id': 'actual-start-capability'})
+
+    async def test_status_after_terminal_get_does_not_launch_another_source_read(self):
+        response = await demo.ScriptedClient().acompletion([
+            {'role': 'tool', 'content': json.dumps({'briefing_id': 'actual-start-capability', 'status': 'started'})},
+            {'role': 'tool', 'content': json.dumps({'status': 'complete', 'cards': []})},
+            {'role': 'user', 'content': 'status'},
+        ], tools=[{'function': {'name': 'briefing'}}])
+        self.assertEqual(response.tool_calls[0].tool_args,
+                         {'action': 'get', 'briefing_id': 'actual-start-capability'})
+
+
 if __name__ == '__main__':
     unittest.main()
