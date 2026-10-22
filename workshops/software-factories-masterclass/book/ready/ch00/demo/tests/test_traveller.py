@@ -181,7 +181,9 @@ class SpokenMeetingHours(unittest.TestCase):
         now = datetime(2026, 10, 22, 14, 0, tzinfo=timezone.utc)
         for words, digits in [('Six PM tomorrow.', '6 pm tomorrow'),
                               ('tomorrow at one a.m.', 'tomorrow at 1 am'),
-                              ('twelve pm tomorrow', '12 pm tomorrow')]:
+                              ('twelve pm tomorrow', '12 pm tomorrow'),
+                              ('six p.m. tomorrow', '6 p.m. tomorrow'),
+                              ('twelve am tomorrow', '12 am tomorrow')]:
             self.assertEqual(meeting_time(words, airport_row('KEWR'), now),
                              meeting_time(digits, airport_row('KEWR'), now))
             self.assertIsNotNone(meeting_time(words, airport_row('KEWR'), now))
@@ -190,5 +192,7 @@ class SpokenMeetingHours(unittest.TestCase):
         from datetime import datetime, timezone
         from briefing.traveller import meeting_time, airport_row
         now = datetime(2026, 10, 22, 14, 0, tzinfo=timezone.utc)
-        for words in ['six tomorrow', 'six hours tomorrow', 'sixish pm tomorrow']:
+        for words in ['six tomorrow', 'six hours tomorrow', 'sixish pm tomorrow',
+                      'six thirty pm tomorrow', 'around six', 'around six pm tomorrow',
+                      'six or seven pm tomorrow', 'sixteen pm tomorrow', 'someone pm tomorrow']:
             self.assertIsNone(meeting_time(words, airport_row('KEWR'), now))
