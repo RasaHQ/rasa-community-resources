@@ -182,9 +182,9 @@ def create_app(jobs: Jobs, *, transport_token: str, host="127.0.0.1"):
         if not snapshot:
             from briefing.board_display import start_panel
             return start_panel(jobs.display_status(), discovery=jobs.display_discovery())
-        from briefing.board_display import brand_document, progress_document
-        return progress_document(brand_document(render_snapshot_html(snapshot, document=True, title=jobs.display_title(),
-                                                   place=jobs.display_place())), jobs.display_status())
+        from briefing.board_display import brand_document
+        return brand_document(render_snapshot_html(snapshot, document=True, title=jobs.display_title(),
+                                                   place=jobs.display_place()))
 
     app = server.streamable_http_app()
     original_lifespan = app.router.lifespan_context
