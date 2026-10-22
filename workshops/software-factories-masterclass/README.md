@@ -6,7 +6,7 @@ Tested by the course team on 22 October 2026 on macOS with Python 3.12, uv and a
 
 Time: 3 hours in the room; on your own, about 3 hours. The chapters total about 165 minutes, plus about 5 minutes for the first install.
 
-You ask an agent to brief you before a flight. It shows four cards: the flight, the weather, your arrival timeline and the market card, which lists exchange rates. You’ll run that agent, then build a small software factory that gives a builder a task for the market card, checks its changes against rules it cannot edit, and decides whether to accept them. Along the way, you’ll try a broken change and see why passing the builder’s own tests is only the beginning.
+You ask an agent to brief you before a flight. It shows four cards: the flight, the weather, your arrival timeline and the market card, which lists exchange rates. You’ll run that agent, then build a small software factory that builds the market card again from a version of the agent without it. The factory checks the builder’s changes against rules it cannot edit and decides whether to accept them. Along the way, you’ll try a broken change and see why passing the builder’s own tests is only the beginning.
 
 ## Start here
 
