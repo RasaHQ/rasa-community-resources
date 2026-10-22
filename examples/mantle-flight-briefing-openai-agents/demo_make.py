@@ -218,11 +218,11 @@ def create_env():
         print(name + ': ' + url, flush=True)
 
 
-def ready_environment():
+def ready_environment(*, credentials=True):
     demo = launcher()
     if not (demo.ROOT / '.env').exists():
         raise demo.DemoError('Run make env first, then fill in your own credential values.')
-    return demo.child_environment()
+    return demo.child_environment(credentials=credentials)
 
 
 def project_python():
@@ -231,7 +231,7 @@ def project_python():
     if not interpreter.is_file():
         raise demo.DemoError('Run make setup first to install the Python 3.12 environments.')
     result = subprocess.run([str(interpreter), '-c', 'import sys; sys.exit(sys.version_info[:2] != (3,12))'],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
+                            env=demo.child_environment(credentials=False), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
     if result.returncode:
         raise demo.DemoError('Install Python 3.12 and run make setup again.')
     return interpreter
@@ -254,7 +254,7 @@ def perform(target):
     elif target == 'clean':
         clean_environments()
     else:
-        env = ready_environment()
+        env = ready_environment(credentials=target not in ('setup', 'test'))
         if target == 'setup':
             demo.setup()
         elif target in ('run', 'run-scripted'):

@@ -374,7 +374,7 @@ class ParticipantDotenv(unittest.TestCase):
                                             self.root, self.project, self.worker)
 
     def test_four_names_literal_values_comments_and_quotes(self):
-        self.path.write_text('# Own values only\nRASA_LICENSE=fixture-licence\n'
+        self.path.write_text('\ufeff# Own values only\nRASA_LICENSE=fixture-licence\n'
                              'OPENAI_API_KEY="literal-${DO_NOT_EXPAND}-#-value"\n'
                              "ANTHROPIC_API_KEY='fixture-anthropic'\nDEEPGRAM_API_KEY=\n")
         result = self.load()
@@ -447,6 +447,24 @@ class ParticipantDotenv(unittest.TestCase):
         with self.assertRaises(demo.DemoError):
             self.load()
 
+    def test_setup_never_loads_dotenv_or_passes_shell_keys_to_build_processes(self):
+        results = [SimpleNamespace(returncode=0, stdout=sys.executable + '\n'), SimpleNamespace(returncode=0)]
+        values = {name: 'synthetic-build-secret-' + name for name in demo.PARTICIPANT_KEYS}
+        with patch.dict(os.environ, values), \
+                patch.object(demo, 'participant_environment', side_effect=AssertionError('setup must not read credentials')), \
+                patch.object(demo.subprocess, 'run', side_effect=results) as run, \
+                patch.object(demo, 'completed') as completed, \
+                patch('demo_make.mark_environment'), \
+                patch.object(demo.shutil, 'which', return_value='/installed/uv'):
+            demo.setup()
+        for call in run.call_args_list:
+            self.assertTrue(demo.PARTICIPANT_KEYS.isdisjoint(call.kwargs['env']))
+        self.assertEqual(completed.call_count, 2)
+        for call in completed.call_args_list:
+            self.assertTrue(demo.PARTICIPANT_KEYS.isdisjoint(call.kwargs['env']))
+            self.assertEqual(call.kwargs['env']['PYTHON_DOTENV_DISABLED'], '1')
+            self.assertEqual(call.kwargs['env']['UV_NO_ENV_FILE'], '1')
+
     def test_git_failure_is_fixed_refusal(self):
         with patch.object(demo.subprocess, 'run', return_value=SimpleNamespace(returncode=128)):
             with self.assertRaises(demo.DemoError) as error:
@@ -497,7 +515,7 @@ class ParticipantDotenv(unittest.TestCase):
                 patch.object(demo.shutil, 'which', return_value='/installed/uv'), \
                 patch.object(demo, 'registry_lock'), \
                 patch.object(demo.Children, 'start') as start, redirect_stderr(output):
-            self.assertEqual(demo.main(['setup']), 1)
+            self.assertEqual(demo.main(['make-target', 'doctor']), 1)
         self.assertNotIn(self.synthetic, output.getvalue())
         self.assertNotIn('Traceback', output.getvalue())
         start.assert_not_called()

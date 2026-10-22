@@ -30,7 +30,8 @@ make setup
 make run
 ```
 
-Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
+Use a Git clone; ZIP downloads are unsupported because the credential tracking
+and ignore checks require Git. Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
 `RASA_LICENSE` (the free Developer Edition licence) in the example-root `.env` or your shell, including in scripted mode;
 the launcher never bypasses the engine licence check. Model and voice keys are
 optional for the scripted text path. Before class, [sign up for your own free
@@ -116,7 +117,9 @@ the file. The launcher passes values only to its child processes and leaves your
 `.env` files, files not ignored by Git, files larger than 4 KiB,
 group/world-writable files, symlinks and runtime dotenv files in `project/` or
 `worker/` are refused. Never commit `.env`; keep the empty `.env.example` as the shared template.
-Implicit engine and uv dotenv loading stays disabled.
+Implicit engine and uv dotenv loading stays disabled. Setup and offline tests
+do not read participant credential values and strip shell credentials before
+starting build tools or test processes.
 
 Run `make help` for the ordered commands. `make env` copies the empty template
 only if `.env` is absent, makes it private (mode 600), and prints the credential

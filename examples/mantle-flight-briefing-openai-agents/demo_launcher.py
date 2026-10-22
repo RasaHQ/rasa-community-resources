@@ -118,7 +118,7 @@ def participant_environment(environment, root=None, project=None, worker=None):
             raw = stream.read(4097)
         if len(raw) > 4096:
             raise DemoError('The example .env is too large; keep it within 4 KiB and the four documented credential lines.')
-        text = raw.decode('utf-8')
+        text = raw.decode('utf-8-sig')
         seen = set()
         for raw_line in text.splitlines():
             line = raw_line.strip()
@@ -147,8 +147,13 @@ def participant_environment(environment, root=None, project=None, worker=None):
         raise DemoError('The example .env could not be read safely; check the file and Git checkout, then retry.') from None
 
 
-def child_environment():
-    env = participant_environment(os.environ)
+def child_environment(*, credentials=True):
+    env = participant_environment(os.environ) if credentials else os.environ.copy()
+    if not credentials:
+        # Setup/build backends and offline controls never receive credentials,
+        # whether they originated in the participant file or the caller shell.
+        for name in PARTICIPANT_KEYS:
+            env.pop(name, None)
     # The launcher alone reads the guarded file; engine/uv dotenv stays disabled.
     cache = ROOT / '.demo-cache'
     cache.mkdir(exist_ok=True)
@@ -259,7 +264,7 @@ def setup():
     from demo_make import check_environment_target, mark_environment
     for directory in (WORKER, PROJECT):
         check_environment_target(directory)
-    env = child_environment()
+    env = child_environment(credentials=False)
     # Locate an EXISTING managed interpreter in the caller's normal data home.
     # Runtime data remains redirected; discovery never downloads or installs.
     find_env = env.copy()
@@ -275,7 +280,7 @@ def setup():
         raise DemoError('Install Python 3.12, then run ./demo setup again.')
     interpreter = result.stdout.strip()
     check = subprocess.run([interpreter, '-c', 'import sys; sys.exit(sys.version_info[:2] != (3,12))'],
-                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
+                           env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
     if check.returncode:
         raise DemoError('Use Python 3.12 for both class environments, then run ./demo setup again.')
     children = Children()

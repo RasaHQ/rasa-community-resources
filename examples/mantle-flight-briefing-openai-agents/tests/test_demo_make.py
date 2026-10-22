@@ -112,6 +112,20 @@ class FriendlyMake(unittest.TestCase):
                 run.assert_called_once_with(scripted=scripted)
                 self.assertIn('http://127.0.0.1:8942/', output)
 
+    def test_make_setup_and_test_never_read_participant_values(self):
+        self.output('env')
+        # A synthetic invalid assignment proves these paths do not parse values.
+        (self.root / '.env').write_text('UNKNOWN=synthetic-not-for-builds\n')
+        with patch.object(demo, 'participant_environment', side_effect=AssertionError('must not load values')), \
+                patch.object(demo, 'setup') as setup:
+            self.output('setup')
+            setup.assert_called_once_with()
+        with patch.object(demo, 'participant_environment', side_effect=AssertionError('must not load values')), \
+                patch.object(commands, 'project_python', return_value=Path(sys.executable)), \
+                patch.object(demo, 'completed') as completed:
+            self.output('test')
+            self.assertTrue(demo.PARTICIPANT_KEYS.isdisjoint(completed.call_args.kwargs['env']))
+
     def test_doctor_and_test_use_installed_interpreter_and_test_strips_keys(self):
         self.output('env')
         (self.root / '.env').write_text('RASA_LICENSE=synthetic-only\n')
