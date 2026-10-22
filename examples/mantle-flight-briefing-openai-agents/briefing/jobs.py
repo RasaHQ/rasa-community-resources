@@ -123,6 +123,16 @@ class Jobs:
         """
         return deepcopy(self._display_job.board.snapshot()) if self._display_job else ()
 
+    def display_status(self):
+        job = self._display_job
+        if job is None:
+            return 'Ready. Waiting for a briefing.'
+        if job.status in ('started', 'running'):
+            return 'Running. Checking the public sources.'
+        if job.needs_input:
+            return 'Waiting for your meeting time or transfer duration.'
+        return 'Ready for another briefing.'
+
     def display_title(self):
         job = self._display_job
         if job and job.needs_input:

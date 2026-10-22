@@ -337,6 +337,15 @@ def start_inspector(children, env, mode):
         return process, text_env
 
 
+def configure_native_sources(environment, scripted):
+    """A managed-session model is independent from Mantle's conversation model."""
+    if scripted or not environment.get('OPENAI_API_KEY', '').strip():
+        return False
+    if not environment.get('BRIEFING_AGENTS_MODEL', '').strip():
+        environment['BRIEFING_AGENTS_MODEL'] = 'gpt-6-astra'
+    return True
+
+
 def run_demo(scripted=False, host="127.0.0.1"):
     try:
         require_viewer_access(host)
@@ -383,6 +392,9 @@ def run_demo(scripted=False, host="127.0.0.1"):
         completed(children, [str(python_at(PROJECT)), '-m', 'rasa', 'train'],
                   cwd=PROJECT, env=env, timeout=180,
                   failure='Mantle training failed; check the class project and its locked release before running again.')
+        managed_sources = configure_native_sources(env, scripted)
+        print('Managed Agents API selects real public-source tools.' if managed_sources
+              else SCRIPTED_LABEL, flush=True)
         service = children.start([str(python_at(WORKER)), '-m', 'briefing', '--public-sources', '--host', host], cwd=ROOT, env=env)
         wait_http(service, 'http://' + host + ':8942/cards')
         mode = 'scripted' if scripted else 'live'

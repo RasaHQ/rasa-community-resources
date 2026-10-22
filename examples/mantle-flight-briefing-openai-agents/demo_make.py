@@ -28,7 +28,7 @@ PURPOSES = {
     'run-scripted': 'Start the labelled scripted text path without model or voice calls.',
     'test': 'Run the example controls without live provider calls.',
     'stop': 'Stop only the demo launched from this checkout.',
-    'clean': 'Remove only this checkout’s marked local environments; keep .env.',
+    'clean': 'Remove this checkout’s marked local environments and cache; keep .env.',
 }
 SOURCES = {
     'RASA_LICENSE': 'https://rasa.com/rasa-pro-developer-edition-license-key-request',
@@ -187,6 +187,12 @@ def clean_environments():
         if owner != {'checkout': str(demo.ROOT.resolve()), 'environment': str(target.resolve())}:
             raise demo.DemoError('An environment belongs to another checkout; nothing was removed.')
         targets.append(target)
+    cache = demo.ROOT / '.demo-cache'
+    if cache.exists() or cache.is_symlink():
+        info = cache.lstat()
+        if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid():
+            raise demo.DemoError('The local demo cache is unsafe; nothing was removed.')
+        targets.append(cache)
     for target in targets:
         shutil.rmtree(target)
 
@@ -258,8 +264,10 @@ def perform(target):
         if target == 'setup':
             demo.setup()
         elif target in ('run', 'run-scripted'):
-            print('Demo page: http://127.0.0.1:8942/', flush=True)
-            demo.run_demo(scripted=target == 'run-scripted')
+            from demo_host import validate_host
+            host = validate_host(env.get('BRIEFING_VIEWER_HOST', '127.0.0.1'))
+            print('Demo page: http://' + host + ':8942/', flush=True)
+            demo.run_demo(scripted=target == 'run-scripted', host=host)
         else:
             interpreter = project_python()
             argv = ([str(interpreter), str(demo.ROOT / 'class_doctor.py')]

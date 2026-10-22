@@ -10,7 +10,7 @@ import httpx
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from briefing.identity import SENDER_META
-from briefing.jobs import Jobs
+from briefing.jobs import Jobs, Owner
 from briefing.mcp_app import create_app
 from briefing.replay import ReplayRunner
 from project.lib.capability_logging import contains_api_key
@@ -26,6 +26,9 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
             return '<p>REPLAY shared renderer contract control</p>'
         module.render_snapshot_html = render
         jobs = Jobs(ReplayRunner(), ownership_mode='capability')
+        started = await jobs.briefing(Owner('mantle', 'renderer-control'), action='start', request='Replay DEMO101')
+        await jobs._jobs[started['job_id']].task
+        self.assertTrue(jobs.display_snapshot())
         app = create_app(jobs, transport_token='synthetic-transport-with-no-real-authority')
         with patch.dict(sys.modules, {'zeo_core.adapters.widget_html': module}):
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app),

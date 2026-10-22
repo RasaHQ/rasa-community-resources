@@ -162,7 +162,11 @@ def create_app(jobs: Jobs, *, transport_token: str, host="127.0.0.1"):
     def render_current_board():
         # One renderer, owned by Core. No local HTML/card implementation.
         from zeo_core.adapters.widget_html import render_snapshot_html
-        return render_snapshot_html(jobs.display_snapshot(), document=True, title=jobs.display_title())
+        snapshot = jobs.display_snapshot()
+        if not snapshot:
+            from briefing.board_display import start_panel
+            return start_panel(jobs.display_status())
+        return render_snapshot_html(snapshot, document=True, title=jobs.display_title())
 
     app = server.streamable_http_app()
     original_lifespan = app.router.lifespan_context

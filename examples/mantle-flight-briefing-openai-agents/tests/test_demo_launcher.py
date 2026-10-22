@@ -186,6 +186,17 @@ class LauncherControls(unittest.TestCase):
                 children.close()
 
 
+    def test_native_source_model_is_supported_session_default_and_scripted_never_calls_it(self):
+        environment = {'OPENAI_API_KEY': 'synthetic-ready-key-only'}
+        self.assertTrue(demo.configure_native_sources(environment, False))
+        self.assertEqual(environment['BRIEFING_AGENTS_MODEL'], 'gpt-6-astra')
+        override = {**environment, 'BRIEFING_AGENTS_MODEL': 'explicit-native-model'}
+        self.assertTrue(demo.configure_native_sources(override, False))
+        self.assertEqual(override['BRIEFING_AGENTS_MODEL'], 'explicit-native-model')
+        self.assertFalse(demo.configure_native_sources(environment, True))
+        self.assertFalse(demo.configure_native_sources({}, False))
+
+
 class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
     async def call(self, messages, names):
         return await demo.ScriptedClient().acompletion(messages, tools=[{'function': {'name': name}} for name in names])

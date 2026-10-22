@@ -74,3 +74,22 @@ def dashboard_html(host):
     validate_host(host)
     return DASHBOARD.replace(b'127.0.0.1', host.encode()).replace(
         b'http%3A%2F%2F127.0.0.1%3A5005', quote('http://' + host + ':5005', safe='').encode())
+
+
+def start_panel(status):
+    from html import escape
+    return """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Start your briefing</title>
+<style>body{font:16px system-ui,sans-serif;color:#17212b;margin:24px;line-height:1.5}
+code{display:block;white-space:normal;overflow-wrap:anywhere;background:#f4f5f7;padding:12px;border-radius:8px}
+li{margin:12px 0}h1{font-size:24px}p{max-width:65ch}</style></head><body>
+<h1>Start your briefing</h1><p><strong>""" + escape(status) + """</strong></p>
+<p>Tell the Mantle assistant your flight callsign, destination, meeting time and assumed transfer duration.</p>
+<code>callsign=TEST123 destination=EDDF meeting=2026-10-22T12:00:00Z transfer=45</code>
+<p>This is example syntax. Replace TEST123 with a currently airborne callsign and set your own meeting date and time.</p>
+<ul><li><strong>Flight status</strong>: observed position from ADSB.lol; an arrival estimate is a calculation, not an airline time.</li>
+<li><strong>Arrival weather</strong>: MET Norway forecast for the destination you state.</li>
+<li><strong>Arrival timeline</strong>: calculated from the flight estimate, your meeting time and assumed transfer.</li>
+<li><strong>Market watchlist</strong>: ECB daily EUR reference rates; these are not live quotes.</li></ul>
+<p>Enter the journey in the conversation beside this panel. The cards appear here as the checks finish.</p>
+</body></html>"""

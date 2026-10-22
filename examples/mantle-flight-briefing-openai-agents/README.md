@@ -189,3 +189,11 @@ public domain under its Unlicense, pinned to source commit
 in `briefing/airports-ourairports-20261022.json`. Supported ICAO codes are CYYZ,
 EDDF, EDDM, EGKK, EGLL, EHAM, KJFK, KLAX, LFPG and OMDB, plus their IATA codes.
 Unknown codes are refused; there is no network lookup or guessed substitute.
+
+The managed specialist uses `gpt-6-astra`, as in the [official Agents session example](https://developers.openai.com/api/docs/guides/agents-api/sessions).
+Mantle's conversation model is configured separately in `project/integrations.yml`.
+`gpt-4.1-mini` works for that conversation but the live Agents API refused it in
+our qualification. To use another compatible specialist model, set
+`BRIEFING_AGENTS_MODEL` in your shell; it is not another key in `.env`.
+Without an OpenAI key, source tool selection is explicitly SCRIPTED; an OpenAI
+key with the default native model enables the combined Agents/public-source path.

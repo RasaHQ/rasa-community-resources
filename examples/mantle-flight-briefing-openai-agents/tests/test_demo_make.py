@@ -109,8 +109,16 @@ class FriendlyMake(unittest.TestCase):
         for target, scripted in [('run', False), ('run-scripted', True)]:
             with patch.object(demo, 'run_demo') as run:
                 output = self.output(target)
-                run.assert_called_once_with(scripted=scripted)
+                run.assert_called_once_with(scripted=scripted, host='127.0.0.1')
                 self.assertIn('http://127.0.0.1:8942/', output)
+
+    def test_make_run_uses_runtime_viewer_address_and_prints_matching_page(self):
+        self.output('env')
+        with patch.dict(os.environ, {'BRIEFING_VIEWER_HOST': '100.64.0.10'}), \
+                patch.object(demo, 'run_demo') as run:
+            output = self.output('run')
+            run.assert_called_once_with(scripted=False, host='100.64.0.10')
+            self.assertIn('http://100.64.0.10:8942/', output)
 
     def test_make_setup_and_test_never_read_participant_values(self):
         self.output('env')
@@ -161,6 +169,8 @@ class FriendlyMake(unittest.TestCase):
         self.output('env')
         keep = self.root / 'leave-this-file'
         keep.write_text('ordinary data')
+        (self.root / '.demo-cache').mkdir(exist_ok=True)
+        (self.root / '.demo-cache' / 'cache-item').write_text('scratch data')
         for directory in (self.worker, self.project):
             (directory / '.venv').mkdir()
             commands.mark_environment(directory)
@@ -169,6 +179,7 @@ class FriendlyMake(unittest.TestCase):
         self.assertFalse((self.project / '.venv').exists())
         self.assertTrue((self.root / '.env').is_file())
         self.assertTrue(keep.is_file())
+        self.assertFalse((self.root / '.demo-cache').exists())
 
     def test_clean_refuses_unmarked_foreign_symlink_and_running_before_any_delete(self):
         for directory in (self.worker, self.project):
