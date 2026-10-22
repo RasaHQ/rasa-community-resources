@@ -160,6 +160,30 @@ class LauncherControls(unittest.TestCase):
         self.assertIsNone(demo.tool_record('not a JSON object'))
 
 
+    def test_opt_in_child_diagnostics_redact_before_writing(self):
+        import secrets
+        values = {name: secrets.token_urlsafe(32) for name in (
+            'OPENAI_API_KEY', 'DEEPGRAM_API_KEY', 'RASA_LICENSE', 'BRIEFING_MCP_TOKEN')}
+        with tempfile.TemporaryDirectory(dir=ROOT / '.demo-cache') as directory:
+            env = {**os.environ, **values, 'BRIEFING_DIAGNOSTICS_DIR': directory}
+            code = 'import os; [print(os.environ[k]) for k in ("OPENAI_API_KEY", "DEEPGRAM_API_KEY", "RASA_LICENSE", "BRIEFING_MCP_TOKEN")]'
+            children = demo.Children()
+            try:
+                with patch.dict(os.environ, values):
+                    process = children.start([sys.executable, '-c', code], cwd=ROOT, env=env)
+                    self.assertEqual(process.wait(timeout=5), 0)
+                    for thread in children.log_threads:
+                        thread.join(timeout=5)
+                    output = ''.join(path.read_text() for path in Path(directory).glob('*.log'))
+                self.assertIn('redacted', output)
+                for value in values.values():
+                    self.assertNotIn(value, output)
+                    for index in range(len(value) - 7):
+                        self.assertNotIn(value[index:index + 8], output)
+            finally:
+                children.close()
+
+
 class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
     async def call(self, messages, names):
         return await demo.ScriptedClient().acompletion(messages, tools=[{'function': {'name': name}} for name in names])
