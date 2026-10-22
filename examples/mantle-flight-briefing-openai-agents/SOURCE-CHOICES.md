@@ -27,7 +27,15 @@ Identifying User-Agent: `RasaCommunityFlightBriefing/1.0 (+https://rasa.communit
 
 The adapters must refuse other hosts, userinfo, non-HTTPS URLs, unexpected ports, IP literals, lookalikes and redirects before a second connection. No environment proxy routing. Cache identical source requests for at least60 seconds and until a provider's later expiry; honour Retry-After and apply bounded pacing. A failed refresh never silently returns expired data. No HTML scraping. No personal passenger, crew or registration-owner fields are retained.
 
-The browser loads only `http://127.0.0.1:8942/cards` and its local refresh. It never calls a provider or loads a remote font, script, image or stylesheet. Render only Core-validated DataRefs. Every card must retain source, attribution, fetch time and honest provider/computed/REPLAY classification; a card never mixes live and fixture values.
+The browser loads only `http://127.0.0.1:8942/cards` and its local refresh. It never calls a provider or loads a remote font, script, image or stylesheet. Render only Core-validated DataRefs. Every card must retain source, attribution and fetch time; a card never mixes live and fixture values.
+
+### Provenance and freshness are separate
+
+The 22 October card-label ruling clarifies decision v3. Each displayed value has exactly one provenance label: **PROVIDER DATA**, **COMPUTED** (with its inputs named), or **REPLAY**. Provider and computed values also have exactly one freshness line: **live**, **daily reference rate, not a live quote**, or **delayed**. REPLAY values have no freshness line.
+
+Map the validated fields rather than source text: `replay=true` means REPLAY; otherwise the source observation is PROVIDER DATA. The validated assumption label `estimated_arrival_from_live_position` marks the derived arrival as COMPUTED. `rate_basis=daily_reference` selects the daily reference line; `delayed=true` selects delayed; otherwise live applies to current observations and forecast runs. The daily ECB publication date stays visible. No daily or delayed value is labelled live.
+
+Acceptance must include the named mutant that substitutes live freshness for a daily-reference value. This document states the required mapping; actual renderer and adapter acceptance remain pending.
 
 adsbdb is not selected: its public route-data notice restricts copying, publication and incorporation without permission. No rights are inferred from a free endpoint or from software licensing alone.
 
