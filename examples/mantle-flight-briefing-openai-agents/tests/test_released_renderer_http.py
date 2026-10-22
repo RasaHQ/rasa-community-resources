@@ -31,6 +31,11 @@ class ReleasedRendererHTTP(unittest.IsolatedAsyncioTestCase):
             app = create_app(jobs, transport_token='synthetic-http-renderer-test-token-only')
             async with httpx.AsyncClient(transport=httpx.ASGITransport(app),
                                          base_url='http://127.0.0.1:8942') as client:
+                combined = await client.get('/')
+                self.assertEqual(combined.status_code, 200)
+                self.assertNotIn('refresh', combined.headers)
+                self.assertIn('Mantle conversation', combined.text)
+                self.assertIn('Validated source cards', combined.text)
                 response = await client.get('/cards')
                 self.assertEqual(response.status_code, 200)
                 self.assertIn("default-src 'none'", response.headers['content-security-policy'])

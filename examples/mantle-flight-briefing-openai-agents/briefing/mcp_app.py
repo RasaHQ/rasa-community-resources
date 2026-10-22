@@ -42,7 +42,7 @@ class _MantlePeer:
         self._display = None
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] == "http" and scope.get("path") == "/cards" and self._display is not None:
+        if scope["type"] == "http" and scope.get("path") in ("/", "/cards") and self._display is not None:
             return await self._display(scope, receive, send)
         if scope["type"] != "http":
             return await self._app(scope, receive, send)
