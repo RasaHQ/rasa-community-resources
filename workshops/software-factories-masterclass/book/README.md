@@ -12,7 +12,9 @@ the workshop.
 - A Deepgram key is optional and only adds voice
 - About 3 GB of disk space and a network connection for the first install
 
-Keys and the licence are read from your environment only. Never put one in a file in this repository.
+Keys and the licence go in the example's Git-ignored `.env` (created by `make env` with mode 600) or in your shell. Never commit that file, and never paste a key anywhere else.
+
+Clone this repository with Git. A ZIP download is not supported.
 
 ## How the chapters work
 
