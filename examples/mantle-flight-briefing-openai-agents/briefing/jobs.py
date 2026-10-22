@@ -97,6 +97,7 @@ class _Job:
     inputs: dict | None = None
     needs_input: dict | None = None
     replaces: tuple[str, ...] | None = None
+    display_destination: str | None = None
 
 
 class Jobs:
@@ -128,6 +129,16 @@ class Jobs:
 
     def display_discovery(self):
         return deepcopy(self._display_discovery)
+
+    def display_place(self):
+        """Use the destination bound to displayed cards, never pending revision text."""
+        job = self._display_job
+        if job is None or not job.display_destination:
+            return None
+        from briefing.traveller import airport_row
+        from zeo_core.adapters.widget_html import Place
+        airport = airport_row(job.display_destination)
+        return Place(code=airport['iata_code'], name=airport['city'], timezone=airport['time_zone'])
 
     def display_status(self):
         job = self._display_job
@@ -312,6 +323,7 @@ class Jobs:
                 # Report completed validation stages, not imagined provider work.
                 job.progress.append({"flight_status": "flight", "weather_hourly": "weather",
                                      "arrival_timeline": "timeline", "market_watchlist": "market"}[component])
+            job.display_destination = (answer.inputs or {}).get('destination')
             job.cards = self._snapshot(job)
             required = set(answer.required_components)
             available = {state.component for state in job.board.snapshot()

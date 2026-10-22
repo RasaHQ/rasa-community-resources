@@ -50,7 +50,7 @@ class StatedDestinationMCP(unittest.IsolatedAsyncioTestCase):
 
     async def test_empty_route_explicit_destination_reaches_four_cards_via_actual_mcp(self):
         sources, requests = fixture_sources()
-        runner = self.runner_type(sources)
+        runner = self.runner_type(sources, clock=lambda: NOW)
         jobs = Jobs(runner, ownership_mode='capability')
         app = create_app(jobs, transport_token='synthetic-destination-protocol-control')
         try:
@@ -88,7 +88,7 @@ class StatedDestinationMCP(unittest.IsolatedAsyncioTestCase):
 
 class RecordedManagedDestinationMCP(StatedDestinationMCP):
     @staticmethod
-    def runner_type(sources):
+    def runner_type(sources, *, clock=None):
         from types import SimpleNamespace
         from test_installed_native_contract import Sessions, Stream
         from briefing.live_public_sources import LivePublicSourcesRunner
@@ -114,7 +114,7 @@ class RecordedManagedDestinationMCP(StatedDestinationMCP):
                 return self
             def __exit__(self, *args):
                 pass
-        return LivePublicSourcesRunner(Client, model='offline-recorded-model', sources=sources)
+        return LivePublicSourcesRunner(Client, model='offline-recorded-model', sources=sources, clock=clock)
 
 
 class ManagedSelectionControls(unittest.IsolatedAsyncioTestCase):
@@ -132,7 +132,7 @@ class ManagedSelectionControls(unittest.IsolatedAsyncioTestCase):
             return SimpleNamespace(ok=True, status='completed', session_id='synthetic-no-callback',
                                    output_text='Invented model values 9999', tools_called=())
         sources, requests = fixture_sources()
-        runner = LivePublicSourcesRunner(Client, model='offline-control', sources=sources, invoke=invoke)
+        runner = LivePublicSourcesRunner(Client, model='offline-control', sources=sources, invoke=invoke, clock=lambda: NOW)
         try:
             answer = await runner(Work('callsign=TEST123 destination=LHR meeting=2026-10-22T06:00:00Z transfer=45',
                                        'request', 1, None))

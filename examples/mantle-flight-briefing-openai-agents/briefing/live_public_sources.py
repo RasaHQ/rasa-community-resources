@@ -1,5 +1,5 @@
 """Managed Agents callbacks read real public sources; prose never makes a card."""
-from datetime import datetime, timezone
+from datetime import datetime
 import json
 
 from briefing.native_runtime import native_turn
@@ -9,8 +9,8 @@ from zeo_core.integrations.briefing_sources.timeline import unavailable
 
 
 class LivePublicSourcesRunner(PublicSourcesRunner):
-    def __init__(self, client_factory, *, model, sources=None, invoke=None):
-        super().__init__(sources)
+    def __init__(self, client_factory, *, model, sources=None, invoke=None, clock=None):
+        super().__init__(sources, clock=clock)
         if not isinstance(model, str) or not model.strip() or len(model) > 200:
             raise ValueError('live_model_required')
         self.client_factory, self.model, self.invoke = client_factory, model, invoke
@@ -26,7 +26,7 @@ class LivePublicSourcesRunner(PublicSourcesRunner):
                     from briefing.airports import stated_destination
                     destination['stated_destination'] = stated_destination(inputs['destination'])
                 cache['flight'] = flight(self.sources.http, inputs['callsign'],
-                                        fetched_at=datetime.now(timezone.utc), **destination)
+                                        fetched_at=self._clock(), **destination)
             return cache['flight']
         def read(component):
             if component in cache:
@@ -43,7 +43,7 @@ class LivePublicSourcesRunner(PublicSourcesRunner):
                 result = observed()
                 if result.destination is None:
                     ref = unavailable('weather_hourly', 'MET Norway (api.met.no), CC BY 4.0',
-                                      datetime.now(timezone.utc), 'route_not_provided' if result.reference.error is None
+                                      self._clock(), 'route_not_provided' if result.reference.error is None
                                       else 'destination_unavailable')
                 else:
                     estimate = result.reference.payload.get('estimated_arrival')

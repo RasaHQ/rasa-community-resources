@@ -79,6 +79,7 @@ async def main():
                 assert [r['callsign'] for r in search['candidates']] == ['BAW117','DLH400']
                 assert search['partial'] is False
                 page = (await client.get('/cards')).text
+                assert jobs.display_place() is None
                 assert 'Lufthansa 400' in page and 'CC0-1.0' in page
                 assert search['discovery_id'] not in page and 'PRIVATE CANARY' not in page
                 started = await call('briefing', {'action':'start','request':'the second one',
@@ -99,6 +100,10 @@ async def main():
                 assert inputs['meeting_time'].endswith('18:00:00-04:00')
                 assert inputs['transfer_minutes'] == 90 and inputs['transfer_assumed'] is True
                 page = (await client.get('/cards')).text
+                assert jobs.display_place().timezone == 'America/New_York'
+                assert jobs.display_place().code == 'JFK'
+                assert 'New York' in page and 'local time' in page
+                assert 'forecast, issued' in page
                 timeline = next(c for c in final['cards'] if c['event']['component'] == 'arrival_timeline')
                 assert any(a['label'] == 'airport_city_planning_allowance' for a in timeline['data_ref']['assumptions'])
                 assert 'ASSUMPTION' in page and 'not live traffic' in page

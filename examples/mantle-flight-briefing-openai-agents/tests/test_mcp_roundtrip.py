@@ -21,7 +21,7 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
         from types import ModuleType
         module = ModuleType('zeo_core.adapters.widget_html')
         seen = []
-        def render(cards, *, document=False, title='Briefing'):
+        def render(cards, *, document=False, title='Briefing', place=None):
             seen.append((cards, document, title))
             return '<p>REPLAY shared renderer contract control</p>'
         module.render_snapshot_html = render
