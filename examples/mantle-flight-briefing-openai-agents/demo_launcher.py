@@ -235,7 +235,7 @@ def run_demo(scripted=False):
         env.pop('DEEPGRAM_API_KEY', None)
     print('RASA_LICENSE: ' + ('SET' if env.get('RASA_LICENSE', '').strip() else 'MISSING'), flush=True)
     if not env.get('RASA_LICENSE', '').strip():
-        raise DemoError('Rasa Inspector needs a free Rasa Developer Edition licence: set RASA_LICENSE in your own terminal, then rerun ./demo run. Scripted mode needs no model key.')
+        raise DemoError('Get your free Rasa Developer Edition licence at https://rasa.com/rasa-pro-developer-edition-license-key-request and set RASA_LICENSE in your terminal before rerunning ./demo run.')
     env['BRIEFING_MCP_TOKEN'] = secrets.token_urlsafe(32)
     # No .env loader may introduce credentials into either process.
     for directory in (ROOT, PROJECT, WORKER):

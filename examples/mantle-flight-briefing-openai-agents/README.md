@@ -29,8 +29,10 @@ Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
 `RASA_LICENSE` (the free Developer Edition licence) in your own terminal
 environment, including in scripted mode;
 the launcher never bypasses the engine licence check. Model and voice keys are
-optional for the scripted text path. See the repository's developer-licence
-instructions if you do not have a Rasa Pro licence.
+optional for the scripted text path. Before class, [sign up for your own free
+Developer Edition licence](https://rasa.com/rasa-pro-developer-edition-license-key-request)
+and set the issued licence as `RASA_LICENSE` in your terminal; submitting the
+form alone does not make the runtime ready.
 
  Setup creates separate worker and Mantle
 `.venv` environments from their committed locks. Both install `zeocore` from
@@ -48,7 +50,7 @@ Press Ctrl-C in the launcher terminal to stop both
 services and their children. If either port is occupied, the launcher refuses;
 it does not stop another user's service.
 
-With a Rasa Pro licence and no model keys, the Inspector uses
+With your Developer Edition licence and no model keys, the Inspector uses
 **SCRIPTED tool selection**. The pinned
 engine, skill execution, MCP requests, hooks and browser Inspector are real;
 the selection of tools is deterministic and is not model reasoning. This is
