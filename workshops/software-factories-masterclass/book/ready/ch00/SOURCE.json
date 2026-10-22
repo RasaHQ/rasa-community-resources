@@ -1,13 +1,13 @@
 {
   "repository": "RasaHQ/rasa-community-resources",
-  "source_commit": "620447eb17be6ad3c4e04f0b0afa6939b362b55a",
+  "source_commit": "084082239b0c2e3fb1bff89d888d26600f7b1a49",
   "source_path": "examples/mantle-flight-briefing-openai-agents",
   "files_sha256": {
     ".env.example": "05e179fa4910d934b6efcda46d868ce811106e3e46683e66e2c0093c6bd01c07",
     ".gitignore": "1bb55fe3ece7ead1256e8b568cae2de86ba1561f379392bb0c6aeef33b78acea",
     "LIVE-WORKER.md": "18844deb2318d085f183da7d3250c02565446e143753ab1b31da2889da92e2a9",
     "Makefile": "b0c5c5cd25e1bee45c708314b3094fd68788db783ee50218b9c4eee185f6a0e9",
-    "README.md": "5d61a256515dd04f1d4487bb568caf3db35bc0ffd4d23985faec1e4d996ccdd0",
+    "README.md": "a93837b6d1cc70eb54f151cf50937349e7c1c0b78506ad15ee89128a2404ef3f",
     "SOURCE-CHOICES.md": "c06392fbfc883e1d8fdcfcb61990b1ba9cb0f365df2701459763717a2904f628",
     "briefing/LICENSE-VRS-CC0.txt": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
     "briefing/__init__.py": "8b554b2b0a5a80d4d3fc044213e53d7b201043fc583e3e9273160e46acfff449",
@@ -90,6 +90,19 @@
     "README.md": "Repository licence link adjusted for chapter nesting."
   },
   "checkpoint_files_sha256": {
-    "README.md": "e8192ee97c66b81a498ec89b37f80a656c6defb6bf48b6e130c5f27a31dc5805"
-  }
+    "README.md": "b35ba13380fb62f5f10cbc4a4ac31bbae62ae155e04ddf6c101e94418d3046a6",
+    "demo_launcher.py": "9160624bd73e6b44d58057405585c183f9fe816d30c9fd567f36b90db6146440",
+    "briefing/__main__.py": "54224cae8dc2f8e6f440c8ebafed87572351b958356ad19f94bb5c996fc68d3a"
+  },
+  "recording": {
+    "path": "recorded-journey.json",
+    "sha256": "bc15b06d1a8b958f8d592688a916cf30d6b8508641a131b53b936fd95803f57a",
+    "method": "Canonical briefing Jobs/PublicSourcesRunner, public source references plus computed timeline for classroom meeting. Runtime capabilities excluded. Playback preserves source values/timestamps and sets replay=True; meeting/transfer planning can be recomputed by canonical timeline helper."
+  },
+  "runtime_adjustments": {
+    "demo_launcher.py": "SCRIPTED startup label announces recorded sources when explicitly selected.",
+    "briefing/__main__.py": "Explicit BRIEFING_RECORDED=1 selects the chapter-only RecordedRunner through the normal MCP service, and refuses a model-enabled recorded worker."
+  },
+  "source_fork": "matorclawson/rasa-community-resources",
+  "source_branch": "rasa-bench/class128-scripted-discovery-precedence-20261022"
 }

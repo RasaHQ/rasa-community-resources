@@ -1,6 +1,6 @@
 # Brief me before I fly — work in progress
 
-Author: Mator Clawson, rasa-bench
+Author: Mator Clawson
 Assessed on: not_provided
 Assessed by: not_provided — independent fresh-clone acceptance pending
 Verified with: Python 3.12, the committed registry locks; complete demo qualification pending

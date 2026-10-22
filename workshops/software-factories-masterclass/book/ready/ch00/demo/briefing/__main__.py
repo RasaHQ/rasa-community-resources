@@ -25,6 +25,9 @@ def main():
     args = parser.parse_args()
     from demo_host import require_viewer_access
     require_viewer_access(args.host)
+    recorded = os.environ.get('BRIEFING_RECORDED')
+    if recorded not in (None, '1'):
+        raise SystemExit('Set BRIEFING_RECORDED=1 for the recorded checkpoint, or unset it for public sources.')
     managed_sources = (args.public_sources and bool(os.environ.get('OPENAI_API_KEY', '').strip())
                        and bool(os.environ.get('BRIEFING_AGENTS_MODEL', '').strip()))
     if (args.live_model or managed_sources) and any(os.environ.get(name, '').strip()
@@ -35,11 +38,20 @@ def main():
     token = os.environ.get("BRIEFING_MCP_TOKEN")
     if not token:
         raise SystemExit("Set the runtime-only BRIEFING_MCP_TOKEN in both facilitator processes")
+    if recorded and (args.live_model or managed_sources):
+        raise SystemExit('The recorded checkpoint requires SCRIPTED mode with no model credentials.')
     runner = ReplayRunner()
     if args.public_sources:
         try:
-            from briefing.public_sources import PublicSourcesRunner
-            runner = PublicSourcesRunner()
+            if recorded:
+                import sys
+                from pathlib import Path
+                sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+                from recorded_checkpoint import make_runner
+                runner = make_runner()
+            else:
+                from briefing.public_sources import PublicSourcesRunner
+                runner = PublicSourcesRunner()
         except ImportError:
             raise SystemExit('Public sources need the reviewed adapter release; update the locked Core pin after it is published.') from None
     if args.live_model or managed_sources:

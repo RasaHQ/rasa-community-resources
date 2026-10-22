@@ -33,7 +33,9 @@ ROOT = Path(__file__).resolve().parent
 PROJECT = ROOT / 'project'
 WORKER = ROOT / 'worker'
 VOICE_FAILED_TEXT = 'Voice could not connect; continuing with text.'
-SCRIPTED_LABEL = 'SCRIPTED tool selection; real keyless sources, not model reasoning.'
+SCRIPTED_LABEL = ('SCRIPTED tool selection; recorded sources (REPLAY), not current data or model reasoning.'
+                  if os.environ.get('BRIEFING_RECORDED') == '1' else
+                  'SCRIPTED tool selection; real keyless sources, not model reasoning.')
 
 
 class DemoError(Exception):

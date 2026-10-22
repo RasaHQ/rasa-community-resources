@@ -16,6 +16,15 @@ class CompletionControls(unittest.TestCase):
         self.assertFalse(inspect_cards(board(EXPECTED[:3])))
         self.assertFalse(inspect_cards(board(EXPECTED[:3] + (EXPECTED[0],))))
 
+    def test_recorded_and_public_checks_cannot_accept_each_others_mode(self):
+        replay = board().replace('<h3>', '<span>REPLAY</span><h3>')
+        self.assertFalse(inspect_cards(replay))
+        self.assertTrue(inspect_cards(replay, require_replay=True))
+        self.assertFalse(inspect_cards(board(), require_replay=True))
+        mixed = board().replace('<h3>', '<span>REPLAY</span><h3>', 1)
+        self.assertFalse(inspect_cards(mixed))
+        self.assertFalse(inspect_cards(mixed, require_replay=True))
+
     def test_each_unavailable_card_refuses_completion(self):
         for name in EXPECTED:
             with self.subTest(card=name):
