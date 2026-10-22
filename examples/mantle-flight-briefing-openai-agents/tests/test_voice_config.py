@@ -17,10 +17,11 @@ class VoiceConfig(unittest.TestCase):
         self.assertIn('text', VOICE_FAILED_TEXT)
 
     def test_environment_key_never_enters_runtime_config(self):
-        canary = 'synthetic-deepgram-6e9a1c3d5f7b0248'
+        canary = 'c8f31a7b9420ed65d2a9e13b7046f58c'
         channels = voice_channels({'DEEPGRAM_API_KEY': canary})
         text = json.dumps(channels)
-        self.assertNotIn(canary, text)
+        for offset in range(len(canary) - 7):
+            self.assertNotIn(canary[offset:offset + 8], text)
         self.assertNotIn('api_key', text)
         self.assertIn('flux-general-en', text)
         self.assertIn('aura-2-andromeda-en', text)

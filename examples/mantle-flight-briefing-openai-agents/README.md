@@ -92,7 +92,7 @@ run with the matching environment key. A key for the other group alone does
 not establish readiness.
 
 Voice uses Deepgram Flux and Aura-2 through the maintained project integration.
-Without `DEEPGRAM_API_KEY`, the launcher prints “Voice is off; continue in text.”
+Without `DEEPGRAM_API_KEY`, the launcher prints “Voice is off; set DEEPGRAM_API_KEY in your environment to enable it, or continue with text.”
 Voice must not block the cards or scripted path. The owner-supplied Flux/Aura-2
 configuration is merged only in the Inspector process, without writing keys.
 If the voice-configured Inspector cannot start, the launcher stops its owned

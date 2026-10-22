@@ -206,7 +206,7 @@ def start_inspector(children, env, mode):
     argv = [str(python_at(PROJECT)), str(Path(__file__).resolve()), '_inspector', mode]
     process = children.start(argv, cwd=PROJECT, env=env)
     try:
-        wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=5 if env.get('DEEPGRAM_API_KEY', '').strip() else 90)
+        wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=90)
         return process, env
     except DemoError:
         if not env.get('DEEPGRAM_API_KEY', '').strip():

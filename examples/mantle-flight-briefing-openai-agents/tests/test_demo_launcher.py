@@ -265,9 +265,6 @@ class InspectorVoiceSeam(unittest.TestCase):
             self.assertEqual(config.config_file_path, root / 'integrations.yml')
 
 
-if __name__ == '__main__':
-    unittest.main()
-
 
 @unittest.skipUnless(__import__('importlib').util.find_spec('rasa'), 'Mantle project interpreter required')
 class ActualVoiceLoaderSeam(unittest.TestCase):
@@ -310,3 +307,20 @@ class ActualVoiceLoaderSeam(unittest.TestCase):
                 patch.dict(os.environ, {'LITELLM_MODE': 'PRODUCTION'}, clear=True):
             demo.inspector('scripted')
         self.assertEqual(observed[0].channels, {})
+
+
+class InspectorReadinessBudget(unittest.TestCase):
+    def test_healthy_voice_gets_at_least_the_text_engine_readiness_budget(self):
+        children = unittest.mock.Mock()
+        with patch.object(demo, 'wait_http') as voice_wait:
+            demo.start_inspector(children, {'DEEPGRAM_API_KEY': 'synthetic-test-only'}, 'scripted')
+        with patch.object(demo, 'wait_http') as text_wait:
+            demo.start_inspector(children, {}, 'scripted')
+        voice_budget = voice_wait.call_args.kwargs['timeout']
+        text_budget = text_wait.call_args.kwargs['timeout']
+        self.assertGreaterEqual(voice_budget, text_budget)
+        self.assertGreaterEqual(voice_budget, 90)
+
+
+if __name__ == '__main__':
+    unittest.main()
