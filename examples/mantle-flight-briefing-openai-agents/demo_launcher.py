@@ -504,9 +504,12 @@ class ScriptedClient:
         capability_index = max((i for i, value in enumerate(previous)
                                 if isinstance(value.get('briefing_id'), str)), default=-1)
         discovery_index = max((i for i, value in enumerate(previous)
-                               if isinstance(value.get('discovery_id'), str)
-                               and value.get('status') == 'found'), default=-1)
+                               if 'discovery_id' in value or 'candidates' in value), default=-1)
         discovery = previous[discovery_index] if discovery_index >= 0 else None
+        if discovery and not (isinstance(discovery.get('discovery_id'), str)
+                and discovery.get('status') == 'found' and discovery.get('partial') is not True
+                and isinstance(discovery.get('candidates'), list) and 1 <= len(discovery['candidates']) <= 5):
+            discovery = None
         if discovery and discovery_index > capability_index:
             import re
             words = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5}

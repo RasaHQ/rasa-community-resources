@@ -36,7 +36,7 @@ async def main():
                     rows[249] = aircraft('DLH400')
                     rows[250] = aircraft('BAW117')
                 else:
-                    rows = [aircraft('DLH400')]
+                    rows = [{**aircraft('DLH400'), 'alt_baro': 27000, 'gs': 360}]
                 return httpx.Response(200, json={'now': now.timestamp(), 'ac': rows})
             return httpx.Response(200, json=[{'callsign': 'DLH400', 'plausible': True,
                 '_airports': [{'icao': 'EDDF', 'lat': 50.03, 'lon': 8.57},
@@ -82,6 +82,8 @@ async def main():
                 assert jobs.display_place() is None
                 assert 'Lufthansa 400' in page and 'CC0-1.0' in page
                 assert search['discovery_id'] not in page and 'PRIVATE CANARY' not in page
+                now += timedelta(seconds=30)
+                tick[0] += 30
                 started = await call('briefing', {'action':'start','request':'the second one',
                     'discovery_id':search['discovery_id'],'choice':2})
                 key = started['briefing_id']
@@ -115,6 +117,10 @@ async def main():
                 assert any(a['label'] == 'airport_city_planning_allowance' for a in timeline['data_ref']['assumptions'])
                 assert 'ASSUMPTION' in page and 'not live traffic' in page
                 assert key not in page and 'PRIVATE CANARY' not in page
+                flight_ref = next(c['data_ref'] for c in final['cards'] if c['event']['component'] == 'flight_status')
+                assert '27000 ft' in flight_ref['payload']['reported_status']
+                assert datetime.fromisoformat(flight_ref['as_of']) == now - timedelta(hours=2, seconds=5)
+                assert len([r for r in requests if '/callsign/DLH400' in r.url.path]) == 1
                 assert len([r for r in requests if '/point/' in r.url.path]) == 1
                 assert all(r.url.host in {'api.adsb.lol','api.met.no','data-api.ecb.europa.eu'} for r in requests)
                 print(json.dumps({'result':'ACCEPT_OFFLINE_RELEASED_FINDER_INTEGRATION','core':version('zeocore'),

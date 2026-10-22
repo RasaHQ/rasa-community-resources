@@ -278,6 +278,31 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.tool_calls[0].tool_args, {'action': 'revise',
             'briefing_id': 'synthetic-selected-flight', 'change': 'the 6 pm meeting tomorrow'})
 
+    async def test_failed_partial_or_empty_search_cannot_replace_the_selected_job(self):
+        for bad in [
+            {'status': 'unavailable', 'candidates': []},
+            {'status': 'found', 'partial': True, 'discovery_id': 'synthetic-partial', 'candidates': [{}]},
+            {'status': 'found', 'discovery_id': 'synthetic-empty', 'candidates': []},
+        ]:
+            messages = [
+                {'role': 'tool', 'content': json.dumps({'status': 'complete', 'briefing_id': 'synthetic-selected'})},
+                {'role': 'tool', 'content': json.dumps(bad)},
+                {'role': 'user', 'content': 'the 6 pm meeting tomorrow'},
+            ]
+            with self.subTest(search=bad['status'], partial=bad.get('partial')):
+                response = await self.call(messages, ['briefing', 'find_flights'])
+                self.assertEqual(response.tool_calls[0].tool_args, {'action': 'revise',
+                    'briefing_id': 'synthetic-selected', 'change': 'the 6 pm meeting tomorrow'})
+
+    async def test_later_failed_search_never_reuses_an_older_choice_list(self):
+        messages = [
+            {'role': 'tool', 'content': json.dumps({'status': 'found', 'discovery_id': 'synthetic-old', 'candidates': [{}]})},
+            {'role': 'tool', 'content': json.dumps({'status': 'no_results', 'candidates': []})},
+            {'role': 'user', 'content': 'the first one'},
+        ]
+        response = await self.call(messages, ['briefing', 'find_flights'])
+        self.assertNotIn('discovery_id', response.tool_calls[0].tool_args)
+
     async def test_scripted_new_turns_do_not_exhaust_a_lifetime_call_counter(self):
         client = demo.ScriptedClient()
         for _ in range(15):
