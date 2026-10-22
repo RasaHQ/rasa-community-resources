@@ -400,6 +400,14 @@ class ParticipantDotenv(unittest.TestCase):
         self.assertNotIn(self.synthetic, str(error.exception))
         self.assertIn('only RASA_LICENSE', str(error.exception))
 
+    def test_export_and_whitespace_before_equals_are_not_assignment_names(self):
+        for prefix in ('export RASA_LICENSE=', 'RASA_LICENSE ='):
+            self.path.write_text(prefix + self.synthetic + '\n')
+            with self.assertRaises(demo.DemoError) as error:
+                self.load()
+            self.assertIn('only RASA_LICENSE', str(error.exception))
+            self.assertNotIn(self.synthetic, str(error.exception))
+
     def test_malformed_duplicate_invalid_utf8_and_oversize_never_echo(self):
         for raw in [(self.synthetic + '\n').encode(),
                     ('RASA_LICENSE=' + self.synthetic + '\nRASA_LICENSE=again\n').encode(),

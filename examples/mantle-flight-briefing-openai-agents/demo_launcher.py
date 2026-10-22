@@ -124,10 +124,8 @@ def participant_environment(environment, root=None, project=None, worker=None):
             line = raw_line.strip()
             if not line or line.startswith('#'):
                 continue
-            if line.startswith('export '):
-                line = line[7:].lstrip()
             name, separator, value = line.partition('=')
-            name, value = name.strip(), value.strip()
+            value = value.strip()
             if not separator or name not in PARTICIPANT_KEYS:
                 raise DemoError('The example .env may contain only RASA_LICENSE, OPENAI_API_KEY, ANTHROPIC_API_KEY and DEEPGRAM_API_KEY assignments.')
             if name in seen or '\x00' in value:
