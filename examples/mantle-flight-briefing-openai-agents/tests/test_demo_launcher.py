@@ -253,6 +253,28 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.tool_calls[0].tool_name, 'find_flights')
         self.assertEqual(response.tool_calls[0].tool_args, {'destination': text})
 
+    async def test_uncovered_discovery_result_ends_tool_loop(self):
+        response = await self.call([{'role': 'user', 'content': 'no'},
+            {'role': 'tool', 'content': json.dumps({'status': 'unsupported_destination',
+                'candidates': [], 'message': 'Published routes cover New York only.'})}], ['briefing', 'find_flights'])
+        self.assertFalse(response.tool_calls)
+
+    async def test_negative_flight_answers_reuse_last_stated_destination(self):
+        for destination in ('London', 'New York', 'Reykjavik'):
+            for answer in ('no', "no, i don't know", 'no idea', 'not sure', 'I do not know'):
+                messages = [{'role': 'user', 'content': 'flight to ' + destination + ' tonight'},
+                    {'role': 'tool', 'content': json.dumps({'status': 'needs_input', 'briefing_id': 'synthetic-owner',
+                        'needs_input': {'field': 'flight'}})}, {'role': 'user', 'content': answer}]
+                response = await self.call(messages, ['briefing', 'find_flights'])
+                self.assertEqual(response.tool_calls[0].tool_name, 'find_flights')
+                self.assertEqual(response.tool_calls[0].tool_args, {'destination': destination})
+
+    async def test_negative_answer_does_not_resurrect_destination_before_ambiguity(self):
+        response = await self.call([{'role': 'user', 'content': 'New York'},
+            {'role': 'user', 'content': 'JFK or Newark'},
+            {'role': 'user', 'content': 'no'}], ['briefing', 'find_flights'])
+        self.assertNotEqual(response.tool_calls[0].tool_name, 'find_flights')
+
     async def test_scripted_choice_uses_only_returned_discovery_and_valid_index(self):
         previous = {'status': 'found', 'discovery_id': 'brf_synthetic_discovery', 'candidates': [{}, {}]}
         for choice, expected in [('the second one', 2), ('1', 1)]:

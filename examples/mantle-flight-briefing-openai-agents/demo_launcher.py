@@ -441,7 +441,7 @@ def tool_record(value):
         except ValueError:
             return None
     if isinstance(value, dict):
-        if value.get('status') in ('started', 'running', 'queued', 'complete', 'incomplete', 'needs_input', 'failed', 'found', 'no_results', 'unavailable'):
+        if value.get('status') in ('started', 'running', 'queued', 'complete', 'incomplete', 'needs_input', 'failed', 'found', 'no_results', 'unavailable', 'unsupported_destination'):
             return value
         for key in ('structuredContent', 'content', 'text', 'value'):
             found = tool_record(value.get(key))
@@ -473,8 +473,8 @@ class ScriptedClient:
         offered = {t.get('function', {}).get('name') for t in kwargs.get('tools') or []}
         briefing = next((n for n in offered if n in ('briefing', 'mcp/briefing:briefing')), None)
         finder = next((n for n in offered if n in ('find_flights', 'mcp/briefing:find_flights')), None)
-        def reply(name, args):
-            return LLMResponse(id='scripted', choices=[], created=0,
+        def reply(name, args, notice=None):
+            return LLMResponse(id='scripted', choices=[notice] if notice else [], created=0,
                 tool_calls=[LLMToolCall(id='script-' + str(self.count), tool_name=name, tool_args=args)])
         if len(current) > 12:
             return LLMResponse(id='scripted', choices=['SCRIPTED: the source check has not completed. Please retry explicitly.'], created=0)
@@ -502,8 +502,24 @@ class ScriptedClient:
             if capability:
                 return reply(briefing, {'action': 'revise', 'briefing_id': capability, 'change': text})
             return reply(briefing, {'action': 'start', 'request': text})
-        wants_search = any(phrase in text.lower() for phrase in ('which flights', 'find flights', 'look for flights', 'don’t know', "don't know"))
-        if finder and destination and flight_number(text) is None and (not capability or wants_search):
+        from briefing.traveller import destination_request, unknown_flight
+        wants_search = any(phrase in text.lower() for phrase in ('which flights', 'find flights', 'look for flights'))
+        query = destination_request(text)
+        if unknown_flight(text):
+            # A short answer belongs to the traveller's last stated destination,
+            # not a fresh parse of "no". Do not infer a destination from a flight.
+            for message in reversed(messages[:latest]):
+                if message.get('role') != 'user':
+                    continue
+                try:
+                    query = destination_request(str(message.get('content', '')))
+                except TravellerQuestion:
+                    break
+                if query:
+                    break
+            if finder and query:
+                return reply(finder, {'destination': query}, "I'll look for flights heading to " + query + " now.")
+        if finder and query and flight_number(text) is None and (not capability or wants_search or destination is None):
             return reply(finder, {'destination': text})
         # The Inspector's opening question can create an empty briefing before
         # flight discovery. Choose from a newer search instead of revising that

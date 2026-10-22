@@ -79,6 +79,25 @@ def destination_hint(text):
     return select(cities)
 
 
+def unknown_flight(text):
+    """A bounded negative answer to the flight-number question, not an airport."""
+    value = normalized(text).replace("’", "'").strip(" .!?,")
+    return bool(re.fullmatch(r"(?:no(?:pe)?[, ]*)?(?:(?:i )?(?:don'?t know|do not know|have no idea|have no flight number)|no idea|not sure|unsure)?", value)) and bool(value)
+
+
+def destination_request(text):
+    """Keep a traveller's unsupported city as a search query, never source facts."""
+    known = destination_hint(text)
+    if known:
+        return known
+    value = normalized(text)
+    match = re.search(r"\b(?:flights?\s+to|heading\s+to|going\s+to|destination(?: is)?)[ ]+([a-z][a-z '-]{0,59})", value)
+    if not match:
+        return None
+    city = re.split(r"\b(?:tonight|tomorrow|today|this|next|at|on|from|meeting)\b", match[1])[0].strip(" .,'-")
+    return city.title() if city and len(city) <= 60 else None
+
+
 def flight_number(text):
     value = normalized(text)
     internal = re.search(r'\bcallsign=([a-z0-9]{2,10})(?=\s|$)', value)
@@ -248,7 +267,10 @@ def discover(sources, destination):
     except TravellerQuestion as missing:
         return {'status': 'needs_input', 'needs_input': {'field': missing.field, 'question': missing.question}}
     if hint not in ('New York', 'KJFK', 'KEWR', 'KLGA'):
-        return {'status': 'needs_input', 'needs_input': {'field': 'flight', 'question': 'Do you know the airline or flight number? I can brief a flight already in the air.'}}
+        query = destination_request(destination)
+        return {'status': 'unsupported_destination', 'candidates': [],
+                'message': ("I can't list flights heading to " + query + " with this search. " if query else "I can't identify that destination in this search. ")
+                + "The published routes cover New York only; this does not mean there are no flights. You can try New York, or return with a flight number to check an airborne flight."}
     book = load_routes()
     point = airport_row(hint if hint != 'New York' else 'KJFK')
     codes = ('KJFK', 'KEWR', 'KLGA') if hint == 'New York' else (hint,)
@@ -274,6 +296,8 @@ def discover(sources, destination):
 
 def discovery_notice(value):
     """Speech is rendered only from bounded local reader results, never model prose."""
+    if value.get('status') == 'unsupported_destination':
+        return value['message']
     if value.get('status') == 'needs_input':
         question = value.get('needs_input', {}).get('question', '')
         if isinstance(question, str) and 0 < len(question) <= 200 and not any(x in question for x in ('<', '>', '://')):

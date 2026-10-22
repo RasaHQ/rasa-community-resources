@@ -15,6 +15,21 @@ NOW = datetime(2026, 10, 22, 12, tzinfo=timezone.utc)
 
 
 class TravellerControls(unittest.TestCase):
+    def test_uncovered_search_never_reasks_flight_number_or_invents_no_flights(self):
+        from briefing.traveller import discover, discovery_notice
+        class NoNetwork:
+            def find_flights(self, *args, **kwargs):
+                raise AssertionError('unsupported destination must not invent covered routes')
+        for city in ('London', 'Reykjavik'):
+            result = discover(NoNetwork(), 'flight to ' + city + ' tonight')
+            self.assertEqual(result['status'], 'unsupported_destination')
+            notice = discovery_notice(result)
+            self.assertIn(city, notice)
+            self.assertIn('New York only', notice)
+            self.assertIn('does not mean there are no flights', notice)
+            self.assertNotIn('Do you know', notice)
+            self.assertEqual(result['candidates'], [])
+
     def test_airport_city_and_airline_words_are_resolved_in_code(self):
         self.assertEqual(destination_hint('I am heading to JFK'), 'KJFK')
         self.assertEqual(destination_hint('New York'), 'New York')
