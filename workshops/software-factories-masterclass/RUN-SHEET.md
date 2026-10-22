@@ -66,7 +66,7 @@ Say, at the end: "Nobody read the change. The gates decided. And the good change
 ### 15:45 Your turn (95 min, with a break)
 Show: slide 28 and leave it up. At 16:30 show slide 29 (the break). At 16:45 go back to slide 28. Do: everyone works through the book, alone or in groups of up to four, from Chapter 0, then the short Chapters 1 and 2 (reading only, their change steps follow after the class), then Chapter 3. Each chapter has a ready folder, so anyone can start at any chapter.
 Break: 16:30 to 16:45, with refreshments. Chat and networking are part of the plan.
-Your job: walk the room. The three common stops are a missing license (point to the sign-up), a key that isn't set (the doctor shows SET or MISSING, never the value) and a clone made as a zip (clone with Git instead). Tell people that a live flight or a live builder run is an extra, and that every "done when" check works offline.
+Your job: walk the room. The three common stops are a missing license (point to the sign-up), a key that isn't set (the doctor shows SET or MISSING, never the value) and a clone made as a zip (clone with Git instead). Tell people that a live flight or a live builder run is an extra, and that the "done when" checks in Chapters 1 to 8 work offline. Chapter 0 needs the license and an internet connection for the install, then runs on recorded data. Only its optional live-source extra needs the internet while it runs.
 Say once at the start: "Keys and the license stay in your own shell or your own Git-ignored .env. Never put one in a tracked file, a tool result, a report or a chat."
 
 ### 17:20 Close (10 min)
