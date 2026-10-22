@@ -7,6 +7,8 @@ Verified with: Python 3.12, the committed registry locks; complete demo qualific
 Audience: Practitioners connecting Rasa Mantle to a managed specialist
 Time: Allow time for the first dependency download
 
+**Self-paced start:** [SELF-PACED-GUIDE.md](SELF-PACED-GUIDE.md) gives five checkpoints with expected behavior and failure cases.
+
 **Draft class head: the complete path is awaiting independent acceptance.**
 From this checkout, create your private credential file and fill in your own values,
 then install and start the demo:
@@ -30,13 +32,13 @@ make setup
 make run
 ```
 
-Use a Git clone; ZIP downloads are unsupported because the credential tracking
-and ignore checks require Git. Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
-`RASA_LICENSE` (the free Developer Edition licence) in the example-root `.env` or your shell, including in scripted mode;
-the launcher never bypasses the engine licence check. Model and voice keys are
+Use a Git clone, or run `git init` in this example folder after unzipping so credential tracking
+and ignore checks can operate. Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
+`RASA_LICENSE` (the free Developer Edition license) in the example-root `.env` or your shell, including in scripted mode;
+the launcher never bypasses the engine license check. Model and voice keys are
 optional for the scripted text path. Before class, [sign up for your own free
-Developer Edition licence](https://rasa.com/rasa-pro-developer-edition-license-key-request)
-and put the issued licence in the template’s `RASA_LICENSE` entry; submitting the
+Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request)
+and put the issued license in the template’s `RASA_LICENSE` entry; submitting the
 form alone does not make the runtime ready.
 
  Setup creates separate worker and Mantle
@@ -55,7 +57,7 @@ Press Ctrl-C in the launcher terminal to stop both
 services and their children. If either port is occupied, the launcher refuses;
 it does not stop another user's service.
 
-With your Developer Edition licence and no model keys, the Inspector uses
+With your Developer Edition license and no model keys, the Inspector uses
 **SCRIPTED tool selection**. The pinned
 engine, skill execution, MCP requests, hooks and browser Inspector are real;
 the selection of tools is deterministic and is not model reasoning. This is
@@ -96,6 +98,8 @@ styles and SVG; it loads no remote browser assets.
 
 ## Optional live model and voice
 
+Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested.
+
 Only the facilitator or participant supplies keys in the ignored example-root
 `.env` or their shell. Never paste values into chat, committed files, URLs or logs. There is no
 seat-operated live model or voice proof here. The selected model group remains
@@ -103,7 +107,7 @@ in `project/integrations.yml`; choose `openai` or `anthropic` there before a liv
 run with the matching environment key. A key for the other group alone does
 not establish readiness.
 
-This pack is pinned to and tested on Rasa Pro 3.21.0.dev5. The current Mantle docs describe 3.21.0.dev12, where the model is set in agent.yml under orchestrator.model_group. Use this pack's files today.
+This example folder is pinned to and tested on Rasa Pro 3.21.0.dev5. The current Mantle docs describe 3.21.0.dev12, where the model is set in agent.yml under orchestrator.model_group. Use this pack's files today. The workshop's Chapter 0 runs on Rasa Pro 3.21.0.
 
 Voice uses Deepgram Flux and Aura-2 through the maintained project integration.
 Without `DEEPGRAM_API_KEY`, the launcher prints “Voice is off; set DEEPGRAM_API_KEY in your environment to enable it, or continue with text.”
@@ -167,7 +171,7 @@ Both use this launcher; historical wheel and two-shell experiments are not the
 class setup path.
 
 Teaching code uses the repository [license](../../LICENSE). Rasa Pro has its own
-terms; any licence requirement is an explicit prerequisite, not a skipped check.
+terms; any license requirement is an explicit prerequisite, not a skipped check.
 
 For a temporary tailnet viewer, set `BRIEFING_VIEWER_HOST` in the terminal to
 this host's assigned address inside 100.64.0.0/10. Optionally set
@@ -179,7 +183,7 @@ authentication token.
 
 **Tailnet access:** Inspector on port 5005 has no authentication of its own.
 Any tailnet device that can reach it can drive the agent using the running
-facilitator's model key and licence. Before enabling this viewer, restrict the
+facilitator's model key and license. Before enabling this viewer, restrict the
 Tailscale ACL to the operator's device, or obtain the operator's explicit
 acceptance of this temporary exposure. Then record that condition in the
 terminal with `BRIEFING_VIEWER_ACCESS=operator-device-acl` or
@@ -218,7 +222,7 @@ Funded rehearsal use remains subject to the facilitator's recorded budget scope.
 Flight discovery uses a local published-route input in
 `briefing/nyc-routes-vrs-20261022.json`. Its loader verifies a fixed SHA256 before
 parsing. `briefing/nyc-routes-SOURCE.json` records the original public CSV hashes,
-source commit/date and CC0 licence. The 76 KB subset contains 1,762 two-airport
+source commit/date and CC0 license. The 76 KB subset contains 1,762 two-airport
 routes for 16 selected airlines ending at JFK, EWR or LGA. It is incomplete
 coverage, not a live filed-flight-plan or schedule source. No aircraft-owner or
 registration dataset is bundled and runtime loading makes no network request.

@@ -4,7 +4,7 @@ Arrow keys advance the deck. N toggles notes. The deck works offline. Slides 16,
 
 ## 1. A software factory that checks an agent’s changes.
 
-Welcome briefly, then move straight to the teaser. The cover describes the target experience. The supplied package does not yet connect the entire voice factory. State the implemented scope before showing anything. Rod Rivera, three-hour masterclass.
+Welcome briefly, then move straight to the teaser. The cover describes the target experience. The supplied package does not yet connect the entire voice factory. State the implemented scope before showing anything. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. Rod Rivera, three-hour masterclass.
 
 ## 2. “Will I make my meeting?”
 
@@ -80,7 +80,7 @@ Optional table-side slide. An attempt accepted before integration may fail after
 
 ## 20. Voice has its own acceptance tests.
 
-Optional. Check ASR, TTS, timing, interruption and state retention. The version update uses deepgram_flux for Flux ASR and deepgram for Aura-2 TTS. If voice falls back to text, mark voice incomplete.
+Explanation only today: Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. Optional later: check ASR, TTS, timing, interruption and state retention. The version update uses deepgram_flux for Flux ASR and deepgram for Aura-2 TTS. If voice falls back to text, mark voice incomplete.
 
 ## 21. Your demo starts with the requirement.
 

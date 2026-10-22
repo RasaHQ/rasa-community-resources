@@ -2,11 +2,13 @@
 
 Bring a laptop, headphones and a charger. Work in groups of three or four. One working machine per group is enough.
 
-## Accounts for the voice and live-builder route
+## Requirements for the core route and optional live runs
 
-- An issued Rasa Developer Edition license (`RASA_LICENSE`). Request it at https://rasa.com/rasa-pro-developer-edition-license-key-request . A submitted form is not an issued license.
-- An OpenAI API application key with Agents session read/write and model inference permissions. The official Agents quickstart names `api.agents.read`, `api.agents.write`, and `api.responses.write`. ChatGPT access alone does not establish API access.
-- A Deepgram key (`DEEPGRAM_API_KEY`) for speech recognition and synthesis.
+Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example in `examples/` stays on 3.21.0.dev5 today.
+
+- An issued free Rasa Developer Edition license (`RASA_LICENSE`). Request it at https://rasa.com/rasa-pro-developer-edition-license-key-request . A submitted form is not an issued license.
+- Optional: an OpenAI API application key with Agents session read/write and model inference permissions. The official Agents quickstart names `api.agents.read`, `api.agents.write`, and `api.responses.write`. ChatGPT access alone does not establish API access.
+- Optional: a Deepgram key (`DEEPGRAM_API_KEY`) for speech recognition and synthesis. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. You don't need the key today.
 - Python 3.12, uv, Git and Make. The existing code-verification labs require macOS. Other participants use the data-only track or join a Mac group. Native Windows launcher support is not established; use a group machine for that route.
 
 Check the account's available credits and enforceable limits before paid work. Call-count and time limits are not a dollar cap. This package has no per-session money cap. Do not retry paid builds in a loop.
@@ -27,7 +29,7 @@ make env
 make setup
 ```
 
-Open the new `.env` in your own editor and fill in the license, OpenAI key and Deepgram key. Anthropic is optional and not required for this workshop. Leave the template committed only with blank values. Then:
+Open the new `.env` in your own editor and fill in the issued license. Leave provider keys empty for the typed scripted route; add them only for an intentional live extension. Anthropic is optional and not required for this workshop. Leave the template committed only with blank values. Then:
 
 ```bash
 make doctor

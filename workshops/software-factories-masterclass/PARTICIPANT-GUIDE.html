@@ -6,7 +6,7 @@
 <pre><code class="language-bash">export PACK=&quot;$PWD&quot;
 python3 --version
 </code></pre>
-<p>Use Python 3.12. <code>PACK</code> always means this folder (the <code>software-factories-masterclass</code> folder); keep the terminal open. In a new terminal, set <code>PACK</code> again to the full path. Read <code>PREWORK.md</code> if you have not installed dependencies.</p>
+<p>Use Python 3.12. Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example in <code>examples/</code> stays on 3.21.0.dev5 today. <code>PACK</code> always means this folder (the <code>software-factories-masterclass</code> folder); keep the terminal open. In a new terminal, set <code>PACK</code> again to the full path. Read <code>PREWORK.md</code> if you have not installed dependencies.</p>
 <p>Choose your route:</p>
 <table>
 <thead>
@@ -19,7 +19,7 @@ python3 --version
 <tbody>
 <tr>
 <td>A: travel scaffold and coding factory</td>
-<td>A Mac for code gates; Python 3.12, uv, Git, Make; license and provider keys for live voice</td>
+<td>A Mac for code gates; Python 3.12, uv, Git, Make; issued free Rasa Developer Edition license; provider keys only for optional live runs</td>
 <td>Travel assistant, Agents API builder, rejection and local integration</td>
 </tr>
 <tr>
@@ -29,7 +29,7 @@ python3 --version
 </tr>
 </tbody>
 </table>
-<p>If setup is still blocking you after ten minutes, use B and pair with an A group for the voice demonstration. A file-presence check is not evidence that an agent works.</p>
+<p>If setup is still blocking you after ten minutes, use B and pair with an A group for the typed travel demonstration. A file-presence check is not evidence that an agent works.</p>
 <p>Assign driver, requirements owner and evaluator. A fourth person records evidence. Swap after the break.</p>
 <h2>Shared checkpoint 1: a brief with examples (10 minutes)</h2>
 <p>Write <code>group-brief.md</code> in your own work folder. Use this request:</p>
@@ -70,15 +70,14 @@ python3 --version
 <p>From your prepared package:</p>
 <pre><code class="language-bash">cd &quot;$PACK/book/ready/ch00/demo&quot;
 make doctor
-make run
 </code></pre>
-<p>With the selected model key and Deepgram key, this is the live-mode entry point. Open http://127.0.0.1:8942/ after the launcher reports ready. Use the Inspector's voice mode and grant microphone access. Ask for flights to New York, choose a returned flight, and give your meeting's local day/time. Allow 90 minutes into town, then change it to 120 minutes.</p>
-<p>Record: what you said, what the system heard, what changed on screen, which sources supplied the values, and the runtime mode. Test a short answer and an interruption. Speech input alone is not enough: verify audible output too.</p>
-<p>The arrival is a position-based estimate, not an airline ETA. The transfer is an assumption, not live traffic. The currency card uses reference rates. The custom card renderer is application code, not automatic Mantle or Agents API UI generation.</p>
-<p>If no model or voice service is available, stop your own launcher with Ctrl-C and use:</p>
+<p>For today's checkpoint, use typed requests and recorded sources. Run:</p>
 <pre><code class="language-bash">BRIEFING_RECORDED=1 make run-scripted
 </code></pre>
-<p>Say <code>United 1162 to EWR</code>, then <code>The 6 pm meeting tomorrow.</code>, then <code>Allow 30 minutes to get into town.</code> In this recording “tomorrow” is 23 October 2026. In another terminal, from <code>book/ready/ch00</code>, run:</p>
+<p>Open http://127.0.0.1:8942/ after the launcher reports ready. Type the three recorded prompts below. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. Voice is optional extension work.</p>
+<p>Record what you typed, what changed on screen, which sources supplied the values, and the SCRIPTED / REPLAY mode. Optional voice testing belongs after the core exercise; test audible output, short answers and interruptions separately.</p>
+<p>The arrival is a position-based estimate, not an airline ETA. The transfer is an assumption, not live traffic. The currency card uses reference rates. The custom card renderer is application code, not automatic Mantle or Agents API UI generation.</p>
+<p>Type <code>United 1162 to EWR</code>, then <code>The 6 pm meeting tomorrow.</code>, then <code>Allow 30 minutes to get into town.</code> In this recording “tomorrow” is 23 October 2026. In another terminal, from <code>book/ready/ch00</code>, run:</p>
 <pre><code class="language-bash">python3 check_demo.py --recorded --transfer-minutes 30
 </code></pre>
 <p>Expected: <code>ch00 OK</code>. Label the result SCRIPTED / REPLAY. Keep the live voice checkpoint incomplete.</p>
@@ -103,7 +102,12 @@ t = json.loads(p.read_text()); t['limit'] = 3
 p.write_text(json.dumps(t, indent=2) + '\n')
 EDIT
 </code></pre>
-<p>For a real builder, provide <code>OPENAI_API_KEY</code> privately to this process environment. The demo's <code>.env</code> is not automatically read here. Use a password manager or secure local terminal prompt; never put the key in the task or share it. Choose an account-approved Agents model. The supplied default example is <code>gpt-6-astra</code>; a model working in Mantle does not prove it is available to an Agents session.</p>
+<p>First finish offline with the edited task:</p>
+<pre><code class="language-bash">python build.py tasks/b-limit-currencies.json attempts/changed --scripted
+python check_build.py attempts/changed
+</code></pre>
+<p>Expected: ACCEPT, then <code>ch05 OK</code>. You now have a complete checkpoint even without API access.</p>
+<p>For an optional real builder, provide <code>OPENAI_API_KEY</code> privately to this process environment. The demo's <code>.env</code> is not automatically read here. Use a password manager or secure local terminal prompt; never put the key in the task or share it. Choose an account-approved Agents model. The supplied default example is <code>gpt-6-astra</code>; a model working in Mantle does not prove it is available to an Agents session.</p>
 <pre><code class="language-bash">printf 'Approved model: '; IFS= read -r MODEL
 printf 'Expected lower cost in USD cents: '; IFS= read -r MIN
 printf 'Expected upper cost in USD cents: '; IFS= read -r MAX
@@ -163,10 +167,11 @@ python3 lesson.py recover
 python3 lesson.py recover
 python3 lesson.py check
 </code></pre>
-<p>Windows PowerShell alternative: copy <code>book/ready/ch08</code> to a new folder in File Explorer, open that folder in PowerShell, and run the same seven Python commands using <code>py -3.12</code> in place of <code>python3</code>.</p>
+<p><strong>Windows is untested.</strong> Suggested PowerShell adaptation (not verified): copy <code>book/ready/ch08</code> to a new folder in File Explorer, open that folder in PowerShell, and run the same seven Python commands using <code>py -3.12</code> in place of <code>python3</code>.</p>
 <p>Expected: accepted proposal; rejected original two-attempt baseline; one simulated crash followed by an accepted retry; duplicate call executes zero further attempts; final <code>ch08 OK</code>. The two measured cases are selected teaching cases, not a success-rate benchmark.</p>
 <p>Then repeat in another fresh folder with <code>set_request.py 1</code>. Recovery should escalate after the first controlled crash (exit code 4), while <code>lesson.py check</code> still passes because escalation is the requested result.</p>
-<p>Use the remaining time to design the travel acceptance scenarios, inspect <code>BUILD-CONTRACT.md</code>, and pair with a voice group. Ask where their job records survive a restart, and what prevents two clicks from launching two builds.</p>
+<p>The builder may see example tests. It never sees or edits the acceptance tests that decide.</p>
+<p>Use the remaining time to design the travel acceptance scenarios, inspect <code>BUILD-CONTRACT.md</code>, and pair with a travel-demo group. Ask where their job records survive a restart, and what prevents two clicks from launching two builds.</p>
 <h2>Final handoff (10 minutes within Lab B)</h2>
 <p>Write these fields in <code>group-handoff.md</code>:</p>
 <ul>
