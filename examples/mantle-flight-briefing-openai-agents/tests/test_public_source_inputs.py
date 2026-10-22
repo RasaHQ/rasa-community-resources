@@ -34,7 +34,9 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
         runner = PublicSourcesRunner(NeverSources(), clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         with self.assertRaises(NeedsInput) as caught:
             await runner(Work('show my flight', 'request', 1, None))
-        self.assertEqual(caught.exception.question, 'Where are you flying to?')
+        self.assertEqual(caught.exception.field, 'destination')
+        self.assertTrue(caught.exception.question.endswith('Where are you heading?'))
+        self.assertIn('the weather when you land', caught.exception.question)
         self.assertNotEqual(caught.exception.inputs.get('source_mode'), 'replay')
 
     async def test_four_error_references_still_use_actual_core_callback_results(self):
