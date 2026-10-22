@@ -21,7 +21,7 @@ NOW = datetime(2026, 10, 22, 1, tzinfo=timezone.utc)
 
 class ReleasedPublicSourceHTTP(unittest.IsolatedAsyncioTestCase):
     async def test_four_injected_source_cards_reach_combined_page_and_preserve_provenance(self):
-        self.assertEqual(version('zeocore'), '0.35.2')
+        self.assertEqual(version('zeocore'), '0.35.4')
         requests = []
         tick = [0.0]
         def handler(request):

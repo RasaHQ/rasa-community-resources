@@ -22,6 +22,6 @@ def native_turn(client, *, agent, text, handlers=None, invoke=None, max_calls=16
     if invoke is None:
         from zeo_core.integrations.agents import run_native
         invoke = run_native
-    return invoke(client, agent=agent, environment={'type': 'openai_hosted'},
+    return invoke(client, agent=agent, environment={'type': 'openai_hosted', 'network': {'access': 'disabled'}},
                   text=text, handlers=handlers, max_calls=max_calls, max_events=10000,
-                  deadline_seconds=60, timeout=20)
+                  deadline_seconds=60, timeout=20, spend_limit_cents=200)

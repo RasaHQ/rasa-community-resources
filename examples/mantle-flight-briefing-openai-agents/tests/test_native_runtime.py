@@ -85,8 +85,8 @@ class NativeRuntimeTests(unittest.TestCase):
                                   handlers=handlers, invoke=invoke), result)
         self.assertIs(calls[0][0], client)
         self.assertEqual(calls[0][1], dict(agent={'model': 'fixture'},
-            environment={'type': 'openai_hosted'}, text='prior validated brief', handlers=handlers,
-            max_calls=16, max_events=10000, deadline_seconds=60, timeout=20))
+            environment={'type': 'openai_hosted', 'network': {'access': 'disabled'}}, text='prior validated brief', handlers=handlers,
+            max_calls=16, max_events=10000, deadline_seconds=60, timeout=20, spend_limit_cents=200))
         self.assertNotIn('session_id', calls[0][1])
 
 

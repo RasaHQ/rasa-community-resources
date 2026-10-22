@@ -197,3 +197,11 @@ our qualification. To use another compatible specialist model, set
 `BRIEFING_AGENTS_MODEL` in your shell; it is not another key in `.env`.
 Without an OpenAI key, source tool selection is explicitly SCRIPTED; an OpenAI
 key with the default native model enables the combined Agents/public-source path.
+
+The source worker pins OpenAI 3.36.1, whose installed session API exposes
+`spend_control`; the older 3.29.0 worker does not. The specialist requests a
+200-cent session spending limit through Core 0.35.4
+and explicitly disables the hosted environment network. Public source reads
+still run only in the local fixed-host handlers. This bounds the requested
+configuration; provider enforcement of the spending limit has not been proven
+by an over-limit funded test.

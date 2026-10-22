@@ -52,8 +52,8 @@ class Sessions:
         self.repeat = repeat
         self.stream = None
 
-    def create(self, *, agent, environment, input, stream, tool_handlers, timeout):
-        if stream is not True or timeout != 20 or environment != {'type': 'openai_hosted'}:
+    def create(self, *, agent, environment, input, stream, tool_handlers, timeout, spend_control):
+        if stream is not True or timeout != 20 or environment != {'type': 'openai_hosted', 'network': {'access': 'disabled'}} or spend_control != {'limit': 200}:
             raise AssertionError('Unexpected native SDK invocation')
         self.stream = Stream(tool_handlers, self.repeat)
         return self.stream
@@ -61,16 +61,16 @@ class Sessions:
 
 @unittest.skipUnless(run_native is not None, 'separate live-worker dev20 interpreter required')
 class InstalledNativeContract(unittest.TestCase):
-    @unittest.skipUnless(find_spec("openai") is not None and version("openai") == "3.29.0",
-                         "separate live-worker OpenAI 3.29.0 interpreter required")
+    @unittest.skipUnless(find_spec("openai") is not None and version("openai") == "3.36.1",
+                         "separate live-worker OpenAI 3.36.1 interpreter required")
     def test_installed_sdk_exposes_the_exact_native_create_surface_without_a_request(self):
         from importlib.metadata import version
         from inspect import signature
         from openai import OpenAI
-        self.assertEqual(version('openai'), '3.29.0')
+        self.assertEqual(version('openai'), '3.36.1')
         with OpenAI(api_key='invented-offline-constructor-canary', max_retries=0) as client:
             parameters = signature(client.beta.agents.sessions.create).parameters
-            self.assertTrue({'agent', 'environment', 'input', 'stream', 'tool_handlers', 'timeout'} <= parameters.keys())
+            self.assertTrue({'agent', 'environment', 'input', 'stream', 'tool_handlers', 'timeout', 'spend_control'} <= parameters.keys())
 
     def test_actual_core_dispatches_handler_and_stops_at_persistent_stream_boundary(self):
         sessions = Sessions()
