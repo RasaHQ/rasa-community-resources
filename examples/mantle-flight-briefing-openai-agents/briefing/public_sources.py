@@ -11,6 +11,7 @@ from dataclasses import replace
 import re
 
 from zeo_core.integrations.agents import ScriptedTransport, function_tool, run
+from zeo_core.contracts.ui.widgets import COMPONENTS
 from briefing.jobs import Answer, BriefingRefused, NeedsInput, Work
 from briefing.replay import ReplayRunner
 
@@ -38,13 +39,16 @@ class PublicSourcesRunner:
                                  {**missing.inputs, 'source_mode': 'replay'}) from None
             return replace(answer, inputs={**(answer.inputs or {}), 'source_mode': 'replay'})
         inputs.pop('source_mode', None)
-        callsign = re.search(r'\bcallsign=([A-Z0-9]{2,10})\b', text)
+        callsign = re.search(r'\bcallsign=([^\s]+)', text)
         if callsign:
-            inputs['callsign'] = callsign.group(1)
+            explicit = callsign.group(1).upper()
+            if not re.fullmatch(r'[A-Z0-9]{2,10}', explicit):
+                raise BriefingRefused('explicit_callsign_required')
+            inputs['callsign'] = explicit
         if not inputs.get('callsign'):
             raise BriefingRefused('explicit_callsign_required')
         meeting = re.search(r'\bmeeting=([^\s]+)', text)
-        transfer = re.search(r'\btransfer=([0-9]{1,4})\b', text)
+        transfer = re.search(r'\btransfer=([^\s]+)', text)
         awaiting = inputs.get('awaiting')
         if meeting or awaiting == 'meeting_time':
             try:
@@ -56,7 +60,7 @@ class PublicSourcesRunner:
                 inputs.pop('meeting_time', None)
         if transfer or awaiting == 'transfer_minutes':
             match = transfer or re.fullmatch(r'([0-9]{1,4})(?: minutes?)?', text)
-            if match and 0 <= int(match.group(1)) <= 1440:
+            if match and re.fullmatch(r'[0-9]{1,4}', match.group(1)) and 0 <= int(match.group(1)) <= 1440:
                 inputs['transfer_minutes'] = int(match.group(1))
             else:
                 inputs.pop('transfer_minutes', None)
@@ -74,6 +78,8 @@ class PublicSourcesRunner:
             inputs['callsign'], transfer_minutes=inputs['transfer_minutes'],
             meeting_time=datetime.fromisoformat(inputs['meeting_time']),
             currencies=('USD', 'GBP'))
+        if set(references) != set(COMPONENTS):
+            raise ValueError('source_components_incomplete')
         cards = {}
 
         def handler(component):

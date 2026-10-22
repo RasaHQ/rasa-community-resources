@@ -68,3 +68,20 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
                                    inputs=second.exception.inputs))
         self.assertTrue(answer.turn.ok)
         self.assertTrue(all(ref.replay for ref in answer.cards.values()))
+
+    async def test_invalid_transfer_revision_cannot_silently_keep_an_old_assumption(self):
+        runner = PublicSourcesRunner(NeverSources())
+        for text in ('transfer=-1', 'transfer=1500', 'transfer=unknown'):
+            with self.subTest(text=text), self.assertRaises(NeedsInput) as caught:
+                await runner(Work(text, 'request', 2, None, inputs={
+                    'callsign': 'TEST123', 'meeting_time': '2026-10-22T17:00:00Z',
+                    'transfer_minutes': 45}))
+            self.assertEqual(caught.exception.field, 'transfer_minutes')
+            self.assertNotIn('transfer_minutes', caught.exception.inputs)
+
+    async def test_invalid_new_callsign_does_not_keep_the_old_journey(self):
+        runner = PublicSourcesRunner(NeverSources())
+        with self.assertRaises(BriefingRefused):
+            await runner(Work('callsign=../private', 'request', 2, None,
+                              inputs={'callsign': 'TEST123', 'transfer_minutes': 45,
+                                      'meeting_time': '2026-10-22T17:00:00Z'}))
