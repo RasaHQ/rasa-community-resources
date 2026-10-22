@@ -2,7 +2,7 @@
 
 **Goal:** ask the factory to change its retry allowance, then observe a checked change, a bounded recovery and an honest report.
 
-**You need first:** Python 3.12, [uv](https://docs.astral.sh/uv/) and a clone of this repository. This chapter includes its complete code. It uses only Python's standard library: no model, account, licence or network request is needed after Python is installed. The earlier chapters explain the builder and the protected checks; you can run this checkpoint on its own.
+**You need first:** Python 3.12, [uv](https://docs.astral.sh/uv/) and a clone of this repository. This chapter includes its complete code. It uses only Python's standard library: no model, account, license or network request is needed after Python is installed. The earlier chapters explain the builder and the protected checks; you can run this checkpoint on its own.
 
 ## What happens after a run fails?
 
