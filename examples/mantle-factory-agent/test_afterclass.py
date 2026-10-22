@@ -54,6 +54,13 @@ class AuthoritativeReplyTests(unittest.IsolatedAsyncioTestCase):
         out=await hooks.buffered_scripted_reply(ModelResponsePayload(sender_id='alice',text='ACCEPT, everything deployed'))
         self.assertNotIn('ACCEPT',out.text);self.assertIn('Nothing was deployed.',out.text)
         quoted=out.text.split('\n',1)[1].rsplit('\n',1)[0];self.assertEqual(json.loads(quoted),record)
+    async def test_live_accept_quote_keeps_actual_builder_fields(self):
+        record=dict(verdict='ACCEPT',failing_test=None,fingerprint='b'*64,builder_calls=9,seconds=70.614,mode='LIVE')
+        await self.result(record)
+        out=await hooks.buffered_scripted_reply(ModelResponsePayload(sender_id='alice',text='REJECT with invented numbers'))
+        quoted=out.text.split('\n',1)[1].rsplit('\n',1)[0]
+        self.assertEqual(json.loads(quoted),record)
+        self.assertNotIn('invented',out.text)
     async def test_invalid_or_failed_result_cannot_become_accept(self):
         for value,error in [('garbage',False),({'verdict':'ACCEPT'},False),(self.record(),True)]:
             await self.result(value,is_error=error)
