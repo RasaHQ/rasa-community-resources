@@ -1,10 +1,10 @@
 # Chapter 2: Cards from real sources
 
-**Goal:** look at one card, find the code that fetched its data, and read the rules that label it.
+Picture a card that says "live" beside a rate that updates once a day. A traveler trusts it and plans around it. In about 10 minutes you'll find the code that stops that, by labeling every card with where its data came from and how fresh it is.
 
-**You need first:** Chapter 1, and the ready folder from Chapter 0. You only read files here. Nothing runs, and no key or account is needed.
+Time: about 10 minutes. You need: the Chapter 0 ready folder and a terminal. You only read files here, so there's no key or account. This chapter has no "Now change it" step. That step comes after the class.
 
-This chapter is short on purpose. It shows you where a card's data comes from. A later "Now change it" step, where you add one field to a card and check the label rules, follows after the class.
+You're done when the listing command at the end prints `ch02 OK`. If you get stuck, open `book/ready/ch00/demo` and run the commands from there.
 
 ## Where a card's data comes from
 
@@ -34,7 +34,7 @@ cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
    grep -E "^class " briefing/public_sources.py briefing/live_public_sources.py
    ```
 
-   You see `PublicSourcesRunner` and `LivePublicSourcesRunner`. They call the readers and hand each result to a card. The readers themselves come from the Core package that Chapter 0 installed.
+   You see `PublicSourcesRunner` and `LivePublicSourcesRunner`. They call the readers and hand each result to a card. The readers themselves come from `zeocore`, the Python package that holds the card code. Chapter 0 installed it.
 
 2. See which readers the live runner imports:
 
@@ -72,8 +72,8 @@ Run this in the `demo` folder:
 
 It lists the skill, the tool, one reader runner and the card text rules, then prints `ch02 OK`. It checks that the files are present. Reading them is your part.
 
-You can now point to the skill, the tool and one reader in the folder.
+## What you just learned
 
-## What comes next
+Every card carries a label that says where its data came from, and most carry a line that says how fresh it is. A source that is down gives an unavailable card with a reason, never an invented value.
 
-The "Now change it" half of this chapter, where you add a field to a card, follows after the class. Chapter 3 starts the factory itself: a task, and tests that judge the change.
+Next: [Chapter 3](03-a-factory-starts-with-a-task.md) starts the factory itself, with a task and tests that judge the change.

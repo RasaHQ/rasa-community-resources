@@ -1,15 +1,16 @@
 # Chapter 4: Acceptance before code
 
-**Goal:** see the tests that judge a change, written before any work, lock them for your own task and watch the factory accept the builder's attempt.
+A coding agent reports that its change works, and it wrote the tests that say so. Tests the builder can read, the builder can bend. In about 30 minutes you'll lock the tests before any work starts, so the builder never sees them and can't change them, and then watch the factory accept an attempt against them.
 
-**You need first:** Chapter 3, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).
+Time: about 30 minutes. You need: a Mac (the check runs in a macOS sandbox), Python 3.12 and uv. Chapter 3 first is useful but not required, because this chapter has its own ready folder. No key or account.
+
+You're done when the check at the end prints a line that starts with `ch04 OK`. If you get stuck, start again from `book/ready/ch04` in a fresh folder.
 
 ## Words used in this chapter
 
-- **Test:** a small program that checks another program. **Acceptance test:** checks that what you asked for was built.
-- **Protected tests:** the acceptance tests the builder never sees and can't change.
+- **Protected tests:** tests that check what you asked for was built. The builder never sees them and can't change them.
 - **Fingerprint (hash):** a short code made from a file. Change one letter and it changes.
-- **Sandbox:** a safety box from the operating system that blocks the network. It uses `sandbox-exec`, which comes with macOS. On another system the gate (`run_a6.py`) prints `could not run: this check needs macOS` and exits 2 before it judges anything, and the protected tests run directly in step 1 report their network check (`test_b6`) as failed. Pair with someone on a Mac, or follow along on screen.
+- **Sandbox:** a safety box from the operating system that blocks the network. It uses `sandbox-exec`, which comes with macOS.
 
 ## Get the ready folder
 
@@ -27,6 +28,7 @@ uv venv --python 3.12 .venv
 source .venv/bin/activate
 uv pip install zeocore==0.35.6 httpx==0.28.1
 ```
+
 ## See how it works
 
 
@@ -109,3 +111,13 @@ It passes only when the fingerprints match, the tests fail on the baseline for t
 - `could not run: this check needs macOS`: the gate needs `sandbox-exec`, which comes with macOS. Pair with someone on a Mac, or follow along on screen. (The tests run directly in step 1 report `test_b6` as failed on such a system.)
 - `No module named zeo_core`: activate the environment and install `zeocore==0.35.6`.
 - Fingerprint mismatch: you changed a protected file after locking. Lock again.
+
+## Good to know
+
+- On a system that isn't macOS, the gate (`run_a6.py`) prints `could not run: this check needs macOS` and exits 2 before it judges anything. The protected tests you run directly in step 1 then report their network check (`test_b6`) as failed. Pair with someone on a Mac, or follow along on screen.
+
+## What you just learned
+
+The tests that judge a change are written first and locked by a fingerprint, so the builder can't read them or bend them. The factory accepted the attempt only because it passed those tests.
+
+Next: [Chapter 5](05-the-builder.md) puts a real builder, a confined coding agent, behind the same gates.

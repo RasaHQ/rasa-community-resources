@@ -1,10 +1,10 @@
 # Chapter 0: Run the agent you will learn to build
 
-**Goal:** see four recorded source cards, then ask the actual agent to change its airport-to-city allowance without editing code.
+Your flight lands at 5 pm and your meeting is at 6 pm, across town. In about 20 minutes, after a first install, you'll run an agent that answers that from four sources at once, then change how it answers without touching its code.
 
-**You need first:** a Git clone of this repository, Python 3.12, [uv](https://docs.astral.sh/uv/), Make, a browser and an issued [free Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the form alone is not a license. Installation needs internet access. After installation, this chapter's core exercise uses recorded data and needs no live source, model key or voice key.
+Time: about 5 minutes for the first install, then about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), Git, Make, a browser and your free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the sign-up form alone isn't a license. The install needs the internet. After that the exercise runs offline, because the cards are a recording from 22 October 2026.
 
-The Python-product factory exercises later in the book require a Mac with `sandbox-exec`. Pair with a Mac user for those checks if needed. This chapter is qualified on macOS/Python 3.12; other operating systems have not been qualified.
+You're done when `python3 check_demo.py --recorded --transfer-minutes 30` prints `ch00 OK`. If you get stuck, the working code is in `book/ready/ch00`.
 
 ## What you are looking at
 
@@ -17,11 +17,11 @@ The Python-product factory exercises later in the book require a Mac with `sandb
 | Timeline | Whether arrival and an assumed transfer fit the meeting |
 | Currency | Daily reference rates and their changes |
 
-In this exercise, the position, forecast and reference rates were recorded on **22 October 2026** through the same briefing workflow. The timeline is computed from those observations and the meeting and transfer you state. Every card says **REPLAY**. These are historical observations, not current flight information. The exercise clock is fixed to the recording's day: “tomorrow” means 23 October 2026.
+The position, forecast and rates were recorded on **22 October 2026**, so every card says **REPLAY**. The timeline is computed from those and from the meeting time and travel time you give. In this exercise “tomorrow” means 23 October 2026.
 
-**SCRIPTED** means teaching code selects the tools. The Mantle engine, Inspector, tool workflow, checks and Core card renderer are real. No model reasoning is being demonstrated. The recorded adapter never opens a source or model connection.
+**SCRIPTED** means teaching code picks which tool to call. The agent engine and the cards are the real ones.
 
-## Open the complete checkpoint
+## Get the code
 
 1. Clone the repository if needed:
 
@@ -29,7 +29,7 @@ In this exercise, the position, forecast and reference rates were recorded on **
    git clone https://github.com/RasaHQ/rasa-community-resources.git
    ```
 
-   Use your existing clone if you have one. Keep this checkpoint inside Git: credential tracking and ignore checks do not support ZIP downloads or an isolated copy.
+   Use your existing clone if you have one. Work inside the clone: a ZIP download won't work.
 
 2. Set your clone's actual location and install the supplied code:
 
@@ -41,15 +41,15 @@ In this exercise, the position, forecast and reference rates were recorded on **
    make env
    ```
 
-   Setup installs two locked Python 3.12 environments without passing participant keys to package build tools. `make env` creates a private `.env` only if absent; it never overwrites earlier values.
+   Setup installs two Python 3.12 environments with pinned versions. `make env` creates a private `.env` file only if none exists, and never overwrites one.
 
-3. Open `.env` in your editor. Put your issued license after `RASA_LICENSE=` and leave model and voice entries empty for this exercise. Never paste a credential into chat, URLs, task files or a terminal command. Do not commit `.env`.
+3. Open `.env` in your editor. Put your issued license after `RASA_LICENSE=` and leave model and voice entries empty for this exercise. Never paste a key into a chat, a URL or a terminal command, and never commit `.env`.
 
    ```bash
    make doctor
    ```
 
-   You should see credential **names** marked SET or MISSING, never values, and `Readiness check passed.` A present license still must be accepted when the real engine starts. Missing model and voice keys are expected. Fix a prerequisite error before continuing.
+   You should see key **names** marked SET or MISSING, never values, and `Readiness check passed.` Missing model and voice keys are expected here. Fix any other error before you continue.
 
 ## See how it works
 
@@ -59,7 +59,7 @@ In this exercise, the position, forecast and reference rates were recorded on **
    BRIEFING_RECORDED=1 make run-scripted
    ```
 
-   The terminal explicitly says `recorded sources (REPLAY)`. Keep it running. Open [the local agent page](http://127.0.0.1:8942/) after it reports ready. This is the actual Mantle Inspector beside Core's cards, not a replacement chat or a separately drawn page.
+   The terminal explicitly says `recorded sources (REPLAY)`. Keep it running. Open [the local agent page](http://127.0.0.1:8942/) after it reports ready. This is the real Mantle Inspector, with the cards beside it.
 
 2. Use the flight included in the recording:
 
@@ -73,7 +73,7 @@ In this exercise, the position, forecast and reference rates were recorded on **
    The 6 pm meeting tomorrow.
    ```
 
-   Four REPLAY cards appear. Read their provenance and recorded times. The initial Newark-to-city allowance is **90 minutes**: a planning assumption, not traffic or a guarantee about immigration or baggage. The recording is fixed; it cannot discover today's flights.
+   Four REPLAY cards appear. Read where each card says its data came from, and when it was recorded. The starting time to get from Newark to your meeting is **90 minutes**. That is a planning assumption, not traffic data.
 
 3. In a second terminal, check the result before making your change:
 
@@ -83,7 +83,7 @@ In this exercise, the position, forecast and reference rates were recorded on **
    python3 check_demo.py --recorded --transfer-minutes 30
    ```
 
-   This must fail with `NOT DONE`, exit 1. Four cards exist, but their 90-minute allowance does not meet your new 30-minute requirement. Before the demo is running, the command also fails because it cannot reach the page.
+   This must fail with `NOT DONE` and exit 1. The four cards are there, but the 90 minutes doesn't match the 30 you're about to ask for. If the demo isn't running, the command also fails, because it can't reach the page.
 
 ## Now change it
 
@@ -93,9 +93,9 @@ In the running conversation, ask:
 Allow 30 minutes to get into town.
 ```
 
-The agent revises the timeline through its briefing tool. The recorded flight, weather and currency observations remain unchanged; your meeting stays the same. The new 30-minute allowance is still explicitly an assumption. You do not edit a product file or a recorded value.
+The agent revises the timeline through its briefing tool. The flight, weather and currency cards stay the same, and so does your meeting. You don't edit any file.
 
-You can instead explore **120 minutes** by requesting it in the conversation and using `--transfer-minutes 120` in the check. Both differ from the initial 90-minute allowance. These are requests for a planning assumption, not claims about actual travel time.
+You can ask for **120 minutes** instead. Use `--transfer-minutes 120` in the check.
 
 ## You are done when
 
@@ -105,7 +105,7 @@ From the second terminal, run your chosen check again:
 python3 check_demo.py --recorded --transfer-minutes 30
 ```
 
-It must exit 0 and print `ch00 OK`: the actual local HTTP page contains four available REPLAY cards and the requested allowance. An empty board, duplicate, three-card replay, unavailable card, public-source mode or unchanged 90-minute timeline cannot pass. Also confirm that the displayed flight and meeting stayed the same. This does not certify voice, model reasoning, a different session or future source availability.
+It must exit 0 and print `ch00 OK`. That means the page shows four REPLAY cards and your new travel time. An empty board, a repeated card, three cards, an unavailable card or the old 90 minutes can't pass. Also check that the flight and meeting stayed the same.
 
 Stop your own demo with Ctrl-C in its launcher terminal, or `make stop` from its `demo` folder. Do not kill someone else's process to free a port.
 
@@ -117,19 +117,29 @@ After the recorded exercise, stop it. Run without the recorded flag:
 make run-scripted
 ```
 
-This still makes no paid model request, but the source readers now need internet access. Ask “I'm heading to New York. Which flights are already in the air?”, choose an actually returned flight, then state your meeting and transfer allowance. Discovery covers selected published New York routes, not a complete airline schedule service. If none matches, supply a flight you know is airborne; do not assume the recorded flight is airborne now.
+This needs the internet, and still makes no paid model request. Ask “I'm heading to New York. Which flights are already in the air?”, choose an actually returned flight, then state your meeting and transfer allowance. It searches a set of published New York routes. If none matches, give a flight you know is in the air. The recorded flight isn't in the air now.
 
-Live observations, forecasts, computed estimates and daily reference rates have different labels. Missing sources show unavailable reasons, never invented values. `python3 check_demo.py` without `--recorded` checks four available cards for this extra. Public source availability is not required to finish the recorded core exercise.
-
-For model reasoning or voice demonstrations, use the facilitator's separately reviewed plan with a named model, execution bounds, an expected cost range and recorded usage. The recorded exercise supplies no paid-run command. Text cards alone do not establish that a spoken interaction worked. The recorded worker refuses model-enabled mode.
+Live positions, forecasts, computed estimates and daily rates carry different labels. A source that is down shows a reason, never an invented value. `python3 check_demo.py` without `--recorded` checks four available cards for this extra. You don't need it to finish the chapter.
 
 ## If it fails
 
 - **License missing or refused:** use the issued license, not the sign-up confirmation. Do not share its value in a support report.
-- **The check still says NOT DONE:** read the four cards. Each must say REPLAY, and the timeline must show your requested 30 or 120 minutes. Make the request through the conversation.
-- **A port is occupied:** stop your own earlier checkpoint with `make stop`. The launcher does not stop another checkout.
-- **Unsafe or tracked `.env`:** keep only the four template names, one assignment each, in a regular ignored file. `chmod 600 .env` repairs permissions. Never force tracked credentials past the check.
+- **The check still says NOT DONE:** read the four cards. Each must say REPLAY, and the timeline must show your requested 30 or 120 minutes. Make the request in the conversation.
+- **A port is occupied:** stop your own earlier run with `make stop`. The launcher doesn't stop anyone else's.
+- **`.env` refused:** move the file aside, run `make env` to create a fresh one, put each key on its own line, and run `chmod 600 .env`. Never commit it.
 - **A live source is unavailable:** return to the recorded exercise rather than calling an unavailable card complete.
-- **You need help:** share the fixed error sentence, Python version and command. Never share `.env`, headers or private briefing identifiers.
+- **You need help:** share the error sentence, your Python version and the command you ran. Never share your `.env` or your keys.
 
-Next, chapter 1 explains the Mantle instructions and tools that made this conversation possible.
+## Good to know
+
+- The later chapters that run protected checks (3 to 7) need a Mac, because they use `sandbox-exec`. This chapter was run on macOS with Python 3.12. Other systems haven't been tried. Pair with someone on a Mac if you need to.
+- No model is reasoning in this exercise. Teaching code picks the tools, and the recorded data never opens a connection to a source or a model.
+- A present license must still be accepted when the agent engine starts, so a passing `make doctor` doesn't guarantee a start.
+- Spoken input is not part of this chapter. Seeing text cards doesn't show that voice works.
+- Model or voice demonstrations are not part of this book's checks. They need a reviewed plan with a named model, limits and an expected cost.
+
+## What you just learned
+
+You ran an agent that builds a four-card briefing from public data, and you changed its answer by asking in plain words. Every value on a card says where it came from.
+
+Next: [Chapter 1](01-what-a-mantle-agent-is.md) shows the files that make this conversation work.

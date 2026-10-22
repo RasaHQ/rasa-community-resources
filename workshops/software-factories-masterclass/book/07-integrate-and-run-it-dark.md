@@ -1,8 +1,10 @@
 # Chapter 7: Integrate and run it dark
 
-**Goal:** see an accepted change go into the product, then do it for your own task, with nobody reading the change.
+A teammate fixes the currency card while your builder is still working. Both changes can pass their own tests, yet installing the later change could overwrite the earlier fix. Before copying an accepted change into the product, check which product it was tested against.
 
-**You need first:** Chapter 6, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).
+Time: about 15 minutes after installation. You need: Chapter 6, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).
+
+If you get stuck, use [the ready folder](ready/ch07) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used in this chapter
 
@@ -53,7 +55,7 @@ uv pip install zeocore==0.35.6 httpx==0.28.1
 
 ## Now change it
 
-Now do the same for your own task, from a clean product. Use the same terminal as before, so that `REPO` is still set (if it isn't, run `export REPO=~/rasa-community-resources` again).
+Repeat the integration for your chosen currency limit, starting from a clean product. Use the same terminal as before, so that `REPO` is still set (if it isn't, run `export REPO=~/rasa-community-resources` again).
 
 The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first by replacing the 2 below with your number. This also makes the builder's attempt again for the new number:
    ```bash
@@ -100,3 +102,15 @@ It passes only when your change is integrated and the card shows your number of 
 - `could not run: this check needs macOS`: the gate needs a Mac. Pair with someone on a Mac, or follow along on screen.
 - `REFUSED: stale base`: you integrated already. Run the reset in step 1 and start again.
 - `could not run: there is no base.json`: run `python integrate.py --record-base` first.
+
+## Good to know
+
+The page uses the bundled sample exchange rates. It checks the card after local integration; it does not install a card into the class's running agent.
+
+You're done when `ch07 OK` confirms that your change is integrated and the card shows your requested number of currencies with the sample-data label.
+
+## What you just learned
+
+You checked the product's base before copying in the accepted files, then ran the tests again on the result. Keep the integration decision with the rendered card so you can trace what was installed and checked.
+
+Next: [set a retry allowance and recover from a crash](08-going-further.md).
