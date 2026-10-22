@@ -108,11 +108,30 @@ class Jobs:
             raise ValueError("Positive job limits required")
         self._runner, self._timeout, self._capacity = runner, timeout, capacity
         self._jobs: dict[str, _Job] = {}
+        self._display_job: _Job | None = None
         self._replacement_plan = replacement_plan
         if ownership_mode not in ("engine", "capability"):
             raise ValueError("unsupported_ownership_mode")
         self.ownership_mode = ownership_mode
         install_log_redaction()
+
+    def display_snapshot(self):
+        """Current local classroom board, without a job/capability selector.
+
+        Only a successful authenticated action changes which board is shown.
+        This display is shared by the facilitator on this machine.
+        """
+        return deepcopy(self._display_job.board.snapshot()) if self._display_job else ()
+
+    def display_title(self):
+        job = self._display_job
+        if job and job.needs_input:
+            field = job.needs_input.get("field")
+            if field == "meeting_time":
+                return "Constructed REPLAY briefing — meeting date and time required"
+            if field == "transfer_minutes":
+                return "Constructed REPLAY briefing — assumed transfer duration required"
+        return "Constructed REPLAY briefing"
 
     @staticmethod
     def _snapshot(job: _Job) -> list[dict]:
@@ -171,10 +190,12 @@ class Jobs:
             job = _Job(owner, text)
             job.board.begin_request(job.request_id)
             self._jobs[job_id] = job
+            self._display_job = job
             job.task = asyncio.create_task(self._run(job, job.request_id))
             return {"job_id": job_id, "status": "started"}
         if action == "get" and job_id is not None and request is None and change is None:
             job = self._owned(owner, job_id)
+            self._display_job = job
             result = {"status": job.status, "progress": list(job.progress),
                       "widgets": [c["event"]["widget_id"] for c in job.cards if not c["replaced"]],
                       "cards": deepcopy(job.cards), "revision": job.revision,
@@ -192,6 +213,7 @@ class Jobs:
                 known = {state.widget_id for state in job.board.snapshot()}
                 if not targets or len(set(targets)) != len(targets) or not set(targets) <= known:
                     raise BriefingRefused("invalid_replacement_targets")
+            self._display_job = job
             if job.task is not None:
                 job.task.cancel()
             # Rotate identity before spawning; even an uncancellable old worker
@@ -266,6 +288,7 @@ class Jobs:
                 job.cards = self._snapshot(job)
 
     async def close(self) -> None:
+        self._display_job = None
         tasks = [job.task for job in self._jobs.values() if job.task is not None]
         for task in tasks:
             task.cancel()

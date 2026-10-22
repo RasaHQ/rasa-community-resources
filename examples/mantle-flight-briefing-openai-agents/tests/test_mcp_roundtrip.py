@@ -17,6 +17,32 @@ from project.lib.capability_logging import contains_api_key
 
 
 class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
+    async def test_local_display_delegates_board_to_core_without_mcp_capability_in_url(self):
+        from types import ModuleType
+        module = ModuleType('zeo_core.adapters.widget_html')
+        seen = []
+        def render(cards, *, document=False, title='Briefing'):
+            seen.append((cards, document, title))
+            return '<p>REPLAY shared renderer contract control</p>'
+        module.render_snapshot_html = render
+        jobs = Jobs(ReplayRunner(), ownership_mode='capability')
+        app = create_app(jobs, transport_token='synthetic-transport-with-no-real-authority')
+        with patch.dict(sys.modules, {'zeo_core.adapters.widget_html': module}):
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app),
+                                        base_url='http://127.0.0.1:8942') as client:
+                response = await client.get('/cards')
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.text, '<p>REPLAY shared renderer contract control</p>')
+                self.assertEqual(len(seen), 1)
+                self.assertTrue(seen[0][1])
+                refused = await client.get('/cards?briefing_id=brf_synthetic')
+                self.assertEqual(refused.status_code, 400)
+                self.assertEqual(len(seen), 1)
+                self.assertNotIn('brf_synthetic', refused.text)
+                private = await client.post('/mcp', json={})
+                self.assertEqual(private.status_code, 401)
+        await jobs.close()
+
     async def test_synthetic_keys_refused_in_meta_and_arguments_without_echo(self):
         runner = ReplayRunner()
         jobs = Jobs(runner, replacement_plan=runner.replacement_plan, ownership_mode='capability')

@@ -14,6 +14,7 @@ from mcp.server.fastmcp.tools.base import Tool
 from pydantic import BaseModel, ConfigDict
 
 from briefing.jobs import Jobs
+from briefing.board_display import BoardDisplay
 from project.lib.capability_logging import contains_api_key, redact_api
 
 
@@ -38,8 +39,11 @@ class _MantlePeer:
         if not isinstance(token, str) or len(token) < 32:
             raise ValueError("runtime_transport_token_required")
         self._app, self._token = app, token
+        self._display = None
 
     async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and scope.get("path") == "/cards" and self._display is not None:
+            return await self._display(scope, receive, send)
         if scope["type"] != "http":
             return await self._app(scope, receive, send)
         headers = [value for name, value in scope.get("headers", []) if name.lower() == b"authorization"]
@@ -155,4 +159,11 @@ def create_app(jobs: Jobs, *, transport_token: str):
     tool.parameters = StrictArguments.model_json_schema(by_alias=True)
     server = FastMCP("briefing", tools=[tool], host="127.0.0.1", port=8942,
                      stateless_http=True, json_response=True, lifespan=lifespan)
-    return _MantlePeer(server.streamable_http_app(), transport_token)
+    def render_current_board():
+        # One renderer, owned by Core. No local HTML/card implementation.
+        from zeo_core.adapters.widget_html import render_snapshot_html
+        return render_snapshot_html(jobs.display_snapshot(), document=True, title=jobs.display_title())
+
+    peer = _MantlePeer(server.streamable_http_app(), transport_token)
+    peer._display = BoardDisplay(peer._app, render_current=render_current_board)
+    return peer

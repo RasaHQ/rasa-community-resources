@@ -30,6 +30,28 @@ class JobControls(unittest.IsolatedAsyncioTestCase):
             with self.assertRaisesRegex(BriefingRefused, "job_unavailable"):
                 await self.jobs.briefing(self.other, action=action, job_id=response["job_id"], **extra)
 
+    async def test_display_snapshot_has_no_capability_and_foreign_get_cannot_select_board(self):
+        from briefing.replay import ReplayRunner
+        runner = ReplayRunner()
+        self.jobs = Jobs(runner, replacement_plan=runner.replacement_plan)
+        response = await self.jobs.briefing(self.owner, action="start", request="Replay DEMO101")
+        capability = response["job_id"]
+        await self.jobs._jobs[capability].task
+        board = self.jobs.display_snapshot()
+        self.assertEqual(len(board), 3)
+        self.assertNotIn(capability, repr(board))
+        other = await self.jobs.briefing(self.other, action="start", request="Replay DEMO101 missing meeting")
+        await self.jobs._jobs[other["job_id"]].task
+        with self.assertRaises(BriefingRefused):
+            await self.jobs.briefing(self.other, action="get", job_id=capability)
+        self.assertFalse(self.jobs.display_snapshot())
+        self.assertIn("meeting date and time required", self.jobs.display_title())
+        self.assertNotIn(capability, self.jobs.display_title())
+        await self.jobs.briefing(self.owner, action="get", job_id=capability)
+        self.assertEqual(self.jobs.display_snapshot(), board)
+        await self.jobs.close()
+        self.assertFalse(self.jobs.display_snapshot())
+
     async def test_identity_is_not_a_public_argument_and_mixed_args_refuse(self):
         with self.assertRaisesRegex(BriefingRefused, "conversation_identity_required"):
             await self.jobs.briefing(None, action="start", request="Brief my flight")
