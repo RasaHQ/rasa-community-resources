@@ -25,7 +25,7 @@ mkdir -p ~/factory-work && cd ~/factory-work
 cd my-factory-ch04
 uv venv --python 3.12 .venv
 source .venv/bin/activate
-uv pip install zeocore==0.35.4 httpx==0.28.1
+uv pip install zeocore==0.35.6 httpx==0.28.1
 ```
 ## See how it works
 
@@ -107,5 +107,5 @@ It passes only when the fingerprints match, the tests fail on the baseline for t
 ## If it fails
 
 - `sandbox-exec: command not found`: the network check needs macOS. Read this chapter beside `book/ready/ch04`.
-- `No module named zeo_core`: activate the environment and install `zeocore==0.35.4`.
+- `No module named zeo_core`: activate the environment and install `zeocore==0.35.6`.
 - Fingerprint mismatch: you changed a protected file after locking. Lock again.

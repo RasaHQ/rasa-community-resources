@@ -25,7 +25,7 @@ mkdir -p ~/factory-work && cd ~/factory-work
 cd my-factory-ch06
 uv venv --python 3.12 .venv
 source .venv/bin/activate
-uv pip install zeocore==0.35.4 httpx==0.28.1
+uv pip install zeocore==0.35.6 httpx==0.28.1
 ```
 ## See how it works
 
