@@ -2,7 +2,7 @@
 
 **Goal:** see how an attempt is judged, then have the builder make an attempt for your task and watch the gates decide.
 
-**You need first:** Chapter 4, or copy the ready folder for this chapter. Chapter 5 builds the live builder on the OpenAI Agents API. Here you use the scripted builder, so this chapter works offline.
+**You need first:** Chapter 4, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README). Chapter 5 builds the live builder on the OpenAI Agents API. Here you use the scripted builder, so this chapter works offline.
 
 ## Words used in this chapter
 
@@ -93,5 +93,6 @@ It passes only when your attempt is accepted (exit code 0) and the attempt that 
 
 ## If it fails
 
+- `could not run: this check needs macOS`: the gate needs a Mac. Pair with someone on a Mac, or follow along on screen.
 - `could not run: the protected file ... does not match`: the fingerprints don't match the files. Copy the ready folder again.
 - `Set a limit from 1 to 3`: run `python set_limit.py 2` first.

@@ -2,7 +2,7 @@
 
 **Goal:** see how a factory is told what to build, then change the task yourself and watch the factory accept the result.
 
-**You need first:** Chapter 0 (the repository cloned), Python 3.12 and uv.
+**You need first:** Chapter 0 (the repository cloned), Python 3.12 and uv. This chapter needs macOS for the gate (see the README).
 
 ## Words used in this chapter
 
@@ -93,6 +93,7 @@ It passes only when your limit is set and the builder's attempt for your task is
 
 ## If it fails
 
+- `could not run: this check needs macOS`: the gate needs a Mac. Pair with someone on a Mac, or follow along on screen.
 - `limit` still says `null`: run step 1.
 - `No such file`: run the command from inside `my-factory-ch03`.
 - `could not run: the protected file ... does not match`: you changed a file under `acceptance/`. Copy the ready folder again.

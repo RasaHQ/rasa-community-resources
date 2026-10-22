@@ -2,7 +2,7 @@
 
 **Goal:** see an accepted change go into the product, then do it for your own task, with nobody reading the change.
 
-**You need first:** Chapter 6, or copy the ready folder for this chapter.
+**You need first:** Chapter 6, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).
 
 ## Words used in this chapter
 
@@ -97,5 +97,6 @@ It passes only when your change is integrated and the card shows your number of 
 
 ## If it fails
 
+- `could not run: this check needs macOS`: the gate needs a Mac. Pair with someone on a Mac, or follow along on screen.
 - `REFUSED: stale base`: you integrated already. Run the reset in step 1 and start again.
 - `could not run: there is no base.json`: run `python integrate.py --record-base` first.

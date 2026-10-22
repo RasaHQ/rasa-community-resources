@@ -51,7 +51,7 @@ Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so o
 
 ## Honest limits
 
-- Chapters 4 to 7 run their protected checks on macOS. On Linux or Windows, pair with someone on a Mac, or follow along on screen. Everything else works on any laptop. (The reason: the no-network check uses `sandbox-exec`.) On another system the gate says `could not run: this check needs macOS` and exits 2 before it judges anything, so a good attempt is never shown as rejected. Read those chapters beside their ready folders instead.
+- Chapters 3 to 7 run their protected checks on macOS. On Linux or Windows, pair with someone on a Mac, or follow along on screen. Everything else works on any laptop. (The reason: the no-network check uses `sandbox-exec`.) On another system the gate says `could not run: this check needs macOS` and exits 2 before it judges anything, so a good attempt is never shown as rejected. Read those chapters beside their ready folders instead.
 - A factory that accepts a change has judged it against the tests you wrote. It has not proved the change is right.
 - Chapters 3, 4, 6 and 7 build the factory step by step. The finished factory is in `../factory/` and the task is in `../factory/a6-market-watchlist/`.
 - Live data and voice depend on public sources and your own keys, and they can fail on the day. Each chapter says

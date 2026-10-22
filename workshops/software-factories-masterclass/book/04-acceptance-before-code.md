@@ -2,14 +2,14 @@
 
 **Goal:** see the tests that judge a change, written before any work, lock them for your own task and watch the factory accept the builder's attempt.
 
-**You need first:** Chapter 3, or copy the ready folder for this chapter.
+**You need first:** Chapter 3, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).
 
 ## Words used in this chapter
 
 - **Test:** a small program that checks another program. **Acceptance test:** checks that what you asked for was built.
 - **Protected tests:** the acceptance tests the builder never sees and can't change.
 - **Fingerprint (hash):** a short code made from a file. Change one letter and it changes.
-- **Sandbox:** a safety box from the operating system that blocks the network. It uses `sandbox-exec`, which comes with macOS. On another system the network check fails by design: read this chapter beside its ready folder.
+- **Sandbox:** a safety box from the operating system that blocks the network. It uses `sandbox-exec`, which comes with macOS. On another system the gate (`run_a6.py`) prints `could not run: this check needs macOS` and exits 2 before it judges anything, and the protected tests run directly in step 1 report their network check (`test_b6`) as failed. Pair with someone on a Mac, or follow along on screen.
 
 ## Get the ready folder
 
@@ -106,6 +106,6 @@ It passes only when the fingerprints match, the tests fail on the baseline for t
 
 ## If it fails
 
-- `sandbox-exec: command not found`: the network check needs macOS. Read this chapter beside `book/ready/ch04`.
+- `could not run: this check needs macOS`: the gate needs `sandbox-exec`, which comes with macOS. Pair with someone on a Mac, or follow along on screen. (The tests run directly in step 1 report `test_b6` as failed on such a system.)
 - `No module named zeo_core`: activate the environment and install `zeocore==0.35.6`.
 - Fingerprint mismatch: you changed a protected file after locking. Lock again.
