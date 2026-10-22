@@ -1,6 +1,6 @@
 # Chapter 3: A factory starts with a task
 
-A team asks a coding agent for a currency card and gets one back that looks right. Nobody wrote down what "right" meant, so nobody can say whether it is. A factory starts with a written request and a list of the files the builder may change. In about 25 minutes you'll set a limit on a currency card and watch a factory accept the result without you writing any code.
+A team asks a coding agent for a currency card and gets one that looks right, but nobody wrote down what "right" meant. A factory starts with a written request and a list of the files the builder may change. In about 25 minutes you'll set a limit on a currency card and watch a factory accept the result without you writing any code.
 
 Time: about 25 minutes. You need: a Mac (the check runs in a macOS sandbox), Python 3.12, uv and the repository cloned in Chapter 0. No key or account.
 
