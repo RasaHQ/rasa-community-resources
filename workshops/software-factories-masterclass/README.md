@@ -2,11 +2,11 @@
 
 Author: Rod Rivera.
 
-Tested: 22 October 2026 on macOS with Python 3.12, uv and a Rasa Developer Edition license. From a fresh clone of main (`8feb87f5`), Chapter 0 passed setup, the recorded flight-and-meeting journey in the Mantle Inspector, and the change from a 90-minute to a 30-minute transfer allowance (`ch00 OK`). Chapter 3 passed on a Mac with a fresh environment: the scripted builder changed the limit to two, the protected checks accepted it, and completion printed `ch03 OK`.
+Tested by the course team on 22 October 2026 on macOS with Python 3.12, uv and a Rasa Developer Edition license. From a fresh clone of main (`8feb87f5`), Chapter 0 passed setup, the recorded flight-and-meeting journey in the Mantle Inspector, and the change from a 90-minute to a 30-minute transfer allowance (`ch00 OK`). Chapter 3 passed on a Mac with a fresh environment: the scripted builder changed the limit to two, the protected checks accepted it, and completion printed `ch03 OK`.
 
 Time: 3 hours in the room; on your own, about 3 hours. The chapters total about 165 minutes, plus about 5 minutes for the first install.
 
-You ask an agent to brief you before a flight. It gives you cards for the flight, weather, currency and meeting, but now you want one more: a market card. You’ll start by running the finished agent, then build a small software factory that gives a builder a task, checks its changes against rules it cannot edit, and decides whether to accept them. Along the way, you’ll try a broken change and see why passing the builder’s own tests is only the beginning.
+You ask an agent to brief you before a flight. It shows four cards: the flight, the weather, your arrival timeline and the market card, which lists exchange rates. You’ll run that agent, then build a small software factory that gives a builder a task for the market card, checks its changes against rules it cannot edit, and decides whether to accept them. Along the way, you’ll try a broken change and see why passing the builder’s own tests is only the beginning.
 
 ## Start here
 
