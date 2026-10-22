@@ -1,5 +1,6 @@
 """Deterministic tool selection; never creates a provider client."""
 import json
+import os
 
 
 def gate_record(value):
@@ -29,7 +30,12 @@ def verdict_text(result):
         return 'NOT_READY: the gate returned no validated verdict.'
     failing = result.get('failing_test') or result.get('failing_tests') or 'none'
     fingerprint = result.get('fingerprint', 'unavailable')
-    return f'{verdict}. Failing test: {failing}. Fingerprint: {fingerprint}. This checks a supplied attempt; nothing was released.'
+    mode = result.get('mode', 'SCRIPTED')
+    if mode == 'LIVE':
+        detail = f"LIVE build: gpt-6-astra on the OpenAI Agents API; {result.get('builder_calls', 0)} builder tool calls; {result.get('seconds', 0)} seconds. Expected cost 15 to 150 US cents, an estimate, not a cap."
+    else:
+        detail = 'SCRIPTED builder: this checks a supplied attempt; zero model calls.'
+    return f'{verdict}. Failing test: {failing}. Attempt fingerprint (computed by the tool): {fingerprint}. {detail} Mantle tool selection is SCRIPTED. Nothing was released.'
 
 
 class ScriptedClient:
@@ -61,7 +67,8 @@ class ScriptedClient:
             return LLMResponse(id='scripted', created=0, choices=['SCRIPTED tool selection. Ask for at most three currencies, or use the supplied attempt that ignores the limit. The protected gate will judge it.'])
         tool = next((n for n in offered if n in ('run_factory', 'mcp/factory:run_factory')), None)
         if tool:
-            return LLMResponse(id='scripted', created=0, choices=[], tool_calls=[LLMToolCall(id=f'factory-{self.count}', tool_name=tool, tool_args={'request': text})])
+            notice = ('Mantle tool selection is SCRIPTED. LIVE builder gpt-6-astra on the OpenAI Agents API; expected cost 15 to 150 US cents (estimate, not cap). Waiting, up to five minutes.' if os.environ.get('FACTORY_BUILDER_MODE') == 'LIVE' and 'ignores the limit' not in text.lower() else 'SCRIPTED supplied attempt; running the real protected acceptance gate.')
+            return LLMResponse(id='scripted', created=0, choices=[notice], tool_calls=[LLMToolCall(id=f'factory-{self.count}', tool_name=tool, tool_args={'request': text})])
         if 'activate' in offered:
             return LLMResponse(id='scripted', created=0, choices=[], tool_calls=[LLMToolCall(id=f'skill-{self.count}', tool_name='activate', tool_args={'target_id': 'request_change'})])
         return LLMResponse(id='scripted', created=0, choices=['NOT_READY: Request a Change skill is unavailable.'])

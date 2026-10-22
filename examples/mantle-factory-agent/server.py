@@ -1,5 +1,6 @@
 """One authenticated MCP tool and a labelled Inspector entry page."""
-import ipaddress
+import asyncio
+from datetime import timedelta
 import json
 import os
 import secrets
@@ -36,6 +37,8 @@ class Authenticated:
 def mcp_app():
     server = FastMCP('factory', host='127.0.0.1', port=8948, stateless_http=True, json_response=True)
 
+    busy = asyncio.Lock()
+
     @server.tool()
     async def run_factory(request: str) -> dict:
         """Judge a supplied attempt using the existing protected gate. No code generation or release."""
@@ -48,7 +51,23 @@ def mcp_app():
         if kind is None:
             return {'verdict': 'NOT_READY', 'failing_test': None, 'fingerprint': None,
                     'seconds': 0, 'reason': 'Use one of the two displayed requests; no arbitrary code or paths are accepted.'}
-        return await asyncio.to_thread(execute, kind)
+        if busy.locked():
+            return {'verdict': 'NOT_READY', 'failing_test': None, 'fingerprint': None,
+                    'seconds': 0, 'reason': 'A factory check is still running. Wait for its result.'}
+        expiry = datetime.fromisoformat(os.environ['FACTORY_EXPIRES_AT'].replace('Z', '+00:00'))
+        if datetime.now(timezone.utc) + timedelta(seconds=350) >= expiry:
+            return {'verdict': 'NOT_READY', 'failing_test': None, 'fingerprint': None,
+                    'seconds': 0, 'reason': 'Not enough time remains before the preview expiry.'}
+        async with busy:
+            mode = os.environ.get('FACTORY_BUILDER_MODE', 'SCRIPTED')
+            result = await asyncio.to_thread(execute, kind, mode=mode,
+                worker_python=os.environ['FACTORY_WORKER_PYTHON'],
+                evidence_root=os.environ['FACTORY_EVIDENCE_ROOT'],
+                env_file=os.environ.get('FACTORY_ENV_FILE') or None)
+            # Local evidence and attempt paths never enter the conversation.
+            allowed = ('verdict', 'failing_test', 'fingerprint', 'seconds',
+                       'mode', 'builder_calls', 'reason')
+            return {key: result[key] for key in allowed if key in result}
 
     token = os.environ['FACTORY_MCP_TOKEN']
     if len(token) < 32:
@@ -64,7 +83,9 @@ def frontend(host):
             return HTMLResponse('Tailnet only', status_code=403)
         name = os.environ.get('FACTORY_VIEWER_NAME', host)
         url = f'http://{name}:5007/webhooks/inspector/inspect.html?projectUrl=http%3A%2F%2F{name}%3A5007'
-        return HTMLResponse('<!doctype html><html lang="en"><meta charset="utf-8"><title>Mantle factory agent</title><style>body{margin:0;font:18px system-ui}header{padding:16px;background:#342b67;color:white}iframe{border:0;width:100%;height:85vh}</style><header>SCRIPTED tool selection · real protected acceptance gate · supplied attempts · no model calls · nothing released</header><iframe title="Mantle factory conversation" src="' + escape(url, quote=True) + '"></iframe></html>')
+        mode = os.environ.get('FACTORY_BUILDER_MODE', 'SCRIPTED')
+        label = ('Mantle selection SCRIPTED · LIVE OpenAI Agents API builder: gpt-6-astra · expected 15 to 150 US cents per run (estimate, not a cap) · up to 5 minutes · real protected gate · nothing released' if mode == 'LIVE' else 'SCRIPTED tool selection · supplied attempts · real protected gate · no model calls · nothing released')
+        return HTMLResponse('<!doctype html><html lang="en"><meta charset="utf-8"><title>Mantle factory agent</title><style>body{margin:0;font:18px system-ui}header{padding:16px;background:#342b67;color:white}iframe{border:0;width:100%;height:85vh}</style><header>' + escape(label) + '</header><iframe title="Mantle factory conversation" src="' + escape(url, quote=True) + '"></iframe></html>')
     return Starlette(routes=[Route('/', index)])
 
 

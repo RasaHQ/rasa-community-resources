@@ -4,4 +4,7 @@ cd "$(dirname "$0")"
 if [ "${1:-}" = setup ]; then
   exec uv sync --project project --locked --python 3.12
 fi
+if [ "${1:-}" = setup-live ]; then
+  exec uv sync --project worker --locked --python 3.12
+fi
 exec project/.venv/bin/python launcher.py "$@"

@@ -73,6 +73,8 @@ def run(args):
         with socket.socket() as probe:
             probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             probe.bind((bind, port))
+    if args.builder_mode == 'LIVE' and not Path(args.worker_python).is_file():
+        raise ValueError('LIVE builder needs a separate worker: run ./demo setup-live first.')
     if not PYTHON.is_file():
         raise ValueError('Run ./demo setup first.')
     # Only the license enters the child. Provider keys are deliberately absent.
@@ -91,6 +93,11 @@ def run(args):
     env.update(RASA_LICENSE=license_value, FACTORY_MCP_TOKEN=secrets.token_urlsafe(32),
                FACTORY_HOST=host, FACTORY_ALLOWED_PEERS=','.join(sorted(allowed)),
                FACTORY_VIEWER_NAME=args.viewer_name or host,
+               FACTORY_BUILDER_MODE=args.builder_mode,
+               FACTORY_WORKER_PYTHON=str(Path(args.worker_python).resolve()),
+               FACTORY_ENV_FILE=str(Path(args.env_file).resolve()) if args.env_file else '',
+               FACTORY_EVIDENCE_ROOT=str(Path(args.evidence_root).resolve()),
+               FACTORY_EXPIRES_AT=args.expires_at,
                FACTORY_VIEWER_AUDIT=str(runtime / 'access.jsonl'),
                RASA_ENV_FILE='', PYTHON_DOTENV_DISABLED='1', RASA_TELEMETRY_ENABLED='false', DO_NOT_TRACK='1',
                PYTHONUNBUFFERED='1', PYTHONPATH=str(ROOT))
@@ -106,7 +113,7 @@ def run(args):
     signal.signal(signal.SIGINT, interrupted)
     signal.signal(signal.SIGTERM, interrupted)
     try:
-        print('SCRIPTED selection; existing supplied attempts; real protected gate; no model or voice calls.', flush=True)
+        print('Mantle selection SCRIPTED; builder mode ' + args.builder_mode + '; protected gate; no voice qualification.', flush=True)
         train = subprocess.run([str(PYTHON), '-m', 'rasa', 'train'], cwd=PROJECT, env=env,
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)
         if train.returncode:
@@ -157,6 +164,9 @@ if __name__ == '__main__':
         parser.add_argument('--viewer-name', default='')
         parser.add_argument('--viewer-access', default='')
         parser.add_argument('--allow-peer', action='append', default=[])
+        parser.add_argument('--builder-mode', type=str.upper, choices=['SCRIPTED', 'LIVE'], default='SCRIPTED')
+        parser.add_argument('--worker-python', default=str(ROOT / 'worker/.venv/bin/python'))
+        parser.add_argument('--evidence-root', default=str(ROOT / '.runtime/factory-evidence'))
         parser.add_argument('--env-file', help='Read only RASA_LICENSE into child memory; never copy the file.')
         parser.add_argument('--expires-at', default=datetime.now(timezone.utc).strftime('%Y-%m-%dT16:30:00Z'))
         args = parser.parse_args()
