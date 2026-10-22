@@ -26,7 +26,7 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
             value = json.loads(value)
         except (ValueError, TypeError):
             value = None
-    if not result.is_error and isinstance(value, dict) and value.get("status") in ("started", "running"):
+    if not result.is_error and isinstance(value, dict) and value.get("status") in ("started", "running") and not value.get("cards"):
         _pending_cards[result.sender_id] = "The briefing is still checking sources; say status in a moment."
         return result
     if not result.is_error and isinstance(value, dict) and value.get("status") == "needs_input":
