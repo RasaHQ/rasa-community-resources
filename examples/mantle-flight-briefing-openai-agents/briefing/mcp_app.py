@@ -7,11 +7,11 @@ OpenAI nor provider credentials belong in MCP metadata or tool arguments.
 from contextlib import asynccontextmanager
 import secrets
 import json
-from typing import Literal
+from typing import Literal, Annotated
 
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.fastmcp.tools.base import Tool
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from briefing.jobs import Jobs
 from briefing.board_display import BoardDisplay
@@ -30,6 +30,13 @@ class BriefingResponse(BaseModel):
     cards: list[dict] | None = None
     reason: str | None = None
     needs_input: dict | None = None
+    discovery_id: str | None = None
+    candidates: list[dict] | None = None
+    source_date: str | None = None
+    label: str | None = None
+    coverage: str | None = None
+    message: str | None = None
+    partial: bool | None = None
 
 
 class _MantlePeer:
@@ -123,17 +130,14 @@ def create_app(jobs: Jobs, *, transport_token: str, host="127.0.0.1"):
     from demo_host import validate_host, display_hosts
     from mcp.server.transport_security import TransportSecuritySettings
     validate_host(host)
-    async def briefing(action: Literal["start", "get", "revise"], ctx: Context,
-                       request: str | None = None, briefing_id: str | None = None,
-                       change: str | None = None) -> BriefingResponse:
+    async def dispatch(ctx: Context, **arguments) -> BriefingResponse:
         context = ctx.request_context
         incoming = context.request
         peer = incoming.scope.get("briefing.peer") if incoming is not None else None
         metadata = context.meta.model_dump(by_alias=True) if context.meta is not None else None
-        if contains_api_key(metadata) or contains_api_key((request, briefing_id, change)):
+        if contains_api_key(metadata) or contains_api_key(arguments):
             raise ValueError('api_credentials_forbidden_in_mcp')
-        result = await jobs.from_transport(peer, metadata, action=action, request=request,
-                                           job_id=briefing_id, change=change)
+        result = await jobs.from_transport(peer, metadata, **arguments)
         if "job_id" in result:
             result["briefing_id"] = result.pop("job_id")
         result["binding"] = "capability_id" if jobs.ownership_mode == "capability" else "engine_sender"
@@ -144,16 +148,28 @@ def create_app(jobs: Jobs, *, transport_token: str, host="127.0.0.1"):
             clean['briefing_id'] = result['briefing_id']
         return BriefingResponse.model_validate(clean)
 
-    tool = Tool.from_function(briefing, description="Start, inspect or revise a briefing using its unguessable briefing_id capability. Possession permits access; this mode is not engine-sender binding. Never supply user or session identity.")
+    async def briefing(action: Literal["start", "get", "revise"], ctx: Context,
+                       request: str | None = None, briefing_id: str | None = None,
+                       change: str | None = None, discovery_id: str | None = None,
+                       choice: Annotated[int, Field(ge=1, le=5)] | None = None) -> BriefingResponse:
+        return await dispatch(ctx, action=action, request=request, job_id=briefing_id,
+                              change=change, discovery_id=discovery_id, choice=choice)
 
-    class StrictArguments(tool.fn_metadata.arg_model):
-        # FastMCP's generated default silently discards extra keys. This public
-        # contract refuses them, including obsolete job_id and invented owner.
-        model_config = ConfigDict(extra="forbid", strict=True, arbitrary_types_allowed=True)
+    async def find_flights(destination: Annotated[str, Field(min_length=1, max_length=120)],
+                           ctx: Context) -> BriefingResponse:
+        return await dispatch(ctx, action='find_flights', request=destination)
 
-    tool.fn_metadata.arg_model = StrictArguments
-    tool.parameters = StrictArguments.model_json_schema(by_alias=True)
-    server = FastMCP("briefing", tools=[tool], host=host, port=8942,
+    def strict_tool(function, description):
+        tool = Tool.from_function(function, description=description)
+        class StrictArguments(tool.fn_metadata.arg_model):
+            model_config = ConfigDict(extra="forbid", strict=True, arbitrary_types_allowed=True)
+        tool.fn_metadata.arg_model = StrictArguments
+        tool.parameters = StrictArguments.model_json_schema(by_alias=True)
+        return tool
+
+    tools = [strict_tool(briefing, "Start, inspect or revise a traveller briefing. Pass the traveller's exact words in request/change. To select a discovered flight, pass its private discovery_id and numbered choice; never invent a flight or supply user/session identity. Keep capability identifiers private."),
+             strict_tool(find_flights, "Find up to five flights already in the air approaching New York or its named airport, using observed positions and dated published routes. Pass the traveller's destination in ordinary words. Return the reader's choices; never invent candidates or landing estimates. Keep the discovery_id private.")]
+    server = FastMCP("briefing", tools=tools, host=host, port=8942,
                      transport_security=TransportSecuritySettings(
                          enable_dns_rebinding_protection=True,
                          allowed_hosts=[value + ":*" for value in display_hosts(host)],
@@ -165,8 +181,9 @@ def create_app(jobs: Jobs, *, transport_token: str, host="127.0.0.1"):
         snapshot = jobs.display_snapshot()
         if not snapshot:
             from briefing.board_display import start_panel
-            return start_panel(jobs.display_status())
-        return render_snapshot_html(snapshot, document=True, title=jobs.display_title())
+            return start_panel(jobs.display_status(), discovery=jobs.display_discovery())
+        from briefing.board_display import brand_document
+        return brand_document(render_snapshot_html(snapshot, document=True, title=jobs.display_title()))
 
     app = server.streamable_http_app()
     original_lifespan = app.router.lifespan_context

@@ -15,7 +15,7 @@ _pending_cards: dict[str, str] = {}
 
 @modify_tool_result()
 async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
-    if result.tool_name not in ("briefing", "mcp/briefing:briefing"):
+    if result.tool_name not in ("briefing", "mcp/briefing:briefing", "find_flights", "mcp/briefing:find_flights"):
         return result
     # Every briefing result owns the next visible response, including failures,
     # unexpected wrappers and empty cards. Never fall back to model prose.
@@ -26,13 +26,22 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
             value = json.loads(value)
         except (ValueError, TypeError):
             value = None
+    if result.tool_name in ("find_flights", "mcp/briefing:find_flights"):
+        try:
+            from briefing.traveller import discovery_notice
+            if result.is_error or not isinstance(value, dict):
+                raise ValueError('invalid_discovery')
+            _pending_cards[result.sender_id] = discovery_notice(value)
+        except Exception:
+            _pending_cards[result.sender_id] = "Do you know the airline or flight number? I can use it to check a flight already in the air."
+        return result
     if not result.is_error and isinstance(value, dict) and value.get("status") in ("started", "running") and not value.get("cards"):
         _pending_cards[result.sender_id] = "The briefing is still checking sources; say status in a moment."
         return result
     if not result.is_error and isinstance(value, dict) and value.get("status") == "needs_input":
         missing = value.get("needs_input") or {}
-        if isinstance(missing, dict) and missing.get("field") in ("meeting_time", "transfer_minutes") and isinstance(missing.get("question"), str):
-            _pending_cards[result.sender_id] = "Briefing needs input: " + missing["question"]
+        if isinstance(missing, dict) and missing.get("field") in ("meeting_time", "transfer_minutes", "destination", "flight") and isinstance(missing.get("question"), str):
+            _pending_cards[result.sender_id] = missing["question"]
         else:
             _pending_cards[result.sender_id] = "The briefing needs input, but its question could not be validated."
         return result

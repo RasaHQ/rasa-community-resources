@@ -4,6 +4,7 @@ All provider responses below are synthetic offline controls. No provider,
 model, voice or licensed Inspector call is made by this test.
 """
 import asyncio
+import json
 from datetime import datetime, timezone, timedelta
 from importlib.metadata import version
 from pathlib import Path
@@ -21,7 +22,7 @@ NOW = datetime(2026, 10, 22, 1, tzinfo=timezone.utc)
 
 class ReleasedPublicSourceHTTP(unittest.IsolatedAsyncioTestCase):
     async def test_four_injected_source_cards_reach_combined_page_and_preserve_provenance(self):
-        self.assertEqual(version('zeocore'), '0.35.4')
+        self.assertEqual(version('zeocore'), json.loads((Path(__file__).resolve().parents[1] / 'worker/core-artifact.json').read_text())['version'])
         requests = []
         tick = [0.0]
         def handler(request):
@@ -53,7 +54,7 @@ class ReleasedPublicSourceHTTP(unittest.IsolatedAsyncioTestCase):
         jobs = Jobs(runner, replacement_plan=runner.replacement_plan, ownership_mode='capability')
         owner = Owner('mantle', 'capability-possession')
         started = await jobs.briefing(owner, action='start',
-            request='callsign=TEST123 meeting=2026-10-22T06:00:00Z transfer=45')
+            request='callsign=TEST123 destination=EDDF meeting=2026-10-22T06:00:00Z transfer=45')
         try:
             for _ in range(200):
                 state = await jobs.briefing(owner, action='get', job_id=started['job_id'])

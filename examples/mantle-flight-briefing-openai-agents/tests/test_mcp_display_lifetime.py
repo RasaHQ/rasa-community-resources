@@ -50,7 +50,7 @@ class MCPDisplayLifetime(unittest.IsolatedAsyncioTestCase):
                         await session.initialize()
                         started = result_value(await session.call_tool('briefing', {
                             'action': 'start',
-                            'request': 'callsign=TEST123 meeting=2026-10-22T06:00:00Z transfer=45'}))
+                            'request': 'callsign=TEST123 destination=EDDF meeting=2026-10-22T06:00:00Z transfer=45'}))
                         capability = started['briefing_id']
                         for _ in range(2):
                             state = result_value(await session.call_tool('briefing',

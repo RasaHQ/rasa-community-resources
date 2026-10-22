@@ -67,17 +67,24 @@ For an explicitly keyless run even when your shell has model keys:
 ./demo run --scripted
 ```
 
-In the Inspector, supply your own explicit journey, using this syntax:
+In the Inspector, start in ordinary words:
 
 ```text
-callsign=TEST123 meeting=2026-10-22T21:00:00Z transfer=45
+I'm heading to New York. Which flights are already in the air?
 ```
 
-`TEST123` illustrates the syntax, not a promised airborne flight. Replace it
-with a real callsign. The meeting includes its date and timezone. Transfer is
-an assumption in minutes, never a traffic observation. A follow-up such as
-`transfer=60` revises the same briefing. Missing or invalid inputs are asked
-for; the launcher does not guess a journey.
+Choose a returned flight, for example “the second one”, then answer “the 6 pm
+meeting tomorrow”. If you know the flight, say “Lufthansa 400 to JFK”. Code
+resolves airline names, airport names and the destination's local date/time;
+the model does not invent those values. Ambiguous details get a short question.
+Flight discovery covers the selected published NYC routes described below;
+for other destinations, supply the airline or flight number in ordinary words.
+
+Airport-to-city travel starts with a visible, bundled planning allowance.
+It is an assumption, not live traffic or a guaranteed baggage/immigration time.
+Say “allow an hour to get into town” to change it while preserving your flight
+and meeting. Landing estimates are computed from observed position and ground
+speed, not airline schedules. Partial searches and source failures are explicit.
 
 The four cards are flight position with a computed arrival estimate, hourly
 weather, the arrival/transfer/meeting timeline, and a currency watchlist. Market
@@ -177,18 +184,17 @@ terminal with `BRIEFING_VIEWER_ACCESS=operator-device-acl` or
 an ACL; the launcher refuses a tailnet start without it. The card display is shared with those
 viewers, not private per browser. No keys belong in a URL or repository file.
 
-When the route source provides no route, keep the live position facts and say
-"Route not provided by the source". For weather and a computed arrival, provide
-an explicit airport, for example `destination=LHR` or `destination=EGLL`, in the
-same journey request. The airport is labelled "destination stated by traveller";
-it is not a provider-reported destination. A conflicting source route is flagged.
+When a source provides no route, the live position remains visible. Name the
+airport in ordinary words, such as “Heathrow”, to supply your destination.
+Traveller-supplied destinations are labelled; a conflicting source route is flagged.
 
-The local ten-airport subset is from [OurAirports](https://github.com/davidmegginson/ourairports-data),
+The twelve-airport reference is derived from [OurAirports](https://github.com/davidmegginson/ourairports-data),
 public domain under its Unlicense, pinned to source commit
-`b529623d2a0b09a9be78d37fc7a7a5e1e16e3451`. Source URL and CSV SHA256 are
-in `briefing/airports-ourairports-20261022.json`. Supported ICAO codes are CYYZ,
-EDDF, EDDM, EGKK, EGLL, EHAM, KJFK, KLAX, LFPG and OMDB, plus their IATA codes.
-Unknown codes are refused; there is no network lookup or guessed substitute.
+`b529623d2a0b09a9be78d37fc7a7a5e1e16e3451`. Its source CSV digest, IANA
+city timezone attribution, airline aliases and dated airport transport links
+are recorded in `briefing/traveller-reference-20261022.json`.
+Timezone mappings and conservative airport-to-city allowances are class-authored;
+OurAirports is not claimed as their source. No runtime airport lookup occurs.
 
 The managed specialist uses `gpt-6-astra`, as in the [official Agents session example](https://developers.openai.com/api/docs/guides/agents-api/sessions).
 Mantle's conversation model is configured separately in `project/integrations.yml`.
@@ -198,21 +204,22 @@ our qualification. To use another compatible specialist model, set
 Without an OpenAI key, source tool selection is explicitly SCRIPTED; an OpenAI
 key with the default native model enables the combined Agents/public-source path.
 
-The source worker pins OpenAI 3.36.1, whose installed session API exposes
-`spend_control`; the older 3.29.0 worker does not. The specialist requests a
-200-cent session spending limit through Core 0.35.4
-and explicitly disables the hosted environment network. Public source reads
-still run only in the local fixed-host handlers. This bounds the requested
-configuration; provider enforcement of the spending limit has not been proven
-by an over-limit funded test.
+The source worker pins OpenAI 3.36.1 and Core 0.35.6. The specialist explicitly
+disables the hosted environment network; public reads remain in local fixed-host
+handlers. It does **not** send `spend_control`: the actual service rejected that
+field even though this SDK exposes it. There is no per-session monetary cap in
+this example. Any OpenAI project budget is configured outside this example;
+call, deadline and timeout limits are execution bounds, not money guarantees.
+Funded rehearsal use remains subject to the facilitator's recorded budget scope.
 
-
-The upcoming flight-discovery path has a local published-route input in
+Flight discovery uses a local published-route input in
 `briefing/nyc-routes-vrs-20261022.json`. Its loader verifies a fixed SHA256 before
 parsing. `briefing/nyc-routes-SOURCE.json` records the original public CSV hashes,
 source commit/date and CC0 licence. The 76 KB subset contains 1,762 two-airport
 routes for 16 selected airlines ending at JFK, EWR or LGA. It is incomplete
 coverage, not a live filed-flight-plan or schedule source. No aircraft-owner or
 registration dataset is bundled and runtime loading makes no network request.
-This input is prepared; natural-language flight discovery is not wired into
-this head yet.
+**Integration checkpoint:** the traveller workflow is implemented locally; the
+finder requires Core PR 172's reviewed registry release before the final worker
+pin, source integration qualification and preview restart. Current offline MCP
+controls inject search results and are not evidence of live discovery acceptance.

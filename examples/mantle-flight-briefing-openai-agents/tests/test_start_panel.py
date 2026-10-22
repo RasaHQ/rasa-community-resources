@@ -18,9 +18,10 @@ class StartPanel(unittest.IsolatedAsyncioTestCase):
                                      base_url='http://127.0.0.1:8942') as http:
             page = await http.get('/cards')
             self.assertEqual(page.status_code, 200)
-            for text in ('Start your briefing', 'Waiting for a briefing', 'currently airborne',
-                         'destination=EDDF', 'ADSB.lol', 'MET Norway', 'ECB', 'not live quotes'):
+            for text in ('Start your briefing', 'Waiting for a briefing', 'already in the air',
+                         'New York', 'tomorrow at 6 pm', 'ECB', 'not live quotes'):
                 self.assertIn(text, page.text)
+            self.assertNotIn('destination=', page.text)
             self.assertNotIn('no cards yet', page.text.lower())
             self.assertNotIn('synthetic-start-panel-control-only', page.text)
             self.assertNotIn('<script', page.text)

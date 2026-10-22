@@ -24,4 +24,4 @@ def native_turn(client, *, agent, text, handlers=None, invoke=None, max_calls=16
         invoke = run_native
     return invoke(client, agent=agent, environment={'type': 'openai_hosted', 'network': {'access': 'disabled'}},
                   text=text, handlers=handlers, max_calls=max_calls, max_events=10000,
-                  deadline_seconds=60, timeout=20, spend_limit_cents=200)
+                  deadline_seconds=60, timeout=20)

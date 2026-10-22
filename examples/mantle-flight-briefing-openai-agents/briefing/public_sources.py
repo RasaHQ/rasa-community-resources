@@ -39,46 +39,27 @@ class PublicSourcesRunner:
                                  {**missing.inputs, 'source_mode': 'replay'}) from None
             return replace(answer, inputs={**(answer.inputs or {}), 'source_mode': 'replay'})
         inputs.pop('source_mode', None)
-        callsign = re.search(r'\bcallsign=([^\s]+)', text)
-        if callsign:
-            explicit = callsign.group(1).upper()
-            if not re.fullmatch(r'[A-Z0-9]{2,10}', explicit):
-                raise BriefingRefused('explicit_callsign_required')
-            inputs['callsign'] = explicit
-        if not inputs.get('callsign'):
-            raise BriefingRefused('explicit_callsign_required')
-        destination = re.search(r'\bdestination=([^\s]+)', text)
-        if destination:
+        for field, pattern in (('callsign', r'[A-Z0-9]{2,10}'), ('destination', r'[A-Z]{3,4}')):
+            explicit = re.search(r'\b' + field + r'=([^\s]+)', text)
+            if explicit and re.fullmatch(pattern, explicit[1].upper()) is None:
+                raise BriefingRefused('invalid_explicit_journey')
+        explicit_destination = re.search(r'\bdestination=([^\s]+)', text)
+        if explicit_destination:
             from briefing.airports import airport
             try:
-                inputs['destination'] = airport(destination.group(1).upper())['ident']
+                airport(explicit_destination[1].upper())
             except ValueError:
-                raise BriefingRefused('unsupported_stated_destination') from None
-        meeting = re.search(r'\bmeeting=([^\s]+)', text)
-        transfer = re.search(r'\btransfer=([^\s]+)', text)
-        awaiting = inputs.get('awaiting')
-        if meeting or awaiting == 'meeting_time':
-            try:
-                parsed = datetime.fromisoformat(meeting.group(1) if meeting else text)
-                if parsed.tzinfo is None:
-                    raise ValueError
-                inputs['meeting_time'] = parsed.isoformat()
-            except ValueError:
-                inputs.pop('meeting_time', None)
-        if transfer or awaiting == 'transfer_minutes':
-            match = transfer or re.fullmatch(r'([0-9]{1,4})(?: minutes?)?', text)
-            if match and re.fullmatch(r'[0-9]{1,4}', match.group(1)) and 0 <= int(match.group(1)) <= 1440:
-                inputs['transfer_minutes'] = int(match.group(1))
-            else:
-                inputs.pop('transfer_minutes', None)
-        inputs.pop('awaiting', None)
-        for field, question in (
-                ('meeting_time', 'What is the meeting time, including its date and timezone?'),
-                ('transfer_minutes', 'What transfer duration in minutes should I assume?')):
-            if field not in inputs:
-                inputs['awaiting'] = field
-                raise NeedsInput(field, question, inputs)
+                raise BriefingRefused('invalid_explicit_journey') from None
+        from briefing.traveller import journey, TravellerQuestion
+        try:
+            inputs = journey(text, inputs)
+        except TravellerQuestion as missing:
+            raise NeedsInput(missing.field, missing.question, missing.inputs) from None
         return await asyncio.to_thread(self._read, work, inputs)
+
+    def find_flights(self, destination):
+        from briefing.traveller import discover
+        return discover(self.sources, destination)
 
     def _read(self, work, inputs):
         cards = {}
@@ -91,6 +72,10 @@ class PublicSourcesRunner:
                         arguments and arguments.get('destination') != inputs.get('destination')):
                     raise ValueError('unexpected_source_arguments')
                 reference = read_reference(component).check(component)
+                if component == 'arrival_timeline' and inputs.get('transfer_assumed') and reference.error is None:
+                    from zeo_core.contracts.ui.widgets import Assumption
+                    reference = reference.model_copy(update={'assumptions': [*reference.assumptions,
+                        Assumption(label='airport_city_planning_allowance', value='Bundled planning assumption; changeable, not live traffic or a guaranteed airport exit time.', kind='assumption')]}).check(component)
                 cards[component] = reference
                 return {'data_ref': reference.model_dump(mode='json')}
             return supply

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import secrets
+import time
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Awaitable, Callable, Protocol
@@ -36,7 +37,7 @@ class NeedsInput(ValueError):
     """A runner needs an explicit traveller answer before doing more work."""
 
     def __init__(self, field: str, question: str, inputs: dict):
-        if field not in ("meeting_time", "transfer_minutes"):
+        if field not in ("meeting_time", "transfer_minutes", "destination", "flight"):
             raise ValueError("unsupported_input_field")
         if not isinstance(question, str) or not question.strip() or len(question) > 200 or any(
             part in question for part in ("<", ">", "://", "\x00")
@@ -109,6 +110,8 @@ class Jobs:
         self._runner, self._timeout, self._capacity = runner, timeout, capacity
         self._jobs: dict[str, _Job] = {}
         self._display_job: _Job | None = None
+        self._discoveries = {}
+        self._display_discovery = None
         self._replacement_plan = replacement_plan
         if ownership_mode not in ("engine", "capability"):
             raise ValueError("unsupported_ownership_mode")
@@ -123,6 +126,9 @@ class Jobs:
         """
         return deepcopy(self._display_job.board.snapshot()) if self._display_job else ()
 
+    def display_discovery(self):
+        return deepcopy(self._display_discovery)
+
     def display_status(self):
         job = self._display_job
         if job is None:
@@ -130,7 +136,7 @@ class Jobs:
         if job.status in ('started', 'running'):
             return 'Running. Checking the public sources.'
         if job.needs_input:
-            return 'Waiting for your meeting time or transfer duration.'
+            return 'Waiting for your answer in the conversation.'
         return 'Ready for another briefing.'
 
     def display_title(self):
@@ -188,19 +194,60 @@ class Jobs:
         return await self.briefing(owner, **arguments)
 
     async def briefing(self, owner: Owner, *, action: str, request: str | None = None,
-                       job_id: str | None = None, change: str | None = None) -> dict:
+                       job_id: str | None = None, change: str | None = None,
+                       discovery_id: str | None = None, choice: int | None = None) -> dict:
         if not isinstance(owner, Owner):
             raise BriefingRefused("conversation_identity_required")
+        if action != "start" and (discovery_id is not None or choice is not None):
+            raise BriefingRefused("invalid_action_arguments")
+        if action == "find_flights" and request is not None and job_id is None and change is None:
+            destination = self._text(request)
+            if len(destination) > 120:
+                raise BriefingRefused("invalid_request_text")
+            # Bound discovery state independently of model-selected identifiers.
+            self._discoveries = {key: value for key, value in self._discoveries.items()
+                                 if time.monotonic() - value[1] <= 600}
+            if len(self._discoveries) + len(self._jobs) >= self._capacity:
+                raise BriefingRefused("job_capacity_reached")
+            search = getattr(self._runner, "find_flights", None)
+            if not callable(search):
+                return {"status": "unavailable", "reason": "flight_search_unavailable", "candidates": []}
+            try:
+                result = await asyncio.wait_for(asyncio.to_thread(search, destination), 15)
+            except Exception:
+                result = {"status": "unavailable", "reason": "flight_search_unavailable", "candidates": []}
+            if result.get("status") == "found" and result.get("candidates"):
+                candidates = deepcopy(result["candidates"])
+                if not 1 <= len(candidates) <= 5:
+                    raise BriefingRefused("invalid_discovery_result")
+                key = "brf_" + secrets.token_urlsafe(32)
+                self._discoveries[key] = (owner, time.monotonic(), candidates)
+                result["discovery_id"] = key
+            self._display_job = None
+            self._display_discovery = deepcopy({k: v for k, v in result.items() if k != 'discovery_id'})
+            return result
         if action == "start" and request is not None and job_id is None and change is None:
             text = self._text(request)
             if len(self._jobs) >= self._capacity:
                 raise BriefingRefused("job_capacity_reached")
             # 32 random bytes = 256 random bits; UUID4 would supply only122.
             job_id = "brf_" + secrets.token_urlsafe(32)
-            job = _Job(owner, text)
+            initial = None
+            if discovery_id is not None:
+                selected = self._discoveries.get(discovery_id)
+                if (selected is None or selected[0] != owner or time.monotonic() - selected[1] > 600
+                        or type(choice) is not int or not 1 <= choice <= len(selected[2])):
+                    raise BriefingRefused("discovery_unavailable")
+                candidate = selected[2][choice - 1]
+                initial = {"callsign": candidate["callsign"], "destination": candidate["destination"],
+                           "destination_hint": candidate["destination"], "selection_basis": "published_route_choice"}
+            elif choice is not None:
+                raise BriefingRefused("discovery_unavailable")
+            job = _Job(owner, text, inputs=initial)
             job.board.begin_request(job.request_id)
             self._jobs[job_id] = job
             self._display_job = job
+            self._display_discovery = None
             job.task = asyncio.create_task(self._run(job, job.request_id))
             return {"job_id": job_id, "status": "started"}
         if action == "get" and job_id is not None and request is None and change is None:
@@ -299,6 +346,8 @@ class Jobs:
 
     async def close(self) -> None:
         self._display_job = None
+        self._display_discovery = None
+        self._discoveries.clear()
         tasks = [job.task for job in self._jobs.values() if job.task is not None]
         for task in tasks:
             task.cancel()

@@ -116,13 +116,13 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         result = await run_modify(self.registry, 'tool_result', ToolResultPayload(
             sender_id='question-conversation', tool_name='briefing', arguments={'action': 'get'},
             value={'status': 'needs_input', 'needs_input': {'field': 'transfer_minutes',
-                   'question': 'What transfer duration in minutes should I assume?'}}))
+                   'question': 'How long should I allow to get from the airport to your meeting?'}}))
         self.assertIsNone(result.control_flow)
         answer = await run_modify(self.registry, 'model_response', ModelResponsePayload(
             sender_id='question-conversation', text='I guessed a 90 minute transfer.'))
-        self.assertIn('What transfer duration', answer.payload.text)
+        self.assertIn('How long should I allow', answer.payload.text)
         self.assertNotIn('REPLAY', answer.payload.text)
-        self.assertIn('Briefing needs input', answer.payload.text)
+        self.assertNotIn('Briefing needs input', answer.payload.text)
         self.assertNotIn('90', answer.payload.text)
 
     async def test_running_source_job_gives_a_status_next_step_without_model_values(self):

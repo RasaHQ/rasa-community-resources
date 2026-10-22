@@ -7,8 +7,8 @@ import re
 
 @lru_cache(maxsize=1)
 def table():
-    data = json.loads(Path(__file__).with_name('airports-ourairports-20261022.json').read_text())
-    return tuple(data['airports'])
+    from briefing.traveller import reference
+    return tuple(reference()['airports'])
 
 
 def airport(code):

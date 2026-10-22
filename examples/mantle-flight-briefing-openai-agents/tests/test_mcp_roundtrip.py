@@ -132,7 +132,7 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
                 await rpc("initialize", {"protocolVersion": "2025-06-18", "capabilities": {},
                                          "clientInfo": {"name": "author-control", "version": "1"}})
                 tools = (await rpc("tools/list", {}))["tools"]
-                self.assertEqual([tool["name"] for tool in tools], ["briefing"])
+                self.assertEqual([tool["name"] for tool in tools], ["briefing", "find_flights"])
                 self.assertFalse(tools[0]["inputSchema"].get("additionalProperties", True))
                 self.assertFalse({"ctx", "user_id", "session_id", "owner"} &
                                  set(tools[0]["inputSchema"]["properties"]))

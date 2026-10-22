@@ -52,8 +52,8 @@ class Sessions:
         self.repeat = repeat
         self.stream = None
 
-    def create(self, *, agent, environment, input, stream, tool_handlers, timeout, spend_control):
-        if stream is not True or timeout != 20 or environment != {'type': 'openai_hosted', 'network': {'access': 'disabled'}} or spend_control != {'limit': 200}:
+    def create(self, *, agent, environment, input, stream, tool_handlers, timeout, **optional):
+        if stream is not True or timeout != 20 or environment != {'type': 'openai_hosted', 'network': {'access': 'disabled'}} or 'spend_control' in optional:
             raise AssertionError('Unexpected native SDK invocation')
         self.stream = Stream(tool_handlers, self.repeat)
         return self.stream

@@ -4,7 +4,6 @@ This is a single named scenario, not a natural-language model or a recording
 of a real flight. No provider or managed OpenAI request is made here.
 """
 import asyncio
-import re
 
 from zeo_core.contracts.ui.widgets import TRANSFER_LABEL, DataRef
 from zeo_core.integrations.agents import ScriptedTransport, function_tool, run
@@ -28,15 +27,15 @@ class ReplayRunner:
         inputs = dict(work.inputs or {"meeting_time": "2026-10-22T21:00:00Z", "transfer_minutes": 90})
         waiting = inputs.get("awaiting")
         if waiting and work.text not in named:
+            from briefing.traveller import airport_row, meeting_time, transfer_time
             if waiting == "transfer_minutes":
-                match = re.fullmatch(r"([0-9]{1,4})(?: minutes?)?", work.text.strip())
-                if match and 0 <= int(match[1]) <= 1440:
-                    inputs[waiting] = int(match[1])
+                value = transfer_time('allow ' + work.text)
+                if value is not None:
+                    inputs[waiting] = value
             else:
-                try:
-                    inputs[waiting] = instant(work.text).isoformat()
-                except ValueError:
-                    pass
+                value = meeting_time(work.text, airport_row('JFK'), instant(FETCHED_AT))
+                if value is not None:
+                    inputs[waiting] = value
             inputs.pop("awaiting", None)
         elif work.text in named:
             if work.text in ("Replay DEMO101 missing meeting", "Replay DEMO101 missing inputs"):
@@ -49,8 +48,8 @@ class ReplayRunner:
                 inputs["later"] = False
         else:
             raise ValueError("named_replay_scenario_required")
-        for field, question in (("meeting_time", "What is the meeting time, including its date and timezone?"),
-                                ("transfer_minutes", "What transfer duration in minutes should I assume?")):
+        for field, question in (("meeting_time", "When is your meeting? Tell me the day and time in New York."),
+                                ("transfer_minutes", "How long should I allow to get from the airport to your meeting?")):
             if inputs.get(field) is None:
                 inputs["awaiting"] = field
                 raise NeedsInput(field, question, inputs)

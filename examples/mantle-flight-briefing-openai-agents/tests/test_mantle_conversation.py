@@ -162,7 +162,7 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                 question = await run_turn('Show the missing-input replay', [
                                     ('briefing', {'action': 'start', 'request': 'Replay DEMO101 missing inputs'}),
                                     ('briefing', {'action': 'get'})], cards=False)
-                                self.assertIn('meeting time', question)
+                                self.assertIn('When is your meeting?', question)
                                 self.assertNotIn('Margin:', question)
                                 capability = list(jobs._jobs)[-1]
                                 for reply in ('tomorrow at five', '2026-10-22T21:00:00Z', '45 minutes'):
@@ -171,9 +171,9 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                                         ('briefing', {'action': 'get'})], cards=reply == '45 minutes')
                                     self.assertEqual(list(jobs._jobs)[-1], capability)
                                     if reply == 'tomorrow at five':
-                                        self.assertIn('meeting time', answer)
+                                        self.assertIn('When is your meeting?', answer)
                                     elif reply.endswith('Z'):
-                                        self.assertIn('transfer duration', answer)
+                                        self.assertIn('How long should I allow', answer)
                                     else:
                                         self.assertIn('Margin: 165.0 minutes', panel_details())
                                         self.assertIn('Transfer assumption: 45 minutes', panel_details())

@@ -1,0 +1,1298 @@
+{
+  "schema": "rasa.traveller-reference/v1",
+  "airport_source": {
+    "source_url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/b529623d2a0b09a9be78d37fc7a7a5e1e16e3451/airports.csv",
+    "source_sha256": "0499dbd88de2fc735ac5c09f59796ccc3af544e17ffda807f793c0c6fe6c3d75",
+    "upstream_commit": "b529623d2a0b09a9be78d37fc7a7a5e1e16e3451",
+    "license": "Public domain (Unlicense)"
+  },
+  "airline_source": {
+    "source_url": "https://raw.githubusercontent.com/vradarserver/standing-data/03cd2417bb217476aa1f560dcb1a136205deff5d/airlines/schema-01/airlines.csv",
+    "source_sha256": "5d86acc2da7ff60b3086e3fabd2233aea66459d037e3bfe8a52343dd1d4501ab",
+    "commit": "03cd2417bb217476aa1f560dcb1a136205deff5d",
+    "license": "CC0-1.0"
+  },
+  "time_zone_assignment": "Class-maintained airport-to-IANA-city mapping; zone rules come from Python zoneinfo/IANA, not from OurAirports.",
+  "planning_default_authority": "Operator04:30 traveller ruling; class-authored conservative planning allowances with cited official transport information, not provider observations.",
+  "airports": [
+    {
+      "ident": "CYYZ",
+      "iata_code": "YYZ",
+      "name": "Toronto Pearson International Airport",
+      "city": "Toronto",
+      "latitude_deg": 43.675935,
+      "longitude_deg": -79.629421,
+      "time_zone": "America/Toronto",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "pearson"
+      ],
+      "transfer_default": {
+        "minutes": 60,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.torontopearson.com/en/transportation-and-parking/up-express",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "EDDF",
+      "iata_code": "FRA",
+      "name": "Frankfurt Main Airport",
+      "city": "Frankfurt",
+      "latitude_deg": 50.026706,
+      "longitude_deg": 8.55835,
+      "time_zone": "Europe/Berlin",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "frankfurt main"
+      ],
+      "transfer_default": {
+        "minutes": 45,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.rmv.de/s/de/airport-to-city",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "EDDM",
+      "iata_code": "MUC",
+      "name": "Munich Airport",
+      "city": "Munich",
+      "latitude_deg": 48.353802,
+      "longitude_deg": 11.7861,
+      "time_zone": "Europe/Berlin",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "munchen"
+      ],
+      "transfer_default": {
+        "minutes": 75,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.munich-airport.de/public-transport-260822",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "EGKK",
+      "iata_code": "LGW",
+      "name": "London Gatwick Airport",
+      "city": "London",
+      "latitude_deg": 51.148744,
+      "longitude_deg": -0.185739,
+      "time_zone": "Europe/London",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "gatwick"
+      ],
+      "transfer_default": {
+        "minutes": 75,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.gatwickairport.com/All_FAQs",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "EGLL",
+      "iata_code": "LHR",
+      "name": "London Heathrow Airport",
+      "city": "London",
+      "latitude_deg": 51.470748,
+      "longitude_deg": -0.459909,
+      "time_zone": "Europe/London",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "heathrow"
+      ],
+      "transfer_default": {
+        "minutes": 75,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.heathrow.com/transport-and-directions/getting-to-central-london",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "EHAM",
+      "iata_code": "AMS",
+      "name": "Amsterdam Airport Schiphol",
+      "city": "Amsterdam",
+      "latitude_deg": 52.308601,
+      "longitude_deg": 4.76389,
+      "time_zone": "Europe/Amsterdam",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "schiphol"
+      ],
+      "transfer_default": {
+        "minutes": 45,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.schiphol.nl/en/from-to-schiphol/by-public-transport/train/",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "KJFK",
+      "iata_code": "JFK",
+      "name": "John F. Kennedy International Airport",
+      "city": "New York",
+      "latitude_deg": 40.639447,
+      "longitude_deg": -73.779317,
+      "time_zone": "America/New_York",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "kennedy",
+        "john f kennedy"
+      ],
+      "transfer_default": {
+        "minutes": 90,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.mta.info/guides/airports/jfk",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "KEWR",
+      "iata_code": "EWR",
+      "name": "Newark Liberty International Airport",
+      "city": "New York",
+      "latitude_deg": 40.6894,
+      "longitude_deg": -74.170545,
+      "time_zone": "America/New_York",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "newark"
+      ],
+      "transfer_default": {
+        "minutes": 90,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.newarkairport.com/transportation/public-transport",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "KLGA",
+      "iata_code": "LGA",
+      "name": "LaGuardia Airport",
+      "city": "New York",
+      "latitude_deg": 40.777199,
+      "longitude_deg": -73.872597,
+      "time_zone": "America/New_York",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "laguardia",
+        "la guardia"
+      ],
+      "transfer_default": {
+        "minutes": 90,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.mta.info/guides/airports/laguardia",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "KLAX",
+      "iata_code": "LAX",
+      "name": "Los Angeles International Airport",
+      "city": "Los Angeles",
+      "latitude_deg": 33.942501,
+      "longitude_deg": -118.407997,
+      "time_zone": "America/Los_Angeles",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "los angeles international"
+      ],
+      "transfer_default": {
+        "minutes": 120,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.flylax.com/flyaway-bus/faqs",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "LFPG",
+      "iata_code": "CDG",
+      "name": "Charles de Gaulle International Airport",
+      "city": "Paris",
+      "latitude_deg": 49.00896,
+      "longitude_deg": 2.554117,
+      "time_zone": "Europe/Paris",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "charles de gaulle",
+        "roissy"
+      ],
+      "transfer_default": {
+        "minutes": 90,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://www.iledefrance-mobilites.fr/acceder-aux-aeroports-franciliens-",
+        "reviewed": "2026-10-22"
+      }
+    },
+    {
+      "ident": "OMDB",
+      "iata_code": "DXB",
+      "name": "Dubai International Airport",
+      "city": "Dubai",
+      "latitude_deg": 25.24979,
+      "longitude_deg": 55.370992,
+      "time_zone": "Asia/Dubai",
+      "time_zone_source": "https://www.iana.org/time-zones",
+      "aliases": [
+        "dubai international"
+      ],
+      "transfer_default": {
+        "minutes": 90,
+        "kind": "assumption",
+        "basis": "Class airport-to-city planning allowance; not a quoted door-to-door duration, live traffic or guaranteed immigration time. Change it for your own meeting.",
+        "transport_source": "https://dubaiairports.ae/",
+        "reviewed": "2026-10-22"
+      }
+    }
+  ],
+  "airlines": [
+    {
+      "icao": "AAL",
+      "iata": "AA",
+      "name": "American Airlines",
+      "published_name": "American Airlines",
+      "aliases": [
+        "aa",
+        "aal",
+        "american",
+        "american airlines"
+      ]
+    },
+    {
+      "icao": "ACA",
+      "iata": "AC",
+      "name": "Air Canada",
+      "published_name": "Air Canada",
+      "aliases": [
+        "ac",
+        "aca",
+        "air canada"
+      ]
+    },
+    {
+      "icao": "AFR",
+      "iata": "AF",
+      "name": "Air France",
+      "published_name": "Air France",
+      "aliases": [
+        "af",
+        "afr",
+        "air france"
+      ]
+    },
+    {
+      "icao": "AUA",
+      "iata": "OS",
+      "name": "Austrian Airlines",
+      "published_name": "Austrian Airlines",
+      "aliases": [
+        "aua",
+        "austrian",
+        "austrian airlines",
+        "os"
+      ]
+    },
+    {
+      "icao": "BAW",
+      "iata": "BA",
+      "name": "British Airways",
+      "published_name": "British Airways",
+      "aliases": [
+        "ba",
+        "baw",
+        "british airways"
+      ]
+    },
+    {
+      "icao": "DAL",
+      "iata": "DL",
+      "name": "Delta Air Lines",
+      "published_name": "Delta Air Lines",
+      "aliases": [
+        "dal",
+        "delta",
+        "delta air lines",
+        "dl"
+      ]
+    },
+    {
+      "icao": "DLH",
+      "iata": "LH",
+      "name": "Lufthansa",
+      "published_name": "Lufthansa",
+      "aliases": [
+        "dlh",
+        "lh",
+        "lufthansa"
+      ]
+    },
+    {
+      "icao": "JBU",
+      "iata": "B6",
+      "name": "JetBlue",
+      "published_name": "JetBlue Airways",
+      "aliases": [
+        "b6",
+        "jbu",
+        "jetblue",
+        "jetblue airways"
+      ]
+    },
+    {
+      "icao": "KLM",
+      "iata": "KL",
+      "name": "KLM",
+      "published_name": "KLM",
+      "aliases": [
+        "kl",
+        "klm"
+      ]
+    },
+    {
+      "icao": "LOT",
+      "iata": "LO",
+      "name": "LOT Polish Airlines",
+      "published_name": "LOT Polish Airlines",
+      "aliases": [
+        "lo",
+        "lot",
+        "lot polish airlines"
+      ]
+    },
+    {
+      "icao": "SAS",
+      "iata": "SK",
+      "name": "SAS",
+      "published_name": "SAS",
+      "aliases": [
+        "sas",
+        "sk"
+      ]
+    },
+    {
+      "icao": "SWR",
+      "iata": "LX",
+      "name": "Swiss",
+      "published_name": "Swiss",
+      "aliases": [
+        "lx",
+        "swiss",
+        "swr"
+      ]
+    },
+    {
+      "icao": "TAP",
+      "iata": "TP",
+      "name": "TAP Air Portugal",
+      "published_name": "TAP Portugal",
+      "aliases": [
+        "tap",
+        "tap air portugal",
+        "tap portugal",
+        "tp"
+      ]
+    },
+    {
+      "icao": "UAE",
+      "iata": "EK",
+      "name": "Emirates",
+      "published_name": "Emirates",
+      "aliases": [
+        "ek",
+        "emirates",
+        "uae"
+      ]
+    },
+    {
+      "icao": "UAL",
+      "iata": "UA",
+      "name": "United Airlines",
+      "published_name": "United Airlines",
+      "aliases": [
+        "ua",
+        "ual",
+        "united",
+        "united airlines"
+      ]
+    },
+    {
+      "icao": "VIR",
+      "iata": "VS",
+      "name": "Virgin Atlantic",
+      "published_name": "Virgin Atlantic",
+      "aliases": [
+        "vir",
+        "virgin atlantic",
+        "vs"
+      ]
+    }
+  ],
+  "origin_cities": {
+    "BGGH": {
+      "city": "Nuuk",
+      "name": "Nuuk International Airport"
+    },
+    "BIKF": {
+      "city": "Reykjavík",
+      "name": "Keflavik International Airport"
+    },
+    "CYHZ": {
+      "city": "Halifax",
+      "name": "Halifax / Stanfield International Airport"
+    },
+    "CYOW": {
+      "city": "Ottawa",
+      "name": "Ottawa Macdonald-Cartier International Airport"
+    },
+    "CYQB": {
+      "city": "Quebec",
+      "name": "Quebec Jean Lesage International Airport"
+    },
+    "CYUL": {
+      "city": "Montréal",
+      "name": "Montreal / Pierre Elliott Trudeau International Airport"
+    },
+    "CYVR": {
+      "city": "Vancouver",
+      "name": "Vancouver International Airport"
+    },
+    "CYYC": {
+      "city": "Calgary",
+      "name": "Calgary International Airport"
+    },
+    "CYYZ": {
+      "city": "Toronto",
+      "name": "Toronto Pearson International Airport"
+    },
+    "DGAA": {
+      "city": "Accra",
+      "name": "Kotoka International Airport"
+    },
+    "EBBR": {
+      "city": "Zaventem",
+      "name": "Brussels Airport"
+    },
+    "EDDB": {
+      "city": "Berlin",
+      "name": "Berlin Brandenburg Airport"
+    },
+    "EDDF": {
+      "city": "Frankfurt am Main",
+      "name": "Frankfurt Main Airport"
+    },
+    "EDDM": {
+      "city": "Munich",
+      "name": "Munich Airport"
+    },
+    "EDHI": {
+      "city": "Hamburg",
+      "name": "Hamburg-Finkenwerder Airport"
+    },
+    "EGAA": {
+      "city": "Belfast",
+      "name": "Belfast International Airport"
+    },
+    "EGCC": {
+      "city": "Manchester, Greater Manchester",
+      "name": "Manchester Airport"
+    },
+    "EGKK": {
+      "city": "London",
+      "name": "London Gatwick Airport"
+    },
+    "EGLL": {
+      "city": "London",
+      "name": "London Heathrow Airport"
+    },
+    "EGPF": {
+      "city": "Glasgow",
+      "name": "Glasgow Airport"
+    },
+    "EGPH": {
+      "city": "Ingliston, Edinburgh",
+      "name": "Edinburgh Airport"
+    },
+    "EHAM": {
+      "city": "Amsterdam",
+      "name": "Amsterdam Airport Schiphol"
+    },
+    "EIDW": {
+      "city": "Dublin",
+      "name": "Dublin Airport"
+    },
+    "EINN": {
+      "city": "Shannon",
+      "name": "Shannon Airport"
+    },
+    "EKCH": {
+      "city": "Copenhagen",
+      "name": "Copenhagen Kastrup Airport"
+    },
+    "EKYT": {
+      "city": "Aalborg",
+      "name": "Aalborg Airport"
+    },
+    "ENEV": {
+      "city": "Evenes",
+      "name": "Harstad/Narvik Airport"
+    },
+    "ENGM": {
+      "city": "Oslo (Gardermoen)",
+      "name": "Oslo-Gardermoen International Airport"
+    },
+    "EPKK": {
+      "city": "Balice",
+      "name": "Kraków John Paul II International Airport"
+    },
+    "EPRZ": {
+      "city": "Jasionka",
+      "name": "Rzeszów-Jasionka Airport"
+    },
+    "EPWA": {
+      "city": "Warsaw",
+      "name": "Warsaw Chopin Airport"
+    },
+    "ESGG": {
+      "city": "Göteborg",
+      "name": "Göteborg Landvetter Airport"
+    },
+    "ESSA": {
+      "city": "Stockholm",
+      "name": "Stockholm-Arlanda Airport"
+    },
+    "FACT": {
+      "city": "Cape Town",
+      "name": "Cape Town International Airport"
+    },
+    "FAOR": {
+      "city": "Johannesburg",
+      "name": "O.R. Tambo International Airport"
+    },
+    "HECA": {
+      "city": "Cairo",
+      "name": "Cairo International Airport"
+    },
+    "KABQ": {
+      "city": "Albuquerque",
+      "name": "Albuquerque International Sunport"
+    },
+    "KACK": {
+      "city": "Nantucket",
+      "name": "Nantucket Memorial Airport"
+    },
+    "KADW": {
+      "city": "Camp Springs",
+      "name": "Joint Base Andrews"
+    },
+    "KAEX": {
+      "city": "Alexandria",
+      "name": "Alexandria International Airport"
+    },
+    "KATL": {
+      "city": "Atlanta",
+      "name": "Hartsfield Jackson Atlanta International Airport"
+    },
+    "KAUS": {
+      "city": "Austin",
+      "name": "Austin Bergstrom International Airport"
+    },
+    "KAVL": {
+      "city": "Asheville",
+      "name": "Asheville Regional Airport"
+    },
+    "KAVP": {
+      "city": "Wilkes-Barre/Scranton",
+      "name": "Wilkes-Barre/Scranton International Airport"
+    },
+    "KBDL": {
+      "city": "Hartford",
+      "name": "Bradley International Airport"
+    },
+    "KBNA": {
+      "city": "Nashville",
+      "name": "Nashville International Airport"
+    },
+    "KBOS": {
+      "city": "Boston",
+      "name": "Boston Logan International Airport"
+    },
+    "KBUF": {
+      "city": "Buffalo",
+      "name": "Buffalo Niagara International Airport"
+    },
+    "KBUR": {
+      "city": "Burbank",
+      "name": "Hollywood Burbank/Bob Hope Airport"
+    },
+    "KBWI": {
+      "city": "Baltimore",
+      "name": "Baltimore/Washington International Thurgood Marshall Airport"
+    },
+    "KBZN": {
+      "city": "Bozeman",
+      "name": "Bozeman Yellowstone International Airport"
+    },
+    "KCHS": {
+      "city": "Charleston",
+      "name": "Charleston International Airport"
+    },
+    "KCLE": {
+      "city": "Cleveland",
+      "name": "Cleveland Hopkins International Airport"
+    },
+    "KCLT": {
+      "city": "Charlotte",
+      "name": "Charlotte Douglas International Airport"
+    },
+    "KCMH": {
+      "city": "Columbus",
+      "name": "John Glenn Columbus International Airport"
+    },
+    "KCRW": {
+      "city": "Charleston",
+      "name": "Yeager Airport"
+    },
+    "KCVG": {
+      "city": "Cincinnati / Covington",
+      "name": "Cincinnati Northern Kentucky International Airport"
+    },
+    "KDAB": {
+      "city": "Daytona Beach",
+      "name": "Daytona Beach International Airport"
+    },
+    "KDAY": {
+      "city": "Dayton",
+      "name": "James M. Cox Dayton International Airport"
+    },
+    "KDCA": {
+      "city": "Washington",
+      "name": "Ronald Reagan Washington National Airport"
+    },
+    "KDEN": {
+      "city": "Denver",
+      "name": "Denver International Airport"
+    },
+    "KDFW": {
+      "city": "Dallas-Fort Worth",
+      "name": "Dallas Fort Worth International Airport"
+    },
+    "KDSM": {
+      "city": "Des Moines",
+      "name": "Des Moines International Airport"
+    },
+    "KDTW": {
+      "city": "Detroit",
+      "name": "Detroit Metropolitan Wayne County Airport"
+    },
+    "KELP": {
+      "city": "El Paso",
+      "name": "El Paso International Airport"
+    },
+    "KFLL": {
+      "city": "Fort Lauderdale",
+      "name": "Fort Lauderdale Hollywood International Airport"
+    },
+    "KFRG": {
+      "city": "East Farmingdale",
+      "name": "Republic Airport"
+    },
+    "KGRR": {
+      "city": "Grand Rapids",
+      "name": "Gerald R. Ford International Airport"
+    },
+    "KGSP": {
+      "city": "Greenville/Greer/Spartanburg",
+      "name": "Greenville-Spartanburg International Airport"
+    },
+    "KHYA": {
+      "city": "Hyannis",
+      "name": "Cape Cod Gateway Airport"
+    },
+    "KIAD": {
+      "city": "Dulles",
+      "name": "Washington Dulles International Airport"
+    },
+    "KIAH": {
+      "city": "Houston",
+      "name": "George Bush Intercontinental Airport"
+    },
+    "KIND": {
+      "city": "Indianapolis",
+      "name": "Indianapolis International Airport"
+    },
+    "KITH": {
+      "city": "Ithaca",
+      "name": "Ithaca Tompkins Regional Airport"
+    },
+    "KJAX": {
+      "city": "Jacksonville",
+      "name": "Jacksonville International Airport"
+    },
+    "KJFK": {
+      "city": "New York",
+      "name": "John F. Kennedy International Airport"
+    },
+    "KLAS": {
+      "city": "Las Vegas",
+      "name": "Harry Reid International Airport"
+    },
+    "KLAX": {
+      "city": "Los Angeles",
+      "name": "Los Angeles International Airport"
+    },
+    "KLCQ": {
+      "city": "Lake City",
+      "name": "Lake City Gateway Airport"
+    },
+    "KLGA": {
+      "city": "New York",
+      "name": "LaGuardia Airport"
+    },
+    "KLGB": {
+      "city": "Long Beach",
+      "name": "Long Beach International Airport"
+    },
+    "KMCI": {
+      "city": "Kansas City",
+      "name": "Kansas City International Airport"
+    },
+    "KMCO": {
+      "city": "Orlando",
+      "name": "Orlando International Airport"
+    },
+    "KMDT": {
+      "city": "Harrisburg",
+      "name": "Harrisburg International Airport"
+    },
+    "KMHT": {
+      "city": "Manchester",
+      "name": "Manchester-Boston Regional Airport"
+    },
+    "KMIA": {
+      "city": "Miami",
+      "name": "Miami International Airport"
+    },
+    "KMKE": {
+      "city": "Milwaukee",
+      "name": "General Mitchell International Airport"
+    },
+    "KMSN": {
+      "city": "Madison",
+      "name": "Dane County Regional Truax Field"
+    },
+    "KMSP": {
+      "city": "Minneapolis",
+      "name": "Minneapolis–Saint Paul International Airport / Wold–Chamberlain Field"
+    },
+    "KMSY": {
+      "city": "New Orleans",
+      "name": "Louis Armstrong New Orleans International Airport"
+    },
+    "KMVY": {
+      "city": "Martha's Vineyard",
+      "name": "Martha's Vineyard Airport"
+    },
+    "KMYR": {
+      "city": "Myrtle Beach",
+      "name": "Myrtle Beach International Airport"
+    },
+    "KOKC": {
+      "city": "Oklahoma City",
+      "name": "OKC Will Rogers World Airport"
+    },
+    "KOMA": {
+      "city": "Omaha",
+      "name": "Eppley Airfield"
+    },
+    "KONT": {
+      "city": "Ontario",
+      "name": "Ontario International Airport"
+    },
+    "KORD": {
+      "city": "Chicago",
+      "name": "Chicago O'Hare International Airport"
+    },
+    "KORF": {
+      "city": "Norfolk",
+      "name": "Norfolk International Airport"
+    },
+    "KPAE": {
+      "city": "Everett",
+      "name": "Seattle Paine Field International Airport"
+    },
+    "KPDX": {
+      "city": "Portland",
+      "name": "Portland International Airport"
+    },
+    "KPHL": {
+      "city": "Philadelphia",
+      "name": "Philadelphia International Airport"
+    },
+    "KPHX": {
+      "city": "Phoenix",
+      "name": "Phoenix Sky Harbor International Airport"
+    },
+    "KPIT": {
+      "city": "Pittsburgh",
+      "name": "Pittsburgh International Airport"
+    },
+    "KPVD": {
+      "city": "Providence/Warwick",
+      "name": "Rhode Island T. F. Green International Airport"
+    },
+    "KPWM": {
+      "city": "Portland",
+      "name": "Portland International Jetport"
+    },
+    "KRDU": {
+      "city": "Raleigh/Durham",
+      "name": "Raleigh-Durham International Airport"
+    },
+    "KRIC": {
+      "city": "Richmond",
+      "name": "Richmond International Airport"
+    },
+    "KRNO": {
+      "city": "Reno",
+      "name": "Reno Tahoe International Airport"
+    },
+    "KROC": {
+      "city": "Rochester",
+      "name": "Frederick Douglass Greater Rochester International Airport"
+    },
+    "KROW": {
+      "city": "Roswell",
+      "name": "Roswell Air Center Airport"
+    },
+    "KRSW": {
+      "city": "Fort Myers",
+      "name": "Southwest Florida International Airport"
+    },
+    "KSAN": {
+      "city": "San Diego",
+      "name": "San Diego International Airport"
+    },
+    "KSAT": {
+      "city": "San Antonio",
+      "name": "San Antonio International Airport"
+    },
+    "KSAV": {
+      "city": "Savannah",
+      "name": "Savannah Hilton Head International Airport"
+    },
+    "KSDF": {
+      "city": "Louisville",
+      "name": "Louisville Muhammad Ali International Airport"
+    },
+    "KSEA": {
+      "city": "Seattle",
+      "name": "Seattle–Tacoma International Airport"
+    },
+    "KSFO": {
+      "city": "San Francisco",
+      "name": "San Francisco International Airport"
+    },
+    "KSLC": {
+      "city": "Salt Lake City",
+      "name": "Salt Lake City International Airport"
+    },
+    "KSMF": {
+      "city": "Sacramento",
+      "name": "Sacramento International Airport"
+    },
+    "KSNA": {
+      "city": "Santa Ana",
+      "name": "John Wayne Orange County International Airport"
+    },
+    "KSRQ": {
+      "city": "Sarasota/Bradenton",
+      "name": "Sarasota Bradenton International Airport"
+    },
+    "KSTL": {
+      "city": "St Louis",
+      "name": "St. Louis Lambert International Airport"
+    },
+    "KSYR": {
+      "city": "Syracuse",
+      "name": "Syracuse Hancock International Airport"
+    },
+    "KTPA": {
+      "city": "Tampa",
+      "name": "Tampa International Airport"
+    },
+    "KTUL": {
+      "city": "Tulsa",
+      "name": "Tulsa International Airport"
+    },
+    "KVPS": {
+      "city": "Valparaiso",
+      "name": "Destin-Fort Walton Beach Airport"
+    },
+    "KVRB": {
+      "city": "Vero Beach",
+      "name": "Vero Beach Regional Airport"
+    },
+    "KXNA": {
+      "city": "Fayetteville/Springdale/Rogers",
+      "name": "Northwest Arkansas National Airport"
+    },
+    "LDDU": {
+      "city": "Dubrovnik",
+      "name": "Dubrovnik Ruđer Bošković Airport"
+    },
+    "LDSP": {
+      "city": "Split",
+      "name": "Split Saint Jerome Airport"
+    },
+    "LEBB": {
+      "city": "Bilbao",
+      "name": "Bilbao Airport"
+    },
+    "LEBL": {
+      "city": "Barcelona",
+      "name": "Josep Tarradellas Barcelona-El Prat Airport"
+    },
+    "LEMD": {
+      "city": "Madrid",
+      "name": "Adolfo Suárez Madrid–Barajas Airport"
+    },
+    "LEPA": {
+      "city": "Palma de Mallorca",
+      "name": "Palma de Mallorca Airport"
+    },
+    "LEST": {
+      "city": "Santiago de Compostela",
+      "name": "Santiago-Rosalía de Castro Airport"
+    },
+    "LEZG": {
+      "city": "Zaragoza",
+      "name": "Zaragoza Airport"
+    },
+    "LFMN": {
+      "city": "Nice, Alpes-Maritimes",
+      "name": "Nice-Côte d'Azur Airport"
+    },
+    "LFPG": {
+      "city": "Paris (Roissy-en-France, Val-d'Oise)",
+      "name": "Charles de Gaulle International Airport"
+    },
+    "LFPO": {
+      "city": "Paris (Orly, Val-de-Marne)",
+      "name": "Paris-Orly Airport"
+    },
+    "LGAV": {
+      "city": "Spata-Artemida",
+      "name": "Athens Eleftherios Venizelos International Airport"
+    },
+    "LHBP": {
+      "city": "Budapest",
+      "name": "Budapest Liszt Ferenc International Airport"
+    },
+    "LIBD": {
+      "city": "Bari",
+      "name": "Bari Karol Wojtyła International Airport"
+    },
+    "LICC": {
+      "city": "Catania",
+      "name": "Catania-Fontanarossa Airport"
+    },
+    "LICJ": {
+      "city": "Palermo",
+      "name": "Falcone–Borsellino Airport"
+    },
+    "LIEO": {
+      "city": "Olbia (SS)",
+      "name": "Olbia Costa Smeralda Airport"
+    },
+    "LIMC": {
+      "city": "Ferno (VA)",
+      "name": "Milan Malpensa International Airport"
+    },
+    "LIPZ": {
+      "city": "Venezia (VE)",
+      "name": "Venice Marco Polo Airport"
+    },
+    "LIRF": {
+      "city": "Rome",
+      "name": "Rome–Fiumicino Leonardo da Vinci International Airport"
+    },
+    "LIRN": {
+      "city": "Napoli",
+      "name": "Naples International Airport"
+    },
+    "LKPR": {
+      "city": "Prague",
+      "name": "Václav Havel Airport Prague"
+    },
+    "LLBG": {
+      "city": "Tel Aviv",
+      "name": "Ben Gurion International Airport"
+    },
+    "LMML": {
+      "city": "Valletta",
+      "name": "Malta International Airport"
+    },
+    "LOWW": {
+      "city": "Vienna",
+      "name": "Vienna International Airport"
+    },
+    "LPMA": {
+      "city": "Funchal",
+      "name": "Cristiano Ronaldo International Airport"
+    },
+    "LPPR": {
+      "city": "Porto",
+      "name": "Francisco de Sá Carneiro Airport"
+    },
+    "LPPT": {
+      "city": "Lisbon",
+      "name": "Lisbon Humberto Delgado Airport"
+    },
+    "LSGG": {
+      "city": "Geneva",
+      "name": "Geneva International Airport"
+    },
+    "LSZH": {
+      "city": "Zurich",
+      "name": "Zürich Airport"
+    },
+    "MBPV": {
+      "city": "Providenciales",
+      "name": "Providenciales International Airport"
+    },
+    "MDPC": {
+      "city": "Punta Cana",
+      "name": "Punta Cana International Airport"
+    },
+    "MDPP": {
+      "city": "Puerto Plata",
+      "name": "Gregorio Luperon International Airport"
+    },
+    "MDSD": {
+      "city": "Santo Domingo",
+      "name": "Las Américas International Airport"
+    },
+    "MDST": {
+      "city": "Santiago",
+      "name": "Cibao International Airport"
+    },
+    "MGGT": {
+      "city": "Guatemala City",
+      "name": "La Aurora International Airport"
+    },
+    "MHLM": {
+      "city": "San Pedro Sula",
+      "name": "Ramón Villeda Morales International Airport"
+    },
+    "MKJP": {
+      "city": "Kingston",
+      "name": "Norman Manley International Airport"
+    },
+    "MKJS": {
+      "city": "Montego Bay",
+      "name": "Sangster International Airport"
+    },
+    "MMIO": {
+      "city": "Saltillo",
+      "name": "Plan de Guadalupe International Airport"
+    },
+    "MMMX": {
+      "city": "Mexico City",
+      "name": "Mexico City Benito Juárez International Airport"
+    },
+    "MMPR": {
+      "city": "Puerto Vallarta",
+      "name": "Puerto Vallarta International Airport"
+    },
+    "MMSD": {
+      "city": "San José del Cabo",
+      "name": "Los Cabos International Airport"
+    },
+    "MMTL": {
+      "city": "Tulum",
+      "name": "Felipe Carrillo Puerto International Airport Tulum"
+    },
+    "MMUN": {
+      "city": "Cancún",
+      "name": "Cancún International Airport"
+    },
+    "MPTO": {
+      "city": "Tocumen",
+      "name": "Tocumen International Airport"
+    },
+    "MRLB": {
+      "city": "Liberia",
+      "name": "Daniel Oduber Quirós International Airport"
+    },
+    "MROC": {
+      "city": "San José (Alajuela)",
+      "name": "Juan Santamaría International Airport"
+    },
+    "MSLP": {
+      "city": "San Salvador (San Luis Talpa)",
+      "name": "El Salvador International Airport Saint Óscar Arnulfo Romero y Galdámez"
+    },
+    "MTPP": {
+      "city": "Port-au-Prince",
+      "name": "Toussaint Louverture International Airport"
+    },
+    "MUHA": {
+      "city": "Havana",
+      "name": "José Martí International Airport"
+    },
+    "MWCR": {
+      "city": "George Town",
+      "name": "Owen Roberts International Airport"
+    },
+    "MYNN": {
+      "city": "Nassau",
+      "name": "Lynden Pindling International Airport"
+    },
+    "MZBZ": {
+      "city": "Belize City",
+      "name": "Philip S. W. Goldson International Airport"
+    },
+    "OMDB": {
+      "city": "Dubai",
+      "name": "Dubai International Airport"
+    },
+    "OTHH": {
+      "city": "Doha",
+      "name": "Hamad International Airport"
+    },
+    "PANC": {
+      "city": "Anchorage",
+      "name": "Ted Stevens Anchorage International Airport"
+    },
+    "PHNL": {
+      "city": "Honolulu, Oahu",
+      "name": "Daniel K. Inouye International Airport"
+    },
+    "RJAA": {
+      "city": "Narita",
+      "name": "Narita International Airport"
+    },
+    "RJTT": {
+      "city": "Tokyo",
+      "name": "Tokyo Haneda International Airport"
+    },
+    "RKSI": {
+      "city": "Seoul",
+      "name": "Incheon International Airport"
+    },
+    "SAEZ": {
+      "city": "Buenos Aires (Ezeiza)",
+      "name": "Ezeiza International Airport - Ministro Pistarini"
+    },
+    "SBGR": {
+      "city": "São Paulo",
+      "name": "São Paulo/Guarulhos–Governor André Franco Montoro International Airport"
+    },
+    "SEGU": {
+      "city": "Guayaquil",
+      "name": "José Joaquín de Olmedo International Airport"
+    },
+    "SKBO": {
+      "city": "Bogota",
+      "name": "El Dorado International Airport"
+    },
+    "SKCG": {
+      "city": "Cartagena",
+      "name": "Rafael Nuñez International Airport"
+    },
+    "SYCJ": {
+      "city": "Georgetown",
+      "name": "Cheddi Jagan International Airport"
+    },
+    "TAPA": {
+      "city": "Osbourn",
+      "name": "V. C. Bird International Airport"
+    },
+    "TBPB": {
+      "city": "Bridgetown",
+      "name": "Grantley Adams International Airport"
+    },
+    "TGPY": {
+      "city": "Saint George's",
+      "name": "Maurice Bishop International Airport"
+    },
+    "TIST": {
+      "city": "Charlotte Amalie",
+      "name": "Cyril E. King Airport"
+    },
+    "TJBQ": {
+      "city": "Aguadilla",
+      "name": "Rafael Hernández International Airport"
+    },
+    "TJSJ": {
+      "city": "San Juan",
+      "name": "Luis Munoz Marin International Airport"
+    },
+    "TKPK": {
+      "city": "Basseterre",
+      "name": "Robert L. Bradshaw International Airport"
+    },
+    "TLPL": {
+      "city": "Vieux Fort",
+      "name": "Hewanorra International Airport"
+    },
+    "TNCA": {
+      "city": "Oranjestad",
+      "name": "Queen Beatrix International Airport"
+    },
+    "TNCB": {
+      "city": "Kralendijk",
+      "name": "Flamingo International Airport"
+    },
+    "TNCC": {
+      "city": "Willemstad",
+      "name": "Hato International Airport"
+    },
+    "TNCM": {
+      "city": "Sint Maarten",
+      "name": "Princess Juliana International Airport"
+    },
+    "TTPP": {
+      "city": "Port of Spain",
+      "name": "Piarco International Airport"
+    },
+    "TVSA": {
+      "city": "Kingstown",
+      "name": "Argyle International Airport"
+    },
+    "TXKF": {
+      "city": "Hamilton",
+      "name": "L.F. Wade International Airport"
+    },
+    "VABB": {
+      "city": "Mumbai",
+      "name": "Chhatrapati Shivaji Maharaj International Airport"
+    },
+    "VIDP": {
+      "city": "New Delhi",
+      "name": "Indira Gandhi International Airport"
+    },
+    "ZBAA": {
+      "city": "Beijing",
+      "name": "Beijing Capital International Airport"
+    },
+    "ZSPD": {
+      "city": "Shanghai (Pudong)",
+      "name": "Shanghai Pudong International Airport"
+    }
+  }
+}

@@ -12,7 +12,7 @@ class Airports(unittest.IsolatedAsyncioTestCase):
     def test_codes_resolve_the_same_pinned_airport(self):
         self.assertEqual(airport('LHR'), airport('EGLL'))
         self.assertEqual(airport('EGLL')['ident'], 'EGLL')
-        self.assertEqual(len(table()), 10)
+        self.assertEqual(len(table()), 12)
         row = airport('EGLL')
         row['ident'] = 'POISON'
         self.assertEqual(airport('EGLL')['ident'], 'EGLL')
