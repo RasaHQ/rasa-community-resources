@@ -20,11 +20,37 @@ python factory_console.py NEW_RUN --port 8943
 The console can start against the future run path before the driver starts.
 It reads only the named evidence artifacts: `console.json`, `events.jsonl`,
 `review/change.patch`, `review/review.json`, `verification/decision.json`, and an
-owner-written `integration.json`. It has no write or execution endpoints and
+validated owner-returned `integration.json`. It has no write or execution endpoints and
 never serves arbitrary files or raw SDK logs. The factory's existing decision,
 not the builder's successful tool calls, supplies ACCEPT or REJECT. Integration
 is recorded by the product owner; this driver does not restart a product or
 invent an integration result.
+
+A trusted receiving program can pass `execute(..., integration_hook=callable)`.
+There is no CLI, model-supplied import, command or callback path. The callable
+receives only the resolved run-directory `Path`, once, after a completed successful
+native turn, factory exit 0, a protected ACCEPT decision and a fresh digest match
+against the collected candidate. Reusing the run directory is refused. Without
+a hook, `integration.json` explicitly stays `NOT_RECORDED`, including on native
+failure or a non-ACCEPT gate; none of those paths invokes a receiver.
+
+The returned record has exactly these fields: `schema` equal to
+`rasa.factory-integration/v1`; `status` equal to `NOT_RECORDED`, `FAILED` or
+`APPLIED_RESTARTED`; matching `candidate_digest`; `baseline_head` and
+`integrated_head` as full hexadecimal Git identifiers or null; `receipt_ref` as
+a bounded single-line path/reference or null; and a lowercase underscore
+`reason_code` of at most 64 characters. `APPLIED_RESTARTED` requires both heads
+and a receipt reference. Unknown fields, invalid types, digest changes and
+credential-bearing records fail validation. Callback exceptions produce only
+`FAILED` / `integration_hook_failed`, without exception text or retry. Writes
+refuse a symlink at the integration artifact.
+
+The protected factory exit code remains its own verdict. Inspect the separate
+integration status: an ACCEPT with a FAILED receiver is not a product success.
+The receiver is trusted host code and must bound its own synchronous apply,
+restart and HTTP checks. This bridge validates its assertion, not the product
+evidence itself. Only the receiving owner supplies an actual baseline and HTTP
+receipt; no injected test record is proof of the classroom end-to-end journey.
 
 The model gets only `list_files`, `read_file`, and `write_file`. Every file is
 opened relative to the scratch directory descriptor, with symlink/hardlink and

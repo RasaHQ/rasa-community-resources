@@ -217,17 +217,21 @@ class DriverControls(unittest.TestCase):
         self.assertNotIn('private-provider-body', (self.root / 'usage.json').read_text())
 
     def test_missing_sandbox_stops_before_any_native_request(self):
+        from unittest.mock import Mock
         run = self.root / 'no-sandbox'
+        hook = Mock()
         factory = SimpleNamespace(sandbox_unavailable=lambda path: True)
         with patch.object(driver, 'module', return_value=factory), patch.object(driver, 'native_builder') as native:
-            code = driver.execute(self.task_path, self.workspace, run, client=object(), model='never-called')
+            code = driver.execute(self.task_path, self.workspace, run, client=object(), model='never-called',
+                                  integration_hook=hook)
         self.assertEqual(code, 2)
         native.assert_not_called()
+        hook.assert_not_called()
         self.assertEqual(json.loads((run / 'console.json').read_text())['state'], 'NOT_READY')
         self.assertFalse((run / 'verification').exists())
 
     def test_noncompleted_session_never_collects_or_accepts_partial_edits(self):
-        for status in ('incomplete', 'failed', 'cancelled', None):
+        for status in ('incomplete', 'failed', 'cancelled', None, 'completed'):
             with self.subTest(status=status):
                 run = self.root / ('stopped-' + str(status))
                 factory = SimpleNamespace(prepare=lambda path: ('injected', []), sandbox_unavailable=lambda path: False)
@@ -261,9 +265,149 @@ class DriverControls(unittest.TestCase):
             self.assertEqual(result, code)
             self.assertEqual([name for name, _ in called], ['collect', 'factory'])
             self.assertTrue((run / 'console.json').is_file())
-            self.assertFalse((run / 'integration.json').exists())  # integration stays owner-controlled
+            self.assertEqual(json.loads((run / 'integration.json').read_text())['status'], 'NOT_RECORDED')
         with self.assertRaises(ValueError):
             driver.execute(self.task_path, self.workspace, self.workspace / 'evidence', client=object(), model='injected')
+
+    def integration_run(self, name, *, hook=None, code=0, decision=None, status='completed', ok=True):
+        """Inject the gate boundary, retaining real candidate bytes/digest custody."""
+        directory = self.root / name
+        digest_tree = driver.module('factory').digest_tree
+
+        def collect(workspace, candidate, review, **kwargs):
+            (Path(candidate) / 'product').mkdir(parents=True)
+            (Path(candidate) / 'product/market.py').write_text('market = "checked proposal"\n')
+            Path(review).mkdir()
+            return 0
+
+        def gate(task, candidate, verification, **kwargs):
+            Path(verification).mkdir()
+            record = {'decision': 'ACCEPT' if code == 0 else 'REJECT',
+                      'candidate_digest': digest_tree(candidate)}
+            record.update(decision or {})
+            (Path(verification) / 'decision.json').write_text(json.dumps(record))
+            return code
+
+        factory = SimpleNamespace(main=gate, digest_tree=digest_tree,
+                                  prepare=lambda path: ('injected', []), sandbox_unavailable=lambda path: False)
+        modules = {'collect': SimpleNamespace(main=collect), 'factory': factory}
+        with patch.object(driver, 'module', side_effect=lambda name: modules[name]), \
+                patch.object(driver, 'native_builder', return_value=SimpleNamespace(ok=ok, status=status)):
+            result = driver.execute(self.task_path, self.workspace, directory, client=object(), model='injected',
+                                    mode='SCRIPTED', integration_hook=hook)
+        return result, directory, json.loads((directory / 'integration.json').read_text())
+
+    @staticmethod
+    def owner_record(directory):
+        digest = json.loads((directory / 'verification/decision.json').read_text())['candidate_digest']
+        return {'schema': 'rasa.factory-integration/v1', 'status': 'APPLIED_RESTARTED',
+                'candidate_digest': digest, 'baseline_head': 'a' * 40, 'integrated_head': 'b' * 40,
+                'receipt_ref': 'receipts/controlled-owner-http.json', 'reason_code': 'owner_recorded'}
+
+    def test_integration_absent_hook_stays_unrecorded_and_noncallable_is_not_a_command(self):
+        result, _, record = self.integration_run('no-hook')
+        self.assertEqual(result, 0)
+        self.assertEqual(record['status'], 'NOT_RECORDED')
+        target = self.root / 'no-import'
+        with self.assertRaisesRegex(ValueError, 'programmatic_integration_callable_required'):
+            driver.execute(self.task_path, self.workspace, target, client=object(), model='injected',
+                           integration_hook='builder-selected-command-or-path')
+        self.assertFalse(target.exists())
+
+    def test_integration_never_invoked_on_nonaccept_or_native_failure(self):
+        from unittest.mock import Mock
+        for code in (1, 2, 3, 4):
+            hook = Mock()
+            result, _, record = self.integration_run('gate-' + str(code), hook=hook, code=code)
+            hook.assert_not_called()
+            self.assertEqual(result, code)
+            self.assertEqual(record['status'], 'NOT_RECORDED')
+        for status, ok in [('failed', False), ('incomplete', False), ('cancelled', False), ('completed', False)]:
+            hook = Mock()
+            result, _, record = self.integration_run('native-' + status, hook=hook, status=status, ok=ok)
+            hook.assert_not_called()
+            self.assertEqual(result, 2)
+            self.assertEqual(record['status'], 'NOT_RECORDED')
+
+    def test_integration_once_with_resolved_run_path_and_exact_owner_record(self):
+        calls = []
+        def hook(directory):
+            calls.append(directory)
+            return self.owner_record(directory)
+        result, directory, record = self.integration_run('owner-success', hook=hook)
+        self.assertEqual(result, 0)
+        self.assertEqual(calls, [directory.resolve()])
+        self.assertEqual(record, self.owner_record(directory))
+        with self.assertRaisesRegex(ValueError, 'fresh_run_directory_required'):
+            driver.execute(self.task_path, self.workspace, directory, client=object(), model='injected',
+                           integration_hook=hook)
+        self.assertEqual(len(calls), 1)
+
+    def test_integration_requires_protected_accept_and_unchanged_candidate_before_callback(self):
+        from unittest.mock import Mock
+        for name, altered in [('verdict', {'decision': 'REJECT'}), ('digest', {'candidate_digest': '0' * 64}),
+                              ('missing', {'candidate_digest': None})]:
+            hook = Mock()
+            _, _, record = self.integration_run('invalid-' + name, hook=hook, decision=altered)
+            hook.assert_not_called()
+            self.assertEqual(record['status'], 'FAILED')
+            self.assertEqual(record['reason_code'], 'protected_accept_invalid')
+
+    def test_integration_exception_digest_mismatch_and_invalid_record_fail_without_raw_text(self):
+        def raised(directory):
+            raise RuntimeError('private-owner-exception-must-not-be-recorded')
+        def mismatched(directory):
+            return {**self.owner_record(directory), 'candidate_digest': '0' * 64}
+        def mutated(directory):
+            record = self.owner_record(directory)
+            (directory / 'candidate/product/market.py').write_text('changed after gate')
+            return record
+        controls = [('exception', raised, 'integration_hook_failed'),
+                    ('mismatch', mismatched, 'integration_digest_mismatch'),
+                    ('mutated', mutated, 'integration_digest_mismatch')]
+        for name, hook, reason in controls:
+            _, directory, record = self.integration_run('bad-' + name, hook=hook)
+            self.assertEqual(record['status'], 'FAILED')
+            self.assertEqual(record['reason_code'], reason)
+            self.assertIsNone(record['integrated_head'])
+            self.assertNotIn('private-owner-exception', (directory / 'integration.json').read_text())
+        for name, changes in [('extra', {'provider_text': 'private raw owner text'}),
+                              ('schema', {'schema': 'unexpected'}), ('status', {'status': 'ACCEPT'}),
+                              ('head', {'baseline_head': '../not-a-head'}),
+                              ('reason', {'reason_code': 'free text is not a fixed code'}),
+                              ('receipt', {'receipt_ref': 'line1\nline2'}), ('missing-receipt', {'receipt_ref': None})]:
+            with self.subTest(record=name):
+                def hook(directory):
+                    return {**self.owner_record(directory), **changes}
+                _, _, record = self.integration_run('record-' + name, hook=hook)
+                self.assertEqual(record['status'], 'FAILED')
+                self.assertEqual(record['reason_code'], 'integration_record_invalid')
+
+    def test_integration_preserves_honest_pending_or_failed_owner_status(self):
+        for status in ('NOT_RECORDED', 'FAILED'):
+            def hook(directory):
+                return {**self.owner_record(directory), 'status': status, 'baseline_head': None,
+                        'integrated_head': None, 'receipt_ref': None, 'reason_code': 'owner_not_bound'}
+            _, _, record = self.integration_run('owner-' + status, hook=hook)
+            self.assertEqual(record['status'], status)
+            self.assertIsNone(record['integrated_head'])
+
+    def test_integration_rejects_credentials_and_never_follows_artifact_symlink(self):
+        secret = 'synthetic-integration-credential-12345678'
+        def unsafe_record(directory):
+            return {**self.owner_record(directory), 'receipt_ref': secret}
+        with patch.dict(os.environ, {'OPENAI_API_KEY': secret}):
+            _, directory, record = self.integration_run('credential-record', hook=unsafe_record)
+        self.assertEqual(record['reason_code'], 'integration_record_invalid')
+        self.assertNotIn(secret, (directory / 'integration.json').read_text())
+        outside = self.root / 'must-remain-unchanged'
+        outside.write_text('original bytes')
+        run = self.root / 'symlink-artifact'
+        run.mkdir()
+        (run / 'integration.json').symlink_to(outside)
+        with self.assertRaises(OSError):
+            driver.integration_status(run)
+        self.assertEqual(outside.read_text(), 'original bytes')
 
 
 if __name__ == '__main__':

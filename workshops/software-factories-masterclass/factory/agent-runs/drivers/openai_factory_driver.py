@@ -326,8 +326,84 @@ def record_usage(client, turn, directory, *, mode):
     return receipt
 
 
+def integration_status(directory, hook=None):
+    """Invoke trusted host code once, after binding ACCEPT to the actual candidate.
+
+    This records the receiving owner's assertion; it does not implement or prove
+    product apply, restart or HTTP acceptance. No CLI or builder input selects it.
+    """
+    record = {'schema': 'rasa.factory-integration/v1', 'status': 'NOT_RECORDED',
+              'candidate_digest': None, 'baseline_head': None, 'integrated_head': None,
+              'receipt_ref': None, 'reason_code': 'integration_not_requested'}
+
+    def failed(reason):
+        return {**record, 'status': 'FAILED', 'reason_code': reason}
+
+    if hook is not None:
+        try:
+            decision_path = directory / 'verification/decision.json'
+            if decision_path.is_symlink() or decision_path.stat().st_size > 65536:
+                raise ValueError('invalid_protected_decision')
+            decision = json.loads(decision_path.read_text())
+            digest = decision.get('candidate_digest')
+            if (decision.get('decision') != 'ACCEPT' or not isinstance(digest, str)
+                    or re.fullmatch(r'[0-9a-f]{64}', digest) is None
+                    or module('factory').digest_tree(directory / 'candidate') != digest):
+                raise ValueError('invalid_protected_decision')
+            record['candidate_digest'] = digest
+        except Exception:
+            record = failed('protected_accept_invalid')
+        else:
+            try:
+                supplied = hook(directory.resolve())
+            except Exception:
+                record = failed('integration_hook_failed')
+            else:
+                try:
+                    if not isinstance(supplied, dict) or set(supplied) != set(record):
+                        raise ValueError('invalid_integration_record')
+                    if (supplied['schema'] != record['schema'] or supplied['status'] not in
+                            ('NOT_RECORDED', 'FAILED', 'APPLIED_RESTARTED')):
+                        raise ValueError('invalid_integration_record')
+                    if supplied['candidate_digest'] != digest:
+                        raise ValueError('integration_digest_mismatch')
+                    for name in ('baseline_head', 'integrated_head'):
+                        value = supplied[name]
+                        if value is not None and (not isinstance(value, str) or
+                                re.fullmatch(r'(?:[0-9a-f]{40}|[0-9a-f]{64})', value) is None):
+                            raise ValueError('invalid_integration_record')
+                    reference = supplied['receipt_ref']
+                    if reference is not None and (not isinstance(reference, str) or
+                            re.fullmatch(r'[A-Za-z0-9_./:@+ -]{1,512}', reference) is None):
+                        raise ValueError('invalid_integration_record')
+                    reason = supplied['reason_code']
+                    if not isinstance(reason, str) or re.fullmatch(r'[a-z][a-z0-9_]{0,63}', reason) is None:
+                        raise ValueError('invalid_integration_record')
+                    if supplied['status'] == 'APPLIED_RESTARTED' and any(
+                            supplied[name] is None for name in ('baseline_head', 'integrated_head', 'receipt_ref')):
+                        raise ValueError('invalid_integration_record')
+                    encoded = json.dumps(supplied, allow_nan=False)
+                    if redact(encoded) != encoded:
+                        raise ValueError('invalid_integration_record')
+                    if module('factory').digest_tree(directory / 'candidate') != digest:
+                        raise ValueError('integration_digest_mismatch')
+                    record = json.loads(encoded)
+                except Exception as error:
+                    record = failed('integration_digest_mismatch' if isinstance(error, ValueError)
+                                    and error.args == ('integration_digest_mismatch',)
+                                    else 'integration_record_invalid')
+    descriptor = os.open(directory / 'integration.json',
+                         os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(descriptor, 'w') as output:
+        output.write(json.dumps(record, indent=2) + '\n')
+    return record
+
+
 def execute(task_path, workspace, run_directory, *, client, model, invoke=None, tool_factory=None,
-            pack_root=None, environment_path=None, spend_limit_cents=None, estimated_cents_per_call=None, expected_cost_cents=None, mode='LIVE_NATIVE'):
+            pack_root=None, environment_path=None, spend_limit_cents=None, estimated_cents_per_call=None,
+            expected_cost_cents=None, mode='LIVE_NATIVE', integration_hook=None):
+    if integration_hook is not None and not callable(integration_hook):
+        raise ValueError('programmatic_integration_callable_required')
     pack_root = Path(pack_root).resolve() if pack_root is not None else FACTORY
     task = json.loads(Path(task_path).read_text())
     validate_scratch(workspace, task, Path(task_path).name)
@@ -338,6 +414,7 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
     if scratch == directory.resolve() or directory.resolve().is_relative_to(scratch):
         raise ValueError('records_must_be_outside_builder_scratch')
     directory.mkdir(parents=True, mode=0o700)
+    integration_status(directory)
     (directory / 'task').mkdir()
     task_snapshot = directory / 'task' / Path(task_path).name
     task_snapshot.write_text(json.dumps(task, indent=2) + '\n')
@@ -381,7 +458,7 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
             'ok': bool(turn.ok), 'tools_called': [name for name in getattr(turn, 'tools_called', ())
                if name in ('list_files', 'read_file', 'write_file')]})))
         record_usage(client, turn, directory, mode=mode)
-        if native_status != 'completed':
+        if native_status != 'completed' or not turn.ok:
             event(stage='builder', status='FAIL', action='session_not_completed')
             save('BUILDER_INCOMPLETE')
             return 2
@@ -398,6 +475,9 @@ def execute(task_path, workspace, run_directory, *, client, model, invoke=None, 
                                       pack_root=pack_root, environment_path=environment_path, strict=True)
         event(stage='decision', status={0: 'ACCEPT', 1: 'REJECT', 2: 'ERROR', 3: 'NOT_READY', 4: 'ESCALATE'}.get(code, 'ERROR'))
         save({0: 'ACCEPT', 1: 'REJECT', 2: 'ERROR', 3: 'NOT_READY', 4: 'ESCALATE'}.get(code, 'ERROR'))
+        if code == 0 and integration_hook is not None:
+            receipt = integration_status(directory, integration_hook)
+            event(stage='integration', status=receipt['status'], action=receipt['reason_code'])
         return code
     except Exception as error:
         code = ('released_native_spend_guard_required' if isinstance(error, ValueError)
