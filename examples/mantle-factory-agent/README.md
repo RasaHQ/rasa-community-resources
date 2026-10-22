@@ -72,7 +72,7 @@ NOT_READY means no usable verdict was obtained. It never means ACCEPT, and a liv
 
 ## Voice
 
-Voice was not tested for this agent. In the travel demo, a test with recorded audio did not pass on the second turn, so type your requests.
+Use the opt-in local command below. A patched runtime completed a Deepgram audio-file request and LIVE gate ACCEPT; the physical microphone remains unqualified. Earlier unpatched travel failures remain recorded.
 
 ## Troubleshooting
 
@@ -89,3 +89,27 @@ Voice was not tested for this agent. In the travel demo, a test with recorded au
 2. A builder produces an attempt. In the scripted run it is a prepared one.
 3. Locked acceptance tests judge the attempt in a sandbox with no network. The conversational agent receives only the verdict record.
 4. ACCEPT or REJECT. A verdict is not a release.
+
+For an isolated local review while the class preview is running, choose distinct ports:
+
+```sh
+./demo run --entry-port 8960 --inspector-port 5020 --mcp-port 8961
+```
+
+Open http://127.0.0.1:8960/ for that run. Keep the same license and expiry requirements.
+
+## Voice, locally
+
+From this example directory on your own Mac:
+
+```sh
+./demo setup
+# Create an ignored .env containing your RASA_LICENSE and DEEPGRAM_API_KEY.
+./demo run --voice --env-file .env
+```
+
+Open http://127.0.0.1:8947 in Chrome, allow microphone access, and start the voice conversation. Say “show at most three currencies on the market card”. SCRIPTED builder mode demonstrates the protected gate without a model key or funded builder call. The Inspector alone receives the Deepgram key; training, entry and MCP children do not. Text remains available without that key by omitting `--voice`. Voice is opt-in and uses the pinned-engine repair in `voice_patch.py` without editing installed packages.
+
+For the LIVE builder, first run `./demo setup-live`, add OPENAI_API_KEY to the same owner file, then use `./demo run --voice --builder-mode LIVE --env-file .env`. This makes a funded builder attempt; Mantle selection stays SCRIPTED. Only the builder child receives OpenAI credentials. The existing run-count and deadline bounds still apply.
+
+If the ports are occupied, add `--entry-port 8964 --inspector-port 5024 --mcp-port 8965` and use the printed page address. The launcher stops at the printed expiry (default 16:30 UTC today) or Ctrl-C; after that time supply `--expires-at` with a future UTC timestamp. Loopback needs no tailnet, TLS or Chrome flags. Audio-file speech completed a LIVE gate ACCEPT on the patched runtime; physical microphone permission/device behavior must still be checked locally.
