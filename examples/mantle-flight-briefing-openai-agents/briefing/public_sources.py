@@ -47,6 +47,13 @@ class PublicSourcesRunner:
             inputs['callsign'] = explicit
         if not inputs.get('callsign'):
             raise BriefingRefused('explicit_callsign_required')
+        destination = re.search(r'\bdestination=([^\s]+)', text)
+        if destination:
+            from briefing.airports import airport
+            try:
+                inputs['destination'] = airport(destination.group(1).upper())['ident']
+            except ValueError:
+                raise BriefingRefused('unsupported_stated_destination') from None
         meeting = re.search(r'\bmeeting=([^\s]+)', text)
         transfer = re.search(r'\btransfer=([^\s]+)', text)
         awaiting = inputs.get('awaiting')
@@ -74,10 +81,14 @@ class PublicSourcesRunner:
         return await asyncio.to_thread(self._read, work, inputs)
 
     def _read(self, work, inputs):
+        destination = {}
+        if inputs.get('destination'):
+            from briefing.airports import stated_destination
+            destination['stated_destination'] = stated_destination(inputs['destination'])
         references = self.sources.read_briefing(
             inputs['callsign'], transfer_minutes=inputs['transfer_minutes'],
             meeting_time=datetime.fromisoformat(inputs['meeting_time']),
-            currencies=('USD', 'GBP'))
+            currencies=('USD', 'GBP'), **destination)
         if set(references) != set(COMPONENTS):
             raise ValueError('source_components_incomplete')
         cards = {}

@@ -266,6 +266,9 @@ class MantleVoiceConfig(unittest.TestCase):
 
 
 class InspectorVoiceSeam(unittest.TestCase):
+    def setUp(self):
+        (ROOT / '.demo-cache').mkdir(exist_ok=True)
+
     def test_real_channel_resolver_sees_patch_even_when_imported_first(self):
         from rasa.core.config.channel_loading import resolve_channels_config
         from rasa.mantle.config import channels

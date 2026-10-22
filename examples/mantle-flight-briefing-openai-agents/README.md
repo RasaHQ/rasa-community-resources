@@ -146,3 +146,16 @@ terminal with `BRIEFING_VIEWER_ACCESS=operator-device-acl` or
 `BRIEFING_VIEWER_ACCESS=operator-accepted`. This declaration does not configure
 an ACL; the launcher refuses a tailnet start without it. The card display is shared with those
 viewers, not private per browser. No keys belong in a URL or repository file.
+
+When the route source provides no route, keep the live position facts and say
+"Route not provided by the source". For weather and a computed arrival, provide
+an explicit airport, for example `destination=LHR` or `destination=EGLL`, in the
+same journey request. The airport is labelled "destination stated by traveller";
+it is not a provider-reported destination. A conflicting source route is flagged.
+
+The local ten-airport subset is from [OurAirports](https://github.com/davidmegginson/ourairports-data),
+public domain under its Unlicense, pinned to source commit
+`b529623d2a0b09a9be78d37fc7a7a5e1e16e3451`. Source URL and CSV SHA256 are
+in `briefing/airports-ourairports-20261022.json`. Supported ICAO codes are CYYZ,
+EDDF, EDDM, EGKK, EGLL, EHAM, KJFK, KLAX, LFPG and OMDB, plus their IATA codes.
+Unknown codes are refused; there is no network lookup or guessed substitute.
