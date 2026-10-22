@@ -250,3 +250,7 @@ Further reading: the individual chapters explain each component in more detail. 
 ## Explain your result before moving on
 
 Use [LEARNING-CHECKPOINTS.md](LEARNING-CHECKPOINTS.md) for explanation prompts and notes. They cover the difference between a product verdict and chapter completion, source uncertainty, stale integration evidence and duplicate requests.
+
+## Optional: ask a Mantle agent to run the factory
+
+If you want to use the factory the way a person would, by asking for a change, the [Mantle factory agent](../../examples/mantle-factory-agent/README.md) does it. Its scripted run needs no OpenAI key. The live run, where a coding builder uses your own OpenAI key, is optional and costs money (estimate 15 to 150 US cents). Voice was not tested for this agent. In the travel demo, a test with recorded audio did not pass on the second turn, so type your requests.
