@@ -23,7 +23,8 @@ Protocol, as implemented by rasa-pro 3.21.0.dev5
   tts_complete_latency_ms}}`) and `{"interruptPlayback": true}`.
 - There is no end-of-bot-turn frame. The driver reads the end of a bot turn
   from the tracker (a new `bot_turn_ended` for every new user event), then
-  waits for its emulated speaker to drain; without a tracker it falls back to
+  waits for reply audio to arrive and its emulated speaker to drain (a silent
+  tracker turn needs no audio); without a tracker it falls back to
   a quiet window.
 
 The caller streams continuously in real time, as a browser does: 20 ms
@@ -595,7 +596,7 @@ class BrowserAudioCall:
                     break
                 time.sleep(FRAME_MS / 1000)
 
-        ended_by, tracker = self._wait_bot_turn(turn, users_before, ends_before)
+        ended_by, tracker = self._wait_bot_turn(turn, users_before, ends_before, bots_before)
         new_users = _events(tracker, "user")[users_before:]
         new_ends = _events(tracker, "bot_turn_ended")[ends_before:]
         new_bots = _events(tracker, "bot")[bots_before:]
@@ -621,7 +622,8 @@ class BrowserAudioCall:
             "bot_pcm": bytes(turn.bot_pcm) if self.record_bot_audio else None,
         }
 
-    def _wait_bot_turn(self, turn: TurnTimes, users_before: int, ends_before: int) -> tuple[str, Optional[dict]]:
+    def _wait_bot_turn(self, turn: TurnTimes, users_before: int, ends_before: int,
+                       bots_before: int = 0) -> tuple[str, Optional[dict]]:
         deadline = time.monotonic() + self.turn_timeout_s
         next_poll = 0.0
         tracker = None
@@ -640,13 +642,22 @@ class BrowserAudioCall:
                         seen_done = seen_done or now
                     else:
                         seen_done = None
-            if seen_done is not None and self.speaker.drained and quiet >= self.settle_s:
+            expects_audio = any(e.get("text") for e in _events(tracker, "bot")[bots_before:])
+            if seen_done is not None and self.speaker.drained and quiet >= self.settle_s \
+                    and (turn.first_audio is not None or not expects_audio):
                 # Re-read once: a caller turn the ASR split in two gets a
                 # second user event, which must be answered before moving on.
                 tracker = self._tracker() or tracker
                 if turn_done_in_tracker(tracker, users_before, ends_before):
-                    return "tracker", tracker
-                seen_done = None
+                    # Tracker and audio arrive on separate transports. An empty
+                    # queue can mean the receiver has not processed the reply
+                    # yet, not that playback finished. Old greeting text must
+                    # not make a genuinely silent current turn wait for audio.
+                    expects_audio = any(e.get("text") for e in _events(tracker, "bot")[bots_before:])
+                    if turn.first_audio is not None or not expects_audio:
+                        return "tracker", tracker
+                else:
+                    seen_done = None
             if self.fetch_tracker is None and turn.first_audio and self.speaker.drained \
                     and quiet >= self.quiet_window_s:
                 return "quiet_window", tracker
