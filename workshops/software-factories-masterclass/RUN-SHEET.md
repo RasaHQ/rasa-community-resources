@@ -39,29 +39,29 @@ Times are London, with UTC in brackets. "Show" is on screen and "Do" is what the
 | Clock | Min | Block | Slides |
 | --- | --- | --- | --- |
 | 14:30 (13:30) | 15 | The problem and the finished agent | 1 to 7 |
-| 14:45 (13:45) | 30 | The real question, the factory idea and the two tools | 8 to 26 |
-| 15:15 (14:15) | 30 | We build the factory | 27 and 28 |
-| 15:45 (14:45) | 95 | Your turn, with a break from 16:30 to 16:45 | 29 |
+| 14:45 (13:45) | 30 | The real question, the factory idea and the two tools | 8 to 24 |
+| 15:15 (14:15) | 30 | We build the factory | 25 to 27 |
+| 15:45 (14:45) | 95 | Your turn, with a break from 16:30 to 16:45 | 28 and 29 |
 | 17:20 (16:20) | 10 | Close | 30 |
 
 ### 14:30 The problem and the finished agent (15 min)
-Show: slides 1 to 4 (Sam, the agent and the plan), then slide 5 with screen 2, then slides 6 and 7. Do: watch.
+Show: slides 1 to 4 (the plan, Sam and the agent), then slide 5 with screen 2, then slides 6 and 7. Do: watch.
 Ask the agent which flights are in the air headed to New York, pick one of the route-confirmed flights it lists, then answer its meeting and transfer questions. Name each card as it appears and the label on it: source, computed, recording or failed. Say that a rate on the market card is a daily reference rate, not a live quote.
 If voice isn't verified on the day, type the request and say so. Don't claim voice that you didn't see work.
 
 ### 14:45 The real question, the factory idea and the two tools (30 min)
-Show: slides 8 to 26 in order. Do: listen. Questions wait for the work block. Each slide has one idea and one picture.
-If you run short, skip in this order: slide 20 (the coin), slide 18 (two good changes clash), slide 19 (the dark factory), then slides 23 and 25. Slide 12 states the limit: a passing check proves only what it checks. Read it aloud.
+Show: slides 8 to 24 in order. Each part opens with what the room will understand and closes with an in-short line and what comes next. Do: listen. Questions wait for the work block. Each slide has one idea and one picture.
+If you run short, skip in this order: slide 19 (the coin), slide 17 (two good changes clash), slide 18 (the dark factory), then slide 23. Slide 11 states the limit: a passing check proves only what it checks. Read it aloud.
 
 ### 15:15 We build the factory (30 min)
-Show: slide 27, then slide 28 beside screen 1 (the console) and screen 2.
-Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 27 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 28, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
+Show: slide 25, then slide 26 beside screen 1 (the console) and screen 2, then slide 27.
+Say: "Nothing here is magic. We build it in the order of the book, and then we run it." Walk the five parts on slide 25 (the task, the tests, the builder, the gates, the integration), each with its book chapter. On slide 26, activate the environment and run the two commands in your chapter 6 folder: the good change ends in ACCEPT and the bad one in REJECT, naming the failed check.
 The commands for the console and the live builder are (pending). The offline loop is the scripted builder from Chapter 6.
 If the live builder stays in the run: there is no money cap per session, and the cap is the OpenAI project budget. Say the budget figure (pending: from the Architect), and the call limit and the time limit (pending: from the builder's documentation).
 Say, at the end: "Nobody read the change. The gates decided. And the good change was one line, because the platform carries the work."
 
 ### 15:45 Your turn (95 min, with a break)
-Show: slide 29 and leave it up. Do: everyone works through the book, alone or in groups of up to four, from Chapter 0. Each chapter has a ready folder, so anyone can start at any chapter.
+Show: slide 28 and leave it up. At 16:30 show slide 29 (the break). Do: everyone works through the book, alone or in groups of up to four, from Chapter 0. Each chapter has a ready folder, so anyone can start at any chapter.
 Break: 16:30 to 16:45, with refreshments. Chat and networking are part of the plan.
 Your job: walk the room. The three common stops are a missing license (point to the sign-up), a key that isn't set (the doctor shows SET or MISSING, never the value) and a clone made as a zip (clone with Git instead). Tell people that a live flight or a live builder run is an extra, and that every "done when" check works offline.
 Say once at the start: "Keys and the license stay in your own shell or your own Git-ignored .env. Never put one in a tracked file, a tool result, a report or a chat."
