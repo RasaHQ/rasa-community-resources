@@ -39,7 +39,7 @@ def inspector():
         return app
     run.configure_app = configure
     LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())
-    sys.argv = ['rasa', 'inspect', '--interface', os.environ['FACTORY_HOST'], '--port', '5007', '--quiet']
+    sys.argv = ['rasa', 'inspect', '--interface', os.environ['FACTORY_HOST'], '--port', os.environ['FACTORY_INSPECTOR_PORT'], '--quiet']
     main()
 
 
@@ -69,7 +69,10 @@ def run(args):
     expiry = datetime.fromisoformat(args.expires_at.replace('Z', '+00:00'))
     if expiry.tzinfo is None or expiry <= datetime.now(timezone.utc):
         raise ValueError('Expiry must be a future UTC timestamp.')
-    for bind, port in [(host, 8947), (host, 5007), ('127.0.0.1', 8948)]:
+    ports = (args.entry_port, args.inspector_port, args.mcp_port)
+    if any(not 1 <= port <= 65535 for port in ports) or len(set(ports)) != 3:
+        raise ValueError('Use three distinct ports between 1 and 65535.')
+    for bind, port in [(host, args.entry_port), (host, args.inspector_port), ('127.0.0.1', args.mcp_port)]:
         with socket.socket() as probe:
             probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             probe.bind((bind, port))
@@ -92,6 +95,10 @@ def run(args):
     env = {k: os.environ[k] for k in ('PATH', 'HOME', 'LANG') if k in os.environ}
     env.update(RASA_LICENSE=license_value, FACTORY_MCP_TOKEN=secrets.token_urlsafe(32),
                FACTORY_HOST=host, FACTORY_ALLOWED_PEERS=','.join(sorted(allowed)),
+               FACTORY_ENTRY_PORT=str(args.entry_port),
+               FACTORY_INSPECTOR_PORT=str(args.inspector_port),
+               FACTORY_MCP_PORT=str(args.mcp_port),
+               FACTORY_MCP_URL=f'http://127.0.0.1:{args.mcp_port}/mcp',
                FACTORY_VIEWER_NAME=args.viewer_name or host,
                FACTORY_BUILDER_MODE=args.builder_mode,
                FACTORY_WORKER_PYTHON=str(Path(args.worker_python).absolute()) if args.builder_mode == 'LIVE' else str(PYTHON),
@@ -127,9 +134,9 @@ def run(args):
             logs.append(log)
             children.append(subprocess.Popen(command, cwd=cwd, env=env, stdout=log,
                                              stderr=subprocess.STDOUT, start_new_session=True))
-        wait_ready(children[1], f'http://{host}:5007/status')
-        wait_ready(children[2], f'http://{host}:8947/')
-        print(f'READY http://{args.viewer_name or host}:8947/ ; expires {args.expires_at}', flush=True)
+        wait_ready(children[1], f'http://{host}:{args.inspector_port}/status')
+        wait_ready(children[2], f'http://{host}:{args.entry_port}/')
+        print(f'READY http://{args.viewer_name or host}:{args.entry_port}/ ; expires {args.expires_at}', flush=True)
         while datetime.now(timezone.utc) < expiry:
             if any(child.poll() is not None for child in children):
                 raise RuntimeError('An owned service stopped; closing the demonstration.')
@@ -161,6 +168,9 @@ if __name__ == '__main__':
         parser = argparse.ArgumentParser(description=__doc__)
         parser.add_argument('command', choices=['run'])
         parser.add_argument('--host', default='127.0.0.1')
+        parser.add_argument('--entry-port', type=int, default=8947)
+        parser.add_argument('--inspector-port', type=int, default=5007)
+        parser.add_argument('--mcp-port', type=int, default=8948)
         parser.add_argument('--viewer-name', default='')
         parser.add_argument('--viewer-access', default='')
         parser.add_argument('--allow-peer', action='append', default=[])

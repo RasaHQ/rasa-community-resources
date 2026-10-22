@@ -13,6 +13,7 @@ import launcher
 class InterpreterSelectionTests(unittest.TestCase):
     def args(self, **changes):
         values=dict(host='127.0.0.1',viewer_access='',viewer_name='',allow_peer=[],
+                    entry_port=8960,inspector_port=5020,mcp_port=8961,
                     builder_mode='SCRIPTED',worker_python='/absent/live-worker-python',
                     env_file=None,evidence_root='/unused',
                     expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat())

@@ -89,3 +89,11 @@ Voice was not tested for this agent. In the travel demo, a test with recorded au
 2. A builder produces an attempt. In the scripted run it is a prepared one.
 3. Locked acceptance tests judge the attempt in a sandbox with no network. The conversational agent receives only the verdict record.
 4. ACCEPT or REJECT. A verdict is not a release.
+
+For an isolated local review while the class preview is running, choose distinct ports:
+
+```sh
+./demo run --entry-port 8960 --inspector-port 5020 --mcp-port 8961
+```
+
+Open http://127.0.0.1:8960/ for that run. Keep the same license and expiry requirements.

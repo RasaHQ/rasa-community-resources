@@ -35,7 +35,7 @@ class Authenticated:
 
 
 def mcp_app():
-    server = FastMCP('factory', host='127.0.0.1', port=8948, stateless_http=True, json_response=True)
+    server = FastMCP('factory', host='127.0.0.1', port=int(os.environ.get('FACTORY_MCP_PORT', '8948')), stateless_http=True, json_response=True)
 
     busy = asyncio.Lock()
 
@@ -82,7 +82,8 @@ def frontend(host):
         if peer not in os.environ['FACTORY_ALLOWED_PEERS'].split(','):
             return HTMLResponse('Tailnet only', status_code=403)
         name = os.environ.get('FACTORY_VIEWER_NAME', host)
-        url = f'http://{name}:5007/webhooks/inspector/inspect.html?projectUrl=http%3A%2F%2F{name}%3A5007'
+        inspector_port = int(os.environ.get('FACTORY_INSPECTOR_PORT', '5007'))
+        url = f'http://{name}:{inspector_port}/webhooks/inspector/inspect.html?projectUrl=http%3A%2F%2F{name}%3A{inspector_port}'
         mode = os.environ.get('FACTORY_BUILDER_MODE', 'SCRIPTED')
         label = ('Mantle selection SCRIPTED · LIVE OpenAI Agents API builder: gpt-6-astra · expected 15 to 150 US cents per run (estimate, not a cap) · up to 5 minutes · real protected gate · nothing released' if mode == 'LIVE' else 'SCRIPTED tool selection · supplied attempts · real protected gate · no model calls · nothing released')
         return HTMLResponse('<!doctype html><html lang="en"><meta charset="utf-8"><title>Mantle factory agent</title><style>body{margin:0;font:18px system-ui}header{padding:16px;background:#342b67;color:white}iframe{border:0;width:100%;height:85vh}</style><header>' + escape(label) + '</header><iframe title="Mantle factory conversation" src="' + escape(url, quote=True) + '"></iframe></html>')
@@ -92,7 +93,7 @@ def frontend(host):
 if __name__ == '__main__':
     import sys
     if sys.argv[1] == 'mcp':
-        uvicorn.run(mcp_app(), host='127.0.0.1', port=8948, log_level='warning', access_log=False)
+        uvicorn.run(mcp_app(), host='127.0.0.1', port=int(os.environ.get('FACTORY_MCP_PORT', '8948')), log_level='warning', access_log=False)
     else:
         host = os.environ['FACTORY_HOST']
-        uvicorn.run(frontend(host), host=host, port=8947, log_level='warning', access_log=False)
+        uvicorn.run(frontend(host), host=host, port=int(os.environ.get('FACTORY_ENTRY_PORT', '8947')), log_level='warning', access_log=False)
