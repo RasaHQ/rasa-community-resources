@@ -50,7 +50,7 @@ class ReleasedPublicSourceHTTP(unittest.IsolatedAsyncioTestCase):
             tick[0] += seconds
         sources = PublicBriefingSources(PublicSourceHTTP(transport=httpx.MockTransport(handler),
             clock=lambda: NOW, monotonic=lambda: tick[0], sleep=sleep), clock=lambda: NOW)
-        runner = PublicSourcesRunner(sources)
+        runner = PublicSourcesRunner(sources, clock=lambda: NOW)
         jobs = Jobs(runner, replacement_plan=runner.replacement_plan, ownership_mode='capability')
         owner = Owner('mantle', 'capability-possession')
         started = await jobs.briefing(owner, action='start',

@@ -6,7 +6,7 @@ meeting time or transfer duration. Source clients persist for this service run,
 so revisions do not reset their finite request budget or cache.
 """
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from dataclasses import replace
 import re
 
@@ -17,10 +17,11 @@ from briefing.replay import ReplayRunner
 
 
 class PublicSourcesRunner:
-    def __init__(self, sources=None):
+    def __init__(self, sources=None, *, clock=None):
         if sources is None:
             from zeo_core.integrations.briefing_sources import PublicBriefingSources
             sources = PublicBriefingSources()
+        self._clock = clock or (lambda: datetime.now(timezone.utc))
         self.sources = sources
         self.replay = ReplayRunner()
 
@@ -52,7 +53,7 @@ class PublicSourcesRunner:
                 raise BriefingRefused('invalid_explicit_journey') from None
         from briefing.traveller import journey, TravellerQuestion
         try:
-            inputs = journey(text, inputs)
+            inputs = journey(text, inputs, now=self._clock())
         except TravellerQuestion as missing:
             raise NeedsInput(missing.field, missing.question, missing.inputs) from None
         return await asyncio.to_thread(self._read, work, inputs)

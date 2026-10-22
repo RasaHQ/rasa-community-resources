@@ -4,6 +4,7 @@ All source values are offline unavailable controls. Protocol/request shutdown
 must not own the application-wide job lifetime; no provider or Inspector runs.
 """
 import asyncio
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 import sys
@@ -35,7 +36,7 @@ def result_value(result):
 class MCPDisplayLifetime(unittest.IsolatedAsyncioTestCase):
     async def test_jobs_span_stateless_requests_and_protocol_close_until_app_shutdown(self):
         release = asyncio.Event()
-        source_runner = PublicSourcesRunner(NoNetworkSources())
+        source_runner = PublicSourcesRunner(NoNetworkSources(), clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         async def runner(work):
             await release.wait()
             return await source_runner(work)

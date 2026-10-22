@@ -1,5 +1,6 @@
 """No provider access: missing traveller inputs must stop before source calls."""
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -16,7 +17,7 @@ class NeverSources:
 
 class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
     async def test_missing_meeting_keeps_flight_and_visible_default(self):
-        runner = PublicSourcesRunner(NeverSources())
+        runner = PublicSourcesRunner(NeverSources(), clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         inputs = None
         for text in ('Lufthansa 400 to JFK', 'tomorrow at five'):
             with self.assertRaises(NeedsInput) as caught:
@@ -30,7 +31,7 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(inputs['transfer_assumed'])
 
     async def test_no_real_flight_is_silently_replaced_with_replay(self):
-        runner = PublicSourcesRunner(NeverSources())
+        runner = PublicSourcesRunner(NeverSources(), clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         with self.assertRaises(NeedsInput) as caught:
             await runner(Work('show my flight', 'request', 1, None))
         self.assertEqual(caught.exception.question, 'Where are you flying to?')
@@ -47,7 +48,7 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
                     payload={}, error=DataError(reason='Source unavailable')) for component in (
                         'flight_status', 'weather_hourly', 'arrival_timeline', 'market_watchlist')}
         sources = Sources()
-        runner = PublicSourcesRunner(sources)
+        runner = PublicSourcesRunner(sources, clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         answer = await runner(Work('callsign=TEST123 destination=EDDF meeting=2026-10-22T17:00:00Z transfer=45',
                                    'request', 1, None))
         self.assertEqual(sources.calls, 1)
@@ -57,7 +58,7 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(all(ref.error is not None and not ref.payload for ref in answer.cards.values()))
 
     async def test_explicit_replay_missing_inputs_resume_without_entering_public_sources(self):
-        runner = PublicSourcesRunner(NeverSources())
+        runner = PublicSourcesRunner(NeverSources(), clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         with self.assertRaises(NeedsInput) as first:
             await runner(Work('Replay DEMO101 missing inputs', 'request', 1, None))
         self.assertEqual(first.exception.inputs['source_mode'], 'replay')
@@ -71,7 +72,7 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(all(ref.replay for ref in answer.cards.values()))
 
     async def test_invalid_transfer_revision_cannot_silently_keep_an_old_assumption(self):
-        runner = PublicSourcesRunner(NeverSources())
+        runner = PublicSourcesRunner(NeverSources(), clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         for text in ('transfer=-1', 'transfer=1500', 'transfer=unknown'):
             with self.subTest(text=text), self.assertRaises(NeedsInput) as caught:
                 await runner(Work(text, 'request', 2, None, inputs={
@@ -81,7 +82,7 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
             self.assertNotIn('transfer_minutes', caught.exception.inputs)
 
     async def test_invalid_new_callsign_does_not_keep_the_old_journey(self):
-        runner = PublicSourcesRunner(NeverSources())
+        runner = PublicSourcesRunner(NeverSources(), clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         with self.assertRaises(BriefingRefused):
             await runner(Work('callsign=../private', 'request', 2, None,
                               inputs={'callsign': 'TEST123', 'transfer_minutes': 45,
@@ -90,7 +91,7 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
 
 class ReplayTravellerWords(unittest.IsolatedAsyncioTestCase):
     async def test_named_replay_accepts_natural_meeting_and_travel_allowance(self):
-        runner = PublicSourcesRunner(NeverSources())
+        runner = PublicSourcesRunner(NeverSources(), clock=lambda: datetime(2026, 10, 22, 1, tzinfo=timezone.utc))
         with self.assertRaises(NeedsInput) as first:
             await runner(Work('Replay DEMO101 missing inputs', 'request', 1, None))
         with self.assertRaises(NeedsInput) as second:
