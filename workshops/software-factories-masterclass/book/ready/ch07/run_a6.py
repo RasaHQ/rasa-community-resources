@@ -4,7 +4,7 @@
     python run_a6.py tasks/a6-market-watchlist.json candidates/market-good
     python run_a6.py tasks/a6-market-watchlist.json baseline        # the product with nothing built: REJECT
 Gates in order: protected files (hash and presence), allowed paths, the protected acceptance suite.
-Exit 0 ACCEPT, 1 REJECT, 2 could not run.
+Exit 0 ACCEPT, 1 REJECT, 2 could not run (including a machine without sandbox-exec).
 """
 import hashlib
 import json
@@ -23,6 +23,9 @@ def sha(path):
 
 
 def main(task_path, candidate):
+    if shutil.which("sandbox-exec") is None:
+        # The no-network check needs macOS. Without it every attempt would fail, so say so instead of judging.
+        print("could not run: this check needs macOS (sandbox-exec). The attempt was not judged."); return 2
     task = json.loads(Path(task_path).read_text())
     baseline = candidate == "baseline"  # judge the product as it is, with no candidate change
     candidate = ROOT / "candidates" / "_baseline_none" if baseline else Path(candidate)
