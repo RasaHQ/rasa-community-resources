@@ -54,3 +54,16 @@ class TailnetDisplay(unittest.IsolatedAsyncioTestCase):
         for condition in ('operator-device-acl', 'operator-accepted'):
             with patch.dict('os.environ', {'BRIEFING_VIEWER_ACCESS': condition}):
                 require_viewer_access('100.64.0.10')
+
+
+    def test_access_metadata_never_records_request_content(self):
+        import json
+        import tempfile
+        from viewer_audit import record_access
+        with tempfile.TemporaryDirectory() as directory:
+            path = str(Path(directory) / 'access.jsonl')
+            with patch.dict('os.environ', {'BRIEFING_VIEWER_AUDIT': path}):
+                record_access('inspector', '100.64.0.2')
+            record = json.loads(Path(path).read_text())
+            self.assertEqual(set(record), {'at', 'component', 'peer'})
+            self.assertEqual(record['peer'], '100.64.0.2')

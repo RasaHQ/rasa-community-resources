@@ -431,6 +431,9 @@ def inspector(mode):
         LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())
     host = validate_host(os.environ.get('BRIEFING_DEMO_HOST', '127.0.0.1'))
     install_mcp_host(host)
+    if os.environ.get('BRIEFING_VIEWER_AUDIT'):
+        from viewer_audit import install_inspector_audit
+        install_inspector_audit()
     sys.argv = ['rasa', 'inspect', '--interface', host, '--port', '5005', '--quiet']
     rasa_main()
 

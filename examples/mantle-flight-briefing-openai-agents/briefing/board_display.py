@@ -17,6 +17,8 @@ class BoardDisplay:
     async def __call__(self, scope, receive, send):
         if scope['type'] != 'http' or scope.get('path') not in ('/', '/cards'):
             return await self._app(scope, receive, send)
+        from viewer_audit import record_access
+        record_access('cards', (scope.get('client') or ('unknown', 0))[0])
         headers = scope.get('headers', [])
         hosts = [v.decode('ascii', errors='replace') for k, v in headers if k.lower() == b'host']
         origins = [v.decode('ascii', errors='replace') for k, v in headers if k.lower() == b'origin']
