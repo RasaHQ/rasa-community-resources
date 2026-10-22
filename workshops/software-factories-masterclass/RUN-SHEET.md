@@ -64,7 +64,7 @@ For a tailnet console, `--viewer-access operator-device-acl` declares that an ac
 
 ### Qualification already completed, and what it does not establish
 
-- The factory's funded qualification completed once with Standard `gpt-6-astra` and Core 0.35.6: eight file-tool calls, about 37 seconds, and all 14 protected market-card checks passed. This was a real builder session. Its expected cost range was 15–150 US cents; the provider returned no usage record, so billed cost remains **unmeasured**. Do not present the range as actual cost or a per-session cap.
+- The factory's funded qualification completed once with Standard `gpt-6-astra` and Core 0.35.6: eight file-tool calls, about 37 seconds, and all 14 protected market-card checks passed. This was a real builder session. Its expected cost range was 15 to 150 US cents; the provider returned no usage record, so billed cost remains **unmeasured**. Do not present the range as actual cost or a per-session cap.
 - Independently tested book Chapters 3, 4, 6 and 7 at PR130 `b985f833`: both reader choices, one and three currencies, passed in clean copies with no keys. Each documented completion check failed before the exercise and passed afterward. Chapter 7's sample HTML was rendered and explicitly says its numbers are samples.
 - Applying the funded proposal to the running Mantle agent, restarting it and seeing its market card is a separate acceptance step. It is **not recorded** by the factory's ACCEPT. Until that receiving check passes, use the scripted builder and finished agent as the stated fallback; do not describe them as a demonstrated funded end-to-end build.
 
