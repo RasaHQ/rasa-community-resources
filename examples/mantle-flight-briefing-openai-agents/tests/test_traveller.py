@@ -15,6 +15,58 @@ NOW = datetime(2026, 10, 22, 12, tzinfo=timezone.utc)
 
 
 class TravellerControls(unittest.TestCase):
+    def test_uncovered_search_never_reasks_flight_number_or_invents_no_flights(self):
+        from briefing.traveller import discover, discovery_notice
+        class NoNetwork:
+            def find_flights(self, *args, **kwargs):
+                raise AssertionError('unsupported destination must not invent covered routes')
+        for city in ('London', 'Reykjavik'):
+            result = discover(NoNetwork(), 'flight to ' + city + ' tonight')
+            self.assertEqual(result['status'], 'unsupported_destination')
+            notice = discovery_notice(result)
+            self.assertIn(city, notice)
+            self.assertIn('New York only', notice)
+            self.assertIn('does not mean there are no flights', notice)
+            self.assertNotIn('Do you know', notice)
+            self.assertEqual(result['candidates'], [])
+
+    def test_suggestion_is_earliest_estimate_with_stable_tie_and_no_partial_guess(self):
+        from briefing.traveller import suggested_flight
+        value = {'status': 'found', 'partial': False, 'candidates': [
+            {'choice': 1, 'landing_estimate_minutes': 25}, {'choice': 2, 'landing_estimate_minutes': 10}]}
+        self.assertEqual(suggested_flight(value)['choice'], 2)
+        value['candidates'][0]['landing_estimate_minutes'] = 10
+        self.assertEqual(suggested_flight(value)['choice'], 1)
+        value['partial'] = True
+        self.assertIsNone(suggested_flight(value))
+        value['partial'] = False
+        value['candidates'][0]['landing_estimate_minutes'] = float('nan')
+        self.assertIsNone(suggested_flight(value))
+
+    def test_uncertain_meeting_answer_keeps_flight_and_explains_required_input(self):
+        with self.assertRaises(TravellerQuestion) as first:
+            journey('Lufthansa 400 to JFK', now=NOW)
+        with self.assertRaises(TravellerQuestion) as followup:
+            journey('not sure', first.exception.inputs, now=NOW)
+        self.assertEqual(followup.exception.field, 'meeting_time')
+        self.assertEqual(followup.exception.inputs['callsign'], 'DLH400')
+        self.assertNotEqual(first.exception.question, followup.exception.question)
+        self.assertNotIn('meeting_time', followup.exception.inputs)
+
+    def test_uncertain_transfer_answer_never_restores_default_allowance(self):
+        original = journey('Lufthansa 400 to JFK, meeting tomorrow at 6 pm', now=NOW)
+        with self.assertRaises(TravellerQuestion) as invalid:
+            journey('Allow bananas minutes to get into town', original, now=NOW)
+        with self.assertRaises(TravellerQuestion) as followup:
+            journey('no', invalid.exception.inputs, now=NOW)
+        self.assertEqual(followup.exception.field, 'transfer_minutes')
+        self.assertNotIn('transfer_minutes', followup.exception.inputs)
+        self.assertEqual(followup.exception.inputs['callsign'], original['callsign'])
+        self.assertEqual(followup.exception.inputs['meeting_time'], original['meeting_time'])
+        self.assertNotEqual(invalid.exception.question, followup.exception.question)
+        corrected = journey('30 minutes', followup.exception.inputs, now=NOW)
+        self.assertEqual(corrected['transfer_minutes'], 30)
+
     def test_airport_city_and_airline_words_are_resolved_in_code(self):
         self.assertEqual(destination_hint('I am heading to JFK'), 'KJFK')
         self.assertEqual(destination_hint('New York'), 'New York')

@@ -441,7 +441,7 @@ def tool_record(value):
         except ValueError:
             return None
     if isinstance(value, dict):
-        if value.get('status') in ('started', 'running', 'queued', 'complete', 'incomplete', 'needs_input', 'failed', 'found', 'no_results', 'unavailable'):
+        if value.get('status') in ('started', 'running', 'queued', 'complete', 'incomplete', 'needs_input', 'failed', 'found', 'no_results', 'unavailable', 'unsupported_destination'):
             return value
         for key in ('structuredContent', 'content', 'text', 'value'):
             found = tool_record(value.get(key))
@@ -473,8 +473,8 @@ class ScriptedClient:
         offered = {t.get('function', {}).get('name') for t in kwargs.get('tools') or []}
         briefing = next((n for n in offered if n in ('briefing', 'mcp/briefing:briefing')), None)
         finder = next((n for n in offered if n in ('find_flights', 'mcp/briefing:find_flights')), None)
-        def reply(name, args):
-            return LLMResponse(id='scripted', choices=[], created=0,
+        def reply(name, args, notice=None):
+            return LLMResponse(id='scripted', choices=[notice] if notice else [], created=0,
                 tool_calls=[LLMToolCall(id='script-' + str(self.count), tool_name=name, tool_args=args)])
         if len(current) > 12:
             return LLMResponse(id='scripted', choices=['SCRIPTED: the source check has not completed. Please retry explicitly.'], created=0)
@@ -502,8 +502,31 @@ class ScriptedClient:
             if capability:
                 return reply(briefing, {'action': 'revise', 'briefing_id': capability, 'change': text})
             return reply(briefing, {'action': 'start', 'request': text})
-        wants_search = any(phrase in text.lower() for phrase in ('which flights', 'find flights', 'look for flights', 'don’t know', "don't know"))
-        if finder and destination and flight_number(text) is None and (not capability or wants_search):
+        from briefing.traveller import destination_request, unknown_flight
+        wants_search = any(phrase in text.lower() for phrase in ('which flights', 'find flights', 'look for flights'))
+        query = destination_request(text)
+        last_result = previous[-1] if previous else {}
+        missing = last_result.get('needs_input')
+        awaiting_flight = (last_result.get('status') == 'needs_input'
+                           and isinstance(missing, dict) and missing.get('field') == 'flight')
+        if unknown_flight(text) and (awaiting_flight or last_result.get('status') == 'unsupported_destination'):
+            # A short answer belongs to the traveller's last stated destination,
+            # not a fresh parse of "no". Do not infer a destination from a flight.
+            for message in reversed(messages[:latest]):
+                if message.get('role') != 'user':
+                    continue
+                try:
+                    query = destination_request(str(message.get('content', '')))
+                except TravellerQuestion:
+                    break
+                if query:
+                    break
+            if query and previous and previous[-1].get('status') == 'unsupported_destination':
+                return LLMResponse(id='scripted', choices=["No problem. You don't need to answer the flight-number question again. "
+                    "This demo can discover New York flights only. You can try New York, or stop here without choosing a flight."], created=0)
+            if finder and query:
+                return reply(finder, {'destination': query}, "I'll look for flights heading to " + query + " now.")
+        if finder and query and flight_number(text) is None and (not capability or wants_search or destination is None):
             return reply(finder, {'destination': text})
         # The Inspector's opening question can create an empty briefing before
         # flight discovery. Choose from a newer search instead of revising that
@@ -522,11 +545,31 @@ class ScriptedClient:
             words = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5}
             match = re.fullmatch(r'(?:the )?(first|second|third|fourth|fifth|[1-5])(?: one| flight)?[.!]?', text.strip().lower())
             choice = (words.get(match[1]) or int(match[1])) if match else None
+            selected = flight_number(text)
+            if selected:
+                choice = next((row.get('choice') for row in discovery['candidates']
+                               if row.get('callsign') == selected), choice)
+            # A positive short answer refers only to the named suggestion from
+            # this exact search. A rejected suggestion is no longer implicit.
+            offered_at = max((i for i, message in enumerate(messages[:latest])
+                if message.get('role') == 'tool' and (tool_record(message.get('content')) or {}).get('discovery_id') == discovery['discovery_id']), default=-1)
+            declined = any(message.get('role') == 'user' and unknown_flight(str(message.get('content', '')))
+                           for message in messages[offered_at + 1:latest]) if offered_at >= 0 else False
+            if text.strip().lower().rstrip('.!?') in ('yes', 'that one', 'yes that one') and not declined:
+                from briefing.traveller import discovery_notice, suggested_flight
+                try:
+                    discovery_notice(discovery)  # Same validated notice as the presentation hook.
+                    suggestion = suggested_flight(discovery)
+                except ValueError:
+                    suggestion = None
+                choice = suggestion['choice'] if suggestion else None
             if choice is not None and choice <= len(discovery.get('candidates', [])):
                 return reply(briefing, {'action': 'start', 'request': text,
                     'discovery_id': discovery['discovery_id'], 'choice': choice})
             if flight_number(text) is None:
-                return LLMResponse(id='scripted', choices=['SCRIPTED: Which flight would you like? Say the first, second, third, fourth or fifth one from the choices.'], created=0)
+                question = ("I won't select a flight without your choice. Tell me its list number or flight number when you are ready."
+                            if declined else "Which flight is yours? Say a list number, such as the second one, or its flight number.")
+                return LLMResponse(id='scripted', choices=[question], created=0)
         if capability:
             if text.strip().lower() in ('status', 'get', 'show cards', 'check'):
                 return reply(briefing, {'action': 'get', 'briefing_id': capability})
