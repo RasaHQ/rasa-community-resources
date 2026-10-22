@@ -4,13 +4,15 @@ A traveler asks for a shorter currency list. The change looks small, but someone
 
 Time: about 20 minutes after installation. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), a clone of this repository and macOS for the network-blocking test. After installation you can do the exercise offline without a key. A paid model run is optional.
 
+You're done when `ch05 OK` confirms that your chosen limit, the protected ACCEPT and the exported files agree.
+
 If you get stuck, use [the ready folder](ready/ch05) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used here
 
 A **builder** proposes changed files. A **tool** is a function it may ask to run: here, list files, read a file or write a file. A **scratch copy** is a disposable copy of the product. The original product stays untouched. An **attempt** holds the proposed files.
 
-The OpenAI Agents API runs a model session and its tool requests. **Core** is the Python package that connects the factory to that service. For this exercise, a **scripted stream** sends prepared file actions through the same connection.
+The OpenAI Agents API runs a model session and its tool requests. **zeocore**, the Python package that holds the card code, connects the factory to that service. For this exercise, a **scripted stream** sends prepared file actions through the same connection.
 
 ```mermaid
 flowchart LR
@@ -159,8 +161,6 @@ Inspect the resulting native status, file actions and protected decision. Then i
 ## Good to know
 
 The scripted stream makes no model request. It shows the file tools and checks, rather than measuring a model's ability. A successful file-tool call still needs a protected ACCEPT, and this exercise exports files without restarting the product.
-
-You're done when `ch05 OK` confirms that your chosen limit, the protected ACCEPT and the exported files agree.
 
 ## What you just learned
 

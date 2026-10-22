@@ -126,7 +126,7 @@ Live positions, forecasts, computed estimates and daily rates carry different la
 - **License missing or refused:** use the issued license, not the sign-up confirmation. Do not share its value in a support report.
 - **The check still says NOT DONE:** read the four cards. Each must say REPLAY, and the timeline must show your requested 30 or 120 minutes. Make the request in the conversation.
 - **A port is occupied:** stop your own earlier run with `make stop`. The launcher doesn't stop anyone else's.
-- **`.env` refused:** move the file aside, run `make env` to create a fresh one, put each key on its own line, and run `chmod 600 .env`. Never commit it.
+- **`.env` refused:** move it out of your clone, run `make env` to create a fresh one, put each key on its own line, and run `chmod 600 .env`. Never commit it.
 - **A live source is unavailable:** return to the recorded exercise rather than calling an unavailable card complete.
 - **You need help:** share the error sentence, your Python version and the command you ran. Never share your `.env` or your keys.
 

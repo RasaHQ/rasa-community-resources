@@ -4,6 +4,8 @@ A worker crashes before it records a verdict. Your team needs the change finishe
 
 Time: about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/) and a clone of this repository. Use the supplied code with Python's standard library; no model, account, license or network request is needed after Python is installed. You can start here without completing the earlier chapters.
 
+You're done when `ch08 OK` confirms that your proposal passes, the baseline fails and recovery ends as your chosen allowance requires.
+
 If you get stuck, use [the ready folder](ready/ch08) and follow **Get the ready folder** below in a fresh work folder.
 
 ## When a check stops without a verdict
@@ -41,7 +43,7 @@ else
 fi
 ```
 
-If the folder exists, choose a new `WORK` name and repeat the block. Earlier evidence stays intact. There is no package installation command: this checkpoint has no third-party dependencies. Use Python 3.12; other versions return NOT_READY when the verifier checks the environment.
+If the folder exists, choose a new `WORK` name and repeat the block. Earlier evidence stays intact. There is no package installation command: this exercise has no third-party dependencies. Use Python 3.12; other versions return NOT_READY when the verifier checks the environment.
 
 ## See how it works
 
@@ -137,8 +139,6 @@ It starts `WHAT-IF`: these are numbers you supplied, not measured results. It en
 This exercise changes the recovery configuration, without changing the earlier market card or restarting an agent. Its data-only checks do not replace the macOS sandbox needed for Python product tests.
 
 The ledger has a single writer. A process killed after doing work but before saving could repeat that work, so a production system also needs coordination between workers and care with effects such as payments.
-
-You're done when `ch08 OK` confirms that your proposal passes, the baseline fails and recovery ends as your chosen allowance requires.
 
 ## What you just learned
 

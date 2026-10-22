@@ -4,6 +4,8 @@ A traveler sees a daily exchange rate labeled as live and plans a purchase aroun
 
 Time: about 15 minutes after installation. You need: Chapter 4, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README). Chapter 5 shows a builder using the OpenAI Agents API. Here you use the scripted builder, which works offline.
 
+You're done when `ch06 OK` confirms that your attempt is accepted and the attempt that ignores your limit is rejected by the named check.
+
 If you get stuck, use [the ready folder](ready/ch06) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used in this chapter
@@ -102,8 +104,6 @@ It passes only when your attempt is accepted (exit code 0) and the attempt that 
 ## Good to know
 
 A setup failure stops the gate before it can judge the change. Keep that result separate from a REJECT that names a failed product check.
-
-You're done when `ch06 OK` confirms that your attempt is accepted and the attempt that ignores your limit is rejected by the named check.
 
 ## What you just learned
 
