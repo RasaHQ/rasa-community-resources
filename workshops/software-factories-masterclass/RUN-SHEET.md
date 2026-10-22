@@ -45,18 +45,18 @@ All times UTC. "Say" is yours in your own words, "Show" is on screen, "Do" is wh
 | 16:20 | 10 | 6. Close |
 
 ### 13:30 The end result (15 min)
-Show: slides 1 to 3, then screen 2. Do: nothing yet, just watch.
+Show: slides 1 to 4, then screen 2. Do: nothing yet, just watch.
 Say: "Here's what you'll be able to build by the end of today. I'll talk to the agent." Speak or type a real flight, for example "callsign=DLH423 destination=EDDF". Name each card as it appears and the label on it: PROVIDER DATA, COMPUTED, REPLAY or unavailable.
 Watch for: the flight card, the weather at the destination, the arrival timeline and the market watchlist. Say aloud that a rate on the market card is a daily reference rate, not a live quote.
 If voice isn't verified on the day, type the request and say so. Don't claim voice that you didn't see work.
 
 ### 13:45 The ideas and the two tools (30 min)
-Show: the deck, parts A, B and C (slides 4 to 33). Do: listen. Questions wait for Block 5.
-Part A is about 13 minutes (slides 4 to 18). If you run short, cut in this order: the integration slide (slide 11), then the escalation slide (16), then the supervision-policy slide (15), and keep the bridge slide (18) last. Part B is about 7 minutes (slides 19 to 23). Part C is about 10 minutes (slides 24 to 33).
+Show: the deck, parts A, B and C (slides 5 to 47). Do: listen. Questions wait for Block 5. Every part opens with what the room will understand and ends with a recap, and each new term is defined with a small example before it is used.
+Part A is slides 5 to 25. If you run short, cut in this order: the integration slide (17), then the escalation slide (22), then the supervision-policy slide (21), and keep the bridge slide (24) last. Part B is slides 26 to 33 and part C is slides 34 to 47. The deck is built to teach from zero, so it holds more slides than 30 minutes allows at a steady pace. Skip the definition slides for words the room already knows, and say so. The timing is open with the Architect.
 Say the limit aloud on the slide that states it: a gate proves only what it checks.
 
 ### 14:15 We build the factory (30 min)
-Show: slides 34 to 39 on screen 3, screen 1 (the console) and screen 2 side by side. Say: "Nothing here is magic. I'll build it in the order of the book, and then we run it."
+Show: slides 48 to 53 on screen 3, screen 1 (the console) and screen 2 side by side. Say: "Nothing here is magic. I'll build it in the order of the book, and then we run it."
 | Min | Part | What you do and say |
 | --- | --- | --- |
 | 4 | The task | The prompt, the two allowed paths and the pins. Book chapter 3. |
@@ -68,13 +68,13 @@ The commands for the console and the live builder are (pending). The offline loo
 Say, once the card appears: "Nobody read the builder's code. The gates decided. And the change was one line, because the platform carries the work."
 
 ### 14:45 On your own (95 min, with a break)
-Show: slide 40 (the hand-off to the book). Do: everyone works through the book, alone or in groups of up to four, from chapter 0. Anyone can start at any chapter from its checkpoint.
+Show: slide 54 (the hand-off to the book). Do: everyone works through the book, alone or in groups of up to four, from chapter 0. Anyone can start at any chapter from its checkpoint.
 Break: 15:30 to 15:45, with refreshments. Chat and networking are part of the plan.
 Your job: walk the room. The three common stops are a missing license (point to the sign-up), a key that isn't set (the doctor shows SET or MISSING, never the value) and a clone made as a zip (clone with Git instead). Tell people that a live flight or a live builder run is an extra, and that every "done when" check works offline.
 Say once at the start: "Keys and the license stay in your own shell or your own Git-ignored .env. Never paste one into a file in the repository or into a chat."
 
 ### 16:20 Close (10 min)
-Show: slides 41 to 43 (part D). Say what they built and where to go next: the book chapters, and the course "Towards Dark Software Factories" on profrod.ai. Ask what stopped them, and note it for the book.
+Show: slides 55 to 57 (part D). Leave the three glossary slides (58 to 60) up during the break. Say what they built and where to go next: the book chapters, and the course "Towards Dark Software Factories" on profrod.ai. Ask what stopped them, and note it for the book.
 
 ## If something fails
 | What fails | What you do |
