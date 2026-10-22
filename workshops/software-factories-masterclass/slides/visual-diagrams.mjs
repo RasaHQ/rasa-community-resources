@@ -12,7 +12,7 @@ const icons = {
   flight: 'M-48 4 48-30 15 12-5 18-20 42-25 15Z M-25 15 48-30',
   weather: 'M-38 18h72a25 25 0 0 0-3-50 34 34 0 0 0-64 10 21 21 0 0 0-5 40 M-20 38l-9 15 M5 38l-9 15 M30 38l-9 15',
   timing: 'M0-48a48 48 0 1 0 1 0 M0-30v32l23 14',
-  money: 'M-42-32h84v64h-84Z M0-18v36 M-9-11h14a9 9 0 0 1 0 18H-7',
+  money: 'M-48-30h96v60h-96Z M0-16a16 16 0 1 0 0 32 16 16 0 1 0 0-32 M-34 0h1 M33 0h1',
   person: 'M0-38a18 18 0 1 0 1 0 M-35 42v-15a35 35 0 0 1 70 0v15',
   task: 'M-34-48h50l20 20v76h-70Z M16-48v22h20 M-17-4h34 M-17 15h34 M-17 34H5',
   builder: 'M-44-32h88v60h-88Z M-19-6-10-15 M19-6 10-15 M-22 45h44 M0 28v17',
@@ -26,8 +26,6 @@ const icon = (name, x, y, scale = 1, cls = '') => `<g transform="translate(${x} 
 /** Four equal domains, one focal traveller; connected=true shows one response. */
 export function traveller({ labels = ['Flight', 'Weather', 'Timing', 'Money'], connected = false, title = 'A traveller and four sources' } = {}) {
   let marks = rect(0, 0, 1680, 660, 'panel-muted');
-  marks += circle(840, 330, 154, connected ? 'panel-ink' : 'panel-pink');
-  marks += icon('person', 840, 322, 1.7, connected ? 'icon-light' : '');
   const positions = [[210, 40], [1120, 40], [210, 370], [1120, 370]];
   positions.forEach(([x, y], i) => {
     if (connected) marks += line(`M${x < 840 ? x + 350 : x} ${y + 125}C840 ${y + 125} 840 ${y + 125} 840 330`, 'route');
@@ -35,6 +33,10 @@ export function traveller({ labels = ['Flight', 'Weather', 'Timing', 'Money'], c
     marks += icon(['flight', 'weather', 'timing', 'money'][i], x + 175, y + 90, 1.15);
     marks += text(x + 175, y + 204, labels[i], 'large-label', 'middle');
   });
+  // Keep every connector behind the focal traveller, as in the brand's
+  // connected-skills composition. Lines never cross the portrait.
+  marks += circle(840, 330, 154, connected ? 'panel-ink' : 'panel-pink');
+  marks += icon('person', 840, 322, 1.7, connected ? 'icon-light' : '');
   return scene(title, marks);
 }
 
