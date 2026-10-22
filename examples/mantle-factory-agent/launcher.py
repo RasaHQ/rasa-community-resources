@@ -167,7 +167,7 @@ if __name__ == '__main__':
         parser.add_argument('--builder-mode', type=str.upper, choices=['SCRIPTED', 'LIVE'], default='SCRIPTED')
         parser.add_argument('--worker-python', default=str(ROOT / 'worker/.venv/bin/python'))
         parser.add_argument('--evidence-root', default=str(ROOT / '.runtime/factory-evidence'))
-        parser.add_argument('--env-file', help='Read only RASA_LICENSE into child memory; never copy the file.')
+        parser.add_argument('--env-file', help='Owner credential file: launcher reads RASA_LICENSE; the LIVE tool reads OPENAI_API_KEY for the builder child only.')
         parser.add_argument('--expires-at', default=datetime.now(timezone.utc).strftime('%Y-%m-%dT16:30:00Z'))
         args = parser.parse_args()
         try:

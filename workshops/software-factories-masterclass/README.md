@@ -86,3 +86,5 @@ Chapter 0 runs on **Rasa Pro 3.21.0**. The standalone example in `examples/` sta
 Use the [run sheet](RUN-SHEET.md), [presenter notes](slides/PRESENTER-NOTES.md), [slides](slides/index.html) and [PDF](slides/masterclass-slides.pdf). The [technical audit](TECHNICAL-AUDIT.md) distinguishes tests run here from earlier course-team evidence. [Learning checkpoints](LEARNING-CHECKPOINTS.md) provide explanation prompts; [acceptance handoff](ACCEPTANCE-HANDOFF.md) records the exact baseline and proposed changes.
 
 Other folders (`openai-mcp/`, `brief-me-before-i-fly/`, `archive/`) are earlier material and are not required. The standalone travel agent has its own [self-paced guide](../../examples/mantle-flight-briefing-openai-agents/SELF-PACED-GUIDE.md).
+
+- Want to ask for a change and watch the factory decide? See the [Mantle factory agent](../../examples/mantle-factory-agent/README.md).
