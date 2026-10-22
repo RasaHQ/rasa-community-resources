@@ -18,6 +18,7 @@ import socket
 import subprocess
 import sys
 import time
+import threading
 import tomllib
 from urllib.parse import urlsplit
 from urllib.request import ProxyHandler, build_opener
@@ -88,12 +89,33 @@ class Children:
     """Own only processes started by this invocation, including their groups."""
     def __init__(self):
         self.processes = []
+        self.log_threads = []
 
     def start(self, argv, *, cwd, env):
+        diagnostics = env.get('BRIEFING_DIAGNOSTICS_DIR')
         process = subprocess.Popen(argv, cwd=cwd, env=env, start_new_session=True,
-                                   stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                                   stderr=subprocess.DEVNULL)
+                                   stdin=subprocess.DEVNULL,
+                                   stdout=subprocess.PIPE if diagnostics else subprocess.DEVNULL,
+                                   stderr=subprocess.STDOUT if diagnostics else subprocess.DEVNULL)
         self.processes.append(process)
+        if diagnostics:
+            directory = Path(diagnostics)
+            directory.mkdir(parents=True, exist_ok=True)
+            def capture():
+                from project.lib.capability_logging import redact
+                with (directory / ('child-' + str(process.pid) + '.log')).open('a') as log:
+                    for raw in iter(process.stdout.readline, b''):
+                        value = raw.decode('utf-8', errors='replace')
+                        token = env.get('BRIEFING_MCP_TOKEN', '')
+                        if len(token) >= 16:
+                            value = value.replace(token, '[transport credential redacted]')
+                            for index in range(len(token) - 7):
+                                value = value.replace(token[index:index + 8], '[transport fragment redacted]')
+                        log.write(redact(value))
+                        log.flush()
+            thread = threading.Thread(target=capture, daemon=True)
+            self.log_threads.append(thread)
+            thread.start()
         return process
 
     def stop(self, process):
