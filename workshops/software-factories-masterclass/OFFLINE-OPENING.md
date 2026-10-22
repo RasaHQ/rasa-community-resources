@@ -2,7 +2,7 @@
 
 Start with the travel-agent illustration in the deck. Say it is an illustration. If you have a recording from a real rehearsal, show that and name its date. This package does not contain a new recording.
 
-For an installed, licensed travel scaffold, the labelled replay path is:
+For an installed, licensed travel scaffold, the labeled replay path is:
 
 ```bash
 cd book/ready/ch00/demo

@@ -25,7 +25,7 @@ The revised materials make that distinction visible. `BUILD-CONTRACT.md` describ
 | Blocker | Flux ASR uses `name: deepgram`, which selects Nova in 3.21.0 | Changed to `deepgram_flux`; retained `deepgram` for Aura-2 TTS; validated with installed engine configuration |
 | High | Doctor reads old `llm.model_group`; its live Agents probe defaults to gpt-4.1-mini although the pack says that model was refused by the service | Doctor now reads the selected agent group and defaults the Agents probe to gpt-6-astra, matching the supplied worker and official quickstart. Live account access is still unverified |
 | High | Current engine requires an AgentSpec in ModelBootstrap and a new resolver signature | Updated doctor probe and relevant fixtures; scripted real-engine conversation passes |
-| High | `openai-mcp` imports `Agent` / `Runner` from `agents` and pins `openai-agents` | Explicitly labelled historical **Agents SDK** appendix, removed from main route; current builder uses `client.beta.agents.sessions` through the OpenAI client/Core adapter |
+| High | `openai-mcp` imports `Agent` / `Runner` from `agents` and pins `openai-agents` | Explicitly labeled historical **Agents SDK** appendix, removed from main route; current builder uses `client.beta.agents.sessions` through the OpenAI client/Core adapter |
 | High | Run sheet, facilitator script and deck describe different agendas and different demos | Replaced with one elapsed-time schedule: 125 minutes of lab and networking |
 | High | “Only reviewer: tests” and hidden-tests-as-definition oversimplify the factory | Replaced with independently controlled verification, explicit release policy, monitoring and escalation; secrecy is optional additional protection |
 | High | Chapters 3–7 require macOS sandbox-exec, despite a general laptop workshop | Explicit platform selection; working standard-library data-only route for other machines; no sandbox check removed |
@@ -39,7 +39,7 @@ The revised materials make that distinction visible. `BUILD-CONTRACT.md` describ
 
 ## Current APIs: what is verified
 
-**Mantle.** PyPI reports Rasa Pro 3.21.0; the Mantle changelog identifies it as the first official open beta released 20 October 2026. Unreleased changes are not assumed present. The current travel project now validates with zero authoring findings on the installed 3.21.0 engine. This is authoring validation, not a licence check or proof of every runtime path.
+**Mantle.** PyPI reports Rasa Pro 3.21.0; the Mantle changelog identifies it as the first official open beta released 20 October 2026. Unreleased changes are not assumed present. The current travel project now validates with zero authoring findings on the installed 3.21.0 engine. This is authoring validation, not a license check or proof of every runtime path.
 
 **Deepgram.** Some current tutorial/reference snippets still show the older Flux ASR selector. The release changelog says to use `deepgram_flux`; installed 3.21.0 code confirms the distinct Nova/Flux engines and rejects a Flux model under the Nova selector. This revision follows the release and installed engine. It uses Flux recognition and Aura-2 speech synthesis, not Flux TTS. Actual audio still requires a live rehearsal.
 
@@ -55,7 +55,7 @@ The API quickstart names application-key permissions `api.agents.read`, `api.age
 |---|---|---|
 | Python syntax | 255 files parse | No runtime claim |
 | Original project under Rasa 3.21.0 | Reproduced unexpected_llm and missing orchestrator.model_group findings | Confirms the migration was needed |
-| Revised project authoring validation | 0 findings | No model, licence or voice request |
+| Revised project authoring validation | 0 findings | No model, license or voice request |
 | Deepgram configuration tests | 3 passed | Installed schema validation, no audio |
 | Doctor / credential controls | 18 passed | Synthetic credentials only |
 | Launcher tests | 46 passed | Includes real channel parsing; no full live launch |
@@ -67,11 +67,11 @@ The API quickstart names application-key permissions `api.agents.read`, `api.age
 | Full Mantle-environment suite | 184 run: 179 passed, 4 failed/error, 1 skipped | Unix sockets denied here; one process teardown failure also remains; see final log |
 | Slides | 23 rendered; 1600×900 and 1280×720 layout/navigation checks pass; no network asset requests | Visual review performed; PDF has 23 pages |
 
-The initial broad test run in the worker-only environment did not pass: it included Mantle-dependent tests and Unix-domain-socket tests unsupported by this host. These were not relabelled as successes. Relevant tests were then run in the appropriate environment, with results above. The final full-suite run has three failures associated with Unix socket control and one process-group teardown error; the latter passed in the isolated launcher suite but remains unresolved in the combined run. The complete `make test`/launcher lifecycle and browser microphone path still need the intended workshop machine. See `verification/` for selected raw results and the final suite status.
+The initial broad test run in the worker-only environment did not pass: it included Mantle-dependent tests and Unix-domain-socket tests unsupported by this host. These were not relabeled as successes. Relevant tests were then run in the appropriate environment, with results above. The final full-suite run has three failures associated with Unix socket control and one process-group teardown error; the latter passed in the isolated launcher suite but remains unresolved in the combined run. The complete `make test`/launcher lifecycle and browser microphone path still need the intended workshop machine. See `verification/` for selected raw results and the final suite status.
 
 ## What remains unverified
 
-- Live Rasa licence acceptance and real microphone / speaker behavior.
+- Live Rasa license acceptance and real microphone / speaker behavior.
 - A paid Agents API session, this account's model access and actual cost.
 - Current flight, forecast and exchange-rate service availability.
 - Fresh setup and full launcher lifecycle on the facilitator's Mac; Unix-domain sockets are denied on this execution host.

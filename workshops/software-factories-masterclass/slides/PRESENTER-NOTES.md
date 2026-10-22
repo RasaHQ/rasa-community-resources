@@ -8,7 +8,7 @@ Welcome briefly, then move straight to the teaser. The cover describes the targe
 
 ## 2. “Will I make my meeting?”
 
-Show the real travel demo now. This slide is an illustration, never a screenshot or current travel data. Use a live returned flight or explicitly labelled replay. Change the transfer to two hours. Show what stayed unchanged. The timeline assumes one local date; real implementation must use timezone-aware timestamps.
+Show the real travel demo now. This slide is an illustration, never a screenshot or current travel data. Use a live returned flight or explicitly labeled replay. Change the transfer to two hours. Show what stayed unchanged. The timeline assumes one local date; real implementation must use timezone-aware timestamps.
 
 ## 3. The screen makes the answer inspectable.
 
@@ -40,11 +40,11 @@ Give the group a concrete feature from the existing code. Public requirements an
 
 ## 10. The builder cannot grade its own homework.
 
-Explain both logical separation and actual execution isolation. Hashes detect mismatches but are not permissions. The existing Python code gate uses macOS sandbox-exec; the fallback checks JSON as data.
+A copied directory is not an operating-system sandbox, so protect execution as well as files. Explain both logical separation and actual execution isolation. Hashes detect mismatches but are not permissions. The existing Python code gate uses macOS sandbox-exec; the fallback checks JSON as data.
 
 ## 11. A completed session still needs a decision.
 
-Ask for examples of each result. A timed-out API request cannot be labelled REJECT solely because the provider failed. Passing a suite is bounded evidence, not proof of all future behavior.
+Ask for examples of each result. A timed-out API request cannot be labeled REJECT solely because the provider failed. Passing a suite is bounded evidence, not proof of all future behavior.
 
 ## 12. Dark factories need an explicit release policy.
 
@@ -58,7 +58,7 @@ This begins the ten-minute group briefing. Groups of three or four. An optional 
 
 Be transparent: B does not use the three providers. It keeps people actively learning rather than watching failed installs. A includes separate components; the full bridge remains extension work.
 
-## 15. Lab A: a brief and a first candidate.
+## 15. Lab A: a brief and a first attempt.
 
 Leave this slide up during Lab A. Participants can vary their pace. On A, first run scripted to verify setup, then a live Agents API run when access and budget are ready. On B, run the recovery exercise and design travel cases. Do not interrupt with mini lectures.
 
@@ -76,7 +76,7 @@ Leave this up for Lab B. The existing integration creates a standalone card, not
 
 ## 19. Release the exact artifact that passed.
 
-Optional table-side slide. A candidate accepted before integration may fail after integration. The supplied chapter 7 demonstrates local integration and stale-base refusal; it does not implement live deployment.
+Optional table-side slide. A attempt accepted before integration may fail after integration. The supplied chapter 7 demonstrates local integration and stale-base refusal; it does not implement live deployment.
 
 ## 20. Voice has its own acceptance tests.
 

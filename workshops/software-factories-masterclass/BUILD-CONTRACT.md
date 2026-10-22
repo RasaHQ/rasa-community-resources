@@ -51,8 +51,8 @@ Only the release worker writes the release record. The builder cannot change tas
 | V02 | Say a short “yes”; interrupt speech | Confirmation heard; playback stops appropriately; task state preserved |
 | V03 | Give an ambiguous flight or date | A clarification question, no invented flight/date |
 | V04 | Set transfer to 120 minutes | Timeline changes; selected flight and meeting remain unchanged |
-| D01 | Weather source unavailable | Weather unavailable; other cards retained; no stale value labelled current |
-| D02 | Position-based arrival estimate | Clearly labelled estimate; no invented airline delay status |
+| D01 | Weather source unavailable | Weather unavailable; other cards retained; no stale value labeled current |
+| D02 | Position-based arrival estimate | Clearly labeled estimate; no invented airline delay status |
 | D03 | Run recorded data | Visible and spoken replay disclosure where relevant |
 | R01 | Restart after submission | Job can be recovered without silently repeating side effects |
 | R02 | Cancel during build | Cancellation acknowledged and no subsequent release |

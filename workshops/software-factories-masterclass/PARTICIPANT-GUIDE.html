@@ -19,7 +19,7 @@ python3 --version
 <tbody>
 <tr>
 <td>A: travel scaffold and coding factory</td>
-<td>A Mac for code gates; Python 3.12, uv, Git, Make; licence and provider keys for live voice</td>
+<td>A Mac for code gates; Python 3.12, uv, Git, Make; license and provider keys for live voice</td>
 <td>Travel assistant, Agents API builder, rejection and local integration</td>
 </tr>
 <tr>
@@ -82,7 +82,7 @@ make run
 <pre><code class="language-bash">python3 check_demo.py --recorded --transfer-minutes 30
 </code></pre>
 <p>Expected: <code>ch00 OK</code>. Label the result SCRIPTED / REPLAY. Keep the live voice checkpoint incomplete.</p>
-<p><strong>Checkpoint:</strong> four labelled cards, correct timeline revision, and a clear record of whether you tested live speech, live text or replay.</p>
+<p><strong>Checkpoint:</strong> four labeled cards, correct timeline revision, and a clear record of whether you tested live speech, live text or replay.</p>
 <h2>Track A, checkpoint 3: one bounded builder (25 minutes)</h2>
 <p>Use a fresh folder so earlier evidence stays intact:</p>
 <pre><code class="language-bash">export WORK=&quot;$(mktemp -d &quot;${TMPDIR:-/tmp}/factory-group.XXXXXX&quot;)&quot;
@@ -94,7 +94,7 @@ uv pip install -r requirements.txt
 python build.py tasks/b-limit-currencies.json attempts/first --scripted
 python check_build.py attempts/first
 </code></pre>
-<p>Expected: ACCEPT, an explicit SCRIPTED label, then <code>ch05 OK</code>. This is a setup check using predetermined actions. Now edit only the task's <code>limit</code> to 1 or 3:</p>
+<p>Expected: ACCEPT and an explicit SCRIPTED label. The completion check then prints <code>NOT DONE</code> and exits 1: the supplied limit is still 2, and this check requires your own change to 1 or 3. This is the expected starting result, not a setup failure. Now edit only the task's <code>limit</code> to 1 or 3:</p>
 <pre><code class="language-bash">python - &lt;&lt;'EDIT'
 import json
 from pathlib import Path
@@ -130,7 +130,7 @@ uv pip install zeocore==0.35.6 httpx==0.28.1
 python run_a6.py tasks/a6-market-watchlist.json candidates/market-good
 python run_a6.py tasks/a6-market-watchlist.json candidates/market-shows-live
 </code></pre>
-<p>Expected: first ACCEPT, second REJECT. Predict the second result before running it. Find the check that refuses daily rates labelled as live. Try the provided <code>market-invents-on-failure</code> candidate too. Do not weaken the test to obtain green output.</p>
+<p>Expected: first ACCEPT, second REJECT. Predict the second result before running it. Find the check that refuses daily rates labeled as live. Try the provided <code>market-invents-on-failure</code> attempt too. Do not weaken the test to obtain green output.</p>
 <p><strong>Checkpoint:</strong> name the violated requirement and the rejecting check. Distinguish this controlled example from a model's measured failure rate.</p>
 <h2>Track A, checkpoint 5: integration and handoff (25 minutes)</h2>
 <p>This checkpoint is a separate local card integration. It is not automatic release into the live travel agent.</p>
@@ -146,10 +146,11 @@ python integrate.py tasks/b-limit-currencies.json attempts/mine
 python show_card.py --offline
 </code></pre>
 <p>Open <code>card.html</code>. Expected: three currencies and an explicit sample-data label. <code>set_limit.py</code> generates a scripted attempt for this chapter. Do not claim it is your earlier live-generated artifact. To carry that exact artifact, follow chapter 5's transfer instructions and require compatible protected-suite fingerprints.</p>
-<p>Repeat integration. Expected: refusal because the base changed. Explain why a candidate tested against yesterday's product cannot simply replace today's product.</p>
+<p>Repeat integration. Expected: refusal because the base changed. Explain why a attempt tested against yesterday's product cannot simply replace today's product.</p>
 <p>For the complete target architecture, read <code>BUILD-CONTRACT.md</code> and identify which steps your group has evidence for. Finish <code>group-handoff.md</code> with the fields below.</p>
 <h2>Track B: a runnable factory without provider accounts</h2>
 <p>This route uses supplied scripted proposals and validates JSON as data. It does not execute generated Python and does not claim the same isolation guarantees as the macOS code route.</p>
+<p>Python 3.12 only. Python 3.13 and 3.14 stop with NOT_READY, which means the check could not run. Windows is untested. Run <code>python3 --version</code> first. If it doesn't print 3.12, use your 3.12 interpreter in place of <code>python3</code> below.</p>
 <p>From the package root, in a POSIX terminal:</p>
 <pre><code class="language-bash">export RECOVERY=&quot;$(mktemp -d &quot;${TMPDIR:-/tmp}/factory-recovery.XXXXXX&quot;)&quot;
 cp -R &quot;$PACK/book/ready/ch08/.&quot; &quot;$RECOVERY/&quot;
@@ -220,11 +221,11 @@ python3 lesson.py check
 </tr>
 <tr>
 <td>Source unavailable</td>
-<td>Show the reason; use labelled replay for the exercise.</td>
+<td>Show the reason; use labeled replay for the exercise.</td>
 </tr>
 <tr>
 <td>Fingerprints differ</td>
-<td>Use a fresh supplied chapter; do not repin tests merely to accept a candidate.</td>
+<td>Use a fresh supplied chapter; do not repin tests merely to accept a attempt.</td>
 </tr>
 </tbody>
 </table>

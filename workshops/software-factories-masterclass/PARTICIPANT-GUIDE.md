@@ -19,8 +19,8 @@ Choose your route:
 
 | Route | You need | You will run |
 |---|---|---|
-| A: travel scaffold and coding factory | A Mac for code gates; Python 3.12, uv, Git, Make; licence and provider keys for live voice | Travel assistant, Agents API builder, rejection and local integration |
-| B: data-only factory | Any machine with Python 3.12; commands below use a POSIX shell | Acceptance, rejection, retry limits and duplicate suppression, with scripted proposals |
+| A: travel scaffold and coding factory | A Mac for code gates; Python 3.12, uv, Git, Make; license and provider keys for live voice | Travel assistant, Agents API builder, rejection and local integration |
+| B: data-only factory | Any machine with Python 3.12 only (3.13 and 3.14 stop with NOT_READY); commands below use a POSIX shell, and Windows is untested | Acceptance, rejection, retry limits and duplicate suppression, with scripted proposals |
 
 If setup is still blocking you after ten minutes, use B and pair with an A group for the voice demonstration. A file-presence check is not evidence that an agent works.
 
@@ -77,7 +77,7 @@ python3 check_demo.py --recorded --transfer-minutes 30
 
 Expected: `ch00 OK`. Label the result SCRIPTED / REPLAY. Keep the live voice checkpoint incomplete.
 
-**Checkpoint:** four labelled cards, correct timeline revision, and a clear record of whether you tested live speech, live text or replay.
+**Checkpoint:** four labeled cards, correct timeline revision, and a clear record of whether you tested live speech, live text or replay.
 
 ## Track A, checkpoint 3: one bounded builder (25 minutes)
 
@@ -94,7 +94,7 @@ python build.py tasks/b-limit-currencies.json attempts/first --scripted
 python check_build.py attempts/first
 ```
 
-Expected: ACCEPT, an explicit SCRIPTED label, then `ch05 OK`. This is a setup check using predetermined actions. Now edit only the task's `limit` to 1 or 3:
+Expected: ACCEPT and an explicit SCRIPTED label. The completion check then prints `NOT DONE` and exits 1: the supplied limit is still 2, and this check requires your own change to 1 or 3. This is the expected starting result, not a setup failure. Now edit only the task's `limit` to 1 or 3:
 
 ```bash
 python - <<'EDIT'
@@ -148,7 +148,7 @@ python run_a6.py tasks/a6-market-watchlist.json candidates/market-good
 python run_a6.py tasks/a6-market-watchlist.json candidates/market-shows-live
 ```
 
-Expected: first ACCEPT, second REJECT. Predict the second result before running it. Find the check that refuses daily rates labelled as live. Try the provided `market-invents-on-failure` candidate too. Do not weaken the test to obtain green output.
+Expected: first ACCEPT, second REJECT. Predict the second result before running it. Find the check that refuses daily rates labeled as live. Try the provided `market-invents-on-failure` attempt too. Do not weaken the test to obtain green output.
 
 **Checkpoint:** name the violated requirement and the rejecting check. Distinguish this controlled example from a model's measured failure rate.
 
@@ -171,13 +171,15 @@ python show_card.py --offline
 
 Open `card.html`. Expected: three currencies and an explicit sample-data label. `set_limit.py` generates a scripted attempt for this chapter. Do not claim it is your earlier live-generated artifact. To carry that exact artifact, follow chapter 5's transfer instructions and require compatible protected-suite fingerprints.
 
-Repeat integration. Expected: refusal because the base changed. Explain why a candidate tested against yesterday's product cannot simply replace today's product.
+Repeat integration. Expected: refusal because the base changed. Explain why a attempt tested against yesterday's product cannot simply replace today's product.
 
 For the complete target architecture, read `BUILD-CONTRACT.md` and identify which steps your group has evidence for. Finish `group-handoff.md` with the fields below.
 
 ## Track B: a runnable factory without provider accounts
 
 This route uses supplied scripted proposals and validates JSON as data. It does not execute generated Python and does not claim the same isolation guarantees as the macOS code route.
+
+Python 3.12 only. Python 3.13 and 3.14 stop with NOT_READY, which means the check could not run. Windows is untested. Run `python3 --version` first. If it doesn't print 3.12, use your 3.12 interpreter in place of `python3` below.
 
 From the package root, in a POSIX terminal:
 
@@ -194,7 +196,7 @@ python3 lesson.py recover
 python3 lesson.py check
 ```
 
-Windows PowerShell alternative: copy `book/ready/ch08` to a new folder in File Explorer, open that folder in PowerShell, and run the same seven Python commands using `py -3.12` in place of `python3`.
+Windows PowerShell alternative (untested): copy `book/ready/ch08` to a new folder in File Explorer, open that folder in PowerShell, and run the same seven Python commands using `py -3.12` in place of `python3`.
 
 Expected: accepted proposal; rejected original two-attempt baseline; one simulated crash followed by an accepted retry; duplicate call executes zero further attempts; final `ch08 OK`. The two measured cases are selected teaching cases, not a success-rate benchmark.
 
@@ -227,7 +229,7 @@ For the closing demo, spend 30 seconds on the requirement, 60 on the rejection a
 | Voice switches to text | Continue the exercise in text and record voice as incomplete. |
 | Port occupied | Stop your own earlier process with Ctrl-C or `make stop`. |
 | Attempt already exists | Choose a new attempt name. |
-| Source unavailable | Show the reason; use labelled replay for the exercise. |
-| Fingerprints differ | Use a fresh supplied chapter; do not repin tests merely to accept a candidate. |
+| Source unavailable | Show the reason; use labeled replay for the exercise. |
+| Fingerprints differ | Use a fresh supplied chapter; do not repin tests merely to accept a attempt. |
 
 Further reading: the individual chapters explain each component in more detail. Their older historical experiments remain tied to their own pins. The current technical corrections and evidence are in `TECHNICAL-AUDIT.md`.

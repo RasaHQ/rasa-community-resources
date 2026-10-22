@@ -4,7 +4,7 @@ Bring a laptop, headphones and a charger. Work in groups of three or four. One w
 
 ## Accounts for the voice and live-builder route
 
-- An issued Rasa Developer Edition licence (`RASA_LICENSE`). Request it at https://rasa.com/rasa-pro-developer-edition-license-key-request . A submitted form is not an issued licence.
+- An issued Rasa Developer Edition license (`RASA_LICENSE`). Request it at https://rasa.com/rasa-pro-developer-edition-license-key-request . A submitted form is not an issued license.
 - An OpenAI API application key with Agents session read/write and model inference permissions. The official Agents quickstart names `api.agents.read`, `api.agents.write`, and `api.responses.write`. ChatGPT access alone does not establish API access.
 - A Deepgram key (`DEEPGRAM_API_KEY`) for speech recognition and synthesis.
 - Python 3.12, uv, Git and Make. The existing code-verification labs require macOS. Other participants use the data-only track or join a Mac group. Native Windows launcher support is not established; use a group machine for that route.
@@ -27,7 +27,7 @@ make env
 make setup
 ```
 
-Open the new `.env` in your own editor and fill in the licence, OpenAI key and Deepgram key. Anthropic is optional and not required for this workshop. Leave the template committed only with blank values. Then:
+Open the new `.env` in your own editor and fill in the license, OpenAI key and Deepgram key. Anthropic is optional and not required for this workshop. Leave the template committed only with blank values. Then:
 
 ```bash
 make doctor

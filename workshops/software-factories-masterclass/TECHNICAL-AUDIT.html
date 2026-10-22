@@ -48,7 +48,7 @@
 <tr>
 <td>High</td>
 <td><code>openai-mcp</code> imports <code>Agent</code> / <code>Runner</code> from <code>agents</code> and pins <code>openai-agents</code></td>
-<td>Explicitly labelled historical <strong>Agents SDK</strong> appendix, removed from main route; current builder uses <code>client.beta.agents.sessions</code> through the OpenAI client/Core adapter</td>
+<td>Explicitly labeled historical <strong>Agents SDK</strong> appendix, removed from main route; current builder uses <code>client.beta.agents.sessions</code> through the OpenAI client/Core adapter</td>
 </tr>
 <tr>
 <td>High</td>
@@ -103,7 +103,7 @@
 </tbody>
 </table>
 <h2>Current APIs: what is verified</h2>
-<p><strong>Mantle.</strong> PyPI reports Rasa Pro 3.21.0; the Mantle changelog identifies it as the first official open beta released 20 October 2026. Unreleased changes are not assumed present. The current travel project now validates with zero authoring findings on the installed 3.21.0 engine. This is authoring validation, not a licence check or proof of every runtime path.</p>
+<p><strong>Mantle.</strong> PyPI reports Rasa Pro 3.21.0; the Mantle changelog identifies it as the first official open beta released 20 October 2026. Unreleased changes are not assumed present. The current travel project now validates with zero authoring findings on the installed 3.21.0 engine. This is authoring validation, not a license check or proof of every runtime path.</p>
 <p><strong>Deepgram.</strong> Some current tutorial/reference snippets still show the older Flux ASR selector. The release changelog says to use <code>deepgram_flux</code>; installed 3.21.0 code confirms the distinct Nova/Flux engines and rejects a Flux model under the Nova selector. This revision follows the release and installed engine. It uses Flux recognition and Aura-2 speech synthesis, not Flux TTS. Actual audio still requires a live rehearsal.</p>
 <p><strong>OpenAI.</strong> The current official API documentation uses <code>client.beta.agents.sessions.create</code>. Session tools request application work and receive results; attaching an environment does not automatically put application function handlers inside that environment. The worker's OpenAI 3.36.1 / Core 0.36.2 contract tests pass without a provider request. Mantle retains its compatible OpenAI 2.x client in a separate environment. Do not combine those environments or substitute the Agents SDK sample.</p>
 <p>The API quickstart names application-key permissions <code>api.agents.read</code>, <code>api.agents.write</code> and <code>api.responses.write</code>; the SDK adds the beta header. Neither a ChatGPT subscription nor a key merely being present proves API access. Model availability remains account-specific.</p>
@@ -131,7 +131,7 @@
 <tr>
 <td>Revised project authoring validation</td>
 <td>0 findings</td>
-<td>No model, licence or voice request</td>
+<td>No model, license or voice request</td>
 </tr>
 <tr>
 <td>Deepgram configuration tests</td>
@@ -185,10 +185,10 @@
 </tr>
 </tbody>
 </table>
-<p>The initial broad test run in the worker-only environment did not pass: it included Mantle-dependent tests and Unix-domain-socket tests unsupported by this host. These were not relabelled as successes. Relevant tests were then run in the appropriate environment, with results above. The final full-suite run has three failures associated with Unix socket control and one process-group teardown error; the latter passed in the isolated launcher suite but remains unresolved in the combined run. The complete <code>make test</code>/launcher lifecycle and browser microphone path still need the intended workshop machine. See <code>verification/</code> for selected raw results and the final suite status.</p>
+<p>The initial broad test run in the worker-only environment did not pass: it included Mantle-dependent tests and Unix-domain-socket tests unsupported by this host. These were not relabeled as successes. Relevant tests were then run in the appropriate environment, with results above. The final full-suite run has three failures associated with Unix socket control and one process-group teardown error; the latter passed in the isolated launcher suite but remains unresolved in the combined run. The complete <code>make test</code>/launcher lifecycle and browser microphone path still need the intended workshop machine. See <code>verification/</code> for selected raw results and the final suite status.</p>
 <h2>What remains unverified</h2>
 <ul>
-<li>Live Rasa licence acceptance and real microphone / speaker behavior.</li>
+<li>Live Rasa license acceptance and real microphone / speaker behavior.</li>
 <li>A paid Agents API session, this account's model access and actual cost.</li>
 <li>Current flight, forecast and exchange-rate service availability.</li>
 <li>Fresh setup and full launcher lifecycle on the facilitator's Mac; Unix-domain sockets are denied on this execution host.</li>

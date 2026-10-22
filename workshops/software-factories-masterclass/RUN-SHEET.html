@@ -14,7 +14,7 @@
 <td>00–10</td>
 <td>14:30–14:40</td>
 <td>Teaser: the finished travel experience, then the build loop</td>
-<td>Spoken question, visual cards, one rejected change. Identify live, replay and scripted parts before showing them.</td>
+<td>Typed question (voice is optional and untested today), visual cards, one rejected change. Identify live, replay and scripted parts before showing them.</td>
 </tr>
 <tr>
 <td>10–30</td>
@@ -29,22 +29,22 @@
 <td>One driver, one requirements owner, one evaluator, optional observer.</td>
 </tr>
 <tr>
-<td>40–95</td>
-<td>15:10–16:05</td>
+<td>40–120</td>
+<td>15:10–16:30</td>
 <td>Lab A at each group's pace</td>
-<td>Brief, acceptance examples, first candidate and recorded verdict.</td>
+<td>Brief, acceptance examples, first attempt and recorded verdict.</td>
 </tr>
 <tr>
-<td>95–110</td>
-<td>16:05–16:20</td>
+<td>120–135</td>
+<td>16:30–16:45</td>
 <td>Break and meet another group</td>
 <td>Each group exchanges one failure case.</td>
 </tr>
 <tr>
-<td>110–165</td>
-<td>16:20–17:15</td>
+<td>135–165</td>
+<td>16:45–17:15</td>
 <td>Lab B at each group's pace</td>
-<td>A rejection, revised candidate, integration evidence and a handoff.</td>
+<td>A rejection, revised attempt, integration evidence and a handoff.</td>
 </tr>
 <tr>
 <td>165–180</td>
@@ -57,12 +57,14 @@
 <p>110 minutes of lab plus 15 minutes of networking = 125 minutes, 69% of the session. Do not add a second lecture during the labs. Optional appendix slides answer questions at tables.</p>
 <h2>Teaser script (10 minutes)</h2>
 <ol>
-<li>Show the travel assistant immediately. Say “I'm flying to New York. Will I make my six o'clock meeting?” Choose a returned flight and give the destination-local date. Show the four cards, then say “Allow two hours to get into town.” The timeline must update without changing the flight. Ask “What if the weather source is down?” Show the failure state from a labelled fixture if necessary.</li>
-<li>Show the factory's task and accepted artifact, then one rejected candidate. Point to the actual check that rejected it.</li>
+<li>Show the travel assistant immediately. Type “I'm flying to New York. Will I make my six o'clock meeting?” Choose a returned flight and give the destination-local date. Show the four cards, then type “Allow two hours to get into town.” The timeline must update without changing the flight. Ask “What if the weather source is down?” Show the failure state from a labeled fixture if necessary.</li>
+<li>Show the factory's task and accepted artifact, then one rejected attempt. Point to the actual check that rejected it.</li>
 <li>Explain the destination: “We want to describe this assistant by voice, have a builder make it, and release only the version that passes our checks.” If the full bridge has not passed rehearsal, say “Today these are two connected ideas demonstrated in separate components. Wiring the complete path is our extension.”</li>
 </ol>
+<p>The live builder defaults to the model gpt-6-astra. The scripted path never calls it. If a live run happens, state its expected cost range first: 15 to 150 US cents is an estimate, not a cap, and the billed cost was not measured.</p>
 <p>Never narrate a prerecorded or scripted build as a live model run. Never describe the supplied currency-card extension as generating an entire application from nothing.</p>
 <h2>Before opening the room</h2>
+<p>The opening runs on the class preview at port 8942: PR 140 head 8427cf8f, Core 0.36.3, Rasa Pro 3.21.0.dev5, typed and labeled SCRIPTED over real public sources. In one measured run the agent suggested a named flight, and 2.5 seconds after &quot;that one&quot; four available cards showed, including the meeting reply. That is one run, not a promise of speed. Voice is not tested end to end, so type the request.</p>
 <p>Read <code>TECHNICAL-AUDIT.md</code> and perform the rehearsal in <code>FACILITATOR.md</code>. Give participants this exact revised package rather than an unspecified GitHub main branch. Have two independently set-up laptops for the main route. Test microphone permissions and audio output in the actual room. Record the runtime versions and the mode of each demo. Credentials remain on each group's machine.</p>
 <p>At minute 50, any group still installing moves to the data-only track. At minute 145, freeze new features and prepare the evidence. At minute 165, stop lab work. A working, explained rejection is a valid result.</p>
 </main></html>
