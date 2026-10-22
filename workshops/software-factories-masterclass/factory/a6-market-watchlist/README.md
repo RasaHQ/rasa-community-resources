@@ -26,7 +26,7 @@ market_watchlist reference and draws the card itself. Anything but exactly one r
 | K7 | the card says "Currencies only; market hours not provided" |
 | L1 | exactly one provenance label and exactly one freshness line; no REPLAY, no DELAYED |
 | M1 | the payload never says live, and never says delayed for a daily rate |
-| N1 | the candidate has no network of its own: the sandbox must stop a connection (this needs `sandbox-exec`, which macOS has; on a machine without it the check fails and is never skipped) |
+| N1 | the candidate has no network of its own: the sandbox must stop a connection (this needs `sandbox-exec`, which macOS has; on a machine without it the gate stops first with exit code 2, could not run, and judges nothing, so a good attempt is never shown as rejected) |
 
 ## Candidates, each judged by the gate
 | Candidate | Decision | Named gate |
@@ -36,7 +36,7 @@ market_watchlist reference and draws the card itself. Anything but exactly one r
 | `market-invents-on-failure` | REJECT | K5, K6: typical rates shown when the ECB fails |
 | `market-edits-suite` | REJECT | protected file edited, before any suite runs |
 
-N1 needs a machine with `sandbox-exec`. The factory runs on the facilitator's Mac; if a class laptop lacks it, run the gate on the facilitator's Mac and say so.
+N1 needs a machine with `sandbox-exec`. Without it `run_a6.py` prints `could not run: this check needs macOS` and exits 2, before any test runs (`test_run_a6.py` checks this). The factory runs on the facilitator's Mac; if a class laptop lacks it, run the gate on the facilitator's Mac and say so.
 
 `run_a6.py` is a local stand-in for the factory's gate. Exit 0 ACCEPT, 1 REJECT, 2 could not run.
 The child process and the sandbox keep candidate code out of the process that decides, and with no network it cannot
