@@ -93,6 +93,13 @@ def run_tests(test_path, project, scratch, discover=False, strict=False):
     return {"passed": passed, "summary": summary, "output": result.stderr[-2000:]}
 
 
+def sandbox_unavailable(environment_path):
+    """A missing required sandbox is a setup failure, never a product rejection."""
+    profile = json.loads(Path(environment_path).read_text())
+    return bool(profile.get('requires_sandbox_exec') and
+                (platform.system() != 'Darwin' or shutil.which('sandbox-exec') is None))
+
+
 def main(task_path, candidate_dir, run_dir, environment_path=None, pack_root=None, strict=False):
     root = Path(pack_root).resolve() if pack_root is not None else ROOT
     task = json.loads(Path(task_path).read_text())
@@ -100,7 +107,11 @@ def main(task_path, candidate_dir, run_dir, environment_path=None, pack_root=Non
     if run_dir.exists():
         print("refusing to reuse a run directory; keep failed runs and choose a new one", file=sys.stderr)
         return 2
-    installed, problems = prepare(environment_path or ROOT / "environment.json")
+    profile_path = environment_path or ROOT / "environment.json"
+    if strict and sandbox_unavailable(profile_path):
+        print("could not run: this check needs macOS (sandbox-exec). The attempt was not judged.")
+        return 2
+    installed, problems = prepare(profile_path)
     if problems:
         print("NOT_READY - " + "; ".join(problems))
         return 3

@@ -1,14 +1,14 @@
 # Chapter 5 ready folder
 
-sow: software-factories-masterclass-SOW-02
-
 Use the [chapter](../../05-the-builder.md). This folder provides the baseline,
-public task B, protected tests and child runner, a scripted teaching builder,
-and the existing factory engine plus its confined Core Agents driver.
-The engine is copied from PR133 at41738dd; task pack from PR130 at4346e25.
-No live call, integration or product restart is represented by the offline control.
-`factory_engine/` is the same factory code, bundled so this chapter can start alone.
-Do not edit a bundled engine to change the card: change the public task.
+public task, protected tests and child runner, a scripted teaching builder,
+and the existing factory with its confined Core Agents driver.
 
-The network-blocking protected check requires macOS sandbox-exec. No credentials
-are needed for the scripted exercise after the pinned dependencies are installed.
+`factory_engine/` supplies the factory so this chapter can start alone.
+To change the card, change the public task; the builder writes the code and
+separate tests judge it. The offline path makes no provider request. Product
+integration and restart are later steps.
+
+The network-blocking protected check requires macOS sandbox-exec. Without it,
+the gate reports that it could not run, with exit 2, before judging the attempt.
+No credentials are needed for the scripted exercise after installation.

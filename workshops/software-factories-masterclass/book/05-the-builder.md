@@ -25,15 +25,23 @@ Use a fresh folder beside your clone. Run these commands from the folder that co
 
 ```bash
 export REPO=~/rasa-community-resources
-export WORK="$REPO/../my-factory-ch05"
-test ! -e "$WORK" && cp -R "$REPO/workshops/software-factories-masterclass/book/ready/ch05" "$WORK"
-cd "$WORK"
-uv venv --python 3.12 .venv
-source .venv/bin/activate
-uv pip install -r requirements.txt
+export WORK=~/factory-work/my-factory-ch05
+if [ -e "$WORK" ]; then
+  printf '%s\n' 'Refused: that folder already exists. Choose a fresh WORK name.'
+else
+  mkdir -p ~/factory-work &&
+  cp -R "$REPO/workshops/software-factories-masterclass/book/ready/ch05" "$WORK" &&
+  cd "$WORK" &&
+  uv venv --python 3.12 .venv &&
+  . .venv/bin/activate &&
+  uv pip install -r requirements.txt
+fi
 ```
 
-If the copy refuses because the folder exists, choose a fresh `WORK` name. Do not merge a ready folder into old results. The installation downloads the pinned dependencies once; it does not read a license or an API key.
+The refusal leaves your current directory and earlier work unchanged; it does not
+run setup inside the old folder or close your terminal. If it refuses, edit the
+`WORK` line to a fresh name and repeat the whole block. The installation downloads
+the pinned dependencies once; it does not read a license or an API key.
 
 ## See how it works
 
@@ -47,7 +55,11 @@ If the copy refuses because the folder exists, choose a fresh `WORK` name. Do no
 
 2. Open the evidence page in another terminal, with the same `WORK` folder:
 
+   Set the folder again: a new terminal does not inherit `WORK`. If you chose a
+   different name during setup, use that same name here.
+
    ```bash
+   export WORK=~/factory-work/my-factory-ch05
    cd "$WORK"
    .venv/bin/python factory_engine/factory_console.py runs/see/run --port 8943
    ```
@@ -106,30 +118,38 @@ python check_build.py attempts/mine
 
 This must exit 0 and print `ch05 OK`: your chosen limit, a completed builder session, protected ACCEPT and the exact exported files all agree. It fails in the ready folder before your change. The offline path is the core exercise; it is not a funded model result or a product restart.
 
-Keep `tasks/b-limit-currencies.json` **and** `attempts/mine` together when continuing to the gates and integration exercises. Copy both into a fresh later ready folder before running it, so its default limit does not replace your choice. Do not copy `runs/`, credentials or the virtual environment.
+To continue with the same chosen limit, use the later chapter's `set_limit.py N`,
+with your number in place of `N`. It keeps that chapter's protected-test pins and
+makes a compatible offline attempt. To carry this exact checked attempt instead,
+copy **both** `tasks/b-limit-currencies.json` and `attempts/mine` into the later
+ready folder after its setup and before its **See how it works** steps. Start with
+a fresh destination for the attempt; do not merge it into another attempt. If the
+protected-test fingerprints differ, use the later ready folder and regenerate
+there. Never edit protected tests to force a match. Do not copy credentials,
+`runs/` or the virtual environment.
 
 ## Optional: use a funded model session
 
 The scripted result above does not test a model. To use the real API, you need your own `OPENAI_API_KEY` in the builder process environment. Never put its value on a command line, in this task or in a committed file.
 
-There is **no per-session money cap**. The provider rejected the `spend_control` field in a bounded run on 22 October 2026, so the driver sends no such field. The actual hard cap is the provider project's budget, controlled by the account owner. The builder is locally bounded to 30 tool calls, a 120-second deadline, a 20-second transport timeout, one named model and no retry loop. These bounds limit execution; they do not guarantee a monetary ceiling.
+There is **no per-session money cap**. The provider rejected the `spend_control` field in a bounded run on 22 October 2026, so the driver sends no such field. An account owner can configure an **enforced hard project or organization spend limit**. A budget alert alone does not stop requests. Enforcement can lag slightly, so recorded spend may exceed the configured amount. See the [official spend-limit guide](https://developers.openai.com/api/docs/guides/spend-limits). No account settings have been inspected by this chapter. The builder is locally bounded to 30 tool calls, a 120-second deadline, a 20-second transport timeout, one named model and no retry loop. These bounds limit execution; they do not guarantee a monetary ceiling.
 
 Before a paid run, check your account budget and state an expected cost range from the model's current price and your planned usage. No measured live price is supplied by this offline exercise. Enter the model and your expected range in cents; these prompts never ask for a key:
 
 ```bash
-read -r -p 'Model approved for your Agents session: ' MODEL
-read -r -p 'Expected lower cost, USD cents: ' MIN
-read -r -p 'Expected upper cost, USD cents: ' MAX
+printf 'Model approved for your Agents session: '; IFS= read -r MODEL
+printf 'Expected lower cost, USD cents: '; IFS= read -r MIN
+printf 'Expected upper cost, USD cents: '; IFS= read -r MAX
 python build.py tasks/b-limit-currencies.json attempts/funded --live \
   --model "$MODEL" --expected-cost-cents-min "$MIN" --expected-cost-cents-max "$MAX"
 ```
 
-Inspect the resulting native status, file actions and protected decision. Then inspect actual usage on the provider's account page. During the workshop rehearsal, run at most three funded builder sessions and record each outcome and actual cost. If a session fails, becomes incomplete or hits a limit, it cannot produce ACCEPT. Preserve the evidence and use the offline path; do not run a retry loop.
+Inspect the resulting native status, file actions and protected decision. Then inspect actual usage on the provider's account page. Run at most three funded builds in a practice session, recording each outcome and actual cost. If a session fails, becomes incomplete or hits a limit, it cannot produce ACCEPT. Preserve the evidence and use the offline path; do not run a retry loop.
 
 ## If it fails
 
 - **Choose a new attempt name:** the factory preserves earlier runs. Use a fresh name rather than deleting evidence.
 - **No module named zeo_core or openai:** activate this chapter's environment and repeat its pinned installation.
-- **Protected tests cannot run:** check Python and macOS setup. A setup failure is not ACCEPT or evidence that the requested change is wrong.
+- **Protected tests cannot run:** missing macOS sandbox support prints `could not run: this check needs macOS` and exits 2 before a model request or test. Pair with someone on a Mac or follow along on screen. Check Python setup too. A setup failure is not ACCEPT or evidence that the requested change is wrong.
 - **The live session could not complete:** inspect its fixed status/error record under `runs/NAME/run/native.json`; no raw provider body is displayed. Use the scripted exercise while resolving the API or account restriction.
 - **The exported files differ:** do not patch them by hand. Make a new task/attempt and let the builder and gates decide again.
