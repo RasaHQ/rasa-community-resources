@@ -139,8 +139,9 @@ malformed `activate` call) and per-minute rate limits; both end the turn
 with an empty reply. The router behaviour above held in every run whose
 LLM call succeeded.
 
-**Not retested:** the Groq model-availability notes are the author's
-historical observations.
+**Groq model pin:** every run above used `qwen/qwen3.8-27b`, so the
+current pin works. The earlier `qwen/qwen3.6-27b` retirement is from the
+author's notes and was not re-checked.
 
 The source-level memory check (no licence or LLM needed) gives the same
 answer: in `3.19.0.dev5`, `memory.yml` is in the engine's
