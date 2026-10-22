@@ -2,17 +2,15 @@
 
 A traveler asks for a shorter currency list. The change looks small, but someone still has to write it and prove that the card respects the limit. Hand that request to a builder and keep the checks outside its reach.
 
-Time: about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), a clone of this repository and macOS for the network-blocking test. After the first installation, the core exercise works offline and needs no key. A funded model session is an optional extra.
-
-You're done when `ch05 OK` confirms that your chosen limit, the protected ACCEPT and the exported files agree.
+Time: about 20 minutes after installation. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), a clone of this repository and macOS for the network-blocking test. After installation you can do the exercise offline without a key. A paid model run is optional.
 
 If you get stuck, use [the ready folder](ready/ch05) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used here
 
-A **builder** proposes changed files. A **tool** is a function it may ask to run: here, list files, read a file or write a file. A **scratch copy** is a disposable copy of the product. The original product stays untouched. An **attempt** holds the proposed files; the code sometimes calls it a candidate.
+A **builder** proposes changed files. A **tool** is a function it may ask to run: here, list files, read a file or write a file. A **scratch copy** is a disposable copy of the product. The original product stays untouched. An **attempt** holds the proposed files.
 
-The OpenAI Agents API is the service that runs a model session and its tool requests. **Core** is the shared Python package that connects this factory to that service. In the offline exercise, a **scripted stream** supplies known file actions to the same Core connection. It makes no model request and does not measure a model's ability.
+The OpenAI Agents API runs a model session and its tool requests. **Core** is the Python package that connects the factory to that service. For this exercise, a **scripted stream** sends prepared file actions through the same connection.
 
 ```mermaid
 flowchart LR
@@ -21,7 +19,7 @@ flowchart LR
     C --> D[ACCEPT or REJECT]
 ```
 
-The builder cannot read the protected tests. A successful tool call does not mean the change is correct.
+The factory keeps the protected tests outside the scratch copy, where the builder cannot read them.
 
 ## Get the ready folder
 
@@ -120,7 +118,7 @@ From `WORK`, with its environment active:
 python check_build.py attempts/mine
 ```
 
-This must exit 0 and print `ch05 OK`: your chosen limit, a completed builder session, protected ACCEPT and the exact exported files all agree. It fails in the ready folder before your change. The offline path is the core exercise; it is not a funded model result or a product restart.
+This must exit 0 and print `ch05 OK`: your chosen limit, a completed builder session, protected ACCEPT and the exact exported files all agree. It fails in the ready folder before your change. Use this check before carrying the attempt into another exercise.
 
 To continue with the same chosen limit, use the later chapter's `set_limit.py N`,
 with your number in place of `N`. It keeps that chapter's protected-test pins and
@@ -132,7 +130,7 @@ protected-test fingerprints differ, use the later ready folder and regenerate
 there. Never edit protected tests to force a match. Do not copy credentials,
 `runs/` or the virtual environment.
 
-## Optional: use a funded model session
+## Optional: ask a model to make the change
 
 The scripted result above does not test a model. To use the real API, you need your own `OPENAI_API_KEY` in the builder process environment. Never put its value on a command line, in this task or in a committed file.
 
@@ -148,7 +146,7 @@ python build.py tasks/b-limit-currencies.json attempts/funded --live \
   --model "$MODEL" --expected-cost-cents-min "$MIN" --expected-cost-cents-max "$MAX"
 ```
 
-Inspect the resulting native status, file actions and protected decision. Then inspect actual usage on the provider's account page. Run at most three funded builds in a practice session, recording each outcome and actual cost. If a session fails, becomes incomplete or hits a limit, it cannot produce ACCEPT. Preserve the evidence and use the offline path; do not run a retry loop.
+Inspect the resulting native status, file actions and protected decision. Then inspect actual usage on the provider's account page. Run at most three paid builds in a practice session, recording each outcome and actual cost. If a session fails, becomes incomplete or hits a limit, it cannot produce ACCEPT. Preserve the evidence and use the offline path; do not run a retry loop.
 
 ## If it fails
 
@@ -157,3 +155,15 @@ Inspect the resulting native status, file actions and protected decision. Then i
 - **Protected tests cannot run:** missing macOS sandbox support prints `could not run: this check needs macOS` and exits 2 before a model request or test. Pair with someone on a Mac or follow along on screen. Check Python setup too. A setup failure is not ACCEPT or evidence that the requested change is wrong.
 - **The live session could not complete:** inspect its fixed status/error record under `runs/NAME/run/native.json`; no raw provider body is displayed. Use the scripted exercise while resolving the API or account restriction.
 - **The exported files differ:** do not patch them by hand. Make a new task/attempt and let the builder and gates decide again.
+
+## Good to know
+
+The scripted stream makes no model request. It shows the file tools and checks, rather than measuring a model's ability. A successful file-tool call still needs a protected ACCEPT, and this exercise exports files without restarting the product.
+
+You're done when `ch05 OK` confirms that your chosen limit, the protected ACCEPT and the exported files agree.
+
+## What you just learned
+
+You asked a builder for a currency limit and checked the files it produced against that request. Keep the task with those files so the next exercise can judge the same change.
+
+Next: [judge the attempt](06-the-gates-and-the-decision.md).

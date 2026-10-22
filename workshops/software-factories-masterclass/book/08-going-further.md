@@ -2,9 +2,7 @@
 
 A worker crashes before it records a verdict. Your team needs the change finished, but retrying without checking the earlier result could repeat work that already happened. Set a retry allowance and see when the factory stops and asks for help.
 
-Time: about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/) and a clone of this repository. This chapter includes its complete code. It uses only Python's standard library: no model, account, license or network request is needed after Python is installed. The earlier chapters explain the builder and the protected checks; you can run this checkpoint on its own.
-
-You're done when `ch08 OK` confirms that your proposal passes, the baseline fails and recovery ends as your chosen allowance requires.
+Time: about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/) and a clone of this repository. Use the supplied code with Python's standard library; no model, account, license or network request is needed after Python is installed. You can start here without completing the earlier chapters.
 
 If you get stuck, use [the ready folder](ready/ch08) and follow **Get the ready folder** below in a fresh work folder.
 
@@ -23,7 +21,7 @@ flowchart LR
     D -->|No| E[ESCALATE to a person]
 ```
 
-The exercise changes a small JSON configuration. It does not change the earlier market card or restart your agent. Keeping this request small lets you see the recovery rule without paying for more builder calls.
+You will change a JSON setting that controls how many attempts the factory allows. The small request lets you follow each attempt from the first crash to the recorded outcome.
 
 ## Get the ready folder
 
@@ -43,7 +41,7 @@ else
 fi
 ```
 
-If the folder exists, choose a new `WORK` name and repeat the block. Earlier evidence stays intact. There is no package installation command: this checkpoint has no third-party dependencies. Python 3.12 is the tested runtime; other versions return NOT_READY when the verifier checks the environment.
+If the folder exists, choose a new `WORK` name and repeat the block. Earlier evidence stays intact. There is no package installation command: this checkpoint has no third-party dependencies. Use Python 3.12; other versions return NOT_READY when the verifier checks the environment.
 
 ## See how it works
 
@@ -61,7 +59,7 @@ If the folder exists, choose a new `WORK` name and repeat the block. Earlier evi
    - `acceptance/c_recovery_policy.py` checks the count, the exact fields and the rule that REJECT is never retried.
    - `recover.py` records a crash, retries within the chosen allowance and stops on a verdict or escalation.
 
-   The builder receives the public request; it does not read the protected tests. The verifier uses the same factory engine introduced earlier, with a data-only profile. It never imports or executes the proposed configuration. This is different from earlier chapters' Python product tests, which require the macOS sandbox. Only the data-only profile is exercised here; it is not permission to run untrusted Python without that sandbox.
+   The builder receives the public request. The factory keeps the protected tests separate and checks the JSON as data, without importing or executing it.
 
 ## Now change it
 
@@ -102,7 +100,7 @@ You choose a requirement. The supplied builder changes the JSON; you do not edit
 
    You see `DUPLICATE`, the stored outcome and `Recovery attempts executed in this invocation: 0`. The ledger remembers ACCEPT, REJECT and ESCALATE for the same work. A changed task, proposal, baseline, verifier, test suite or runtime is different work.
 
-   Keep the ledger and run folders. This is a single-process teaching example, not a production job queue. It does not promise exactly-once execution: a process killed after doing work but before saving could repeat that work. Real deployments also need coordination between workers and safe handling of external effects such as sending a payment.
+   Keep the ledger and run folders so you can see why the repeated request did no more work.
 
 ## You are done when
 
@@ -128,8 +126,22 @@ It starts `WHAT-IF`: these are numbers you supplied, not measured results. It en
 
 ## If it fails
 
-- **NOT_READY:** use Python 3.12. A setup problem is not a verdict on the change. This checkpoint calls a setup failure NOT_READY; earlier chapters call it “could not run”. Neither means REJECT.
+- **NOT_READY:** use Python 3.12. A setup problem is not a verdict on the change. This exercise calls a setup failure NOT_READY; earlier chapters call it “could not run”. Neither means REJECT.
 - **An attempt or measurement folder already exists:** keep it and start the chapter in a fresh `WORK` folder. Do not erase evidence to obtain a cleaner result.
 - **ESCALATE with one attempt:** that is expected. Run the completion check. To explore three attempts, start a fresh folder and request 3.
 - **A proposal changed after ACCEPT:** let the builder make a fresh proposal in a fresh exercise folder. Do not edit the protected tests or ledger to make the completion check pass.
 - **You want a real timeout test:** the controlled classroom fault is a crash, not a measured timeout. `recover.py` also bounds the verifier subprocess by a deadline; that mechanism needs separate platform testing before deployment.
+
+## Good to know
+
+This exercise changes the recovery configuration, without changing the earlier market card or restarting an agent. Its data-only checks do not replace the macOS sandbox needed for Python product tests.
+
+The ledger has a single writer. A process killed after doing work but before saving could repeat that work, so a production system also needs coordination between workers and care with effects such as payments.
+
+You're done when `ch08 OK` confirms that your proposal passes, the baseline fails and recovery ends as your chosen allowance requires.
+
+## What you just learned
+
+You set an attempt allowance and watched a crash lead to a retry or an escalation. The saved outcome let you repeat the request without executing the same attempts again.
+
+Next: use [the book index](README.md) to choose the part of your own factory you want to change.

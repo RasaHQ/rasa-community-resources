@@ -2,15 +2,13 @@
 
 A traveler sees a daily exchange rate labeled as live and plans a purchase around it. The card looks plausible, but its claim is wrong. You need a gate that rejects it and says which requirement failed.
 
-Time: about 15 minutes. You need: Chapter 4, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README). Chapter 5 builds the live builder on the OpenAI Agents API. Here you use the scripted builder, so this chapter works offline.
-
-You're done when `ch06 OK` confirms that your attempt is accepted and the attempt that ignores your limit is rejected by the named check.
+Time: about 15 minutes after installation. You need: Chapter 4, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README). Chapter 5 shows a builder using the OpenAI Agents API. Here you use the scripted builder, which works offline.
 
 If you get stuck, use [the ready folder](ready/ch06) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used in this chapter
 
-- **Attempt:** one try at the task, kept as a folder with only the files it changed. (The code calls it a candidate.)
+- **Attempt:** one try at the task, kept as a folder with only the files it changed.
 - **Gate:** one check an attempt must pass before the next one runs.
 - **Decision:** ACCEPT (every gate passed), REJECT (a gate failed, and the decision names it) or could not run (a problem with the machine).
 - **Exit code:** the number a program gives back when it ends. 0 is success, 1 is rejected, 2 is could not run.
@@ -55,7 +53,7 @@ uv pip install zeocore==0.35.6 httpx==0.28.1
 
 ## Now change it
 
-Now ask for the change: have a builder make an attempt for your task, and let the gates decide.
+Set the currency limit you want, ask the builder for an attempt, then run both the good and bad attempts through the gates.
 
 The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first by replacing the 2 below with your number. This also makes the builder's attempt again for the new number:
    ```bash
@@ -74,7 +72,7 @@ The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 
    python run_a6.py tasks/b-limit-currencies.json attempts/b-ignores-limit
    ```
 
-   Yours prints `ACCEPT`. The other prints `REJECT` and names `test_b1_...`: it showed more currencies than your limit. You wrote no code, and the decision isn't yours: the gates made it.
+   Yours prints `ACCEPT`. The other prints `REJECT` and names `test_b1_...`: it showed more currencies than your limit. Read that name to find the requirement the attempt broke.
 
 ## You are done when
 
@@ -100,3 +98,15 @@ It passes only when your attempt is accepted (exit code 0) and the attempt that 
 - `could not run: this check needs macOS`: the gate needs a Mac. Pair with someone on a Mac, or follow along on screen.
 - `could not run: the protected file ... does not match`: the fingerprints don't match the files. Copy the ready folder again.
 - `Set a limit from 1 to 3`: run `python set_limit.py 2` first.
+
+## Good to know
+
+A setup failure stops the gate before it can judge the change. Keep that result separate from a REJECT that names a failed product check.
+
+You're done when `ch06 OK` confirms that your attempt is accepted and the attempt that ignores your limit is rejected by the named check.
+
+## What you just learned
+
+You saw the gates accept your attempt and reject an attempt that ignored the currency limit. The named failure tells you which requirement to inspect before asking the builder for another attempt.
+
+Next: [put an accepted change into the product](07-integrate-and-run-it-dark.md).
