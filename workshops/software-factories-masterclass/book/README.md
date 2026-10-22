@@ -26,19 +26,19 @@ Every chapter has the same parts:
 4. **Checkpoint**, a finished folder for that chapter under `checkpoints/`, so you can start at any chapter
    without doing the earlier ones.
 
-Each chapter builds on the one before it, and every chapter after Chapter 0 can start from the earlier checkpoint.
+Each chapter builds on the one before it, and every chapter after Chapter 0 can start from the earlier checkpoint. Each "you are done when" check fails at the chapter's start checkpoint and passes at its end.
 
 ## The chapters
 
 | Chapter | Title | You build | You are done when |
 | --- | --- | --- | --- |
-| [0](00-run-the-finished-agent.md) | Run the finished agent | Clone, set up and run the briefing agent, and see its four cards | The doctor shows your licence and key as SET, and the four cards show for a live flight |
+| [0](00-run-the-finished-agent.md) | Run the finished agent | Clone, set up and run the briefing agent, and see its four cards | The doctor passes and the four recorded cards show (a live flight is the extra, not the check) |
 | [1](01-what-a-mantle-agent-is.md) | What a Rasa Mantle agent is | Read and change the briefing skill and its tool | The changed skill trains and its test passes |
 | [2](02-cards-from-real-sources.md) | Cards from real sources | How cards, the renderer and the four public readers fit together | The card test passes with the label rules held |
 | [3](03-the-factorys-parts.md) | The factory's parts | The task, the protected acceptance suite, the gates and the decision | `factory.py` ACCEPTs the good candidate and REJECTs the bad ones |
 | [4](04-write-the-task-and-its-acceptance-first.md) | Write the task and its acceptance first | The market card task and its hidden suite, before any code | The suite fails on the baseline, for the right reasons |
-| [5](05-the-builder.md) | The builder, on the OpenAI Agents API | A builder session with file tools confined to a scratch copy | The builder produces a candidate change |
-| [6](06-let-the-factory-build-the-card.md) | Let the factory build the market card | The whole loop, from task to ACCEPT and integration | The market card appears in your own running agent |
+| [5](05-the-builder.md) | The builder, on the OpenAI Agents API | A builder session with file tools confined to a scratch copy | The builder produces a candidate change in an offline run, and a live run is the extra |
+| [6](06-let-the-factory-build-the-card.md) | Let the factory build the market card | The whole loop, from task to ACCEPT and integration | The offline run ends in ACCEPT and the market card shows in your agent (a live builder is the extra) |
 | [7](07-going-dark.md) | Going dark | Policy, measurement, recovery and escalation | The measure and recover commands run on your own factory |
 
 ## Honest limits
