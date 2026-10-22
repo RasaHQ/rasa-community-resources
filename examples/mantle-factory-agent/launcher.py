@@ -71,6 +71,7 @@ def run(args):
         raise ValueError('Expiry must be a future UTC timestamp.')
     for bind, port in [(host, 8947), (host, 5007), ('127.0.0.1', 8948)]:
         with socket.socket() as probe:
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             probe.bind((bind, port))
     if not PYTHON.is_file():
         raise ValueError('Run ./demo setup first.')
@@ -137,7 +138,11 @@ def run(args):
                 child.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 os.killpg(child.pid, signal.SIGTERM)
-                child.wait(timeout=5)
+                try:
+                    child.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    os.killpg(child.pid, signal.SIGKILL)
+                    child.wait(timeout=5)
         for log in logs:
             log.close()
 

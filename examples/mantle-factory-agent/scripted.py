@@ -45,8 +45,16 @@ class ScriptedClient:
         offered = {t.get('function', {}).get('name') for t in kwargs.get('tools') or []}
         results = [gate_record(m.get('content')) for m in messages[latest + 1:] if m.get('role') == 'tool']
         result = next((v for v in reversed(results) if v), None)
-        if len(results) > 6:
-            return LLMResponse(id='scripted', created=0, choices=['NOT_READY: tool result was not validated; stopped instead of retrying.'])
+        gate_ids = set()
+        for message in messages[latest + 1:]:
+            for call in message.get('tool_calls') or []:
+                if call.get('function', {}).get('name') in ('run_factory', 'mcp/factory:run_factory'):
+                    gate_ids.add(call.get('id'))
+        received_gate = any(m.get('role') == 'tool' and (
+            m.get('name') in ('run_factory', 'mcp/factory:run_factory') or
+            m.get('tool_call_id') in gate_ids) for m in messages[latest + 1:])
+        if received_gate and result is None:
+            return LLMResponse(id='scripted', created=0, choices=['NOT_READY: the tool returned no valid gate record; no automatic retry.'])
         if result:
             return LLMResponse(id='scripted', created=0, choices=[verdict_text(result)])
         if not text or text.startswith('/session_start'):
