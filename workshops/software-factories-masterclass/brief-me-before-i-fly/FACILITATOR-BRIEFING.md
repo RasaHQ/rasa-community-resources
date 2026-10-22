@@ -3,7 +3,10 @@
 sow: software-factories-masterclass-SOW-02
 
 Thursday 22 October 2026, 14:30 to 17:30 London (13:30 to 16:30 UTC), in person, three hours. If the Wednesday 19:00 UTC rehearsal is not green by 21:00 UTC, run the frozen plan in `../FACILITATOR.md` at its pinned commit instead and say nothing about this one.
-Status of everything marked [PRODUCT]: depends on the companion `examples/mantle-flight-briefing-openai-agents` being merged and pinned, and on one clean facilitator rehearsal. Fill in `<PINNED_COMMIT>` once known.
+Status of everything marked [PRODUCT]: depends on the companion `examples/mantle-flight-briefing-openai-agents` being merged and pinned, and on one clean facilitator rehearsal. The commits to use are named in the next section.
+
+## Which commit is which
+Participants use the class commit `74adca16483ed8444a2c89121bc63cc4bac52332`. The prework addendum names it. The facilitator's live check uses main `66c5d71eb79961e5af6ad86eafdd7693b7e244bc` and follows section 7 of the project README at that commit. The live Agents API leg isn't run in class, as section 7 says. If the facilitator is on the newer commit, nothing changes for participants.
 
 ## What you say first, and what you never say
 Say: this is a Rasa-organized class. Rasa Mantle is the center. A dark software factory is how the Mantle agent is built and extended.
@@ -14,7 +17,7 @@ Say aloud at the start: If you see SCRIPTED on your screen, nothing live ran. Th
 - Environment as in the companion README: two shells, the same runtime-only `BRIEFING_MCP_TOKEN` (at least 32 characters, never written to a file), the worker interpreter and the project interpreter, both built from the resource-owned locks with the verified dev17 wheel (sha256 724fab71d1472aaf8968c2eea7f63f6a9698850ca169d4c84a6484f0ef6e8f40).
 - Shell 1, from the example folder: `worker/.venv/bin/python -m briefing`. Shell 2, from `project/`: `.venv/bin/rasa train` then `.venv/bin/rasa inspect`.
 - Keys (decision of 2026-10-21): participants run the product on keys handed out IN CLASS, read only from the environment: `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY`. Participants bring none. No contributor holds, requests or sees a key; the organizer hands them out by his own method and revokes them after the class. Never type a key into a file, a chat, an email or a screenshot. The doctor command (`class_doctor.py` in the example folder, run with the project interpreter) prints SET or MISSING for each key, never the value, and says which path will run: live OpenAI, live Anthropic or SCRIPTED. The scripted replay (`scripted_demo.py`, same folder and interpreter) always works and is labeled SCRIPTED on screen. Say which path is shown, every time.
-- Participants' prework: the earlier one (c894ff24) PLUS the addendum in `PREWORK-ADDENDUM-DRAFT` (the class commit, two environments, `class_doctor.py --scripted`, `scripted_demo.py`), which the organizer sends before the class. Participants then already hold `<PINNED_COMMIT>` and the two environments. If someone did not run it: they pair with someone who did. Check before the day that the factory lock did not change: `git diff e2a286a8e496aeee0ad2a695031165361693ea8a <PINNED_COMMIT> -- workshops/software-factories-masterclass/factory/uv.lock` prints nothing.
+- Participants' prework: the earlier one (c894ff24) PLUS the addendum in `PREWORK-ADDENDUM-DRAFT` (the class commit, two environments, `class_doctor.py --scripted`, `scripted_demo.py`), which the organizer sends before the class. Participants then already hold `74adca16483ed8444a2c89121bc63cc4bac52332` and the two environments. If someone did not run it: they pair with someone who did. Check before the day that the factory lock did not change: `git diff e2a286a8e496aeee0ad2a695031165361693ea8a 74adca16483ed8444a2c89121bc63cc4bac52332 -- workshops/software-factories-masterclass/factory/uv.lock` prints nothing.
 
 ## Schedule (UTC / London)
 | UTC | London | Min | Block |
@@ -41,7 +44,7 @@ Say aloud at the start: If you see SCRIPTED on your screen, nothing live ran. Th
 - Ask each pair to pick one scenario and name the edit to the product that would make it fail.
 
 ### 14:05 What Mantle compiles can be graded offline (30 min)
-- Participants (already on `<PINNED_COMMIT>` from the addendum), from `workshops/software-factories-masterclass/brief-me-before-i-fly`:
+- Participants (already on `74adca16483ed8444a2c89121bc63cc4bac52332` from the addendum), from `workshops/software-factories-masterclass/brief-me-before-i-fly`:
   1. Read `project/skills/briefing/skill.md`.
   2. Write down which of the fourteen edits the suite will reject.
   3. `MANTLE_PROJECT=$PWD/project PYTHONPATH=../factory ../factory/.venv/bin/python acceptance/a6_briefing.py` (15 tests OK), then `../factory/.venv/bin/python grade_variants.py project` (baseline ACCEPT, fourteen REJECT, each with its failing check).
