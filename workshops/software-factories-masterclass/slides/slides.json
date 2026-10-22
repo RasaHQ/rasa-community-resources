@@ -29,30 +29,30 @@
   },
   {
     "title": "A software factory turns a request into a checked change.",
-    "sub": "The same steps every time, so you can trust the result without reading every line.",
-    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Write the request</h2><p>Say what should change, and how you will know it worked.</p></article><article><span class=\"num\">02</span><h2>Let a builder make it</h2><p>A coding agent edits a spare copy of the product, never the real one.</p></article><article><span class=\"num\">03</span><h2>Check it independently</h2><p>Tests the builder cannot see or edit decide ACCEPT or REJECT.</p></article></div>",
-    "notes": "Assume nobody has heard the term. A factory here is not a building: it is a fixed routine that every change goes through. The point is trust: coding agents often report success when the change is wrong, and nobody can read every line they write. The factory replaces reading with checking.",
+    "sub": "The same steps every time, so you can check the result without reading every line.",
+    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Write the request</h2><p>Say what should change, and how you will know it worked.</p></article><article><span class=\"num\">02</span><h2>Let a builder make it</h2><p>A coding agent edits a spare copy of the product, never the real one.</p></article><article><span class=\"num\">03</span><h2>Check it independently</h2><p>Acceptance tests that the builder can’t see or edit decide ACCEPT or REJECT.</p></article></div>",
+    "notes": "Assume nobody has heard the term. A factory here isn’t a building. It is a fixed routine that every change goes through. The point is trust: coding agents often report success when the change is wrong, and nobody can read every line they write. The factory replaces reading with checking.",
     "kind": ""
   },
   {
     "title": "A dark factory runs with the lights off.",
     "sub": "Machines build and check. People set the rules and handle the exceptions.",
-    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Where the name comes from</h2><p>Some car and electronics plants run so automated that the lights can stay off.</p></article><article><span class=\"num\">02</span><h2>In software</h2><p>No person reads each change. The checks decide, and anything unusual goes back to a person.</p></article><article><span class=\"num\">03</span><h2>What it needs</h2><p>Clear requests, tests the builder cannot bend, and a release rule people agree on.</p></article></div>",
-    "notes": "Lights-out manufacturing is the image. Stress that dark does not mean unsupervised: people decide what good looks like and own the exceptions. Today you build a small version of this: request, builder, protected checks, decision.",
+    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Where the name comes from</h2><p>Some car and electronics plants run so automated that the lights can stay off.</p></article><article><span class=\"num\">02</span><h2>In software</h2><p>No person reads each change. The checks decide, and anything unusual goes back to a person.</p></article><article><span class=\"num\">03</span><h2>What it needs</h2><p>Clear requests, tests the builder can’t bend, and a release rule people agree on.</p></article></div>",
+    "notes": "Lights-out manufacturing is the image. Stress that dark doesn’t mean unsupervised: people decide what good looks like and own the exceptions. Today you build a small version of this: request, builder, protected checks, decision.",
     "kind": ""
   },
   {
     "title": "Rasa Mantle is how we build the travel agent.",
     "sub": "A framework from Rasa for agents that talk with people and use tools.",
-    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>It runs the conversation</h2><p>It reads what the traveler types and keeps track of what is already known, such as the flight and the meeting.</p></article><article><span class=\"num\">02</span><h2>It decides when to use a tool</h2><p>Skills, written in plain files, say when to search flights or build a briefing.</p></article><article><span class=\"num\">03</span><h2>It keeps the agent in bounds</h2><p>The project files set which tools exist and what the agent may do. You test it in the Inspector, a chat window in the browser.</p></article></div>",
+    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>It runs the conversation</h2><p>It reads what the traveler types and keeps track of the flight and the meeting.</p></article><article><span class=\"num\">02</span><h2>It decides when to use a tool</h2><p>Skills, written in plain files, say when to search flights or build a briefing.</p></article><article><span class=\"num\">03</span><h2>It keeps the agent in bounds</h2><p>The project files set which tools exist and what the agent may do. You test it in the Inspector, a chat window in the browser.</p></article></div>",
     "notes": "Introduce Mantle as the product people talk to. A Mantle agent is a folder of files: agent.yml, skills and tool connections. In today's exercises the choice of tool is scripted so results repeat; the flight, weather and rate data are real or a labeled recording. Chapter 1 of the book opens the folder and shows each part.",
     "kind": ""
   },
   {
     "title": "The OpenAI Agents API runs a coding agent for us.",
     "sub": "You describe the agent. OpenAI's service runs its work, step by step.",
-    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>You give it a job</h2><p>A model, instructions and the tools it may use, such as reading and writing files.</p></article><article><span class=\"num\">02</span><h2>It runs the loop for you</h2><p>The service thinks, calls a tool, reads the result and continues until the job is done.</p></article><article><span class=\"num\">03</span><h2>In our factory it is the builder</h2><p>It edits a spare copy of the product. It never sees the tests that decide.</p></article></div>",
-    "notes": "This is the OpenAI Agents API, a hosted service. It is not the OpenAI Agents SDK, which is a separate Python library. Our code reaches the service through OpenAI's normal Python client. Running it costs money, so today you see a recording of a paid build and a scripted builder that makes no model calls. Chapter 5 shows how to run it yourself.",
+    "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>You give it a job</h2><p>A model, instructions and the tools it may use, such as reading and writing files.</p></article><article><span class=\"num\">02</span><h2>It runs the loop for you</h2><p>The service plans, calls a tool, reads the result and continues until the job is done.</p></article><article><span class=\"num\">03</span><h2>In our factory it is the builder</h2><p>It edits a spare copy of the product. It never sees the acceptance tests that decide.</p></article></div>",
+    "notes": "This is the OpenAI Agents API, a hosted service, and a different thing from the OpenAI Agents SDK, a separate Python library. Our code reaches the service through OpenAI's normal Python client. Running it costs money, so today you see a recording of a paid build and a scripted builder that makes no model calls. Chapter 5 shows how to run it yourself.",
     "kind": ""
   },
   {

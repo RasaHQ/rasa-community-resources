@@ -20,11 +20,11 @@ Use elapsed time. Explain the two lab blocks and the break. Do not teach every r
 
 ## 5. A software factory turns a request into a checked change.
 
-Assume nobody has heard the term. A factory here is not a building: it is a fixed routine that every change goes through. The point is trust: coding agents often report success when the change is wrong, and nobody can read every line they write. The factory replaces reading with checking.
+Assume nobody has heard the term. A factory here isn’t a building. It is a fixed routine that every change goes through. The point is trust: coding agents often report success when the change is wrong, and nobody can read every line they write. The factory replaces reading with checking.
 
 ## 6. A dark factory runs with the lights off.
 
-Lights-out manufacturing is the image. Stress that dark does not mean unsupervised: people decide what good looks like and own the exceptions. Today you build a small version of this: request, builder, protected checks, decision.
+Lights-out manufacturing is the image. Stress that dark doesn’t mean unsupervised: people decide what good looks like and own the exceptions. Today you build a small version of this: request, builder, protected checks, decision.
 
 ## 7. Rasa Mantle is how we build the travel agent.
 
@@ -32,7 +32,7 @@ Introduce Mantle as the product people talk to. A Mantle agent is a folder of fi
 
 ## 8. The OpenAI Agents API runs a coding agent for us.
 
-This is the OpenAI Agents API, a hosted service. It is not the OpenAI Agents SDK, which is a separate Python library. Our code reaches the service through OpenAI's normal Python client. Running it costs money, so today you see a recording of a paid build and a scripted builder that makes no model calls. Chapter 5 shows how to run it yourself.
+This is the OpenAI Agents API, a hosted service, and a different thing from the OpenAI Agents SDK, a separate Python library. Our code reaches the service through OpenAI's normal Python client. Running it costs money, so today you see a recording of a paid build and a scripted builder that makes no model calls. Chapter 5 shows how to run it yourself.
 
 ## 9. Two agents have different jobs.
 

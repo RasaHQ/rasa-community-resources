@@ -5,7 +5,7 @@ Use elapsed time. If the booked start is 14:30 London, the finish is 17:30. This
 | Elapsed | Example clock | Activity | Evidence / output |
 |---|---|---|---|
 | 00–10 | 14:30–14:40 | Teaser: the finished travel experience, then the build loop | Typed question (voice failed on the second turn in today's audio-file test), visual cards, one rejected change. Identify live, replay and scripted parts before showing them. |
-| 10–30 | 14:40–15:00 | Concepts, slides 4–16 | Participants can explain the two agents, independent verification and release boundary. |
+| 10–30 | 14:40–15:00 | Concepts, slides 4–16 | Participants can explain the two agents, independent verification and release boundary. Spend about 1 minute on each of slides 4 to 8 and about 1.5 minutes on each of slides 9 to 16, which is 17 minutes with a few spare. |
 | 30–40 | 15:00–15:10 | Form groups of 3–4; open the guide; choose track | One driver, one requirements owner, one evaluator, optional observer. |
 | 40–95 | 15:10–16:05 | Lab A at each group's pace | Brief, acceptance examples, first attempt and recorded verdict. |
 | 95–110 | 16:05–16:20 | Break and meet another group | Each group exchanges one failure case. |
