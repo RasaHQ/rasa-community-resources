@@ -27,6 +27,8 @@ class ScriptedStream:
         yield {'type': 'agent.session.turn.created', 'turn': {'id': 'scripted-factory-turn'}}
         for action in self.actions:
             result = self.handlers['write_file'](action)
+            # Core's SDK handlers return JSON text, just as the real SDK consumes.
+            result = json.loads(result) if isinstance(result, str) else result
             if not result.get('ok'):
                 raise ValueError('scripted_action_refused')
             yield {'type': 'scripted.file_action.completed'}
