@@ -43,8 +43,8 @@ const PARTS = ['The problem', 'The finished agent', 'The real question', 'The fa
 add(1, 'Build a *factory* that builds your agent.', 'Agents you can trust.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
 add(1, 'Meet *Sam*, due in New York tonight.', 'Four websites. One answer.', traveller({ title: 'Sam needs four checks' }));
 add(1, 'An *agent* can do Sam’s four checks.', 'An agent decides, then does.', traveller({ connected: true, title: 'One agent answers all four' }));
-add(1, 'Today (UTC): *see it*, *learn it*, *build it*.', 'Break 15:30.', scene('The plan for the day',
-  row([{ label: '13:30', sub: 'See' }, { label: '13:45', sub: 'Learn' }, { label: '14:15', sub: 'Build' }, { label: '14:45', sub: 'Practice' }, { label: '16:20', sub: 'Close' }], { y: 150, h: 360, gap: 30 })));
+add(1, 'Today in London: *see it*, *learn it*, *build it*.', 'Break 16:30.', scene('The plan for the day',
+  row([{ label: '14:30', sub: 'See' }, { label: '14:45', sub: 'Learn' }, { label: '15:15', sub: 'Build' }, { label: '15:45', sub: 'Practice' }, { label: '17:20', sub: 'Close' }], { y: 150, h: 360, gap: 30 })));
 // ---- Part 2: the finished agent
 add(2, 'Watch the agent answer Sam.', 'Type: Which flights are headed to New York?', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
 add(2, 'Every card says *where it came from*.', 'Every value is labeled.', scene('Four labels',
@@ -103,8 +103,8 @@ add(5, 'A run has *limits* and a secret key.', 'A key is a paid-service password
 add(5, 'Mantle is home. The API is the *builder*.', 'Next: we build.', tools({ labels: ['Rasa Mantle', 'Agent', 'OpenAI Agents API', 'Builder'], title: 'Mantle is home and the API is the builder' }));
 // ---- Part 6: we build the factory
 add(6, 'We build the factory in *five parts*.', 'Book chapters', chapters({ labels: ['Task', 'Tests', 'Builder', 'Checks', 'Integrate'], title: 'Five parts, five chapters' }));
-add(6, 'Judge a *good* change and a *bad* one.', '', scene('Run the gate on a good change and a bad one',
-  rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 110, '$ cd workshops/software-factories-masterclass/factory/a6-market-watchlist', 'mono on-dark', 'start')
+add(6, 'In your chapter 6 folder: judge a *good* change and a *bad* one.', '', scene('Run the gate on a good change and a bad one',
+  rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 110, '$ source .venv/bin/activate', 'mono on-dark', 'start')
   + text(60, 270, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-good', 'mono on-dark', 'start') + icon('check', 160, 350, 1.1, 'success').replace('icon success', 'icon" style="stroke:#C6FEE1;stroke-width:9')
   + text(60, 500, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-shows-live', 'mono on-dark', 'start') + icon('stop', 160, 580, 1.0, '').replace('icon ', 'icon" style="stroke:#FFB28C;stroke-width:9')), 'dark');
 // ---- Part 7: your turn

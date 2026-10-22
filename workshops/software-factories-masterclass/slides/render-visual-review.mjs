@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// sow: software-factories-masterclass-SOW-02
-// Component review only. Rasa-ops owns the finished deck's story and wording.
+// Component review only. The finished deck's story and wording live in build-deck.mjs.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

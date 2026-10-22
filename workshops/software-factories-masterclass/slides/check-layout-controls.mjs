@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// sow: software-factories-masterclass-SOW-02
 // Deliberately broken fixtures prove that the slide gate rejects each failure.
 import fs from 'node:fs/promises';
 import path from 'node:path';

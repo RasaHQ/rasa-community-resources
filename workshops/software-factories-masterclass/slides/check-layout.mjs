@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// sow: software-factories-masterclass-SOW-02
 // No runtime dependency is added to the offline deck. Supply an installed
 // playwright-core path with --playwright when running this development gate.
 import fs from 'node:fs/promises';
@@ -24,7 +23,6 @@ const sourceBytes = await fs.readFile(source);
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 await fs.mkdir(output, { recursive: true });
 const report = {
-  sow: 'software-factories-masterclass-SOW-02',
   createdAt: new Date().toISOString(),
   source, sourceSha256: sha256(sourceBytes),
   policy: { maximumSlides: 30, maximumBodyWords: 12, marginRatio: 0.06,

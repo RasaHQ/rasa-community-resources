@@ -1,5 +1,4 @@
-// sow: software-factories-masterclass-SOW-02
-// Rasa visual primitives, separate from rasa-ops' narrative/content ownership.
+// Rasa visual primitives, separate from the deck's story and wording.
 // Each scene has an accessible title. Its labels count toward the 12-word limit.
 const escape = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const text = (x, y, value, cls = 'label', anchor = 'start') => `<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}">${escape(value)}</text>`;

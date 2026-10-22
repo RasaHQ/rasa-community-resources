@@ -1,9 +1,7 @@
 # Masterclass visual system
 
-sow: software-factories-masterclass-SOW-02
-
 The designer supplies `visual-system.css`, `visual-diagrams.mjs` and
-`check-layout.mjs`. Rasa-ops owns the slide story and text in the single
+`check-layout.mjs`. The slide story and text live in `build-deck.mjs`, which writes the single
 offline `index.html`. These source helpers are build-time tools: inline the
 CSS and generated SVGs into that file. The final deck needs no module loader,
 package install, external font host or network connection.
@@ -56,9 +54,8 @@ network fetches or a visual under half the slide area. The visual measurement
 uses visible SVG marks, not an empty SVG container. Fixed deck chrome is also
 measured. A background panel can be part of a designed scene; geometry alone
 cannot prove that it communicates an idea. Inspect the screenshots and obtain
-dt-proofreader's teaching/read-aloud review and Council review independently.
+a teaching and read-aloud review, and a separate source review, independently.
 
-The 55-slide source at PR131 `4537736` is the recorded failure baseline.
 The visual-system design review is a component demonstration, not a replacement
 story, a completed deck or acceptance of the public preview.
 
