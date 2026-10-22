@@ -233,7 +233,7 @@ from that control. Final consumer review and preview rehearsal remain required.
 
 ## Voice, locally
 
-Run on your own Mac from this example directory. Keep the terminal running.
+Run on your own Mac from this example directory. Keep the terminal running. Create your own Deepgram API key at https://console.deepgram.com/ (Deepgram offers free starting credit).
 
 ```sh
 make env

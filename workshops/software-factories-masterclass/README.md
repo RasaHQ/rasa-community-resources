@@ -55,7 +55,7 @@ You will spend most of your time in four places:
 | `book/ready/` | Ready-made starting folders for chapter 0 and chapters 3 to 8 (`ch00`, `ch03` … `ch08`). Chapters 1 and 2 only read files and use the chapter 0 folder. If a chapter goes wrong, start again from its ready folder, as the chapter's "Get the ready folder" step shows. |
 | [`../../examples/`](../../examples/README.md) | The two finished agents from the class, each with its own README: the [travel agent](../../examples/mantle-flight-briefing-openai-agents/README.md) and the [dark software factory](../../examples/mantle-factory-agent/README.md). |
 
-**Where are the exercises?** Each chapter is an exercise. Open a chapter file, run what "See how it works" tells you to run, then do the task under **"Now change it"**. Chapters 1 and 2 have no change step: you read the agent's files and run a listing command. "You are done when" tells you how to check your work; most chapters end with a check that prints `chNN OK`. If something fails, read "If it fails" in the same chapter.
+**Where are the exercises?** Each chapter is an exercise. Open a chapter file, run what "See how it works" tells you to run, then do the task under **"Now change it"**. Chapters 1 and 2 have no change step: you read the agent's files and run a listing command. "You are done when" tells you how to check your work; several chapters end with a check that prints `chNN OK`. If something goes wrong in chapters 0 or 3 to 8, read the **If it fails** section at the end of the same chapter.
 
 To learn on your own, go through the chapters in order, from 0 to 8. Each one builds on the one before. You can point your own coding agent at a chapter file, but keep the acceptance tests out of its reach: that is the point of chapter 4.
 
@@ -92,7 +92,7 @@ In Track A checkpoint 3, the supplied task has `"limit": 2`. Its first build can
 
 - With a model choosing the tools, the travel agent was slow to answer in our rehearsal on 22 October. The scripted mode is the reliable path today.
 - Tool selection is **scripted** in the exercises so results are repeatable. Source data may be fetched, recorded or unavailable; read the card's label.
-- **Voice:** both finished agents can now be spoken to on your own Mac, with your own Deepgram key: `make run-voice` for the [travel agent](../../examples/mantle-flight-briefing-openai-agents/README.md) and `./demo run --voice --env-file .env` for the [factory](../../examples/mantle-factory-agent/README.md). Recorded-audio tests passed on 22 October; your own microphone is the first live test, so typing stays the reliable path.
+- **Voice:** both finished agents have an opt-in voice command for your own Mac and your own Deepgram key: `make run-voice` for the [travel agent](../../examples/mantle-flight-briefing-openai-agents/README.md) and `./demo run --voice --env-file .env` for the [factory](../../examples/mantle-factory-agent/README.md). A patched run completed a recorded-audio request on 22 October, and earlier unpatched attempts did not. Your own microphone has not been tested, so typing stays the reliable path.
 - The travel agent and coding builder run separately. Asking the travel agent to change its own code is not a completed capability.
 - The full journey, where you **ask by voice** for a new agent and the factory builds and releases it, is the next step. [BUILD-CONTRACT.md](BUILD-CONTRACT.md) describes what it needs.
 
