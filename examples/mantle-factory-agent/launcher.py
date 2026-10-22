@@ -94,7 +94,7 @@ def run(args):
                FACTORY_HOST=host, FACTORY_ALLOWED_PEERS=','.join(sorted(allowed)),
                FACTORY_VIEWER_NAME=args.viewer_name or host,
                FACTORY_BUILDER_MODE=args.builder_mode,
-               FACTORY_WORKER_PYTHON=str(Path(args.worker_python).absolute()),
+               FACTORY_WORKER_PYTHON=str(Path(args.worker_python).absolute()) if args.builder_mode == 'LIVE' else str(PYTHON),
                FACTORY_ENV_FILE=str(Path(args.env_file).resolve()) if args.env_file else '',
                FACTORY_EVIDENCE_ROOT=str(Path(args.evidence_root).resolve()),
                FACTORY_EXPIRES_AT=args.expires_at,
