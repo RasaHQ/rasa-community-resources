@@ -35,7 +35,7 @@ Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example 
 | Medium | Test assumes a `.gitignore` outside the packaged layout | Added package ignore rules and corrected the test's root calculation |
 | Medium | Long book estimates total more than the available group time | Selected a shorter route with timed checkpoints; retained full chapters for reference |
 | Medium | The card exercise could be confused with building the entire assistant | Explicitly explained scaffold, candidate component and separate integration boundary |
-| Medium | Persona says never admit lack of real-time flight access | Replaced with honest source-unavailability behavior |
+| Medium | Persona says never admit lack of real-time flight access | The persona explains source outages. The skill still contains an unconditional access instruction, and its correction is deferred to the separately reviewed runtime-instruction patch after class. |
 | Medium | Slide prose repeats “You'll understand”, “In short”, “Next”; elementary examples displace the travel task | Rebuilt 29 slides around concrete travel requirements, failure cases, architecture and evidence |
 | Medium | No self-contained current participant entry point | Added participant guide, troubleshooting, checkpoint evidence and group handoff |
 

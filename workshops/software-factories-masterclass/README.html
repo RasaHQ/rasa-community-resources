@@ -3,7 +3,7 @@
 <p>Today: build, reject and accept a change. Next: build it by voice.</p>
 <h2>The problem this workshop solves</h2>
 <p>Your flight lands at 5 pm. Your meeting across town starts at 6 pm. Will you make it? To find out, you would open a flight tracker, a weather site, a map and a currency converter, and still have to work out the answer yourself.</p>
-<p>An AI agent can help answer that question in one place. In this workshop you run such an agent: it shows four cards, for the flight, the weather at landing, your arrival timeline and the exchange rate. The timeline uses your transfer allowance; it is an estimate, not a live route prediction.</p>
+<p>An AI agent can help answer that question in one place. In this workshop you run such an agent: it shows four cards, for the flight, the weather at landing, your arrival timeline and the exchange rate. The timeline uses your transfer allowance. It is an estimate, not a live route prediction.</p>
 <p>Then comes the harder question. Coding agents can change software for you, but they also tell you a change works when it doesn't. Nobody has time to read every line they write. So how do you let an agent change your agent safely?</p>
 <p>The answer you will build is a <strong>software factory</strong>: a fixed set of steps that turns a written request into a change, checks that change with tests the coding agent can't see or edit, and then decides ACCEPT or REJECT. You will watch it accept a good change and reject a bad one.</p>
 <h2>What you will be able to do afterwards</h2>
@@ -21,7 +21,8 @@
 <li>A laptop. Chapters 3 to 7 need a Mac for the protective code checks. No Mac? Pair with someone who has one, or follow <strong>Track B</strong> in the participant guide: Python 3.12 only; 3.13 and 3.14 stop with NOT_READY. Windows is untested.</li>
 <li>Python 3.12, <a href="https://docs.astral.sh/uv/">uv</a>, Git and Make.</li>
 <li>A free <a href="https://rasa.com/rasa-pro-developer-edition-license-key-request">Rasa Developer Edition license</a>. Request it first: the form's confirmation page is not the key, and the key reaches you after you submit.</li>
-<li>An OpenAI key is <strong>not</strong> needed for the default exercises. Chapter 5 has an optional paid live builder using the Agents API and <code>gpt-6-astra</code>.</li>
+<li>An OpenAI API key. Rasa Mantle has no model of its own: in live mode it asks a language model, OpenAI by default, to understand what you type and to choose a tool. The scripted mode (chapter 0 and the other exercises) runs without a key, because teaching code chooses the tools, so you can start while your key is being set up.</li>
+<li>Chapter 5 has an optional paid live builder using the Agents API and <code>gpt-6-astra</code>.</li>
 </ul>
 <p>Get your own copy. On GitHub, click <strong>Fork</strong> on <a href="https://github.com/RasaHQ/rasa-community-resources">RasaHQ/rasa-community-resources</a>, then clone your fork:</p>
 <pre><code class="language-bash">git clone https://github.com/YOUR-GITHUB-NAME/rasa-community-resources.git
@@ -100,13 +101,14 @@ export PACK=&quot;$PWD&quot;
 </ul>
 <h2>What this workshop does not show yet</h2>
 <ul>
+<li>With a model choosing the tools, the travel agent was slow to answer in our rehearsal on 22 October. The scripted mode is the reliable path today.</li>
 <li>Tool selection is <strong>scripted</strong> in the exercises so results are repeatable. Source data may be fetched, recorded or unavailable; read the card's label.</li>
 <li><strong>Voice:</strong> on 22 October a recorded-audio test failed on the second turn. Type your requests. Microphone use is untested.</li>
 <li>The travel agent and coding builder run separately. Asking the travel agent to change its own code is not a completed capability.</li>
 <li>The full journey, where you <strong>ask by voice</strong> for a new agent and the factory builds and releases it, is the next step. <a href="BUILD-CONTRACT.html">BUILD-CONTRACT.md</a> describes what it needs.</li>
 </ul>
-<p>Chapter 0 runs on <strong>Rasa Pro 3.21.0</strong>. The standalone example in <code>examples/</code> stays on <strong>3.21.0.dev5</strong>. This candidate preserves those tested baseline pins.</p>
+<p>Chapter 0 runs on <strong>Rasa Pro 3.21.0</strong>. The standalone example in <code>examples/</code> stays on <strong>3.21.0.dev5</strong>.</p>
 <h2>For facilitators</h2>
-<p>Use the <a href="RUN-SHEET.html">run sheet</a>, <a href="slides/PRESENTER-NOTES.md">presenter notes</a>, <a href="slides/index.html">slides</a> and <a href="slides/masterclass-slides.pdf">PDF</a>. The <a href="TECHNICAL-AUDIT.html">technical audit</a> distinguishes tests run here from earlier course-team evidence. <a href="LEARNING-CHECKPOINTS.html">Learning checkpoints</a> provide explanation prompts; <a href="ACCEPTANCE-HANDOFF.html">acceptance handoff</a> records the exact baseline and proposed changes.</p>
+<p>Use the <a href="RUN-SHEET.html">run sheet</a>, <a href="slides/PRESENTER-NOTES.md">presenter notes</a>, <a href="slides/index.html">slides</a> and <a href="slides/masterclass-slides.pdf">PDF</a>. The <a href="TECHNICAL-AUDIT.html">technical audit</a> distinguishes tests run here from earlier course-team evidence. <a href="LEARNING-CHECKPOINTS.html">Learning checkpoints</a> provide explanation prompts.</p>
 <p>Other folders (<code>openai-mcp/</code>, <code>brief-me-before-i-fly/</code>, <code>archive/</code>) are earlier material and are not required. The standalone travel agent has its own <a href="../../examples/mantle-flight-briefing-openai-agents/SELF-PACED-GUIDE.md">self-paced guide</a>.</p>
 </main></html>

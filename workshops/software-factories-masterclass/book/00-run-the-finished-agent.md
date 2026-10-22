@@ -54,7 +54,7 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 
    Setup installs two Python 3.12 environments with pinned versions. `make env` creates a private `.env` file only if none exists, and never overwrites one.
 
-3. Open `.env` in your editor. Put your issued license after `RASA_LICENSE=` and leave model and voice entries empty for this exercise. Never paste a key into a chat, a URL or a terminal command, and never commit `.env`.
+3. Open `.env` in your editor. Put your issued license after `RASA_LICENSE=` and leave the model and voice entries empty for this scripted exercise. Add your OpenAI key when you want a model to choose the tools. Never paste a key into a chat, a URL or a terminal command, and never commit `.env`.
 
    ```bash
    make doctor

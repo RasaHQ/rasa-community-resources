@@ -26,7 +26,7 @@ Never narrate a prerecorded or scripted build as a live model run. Never describ
 
 ## Before opening the room
 
-The opening runs on the class preview at port 8942: PR 140 head 8427cf8f, Core 0.36.3, Rasa Pro 3.21.0.dev5 (the standalone example), typed and labeled SCRIPTED over real public sources. In one measured run at 11:58 UTC the agent suggested a named flight (Delta Air Lines 2524 to LGA), and 2.5 seconds after "that one" four available cards showed, including the meeting reply. That is one run, not a promise of speed. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. The Deepgram file test ran at 12:05 UTC.
+The opening runs on the class preview at port 8942: PR 140 head 8427cf8f, Core 0.36.3, Rasa Pro 3.21.0.dev5 (the standalone example; chapter 0 in the book runs on 3.21.0), typed and labeled SCRIPTED over real public sources. In one measured run at 11:58 UTC the agent suggested a named flight (Delta Air Lines 2524 to LGA), and 2.5 seconds after "that one" four available cards showed, including the meeting reply. That is one run, not a promise of speed. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. The Deepgram file test ran at 12:05 UTC.
 
 Read `TECHNICAL-AUDIT.md` and perform the rehearsal in `FACILITATOR.md`. Give participants this exact revised package rather than an unspecified GitHub main branch. Have two independently set-up laptops for the main route. Test microphone permissions and audio output in the actual room. Record the runtime versions and the mode of each demo. Credentials remain on each group's machine.
 

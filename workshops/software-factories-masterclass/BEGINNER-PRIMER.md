@@ -1,6 +1,6 @@
 # Start here: from a travel question to a software factory
 
-Allow 15–20 minutes. You need no previous knowledge of these products.
+Allow 15 to 20 minutes. You need no previous knowledge of these products.
 
 ## What makes this an AI agent?
 
@@ -54,7 +54,7 @@ This workshop uses the service through a Python client.
 
 A repeatable process from a written request to a checked change.
 
-<table><tr><td>1 · Specify</td><td>“Display three currency rows, with the reference date.”</td></tr><tr><td>2 · Build</td><td>A coding agent produces a candidate change.</td></tr><tr><td>3 · Check</td><td>Independent acceptance tests compare behavior with the request.</td></tr><tr><td>4 · Decide</td><td>Accept or reject; integrate only an eligible accepted artifact.</td></tr></table>
+<table><tr><td>1 · Specify</td><td>“Display three currency rows, with the reference date.”</td></tr><tr><td>2 · Build</td><td>A coding agent produces an attempt.</td></tr><tr><td>3 · Check</td><td>Independent acceptance tests compare behavior with the request.</td></tr><tr><td>4 · Decide</td><td>Accept or reject; integrate only an accepted attempt.</td></tr></table>
 
 ## What makes a factory “dark”?
 
@@ -66,7 +66,7 @@ Routine building and checking run without someone reviewing every line.
 
 Request: display exactly three currency rows.
 
-<table><tr><td>Candidate output</td><td>Decision</td><td>Reason</td></tr><tr><td>Four rows</td><td>REJECT</td><td>The requested limit was not respected.</td></tr><tr><td>Three rows, reference date present</td><td>Check all remaining requirements</td><td>One visible success is not the whole suite.</td></tr><tr><td>All required checks pass</td><td>ACCEPT</td><td>This attempt meets the specified checks.</td></tr></table>
+<table><tr><td>Attempt output</td><td>Decision</td><td>Reason</td></tr><tr><td>Four rows</td><td>REJECT</td><td>The requested limit was not respected.</td></tr><tr><td>Three rows, reference date present</td><td>Check all remaining requirements</td><td>One visible success is not the whole suite.</td></tr><tr><td>All required checks pass</td><td>ACCEPT</td><td>This attempt meets the specified checks.</td></tr></table>
 
 ## The builder cannot grade its own homework.
 

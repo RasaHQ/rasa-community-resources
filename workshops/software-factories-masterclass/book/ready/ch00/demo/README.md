@@ -196,7 +196,7 @@ Timezone mappings and conservative airport-to-city allowances are class-authored
 OurAirports is not claimed as their source. No runtime airport lookup occurs.
 
 The managed specialist uses `gpt-6-astra`, as in the [official Agents session example](https://developers.openai.com/api/docs/guides/agents-api/sessions).
-Mantle's conversation model is configured separately in `project/integrations.yml`.
+Mantle's conversation model group is selected in `project/agent.yml` under `orchestrator.model_group`; model definitions remain in `project/integrations.yml`.
 `gpt-4.1-mini` works for that conversation but the live Agents API refused it in
 our qualification. To use another compatible specialist model, set
 `BRIEFING_AGENTS_MODEL` in your shell; it is not another key in `.env`.
