@@ -12,7 +12,7 @@ _installed = False
 
 def configured_secrets():
     # Short/blank values are not usable keys and must not rewrite common text.
-    return tuple(value for name in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY')
+    return tuple(value for name in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'DEEPGRAM_API_KEY')
                  if len(value := os.environ.get(name, '').strip()) >= 16)
 
 

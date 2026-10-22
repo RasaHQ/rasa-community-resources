@@ -54,3 +54,17 @@ class PublicSourceInputs(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(answer.cards), 4)
         self.assertEqual(set(answer.required_components), set(answer.cards))
         self.assertTrue(all(ref.error is not None and not ref.payload for ref in answer.cards.values()))
+
+    async def test_explicit_replay_missing_inputs_resume_without_entering_public_sources(self):
+        runner = PublicSourcesRunner(NeverSources())
+        with self.assertRaises(NeedsInput) as first:
+            await runner(Work('Replay DEMO101 missing inputs', 'request', 1, None))
+        self.assertEqual(first.exception.inputs['source_mode'], 'replay')
+        with self.assertRaises(NeedsInput) as second:
+            await runner(Work('2026-10-22T17:00:00Z', 'request', 2, None,
+                              inputs=first.exception.inputs))
+        self.assertEqual(second.exception.field, 'transfer_minutes')
+        answer = await runner(Work('45 minutes', 'request', 3, None,
+                                   inputs=second.exception.inputs))
+        self.assertTrue(answer.turn.ok)
+        self.assertTrue(all(ref.replay for ref in answer.cards.values()))

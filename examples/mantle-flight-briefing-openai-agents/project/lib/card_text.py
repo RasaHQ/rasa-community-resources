@@ -25,13 +25,20 @@ def render_cards(snapshot: dict) -> str:
         if event.data_ref != ref.id:
             raise ValueError("unbound_card")
         ref.check(event.component)
-        label = "REPLAY" if ref.replay else "Provider data"
+        label = "REPLAY" if ref.replay else ("COMPUTED" if event.component == "arrival_timeline" else "Provider data")
         if ref.delayed:
             label += " · delayed"
         lines = [f"[{label}] {event.component.replace('_', ' ').title()}",
                  f"Card request: {event.request_id}; revision: {event.revision}",
                  f"Source: {ref.source}", f"Retrieved: {ref.fetched_at}",
                  f"Provider update: {ref.as_of or 'provider update time not given'}"]
+        if not ref.replay and ref.error is None:
+            if ref.payload.get("rate_basis") == "daily_reference":
+                lines.append("Freshness: daily reference rate, not a live quote; publication day " + ref.payload["quote_date"])
+            elif ref.delayed:
+                lines.append("Freshness: delayed")
+            else:
+                lines.append("Freshness: live, observed at or near retrieval")
         if ref.error is not None:
             lines.append(f"Unavailable: {ref.error.reason}")
         else:
@@ -39,11 +46,13 @@ def render_cards(snapshot: dict) -> str:
             if event.component == "flight_status":
                 lines += [f"{p['flight_number']} · {p['route']['from']} → {p['route']['to']}",
                           f"Reported status: {p['reported_status']}",
-                          f"Scheduled departure: {p['scheduled_departure']}",
+                          f"Scheduled departure: {_shown(p['scheduled_departure'])}",
                           f"Estimated departure: {_shown(p['estimated_departure'])}",
-                          f"Scheduled arrival: {p['scheduled_arrival']}",
+                          f"Scheduled arrival: {_shown(p['scheduled_arrival'])}",
                           f"Estimated arrival: {_shown(p['estimated_arrival'])}",
                           f"Terminal: {_shown(p['terminal'])}"]
+                if not ref.replay and any(a.label == "estimated_arrival_from_live_position" for a in ref.assumptions):
+                    lines.append("Estimated arrival is COMPUTED from live position, ground speed and great-circle distance, not an airline time.")
             elif event.component == "weather_hourly":
                 lines += [f"{p['location']} · {p['timezone']}",
                           f"Arrival marker: {_shown(p['arrival_hour'])}"]
@@ -54,10 +63,15 @@ def render_cards(snapshot: dict) -> str:
                 lines += [f"Transfer assumption: {p['transfer_minutes']['value']} minutes; not live traffic",
                           f"Meeting: {p['meeting_time']}", f"Margin: {p['margin_minutes']} minutes"]
             elif event.component == "market_watchlist":
+                if not ref.replay and any(a.label == "change_computed_from_two_reference_days" for a in ref.assumptions):
+                    days = sorted({point["time"] for points in p["series"].values() for point in points})
+                    lines.append("Change and change percent are COMPUTED from two ECB reference days " + ", ".join(days) + ", not provider data.")
                 lines += [f"Market: {p['market_status']}; quote time: {_shown(p['quote_time'])}"]
                 lines += [f"{q['symbol']}: {q['price']}; change {q['change']} ({q['change_pct']}%)"
                           for q in p["symbols"]]
             for assumption in ref.assumptions:
+                if assumption.label in ("estimated_arrival_from_live_position", "change_computed_from_two_reference_days"):
+                    continue
                 lines.append(f"Assumption: {assumption.label} = {assumption.value}")
         blocks.append("\n".join(lines))
     return redact("\n\n".join(blocks))

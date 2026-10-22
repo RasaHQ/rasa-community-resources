@@ -29,7 +29,7 @@ async def prepare_source_cards(result: ToolResultPayload) -> ToolResultPayload:
     if not result.is_error and isinstance(value, dict) and value.get("status") == "needs_input":
         missing = value.get("needs_input") or {}
         if isinstance(missing, dict) and missing.get("field") in ("meeting_time", "transfer_minutes") and isinstance(missing.get("question"), str):
-            _pending_cards[result.sender_id] = "Constructed REPLAY: " + missing["question"]
+            _pending_cards[result.sender_id] = "Briefing needs input: " + missing["question"]
         else:
             _pending_cards[result.sender_id] = "The briefing needs input, but its question could not be validated."
         return result

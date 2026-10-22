@@ -7,10 +7,12 @@ so revisions do not reset their finite request budget or cache.
 """
 import asyncio
 from datetime import datetime
+from dataclasses import replace
 import re
 
 from zeo_core.integrations.agents import ScriptedTransport, function_tool, run
 from briefing.jobs import Answer, BriefingRefused, NeedsInput, Work
+from briefing.replay import ReplayRunner
 
 
 class PublicSourcesRunner:
@@ -19,6 +21,7 @@ class PublicSourcesRunner:
             from zeo_core.integrations.briefing_sources import PublicBriefingSources
             sources = PublicBriefingSources()
         self.sources = sources
+        self.replay = ReplayRunner()
 
     @staticmethod
     def replacement_plan(change):
@@ -27,6 +30,14 @@ class PublicSourcesRunner:
     async def __call__(self, work: Work) -> Answer:
         inputs = dict(work.inputs or {})
         text = work.text.strip()
+        if text.startswith('Replay DEMO101') or (inputs.get('source_mode') == 'replay' and 'callsign=' not in text):
+            try:
+                answer = await self.replay(work)
+            except NeedsInput as missing:
+                raise NeedsInput(missing.field, missing.question,
+                                 {**missing.inputs, 'source_mode': 'replay'}) from None
+            return replace(answer, inputs={**(answer.inputs or {}), 'source_mode': 'replay'})
+        inputs.pop('source_mode', None)
         callsign = re.search(r'\bcallsign=([A-Z0-9]{2,10})\b', text)
         if callsign:
             inputs['callsign'] = callsign.group(1)

@@ -116,7 +116,8 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         answer = await run_modify(self.registry, 'model_response', ModelResponsePayload(
             sender_id='question-conversation', text='I guessed a 90 minute transfer.'))
         self.assertIn('What transfer duration', answer.payload.text)
-        self.assertIn('REPLAY', answer.payload.text)
+        self.assertNotIn('REPLAY', answer.payload.text)
+        self.assertIn('Briefing needs input', answer.payload.text)
         self.assertNotIn('90', answer.payload.text)
 
     async def test_bad_card_stops_unchecked_numeric_model_output(self):

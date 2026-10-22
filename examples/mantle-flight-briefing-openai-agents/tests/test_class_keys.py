@@ -65,6 +65,26 @@ class ClassKeys(unittest.TestCase):
         self.assertIn('DEEPGRAM_API_KEY: MISSING', text)
         self.assertIn('continue with text', text)
 
+    def test_deepgram_key_and_clipped_error_are_redacted_at_output_boundaries(self):
+        from project.lib.capability_logging import redact_api
+        key = '83b1d9a6c5e7f042a19c3b6d8f0e24a7'
+        with patch.dict(os.environ, {'DEEPGRAM_API_KEY': key}, clear=True):
+            self.assertTrue(contains_api_key({'voice': key}))
+            for raw in (key, key[8:24], 'voice rejected ***' + key[-4:]):
+                safe = redact_api(raw)
+                assert_no_fragments(self, safe, key)
+                self.assertNotIn(key[-4:], safe)
+            out = io.StringIO()
+            handler = logging.StreamHandler(out)
+            logger = logging.getLogger('class.voice.synthetic')
+            logger.addHandler(handler)
+            install()
+            try:
+                logger.error('Voice failed %s', key)
+            finally:
+                logger.removeHandler(handler)
+            assert_no_fragments(self, out.getvalue(), key)
+
     def test_both_provider_settings_and_environment_only_readiness(self):
         for provider, variable in class_doctor.KEYS.items():
             with self.subTest(provider=provider), patch.object(class_doctor, 'selected_provider', return_value=provider):
