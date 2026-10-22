@@ -172,3 +172,23 @@ class TravellerControls(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class SpokenMeetingHours(unittest.TestCase):
+    def test_explicit_spoken_am_pm_matches_digit_clock(self):
+        from datetime import datetime, timezone
+        from briefing.traveller import meeting_time, airport_row
+        now = datetime(2026, 10, 22, 14, 0, tzinfo=timezone.utc)
+        for words, digits in [('Six PM tomorrow.', '6 pm tomorrow'),
+                              ('tomorrow at one a.m.', 'tomorrow at 1 am'),
+                              ('twelve pm tomorrow', '12 pm tomorrow')]:
+            self.assertEqual(meeting_time(words, airport_row('KEWR'), now),
+                             meeting_time(digits, airport_row('KEWR'), now))
+            self.assertIsNotNone(meeting_time(words, airport_row('KEWR'), now))
+
+    def test_unqualified_words_and_durations_need_clarification(self):
+        from datetime import datetime, timezone
+        from briefing.traveller import meeting_time, airport_row
+        now = datetime(2026, 10, 22, 14, 0, tzinfo=timezone.utc)
+        for words in ['six tomorrow', 'six hours tomorrow', 'sixish pm tomorrow']:
+            self.assertIsNone(meeting_time(words, airport_row('KEWR'), now))

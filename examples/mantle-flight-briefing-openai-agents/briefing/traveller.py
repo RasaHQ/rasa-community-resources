@@ -148,6 +148,13 @@ def meeting_time(text, airport, now):
     except ValueError:
         pass
     value = normalized(text)
+    # ASR commonly spells an hour. Convert only an explicit AM/PM clock,
+    # never durations, vague times or an unqualified number word.
+    spoken_hours = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                    'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+                    'eleven': 11, 'twelve': 12}
+    value = re.sub(r"\b(" + '|'.join(spoken_hours) + r")(?=\s+[ap]\.?m\.?\b)",
+                   lambda match: str(spoken_hours[match[1]]), value)
     local_today = now.astimezone(zone).date()
     if re.search(r'\btomorrow\b', value):
         day = local_today + timedelta(days=1)
