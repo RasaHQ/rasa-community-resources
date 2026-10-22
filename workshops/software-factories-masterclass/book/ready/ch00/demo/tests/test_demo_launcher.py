@@ -546,6 +546,35 @@ class ActualVoiceLoaderSeam(unittest.TestCase):
         self.assertIs(MantleA2AConfigSource._read_raw_block, original_a2a)
 
 
+    def test_scripted_seams_restore_on_error_and_live_keeps_original_resolution(self):
+        from rasa.mantle.model_archive import bootstrap
+        from rasa.mantle.llm.client import LLMClient
+        from rasa.mantle.config.a2a_server import MantleA2AConfigSource
+        from rasa.mantle.config import channels
+        resolver = bootstrap.resolve_integration_llm_config
+        client = LLMClient.__dict__['from_bootstrap']
+        a2a = MantleA2AConfigSource._read_raw_block
+        for mode in ('scripted', 'live'):
+            def fail_entrypoint():
+                if mode == 'live':
+                    self.assertIs(bootstrap.resolve_integration_llm_config, resolver)
+                    self.assertIs(LLMClient.__dict__['from_bootstrap'], client)
+                    self.assertIs(MantleA2AConfigSource._read_raw_block, a2a)
+                else:
+                    self.assertIsInstance(LLMClient.from_bootstrap(None), demo.ScriptedClient)
+                    self.assertEqual(bootstrap.resolve_integration_llm_config(None, demo.PROJECT), {})
+                    self.assertIsNone(MantleA2AConfigSource(demo.PROJECT).load())
+                raise RuntimeError('controlled startup failure')
+            with self.subTest(mode=mode), patch.object(channels, 'load_integration_channels'), \
+                    patch('rasa.__main__.main', side_effect=fail_entrypoint), \
+                    patch.object(sys, 'argv', []), patch.dict(os.environ, {}, clear=True):
+                with self.assertRaisesRegex(RuntimeError, 'controlled startup failure'):
+                    demo.inspector(mode)
+            self.assertIs(bootstrap.resolve_integration_llm_config, resolver)
+            self.assertIs(LLMClient.__dict__['from_bootstrap'], client)
+            self.assertIs(MantleA2AConfigSource._read_raw_block, a2a)
+
+
 class InspectorReadinessBudget(unittest.TestCase):
     def test_healthy_voice_gets_at_least_the_text_engine_readiness_budget(self):
         children = unittest.mock.Mock()
