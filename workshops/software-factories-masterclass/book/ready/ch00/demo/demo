@@ -1,0 +1,12 @@
+#!/bin/sh
+# sow: software-factories-masterclass-SOW-02
+if ! command -v python3 >/dev/null 2>&1; then
+    echo 'Install Python 3.12 and uv, then run ./demo setup.' >&2
+    exit 1
+fi
+if ! python3 -c 'import sys; sys.exit(sys.version_info < (3, 11))' 2>/dev/null; then
+    echo 'Use Python 3.12 as python3, then run ./demo setup.' >&2
+    exit 1
+fi
+cd "$(dirname "$0")" || exit 1
+exec python3 demo_launcher.py "$@"
