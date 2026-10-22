@@ -38,6 +38,7 @@ class JobControls(unittest.IsolatedAsyncioTestCase):
         capability = response["job_id"]
         await self.jobs._jobs[capability].task
         board = self.jobs.display_snapshot()
+        self.assertEqual(self.jobs.display_title(), "Flight briefing")
         self.assertEqual(len(board), 3)
         self.assertNotIn(capability, repr(board))
         other = await self.jobs.briefing(self.other, action="start", request="Replay DEMO101 missing meeting")

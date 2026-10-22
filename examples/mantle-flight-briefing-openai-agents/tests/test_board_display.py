@@ -50,5 +50,5 @@ class BoardDisplayTests(unittest.IsolatedAsyncioTestCase):
     async def test_renderer_error_is_value_free_unavailable(self):
         start, body = await self.request(fail=True)
         self.assertEqual(start['status'], 503)
-        self.assertEqual(body['body'], b'REPLAY board unavailable')
+        self.assertEqual(body['body'], b'Briefing board unavailable')
         self.assertNotIn(b'brf_', body['body'])

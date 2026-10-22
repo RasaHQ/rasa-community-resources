@@ -33,7 +33,7 @@ class BoardDisplay:
             except Exception:
                 # Never echo a rendering exception, source record or capability.
                 status = 503
-                body = b'REPLAY board unavailable'
+                body = b'Briefing board unavailable'
         response_headers = [
             (b'content-type', b'text/html; charset=utf-8'),
             (b'cache-control', b'no-store'),

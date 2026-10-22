@@ -128,10 +128,10 @@ class Jobs:
         if job and job.needs_input:
             field = job.needs_input.get("field")
             if field == "meeting_time":
-                return "Constructed REPLAY briefing — meeting date and time required"
+                return "Flight briefing — meeting date and time required"
             if field == "transfer_minutes":
-                return "Constructed REPLAY briefing — assumed transfer duration required"
-        return "Constructed REPLAY briefing"
+                return "Flight briefing — assumed transfer duration required"
+        return "Flight briefing"
 
     @staticmethod
     def _snapshot(job: _Job) -> list[dict]:
