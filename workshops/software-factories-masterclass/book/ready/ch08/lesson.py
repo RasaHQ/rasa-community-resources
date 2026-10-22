@@ -1,5 +1,4 @@
 """Offline policy builder, real protected gate, measurements and a controlled recovery fault.
-sow: software-factories-masterclass-SOW-02
 """
 import argparse
 import json

@@ -1,5 +1,4 @@
 """Meaningful fault and evidence controls for the complete offline lesson.
-sow: software-factories-masterclass-SOW-02
 """
 import json
 import os

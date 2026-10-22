@@ -6,7 +6,7 @@
 One key per piece of work: task, candidate, baseline, verifier, suite and runtime fingerprints.
 Single local writer only. A crash after execution but before recording can repeat work;
 this teaching ledger is not an exactly-once distributed scheduler.
-  - A decided key (ACCEPT or REJECT) is final. Asking again returns the stored decision and runs nothing.
+  - A decided key (ACCEPT, REJECT or ESCALATE) is final. Asking again returns the stored decision and runs nothing.
   - A stalled or crashed attempt is recorded with its own number and retried, up to --max-attempts.
   - A REJECT is never retried: running a hidden suite again and again leaks it.
   - Out of attempts means ESCALATE: a person decides. The ledger says why.
