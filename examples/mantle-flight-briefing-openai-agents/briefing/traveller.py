@@ -49,15 +49,33 @@ def airport_row(code):
 
 def destination_hint(text):
     value = normalized(text)
-    # Airport names/codes take precedence over a metro name in the same answer.
+
+    def role(position):
+        markers = list(re.finditer(r'\b(from|to|into|at)\s+', value[:position]))
+        return markers[-1][1] if markers else None
+
+    def select(mentions):
+        destinations = {code for position, code in mentions if role(position) in ('to', 'into', 'at')}
+        candidates = destinations or {code for position, code in mentions if role(position) != 'from'}
+        if len(candidates) > 1:
+            raise TravellerQuestion('destination', 'Which airport are you arriving at? Please choose one airport.', {})
+        return next(iter(candidates), None)
+
+    mentions = []
     for airport in reference()['airports']:
         for alias in (airport['ident'], airport['iata_code'], *airport['aliases']):
-            if re.search(r'(?<![a-z0-9])' + re.escape(normalized(alias)) + r'(?![a-z0-9])', value):
-                return airport['ident']
-    for city in sorted({a['city'] for a in reference()['airports']}, key=len, reverse=True):
-        if re.search(r'\b' + re.escape(normalized(city)) + r'\b', value):
-            return city
-    return 'New York' if re.search(r'\bnyc\b', value) else None
+            for match in re.finditer(r'(?<![a-z0-9])' + re.escape(normalized(alias)) + r'(?![a-z0-9])', value):
+                mentions.append((match.start(), airport['ident']))
+    airport = select(mentions)
+    if airport:
+        return airport
+    cities = []
+    for city in {a['city'] for a in reference()['airports']}:
+        for match in re.finditer(r'\b' + re.escape(normalized(city)) + r'\b', value):
+            cities.append((match.start(), city))
+    for match in re.finditer(r'\bnyc\b', value):
+        cities.append((match.start(), 'New York'))
+    return select(cities)
 
 
 def flight_number(text):
@@ -171,7 +189,13 @@ def journey(text, previous=None, *, now=None):
     selected = flight_number(text)
     if selected:
         inputs['callsign'] = selected
-    hint = destination_hint(text)
+    try:
+        hint = destination_hint(text)
+    except TravellerQuestion as missing:
+        inputs.pop('destination', None)
+        inputs.pop('destination_hint', None)
+        inputs.pop('meeting_time', None)
+        raise TravellerQuestion(missing.field, missing.question, inputs) from None
     if hint:
         inputs['destination_hint'] = hint
     hint = inputs.get('destination_hint') or inputs.get('destination')
@@ -187,9 +211,9 @@ def journey(text, previous=None, *, now=None):
     airport = _airport_for(hint, inputs['callsign'], inputs)
     inputs['destination'] = airport['ident']
     parsed = meeting_time(text, airport, now)
-    if parsed:
+    if parsed and datetime.fromisoformat(parsed) > now:
         inputs['meeting_time'] = parsed
-    elif 'meeting=' in text or inputs.get('awaiting') == 'meeting_time':
+    elif parsed or re.search(r'\b(?:move|change|reschedule|revise|set)\b.*\bmeeting\b|\bmeeting\b.*\b(?:tomorrow|today|morning|afternoon|evening|at|on|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b', normalized(text)) or 'meeting=' in text or inputs.get('awaiting') == 'meeting_time':
         inputs.pop('meeting_time', None)
     minutes = transfer_time(('allow ' + text) if inputs.get('awaiting') == 'transfer_minutes' else text)
     if minutes is None and ('transfer=' in text or re.search(r'\ballow\b.*\b(?:minutes?|hours?)\b', normalized(text))):
@@ -211,7 +235,10 @@ def journey(text, previous=None, *, now=None):
 
 
 def discover(sources, destination):
-    hint = destination_hint(destination)
+    try:
+        hint = destination_hint(destination)
+    except TravellerQuestion as missing:
+        return {'status': 'needs_input', 'needs_input': {'field': missing.field, 'question': missing.question}}
     if hint not in ('New York', 'KJFK', 'KEWR', 'KLGA'):
         return {'status': 'needs_input', 'needs_input': {'field': 'flight', 'question': 'Do you know the airline or flight number? I can brief a flight already in the air.'}}
     book = load_routes()

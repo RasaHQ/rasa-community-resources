@@ -68,6 +68,33 @@ class TravellerControls(unittest.TestCase):
         self.assertEqual(value['callsign'], 'DLH400')
         self.assertEqual(value['meeting_time'], '2026-10-23T18:00:00-04:00')
 
+    def test_origin_never_wins_over_destination_and_alternatives_need_a_choice(self):
+        for route in ['from LHR to JFK', 'to JFK from LHR']:
+            value = journey('Lufthansa 400 ' + route + ', meeting tomorrow at 6 pm', now=NOW)
+            self.assertEqual(value['destination'], 'KJFK')
+            self.assertEqual(value['meeting_time'], '2026-10-23T18:00:00-04:00')
+        with self.assertRaises(TravellerQuestion) as caught:
+            journey('Lufthansa 400 to JFK or Newark, meeting tomorrow at 6 pm', now=NOW)
+        self.assertEqual(caught.exception.field, 'destination')
+        self.assertNotIn('destination', caught.exception.inputs)
+        self.assertEqual(caught.exception.inputs['callsign'], 'DLH400')
+
+    def test_ambiguous_meeting_revision_clears_old_time_and_resumes_same_flight(self):
+        original = journey('Lufthansa 400 to JFK, meeting tomorrow at 6 pm', now=NOW)
+        for change in ['move my meeting to tomorrow morning',
+                       'move my meeting to 2026-11-01 at 1:30 am',
+                       'move my meeting to 2027-03-14 at 2:30 am',
+                       'move my meeting to today at 6 am']:
+            with self.subTest(change=change), self.assertRaises(TravellerQuestion) as caught:
+                journey(change, original, now=NOW)
+            missing = caught.exception
+            self.assertEqual(missing.field, 'meeting_time')
+            self.assertNotIn('meeting_time', missing.inputs)
+            self.assertEqual(missing.inputs['callsign'], 'DLH400')
+            self.assertEqual(missing.inputs['destination'], 'KJFK')
+            repaired = journey('tomorrow at 9 am', missing.inputs, now=NOW)
+            self.assertEqual(repaired['meeting_time'], '2026-10-23T09:00:00-04:00')
+
 
 if __name__ == '__main__':
     unittest.main()
