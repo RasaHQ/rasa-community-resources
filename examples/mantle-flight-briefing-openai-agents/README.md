@@ -40,9 +40,11 @@ safe to repeat. A missing prerequisite stops with a sentence naming the fix.
 ## Open the actual Mantle inspector and the card page
 
 Run starts the public-source briefing service and the actual `rasa inspect`
-server. It trains the project first, prints both loopback URLs when ready, and
-keeps ownership of the processes. Open the printed inspector URL to chat and
-the card-page URL beside it. Press Ctrl-C in the launcher terminal to stop both
+server. It trains the project first and keeps ownership of the processes.
+Open **http://127.0.0.1:8942/** when the launcher reports ready: the combined
+page shows the actual Inspector conversation beside the source cards. The
+separate `/cards` and Inspector URLs are printed for diagnostics.
+Press Ctrl-C in the launcher terminal to stop both
 services and their children. If either port is occupied, the launcher refuses;
 it does not stop another user's service.
 

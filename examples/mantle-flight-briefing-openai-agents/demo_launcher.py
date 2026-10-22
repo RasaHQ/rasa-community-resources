@@ -267,8 +267,9 @@ def run_demo(scripted=False):
         wait_http(service, 'http://127.0.0.1:8942/cards')
         mode = 'scripted' if scripted else 'live'
         inspector, inspector_env = start_inspector(children, env, mode)
-        print('Cards: http://127.0.0.1:8942/cards', flush=True)
-        print('Mantle inspector: http://127.0.0.1:5005/webhooks/inspector/inspect.html', flush=True)
+        print('Open the demo: http://127.0.0.1:8942/', flush=True)
+        print('Cards diagnostic: http://127.0.0.1:8942/cards', flush=True)
+        print('Mantle Inspector diagnostic: http://127.0.0.1:5005/webhooks/inspector/inspect.html', flush=True)
         print('Enter your journey: callsign=TEST123 meeting=2026-10-22T21:00:00Z transfer=45', flush=True)
         print('TEST123 is syntax, not a promised airborne flight. Use an actual callsign for available flight data.', flush=True)
         print('Press Ctrl-C here to stop both services and their children.', flush=True)
