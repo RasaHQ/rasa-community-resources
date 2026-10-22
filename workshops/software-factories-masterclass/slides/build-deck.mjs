@@ -54,7 +54,7 @@ add(2, 'Every card says *where it came from*.', 'Every value is labeled.', scene
   row([{ label: 'Source', cls: 'panel-mint' }, { label: 'Computed', cls: 'panel-gold' }, { label: 'Recording', cls: 'panel-pink' }, { label: 'Failed', cls: 'panel-orange' }], { y: 130, h: 400, gap: 30, arrows: false, steps: true })));
 add(2, 'Four *honest* cards.', 'In short: honest cards. Next: trust.', traveller({ connected: true, title: 'Four honest cards' }));
 // ---- Part 3: the real question
-add(3, 'A *coding agent* changes files, then reports success.', 'You’ll understand: why we can’t trust it.', scene('You ask, the coding agent edits files and says it worked',
+add(3, 'A *coding agent* edits files, then says it worked.', 'You’ll understand: why we can’t trust it.', scene('You ask, the coding agent edits files and says it worked',
   step(1, icon('person', 200, 250, 2) + text(200, 420, 'You', 'large-label') + arrow(340, 300, 140))
   + step(2, rect(520, 140, 380, 360, 'panel-ink') + icon('builder', 710, 290, 2, 'icon-light') + text(710, 450, 'Coding agent', 'large-label on-dark') + arrow(930, 300, 140))
   + step(3, rect(1100, 140, 300, 360, 'panel') + icon('task', 1250, 290, 1.8) + text(1250, 450, 'Files', 'large-label') + rect(1180, 540, 440, 90, 'panel-pink', 45))));
@@ -127,7 +127,7 @@ const seen = {};
 const html = S.map((s, i) => {
   seen[s.part] = (seen[s.part] || 0) + 1;
   const prog = Array.from({ length: 8 }, (_, k) => `<i class="${k + 1 === s.part ? 'active' : ''}"></i>`).join('');
-  return `<section class="slide${s.cls ? ' ' + s.cls : ''}${i === 0 ? ' on' : ''}" id="s${i + 1}"><nav class="crumb" aria-label="Where you are"><span>Part ${s.part} of 8 · ${esc(PARTS[s.part - 1])} · ${seen[s.part]} of ${counts[s.part]}</span><span class="progress">${prog}</span></nav><h1>${em(s.title)}</h1>${s.body ? `<p class="words" data-slide-chrome-no>${esc(s.body)}</p>` : ''}<div class="scene">${s.svg}</div></section>`;
+  return `<section class="slide${s.cls ? ' ' + s.cls : ''}${i === 0 ? ' on' : ''}" id="s${i + 1}"><nav class="crumb" aria-label="Where you are"><span>Part ${s.part} of 8 · ${esc(PARTS[s.part - 1])} · ${seen[s.part]} of ${counts[s.part]}</span><span class="progress">${prog}</span></nav><div class="head"><h1>${em(s.title)}</h1>${s.body ? `<p class="words" data-slide-chrome-no>${esc(s.body)}</p>` : ''}</div><div class="scene">${s.svg}</div></section>`;
 }).join('\n');
 const JS_OLD = `const slides=[...document.querySelectorAll('.slide')];let current=0;
 function show(n){current=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>s.classList.toggle('on',i===current));history.replaceState(null,'','#'+(current+1))}
@@ -135,7 +135,7 @@ document.addEventListener('keydown',e=>{if(['ArrowRight','ArrowDown','PageDown',
 document.addEventListener('click',e=>{if(e.target.closest('a'))return;show(current+(e.clientX<innerWidth/3?-1:1))});
 addEventListener('hashchange',()=>show(Number(location.hash.slice(1))-1||0));show(Number(location.hash.slice(1))-1||0);`;
 const JS = fs.readFileSync('reveal-navigation.js', 'utf8');
-const EXTRA = `.step-navigation .step{opacity:0;transition:opacity .25s}.step-navigation .step.shown{opacity:1}@media (prefers-reduced-motion:reduce){.step-navigation .step{transition:none}}` + `.slide .words{position:absolute;left:6.25vw;right:6.25vw;top:23.6vh;margin:0;font:400 2.0833vw/1.2 var(--sans)}.dark .words{color:var(--cream)}`;
+const EXTRA = `.step-navigation .step{opacity:0;transition:opacity .25s}.step-navigation .step.shown{opacity:1}@media (prefers-reduced-motion:reduce){.step-navigation .step{transition:none}}` + `.slide .words{position:absolute;left:6.25vw;right:6.25vw;top:23.6vh;margin:0;font:400 2.0833vw/1.2 var(--sans)}.dark .words{color:var(--cream)}` + `@media screen{.slide.on{display:grid;grid-template-rows:auto minmax(0,1fr);box-sizing:border-box;padding:12.75vh 6.25vw 7.4vh}.slide .head{min-height:18.73vh}.slide .head h1{position:static;margin:0}.slide .head .words{position:static;margin:max(1vh,calc(10.85vh - 4.3333vw)) 0 0}.slide.on .scene{position:static;width:100%;height:100%;min-height:0}}`;
 const page = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Software factories masterclass</title><!-- Fonts: Inter, Newsreader and JetBrains Mono, Latin subsets, SIL Open Font License 1.1 (see FONT-LICENSES.txt beside this file). The Rasa brand fonts are not redistributable. --><style>${FACES}${CSS}${EXTRA}</style></head><body>${html}<script>${JS}</script></body></html>`;
 fs.writeFileSync('index.html', page);
 console.log(S.length, 'slides,', page.length, 'bytes');
