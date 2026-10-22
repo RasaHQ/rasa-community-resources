@@ -122,3 +122,14 @@ class DiscoveryMCP(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('No matching', discovery_notice(value))
         value['partial'] = False
         self.assertIn('covered routes', discovery_notice(value))
+
+    def test_panel_position_age_uses_human_units_at_boundaries(self):
+        from briefing.board_display import start_panel
+        value = SearchRunner().find_flights('New York')
+        for age, expected in [(0.331449, 'just now'), (9.99, 'just now'),
+                              (10, '10 s old'), (59.9, '59 s old'),
+                              (60, '1 min old'), (119.9, '1 min old'), (120, '2 min old')]:
+            value['candidates'][0]['position_age_seconds'] = age
+            page = start_panel('Ready', discovery=value)
+            self.assertIn('Position ' + expected + '.', page)
+            self.assertNotIn('0.331449 seconds', page)

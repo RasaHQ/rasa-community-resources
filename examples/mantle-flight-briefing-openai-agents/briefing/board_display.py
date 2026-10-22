@@ -100,6 +100,17 @@ DASHBOARD = brand_document(DASHBOARD.decode().replace('<h1>Flight briefing</h1>'
     '<p class="eyebrow">Rasa - Flight briefing</p><h1>Your flight, your meeting</h1>')).encode()
 
 
+def position_age_text(seconds):
+    import math
+    if isinstance(seconds, bool) or not isinstance(seconds, (int, float)) or not math.isfinite(seconds) or not 0 <= seconds <= 120:
+        raise ValueError('invalid_position_age')
+    if seconds < 10:
+        return 'just now'
+    if seconds < 60:
+        return f'{int(seconds)} s old'
+    return f'{int(seconds // 60)} min old'
+
+
 def start_panel(status, *, discovery=None):
     from html import escape
     choices = ''
@@ -112,7 +123,7 @@ def start_panel(status, *, discovery=None):
             rows.append('<li class="search-choice"><strong>' + escape(flight_name(row['callsign']))
                 + '</strong> from ' + escape(city) + '<br>Estimated landing in about '
                 + escape(str(row['landing_estimate_minutes'])) + ' minutes. Position '
-                + escape(str(row['position_age_seconds'])) + ' seconds old.</li>')
+                + escape(position_age_text(row['position_age_seconds'])) + '.</li>')
         choices = '<h2>Which flight would you like?</h2><ol>' + ''.join(rows) + '</ol><p class="source-note">'
         choices += escape(discovery['label']) + '. Route table date: ' + escape(discovery['source_date'])
         choices += '. ' + escape(discovery['coverage']) + ' Landing estimates are computed from position and speed, not airline times. '
