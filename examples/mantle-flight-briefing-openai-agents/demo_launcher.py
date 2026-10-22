@@ -25,6 +25,7 @@ from urllib.request import ProxyHandler, build_opener
 ROOT = Path(__file__).resolve().parent
 PROJECT = ROOT / 'project'
 WORKER = ROOT / 'worker'
+VOICE_FAILED_TEXT = 'Voice could not connect; continuing with text.'
 SCRIPTED_LABEL = 'SCRIPTED tool selection; real keyless sources, not model reasoning.'
 
 
@@ -212,7 +213,7 @@ def start_inspector(children, env, mode):
         children.stop(process)
         text_env = env.copy()
         text_env.pop('DEEPGRAM_API_KEY', None)
-        print('Inspector with voice was unavailable; retrying in text.', flush=True)
+        print(VOICE_FAILED_TEXT, flush=True)
         process = children.start(argv, cwd=PROJECT, env=text_env)
         wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=90)
         return process, text_env
@@ -279,7 +280,7 @@ def run_demo(scripted=False):
                     children.stop(inspector)
                     inspector_env = inspector_env.copy()
                     inspector_env.pop('DEEPGRAM_API_KEY', None)
-                    print('Inspector stopped; retrying once without voice.', flush=True)
+                    print(VOICE_FAILED_TEXT, flush=True)
                     inspector, inspector_env = start_inspector(children, inspector_env, mode)
                 else:
                     raise DemoError('The Inspector stopped; both services are being shut down. Run ./demo setup before retrying.')
@@ -362,6 +363,14 @@ class ScriptedClient:
         return reply(briefing, {'action': 'start', 'request': text})
 
 
+def merge_voice_channels(values, voice):
+    """Validate raw owner config through Mantle's integrations.yml parser."""
+    from rasa.mantle.config.channels import parse_channels
+    result = dict(values or {})
+    result.update(parse_channels(voice))
+    return result
+
+
 def inspector(mode):
     # Import the normal entrypoint before touching the pinned factory seam.
     sys.path[:0] = [str(ROOT), str(PROJECT)]
@@ -380,9 +389,7 @@ def inspector(mode):
         from rasa.mantle.config import channels
         original = channels.load_integration_channels
         def runtime_channels(project_root=None):
-            values = dict(original(project_root) or {})
-            values.update(voice)
-            return values
+            return merge_voice_channels(original(project_root), voice)
         channels.load_integration_channels = runtime_channels
     if mode == 'scripted':
         from rasa.mantle.llm.client import LLMClient

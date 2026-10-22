@@ -226,5 +226,18 @@ class ActualMCPResponseShapes(unittest.IsolatedAsyncioTestCase):
                          {'action': 'get', 'briefing_id': 'actual-start-capability'})
 
 
+class MantleVoiceConfig(unittest.TestCase):
+    def test_real_mantle_parser_accepts_flux_aura_without_enabled_keyword(self):
+        voice = {'inspector': {'enabled': True,
+            'asr': {'name': 'deepgram', 'language_map': {'en': {'model': 'flux-general-en'}}},
+            'tts': {'name': 'deepgram', 'language_map': {'en': {'model': 'aura-2-andromeda-en'}}}}}
+        result = demo.merge_voice_channels({'rest': {}}, voice)
+        self.assertEqual(result['inspector']['asr'], voice['inspector']['asr'])
+        self.assertEqual(result['inspector']['tts'], voice['inspector']['tts'])
+        self.assertNotIn('enabled', result['inspector'])
+        self.assertIn('rest', result)
+        self.assertIn('enabled', voice['inspector'])
+
+
 if __name__ == '__main__':
     unittest.main()
