@@ -51,7 +51,7 @@ add(1, 'An *agent* decides what to do, then does it.', 'In short: one agent. Nex
 // ---- Part 2: the finished agent
 add(2, 'Watch the agent answer Sam.', 'You’ll understand: each value’s source. Flights to New York?', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
 add(2, 'Every card says *where it came from*.', 'Every value is labeled.', scene('Four labels',
-  row([{ label: 'Source', cls: 'panel-mint' }, { label: 'Computed', cls: 'panel-gold' }, { label: 'Recording', cls: 'panel-pink' }, { label: 'Failed', cls: 'panel-orange' }], { y: 130, h: 400, gap: 30, arrows: false })));
+  row([{ label: 'Source', cls: 'panel-mint' }, { label: 'Computed', cls: 'panel-gold' }, { label: 'Recording', cls: 'panel-pink' }, { label: 'Failed', cls: 'panel-orange' }], { y: 130, h: 400, gap: 30, arrows: false, steps: true })));
 add(2, 'Four *honest* cards.', 'In short: honest cards. Next: trust.', traveller({ connected: true, title: 'Four honest cards' }));
 // ---- Part 3: the real question
 add(3, 'A *coding agent* changes files, then reports success.', 'You’ll understand: why we can’t trust it.', scene('You ask, the coding agent edits files and says it worked',
