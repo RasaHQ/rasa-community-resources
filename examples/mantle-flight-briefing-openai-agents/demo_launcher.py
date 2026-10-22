@@ -455,6 +455,25 @@ def tool_record(value):
     return None
 
 
+def speech_confirmation(text):
+    """A positive speech reference is not an override or a negative answer."""
+    import re
+    from briefing.traveller import flight_number
+    words = re.findall(r"[a-z]+|[0-9]+", text.casefold())
+    if not words or words[0] not in ('yes', 'yeah', 'that'):
+        return False
+    if any(word in ('no', 'not', 'never', 'dont', 'don') for word in words):
+        return False
+    if flight_number(text) is not None:
+        return False
+    numbers = {'two', 'three', 'four', 'five', 'first', 'second', 'third', 'fourth', 'fifth'}
+    if any(word.isdigit() or word in numbers for word in words):
+        return False
+    if 'one' in words and not any(word in ('that', 'the') for word in words[:words.index('one')]):
+        return False
+    return True
+
+
 class ScriptedClient:
     """No model/network client. Deterministic selection in the ACTUAL inspector."""
     def __init__(self):
@@ -545,6 +564,10 @@ class ScriptedClient:
             words = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5}
             match = re.fullmatch(r'(?:the )?(first|second|third|fourth|fifth|[1-5])(?: one| flight)?[.!]?', text.strip().lower())
             choice = (words.get(match[1]) or int(match[1])) if match else None
+            spoken_words = re.findall(r"[a-z]+|[0-9]+", text.casefold())
+            if (spoken_words and spoken_words[0] in ('yes', 'yeah', 'that')
+                    and any(word in ('no', 'not', 'never', 'dont', 'don') for word in spoken_words)):
+                return LLMResponse(id='scripted', choices=["I won't select a flight from a negative confirmation. Tell me its list number or flight number when you are ready."], created=0)
             selected = flight_number(text)
             if selected:
                 choice = next((row.get('choice') for row in discovery['candidates']
@@ -555,7 +578,7 @@ class ScriptedClient:
                 if message.get('role') == 'tool' and (tool_record(message.get('content')) or {}).get('discovery_id') == discovery['discovery_id']), default=-1)
             declined = any(message.get('role') == 'user' and unknown_flight(str(message.get('content', '')))
                            for message in messages[offered_at + 1:latest]) if offered_at >= 0 else False
-            if text.strip().lower().rstrip('.!?') in ('yes', 'that one', 'yes that one') and not declined:
+            if speech_confirmation(text) and not declined:
                 from briefing.traveller import discovery_notice, suggested_flight
                 try:
                     discovery_notice(discovery)  # Same validated notice as the presentation hook.

@@ -282,11 +282,19 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         notice = discovery_notice(search)
         self.assertIn('My suggestion is United Airlines 57', notice)
         self.assertIn('soonest', notice)
-        for answer in ('yes', 'that one', 'yes that one'):
+        for answer in ('yes', 'that one', 'yes that one', 'Yes. That', 'yeah', 'that is the one', 'yes please'):
             response = await self.call([{'role': 'tool', 'content': json.dumps(search)},
                 {'role': 'assistant', 'content': notice}, {'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
             self.assertEqual(response.tool_calls[0].tool_args,
                 {'action': 'start', 'request': answer, 'discovery_id': search['discovery_id'], 'choice': 2})
+
+    async def test_spoken_confirmation_rejects_negatives_and_number_overrides(self):
+        search = self.suggested_search()
+        for answer in ('yes no', 'that is not mine', 'yeah no United 57',
+                       'yes second one', 'that flight 3', 'yes two', 'yes one'):
+            response = await self.call([{'role': 'tool', 'content': json.dumps(search)},
+                {'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
+            self.assertFalse(response.tool_calls, answer)
 
     async def test_explicit_choice_overrides_suggestion_and_decline_does_not_select(self):
         search = self.suggested_search()
@@ -299,7 +307,7 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(first.tool_calls)
         self.assertIn('Which flight', first.response_text())
         history += [{'role': 'user', 'content': 'no'}, {'role': 'assistant', 'content': first.response_text()}]
-        for answer in ('no', 'yes', 'that one'):
+        for answer in ('no', 'yes', 'that one', 'Yes. That', 'yeah'):
             followup = await self.call(history + [{'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
             self.assertFalse(followup.tool_calls)
             self.assertNotIn('?', followup.response_text())
