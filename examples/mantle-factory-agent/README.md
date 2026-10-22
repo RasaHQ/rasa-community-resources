@@ -129,3 +129,11 @@ Ask “Can you limit the market card to three currencies?” and then “Try the
 For voice, add DEEPGRAM_API_KEY to the same owner file and `--voice`. Text qualification and physical microphone qualification are separate. The default `--mantle-mode SCRIPTED` remains the teaching fallback.
 
 Each `good` request in LIVE builder mode starts a new funded build, including a repeated request. The one-at-a-time lock and the default limit of 12 funded runs per evidence folder bound these builds. A started run counts even if it fails; the `ignores-limit` request uses no funded build.
+
+## Requalify the voice repair after changing pins
+
+`voice_patch.py` patches private engine names and remains the proven v1. `voice_compat.py` permits only the recorded Rasa Pro/Core pairs: 3.21.0.dev5 with Core 0.35.6 or 0.36.3. A different Rasa Pro or Core version refuses voice startup; the text path remains available. Do not add a pair merely to silence the check.
+
+After either pin moves, run the offline voice-patch regressions in the example's project environment, including EndOfTurn-only text, reconnect and idle silence. Then run real Deepgram file inputs through the Inspector: flight search, “yes that one”, and “six pm tomorrow” for travel; a factory request and its actual protected result for the factory. Record the exact versions, source head, transcripts and result before adding a qualified pair. This proves file speech only; physical microphone/browser permission needs a separate check. No provider call is part of the offline tests.
+
+After a factory call, the reply quotes the validated tool fields: verdict, failing test, attempt fingerprint, builder calls, seconds and mode. Model-authored prose cannot replace that verdict. A failed or malformed result produces NOT_READY without an acceptance claim.

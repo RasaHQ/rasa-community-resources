@@ -148,6 +148,9 @@ def meeting_time(text, airport, now):
     except ValueError:
         pass
     value = normalized(text)
+    # Do not silently turn fractional clock phrases into the bare hour.
+    if re.search(r'\b(?:half|quarter)\b', value):
+        return None
     # ASR commonly spells an hour. Convert only an explicit AM/PM clock,
     # never durations, vague times or an unqualified number word.
     spoken_hours = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
