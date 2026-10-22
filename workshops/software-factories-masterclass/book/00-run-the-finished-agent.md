@@ -1,8 +1,10 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 0: Run the agent you will learn to build
 
 Picture a flight that lands at 5 pm, with a meeting at 6 pm across town. In about 20 minutes, after a first install, you'll run an agent that answers that from four sources at once, then change how it answers without touching its code.
 
-Time: about 5 minutes for the first install, then about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), Git, Make, a browser and your free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the sign-up form alone isn't a license. The install needs the internet. After that the exercise runs offline, because the cards are a recording from 22 October 2026. This pack is pinned to and tested on Rasa Pro 3.21.0.dev5. The current Mantle docs describe 3.21.0.dev12, where the model is set in agent.yml under orchestrator.model_group. Use this pack's files today.
+Time: about 5 minutes for the first install, then about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), Git, Make, a browser and your free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Submitting the sign-up form alone isn't a license. The install needs the internet. After that the exercise runs offline, because the cards are a recording from 22 October 2026.
 
 You're done when `python3 check_demo.py --recorded --transfer-minutes 30` prints `ch00 OK`. If you get stuck, the working code is in `book/ready/ch00`.
 
@@ -29,13 +31,13 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
    git clone https://github.com/RasaHQ/rasa-community-resources.git
    ```
 
-   Use your existing clone if you have one. Work inside the clone: a ZIP download won't work.
+   For the supplied ZIP, run `git init` at the package root and set PACK to that folder. You do not need a remote repository.
 
 2. Set your clone's actual location and install the supplied code:
 
    ```bash
-   export REPO=~/rasa-community-resources
-   cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00/demo"
+   export PACK=/absolute/path/to/software-factories-masterclass
+   cd "$PACK/book/ready/ch00/demo"
    make help
    make setup
    make env
@@ -78,8 +80,8 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 3. In a second terminal, check the result before making your change:
 
    ```bash
-   export REPO=~/rasa-community-resources
-   cd "$REPO/workshops/software-factories-masterclass/book/ready/ch00"
+   export PACK=/absolute/path/to/software-factories-masterclass
+   cd "$PACK/book/ready/ch00"
    python3 check_demo.py --recorded --transfer-minutes 30
    ```
 

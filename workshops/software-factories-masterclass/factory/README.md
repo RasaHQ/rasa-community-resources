@@ -1,3 +1,5 @@
+> **Historical extension, not the current workshop entry point.** This folder retains its original prerelease fixtures and results. Start with [the participant guide](../PARTICIPANT-GUIDE.md). `openai-mcp` uses the separate Agents SDK, not the Agents API taught today. Do not upgrade these fixtures or reinterpret their recorded results as 3.21.0 results.
+
 # mantle-factory-v1: a small software factory whose product is a Rasa Mantle agent
 
 The factory for the Rasa Mantle masterclass in this pack. The loop is the one from the technology-neutral course "Towards Dark Software Factories" on profrod.ai: **task -> isolated change -> independent verification -> decision.** The product is a Mantle project, and the independent verification asks the real Mantle engine.

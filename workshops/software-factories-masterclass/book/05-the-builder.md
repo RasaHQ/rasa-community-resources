@@ -1,3 +1,5 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 5: Ask a builder to make the change
 
 A traveler asks for a shorter currency list. The change looks small, but someone still has to write it and prove that the card respects the limit. Hand that request to a builder and keep the checks outside its reach.
@@ -25,16 +27,16 @@ The factory keeps the protected tests outside the scratch copy, where the builde
 
 ## Get the ready folder
 
-Use a fresh folder beside your clone. Run these commands from the folder that contains the clone, rather than from an earlier exercise folder. Change `REPO` to your clone's actual location.
+Use a fresh folder beside your clone. Run these commands from the folder that contains the clone, rather than from an earlier exercise folder. Change `PACK` to your clone's actual location.
 
 ```bash
-export REPO=~/rasa-community-resources
+export PACK=/absolute/path/to/software-factories-masterclass
 export WORK=~/factory-work/my-factory-ch05
 if [ -e "$WORK" ]; then
   printf '%s\n' 'Refused: that folder already exists. Choose a fresh WORK name.'
 else
   mkdir -p ~/factory-work &&
-  cp -R "$REPO/workshops/software-factories-masterclass/book/ready/ch05" "$WORK" &&
+  cp -R "$PACK/book/ready/ch05" "$WORK" &&
   cd "$WORK" &&
   uv venv --python 3.12 .venv &&
   . .venv/bin/activate &&

@@ -1,3 +1,5 @@
+> **Historical extension, not the current workshop entry point.** This folder retains its original prerelease fixtures and results. Start with [the participant guide](../PARTICIPANT-GUIDE.md). `openai-mcp` uses the separate Agents SDK, not the Agents API taught today. Do not upgrade these fixtures or reinterpret their recorded results as 3.21.0 results.
+
 # Brief me before I fly: the Mantle side, graded offline
 
 sow: software-factories-masterclass-SOW-02

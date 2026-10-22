@@ -1,10 +1,12 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # The software factories book
 
 A hands-on book that takes you from a running Rasa Mantle agent to a dark software factory that builds a new
 card for that agent. You can follow it alone from a clone of this repository. You do not need to have attended
 the workshop.
 
-A coding agent says its change works, and you have no time to read every line it changed. A software factory checks the change for you, with tests the agent never sees. You build one here, chapter by chapter, and watch it accept a good change and reject a bad one.
+A coding agent says its change works, and you have no time to read every line it changed. A software factory checks the change against independently controlled acceptance criteria. This exercise also withholds the protected suite from the builder. You build one here, chapter by chapter, and watch it accept a good change and reject a bad one.
 
 Time: each chapter opens with its own estimate. Chapter 0 takes about 5 minutes to install and then about 20. Chapters 1 to 8 take about 10, 10, 25, 30, 20, 15, 15 and 20. Every chapter ends with a check that prints `chNN OK`, so you always know whether you're done. If a chapter goes wrong, start it again from its ready folder.
 
@@ -18,7 +20,7 @@ Time: each chapter opens with its own estimate. Chapter 0 takes about 5 minutes 
 
 Keys and the license go in the example's Git-ignored `.env` (created by `make env` with mode 600) or in your shell. Never commit that file, and never paste a key anywhere else.
 
-Clone this repository with Git. A ZIP download is not supported.
+Use the supplied ZIP and run `git init` at its root, as PREWORK.md explains.
 
 ## How the chapters work
 
@@ -29,7 +31,7 @@ Every chapter opens with a short scene, then a **Time** line and what you need. 
 3. **You're done when.** A real command that prints `chNN OK`. In chapters 3 to 8 it fails before you make your change and passes after.
 4. **If you get stuck.** The working code for the chapter is in its ready folder under `ready/`, so you can start any chapter without doing the earlier ones. Chapters 1 and 2 use the chapter 0 folder.
 
-Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so on), next to your clone and outside it, copied from the chapter's ready folder. `REPO` in the commands means the folder where you cloned this repository, for example `export REPO=~/rasa-community-resources`.
+Chapters 3, 4, 6 and 7 each work in their own folder (`my-factory-ch03` and so on), next to your clone and outside it, copied from the chapter's ready folder. `PACK` in the commands means the root of the unzipped workshop package, for example `export PACK=/absolute/path/to/software-factories-masterclass`.
 
 ## The chapters
 

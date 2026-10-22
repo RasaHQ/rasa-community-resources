@@ -1,6 +1,8 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
 # Chapter 4: Acceptance before code
 
-A coding agent reports that its change works, and it wrote the tests that say so. Tests the builder can read, the builder can bend. In about 30 minutes you'll lock the tests before any work starts, so the builder never sees them and can't change them, and then watch the factory accept an attempt against them.
+A coding agent reports that its change works, and it wrote the tests that say so. The builder may read public acceptance criteria and development tests. It must not control the verifier or its verdict. In about 30 minutes you'll lock the tests before any work starts, so the builder never sees them and can't change them, and then watch the factory accept an attempt against them.
 
 Time: about 30 minutes. You need: a Mac (the check runs in a macOS sandbox), Python 3.12 and uv. Chapter 3 first is useful but not required, because this chapter has its own ready folder. No key or account.
 
@@ -8,7 +10,7 @@ You're done when the check at the end prints a line that starts with `ch04 OK`. 
 
 ## Words used in this chapter
 
-- **Protected tests:** tests that check what you asked for was built. The builder never sees them and can't change them.
+- **Protected tests:** tests controlled by the evaluator. This exercise also withholds their contents from the builder; secrecy is an extra measure, not a requirement for every factory.
 - **Fingerprint (hash):** a short code made from a file. Change one letter and it changes.
 - **Sandbox:** a safety box from the operating system that blocks the network. It uses `sandbox-exec`, which comes with macOS.
 
@@ -17,9 +19,9 @@ You're done when the check at the end prints a line that starts with `ch04 OK`. 
 Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into `~/factory-work` (it creates a new folder there, `my-factory-ch04`, and refuses to overwrite an existing one), then set up Python once:
 
 ```bash
-export REPO=~/rasa-community-resources   # the folder where you cloned the repository
+export PACK=/absolute/path/to/software-factories-masterclass   # the unzipped workshop root
 mkdir -p ~/factory-work && cd ~/factory-work
-[ -e my-factory-ch04 ] && echo "my-factory-ch04 already exists: use it, or move it away first" || cp -R "$REPO"/workshops/software-factories-masterclass/book/ready/ch04 my-factory-ch04
+[ -e my-factory-ch04 ] && echo "my-factory-ch04 already exists: use it, or move it away first" || cp -R "$PACK"/book/ready/ch04 my-factory-ch04
 ```
 
 ```bash

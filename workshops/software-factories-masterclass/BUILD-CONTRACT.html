@@ -1,0 +1,165 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Build Contract</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="README.html">Start</a> · <a href="PARTICIPANT-GUIDE.html">Participant guide</a> · <a href="slides/index.html">Slides</a> · <a href="TECHNICAL-AUDIT.html">Audit</a></nav><main><h1>The complete voice factory: implementation contract</h1>
+<p>This is the target specification and missing-integration checklist, not a claim that the attached code already implements it.</p>
+<h2>The user journey</h2>
+<ol>
+<li>I say: “Build me a voice assistant for my flight to New York. Show the arrival weather and whether I can make my meeting.”</li>
+<li>The factory assistant asks only for missing requirements, reads back the brief, and gets confirmation before starting paid build work.</li>
+<li>A visible job shows queued, building, checking and ready, or a specific failure. Conversation remains responsive while the build runs.</li>
+<li>The system gives me a preview URL only after the exact artifact passes the release checks.</li>
+<li>I open that assistant and ask about my flight by voice. It answers briefly and updates a visual flight/weather/timeline/currency board.</li>
+<li>I request a change. The factory builds a candidate, evaluates it independently and either releases a new version or keeps the previous working version.</li>
+</ol>
+<h2>Responsibilities</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Responsibility</th>
+<th>What it must not imply</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Factory conversation: Mantle + Deepgram</td>
+<td>Spoken requirements, clarification, confirmation, status</td>
+<td>A voice transcript alone does not establish a complete build</td>
+</tr>
+<tr>
+<td>Factory MCP service</td>
+<td>Submit/status/cancel jobs; bind task to artifact and evidence</td>
+<td>MCP itself is neither an evaluator nor a deployment system</td>
+</tr>
+<tr>
+<td>OpenAI Agents API worker</td>
+<td>Managed builder session with explicitly scoped file tools or sandbox</td>
+<td>Session completion is not acceptance</td>
+</tr>
+<tr>
+<td>Independent verifier</td>
+<td>Validate task, scope, product behavior and artifact identity</td>
+<td>A hidden test suite alone is not a security boundary</td>
+</tr>
+<tr>
+<td>Release worker</td>
+<td>Train/start checked artifact, run smoke checks, preserve rollback</td>
+<td>Copying files is not proof the new app is running</td>
+</tr>
+<tr>
+<td>Generated travel agent: Mantle + Deepgram</td>
+<td>User conversation and tool routing</td>
+<td>Its prompts do not supply authoritative flight values</td>
+</tr>
+<tr>
+<td>Source adapters and custom UI</td>
+<td>Validated observations, estimates, assumptions, unavailable states</td>
+<td>These visual cards are application code, not a built-in Agents API UI feature</td>
+</tr>
+</tbody>
+</table>
+<p>The supplied code includes the travel agent, source MCP tools and a separate builder driver. It lacks a factory conversation skill exposing build jobs and a demonstrated release bridge into a newly launched travel agent.</p>
+<h2>Suggested MCP job contract</h2>
+<p><code>submit_build(brief, request_id)</code> validates a confirmed brief, assigns a durable job ID and returns quickly. <code>get_build(job_id)</code> returns the state and safe progress. <code>cancel_build(job_id)</code> requests cancellation and never reports cancellation until acknowledged. Names are proposed application interfaces, not vendor APIs.</p>
+<p>Allowed transitions: QUEUED → BUILDING → CHECKING → ACCEPTED → RELEASING → READY. Any stage can fail; bounded transient failures may retry. REJECTED means a product requirement failed. NOT_READY means no valid judgment was possible. Cancellation and timeout never become READY.</p>
+<p>The job record includes the normalized brief, caller request ID, task digest, base artifact digest, builder session ID, candidate digest, verifier/version, test results, release artifact digest and final URL. Repeated request IDs with the same brief return the original job. A different brief with the same ID is refused.</p>
+<p>Only the release worker writes the release record. The builder cannot change task authority, tests, verification results or release policy. A directory copy and file hashes detect some changes; they do not stop arbitrary untrusted code. Run code in an actual isolated worker with no provider keys and a separate protected verifier.</p>
+<h2>Acceptance scenarios for the complete demo</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Action / fault</th>
+<th>Required observation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F01</td>
+<td>Speak the brief</td>
+<td>Correct transcript, clarification and confirmed normalized task</td>
+</tr>
+<tr>
+<td>F02</td>
+<td>Start the same request twice</td>
+<td>One build job and one billed session, or explicit reconciliation of uncertain submission</td>
+</tr>
+<tr>
+<td>F03</td>
+<td>Builder finishes</td>
+<td>CHECKING, never immediately READY</td>
+</tr>
+<tr>
+<td>F04</td>
+<td>Candidate changes protected evaluator or asks for secrets</td>
+<td>Refusal and preserved previous release</td>
+</tr>
+<tr>
+<td>F05</td>
+<td>Candidate labels daily FX as live</td>
+<td>REJECTED with the violated requirement</td>
+</tr>
+<tr>
+<td>F06</td>
+<td>Provider fails / worker times out</td>
+<td>NOT_READY or FAILED; no successful release claim</td>
+</tr>
+<tr>
+<td>F07</td>
+<td>Accepted artifact changes before release</td>
+<td>Digest mismatch blocks release</td>
+</tr>
+<tr>
+<td>F08</td>
+<td>Release succeeds</td>
+<td>Checked artifact starts; returned URL serves that version; prior version remains recoverable</td>
+</tr>
+<tr>
+<td>V01</td>
+<td>Ask about flight by voice</td>
+<td>Recognized request, audible short answer and matching visual cards</td>
+</tr>
+<tr>
+<td>V02</td>
+<td>Say a short “yes”; interrupt speech</td>
+<td>Confirmation heard; playback stops appropriately; task state preserved</td>
+</tr>
+<tr>
+<td>V03</td>
+<td>Give an ambiguous flight or date</td>
+<td>A clarification question, no invented flight/date</td>
+</tr>
+<tr>
+<td>V04</td>
+<td>Set transfer to 120 minutes</td>
+<td>Timeline changes; selected flight and meeting remain unchanged</td>
+</tr>
+<tr>
+<td>D01</td>
+<td>Weather source unavailable</td>
+<td>Weather unavailable; other cards retained; no stale value labeled current</td>
+</tr>
+<tr>
+<td>D02</td>
+<td>Position-based arrival estimate</td>
+<td>Clearly labeled estimate; no invented airline delay status</td>
+</tr>
+<tr>
+<td>D03</td>
+<td>Run recorded data</td>
+<td>Visible and spoken replay disclosure where relevant</td>
+</tr>
+<tr>
+<td>R01</td>
+<td>Restart after submission</td>
+<td>Job can be recovered without silently repeating side effects</td>
+</tr>
+<tr>
+<td>R02</td>
+<td>Cancel during build</td>
+<td>Cancellation acknowledged and no subsequent release</td>
+</tr>
+</tbody>
+</table>
+<h2>A practical three-hour scope</h2>
+<p>Use a prepared travel scaffold, not an empty repository. Ask the builder for one visible feature with precise acceptance examples. Once the bridge exists, it can copy the scaffold, implement the feature, run checks and launch the result. This is still an agent building another agent, provided the artifacts and release are real and visible. The workshop should say what the scaffold supplies and what the builder actually changes.</p>
+<p>Do not present these scenario descriptions as an automated suite. Each needs an implementation and recorded execution before claiming the full demo is ready.</p>
+</main></html>

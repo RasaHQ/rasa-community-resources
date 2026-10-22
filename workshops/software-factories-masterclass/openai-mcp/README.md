@@ -1,4 +1,6 @@
-# An OpenAI agent behind an MCP server that a Mantle project calls
+> **Historical extension, not the current workshop entry point.** This folder retains its original prerelease fixtures and results. Start with [the participant guide](../PARTICIPANT-GUIDE.md). `openai-mcp` uses the separate Agents SDK, not the Agents API taught today. Do not upgrade these fixtures or reinterpret their recorded results as 3.21.0 results.
+
+# Historical Agents SDK exercise behind MCP (outside the Agents API workshop)
 
 An offline exercise. Nothing here has run against a model, a license or a key.
 

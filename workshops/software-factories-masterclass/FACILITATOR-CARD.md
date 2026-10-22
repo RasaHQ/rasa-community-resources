@@ -1,22 +1,15 @@
-# Facilitator card: Thu 22 Oct 2026, 14:30 to 17:30 London (13:30 UTC)
+# Facilitator table card
 
-In person, 5 to 40 people, pairs or groups of up to four. Offline by default: nothing runs against a live model unless you choose the one optional live coding-agent run (then say so, and that it is one run); the vendor agent is a stub. Say the matching line in the first ten minutes and at 17:25. Full script: `FACILITATOR.md`. `OFFLINE-OPENING.md` is the 14:30 and 14:40 material, online or not. Rehearse: `uv run python rehearse.py` in `factory/`.
+**Schedule:** 0–10 teaser; 10–30 concepts; 30–40 groups; 40–95 lab; 95–110 networking; 110–165 lab; 165–180 demos.
 
-| Clock | Block | One line to say | Pairs do |
-| --- | --- | --- | --- |
-| 14:30 | A grader the builder cannot edit is the only review a dark factory has | In a dark factory the evaluation is the only review | Answer the question in `OFFLINE-OPENING.md` |
-| 14:40 | A forged pass fools the first factory and is rejected by the second | The forgery is constructed here; the defect it stands for, one the agent's own tests missed, is the whole course in one run | Offline toy loop: ACCEPT, REJECT, ACCEPT (first factory fooled), REJECT (second factory) |
-| 15:00 | The engine reports nothing when a confirmation gate has silently disappeared | The engine reported nothing and the gate was gone | `factory.py` on good + 3 silent-gate candidates; `show_gate.py` |
-| 15:30 | Break | | |
-| 15:40 | A vendor agent's answer is advice, and the write that follows still waits for a person | You can grade the line after the vendor's answer, not the vendor | From `openai-mcp/`: `../factory/.venv/bin/python -I experiments.py project`, then `.../python grade_variants.py project`; predict, then compare |
-| 16:10 | A coding agent's summary is a claim until you have read its diff | Read the diff before you read the summary | Read a recorded run; all 18 were accepted |
-| 16:40 | Break | | |
-| 16:50 | Two changes that pass alone can fail together, and the builder cannot approve its own release | Passing alone says nothing about the trunk | `integrate.py` (STALE_BASE refusal); `release.py` (builder refused) |
-| 17:10 | A few runs support a count with an error bar, not a pass rate | What do these runs support? | `measure.py report` over the 18 recorded runs, `needed 0.9`, `policy.py what-if`; the scripted candidates are examples, not results |
-| 17:25 | You leave knowing who may edit the check, where the engine is silent and why advice is not permission | The grader is not the builder's; the engine can be silent; advice is not permission | Nothing |
+**Entry:** `PARTICIPANT-GUIDE.md`. Groups of 3–4. Rotate driver at the break.
 
-Landing lines: all three silent-gate candidates pass the builder's tests and are REJECTED by the protected suite. In the vendor block six edits are rejected and one ("Done." replacing the question) is ACCEPTED: a known gap. The recorded report is 18 of 18 accepted, Wilson 95% 0.82 to 1.00; 35 clean runs are needed for a Wilson 95% lower bound of 0.9.
+Ask: What did you ask for? What would make it wrong? Which check caught that? Which exact artifact did you run? What still needs a person?
 
-If it fails: practiced before? move `runs`, `trunk`, `releases`, `approvals` aside (`FACILITATOR.md`, Reset); pair people up; spare laptop; NOT_READY means read the reason aloud (Python or `uv sync`); no block needs wifi; projector down means the printed card and one recorded decision read aloud.
+**Tracks:** Mac with accounts: travel scaffold + Agents API builder. Any Python 3.12 laptop: recovery factory, plus architecture and acceptance design. No setup: work as evaluator at another group's machine.
 
-Do not claim: that Mantle agents are safe or unsafe; any pass rate for coding agents; anything about the real vendor agent.
+**Never equate:** API session complete with acceptance; acceptance with release; text with voice proof; replay with current data; SDK with API; a copied folder with an OS sandbox.
+
+**At 50 min:** stop installation troubleshooting and move to the fallback. **At 145 min:** stop adding features. **At 165 min:** group demos.
+
+**Closing prompt:** Show one requirement, one rejected result, one accepted artifact and one limitation. Evidence is more useful than “the agent said it worked.”
