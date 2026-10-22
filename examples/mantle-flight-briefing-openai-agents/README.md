@@ -8,10 +8,13 @@ Audience: Practitioners connecting Rasa Mantle to a managed specialist
 Time: Allow time for the first dependency download
 
 **Draft class head: the complete path is awaiting independent acceptance.**
-From this checkout, the two commands are:
+From this checkout, copy the credential template and fill in your own values,
+then run setup and start the demo:
 
 ```sh
 cd examples/mantle-flight-briefing-openai-agents
+cp .env.example .env
+# Fill in your own values in .env with a text editor.
 ./demo setup
 ./demo run
 ```
@@ -21,17 +24,18 @@ For a new checkout after the class PR is merged:
 ```sh
 git clone https://github.com/RasaHQ/rasa-community-resources.git
 cd rasa-community-resources/examples/mantle-flight-briefing-openai-agents
+cp .env.example .env
+# Fill in your own values in .env with a text editor.
 ./demo setup
 ./demo run
 ```
 
 Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
-`RASA_LICENSE` (the free Developer Edition licence) in your own terminal
-environment, including in scripted mode;
+`RASA_LICENSE` (the free Developer Edition licence) in the example-root `.env` or your shell, including in scripted mode;
 the launcher never bypasses the engine licence check. Model and voice keys are
 optional for the scripted text path. Before class, [sign up for your own free
 Developer Edition licence](https://rasa.com/rasa-pro-developer-edition-license-key-request)
-and set the issued licence as `RASA_LICENSE` in your terminal; submitting the
+and put the issued licence in the template’s `RASA_LICENSE` entry; submitting the
 form alone does not make the runtime ready.
 
  Setup creates separate worker and Mantle
@@ -84,8 +88,8 @@ styles and SVG; it loads no remote browser assets.
 
 ## Optional live model and voice
 
-Only the facilitator or participant supplies keys, in their own terminal
-environment. Do not paste values into chat, files, URLs or logs. There is no
+Only the facilitator or participant supplies keys in the ignored example-root
+`.env` or their shell. Never paste values into chat, committed files, URLs or logs. There is no
 seat-operated live model or voice proof here. The selected model group remains
 in `project/integrations.yml`; choose `openai` or `anthropic` there before a live
 run with the matching environment key. A key for the other group alone does
@@ -101,6 +105,17 @@ source service running. `--scripted` disables model
 and voice credentials in its children. Actual voice failure fallback and spoken
 weather scenario S13 require the operator's live check; no voice PASS is claimed.
 The owner-maintained doctor prints only SET or MISSING for credential names.
+
+The launcher reads only `RASA_LICENSE`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`
+and `DEEPGRAM_API_KEY` from this one `.env`; any other assignment is refused.
+Use single-line `NAME=value` entries, optionally enclosing a value in matching
+single or double quotes, with comments on separate lines. Values stay literal:
+there is no variable expansion or shell evaluation. A shell variable takes
+precedence, including an explicitly empty shell value. The launcher passes
+values only to its child processes and leaves your shell unchanged. Git-tracked
+`.env` files, symlinks and runtime dotenv files in `project/` or `worker/` are
+refused. Never commit `.env`; keep the empty `.env.example` as the shared template.
+Implicit engine and uv dotenv loading stays disabled.
 
 ## Provenance, access and remaining checks
 

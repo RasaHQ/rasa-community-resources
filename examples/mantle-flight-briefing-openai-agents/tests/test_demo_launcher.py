@@ -43,6 +43,7 @@ class LauncherControls(unittest.TestCase):
         with patch.dict(os.environ, {'XDG_DATA_HOME': '/existing-python-data'}), \
                 patch.object(demo.subprocess, 'run', side_effect=results) as run, \
                 patch.object(demo, 'completed'), \
+                patch.object(demo, 'participant_environment', side_effect=lambda env: dict(env)), \
                 patch.object(demo.shutil, 'which', return_value='/installed/uv'):
             demo.setup()
         self.assertEqual(run.call_args_list[0].kwargs['env']['XDG_DATA_HOME'], '/existing-python-data')
@@ -163,13 +164,13 @@ class LauncherControls(unittest.TestCase):
     def test_opt_in_child_diagnostics_redact_before_writing(self):
         import secrets
         values = {name: secrets.token_urlsafe(32) for name in (
-            'OPENAI_API_KEY', 'DEEPGRAM_API_KEY', 'RASA_LICENSE', 'BRIEFING_MCP_TOKEN')}
+            'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'DEEPGRAM_API_KEY', 'RASA_LICENSE', 'BRIEFING_MCP_TOKEN')}
         with tempfile.TemporaryDirectory(dir=ROOT / '.demo-cache') as directory:
             env = {**os.environ, **values, 'BRIEFING_DIAGNOSTICS_DIR': directory}
-            code = 'import os; [print(os.environ[k]) for k in ("OPENAI_API_KEY", "DEEPGRAM_API_KEY", "RASA_LICENSE", "BRIEFING_MCP_TOKEN")]'
+            code = 'import os; [print(os.environ[k], os.environ[k][3:11]) for k in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "DEEPGRAM_API_KEY", "RASA_LICENSE", "BRIEFING_MCP_TOKEN")]'
             children = demo.Children()
             try:
-                with patch.dict(os.environ, values):
+                with patch.dict(os.environ, {key: "" for key in values}):
                     process = children.start([sys.executable, '-c', code], cwd=ROOT, env=env)
                     self.assertEqual(process.wait(timeout=5), 0)
                     for thread in children.log_threads:
@@ -349,6 +350,135 @@ class InspectorReadinessBudget(unittest.TestCase):
         text_budget = text_wait.call_args.kwargs['timeout']
         self.assertGreaterEqual(voice_budget, text_budget)
         self.assertGreaterEqual(voice_budget, 90)
+
+
+class ParticipantDotenv(unittest.TestCase):
+    def setUp(self):
+        (ROOT / '.demo-cache').mkdir(exist_ok=True)
+        self.temporary = tempfile.TemporaryDirectory(dir=ROOT / '.demo-cache')
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.project = self.root / 'project'
+        self.worker = self.root / 'worker'
+        self.project.mkdir()
+        self.worker.mkdir()
+        demo.subprocess.run(['git', 'init', '-q', str(self.root)], check=True,
+                            stdout=demo.subprocess.DEVNULL, stderr=demo.subprocess.DEVNULL)
+        self.path = self.root / '.env'
+        self.synthetic = 'fixture-only-do-not-echo-43b02a'
+
+    def load(self, environment=None):
+        return demo.participant_environment({} if environment is None else environment,
+                                            self.root, self.project, self.worker)
+
+    def test_four_names_literal_values_comments_and_quotes(self):
+        self.path.write_text('# Own values only\nRASA_LICENSE=fixture-licence\n'
+                             'OPENAI_API_KEY="literal-${DO_NOT_EXPAND}-#-value"\n'
+                             "ANTHROPIC_API_KEY='fixture-anthropic'\nDEEPGRAM_API_KEY=\n")
+        result = self.load()
+        self.assertEqual(set(result), demo.PARTICIPANT_KEYS)
+        self.assertEqual(result['OPENAI_API_KEY'], 'literal-${DO_NOT_EXPAND}-#-value')
+        self.assertEqual(result['ANTHROPIC_API_KEY'], 'fixture-anthropic')
+        self.assertEqual(result['DEEPGRAM_API_KEY'], '')
+
+    def test_shell_presence_wins_including_explicit_empty_without_mutation(self):
+        self.path.write_text('RASA_LICENSE=file-only\nOPENAI_API_KEY=file-only\n')
+        original = {'RASA_LICENSE': 'shell-only', 'OPENAI_API_KEY': '', 'UNRELATED': 'keep'}
+        before = dict(os.environ)
+        result = self.load(original)
+        self.assertEqual(result, original)
+        self.assertIsNot(result, original)
+        self.assertEqual(os.environ, before)
+
+    def test_unknown_names_refused_even_when_shell_would_override(self):
+        self.path.write_text('EXTRA_' + self.synthetic + '=' + self.synthetic + '\n')
+        with self.assertRaises(demo.DemoError) as error:
+            self.load()
+        self.assertNotIn(self.synthetic, str(error.exception))
+        self.assertIn('only RASA_LICENSE', str(error.exception))
+
+    def test_malformed_duplicate_invalid_utf8_and_oversize_never_echo(self):
+        for raw in [(self.synthetic + '\n').encode(),
+                    ('RASA_LICENSE=' + self.synthetic + '\nRASA_LICENSE=again\n').encode(),
+                    ('RASA_LICENSE="' + self.synthetic + '\n').encode(),
+                    b'RASA_LICENSE=\xff', b'#' + b'x' * 65536]:
+            with self.subTest(kind=raw[:1]):
+                self.path.write_bytes(raw)
+                with self.assertRaises(demo.DemoError) as error:
+                    self.load()
+                self.assertNotIn(self.synthetic, str(error.exception))
+
+    def test_tracked_file_refused_before_reading_even_if_worktree_deleted(self):
+        self.path.write_text('RASA_LICENSE=' + self.synthetic + '\n')
+        demo.subprocess.run(['git', '-C', str(self.root), 'add', '.env'], check=True,
+                            stdout=demo.subprocess.DEVNULL, stderr=demo.subprocess.DEVNULL)
+        self.path.unlink()
+        with self.assertRaises(demo.DemoError) as error:
+            self.load()
+        self.assertIn('tracked by Git', str(error.exception))
+        self.assertNotIn(self.synthetic, str(error.exception))
+
+    def test_git_redirect_cannot_bypass_tracking_check(self):
+        self.path.write_text('RASA_LICENSE=fixture\n')
+        demo.subprocess.run(['git', '-C', str(self.root), 'add', '.env'], check=True,
+                            stdout=demo.subprocess.DEVNULL, stderr=demo.subprocess.DEVNULL)
+        with self.assertRaises(demo.DemoError):
+            self.load({'GIT_INDEX_FILE': str(self.root / 'missing-index')})
+
+    def test_git_failure_is_fixed_refusal(self):
+        with patch.object(demo.subprocess, 'run', return_value=SimpleNamespace(returncode=128)):
+            with self.assertRaises(demo.DemoError) as error:
+                self.load()
+        self.assertIn('Git could not verify', str(error.exception))
+
+    def test_only_root_env_exception_nested_env_and_root_variants_refused(self):
+        for path in (self.project / '.env', self.worker / '.env', self.root / '.env.local'):
+            with self.subTest(location=path.name):
+                path.write_text('RASA_LICENSE=' + self.synthetic)
+                with self.assertRaises(demo.DemoError) as error:
+                    self.load()
+                self.assertNotIn(self.synthetic, str(error.exception))
+                path.unlink()
+
+    def test_symlink_refused_and_example_is_not_loaded(self):
+        (self.root / '.env.example').write_text('NOT_ALLOWED=' + self.synthetic)
+        self.assertEqual(self.load(), {})
+        self.path.symlink_to(self.root / '.env.example')
+        with self.assertRaises(demo.DemoError):
+            self.load()
+
+    def test_child_environment_loads_keys_without_global_mutation_and_disables_dotenv(self):
+        self.path.write_text('RASA_LICENSE=' + self.synthetic + '\n')
+        with patch.object(demo, 'ROOT', self.root), patch.object(demo, 'PROJECT', self.project), \
+                patch.object(demo, 'WORKER', self.worker), patch.dict(os.environ, {}, clear=True):
+            output = io.StringIO()
+            with redirect_stderr(output):
+                result = demo.child_environment()
+            self.assertEqual(result['RASA_LICENSE'], self.synthetic)
+            self.assertNotIn('RASA_LICENSE', os.environ)
+            self.assertEqual(result['UV_NO_ENV_FILE'], '1')
+            self.assertEqual(result['PYTHON_DOTENV_DISABLED'], '1')
+            self.assertNotIn(self.synthetic, output.getvalue())
+
+    def test_real_engine_dotenv_loader_disabled_by_child_flag(self):
+        from rasa.cli.project_env import load_project_dotenv
+        self.path.write_text('RASA_LICENSE=' + self.synthetic + '\n')
+        with patch.dict(os.environ, {'PYTHON_DOTENV_DISABLED': '1'}, clear=True):
+            load_project_dotenv(str(self.root))
+            self.assertNotIn('RASA_LICENSE', os.environ)
+
+    def test_cli_refusal_has_no_secret_no_traceback_and_no_children(self):
+        self.path.write_text('UNKNOWN=' + self.synthetic + '\n')
+        output = io.StringIO()
+        with patch.object(demo, 'ROOT', self.root), patch.object(demo, 'PROJECT', self.project), \
+                patch.object(demo, 'WORKER', self.worker), \
+                patch.object(demo.shutil, 'which', return_value='/installed/uv'), \
+                patch.object(demo, 'registry_lock'), \
+                patch.object(demo.Children, 'start') as start, redirect_stderr(output):
+            self.assertEqual(demo.main(['setup']), 1)
+        self.assertNotIn(self.synthetic, output.getvalue())
+        self.assertNotIn('Traceback', output.getvalue())
+        start.assert_not_called()
 
 
 if __name__ == '__main__':

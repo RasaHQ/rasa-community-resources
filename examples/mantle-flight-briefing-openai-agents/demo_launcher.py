@@ -65,9 +65,74 @@ def registry_lock(directory):
         raise DemoError('The zeocore release pin and lock disagree; use the complete class checkout.')
 
 
+PARTICIPANT_KEYS = frozenset(('RASA_LICENSE', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'DEEPGRAM_API_KEY'))
+
+
+def participant_environment(environment, root=None, project=None, worker=None):
+    """Read only the guarded example-root file, without expanding or exporting."""
+    root = ROOT if root is None else Path(root)
+    project = PROJECT if project is None else Path(project)
+    worker = WORKER if worker is None else Path(worker)
+    env = dict(environment)
+    try:
+        for directory in (root, project, worker):
+            for candidate in directory.glob('.env*'):
+                if candidate.name == '.env.example':
+                    continue
+                if directory == root and candidate.name == '.env':
+                    continue
+                raise DemoError('Keep participant credentials only in the example-root .env or your shell; remove other runtime dotenv files.')
+        git_env = {key: value for key, value in environment.items() if not key.startswith('GIT_')}
+        git_env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
+        tracked = subprocess.run(['git', '--literal-pathspecs', '-C', str(root), 'ls-files',
+                                  '--error-unmatch', '--', '.env'],
+                                 env=git_env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                 timeout=10)
+        if tracked.returncode == 0:
+            raise DemoError('The example .env is tracked by Git; remove it from the index before running the demo.')
+        if tracked.returncode != 1:
+            raise DemoError('Git could not verify that the example .env is untracked; use a Git checkout and retry.')
+        path = root / '.env'
+        if path.is_symlink():
+            raise DemoError('Use a regular example-root .env file, not a symbolic link.')
+        if not path.exists():
+            return env
+        with path.open('rb') as stream:
+            raw = stream.read(65537)
+        if len(raw) > 65536:
+            raise DemoError('The example .env is too large; keep only the four documented credential lines.')
+        text = raw.decode('utf-8')
+        seen = set()
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if line.startswith('export '):
+                line = line[7:].lstrip()
+            name, separator, value = line.partition('=')
+            name, value = name.strip(), value.strip()
+            if not separator or name not in PARTICIPANT_KEYS:
+                raise DemoError('The example .env may contain only RASA_LICENSE, OPENAI_API_KEY, ANTHROPIC_API_KEY and DEEPGRAM_API_KEY assignments.')
+            if name in seen or '\x00' in value:
+                raise DemoError('Use one single-line assignment per credential in the example .env.')
+            seen.add(name)
+            if value.startswith(('"', "'")):
+                if len(value) < 2 or value[-1] != value[0]:
+                    raise DemoError('Use one single-line assignment per credential in the example .env.')
+                value = value[1:-1]
+            # Values are literal. No interpolation, escaping or shell evaluation.
+            if name not in env:
+                env[name] = value
+        return env
+    except DemoError:
+        raise
+    except (OSError, UnicodeError, subprocess.SubprocessError):
+        raise DemoError('The example .env could not be read safely; check the file and Git checkout, then retry.') from None
+
+
 def child_environment():
-    env = os.environ.copy()
-    # Caches and generated data stay in this owned example. Never load dotenv.
+    env = participant_environment(os.environ)
+    # The launcher alone reads the guarded file; engine/uv dotenv stays disabled.
     cache = ROOT / '.demo-cache'
     cache.mkdir(exist_ok=True)
     (cache / 'tmp').mkdir(exist_ok=True)
@@ -75,6 +140,7 @@ def child_environment():
         if name.startswith(('UV_', 'PIP_')):
             env.pop(name)
     env.update(UV_CACHE_DIR=str(cache / 'uv'), UV_NO_CONFIG='1', UV_NO_ENV_FILE='1',
+               PYTHON_DOTENV_DISABLED='1',
                UV_PYTHON_DOWNLOADS='never', UV_INDEX_URL='https://pypi.org/simple',
                PYTHONPYCACHEPREFIX=str(cache / 'pycache'), XDG_CACHE_HOME=str(cache),
                MPLCONFIGDIR=str(cache / 'matplotlib'), LITELLM_MODE='PRODUCTION',
@@ -106,11 +172,14 @@ class Children:
                 with (directory / ('child-' + str(process.pid) + '.log')).open('a') as log:
                     for raw in iter(process.stdout.readline, b''):
                         value = raw.decode('utf-8', errors='replace')
-                        token = env.get('BRIEFING_MCP_TOKEN', '')
-                        if len(token) >= 16:
-                            value = value.replace(token, '[transport credential redacted]')
-                            for index in range(len(token) - 7):
-                                value = value.replace(token[index:index + 8], '[transport fragment redacted]')
+                        # File credentials exist only in env, not os.environ;
+                        # redact from this child mapping before any log write.
+                        for name in (*PARTICIPANT_KEYS, 'BRIEFING_MCP_TOKEN'):
+                            secret = env.get(name, '')
+                            if secret:
+                                value = value.replace(secret, '[credential redacted]')
+                                for index in range(len(secret) - 7):
+                                    value = value.replace(secret[index:index + 8], '[credential fragment redacted]')
                         log.write(redact(value))
                         log.flush()
             thread = threading.Thread(target=capture, daemon=True)
@@ -265,14 +334,8 @@ def run_demo(scripted=False, host="127.0.0.1"):
         env.pop('DEEPGRAM_API_KEY', None)
     print('RASA_LICENSE: ' + ('SET' if env.get('RASA_LICENSE', '').strip() else 'MISSING'), flush=True)
     if not env.get('RASA_LICENSE', '').strip():
-        raise DemoError('Get your free Rasa Developer Edition licence at https://rasa.com/rasa-pro-developer-edition-license-key-request and set RASA_LICENSE in your terminal before rerunning ./demo run.')
+        raise DemoError('Get your free Rasa Developer Edition licence at https://rasa.com/rasa-pro-developer-edition-license-key-request and set RASA_LICENSE in the example .env or your shell before rerunning ./demo run.')
     env['BRIEFING_MCP_TOKEN'] = secrets.token_urlsafe(32)
-    # No .env loader may introduce credentials into either process.
-    for directory in (ROOT, PROJECT, WORKER):
-        if any(directory.glob('.env')) or any(directory.glob('.env.*')):
-            # .env.example is documentation only.
-            if any(p.name != '.env.example' for p in [*directory.glob('.env'), *directory.glob('.env.*')]):
-                raise DemoError('Remove runtime dotenv files from this demo; supply credentials only in your terminal environment.')
     children = Children()
     previous = {}
     def interrupt(_signum, _frame):
