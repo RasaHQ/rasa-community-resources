@@ -93,6 +93,17 @@ class Children:
         self.processes.append(process)
         return process
 
+    def stop(self, process):
+        others = [p for p in self.processes if p is not process]
+        self.processes = [process]
+        try:
+            self.close()
+        except Exception:
+            self.processes = others + [process]
+            raise
+        else:
+            self.processes = others
+
     def close(self):
         # Signal groups even if their leader has already exited.
         for sig in (signal.SIGTERM, signal.SIGKILL):
@@ -189,6 +200,24 @@ def wait_http(process, url, timeout=45):
     raise DemoError('The demo did not become ready in time; stop it and check the class release before retrying.')
 
 
+def start_inspector(children, env, mode):
+    argv = [str(python_at(PROJECT)), str(Path(__file__).resolve()), '_inspector', mode]
+    process = children.start(argv, cwd=PROJECT, env=env)
+    try:
+        wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=90)
+        return process, env
+    except DemoError:
+        if not env.get('DEEPGRAM_API_KEY', '').strip():
+            raise
+        children.stop(process)
+        text_env = env.copy()
+        text_env.pop('DEEPGRAM_API_KEY', None)
+        print('Inspector with voice was unavailable; retrying in text.', flush=True)
+        process = children.start(argv, cwd=PROJECT, env=text_env)
+        wait_http(process, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=90)
+        return process, text_env
+
+
 def run_demo(scripted=False):
     if os.name != 'posix':
         raise DemoError('Use macOS, Linux or WSL for this process-group launcher.')
@@ -196,12 +225,16 @@ def run_demo(scripted=False):
         raise DemoError('Run ./demo setup before ./demo run.')
     require_free_ports()
     env = child_environment()
+    force_scripted = scripted
     scripted = scripted or not any(env.get(k, '').strip() for k in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY'))
     if scripted:
-        for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'DEEPGRAM_API_KEY'):
+        for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY'):
             env.pop(key, None)
+    if force_scripted:
+        env.pop('DEEPGRAM_API_KEY', None)
+    print('RASA_LICENSE: ' + ('SET' if env.get('RASA_LICENSE', '').strip() else 'MISSING'), flush=True)
     if not env.get('RASA_LICENSE', '').strip():
-        raise DemoError('Rasa Inspector needs a Rasa Pro licence: set RASA_LICENSE in your own terminal, then rerun ./demo run. Scripted mode needs no model key.')
+        raise DemoError('Rasa Inspector needs a free Rasa Developer Edition licence: set RASA_LICENSE in your own terminal, then rerun ./demo run. Scripted mode needs no model key.')
     env['BRIEFING_MCP_TOKEN'] = secrets.token_urlsafe(32)
     # No .env loader may introduce credentials into either process.
     for directory in (ROOT, PROJECT, WORKER):
@@ -232,21 +265,31 @@ def run_demo(scripted=False):
         service = children.start([str(python_at(WORKER)), '-m', 'briefing', '--public-sources'], cwd=ROOT, env=env)
         wait_http(service, 'http://127.0.0.1:8942/cards')
         mode = 'scripted' if scripted else 'live'
-        inspector = children.start([str(python_at(PROJECT)), str(Path(__file__).resolve()), '_inspector', mode], cwd=PROJECT, env=env)
-        wait_http(inspector, 'http://127.0.0.1:5005/webhooks/inspector/inspect.html', timeout=90)
+        inspector, inspector_env = start_inspector(children, env, mode)
         print('Cards: http://127.0.0.1:8942/cards', flush=True)
         print('Mantle inspector: http://127.0.0.1:5005/webhooks/inspector/inspect.html', flush=True)
         print('Enter your journey: callsign=TEST123 meeting=2026-10-22T21:00:00Z transfer=45', flush=True)
         print('TEST123 is syntax, not a promised airborne flight. Use an actual callsign for available flight data.', flush=True)
         print('Press Ctrl-C here to stop both services and their children.', flush=True)
         while True:
-            if service.poll() is not None or inspector.poll() is not None:
-                raise DemoError('A demo service stopped; both services are being shut down. Run ./demo setup before retrying.')
+            if service.poll() is not None:
+                raise DemoError('The source service stopped; both services are being shut down. Run ./demo setup before retrying.')
+            if inspector.poll() is not None:
+                if inspector_env.get('DEEPGRAM_API_KEY', '').strip():
+                    children.stop(inspector)
+                    inspector_env = inspector_env.copy()
+                    inspector_env.pop('DEEPGRAM_API_KEY', None)
+                    print('Inspector stopped; retrying once without voice.', flush=True)
+                    inspector, inspector_env = start_inspector(children, inspector_env, mode)
+                else:
+                    raise DemoError('The Inspector stopped; both services are being shut down. Run ./demo setup before retrying.')
             time.sleep(0.2)
     except KeyboardInterrupt:
         print('Stopping the demo.', flush=True)
     finally:
         try:
+            signal.signal(signal.SIGINT, signal.SIG_IGN)
+            signal.signal(signal.SIGTERM, signal.SIG_IGN)
             children.close()
         finally:
             for sig, handler in previous.items():
@@ -319,6 +362,22 @@ def inspector(mode):
     from project.lib.capability_logging import install
     install()
     from rasa.__main__ import main as rasa_main
+    # The channel loader is the pinned engine's common inspect/run seam.
+    # Merge owner-supplied voice config in memory: no key/config file is written.
+    try:
+        from voice_config import voice_channels
+    except ImportError:
+        voice = {}
+    else:
+        voice = voice_channels(os.environ)
+    if voice:
+        from rasa.mantle.config import channels
+        original = channels.load_integration_channels
+        def runtime_channels(project_root=None):
+            values = dict(original(project_root) or {})
+            values.update(voice)
+            return values
+        channels.load_integration_channels = runtime_channels
     if mode == 'scripted':
         from rasa.mantle.llm.client import LLMClient
         LLMClient.from_bootstrap = classmethod(lambda cls, bootstrap: ScriptedClient())

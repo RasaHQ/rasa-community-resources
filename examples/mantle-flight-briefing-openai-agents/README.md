@@ -26,7 +26,8 @@ cd rasa-community-resources/examples/mantle-flight-briefing-openai-agents
 ```
 
 Install Python 3.12 and `uv` first. The actual Mantle Inspector also requires
-`RASA_LICENSE` in your own terminal environment, including in scripted mode;
+`RASA_LICENSE` (the free Developer Edition licence) in your own terminal
+environment, including in scripted mode;
 the launcher never bypasses the engine licence check. Model and voice keys are
 optional for the scripted text path. See the repository's developer-licence
 instructions if you do not have a Rasa Pro licence.
@@ -88,7 +89,11 @@ not establish readiness.
 
 Voice uses Deepgram Flux and Aura-2 through the maintained project integration.
 Without `DEEPGRAM_API_KEY`, the launcher prints “Voice is off; continue in text.”
-Voice must not block the cards or scripted path. `--scripted` disables model
+Voice must not block the cards or scripted path. The owner-supplied Flux/Aura-2
+configuration is merged only in the Inspector process, without writing keys.
+If the voice-configured Inspector cannot start, the launcher stops its owned
+process group and retries the actual Inspector once in text mode, leaving the
+source service running. `--scripted` disables model
 and voice credentials in its children. Actual voice failure fallback and spoken
 weather scenario S13 require the operator's live check; no voice PASS is claimed.
 The owner-maintained doctor prints only SET or MISSING for credential names.

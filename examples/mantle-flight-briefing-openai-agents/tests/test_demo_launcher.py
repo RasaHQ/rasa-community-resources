@@ -118,6 +118,39 @@ class LauncherControls(unittest.TestCase):
         with socket.socket() as client:
             self.assertNotEqual(client.connect_ex(('127.0.0.1', port)), 0)
 
+    def test_failed_voice_start_retries_text_once_without_stopping_source(self):
+        first, second = object(), object()
+        children = unittest.mock.Mock()
+        children.start.side_effect = [first, second]
+        environment = {'DEEPGRAM_API_KEY': 'synthetic-test-only', 'BRIEFING_MCP_TOKEN': 'synthetic-private-token'}
+        with patch.object(demo, 'wait_http', side_effect=[demo.DemoError('fixed test failure'), None]):
+            process, text_env = demo.start_inspector(children, environment, 'live')
+        self.assertIs(process, second)
+        children.stop.assert_called_once_with(first)
+        self.assertNotIn('DEEPGRAM_API_KEY', text_env)
+        self.assertEqual(text_env['BRIEFING_MCP_TOKEN'], 'synthetic-private-token')
+        self.assertIn('DEEPGRAM_API_KEY', environment)
+        self.assertEqual(children.start.call_count, 2)
+        self.assertNotIn('DEEPGRAM_API_KEY', children.start.call_args_list[1].kwargs['env'])
+
+    def test_text_start_failure_does_not_loop_or_claim_voice_failure(self):
+        children = unittest.mock.Mock()
+        with patch.object(demo, 'wait_http', side_effect=demo.DemoError('fixed test failure')):
+            with self.assertRaises(demo.DemoError):
+                demo.start_inspector(children, {}, 'scripted')
+        self.assertEqual(children.start.call_count, 1)
+        children.stop.assert_not_called()
+
+    def test_healthy_voice_start_keeps_same_actual_inspector(self):
+        children = unittest.mock.Mock()
+        environment = {'DEEPGRAM_API_KEY': 'synthetic-test-only'}
+        with patch.object(demo, 'wait_http'):
+            process, result = demo.start_inspector(children, environment, 'live')
+        self.assertIs(process, children.start.return_value)
+        self.assertIs(result, environment)
+        children.stop.assert_not_called()
+        self.assertEqual(children.start.call_count, 1)
+
     def test_tool_record_only_decodes_structured_result(self):
         value = {'briefing_id': 'synthetic-private-capability', 'status': 'started'}
         wrapped = [{'type': 'text', 'text': json.dumps(value)}]
