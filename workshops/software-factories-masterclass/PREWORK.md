@@ -4,6 +4,8 @@ Bring a laptop, headphones and a charger. Work in groups of three or four. One w
 
 ## Requirements for the core route and optional live runs
 
+Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example in `examples/` stays on 3.21.0.dev5 today.
+
 - An issued Rasa Developer Edition license (`RASA_LICENSE`). Request it at https://rasa.com/rasa-pro-developer-edition-license-key-request . A submitted form is not an issued license.
 - Optional: an OpenAI API application key with Agents session read/write and model inference permissions. The official Agents quickstart names `api.agents.read`, `api.agents.write`, and `api.responses.write`. ChatGPT access alone does not establish API access.
 - Optional: a Deepgram key (`DEEPGRAM_API_KEY`) for speech recognition and synthesis.

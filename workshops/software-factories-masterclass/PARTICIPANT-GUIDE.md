@@ -13,7 +13,7 @@ export PACK="$PWD"
 python3 --version
 ```
 
-Use Python 3.12. `PACK` always means this folder (the `software-factories-masterclass` folder); keep the terminal open. In a new terminal, set `PACK` again to the full path. Read `PREWORK.md` if you have not installed dependencies.
+Use Python 3.12. Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example in `examples/` stays on 3.21.0.dev5 today. `PACK` always means this folder (the `software-factories-masterclass` folder); keep the terminal open. In a new terminal, set `PACK` again to the full path. Read `PREWORK.md` if you have not installed dependencies.
 
 Choose your route:
 

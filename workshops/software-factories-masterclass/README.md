@@ -11,7 +11,7 @@ The target experience is a spoken product request, a builder session, independen
 
 - One three-hour schedule: 10-minute teaser, 20-minute concepts, 10-minute group briefing, 55-minute lab, 15-minute networking break, 55-minute lab, 15-minute demos.
 - A participant route with checkpoints, expected results, recovery instructions and a path for participants without macOS.
-- The travel scaffold now targets Rasa Pro **3.21.0**. Its model group is selected in `agent.yml`; Flux recognition uses `deepgram_flux`. Its dependency lock is regenerated.
+- Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example in `examples/` stays on 3.21.0.dev5 today. The chapter 0 scaffold's model group is selected in `agent.yml`; Flux recognition uses `deepgram_flux`. Its dependency lock is regenerated.
 - The Agents API and Agents SDK are clearly distinguished. Python's `openai` client can call the Agents API; that does not make it the `openai-agents` framework.
 - Revised slides use Rasa's supplied palette, official logo and open fallback fonts, with concrete travel examples and architecture diagrams.
 

@@ -22,9 +22,9 @@ Type “Allow 120 minutes to get into town.” Check that the timeline changes, 
 
 Start a new conversation. Ask for London, then reply “no” if asked for a flight number. The demo should explain that discovery covers selected New York routes, without repeatedly asking the same question or claiming no London flights exist.
 
-In another new conversation, request New York. Decline the suggested flight, then say “yes.” The assistant must ask you to choose explicitly, rather than silently revive the rejected suggestion. Also try “JFK or Newark”: ambiguity should trigger clarification.
+In another new conversation, request New York. Decline the suggested flight, then say “yes.” Try this and note what happens: does the assistant ask you to choose, or does it revive the suggestion you declined? Also try “JFK or Newark” and note whether it asks you to clarify.
 
-**Done when:** write one Given/When/Then example for each behavior. These are evaluation requirements, not claims that an unconstrained live model will always pass.
+**Done when:** write one Given/When/Then example for each behavior, with what you saw. These are evaluation requirements, not claims that an unconstrained live model will always pass.
 
 ## 4. Add a live provider only after the baseline works
 

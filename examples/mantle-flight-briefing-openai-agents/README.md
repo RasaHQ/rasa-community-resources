@@ -105,7 +105,7 @@ in `project/integrations.yml`; choose `openai` or `anthropic` there before a liv
 run with the matching environment key. A key for the other group alone does
 not establish readiness.
 
-This pack is pinned to and tested on Rasa Pro 3.21.0.dev5. The current Mantle docs describe 3.21.0.dev12, where the model is set in agent.yml under orchestrator.model_group. Use this pack's files today.
+This pack is pinned to and tested on Rasa Pro 3.21.0.dev5. The current Mantle docs describe 3.21.0.dev12, where the model is set in agent.yml under orchestrator.model_group. Use this pack's files today. The workshop's Chapter 0 runs on Rasa Pro 3.21.0.
 
 Voice uses Deepgram Flux and Aura-2 through the maintained project integration.
 Without `DEEPGRAM_API_KEY`, the launcher prints “Voice is off; set DEEPGRAM_API_KEY in your environment to enable it, or continue with text.”

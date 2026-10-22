@@ -18,6 +18,8 @@ The revised materials make that distinction visible. `BUILD-CONTRACT.md` describ
 
 ## Findings and disposition
 
+Chapter 0 runs on Rasa Pro 3.21.0, tested on 22 October. The standalone example in `examples/` stays on 3.21.0.dev5 today.
+
 | Priority | Finding in the supplied pack | Correction or remaining work |
 |---|---|---|
 | Blocker | The advertised voice-to-build-to-voice journey is absent | Clearly disclosed; specified build service, job lifecycle, release worker and acceptance scenarios |
