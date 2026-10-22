@@ -1,8 +1,12 @@
 # Chapter 5: Ask a builder to make the change
 
-**Goal:** ask for a different currency limit and receive a checked attempt, without editing product code.
+A traveler asks for a shorter currency list. The change looks small, but someone still has to write it and prove that the card respects the limit. Hand that request to a builder and keep the checks outside its reach.
 
-**You need first:** Python 3.12, [uv](https://docs.astral.sh/uv/), a clone of this repository and macOS for the network-blocking test. After the first installation, the core exercise works offline and needs no key. A funded model session is an optional extra.
+Time: about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/), a clone of this repository and macOS for the network-blocking test. After the first installation, the core exercise works offline and needs no key. A funded model session is an optional extra.
+
+You're done when `ch05 OK` confirms that your chosen limit, the protected ACCEPT and the exported files agree.
+
+If you get stuck, use [the ready folder](ready/ch05) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used here
 

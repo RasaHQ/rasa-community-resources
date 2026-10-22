@@ -1,10 +1,14 @@
 # Chapter 8: Measure results and recover without guessing
 
-**Goal:** ask the factory to change its retry allowance, then observe a checked change, a bounded recovery and an honest report.
+A worker crashes before it records a verdict. Your team needs the change finished, but retrying without checking the earlier result could repeat work that already happened. Set a retry allowance and see when the factory stops and asks for help.
 
-**You need first:** Python 3.12, [uv](https://docs.astral.sh/uv/) and a clone of this repository. This chapter includes its complete code. It uses only Python's standard library: no model, account, license or network request is needed after Python is installed. The earlier chapters explain the builder and the protected checks; you can run this checkpoint on its own.
+Time: about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/) and a clone of this repository. This chapter includes its complete code. It uses only Python's standard library: no model, account, license or network request is needed after Python is installed. The earlier chapters explain the builder and the protected checks; you can run this checkpoint on its own.
 
-## What happens after a run fails?
+You're done when `ch08 OK` confirms that your proposal passes, the baseline fails and recovery ends as your chosen allowance requires.
+
+If you get stuck, use [the ready folder](ready/ch08) and follow **Get the ready folder** below in a fresh work folder.
+
+## When a check stops without a verdict
 
 A **verdict** says whether a proposed change meets the requirements. ACCEPT means it does; REJECT means it does not. A **crash** or **timeout** produces no verdict. Retrying a crash can help. Repeating a rejected change does not fix it and can reveal information about the protected tests.
 
@@ -129,5 +133,3 @@ It starts `WHAT-IF`: these are numbers you supplied, not measured results. It en
 - **ESCALATE with one attempt:** that is expected. Run the completion check. To explore three attempts, start a fresh folder and request 3.
 - **A proposal changed after ACCEPT:** let the builder make a fresh proposal in a fresh exercise folder. Do not edit the protected tests or ledger to make the completion check pass.
 - **You want a real timeout test:** the controlled classroom fault is a crash, not a measured timeout. `recover.py` also bounds the verifier subprocess by a deadline; that mechanism needs separate platform testing before deployment.
-
-You now have a visible distinction between a wrong change, an unavailable verdict and work that needs a person's decision. Keep that distinction when you connect the factory to a real product.

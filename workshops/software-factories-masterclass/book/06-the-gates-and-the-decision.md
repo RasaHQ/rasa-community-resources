@@ -1,8 +1,12 @@
 # Chapter 6: The gates and the decision
 
-**Goal:** see how an attempt is judged, then have the builder make an attempt for your task and watch the gates decide.
+A traveler sees a daily exchange rate labeled as live and plans a purchase around it. The card looks plausible, but its claim is wrong. You need a gate that rejects it and says which requirement failed.
 
-**You need first:** Chapter 4, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README). Chapter 5 builds the live builder on the OpenAI Agents API. Here you use the scripted builder, so this chapter works offline.
+Time: about 15 minutes. You need: Chapter 4, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README). Chapter 5 builds the live builder on the OpenAI Agents API. Here you use the scripted builder, so this chapter works offline.
+
+You're done when `ch06 OK` confirms that your attempt is accepted and the attempt that ignores your limit is rejected by the named check.
+
+If you get stuck, use [the ready folder](ready/ch06) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used in this chapter
 

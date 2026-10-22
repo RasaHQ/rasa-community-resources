@@ -1,8 +1,12 @@
 # Chapter 7: Integrate and run it dark
 
-**Goal:** see an accepted change go into the product, then do it for your own task, with nobody reading the change.
+A teammate fixes the currency card while your builder is still working. Both changes can pass their own tests, yet installing the later change could overwrite the earlier fix. Before copying an accepted change into the product, check which product it was tested against.
 
-**You need first:** Chapter 6, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).
+Time: about 15 minutes. You need: Chapter 6, or copy the ready folder for this chapter. This chapter needs macOS for the gate (see the README).
+
+You're done when `ch07 OK` confirms that your change is integrated and the card shows your requested number of currencies with the sample-data label.
+
+If you get stuck, use [the ready folder](ready/ch07) and follow **Get the ready folder** below in a fresh work folder.
 
 ## Words used in this chapter
 
