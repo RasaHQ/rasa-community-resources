@@ -49,7 +49,9 @@ Times are London, with UTC in brackets. "Show" is on screen and "Do" is what the
 
 ### 14:30 The problem and the finished agent (15 min)
 Show: slides 1 to 4 (the plan, Sam and the agent), then slide 5 with screen 2, then slides 6 and 7. Do: watch.
-Say: "The data is real. The choice of tools is scripted, and I'll show the live builder later." Ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. Point out that the transfer time is a labeled assumption, then change it by saying so. If the scripted opening wasn't frozen and rehearsed, run the recorded opening and say it is a recording.
+Which opening runs is named at 08:15 UTC (pending). Keep both ready, with the deck head that matches.
+Opening A, scripted: slide 5 reads "A script picks the tools" (deck head 9c866309). Say: "The data is real. The choice of tools is scripted, and I'll show the live builder later." Ask "Which flights are in the air heading to New York?", answer "that one" for the flight it picks, then say your meeting time at the destination in local time. Point out that the transfer time is a labeled assumption, then change it by saying so. If the scripted opening wasn't frozen and rehearsed, run the recorded opening and say it is a recording.
+Opening B, live: slide 5 reads "Flights to New York?" (deck head 013efc87, the approved text). The same steps, but the agent picks the tools. Say nothing about scripting. If the live opening misbehaves, switch to opening A or the recorded opening and say which one it is.
 If voice isn't verified on the day, type the request and say so. Don't claim voice that you didn't see work.
 
 ### 14:45 The real question, the factory idea and the two tools (30 min)
