@@ -41,7 +41,7 @@ const PARTS = ['The problem', 'The finished agent', 'The real question', 'The fa
 
 // ---- Part 1: the problem
 add(1, 'Build a *factory* that builds your agent.', 'Agents you can trust.', traveller({ connected: true, title: 'Sam and four answers on one screen' }), 'dark');
-add(1, 'Meet *Sam*, due in New York tonight.', 'Four websites. One answer.', traveller({ title: 'Sam needs four checks' }));
+add(1, 'Meet *Sam*, due in New York tonight.', 'Will I make my meeting?', traveller({ title: 'Sam needs four checks' }));
 add(1, 'An *agent* can do Sam’s four checks.', 'An agent decides, then does.', traveller({ connected: true, title: 'One agent answers all four' }));
 add(1, 'Today in London: *see it*, *learn it*, *build it*.', 'Break 16:30.', scene('The plan for the day',
   row([{ label: '14:30', sub: 'See' }, { label: '14:45', sub: 'Learn' }, { label: '15:15', sub: 'Build' }, { label: '15:45', sub: 'Practice' }, { label: '17:20', sub: 'Close' }], { y: 150, h: 360, gap: 30 })));
@@ -56,8 +56,8 @@ add(3, 'A coding agent *reports* success.', 'It changes files, then says it work
   + rect(520, 140, 380, 360, 'panel-ink') + icon('builder', 710, 290, 2, 'icon-light') + text(710, 450, 'Coding agent', 'large-label on-dark')
   + arrow(930, 300, 140) + rect(1100, 140, 300, 360, 'panel') + icon('task', 1250, 290, 1.8) + text(1250, 450, 'Files', 'large-label')
   + rect(1180, 540, 440, 90, 'panel-pink', 45)));
-add(3, 'Nobody can *read* every change.', 'Ten times the code.', scene('Ten agents write ten times the code',
-  Array.from({ length: 10 }, (_, i) => rect(80 + i * 110, 120 + (i % 3) * 40, 90, 150, 'panel', 10)).join('') + icon('person', 1400, 450, 2) + text(840, 560, 'Ten agents', 'large-label')));
+add(3, 'Nobody can *read* every change.', 'More agents, more code to read.', scene('Many agents write a lot of code',
+  Array.from({ length: 10 }, (_, i) => rect(80 + i * 110, 120 + (i % 3) * 40, 90, 150, 'panel', 10)).join('') + icon('person', 1400, 450, 2) + text(840, 560, 'Many agents', 'large-label')));
 add(3, 'A *test* checks a known answer.', '', scene('add(2, 2) must give 4',
   rect(60, 170, 460, 320, 'panel') + text(290, 310, 'add(2, 2)', 'large-label') + arrow(540, 330, 140)
   + rect(720, 80, 380, 200, 'panel-mint') + text(910, 205, '4 pass', 'large-label') + rect(720, 380, 380, 200, 'panel-orange') + text(910, 505, '5 fail', 'large-label')
@@ -66,8 +66,8 @@ add(3, 'An *acceptance test* checks the request.', 'Tests what was asked.', scen
   rect(60, 150, 420, 360, 'panel-pink') + text(270, 340, 'Request', 'large-label') + arrow(500, 330, 110)
   + rect(640, 60, 640, 540, 'panel') + ['Rows', 'Labels', 'Day', 'Source'].map((t, i) => icon('check', 720, 150 + i * 120, 0.8, 'success') + text(830, 165 + i * 120, t, 'large-label', 'start')).join('')
   + arrow(1300, 330, 100) + rect(1440, 220, 200, 220, 'panel-mint') + text(1540, 345, 'Pass', 'large-label')));
-add(3, 'We can’t read it all, so *tests decide*.', 'A claim proves nothing. A passing test does.', scene('Claim and proof',
-  rect(80, 120, 700, 420, 'panel-orange') + text(430, 350, 'Claim', 'large-label') + rect(900, 120, 700, 420, 'panel-mint') + text(1250, 350, 'Proof', 'large-label')));
+add(3, 'We can’t read it all, so *tests decide*.', 'A passing check proves only what it checks.', scene('Claim and evidence',
+  rect(80, 120, 700, 420, 'panel-orange') + text(430, 350, 'Claim', 'large-label') + rect(900, 120, 700, 420, 'panel-mint') + text(1250, 350, 'Evidence', 'large-label')));
 // ---- Part 4: the factory idea
 add(4, 'A software factory repeats *four steps*.', 'Sam’s request rides through.', pipeline({ labels: ['Task', 'Change', 'Check', 'Decision'], highlight: 2, title: 'Task, change, check, decision' }));
 add(4, 'The builder works in a *spare copy*.', 'The builder makes the change.', scene('Only the changed lines come back',
@@ -92,8 +92,8 @@ add(5, '*Rasa Mantle* is where our agent lives.', 'A folder of files you can rea
   rect(60, 150, 440, 360, 'panel') + icon('task', 280, 280, 1.7) + text(280, 450, 'Files', 'large-label') + arrow(520, 330, 100)
   + rect(660, 150, 440, 360, 'panel-pink') + text(880, 345, 'Rasa Mantle', 'large-label') + arrow(1120, 330, 100)
   + rect(1260, 150, 360, 360, 'panel-mint') + icon('person', 1440, 280, 1.7) + text(1440, 450, 'Agent', 'large-label')));
-add(5, 'The agent calls *tools*.', 'A skill says when. MCP offers the tools.', scene('Skill, agent, tool, cards',
-  row([{ label: 'Skill' }, { label: 'Agent', cls: 'panel-pink' }, { label: 'Tool' }, { label: 'Cards', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
+add(5, 'The agent calls *tools*.', 'A skill says when. A tool does the work.', scene('Skill, agent, tool',
+  row([{ label: 'Skill' }, { label: 'Agent', cls: 'panel-pink' }, { label: 'Tool', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
 add(5, 'The *inspector* shows what the agent did.', 'Chat on the left, steps on the right.', scene('Chat on the left, steps on the right',
   rect(60, 60, 740, 540, 'panel') + text(430, 150, 'Chat', 'large-label') + rect(880, 60, 740, 540, 'panel-mint') + text(1250, 150, 'Steps', 'large-label')));
 add(5, 'The builder runs on *OpenAI’s Agents API*.', 'An API lets one program ask another.', scene('The builder asks, our code runs it',
