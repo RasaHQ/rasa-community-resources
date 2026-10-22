@@ -25,15 +25,15 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
 
 ## Get the code
 
-1. Clone the repository if needed:
+1. Get the code. Clone the repository:
 
    ```bash
    git clone https://github.com/RasaHQ/rasa-community-resources.git
    ```
 
-   For the supplied ZIP, run `git init` at the package root and set PACK to that folder. You do not need a remote repository.
+   If you have the supplied ZIP instead, unzip it and run `git init` in the unzipped folder, because the demo checks that `.env` is untracked. You don't need a remote repository. In this book, `PACK` always means the folder you cloned or unzipped.
 
-2. Set your clone's actual location and install the supplied code:
+2. Set `PACK` to that folder and install the supplied code:
 
    ```bash
    export PACK=/absolute/path/to/software-factories-masterclass

@@ -19,6 +19,8 @@ A Mantle skill imports `mcp/reviewer:ask_reviewer`. The server behind it (`serve
 
 ## Run it (no license, no key, no network beyond loopback)
 
+First, once, from the `factory/` folder: `uv sync --frozen`. That creates `factory/.venv`, which the commands below use. It needs the internet for the install and nothing after that.
+
 Use the pack's pinned environment (`factory/uv.lock`: `rasa-pro` 3.21.0.dev5, `mcp` 1.28.1, `openai-agents` 0.13.6). From this folder, use the pack's own interpreter `../factory/.venv/bin/python` (this folder has no `pyproject`, so a bare `python` can miss the Mantle packages):
 
 ```bash
