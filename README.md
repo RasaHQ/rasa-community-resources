@@ -4,6 +4,8 @@
 
 This is the code companion to [rasa.community](https://rasa.community/). Every resource is a directory you can run in full, study, or copy piece by piece into your own project. Each one states who wrote it, when it was last verified, and which versions it was verified against.
 
+> **Here for the Software Factories masterclass?** Everything for it is in one folder: [`workshops/software-factories-masterclass/`](workshops/software-factories-masterclass/README.md). Open its README first. It tells you what to install, then lets you choose between the participant guide (about two hours) and the book (about three hours, at your own pace). The two finished agents from the class live in [`examples/mantle-flight-briefing-openai-agents/`](examples/mantle-flight-briefing-openai-agents/README.md) (the travel agent) and [`examples/mantle-factory-agent/`](examples/mantle-factory-agent/README.md) (the dark software factory).
+
 ---
 
 ## Find it fast

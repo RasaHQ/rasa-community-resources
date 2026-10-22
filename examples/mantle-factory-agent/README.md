@@ -100,7 +100,7 @@ Open http://127.0.0.1:8960/ for that run. Keep the same license and expiry requi
 
 ## Voice, locally
 
-From this example directory on your own Mac:
+From this example directory on your own Mac. Create your own Deepgram API key at https://console.deepgram.com/ (Deepgram offers free starting credit).
 
 ```sh
 ./demo setup
