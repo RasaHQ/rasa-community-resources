@@ -1,5 +1,6 @@
 """Actual installed Core native adapter with an offline SDK-shaped stream."""
 from pathlib import Path
+from importlib.util import find_spec
 import sys
 from types import SimpleNamespace
 import unittest
@@ -59,6 +60,7 @@ class Sessions:
 
 @unittest.skipUnless(run_native is not None, 'separate live-worker dev20 interpreter required')
 class InstalledNativeContract(unittest.TestCase):
+    @unittest.skipUnless(find_spec("openai") is not None, "separate live-worker SDK interpreter required")
     def test_installed_sdk_exposes_the_exact_native_create_surface_without_a_request(self):
         from importlib.metadata import version
         from inspect import signature
