@@ -49,7 +49,7 @@ add(1, 'Today in London: *see it*, *learn it*, *build it*.', 'Break 16:30.', sce
 add(1, 'Meet *Sam*, due in New York tonight.', 'Will I make my meeting?', traveller({ title: 'Sam needs four checks' }));
 add(1, 'An *agent* decides what to do, then does it.', 'In short: one agent. Next: watch it.', traveller({ connected: true, title: 'One agent answers all four' }));
 // ---- Part 2: the finished agent
-add(2, 'Watch the agent answer Sam.', 'You’ll understand: sources. Scripted choices, real data.', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
+add(2, 'Watch the agent answer Sam.', 'You’ll understand: sources. A script picks the tools.', conversation({ labels: ['Ask', 'Choose', 'Briefing'], title: 'Ask, choose a flight, get the briefing' }));
 add(2, 'Every card says *where it came from*.', 'Every value is labeled.', scene('Four labels',
   row([{ label: 'Source', cls: 'panel-mint' }, { label: 'Computed', cls: 'panel-gold' }, { label: 'Recording', cls: 'panel-pink' }, { label: 'Failed', cls: 'panel-orange' }], { y: 130, h: 400, gap: 30, arrows: false, steps: true })));
 add(2, 'Four *honest* cards.', 'In short: honest cards. Next: trust.', traveller({ connected: true, title: 'Four honest cards' }));
