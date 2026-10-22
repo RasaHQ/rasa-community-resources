@@ -101,7 +101,10 @@ class ScriptedMantleConversation(unittest.IsolatedAsyncioTestCase):
                             runtime.mcp_tool_schemas = {'briefing': {'briefing': AgentToolSchema(
                                 name=tool.name, description=tool.description or '',
                                 parameters=tool.inputSchema, strict=False)}}
-                            bootstrap = ModelBootstrap(llm={'model': 'fixture-only'}, skill_catalog=catalog, hooks=hooks)
+                            from rasa.mantle.config.agent_spec import agent_spec_from_config
+                            import yaml
+                            agent_spec = agent_spec_from_config(yaml.safe_load((ROOT / 'project/agent.yml').read_text()))
+                            bootstrap = ModelBootstrap(agent=agent_spec, llm={'model': 'fixture-only'}, skill_catalog=catalog, hooks=hooks)
                             tracker = DialogueStateTracker('fixture-conversation-a', [])
                             handle = make_tracker_handle(tracker, bootstrap)
                             output = CollectingOutputChannel()

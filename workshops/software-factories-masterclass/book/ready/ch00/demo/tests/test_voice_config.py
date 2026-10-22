@@ -25,13 +25,13 @@ class VoiceConfig(unittest.TestCase):
         self.assertNotIn('api_key', text)
         self.assertIn('flux-general-en', text)
         self.assertIn('aura-2-andromeda-en', text)
-        self.assertEqual(channels['inspector']['asr']['name'], 'deepgram')
+        self.assertEqual(channels['inspector']['asr']['name'], 'deepgram_flux')
         self.assertEqual(channels['inspector']['tts']['name'], 'deepgram')
 
     @unittest.skipUnless(find_spec('rasa') is not None, 'Mantle project interpreter required')
     def test_actual_engine_accepts_flux_v2_configuration_without_opening_a_connection(self):
-        from rasa.core.channels.voice_stream.asr.deepgram.config import DEEPGRAM_CONFIG_ADAPTER
+        from rasa.core.channels.voice_stream.asr.deepgram.config import DeepgramFluxASRConfig
         asr = voice_channels({'DEEPGRAM_API_KEY': 'synthetic-only'})['inspector']['asr']
-        parsed = DEEPGRAM_CONFIG_ADAPTER.validate_python({k: v for k, v in asr.items() if k != 'name'})
+        parsed = DeepgramFluxASRConfig.model_validate({k: v for k, v in asr.items() if k != 'name'})
         self.assertEqual(parsed.version, 'v2')
         self.assertEqual(parsed.language_map['en'].model, 'flux-general-en')

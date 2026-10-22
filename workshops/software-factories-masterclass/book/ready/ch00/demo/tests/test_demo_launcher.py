@@ -241,6 +241,137 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.tool_calls[0].tool_name, 'find_flights')
         self.assertEqual(response.tool_calls[0].tool_args, {'destination': text})
 
+    async def test_ambiguous_airports_reach_backend_without_inventing_destination(self):
+        text = 'JFK or Newark'
+        initial = await self.call([{'role': 'user', 'content': text}], ['briefing', 'find_flights'])
+        self.assertEqual(initial.tool_calls[0].tool_args, {'action': 'start', 'request': text})
+        previous = [{'role': 'tool', 'content': json.dumps({'briefing_id': 'synthetic-owner-job', 'status': 'needs_input'})}]
+        followup = await self.call(previous + [{'role': 'user', 'content': text}], ['briefing', 'find_flights'])
+        self.assertEqual(followup.tool_calls[0].tool_args,
+            {'action': 'revise', 'briefing_id': 'synthetic-owner-job', 'change': text})
+        resumed = await self.call(previous + [{'role': 'user', 'content': 'Newark'}], ['briefing'])
+        self.assertEqual(resumed.tool_calls[0].tool_args,
+            {'action': 'revise', 'briefing_id': 'synthetic-owner-job', 'change': 'Newark'})
+
+
+    async def test_uncovered_discovery_result_ends_tool_loop(self):
+        response = await self.call([{'role': 'user', 'content': 'no'},
+            {'role': 'tool', 'content': json.dumps({'status': 'unsupported_destination',
+                'candidates': [], 'message': 'Published routes cover New York only.'})}], ['briefing', 'find_flights'])
+        self.assertFalse(response.tool_calls)
+
+
+    async def test_repeated_negative_after_uncovered_search_does_not_search_or_ask_again(self):
+        response = await self.call([{'role': 'user', 'content': 'flight to London tonight'},
+            {'role': 'tool', 'content': json.dumps({'status': 'unsupported_destination', 'candidates': [],
+                'message': 'Published routes cover New York only.'})},
+            {'role': 'user', 'content': 'no'}], ['briefing', 'find_flights'])
+        self.assertFalse(response.tool_calls)
+        self.assertIn("don't need to answer", response.response_text())
+        self.assertNotIn('?', response.response_text())
+
+
+    @staticmethod
+    def suggested_search():
+        return {'status': 'found', 'discovery_id': 'brf_synthetic_suggested', 'partial': False,
+            'source_date': '2026-10-22', 'candidates': [dict(choice=n, callsign=call,
+                origin='EDDF', destination='KJFK', altitude_feet=25000,
+                position_age_seconds=5, landing_estimate_minutes=minutes)
+                for n, call, minutes in [(1, 'DLH400', 35), (2, 'UAL57', 10)]]}
+
+
+    async def test_short_confirmation_selects_only_the_announced_suggestion(self):
+        from briefing.traveller import discovery_notice
+        search = self.suggested_search()
+        notice = discovery_notice(search)
+        self.assertIn('My suggestion is United Airlines 57', notice)
+        self.assertIn('soonest', notice)
+        for answer in ('yes', 'that one', 'yes that one'):
+            response = await self.call([{'role': 'tool', 'content': json.dumps(search)},
+                {'role': 'assistant', 'content': notice}, {'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
+            self.assertEqual(response.tool_calls[0].tool_args,
+                {'action': 'start', 'request': answer, 'discovery_id': search['discovery_id'], 'choice': 2})
+
+
+    async def test_explicit_choice_overrides_suggestion_and_decline_does_not_select(self):
+        search = self.suggested_search()
+        for answer, expected in [('the first one', 1), ('Lufthansa 400', 1), ('United 57', 2)]:
+            response = await self.call([{'role': 'tool', 'content': json.dumps(search)},
+                {'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
+            self.assertEqual(response.tool_calls[0].tool_args['choice'], expected)
+        history = [{'role': 'tool', 'content': json.dumps(search)}]
+        first = await self.call(history + [{'role': 'user', 'content': 'no'}], ['briefing', 'find_flights'])
+        self.assertFalse(first.tool_calls)
+        self.assertIn('Which flight', first.response_text())
+        history += [{'role': 'user', 'content': 'no'}, {'role': 'assistant', 'content': first.response_text()}]
+        for answer in ('no', 'yes', 'that one'):
+            followup = await self.call(history + [{'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
+            self.assertFalse(followup.tool_calls)
+            self.assertNotIn('?', followup.response_text())
+            self.assertNotEqual(followup.response_text(), first.response_text())
+
+
+    async def test_negative_nonflight_answers_preserve_selected_journey(self):
+        for field in ('meeting_time', 'transfer_minutes'):
+            for answer in ('no', 'not sure', 'no idea', "I don't know"):
+                messages = [{'role': 'user', 'content': 'flight to New York tonight'},
+                    {'role': 'tool', 'content': json.dumps({'status': 'needs_input',
+                        'briefing_id': 'synthetic-old-opening', 'needs_input': {'field': 'flight'}})},
+                    {'role': 'user', 'content': 'the first one'},
+                    {'role': 'tool', 'content': json.dumps({'status': 'needs_input',
+                        'briefing_id': 'synthetic-selected-journey', 'needs_input': {'field': field}})},
+                    {'role': 'user', 'content': answer}]
+                response = await self.call(messages, ['briefing', 'find_flights'])
+                self.assertEqual(response.tool_calls[0].tool_name, 'briefing')
+                self.assertEqual(response.tool_calls[0].tool_args,
+                    {'action': 'revise', 'briefing_id': 'synthetic-selected-journey', 'change': answer})
+
+
+    async def test_negative_flight_answers_reuse_last_stated_destination(self):
+        for destination in ('London', 'New York', 'Reykjavik'):
+            for answer in ('no', "no, i don't know", 'no idea', 'not sure', 'I do not know'):
+                messages = [{'role': 'user', 'content': 'flight to ' + destination + ' tonight'},
+                    {'role': 'tool', 'content': json.dumps({'status': 'needs_input', 'briefing_id': 'synthetic-owner',
+                        'needs_input': {'field': 'flight'}})}, {'role': 'user', 'content': answer}]
+                response = await self.call(messages, ['briefing', 'find_flights'])
+                self.assertEqual(response.tool_calls[0].tool_name, 'find_flights')
+                self.assertEqual(response.tool_calls[0].tool_args, {'destination': destination})
+
+
+    async def test_negative_answer_does_not_resurrect_destination_before_ambiguity(self):
+        response = await self.call([{'role': 'user', 'content': 'New York'},
+            {'role': 'user', 'content': 'JFK or Newark'},
+            {'role': 'user', 'content': 'no'}], ['briefing', 'find_flights'])
+        self.assertNotEqual(response.tool_calls[0].tool_name, 'find_flights')
+
+
+    async def test_failed_partial_or_empty_search_cannot_replace_the_selected_job(self):
+        for bad in [
+            {'status': 'unavailable', 'candidates': []},
+            {'status': 'found', 'partial': True, 'discovery_id': 'synthetic-partial', 'candidates': [{}]},
+            {'status': 'found', 'discovery_id': 'synthetic-empty', 'candidates': []},
+        ]:
+            messages = [
+                {'role': 'tool', 'content': json.dumps({'status': 'complete', 'briefing_id': 'synthetic-selected'})},
+                {'role': 'tool', 'content': json.dumps(bad)},
+                {'role': 'user', 'content': 'the 6 pm meeting tomorrow'},
+            ]
+            with self.subTest(search=bad['status'], partial=bad.get('partial')):
+                response = await self.call(messages, ['briefing', 'find_flights'])
+                self.assertEqual(response.tool_calls[0].tool_args, {'action': 'revise',
+                    'briefing_id': 'synthetic-selected', 'change': 'the 6 pm meeting tomorrow'})
+
+
+    async def test_later_failed_search_never_reuses_an_older_choice_list(self):
+        messages = [
+            {'role': 'tool', 'content': json.dumps({'status': 'found', 'discovery_id': 'synthetic-old', 'candidates': [{}]})},
+            {'role': 'tool', 'content': json.dumps({'status': 'no_results', 'candidates': []})},
+            {'role': 'user', 'content': 'the first one'},
+        ]
+        response = await self.call(messages, ['briefing', 'find_flights'])
+        self.assertNotIn('discovery_id', response.tool_calls[0].tool_args)
+
+
     async def test_scripted_choice_uses_only_returned_discovery_and_valid_index(self):
         previous = {'status': 'found', 'discovery_id': 'brf_synthetic_discovery', 'candidates': [{}, {}]}
         for choice, expected in [('the second one', 2), ('1', 1)]:
@@ -378,7 +509,7 @@ class ActualVoiceLoaderSeam(unittest.TestCase):
             demo.inspector('scripted')
         self.assertEqual(len(observed), 1)
         actual = observed[0].channels['inspector']
-        self.assertEqual(actual['asr']['name'], 'deepgram')
+        self.assertEqual(actual['asr']['name'], 'deepgram_flux')
         self.assertEqual(actual['asr']['language_map']['en']['model'], 'flux-general-en')
         self.assertEqual(actual['tts']['name'], 'deepgram')
         self.assertEqual(actual['tts']['language_map']['en']['model'], 'aura-2-andromeda-en')
@@ -390,7 +521,17 @@ class ActualVoiceLoaderSeam(unittest.TestCase):
         from rasa.mantle.config import channels
         from rasa.mantle.llm.client import LLMClient
         observed = []
+        from rasa.mantle.model_archive import bootstrap
+        original_resolver = bootstrap.resolve_integration_llm_config
+        original_client = LLMClient.__dict__['from_bootstrap']
+        from rasa.mantle.config.a2a_server import MantleA2AConfigSource
+        original_a2a = MantleA2AConfigSource._read_raw_block
         def normal_entrypoint():
+            # Real stable-engine resolver normally expands provider credentials
+            # before the provider factory. The scripted child needs neither.
+            self.assertEqual(bootstrap.resolve_integration_llm_config(None, demo.PROJECT), {})
+            self.assertIsInstance(LLMClient.from_bootstrap(None), demo.ScriptedClient)
+            self.assertIsNone(MantleA2AConfigSource(demo.PROJECT).load())
             observed.append(resolve_channels_config(project_root=demo.PROJECT))
         original = channels.load_integration_channels
         with patch.object(channels, 'load_integration_channels', original), \
@@ -400,6 +541,38 @@ class ActualVoiceLoaderSeam(unittest.TestCase):
                 patch.dict(os.environ, {'LITELLM_MODE': 'PRODUCTION'}, clear=True):
             demo.inspector('scripted')
         self.assertEqual(observed[0].channels, {})
+        self.assertIs(bootstrap.resolve_integration_llm_config, original_resolver)
+        self.assertIs(LLMClient.__dict__['from_bootstrap'], original_client)
+        self.assertIs(MantleA2AConfigSource._read_raw_block, original_a2a)
+
+
+    def test_scripted_seams_restore_on_error_and_live_keeps_original_resolution(self):
+        from rasa.mantle.model_archive import bootstrap
+        from rasa.mantle.llm.client import LLMClient
+        from rasa.mantle.config.a2a_server import MantleA2AConfigSource
+        from rasa.mantle.config import channels
+        resolver = bootstrap.resolve_integration_llm_config
+        client = LLMClient.__dict__['from_bootstrap']
+        a2a = MantleA2AConfigSource._read_raw_block
+        for mode in ('scripted', 'live'):
+            def fail_entrypoint():
+                if mode == 'live':
+                    self.assertIs(bootstrap.resolve_integration_llm_config, resolver)
+                    self.assertIs(LLMClient.__dict__['from_bootstrap'], client)
+                    self.assertIs(MantleA2AConfigSource._read_raw_block, a2a)
+                else:
+                    self.assertIsInstance(LLMClient.from_bootstrap(None), demo.ScriptedClient)
+                    self.assertEqual(bootstrap.resolve_integration_llm_config(None, demo.PROJECT), {})
+                    self.assertIsNone(MantleA2AConfigSource(demo.PROJECT).load())
+                raise RuntimeError('controlled startup failure')
+            with self.subTest(mode=mode), patch.object(channels, 'load_integration_channels'), \
+                    patch('rasa.__main__.main', side_effect=fail_entrypoint), \
+                    patch.object(sys, 'argv', []), patch.dict(os.environ, {}, clear=True):
+                with self.assertRaisesRegex(RuntimeError, 'controlled startup failure'):
+                    demo.inspector(mode)
+            self.assertIs(bootstrap.resolve_integration_llm_config, resolver)
+            self.assertIs(LLMClient.__dict__['from_bootstrap'], client)
+            self.assertIs(MantleA2AConfigSource._read_raw_block, a2a)
 
 
 class InspectorReadinessBudget(unittest.TestCase):

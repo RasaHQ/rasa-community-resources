@@ -165,7 +165,7 @@ class ClassKeys(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertIn('OPENAI_API_KEY: MISSING', text)
             self.assertEqual(before, {x.name: x.read_bytes() for x in p.iterdir()})
-        repo = ROOT.parents[1]
+        repo = ROOT.parents[3]
         # The finite qualification receives a git archive, not .git metadata.
         # Exercise Git's real ignore semantics in an owned scratch repository
         # using the exact shipped root ignore file; do not skip this check.
@@ -200,9 +200,14 @@ class ClassKeys(unittest.TestCase):
         for provider, name in class_doctor.KEYS.items():
             with self.subTest(provider=provider), tempfile.TemporaryDirectory() as tmp:
                 p = Path(tmp)
-                (p / 'integrations.yml').write_text(text.replace('model_group: openai', 'model_group: ' + provider))
+                (p / 'integrations.yml').write_text(text)
+                import yaml
+                from rasa.mantle.config.agent_spec import agent_spec_from_config
+                agent_config = yaml.safe_load((ROOT / 'project/agent.yml').read_text())
+                agent_config['orchestrator']['model_group'] = provider
+                agent = agent_spec_from_config(agent_config)
                 with patch.dict(os.environ, {name: fake_key(provider)}, clear=True):
-                    config = resolve_integration_llm_config(p)
+                    config = resolve_integration_llm_config(agent, p)
                 self.assertEqual(config['models'][0]['provider'], provider)
                 self.assertNotIn(fake_key(provider), (p / 'integrations.yml').read_text())
 

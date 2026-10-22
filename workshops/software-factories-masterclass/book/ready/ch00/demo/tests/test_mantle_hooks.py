@@ -83,7 +83,10 @@ class MantleHookQualification(unittest.IsolatedAsyncioTestCase):
         started = await self.jobs.briefing(self.owner, action='start', request='Replay DEMO101')
         await self.jobs._jobs[started['job_id']].task
         value = await self.jobs.briefing(self.owner, action='get', job_id=started['job_id'])
-        bootstrap = ModelBootstrap(llm={}, hooks=self.registry)
+        from rasa.mantle.config.agent_spec import agent_spec_from_config
+        import yaml
+        spec = agent_spec_from_config(yaml.safe_load((ROOT / 'project/agent.yml').read_text()))
+        bootstrap = ModelBootstrap(agent=spec, llm={}, hooks=self.registry)
         tracker = DialogueStateTracker('conversation-a', [])
         handle = make_tracker_handle(tracker, bootstrap)
         output = CollectingOutputChannel()

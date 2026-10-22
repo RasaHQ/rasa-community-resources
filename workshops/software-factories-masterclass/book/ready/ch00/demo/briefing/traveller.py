@@ -13,6 +13,7 @@ from briefing.published_routes import load_routes
 
 REFERENCE = Path(__file__).with_name('traveller-reference-20261022.json')
 REFERENCE_SHA256 = 'a2a034c8770c4bccae8ba1fa71737f16a6ed433280b255b7429c422cf555222a'
+GREETING = "Hi, I can brief you on a flight: where it is, the weather when you land, whether you'll make your meeting, and the exchange rate. Where are you heading?"
 
 
 class TravellerQuestion(ValueError):
@@ -76,6 +77,25 @@ def destination_hint(text):
     for match in re.finditer(r'\bnyc\b', value):
         cities.append((match.start(), 'New York'))
     return select(cities)
+
+
+def unknown_flight(text):
+    """A bounded negative answer to the flight-number question, not an airport."""
+    value = normalized(text).replace("’", "'").strip(" .!?,")
+    return bool(re.fullmatch(r"(?:no(?:pe)?[, ]*)?(?:(?:i )?(?:don'?t know|do not know|have no idea|have no flight number)|no idea|not sure|unsure)?", value)) and bool(value)
+
+
+def destination_request(text):
+    """Keep a traveller's unsupported city as a search query, never source facts."""
+    known = destination_hint(text)
+    if known:
+        return known
+    value = normalized(text)
+    match = re.search(r"\b(?:flights?\s+to|heading\s+to|going\s+to|destination(?: is)?)[ ]+([a-z][a-z '-]{0,59})", value)
+    if not match:
+        return None
+    city = re.split(r"\b(?:tonight|tomorrow|today|this|next|at|on|from|meeting)\b", match[1])[0].strip(" .,'-")
+    return city.title() if city and len(city) <= 60 else None
 
 
 def flight_number(text):
@@ -174,13 +194,20 @@ def transfer_time(text):
     value = normalized(text)
     if not re.search(r'\b(allow|transfer|airport|into town|city|getting|journey|drive|taxi)\b', value):
         return None
-    match = re.search(r'\b([0-9]{1,4})\s*(minute|hour)s?\b', value)
-    if match:
-        minutes = int(match[1]) * (60 if match[2] == 'hour' else 1)
+    # Never read the tail of a decimal or negative duration as a whole number.
+    if re.search(r'(?:[0-9]+[.,][0-9]+|[-−]\s*[0-9]+)\s*(?:minutes?|hours?)\b', value):
+        return None
+    if re.search(r'\b(?:an|one) hour and (?:a )?half\b|\bone and a half hours?\b', value):
+        return 90
+    if re.search(r'\bhalf (?:an? )?hour\b', value):
+        return 30
+    parts = list(re.finditer(r'(?<![0-9.])([0-9]{1,4})\s*(minute|hour)s?\b', value))
+    if parts:
+        minutes = sum(int(part[1]) * (60 if part[2] == 'hour' else 1) for part in parts)
         return minutes if 0 <= minutes <= 1440 else None
     if re.search(r'\b(?:an|one) hour\b', value):
         return 60
-    return 30 if 'half an hour' in value else None
+    return None
 
 
 def journey(text, previous=None, *, now=None):
@@ -205,7 +232,7 @@ def journey(text, previous=None, *, now=None):
             hint = published.destination
             inputs['destination_hint'] = hint
     if not hint:
-        raise TravellerQuestion('destination', 'Where are you flying to?', inputs)
+        raise TravellerQuestion('destination', GREETING, inputs)
     if not inputs.get('callsign'):
         raise TravellerQuestion('flight', 'Do you know the airline or flight number? I can also look for flights already in the air.', inputs)
     airport = _airport_for(hint, inputs['callsign'], inputs)
@@ -220,6 +247,9 @@ def journey(text, previous=None, *, now=None):
         inputs.pop('transfer_minutes', None)
         inputs['awaiting'] = 'transfer_minutes'
         raise TravellerQuestion('transfer_minutes', 'How long should I allow to get from the airport to your meeting?', inputs)
+    if minutes is None and inputs.get('awaiting') == 'transfer_minutes':
+        raise TravellerQuestion('transfer_minutes',
+            "I need an airport-to-meeting allowance in minutes or hours; for example, 'allow 30 minutes'.", inputs)
     if minutes is not None:
         inputs['transfer_minutes'] = minutes
         inputs['transfer_assumed'] = False
@@ -230,7 +260,10 @@ def journey(text, previous=None, *, now=None):
     inputs.pop('awaiting', None)
     if 'meeting_time' not in inputs:
         inputs['awaiting'] = 'meeting_time'
-        raise TravellerQuestion('meeting_time', 'When is your meeting? Tell me the day and time; I’ll use the destination’s local time.', inputs)
+        question = ('To check whether you will make it, I need the meeting day and local time; for example, tomorrow at 6 pm.'
+                    if previous and previous.get('awaiting') == 'meeting_time' and unknown_flight(text)
+                    else 'When is your meeting? Tell me the day and time; I’ll use the destination’s local time.')
+        raise TravellerQuestion('meeting_time', question, inputs)
     return inputs
 
 
@@ -240,7 +273,10 @@ def discover(sources, destination):
     except TravellerQuestion as missing:
         return {'status': 'needs_input', 'needs_input': {'field': missing.field, 'question': missing.question}}
     if hint not in ('New York', 'KJFK', 'KEWR', 'KLGA'):
-        return {'status': 'needs_input', 'needs_input': {'field': 'flight', 'question': 'Do you know the airline or flight number? I can brief a flight already in the air.'}}
+        query = destination_request(destination)
+        return {'status': 'unsupported_destination', 'candidates': [],
+                'message': ("I can't list flights heading to " + query + " with this search. " if query else "I can't identify that destination in this search. ")
+                + "The published routes cover New York only; this does not mean there are no flights. You can try New York, or return with a flight number to check an airborne flight."}
     book = load_routes()
     point = airport_row(hint if hint != 'New York' else 'KJFK')
     codes = ('KJFK', 'KEWR', 'KLGA') if hint == 'New York' else (hint,)
@@ -264,8 +300,29 @@ def discover(sources, destination):
     return result
 
 
+def suggested_flight(value):
+    """Suggest only a complete, validated search; earliest computed landing wins."""
+    if value.get('status') != 'found' or value.get('partial') is True:
+        return None
+    rows = value.get('candidates')
+    if not isinstance(rows, list) or not 1 <= len(rows) <= 5:
+        return None
+    for number, row in enumerate(rows, 1):
+        if not isinstance(row, dict) or type(row.get('choice')) is not int or row['choice'] != number:
+            return None
+        minutes = row.get('landing_estimate_minutes')
+        if isinstance(minutes, bool) or not isinstance(minutes, (int, float)) or not math.isfinite(minutes) or not 0 <= minutes <= 1440:
+            return None
+    return min(rows, key=lambda row: (row['landing_estimate_minutes'], row['choice']))
+
+
 def discovery_notice(value):
     """Speech is rendered only from bounded local reader results, never model prose."""
+    if value.get('status') == 'unsupported_destination':
+        message = value.get('message')
+        if not isinstance(message, str) or not 0 < len(message) <= 500 or not message.isprintable() or any(marker in message for marker in ('<', '>', '://')):
+            raise ValueError('invalid_discovery_message')
+        return message
     if value.get('status') == 'needs_input':
         question = value.get('needs_input', {}).get('question', '')
         if isinstance(question, str) and 0 < len(question) <= 200 and not any(x in question for x in ('<', '>', '://')):
@@ -294,7 +351,11 @@ def discovery_notice(value):
     date = value.get('source_date', '')
     if re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', date) is None:
         raise ValueError('invalid_route_date')
-    lines.append('Which one would you like? Routes are published data dated ' + date + '; positions are live. Landing estimates are computed from position and speed, not airline times.')
+    suggestion = suggested_flight(value)
+    if suggestion is not None:
+        destination = airport_row(suggestion['destination'])['iata_code']
+        lines.append(f"My suggestion is {flight_name(suggestion['callsign'])} to {destination}, because its computed landing estimate is soonest among these flights: about {suggestion['landing_estimate_minutes']} minutes. Is that your flight?")
+    lines.append('You can also choose a list number or flight number. Routes are published data dated ' + date + '; positions are live. Landing estimates are computed from position and speed, not airline times.')
     if value.get('partial'):
         lines.append('This search is partial; more flights may be present. Do you know the airline or flight number?')
     return '\n'.join(lines)
