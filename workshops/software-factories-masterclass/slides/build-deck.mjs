@@ -104,7 +104,7 @@ add(6, 'In your chapter 6 folder: judge a *good* change and a *bad* one.', '', s
   rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 110, '$ source .venv/bin/activate', 'mono on-dark', 'start')
   + text(60, 270, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-good', 'mono on-dark', 'start') + icon('check', 160, 350, 1.1, 'success').replace('icon success', 'icon" style="stroke:#C6FEE1;stroke-width:9')
   + text(60, 500, '$ python run_a6.py tasks/a6-market-watchlist.json candidates/market-shows-live', 'mono on-dark', 'start') + icon('stop', 160, 580, 1.0, '').replace('icon ', 'icon" style="stroke:#FFB28C;stroke-width:9')), 'dark');
-add(6, 'The gates decided, and nobody read the change.', 'In short: the gates decided. Next: your turn.', scene('The gates decide before integration', row([{ label: 'Request' }, { label: 'Gates', cls: 'panel-pink' }, { label: 'Integrated', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
+add(6, 'The gates decide what *goes in*.', 'In short: gates decide first. Next: your turn.', scene('The gates decide what goes in', row([{ label: 'Request' }, { label: 'Gates', cls: 'panel-pink' }, { label: 'If accepted', cls: 'panel-mint' }], { y: 150, h: 360, gap: 70 })));
 // ---- Part 7: your turn
 add(7, 'Set up once, then follow the *book*.', 'You’ll understand: the book.', scene('Clone the repository and open the book',
   rect(0, 0, 1680, 660, 'panel-ink', 0) + text(60, 140, '$ git clone https://github.com/RasaHQ/rasa-community-resources.git', 'mono on-dark', 'start')
