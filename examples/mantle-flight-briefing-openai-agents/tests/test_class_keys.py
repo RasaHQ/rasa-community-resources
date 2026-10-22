@@ -50,6 +50,21 @@ class ClassKeys(unittest.TestCase):
         for option in ('--probe', '--probe-agents'):
             self.assertEqual(self.doctor([option])[0], 2)
 
+    def test_voice_readiness_is_value_free_and_never_selects_a_live_model(self):
+        canary = 'synthetic-deepgram-Q7m9V2x4N6p8R0t3'
+        with patch.object(class_doctor, 'probe_agents', side_effect=AssertionError('no call')), \
+                patch.object(class_doctor, 'probe_mantle', side_effect=AssertionError('no call')):
+            code, text = self.doctor(env={'DEEPGRAM_API_KEY': canary})
+        self.assertEqual(code, 0)
+        self.assertIn('DEEPGRAM_API_KEY: SET', text)
+        self.assertIn('PATH: SCRIPTED', text)
+        self.assertNotIn(canary, text)
+        self.assertNotIn('Traceback', text)
+        code, text = self.doctor()
+        self.assertEqual(code, 0)
+        self.assertIn('DEEPGRAM_API_KEY: MISSING', text)
+        self.assertIn('continue with text', text)
+
     def test_both_provider_settings_and_environment_only_readiness(self):
         for provider, variable in class_doctor.KEYS.items():
             with self.subTest(provider=provider), patch.object(class_doctor, 'selected_provider', return_value=provider):
