@@ -8,7 +8,7 @@ In this example folder, run `make env`, fill only the issued `RASA_LICENSE` in t
 
 Run `make run-scripted` and open http://127.0.0.1:8942/ after readiness. This path chooses tools with code and calls current public sources. It is not an offline replay. For the reproducible recorded exercise, use the workshop's chapter 0 instead.
 
-Type “I'm heading to New York. Which flights are already in the air?” Read the returned options and named suggestion. Type “yes, that one” only if it is the option you intend. Supply the meeting's day and destination-local time. Never use a fixed flight number as evidence that a flight is currently airborne.
+Type “I'm heading to New York. Which flights are already in the air?” Read the returned options and named suggestion. Type “that one” only if it is the option you intend. Supply the meeting's day and destination-local time. Never use a fixed flight number as evidence that a flight is currently airborne.
 
 **Done when:** four cards are visible, source dates are readable, and you can distinguish observation, estimate, forecast, assumption and daily reference rate. If a source fails, record the unavailable state; do not claim a full successful live briefing.
 
