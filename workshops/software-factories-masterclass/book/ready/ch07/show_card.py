@@ -35,8 +35,8 @@ def main():
     sources = PublicBriefingSources(http, clock=lambda: NOW)
     ref = market_card(sources, ["USD", "GBP", "JPY", "CHF"])
     card = CardState(widget_id="market-watchlist", component="market_watchlist", revision=1, request_id="r1", replaced=False, data_ref=ref)
-    Path("card.html").write_text(render_snapshot_html([card], document=True, title="Market watchlist"))
-    print("wrote card.html: open it in a browser")
+    Path("card.html").write_text(render_snapshot_html([card], document=True, title="Market watchlist (a recorded example, not live)"))
+    print("wrote card.html: a recorded exchange-rate answer from 2026-10-21, not live data. Open it in a browser.")
     return 0
 
 

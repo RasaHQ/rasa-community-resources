@@ -8,12 +8,12 @@
 
 - **Integration:** putting an accepted change into the product.
 - **Stale base:** the product changed after the attempt was made, so the attempt was judged against something that is gone.
-- **Replay:** running the checks again on the product after the change went in.
+- **Replay:** running the checks again on the product after the change went in. If they fail, the change comes out again.
 - **Run it dark:** let the tests decide, with no person reading each change.
 
 ## Get the ready folder
 
-Every chapter has a finished, working folder. Copy the one for this chapter next to your clone, then set up Python once:
+Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter next to your clone (it creates a new folder, `my-factory-ch07`), then set up Python once:
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
@@ -33,7 +33,7 @@ uv pip install zeocore==0.35.4 httpx==0.28.1
    1. It asks the gate. If the gate doesn't say ACCEPT, nothing goes in.
    2. It refuses a stale base: the product must be exactly the one the attempt was made against.
    3. It copies the allowed files in.
-   4. It replays the protected tests on the integrated product. If they fail, the change comes out again.
+   4. It replays the protected tests on the integrated product. If they fail, it puts every file back as it was.
    5. It writes the decision with its evidence.
 2. Integrate the good attempt for the first task into a copy of the product, and draw the card:
    ```bash
@@ -42,7 +42,7 @@ uv pip install zeocore==0.35.4 httpx==0.28.1
    python show_card.py --offline
    ```
 
-   You see `recorded the base product`, then `INTEGRATED - the checks replayed on the integrated product`, then `wrote card.html`. Open `card.html` in a browser: the market card with four currencies, its label and its publication day.
+   You see `recorded the base product`, then `INTEGRATED - the checks replayed on the integrated product`, then `wrote card.html`. Open `card.html` in a browser: the market card with four currencies. The page is titled a recorded example, because `show_card.py` draws it from a recorded answer from 2026-10-21 so that it works offline. It isn't live data.
 3. Try the same integration again:
    ```bash
    python integrate.py tasks/a6-market-watchlist.json candidates/market-good
@@ -53,6 +53,11 @@ uv pip install zeocore==0.35.4 httpx==0.28.1
 ## Now change it
 
 Now do the same for your own task, from a clean product. Use the same terminal as before, so that `REPO` is still set (if it isn't, run `export REPO=~/rasa-community-resources` again).
+
+The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first. This also makes the builder's attempt again for the new number:
+   ```bash
+   python set_limit.py 2
+   ```
 
 1. Reset the product to the baseline and clear the earlier results:
    ```bash
@@ -67,7 +72,7 @@ Now do the same for your own task, from a clean product. Use the same terminal a
    python show_card.py --offline
    ```
 
-   You see `INTEGRATED`, then `wrote card.html`. Open `card.html`: the market card shows exactly the number of currencies you asked for.
+   You see `INTEGRATED`, then `wrote card.html`. Open `card.html`: the market card shows exactly the number of currencies you asked for, and the page is titled a recorded example.
 
 ## You are done when
 
@@ -79,15 +84,17 @@ grep -q INTEGRATED decisions/integration.json \
  && python - <<'EOF'
 import json, re
 limit = json.load(open("tasks/b-limit-currencies.json"))["limit"]
-rows = set(re.findall(r"EUR[A-Z]{3}", open("card.html").read()))
+page = open("card.html").read()
+rows = set(re.findall(r"EUR[A-Z]{3}", page))
 assert len(rows) == limit, rows
-print("ch07 OK: the card shows", limit, "currencies")
+assert "recorded example, not live" in page
+print("ch07 OK: the card shows", limit, "currencies and says it is a recorded example")
 EOF
 ```
 
-At the start of this chapter there is no decision and no card, so it fails. It passes only when your change is integrated and the card shows your number of currencies.
+It passes only when your change is integrated and the card shows your number of currencies. At the start of this chapter there is no decision and no card, so it fails.
 
 ## If it fails
 
 - `REFUSED: stale base`: you integrated already. Run the reset in step 1 and start again.
-- `base.json` not found: run `python integrate.py --record-base` first.
+- `could not run: there is no base.json`: run `python integrate.py --record-base` first.

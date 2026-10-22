@@ -2,7 +2,7 @@
 
 **Goal:** see how an attempt is judged, then have the builder make an attempt for your task and watch the gates decide.
 
-**You need first:** Chapter 4, or copy the ready folder for this chapter. Chapter 5 builds the live builder on the OpenAI Agents API. Here you use the scripted builder, which needs no model call, so this chapter works offline.
+**You need first:** Chapter 4, or copy the ready folder for this chapter. Chapter 5 builds the live builder on the OpenAI Agents API. Here you use the scripted builder, so this chapter works offline.
 
 ## Words used in this chapter
 
@@ -10,11 +10,10 @@
 - **Gate:** one check an attempt must pass before the next one runs.
 - **Decision:** ACCEPT (every gate passed), REJECT (a gate failed, and the decision names it) or could not run (a problem with the machine).
 - **Exit code:** the number a program gives back when it ends. 0 is success, 1 is rejected, 2 is could not run.
-- **Scripted builder:** a stand-in for the builder from Chapter 5. It writes an attempt without any model.
 
 ## Get the ready folder
 
-Every chapter has a finished, working folder. Copy the one for this chapter next to your clone, then set up Python once:
+Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter next to your clone (it creates a new folder, `my-factory-ch06`), then set up Python once:
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
@@ -53,8 +52,14 @@ uv pip install zeocore==0.35.4 httpx==0.28.1
 
 Now ask for the change: have a builder make an attempt for your task, and let the gates decide.
 
+The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first. This also makes the builder's attempt again for the new number:
+   ```bash
+   python set_limit.py 2
+   ```
+
 1. Run the scripted builder. It reads the limit from your task and writes an attempt, with no model call:
    ```bash
+   python set_limit.py 2
    python scripted_builder.py tasks/b-limit-currencies.json attempts/mine
    ```
 
@@ -72,15 +77,21 @@ Now ask for the change: have a builder make an attempt for your task, and let th
 From inside `my-factory-ch06`, with your environment active, this prints a line that starts with `ch06 OK`:
 
 ```bash
-T=tasks/b-limit-currencies.json
-python run_a6.py $T attempts/mine > /dev/null \
- && { python run_a6.py $T attempts/b-ignores-limit > /dev/null; [ $? -eq 1 ]; } \
- && echo "ch06 OK"
+python - <<'EOF'
+import subprocess, sys
+def gate(attempt):
+    return subprocess.run([sys.executable, "run_a6.py", "tasks/b-limit-currencies.json", attempt], capture_output=True, text=True)
+good = gate("attempts/mine")
+assert good.returncode == 0 and good.stdout.startswith("ACCEPT"), good.stdout + good.stderr
+bad = gate("attempts/b-ignores-limit")
+assert bad.returncode == 1 and bad.stdout.startswith("REJECT") and "test_b1" in bad.stdout, bad.stdout + bad.stderr
+print("ch06 OK: your attempt is accepted, and the attempt that ignores the limit is rejected by test_b1")
+EOF
 ```
 
-At the start of this chapter there is no attempt for your task, so it fails. It passes only when your attempt is accepted and the bad one is rejected.
+It passes only when your attempt is accepted (exit code 0) and the attempt that ignores the limit is rejected (exit code 1) by `test_b1`. A crash or a setup problem does not count as a rejection. At the start of this chapter there is no attempt for your task, so it fails.
 
 ## If it fails
 
-- `could not run: the protected file ... does not match`: the fingerprints don't match the files. Lock them again (Chapter 4).
-- `Set a limit from 1 to 3`: set the limit in your task first (Chapter 3).
+- `could not run: the protected file ... does not match`: the fingerprints don't match the files. Copy the ready folder again.
+- `Set a limit from 1 to 3`: run `python set_limit.py 2` first.

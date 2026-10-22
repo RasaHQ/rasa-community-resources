@@ -35,14 +35,14 @@ Each chapter builds on the one before it, and every chapter after Chapter 0 can 
 | [0](00-run-the-finished-agent.md) | Run the finished agent | Clone, set up and run the briefing agent, and see its four cards | The doctor passes and the four recorded cards show (a live flight is the extra, not the check) |
 | [1](01-what-a-mantle-agent-is.md) | What a Rasa Mantle agent is | Read and change the briefing skill and its tool | The changed skill trains and its test passes |
 | [2](02-cards-from-real-sources.md) | Cards from real sources | How cards, the renderer and the four public readers fit together | The card test passes with the label rules held |
-| [3](03-a-factory-starts-with-a-task.md) | A factory starts with a task | The task for the market card and the baseline it applies to | `ch3 OK`: your task asks for a limit of 1 to 3 currencies |
-| [4](04-acceptance-before-code.md) | Acceptance before code | The protected suite for the market card, written before any candidate | `ch4 OK`: the fingerprints match, and the tests fail on the baseline |
+| [3](03-a-factory-starts-with-a-task.md) | A factory starts with a task | See a task judged, then set your own limit and let the builder's attempt be judged | `ch03 OK`: the builder's attempt for your task is accepted |
+| [4](04-acceptance-before-code.md) | Acceptance before code | See the tests that judge the card, lock them for your task and watch them accept the attempt | `ch04 OK`: the tests fail on the baseline for the right reasons, the fingerprints match and the attempt is accepted |
 | [5](05-the-builder.md) | The builder, on the OpenAI Agents API | A builder session with file tools confined to a scratch copy | The builder produces a candidate change in an offline run, and a live run is the extra |
-| [6](06-the-gates-and-the-decision.md) | The gates and the decision | The gate runner and the recorded decision | `ch6 OK`: the builder's attempt for your task is accepted and the bad one is rejected, offline |
-| [7](07-integrate-and-run-it-dark.md) | Integrate and run it dark | Integration, then the whole loop | `ch7 OK`: your change is integrated and the card shows your number of currencies, offline |
+| [6](06-the-gates-and-the-decision.md) | The gates and the decision | The gate runner and the recorded decision | `ch06 OK`: the builder's attempt for your task is accepted and the bad one is rejected, offline |
+| [7](07-integrate-and-run-it-dark.md) | Integrate and run it dark | Integration, then the whole loop | `ch07 OK`: your change is integrated and the card shows your number of currencies, offline |
 | [8](08-going-further.md) | Going further | Policy, measurement, recovery and escalation | The measure and recover commands run on your own factory |
 
-The book builds the factory from an empty folder, one part per chapter. The finished factory in `../factory/` is the reference result: compare yours with it, and use it when a checkpoint is the quickest way to catch up.
+The book teaches the factory one part per chapter. In each chapter you first see a working part run, then you change your own task and the factory's gates decide. The finished factory in `../factory/` is the reference result you can compare with.
 
 ## How each chapter works
 Every chapter ships its own working code in a ready folder under `ready/`, so nobody starts from zero. A chapter has three parts: **See how it works**, where you run the code, watch what happens and read the two or three files that matter. **Now change it**, where you ask for a change (in a factory, by changing the task) and the gates decide, with no code written by hand. And **You are done when**, a real command that passes.

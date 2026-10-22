@@ -1,6 +1,6 @@
 # Chapter 4: Acceptance before code
 
-**Goal:** see the tests that judge a change, written before any work, and lock the tests for your own task.
+**Goal:** see the tests that judge a change, written before any work, lock them for your own task and watch the factory accept the builder's attempt.
 
 **You need first:** Chapter 3, or copy the ready folder for this chapter.
 
@@ -13,7 +13,7 @@
 
 ## Get the ready folder
 
-Every chapter has a finished, working folder. Copy the one for this chapter next to your clone, then set up Python once:
+Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter next to your clone (it creates a new folder, `my-factory-ch04`), then set up Python once:
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
@@ -41,14 +41,19 @@ uv pip install zeocore==0.35.4 httpx==0.28.1
 
 ## Now change it
 
-Your task's tests are written. You lock them, so that nobody can change them without the fingerprint showing it.
+Your task's tests are written. You lock them, so that nobody can change them without the fingerprint showing it, and then the factory judges the builder's attempt against them.
+
+The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first. This also makes the builder's attempt again for the new number:
+   ```bash
+   python set_limit.py 2
+   ```
 
 1. Run your task's tests against the baseline. They fail, because the card isn't built:
    ```bash
    PRODUCT_PROJECT=$PWD/product python acceptance/b_limit_currencies.py
    ```
 
-   You see `FAILED` and `test_b1_four_currencies_show_at_most_the_limit` among the failures.
+   You see `FAILED` and `test_b1_four_currencies_show_at_most_the_limit` among five failures, one for each card check. The sixth check, the network one, passes.
 2. Lock the tests. This writes the fingerprint of each protected file into your task:
    ```bash
    python - <<'EOF'
@@ -65,6 +70,13 @@ Your task's tests are written. You lock them, so that nobody can change them wit
    ```
 
    You see `pinned`. Now the task knows exactly which tests judge the work.
+3. Ask the scripted builder for an attempt, and let the gates decide:
+   ```bash
+   python scripted_builder.py tasks/b-limit-currencies.json attempts/mine
+   python run_a6.py tasks/b-limit-currencies.json attempts/mine
+   ```
+
+   You see `ACCEPT - protected acceptance passed (Ran 6 tests ...)`.
 
 ## You are done when
 
@@ -72,19 +84,22 @@ From inside `my-factory-ch04`, with your environment active, this prints a line 
 
 ```bash
 python - <<'EOF'
-import hashlib, json, os, subprocess, sys
+import hashlib, json, os, re, subprocess, sys
 from pathlib import Path
 t = json.loads(Path("tasks/b-limit-currencies.json").read_text())
 for item in [t["acceptance"], *t["support"]]:
     assert hashlib.sha256(Path(item["path"]).read_bytes()).hexdigest() == item["sha256"], item["path"]
-r = subprocess.run([sys.executable, "-I", t["acceptance"]["path"]], capture_output=True, text=True,
-                   env={"PATH": "/usr/bin:/bin", "PRODUCT_PROJECT": os.path.abspath("product")})
-assert r.returncode != 0 and "FAILED" in r.stderr and "test_b1" in r.stderr, r.stderr[-300:]
-print("ch04 OK: the fingerprints match and the tests fail on the baseline")
+env = {"PATH": "/usr/bin:/bin", "PRODUCT_PROJECT": os.path.abspath("product")}
+r = subprocess.run([sys.executable, "-I", t["acceptance"]["path"]], capture_output=True, text=True, env=env)
+failing = set(re.findall(r"^FAIL: (test_b\d)", r.stderr, re.M))
+assert failing == {"test_b1", "test_b2", "test_b3", "test_b4", "test_b5"}, "setup problem or unexpected failures: " + r.stderr[-300:]
+g = subprocess.run([sys.executable, "run_a6.py", "tasks/b-limit-currencies.json", "attempts/mine"], capture_output=True, text=True)
+assert g.returncode == 0 and g.stdout.startswith("ACCEPT"), g.stdout + g.stderr
+print("ch04 OK: the tests fail on the baseline for the right reasons, and the builder's attempt is accepted")
 EOF
 ```
 
-At the start of this chapter the fingerprints in your task are empty, so it fails.
+It passes only when the fingerprints match, the tests fail on the baseline for the five card checks (not for a setup problem), and the builder's attempt is accepted. At the start of this chapter the fingerprints are empty, so it fails.
 
 ## If it fails
 

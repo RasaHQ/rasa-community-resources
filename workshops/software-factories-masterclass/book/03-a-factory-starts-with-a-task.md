@@ -1,6 +1,6 @@
 # Chapter 3: A factory starts with a task
 
-**Goal:** see how a factory is told what to build, then change the task yourself.
+**Goal:** see how a factory is told what to build, then change the task yourself and watch the factory accept the result.
 
 **You need first:** Chapter 0 (the repository cloned), Python 3.12 and uv.
 
@@ -10,11 +10,12 @@
 - **Task:** the written request, plus the list of files the builder may change.
 - **Allowed paths:** the only places the builder may change. Anything else is refused.
 - **Baseline:** the product as it is before the change, with no market card yet.
+- **Builder:** the coding agent that makes the change. In Chapter 5 it runs on the OpenAI Agents API. Here you use the **scripted builder**, a stand-in that needs no model and no key.
 - **Limit:** in this chapter, the number of currencies your market card may show.
 
 ## Get the ready folder
 
-Every chapter has a finished, working folder. Copy the one for this chapter next to your clone, then set up Python once:
+Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter next to your clone (it creates a new folder, `my-factory-ch03`), then set up Python once:
 
 ```bash
 export REPO=~/rasa-community-resources   # the folder where you cloned the repository
@@ -51,33 +52,46 @@ uv pip install zeocore==0.35.4 httpx==0.28.1
 
 ## Now change it
 
-Your task is a variation of the first one: the market card, but limited to a number of currencies. The limit is yours to choose.
+Your task is a variation of the first one: the market card, but limited to a number of currencies. The tests for it are already written and locked (Chapter 4 shows how). You choose the limit, the builder makes an attempt and the gates decide. You write no code.
 
-1. Open `tasks/b-limit-currencies.json`. The line `"limit": null` is what you ask for. Change `null` to a number from 1 to 3, for example 2, and save. That is the whole change: you wrote no code. In a factory you ask for a change by changing the task.
-   If you prefer to do it from the terminal, this sets the limit to 2:
+1. Choose a limit from 1 to 3 and set it in your task. This sets 2:
    ```bash
-   python - <<'EOF'
-   import json
-   from pathlib import Path
-   p = Path('tasks/b-limit-currencies.json')
-   t = json.loads(p.read_text())
-   t['limit'] = 2
-   p.write_text(json.dumps(t, indent=2) + '\n')
-   EOF
+   python set_limit.py 2
    ```
 
+   (You can also open `tasks/b-limit-currencies.json` and change the line `"limit": null` yourself.)
+2. Ask the scripted builder for an attempt. It reads your task, writes only the allowed files and never sees the tests:
+   ```bash
+   python scripted_builder.py tasks/b-limit-currencies.json attempts/mine
+   ```
+
+   (The live builder from Chapter 5 does the same job with the OpenAI Agents API. This offline builder lets everyone finish without a key.)
+3. Let the gates decide:
+   ```bash
+   python run_a6.py tasks/b-limit-currencies.json attempts/mine
+   ```
+
+   You see `ACCEPT - protected acceptance passed (Ran 6 tests ...)`.
 
 ## You are done when
 
 From inside `my-factory-ch03`, with your environment active, this prints a line that starts with `ch03 OK`:
 
 ```bash
-python -c "import json, pathlib; t = json.load(open('tasks/b-limit-currencies.json')); assert isinstance(t['limit'], int) and 1 <= t['limit'] <= 3; assert 'limit' in t['request']; assert all(pathlib.Path(p).exists() for p in t['allowed_paths']); print('ch03 OK')"
+python - <<'EOF'
+import json, subprocess, sys
+t = json.load(open("tasks/b-limit-currencies.json"))
+assert isinstance(t["limit"], int) and 1 <= t["limit"] <= 3, "set your limit first"
+r = subprocess.run([sys.executable, "run_a6.py", "tasks/b-limit-currencies.json", "attempts/mine"], capture_output=True, text=True)
+assert r.returncode == 0 and r.stdout.startswith("ACCEPT"), r.stdout + r.stderr
+print("ch03 OK: the builder's attempt for your task is accepted, with a limit of", t["limit"])
+EOF
 ```
 
-At the start of this chapter `limit` is empty, so it fails.
+It passes only when your limit is set and the builder's attempt for your task is accepted. At the start of this chapter `limit` is empty and there is no attempt, so it fails.
 
 ## If it fails
 
-- `limit` still says `null`: set it to 1, 2 or 3 and save the file.
+- `limit` still says `null`: run step 1.
 - `No such file`: run the command from inside `my-factory-ch03`.
+- `could not run: the protected file ... does not match`: you changed a file under `acceptance/`. Copy the ready folder again.
