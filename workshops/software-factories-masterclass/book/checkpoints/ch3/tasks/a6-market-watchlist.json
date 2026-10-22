@@ -1,0 +1,19 @@
+{
+  "id": "A6-market-watchlist",
+  "request": "Add the market_watchlist card to \"Brief me before I fly\". Implement market_card in briefing/market_card.py: it takes a zeocore PublicBriefingSources and the traveler's currencies (a list such as [\"USD\", \"GBP\"]) and returns the card's DataRef. Use the existing ECB daily reference-rate reader in zeocore's briefing_sources. Show the traveler's currencies against EUR, with the publication day. Keep the labels the reader gives you: the rate PROVIDER DATA with \"daily reference rate, not a live quote\", and the day-on-day change COMPUTED from the two reference days. Never invent a rate or show one as live. When the source fails, return the unavailable card the reader gives you. Change only the files listed in the task. Tests the builder writes go under tests/.",
+  "allowed_paths": [
+    "product/briefing/market_card.py",
+    "product/tests/"
+  ],
+  "acceptance": {
+    "path": "acceptance/a6_market_watchlist.py",
+    "sha256": "PENDING"
+  },
+  "support": [
+    {
+      "path": "acceptance/a6_child.py",
+      "sha256": "PENDING"
+    }
+  ],
+  "excluded": "Changing the acceptance suite or its child runner, the card registry, the other cards' readers, the launcher, or anything under zeocore. Those belong to the platform and have a separate owner."
+}
