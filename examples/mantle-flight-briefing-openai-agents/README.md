@@ -231,3 +231,26 @@ registry locks. The actual installed reader, real MCP requests, numbered flight
 selection, natural meeting input and four graphical cards pass an injected-provider
 integration control. No live provider/model, browser or voice acceptance is inferred
 from that control. Final consumer review and preview rehearsal remain required.
+
+## Voice, locally
+
+Run on your own Mac from this example directory. Keep the terminal running.
+
+```sh
+make env
+# Edit the ignored .env: set RASA_LICENSE and DEEPGRAM_API_KEY.
+make setup
+make run-voice
+```
+
+Open http://127.0.0.1:8942 in Chrome, allow microphone access, then start the voice conversation. Ask which flights are in the air heading to New York; confirm the suggested flight; say “six PM tomorrow”. The page should show four source cards. Local loopback supports browser microphone access without tailnet, TLS or browser flags.
+
+Voice uses Deepgram and explicitly scripted Mantle tool selection with real public sources. No OpenAI key is needed for this command. Only the Inspector child receives the Deepgram key. `make run-scripted` remains a text path without voice or model calls; `make run` retains the separate model path with voice disabled. File-audio tests passed on the patched runtime; a physical microphone still needs permission and device testing on your Mac.
+
+If the default ports are occupied:
+
+```sh
+BRIEFING_PAGE_PORT=8960 BRIEFING_INSPECTOR_PORT=5020 make run-voice
+```
+
+Use the printed page address. Stop the processes with Ctrl-C. Voice includes the pinned-engine in-memory repair in `voice_patch.py`; no installed package is edited.

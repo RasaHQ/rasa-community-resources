@@ -1,3 +1,4 @@
+from demo_host import runtime_ports
 """Local display transport; all card rendering belongs to zeocore.
 
 No job identifier or credential is accepted by this endpoint. The service
@@ -47,7 +48,7 @@ class BoardDisplay:
             (b'referrer-policy', b'no-referrer'),
             (b'x-content-type-options', b'nosniff'),
             (b'content-security-policy',
-             ("default-src 'none'; style-src 'unsafe-inline'; frame-src 'self' http://" + self._host + ":5005; frame-ancestors 'none'; base-uri 'none'; form-action 'none'").encode()
+             ("default-src 'none'; style-src 'unsafe-inline'; frame-src 'self' http://" + self._host + ':' + str(runtime_ports()[1]) + "; frame-ancestors 'none'; base-uri 'none'; form-action 'none'").encode()
              if dashboard else b"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'"),
         ]
         if status == 200 and not dashboard:
@@ -65,15 +66,16 @@ header{padding:12px 20px}h1{font-size:20px;margin:0}main{display:grid;grid-templ
 iframe{border:1px solid #d3d7df;border-radius:8px;background:white;width:100%;height:100%}
 @media(max-width:800px){body{height:auto}main{grid-template-columns:1fr;height:auto}iframe{height:75vh}}
 </style></head><body><header><h1>Flight briefing</h1></header><main>
-<iframe title="Mantle conversation" src="http://127.0.0.1:5005/webhooks/inspector/inspect.html?projectUrl=http%3A%2F%2F127.0.0.1%3A5005"></iframe>
+<iframe allow="microphone; autoplay" title="Mantle conversation" src="http://127.0.0.1:5005/webhooks/inspector/inspect.html?projectUrl=http%3A%2F%2F127.0.0.1%3A5005"></iframe>
 <iframe title="Validated source cards" src="/cards"></iframe>
 </main></body></html>"""
 
 
 def dashboard_html(host):
     validate_host(host)
-    return DASHBOARD.replace(b'127.0.0.1', host.encode()).replace(
-        b'http%3A%2F%2F127.0.0.1%3A5005', quote('http://' + host + ':5005', safe='').encode())
+    endpoint = 'http://' + host + ':' + str(runtime_ports()[1])
+    return DASHBOARD.replace(b'http%3A%2F%2F127.0.0.1%3A5005', quote(endpoint, safe='').encode()).replace(
+        b'http://127.0.0.1:5005', endpoint.encode())
 
 
 # Semantic Rasa roles from supplied brand tokens v0.2.0 (2026-10-16).

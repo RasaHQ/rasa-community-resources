@@ -40,3 +40,15 @@ def require_viewer_access(host):
     if host != LOOPBACK and os.environ.get('BRIEFING_VIEWER_ACCESS') not in (
             'operator-device-acl', 'operator-accepted'):
         raise ValueError('Inspector is unauthenticated: confirm an operator-device ACL or explicit operator acceptance in BRIEFING_VIEWER_ACCESS before tailnet launch.')
+
+
+def runtime_ports():
+    """Owner configuration only; model/tool arguments cannot change listeners."""
+    try:
+        ports = tuple(int(os.environ.get(name, default)) for name, default in
+                      [('BRIEFING_PAGE_PORT', '8942'), ('BRIEFING_INSPECTOR_PORT', '5005')])
+    except ValueError:
+        raise ValueError('Use two distinct port numbers from 1024 to 65535.') from None
+    if len(set(ports)) != 2 or any(not 1024 <= port <= 65535 for port in ports):
+        raise ValueError('Use two distinct port numbers from 1024 to 65535.')
+    return ports

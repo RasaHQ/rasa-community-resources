@@ -26,6 +26,7 @@ PURPOSES = {
     'setup': 'Install the two locked Python 3.12 environments.',
     'doctor': 'Check readiness and show credential names as SET or MISSING.',
     'run': 'Start the real Inspector and source-card page.',
+    'run-voice': 'Start scripted selection with Deepgram voice; no model key is needed.',
     'run-scripted': 'Start the labelled scripted text path without model or voice calls.',
     'test': 'Run the example controls without live provider calls.',
     'stop': 'Stop only the demo launched from this checkout.',
@@ -281,11 +282,11 @@ def perform(target):
         env = ready_environment(credentials=target not in ('setup', 'test'))
         if target == 'setup':
             demo.setup()
-        elif target in ('run', 'run-scripted'):
-            from demo_host import validate_host
+        elif target in ('run', 'run-scripted', 'run-voice'):
+            from demo_host import validate_host, runtime_ports
             host = validate_host(env.get('BRIEFING_VIEWER_HOST', '127.0.0.1'))
-            print('Demo page: http://' + host + ':8942/', flush=True)
-            demo.run_demo(scripted=target == 'run-scripted', host=host)
+            print('Demo page: http://' + host + ':' + str(runtime_ports()[0]) + '/', flush=True)
+            demo.run_demo(scripted=target == 'run-scripted', host=host, **({'voice': True} if target == 'run-voice' else {}))
         else:
             interpreter = project_python()
             argv = ([str(interpreter), str(demo.ROOT / 'class_doctor.py')]

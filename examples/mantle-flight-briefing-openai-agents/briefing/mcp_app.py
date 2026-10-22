@@ -1,3 +1,4 @@
+from demo_host import runtime_ports
 """One authenticated Mantle task tool over MCP streamable HTTP.
 
 Targets mcp 1.26.0. App construction does not start a service or read secrets.
@@ -169,7 +170,7 @@ def create_app(jobs: Jobs, *, transport_token: str, host="127.0.0.1"):
 
     tools = [strict_tool(briefing, "Start, inspect or revise a traveller briefing. Pass the traveller's exact words in request/change. To select a discovered flight, pass its private discovery_id and numbered choice; never invent a flight or supply user/session identity. Keep capability identifiers private."),
              strict_tool(find_flights, "Find up to five flights already in the air approaching New York or its named airport, using observed positions and dated published routes. Pass the traveller's destination in ordinary words. Return the reader's choices; never invent candidates or landing estimates. Keep the discovery_id private.")]
-    server = FastMCP("briefing", tools=tools, host=host, port=8942,
+    server = FastMCP("briefing", tools=tools, host=host, port=runtime_ports()[0],
                      transport_security=TransportSecuritySettings(
                          enable_dns_rebinding_protection=True,
                          allowed_hosts=[value + ":*" for value in display_hosts(host)],
