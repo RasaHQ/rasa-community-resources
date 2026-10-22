@@ -68,7 +68,7 @@ def qualify(pack, evidence):
     driver.module('scratch').main(task, workspace, pack_root=pack, instructions='AGENTS-a6.md')
     teaching = pack / 'candidates/market-good'
     actions = [{'path': str(path.relative_to(teaching)), 'text': path.read_text()}
-               for path in sorted(teaching.rglob('*')) if path.is_file()]
+               for path in driver.module('factory').files_in(teaching)]
     sessions = ScriptedSessions(actions)
     client = SimpleNamespace(beta=SimpleNamespace(agents=SimpleNamespace(sessions=sessions)))
     code = driver.execute(task, workspace, evidence / 'run', client=client,
