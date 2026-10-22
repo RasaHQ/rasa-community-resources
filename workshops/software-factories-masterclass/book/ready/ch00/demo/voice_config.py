@@ -16,6 +16,6 @@ def voice_channels(environment=None):
         return {}
     # The engine reads its required DEEPGRAM_API_KEY directly from the process
     # environment. Never copy the value into this configuration or a URL.
-    asr = {'name': 'deepgram', 'language_map': {'en': {'model': 'flux-general-en'}}}
+    asr = {'name': 'deepgram_flux', 'language_map': {'en': {'model': 'flux-general-en'}}}
     tts = {'name': 'deepgram', 'language_map': {'en': {'model': 'aura-2-andromeda-en'}}}
     return {'inspector': {'enabled': True, 'asr': asr, 'tts': tts}}

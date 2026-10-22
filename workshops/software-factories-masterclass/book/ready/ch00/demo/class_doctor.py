@@ -14,11 +14,14 @@ KEYS = {'openai': 'OPENAI_API_KEY', 'anthropic': 'ANTHROPIC_API_KEY'}
 
 
 def selected_provider(project=ROOT / 'project'):
-    text = (project / 'integrations.yml').read_text()
-    match = re.search(r'^llm:\s*\n\s+model_group:\s*(openai|anthropic)\s*$', text, re.M)
-    if not match:
-        raise ValueError('Select openai or anthropic in llm.model_group.')
-    return match[1]
+    import yaml
+    config = yaml.safe_load((project / 'agent.yml').read_text())
+    group = config.get('orchestrator', {}).get('model_group')
+    integrations = yaml.safe_load((project / 'integrations.yml').read_text())
+    models = next((g.get('models', []) for g in integrations.get('model_groups', []) if g.get('id') == group), [])
+    if not models or models[0].get('provider') not in KEYS:
+        raise ValueError('Select an OpenAI or Anthropic group in agent.yml orchestrator.model_group.')
+    return models[0]['provider']
 
 
 async def probe_mantle(project):
@@ -26,7 +29,11 @@ async def probe_mantle(project):
     from rasa.core.agent import Agent
     from rasa.mantle.llm.client import LLMClient
     from rasa.mantle.model_archive.bootstrap import ModelBootstrap, resolve_integration_llm_config
-    client = LLMClient.from_bootstrap(ModelBootstrap(llm=dict(resolve_integration_llm_config(project))))
+    from rasa.mantle.config.agent_spec import agent_spec_from_config
+    import yaml
+    agent = agent_spec_from_config(yaml.safe_load((project / 'agent.yml').read_text()))
+    client = LLMClient.from_bootstrap(ModelBootstrap(
+        agent=agent, llm=dict(resolve_integration_llm_config(agent, project))))
     reply = await asyncio.wait_for(client.acompletion(
         [{'role': 'user', 'content': 'Reply with READY only.'}]), timeout=60)
     return bool(reply.response_text())
@@ -36,7 +43,7 @@ def probe_agents():
     from openai import OpenAI
     # Default SDK auth reads OPENAI_API_KEY only in this facilitator process.
     with OpenAI(timeout=20, max_retries=0) as client:
-        result = native_turn(client, agent={'model': os.environ.get('BRIEFING_AGENTS_MODEL', 'gpt-4.1-mini'),
+        result = native_turn(client, agent={'model': os.environ.get('BRIEFING_AGENTS_MODEL', 'gpt-6-astra'),
             'instructions': 'Reply with READY only; no tools or files.'},
             text='Reply with READY only.')
         return result.ok
@@ -82,7 +89,7 @@ def main(argv=None):
     try:
         provider = 'openai' if args.probe_agents else selected_provider()
     except (ValueError, OSError):
-        print('Refused: select openai or anthropic in project/integrations.yml llm.model_group.')
+        print('Refused: select openai or anthropic in project/agent.yml orchestrator.model_group.')
         return 2
     key_name = KEYS[provider]
     if not os.environ.get(key_name, '').strip():
