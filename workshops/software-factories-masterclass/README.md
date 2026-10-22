@@ -28,17 +28,18 @@ You need:
 
 - A laptop. Chapters 3 to 7 need a Mac, because the factory's protective checks use a macOS feature. No Mac? Pair up with someone who has one, or follow **Track B** in the participant guide, which works with Python 3.12 on any system (Windows is untested).
 - Python 3.12, [uv](https://docs.astral.sh/uv/), Git and Make.
-- A free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Request it first, because the key arrives by email. The form's confirmation page is not the key.
+- A free [Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). Request it first: the form's confirmation page is not the key, and the key reaches you after you submit.
 - An OpenAI key is **not** needed. It is only used by one optional extra in chapter 5.
 
-Get the code:
+Get your own copy. On GitHub, click **Fork** on [RasaHQ/rasa-community-resources](https://github.com/RasaHQ/rasa-community-resources), then clone your fork:
 
 ```bash
-git clone https://github.com/RasaHQ/rasa-community-resources.git
+git clone https://github.com/YOUR-GITHUB-NAME/rasa-community-resources.git
 cd rasa-community-resources/workshops/software-factories-masterclass
+export PACK="$PWD"
 ```
 
-This folder is the one the book calls `PACK`.
+This folder is the one the book calls `PACK`. Everything here is plain Markdown and code, so you can open it in your editor and point your own coding agent, such as Claude Code or Codex, at any chapter. Your changes stay in your fork.
 
 ## Choose how you want to learn
 
@@ -71,7 +72,7 @@ This folder is the one the book calls `PACK`.
 Being honest about the limits is part of the method:
 
 - The agent's choice of tools is **scripted** in the exercises, so the results are repeatable. The flight, weather and rate data are real, or a labeled recording.
-- **Voice:** a test with recorded audio failed on the second turn, so type your requests. Speaking into a microphone is untested.
+- **Voice:** on 22 October a test with recorded audio failed on the second turn, so type your requests. Speaking into a microphone is untested.
 - The full journey, where you **ask by voice** for a new agent and the factory builds and releases it, is the next step. [BUILD-CONTRACT.md](BUILD-CONTRACT.md) describes what it needs.
 
 Chapter 0 runs on Rasa Pro 3.21.0. The standalone example in `examples/` stays on 3.21.0.dev5 for now.

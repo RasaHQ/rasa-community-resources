@@ -19,13 +19,14 @@
 <ul>
 <li>A laptop. Chapters 3 to 7 need a Mac, because the factory's protective checks use a macOS feature. No Mac? Pair up with someone who has one, or follow <strong>Track B</strong> in the participant guide, which works with Python 3.12 on any system (Windows is untested).</li>
 <li>Python 3.12, <a href="https://docs.astral.sh/uv/">uv</a>, Git and Make.</li>
-<li>A free <a href="https://rasa.com/rasa-pro-developer-edition-license-key-request">Rasa Developer Edition license</a>. Request it first, because the key arrives by email. The form's confirmation page is not the key.</li>
+<li>A free <a href="https://rasa.com/rasa-pro-developer-edition-license-key-request">Rasa Developer Edition license</a>. Request it first: the form's confirmation page is not the key, and the key reaches you after you submit.</li>
 <li>An OpenAI key is <strong>not</strong> needed. It is only used by one optional extra in chapter 5.</li>
 </ul>
-<p>Get the code:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/RasaHQ/rasa-community-resources.git</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> rasa-community-resources/workshops/software-factories-masterclass</span></code></pre></div>
-<p>This folder is the one the book calls <code>PACK</code>.</p>
+<p>Get your own copy. On GitHub, click <strong>Fork</strong> on <a href="https://github.com/RasaHQ/rasa-community-resources">RasaHQ/rasa-community-resources</a>, then clone your fork:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/YOUR-GITHUB-NAME/rasa-community-resources.git</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> rasa-community-resources/workshops/software-factories-masterclass</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PACK</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$PWD</span><span class="st">&quot;</span></span></code></pre></div>
+<p>This folder is the one the book calls <code>PACK</code>. Everything here is plain Markdown and code, so you can open it in your editor and point your own coding agent, such as Claude Code or Codex, at any chapter. Your changes stay in your fork.</p>
 <h2 id="choose-how-you-want-to-learn">Choose how you want to learn</h2>
 <p><strong>In the room, or with about two hours:</strong> follow the <a href="PARTICIPANT-GUIDE.html">participant guide</a>. It takes you through a few checkpoints, tells you what you should see at each one, and what to do if you don't.</p>
 <p><strong>On your own, at your own pace (about three hours):</strong> work through <a href="book/README.md">the book</a>, one chapter at a time. Each chapter starts with a short scene, tells you how long it takes, has you run something that already works, then asks you to change it. Each chapter ends with a check that prints <code>chNN OK</code>, so you always know when you're done. If you get stuck, every chapter has a ready-made folder to start again from.</p>
@@ -97,7 +98,7 @@
 <p>Being honest about the limits is part of the method:</p>
 <ul>
 <li>The agent's choice of tools is <strong>scripted</strong> in the exercises, so the results are repeatable. The flight, weather and rate data are real, or a labeled recording.</li>
-<li><strong>Voice:</strong> a test with recorded audio failed on the second turn, so type your requests. Speaking into a microphone is untested.</li>
+<li><strong>Voice:</strong> on 22 October a test with recorded audio failed on the second turn, so type your requests. Speaking into a microphone is untested.</li>
 <li>The full journey, where you <strong>ask by voice</strong> for a new agent and the factory builds and releases it, is the next step. <a href="BUILD-CONTRACT.html">BUILD-CONTRACT.md</a> describes what it needs.</li>
 </ul>
 <p>Chapter 0 runs on Rasa Pro 3.21.0. The standalone example in <code>examples/</code> stays on 3.21.0.dev5 for now.</p>
