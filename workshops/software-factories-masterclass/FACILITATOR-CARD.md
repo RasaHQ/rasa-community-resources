@@ -6,7 +6,7 @@
 
 Ask: What did you ask for? What would make it wrong? Which check caught that? Which exact artifact did you run? What still needs a person?
 
-**Tracks:** Mac with accounts: travel scaffold + Agents API builder. Any Python 3.12 laptop: recovery factory, plus architecture and acceptance design. No setup: work as evaluator at another group's machine.
+**Tracks:** Mac with accounts: travel scaffold + Agents API builder. Python 3.12 only (3.13/3.14: NOT_READY; Windows untested): recovery factory, plus architecture and acceptance design. No setup: work as evaluator at another group's machine.
 
 **Never equate:** API session complete with acceptance; acceptance with release; text with voice proof; replay with current data; SDK with API; a copied folder with an OS sandbox.
 

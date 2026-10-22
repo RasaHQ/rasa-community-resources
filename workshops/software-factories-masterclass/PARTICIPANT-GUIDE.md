@@ -19,10 +19,10 @@ Choose your route:
 
 | Route | You need | You will run |
 |---|---|---|
-| A: travel scaffold and coding factory | A Mac for code gates; Python 3.12, uv, Git, Make; license and provider keys for live voice | Travel assistant, Agents API builder, rejection and local integration |
+| A: travel scaffold and coding factory | A Mac for code gates; Python 3.12, uv, Git, Make; issued Rasa license; provider keys only for optional live runs | Travel assistant, Agents API builder, rejection and local integration |
 | B: data-only factory | Any machine with Python 3.12 only (3.13 and 3.14 stop with NOT_READY); commands below use a POSIX shell, and Windows is untested | Acceptance, rejection, retry limits and duplicate suppression, with scripted proposals |
 
-If setup is still blocking you after ten minutes, use B and pair with an A group for the voice demonstration. A file-presence check is not evidence that an agent works.
+If setup is still blocking you after ten minutes, use B and pair with an A group for the typed travel demonstration. A file-presence check is not evidence that an agent works.
 
 Assign driver, requirements owner and evaluator. A fourth person records evidence. Swap after the break.
 
@@ -54,22 +54,21 @@ From your prepared package:
 ```bash
 cd "$PACK/book/ready/ch00/demo"
 make doctor
-make run
 ```
 
-With the selected model key and Deepgram key, this is the live-mode entry point. Open http://127.0.0.1:8942/ after the launcher reports ready. Use the Inspector's voice mode and grant microphone access. Ask for flights to New York, choose a returned flight, and give your meeting's local day/time. Allow 90 minutes into town, then change it to 120 minutes.
-
-Record: what you said, what the system heard, what changed on screen, which sources supplied the values, and the runtime mode. Test a short answer and an interruption. Speech input alone is not enough: verify audible output too.
-
-The arrival is a position-based estimate, not an airline ETA. The transfer is an assumption, not live traffic. The currency card uses reference rates. The custom card renderer is application code, not automatic Mantle or Agents API UI generation.
-
-If no model or voice service is available, stop your own launcher with Ctrl-C and use:
+For today's checkpoint, use typed requests and recorded sources. Run:
 
 ```bash
 BRIEFING_RECORDED=1 make run-scripted
 ```
 
-Say `United 1162 to EWR`, then `The 6 pm meeting tomorrow.`, then `Allow 30 minutes to get into town.` In this recording “tomorrow” is 23 October 2026. In another terminal, from `book/ready/ch00`, run:
+Open http://127.0.0.1:8942/ after the launcher reports ready. Type the three recorded prompts below. Voice is optional extension work and has not been tested end to end.
+
+Record what you typed, what changed on screen, which sources supplied the values, and the SCRIPTED / REPLAY mode. Optional voice testing belongs after the core exercise; test audible output, short answers and interruptions separately.
+
+The arrival is a position-based estimate, not an airline ETA. The transfer is an assumption, not live traffic. The currency card uses reference rates. The custom card renderer is application code, not automatic Mantle or Agents API UI generation.
+
+Type `United 1162 to EWR`, then `The 6 pm meeting tomorrow.`, then `Allow 30 minutes to get into town.` In this recording “tomorrow” is 23 October 2026. In another terminal, from `book/ready/ch00`, run:
 
 ```bash
 python3 check_demo.py --recorded --transfer-minutes 30
@@ -106,7 +105,16 @@ p.write_text(json.dumps(t, indent=2) + '\n')
 EDIT
 ```
 
-For a real builder, provide `OPENAI_API_KEY` privately to this process environment. The demo's `.env` is not automatically read here. Use a password manager or secure local terminal prompt; never put the key in the task or share it. Choose an account-approved Agents model. The supplied default example is `gpt-6-astra`; a model working in Mantle does not prove it is available to an Agents session.
+First finish offline with the edited task:
+
+```bash
+python build.py tasks/b-limit-currencies.json attempts/changed --scripted
+python check_build.py attempts/changed
+```
+
+Expected: ACCEPT, then `ch05 OK`. You now have a complete checkpoint even without API access.
+
+For an optional real builder, provide `OPENAI_API_KEY` privately to this process environment. The demo's `.env` is not automatically read here. Use a password manager or secure local terminal prompt; never put the key in the task or share it. Choose an account-approved Agents model. The supplied default example is `gpt-6-astra`; a model working in Mantle does not prove it is available to an Agents session.
 
 ```bash
 printf 'Approved model: '; IFS= read -r MODEL
@@ -196,13 +204,15 @@ python3 lesson.py recover
 python3 lesson.py check
 ```
 
-Windows PowerShell alternative (untested): copy `book/ready/ch08` to a new folder in File Explorer, open that folder in PowerShell, and run the same seven Python commands using `py -3.12` in place of `python3`.
+**Windows is untested.** Suggested PowerShell adaptation (not verified): copy `book/ready/ch08` to a new folder in File Explorer, open that folder in PowerShell, and run the same seven Python commands using `py -3.12` in place of `python3`.
 
 Expected: accepted proposal; rejected original two-attempt baseline; one simulated crash followed by an accepted retry; duplicate call executes zero further attempts; final `ch08 OK`. The two measured cases are selected teaching cases, not a success-rate benchmark.
 
 Then repeat in another fresh folder with `set_request.py 1`. Recovery should escalate after the first controlled crash (exit code 4), while `lesson.py check` still passes because escalation is the requested result.
 
-Use the remaining time to design the travel acceptance scenarios, inspect `BUILD-CONTRACT.md`, and pair with a voice group. Ask where their job records survive a restart, and what prevents two clicks from launching two builds.
+The builder may see example tests. It never sees or edits the acceptance tests that decide.
+
+Use the remaining time to design the travel acceptance scenarios, inspect `BUILD-CONTRACT.md`, and pair with a travel-demo group. Ask where their job records survive a restart, and what prevents two clicks from launching two builds.
 
 ## Final handoff (10 minutes within Lab B)
 

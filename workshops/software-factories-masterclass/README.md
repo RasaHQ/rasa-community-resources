@@ -15,6 +15,16 @@ The target experience is a spoken product request, a builder session, independen
 - The Agents API and Agents SDK are clearly distinguished. Python's `openai` client can call the Agents API; that does not make it the `openai-agents` framework.
 - Revised slides use Rasa's supplied palette, official logo and open fallback fonts, with concrete travel examples and architecture diagrams.
 
+## What is demonstrated
+
+The teaser uses typed requests. Tool selection is scripted. Sources are either explicitly labeled REPLAY or current public sources. Voice has not been tested end to end. The live Agents API builder is an optional paid extension, with the default model **gpt-6-astra**. The `openai-agents` SDK appendix is not the API implementation used here.
+
+The built card is not automatically installed in the running travel demo. A complete voice-triggered build and release remains extension work. [BUILD-CONTRACT.md](BUILD-CONTRACT.md) defines that work without claiming it exists.
+
+Track B: **Python 3.12 only (3.13 and 3.14 stop with NOT_READY). Windows untested.** It teaches the factory method without provider accounts.
+
+The standalone example is in `examples/mantle-flight-briefing-openai-agents/` in this repository. Its [self-paced guide](../../examples/mantle-flight-briefing-openai-agents/SELF-PACED-GUIDE.md) explains which paths use live providers.
+
 ## Where to go
 
 | File | Purpose |

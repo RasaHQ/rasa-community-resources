@@ -16,7 +16,7 @@ Use elapsed time. If the booked start is 14:30 London, the finish is 17:30. This
 
 ## Teaser script (10 minutes)
 
-1. Show the travel assistant immediately. Type “I'm flying to New York. Will I make my six o'clock meeting?” Choose a returned flight and give the destination-local date. Show the four cards, then type “Allow two hours to get into town.” The timeline must update without changing the flight. Ask “What if the weather source is down?” Show the failure state from a labeled fixture if necessary.
+1. Show the travel assistant immediately. State: “Tool selection is scripted. Voice has not been tested end to end. I will type.” Use the chapter 0 recorded prompts for a dependable teaser, or a separately rehearsed current-source run. For the recorded route, type “United 1162 to EWR”, then “The 6 pm meeting tomorrow.” For a rehearsed current-source route, ask for New York flights and choose a returned option. Show the four cards, then type “Allow 120 minutes to get into town.” The timeline must update without changing the flight. Ask “What if the weather source is down?” Show the failure state from a labeled fixture if necessary.
 2. Show the factory's task and accepted artifact, then one rejected attempt. Point to the actual check that rejected it.
 3. Explain the destination: “We want to describe this assistant by voice, have a builder make it, and release only the version that passes our checks.” If the full bridge has not passed rehearsal, say “Today these are two connected ideas demonstrated in separate components. Wiring the complete path is our extension.”
 
