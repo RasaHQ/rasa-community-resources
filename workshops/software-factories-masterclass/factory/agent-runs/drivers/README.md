@@ -34,10 +34,12 @@ One `run_native` call has 30 tool calls, 10,000 events, a 120-second deadline
 and a 20-second transport timeout. It uses `environment={"type":"none"}` so no
 hosted shell/network is implicitly granted; this environment with function tools
 still needs the owner’s bounded live qualification. There is no automatic
-fallback. A provider-side spend cap of 1–200 USD cents is required (at most
-USD 2); the driver refuses before a session if Core lacks `spend_limit_cents`.
-Core 0.35.2 alone does not expose that parameter; use the reviewed release
-containing Core #170. No expected or observed live cost is claimed yet. The host then invokes the existing
+fallback. A requested provider-side spend cap of 1–200 USD cents is required
+(USD 2 requested maximum); the driver refuses before a session if Core lacks `spend_limit_cents`.
+Core 0.35.4 exposes that parameter; Core 0.35.2 alone does not. The
+request field is verified from the released SDK and official API reference;
+provider enforcement has not been demonstrated by a funded run. No expected
+or observed live cost is claimed yet. The host then invokes the existing
 `collect.py` and `factory.py`, preserving exit codes 0–4. The prepared scratch
 must contain the visible task and `.scratch.json`; a repository checkout or
 workspace containing acceptance files is refused.
@@ -75,3 +77,9 @@ Remaining end-to-end qualification: run the three teaching rejects with the
 qualified Core worker, and bind the product owner’s gated-diff integration hook
 to a scripted builder → real factory ACCEPT → actual briefing HTTP restart
 regression. A generic injected callback or the console page is not that F7 proof.
+
+The official [create-session reference](https://developers.openai.com/api/reference/python/resources/beta/subresources/agents/subresources/sessions/methods/create)
+defines `spend_control` in USD cents and requires initial input with environment
+`none`. The [session guide](https://developers.openai.com/api/docs/guides/agents-api/sessions)
+distinguishes a completed turn from a successful tool result. These describe
+the API contract; the factory’s acceptance still comes from its protected checks.

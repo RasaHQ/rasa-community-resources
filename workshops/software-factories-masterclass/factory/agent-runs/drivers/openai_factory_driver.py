@@ -349,7 +349,7 @@ def main(argv=None):
     parser.add_argument('--model', required=True)
     parser.add_argument('--pack-root', help='Owning factory pack root; use the A6 subdirectory for A6.')
     parser.add_argument('--environment', help='Verifier profile; A6 uses factory/environment-a6.json.')
-    parser.add_argument('--spend-limit-cents', type=int, required=True, help='Hard provider cap, 1 to200 USD cents.')
+    parser.add_argument('--spend-limit-cents', type=int, required=True, help='Requested provider spend cap, 1 to 200 USD cents.')
     args = parser.parse_args(argv)
     if not os.environ.get('OPENAI_API_KEY', '').strip():
         print('Set OPENAI_API_KEY in the driver process environment; no value is printed.')
