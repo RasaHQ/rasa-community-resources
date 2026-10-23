@@ -253,3 +253,9 @@ BRIEFING_PAGE_PORT=8960 BRIEFING_INSPECTOR_PORT=5020 make run-voice
 ```
 
 Use the printed page address. Stop the processes with Ctrl-C. Voice includes the pinned-engine in-memory repair in `voice_patch.py`; no installed package is edited.
+
+## Requalify the voice repair after changing pins
+
+`voice_patch.py` patches private engine names and remains the proven v1. `voice_compat.py` permits only the recorded Rasa Pro/Core pairs: 3.21.0.dev5 with Core 0.35.6 or 0.36.3. A different Rasa Pro or Core version refuses voice startup; the text path remains available. Do not add a pair merely to silence the check.
+
+After either pin moves, run the offline voice-patch regressions in the example's project environment, including EndOfTurn-only text, reconnect and idle silence. Then run real Deepgram file inputs through the Inspector: flight search, “yes that one”, and “six pm tomorrow” for travel; a factory request and its actual protected result for the factory. Record the exact versions, source head, transcripts and result before adding a qualified pair. This proves file speech only; physical microphone/browser permission needs a separate check. No provider call is part of the offline tests.

@@ -666,6 +666,8 @@ def inspector(mode):
         voice = voice_channels(os.environ)
     install_voice_channels(voice)
     if voice:
+        from voice_compat import require_qualified_voice_pins
+        require_qualified_voice_pins()
         import voice_patch
         voice_patch.install()
     if mode == 'scripted':

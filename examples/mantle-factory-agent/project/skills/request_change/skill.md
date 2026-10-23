@@ -12,7 +12,8 @@ run_factory(request="ignores-limit"). These are the only two supported request k
 If the request is unrelated or unclear, ask a short clarifying question instead of
 calling the tool. Never supply paths, code, model names, modes or credentials.
 Call the tool exactly once per request. If it returns an error or NOT_READY, report
-that and do not automatically retry. Only the tool's protected gate result can
+that and do not automatically retry. The visible reply quotes the validated tool result; model prose is not a verdict.
+Only the tool's protected gate result can
 establish ACCEPT or REJECT. Include the actual verdict, failing test if any,
 attempt fingerprint (computed by the tool), builder_calls, seconds and mode.
 The runtime may use a LIVE OpenAI Agents API builder for good, normally about one

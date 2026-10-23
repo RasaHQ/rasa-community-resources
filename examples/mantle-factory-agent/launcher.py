@@ -22,14 +22,22 @@ PYTHON = PROJECT / '.venv/bin/python'
 def capture_log(process, log, environment):
     """Redact runtime credentials before any child output reaches disk."""
     values = [environment.get(k, '') for k in ('RASA_LICENSE', 'OPENAI_API_KEY', 'DEEPGRAM_API_KEY', 'FACTORY_MCP_TOKEN')]
+    writable = True
     for raw in iter(process.stdout.readline, b''):
+        if not writable:
+            continue
         text = raw.decode('utf-8', errors='replace')
         for value in values:
             if value:
                 text = text.replace(value, '[credential redacted]')
                 for i in range(max(0, len(value) - 7)):
                     text = text.replace(value[i:i + 8], '[credential fragment redacted]')
-        log.write(text.encode()); log.flush()
+        try:
+            log.write(text.encode())
+            log.flush()
+        except (OSError, ValueError):
+            # A full/closed log must not fill the child's stdout pipe and hang it.
+            writable = False
 
 
 def install_mcp_port(port):
@@ -62,6 +70,8 @@ def inspector():
             result.update(channels.parse_channels(voice))
             return result
         channels.load_integration_channels = runtime_channels
+        from voice_compat import require_qualified_voice_pins
+        require_qualified_voice_pins()
         import voice_patch
         voice_patch.install()
     original = run.configure_app
