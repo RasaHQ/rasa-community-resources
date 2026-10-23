@@ -50,6 +50,52 @@ class ClassKeys(unittest.TestCase):
         for option in ('--probe', '--probe-agents'):
             self.assertEqual(self.doctor([option])[0], 2)
 
+    def test_voice_readiness_is_value_free_and_never_selects_a_live_model(self):
+        canary = 'synthetic-deepgram-Q7m9V2x4N6p8R0t3'
+        with patch.object(class_doctor, 'probe_agents', side_effect=AssertionError('no call')), \
+                patch.object(class_doctor, 'probe_mantle', side_effect=AssertionError('no call')):
+            code, text = self.doctor(env={'DEEPGRAM_API_KEY': canary})
+        self.assertEqual(code, 0)
+        self.assertIn('DEEPGRAM_API_KEY: SET', text)
+        self.assertIn('PATH: SCRIPTED', text)
+        self.assertNotIn(canary, text)
+        self.assertNotIn('Traceback', text)
+        code, text = self.doctor()
+        self.assertEqual(code, 0)
+        self.assertIn('DEEPGRAM_API_KEY: MISSING', text)
+        self.assertIn('continue with text', text)
+
+    def test_deepgram_key_and_clipped_error_are_redacted_at_output_boundaries(self):
+        from project.lib.capability_logging import redact_api
+        key = '83b1d9a6c5e7f042a19c3b6d8f0e24a7'
+        with patch.dict(os.environ, {'DEEPGRAM_API_KEY': key}, clear=True):
+            self.assertTrue(contains_api_key({'voice': key}))
+            for raw in (key, key[8:24], 'voice rejected ***' + key[-4:]):
+                safe = redact_api(raw)
+                assert_no_fragments(self, safe, key)
+                self.assertNotIn(key[-4:], safe)
+            out = io.StringIO()
+            handler = logging.StreamHandler(out)
+            logger = logging.getLogger('class.voice.synthetic')
+            logger.addHandler(handler)
+            install()
+            try:
+                logger.error('Voice failed %s', key)
+            finally:
+                logger.removeHandler(handler)
+            assert_no_fragments(self, out.getvalue(), key)
+
+    def test_license_is_readiness_only_and_does_not_select_a_live_model(self):
+        canary = 'synthetic-license-only-7b1d3f5a9c02468e'
+        code, text = self.doctor(env={'RASA_LICENSE': canary})
+        self.assertEqual(code, 0)
+        self.assertIn('RASA_LICENSE: SET', text)
+        self.assertIn('PATH: SCRIPTED', text)
+        self.assertNotIn(canary, text)
+        code, text = self.doctor()
+        self.assertEqual(code, 0)
+        self.assertIn('RASA_LICENSE: MISSING', text)
+
     def test_both_provider_settings_and_environment_only_readiness(self):
         for provider, variable in class_doctor.KEYS.items():
             with self.subTest(provider=provider), patch.object(class_doctor, 'selected_provider', return_value=provider):

@@ -1,0 +1,113 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>04 acceptance before code</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="../README.html">Start</a> · <a href="../PARTICIPANT-GUIDE.html">Short route</a> · <a href="../book/README.html">Book</a> · <a href="../slides/index.html">Slides</a></nav><main><blockquote>
+<p><strong>22 October revision:</strong> Start with <a href="../PARTICIPANT-GUIDE.html">the participant guide</a> for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.</p>
+</blockquote>
+<h1>Chapter 4: Acceptance before code</h1>
+<p>A coding agent reports that its change works, and it wrote the tests that say so. The builder may see example tests. It never sees or edits the acceptance tests that decide. In about 30 minutes you'll lock the tests before any work starts, so the builder never sees them and can't change them, and then watch the factory accept an attempt against them.</p>
+<p>Time: about 30 minutes. You need: a Mac (the check runs in a macOS sandbox), Python 3.12 and uv. Chapter 3 first is useful but not required, because this chapter has its own ready folder. No key or account.</p>
+<p>You're done when the check at the end prints a line that starts with <code>ch04 OK</code>. If you get stuck, start again from <code>book/ready/ch04</code> in a fresh folder.</p>
+<h2>Words used in this chapter</h2>
+<ul>
+<li><strong>Protected tests:</strong> tests controlled by the evaluator. This exercise also withholds their contents from the builder; secrecy is an extra measure, not a requirement for every factory.</li>
+<li><strong>Fingerprint (hash):</strong> a short code made from a file. Change one letter and it changes.</li>
+<li><strong>Sandbox:</strong> a safety box from the operating system that blocks the network. It uses <code>sandbox-exec</code>, which comes with macOS.</li>
+</ul>
+<h2>Get the ready folder</h2>
+<p>Every chapter has a finished, working folder, so you don't need the earlier chapters' folders. Copy the one for this chapter into <code>~/factory-work</code> (it creates a new folder there, <code>my-factory-ch04</code>, and refuses to overwrite an existing one), then set up Python once:</p>
+<pre><code class="language-bash">export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
+mkdir -p ~/factory-work &amp;&amp; cd ~/factory-work
+[ -e my-factory-ch04 ] &amp;&amp; echo &quot;my-factory-ch04 already exists: use it, or move it away first&quot; || cp -R &quot;$PACK&quot;/book/ready/ch04 my-factory-ch04
+</code></pre>
+<pre><code class="language-bash">cd my-factory-ch04
+uv venv --python 3.12 .venv
+source .venv/bin/activate
+uv pip install zeocore==0.35.6 httpx==0.28.1
+</code></pre>
+<h2>See how it works</h2>
+<ol>
+<li>
+<p>Run the tests for the first task against the baseline. They fail, because the card isn't built:</p>
+<pre><code class="language-bash">python run_a6.py tasks/a6-market-watchlist.json baseline
+</code></pre>
+<p>You see <code>REJECT</code> and a list of failing checks such as <code>test_k1_...</code>. Each fails for the right reason: there is no card yet.</p>
+</li>
+<li>
+<p>Read the top of the tests. Open <code>acceptance/a6_market_watchlist.py</code>: the first lines list ten checks in plain words (the rows, the publication day, the labels, the change since yesterday, the failure case and more).</p>
+</li>
+<li>
+<p>Read what runs the attempt. Open <code>acceptance/a6_child.py</code>: it runs the attempt's <code>market_card</code> with a recorded answer from the exchange-rate source, in a safe child process, and prints only the card as data. It decides nothing.</p>
+</li>
+<li>
+<p>Read your own task's tests. Open <code>acceptance/b_limit_currencies.py</code>: six checks, written for you. The limit comes from your task file (<code>limit</code> in <code>tasks/b-limit-currencies.json</code>), and the tests never change.</p>
+</li>
+</ol>
+<h2>Now change it</h2>
+<p>Your task's tests are written. You lock them, so that nobody can change them without the fingerprint showing it, and then the factory judges the builder's attempt against them.</p>
+<p>The ready folder uses a limit of 2. If you chose a different limit in Chapter 3 (1 or 3), set it first by replacing the 2 below with your number. This also makes the builder's attempt again for the new number:</p>
+<pre><code class="language-bash">python set_limit.py 2
+</code></pre>
+<ol>
+<li>
+<p>Run your task's tests against the baseline. They fail, because the card isn't built:</p>
+<pre><code class="language-bash">PRODUCT_PROJECT=$PWD/product python acceptance/b_limit_currencies.py
+</code></pre>
+<p>You see <code>FAILED</code> and <code>test_b1_four_currencies_show_at_most_the_limit</code> among five failures, one for each card check. The sixth check, the network one, passes.</p>
+</li>
+<li>
+<p>Lock the tests. This writes the fingerprint of each protected file into your task:</p>
+<pre><code class="language-bash">python - &lt;&lt;'EOF'
+import hashlib, json
+from pathlib import Path
+p = Path(&quot;tasks/b-limit-currencies.json&quot;)
+t = json.loads(p.read_text())
+t[&quot;acceptance&quot;][&quot;sha256&quot;] = hashlib.sha256(Path(t[&quot;acceptance&quot;][&quot;path&quot;]).read_bytes()).hexdigest()
+for item in t[&quot;support&quot;]:
+    item[&quot;sha256&quot;] = hashlib.sha256(Path(item[&quot;path&quot;]).read_bytes()).hexdigest()
+p.write_text(json.dumps(t, indent=2) + &quot;\n&quot;)
+print(&quot;pinned&quot;)
+EOF
+</code></pre>
+<p>You see <code>pinned</code>. Now the task knows exactly which tests judge the work.</p>
+</li>
+<li>
+<p>Ask the scripted builder for an attempt, and let the gates decide:</p>
+<pre><code class="language-bash">python scripted_builder.py tasks/b-limit-currencies.json attempts/mine
+python run_a6.py tasks/b-limit-currencies.json attempts/mine
+</code></pre>
+<p>You see <code>ACCEPT - protected acceptance passed (Ran 6 tests ...)</code>.</p>
+</li>
+</ol>
+<h2>You are done when</h2>
+<p>From inside <code>my-factory-ch04</code>, with your environment active, this prints a line that starts with <code>ch04 OK</code>:</p>
+<pre><code class="language-bash">python - &lt;&lt;'EOF'
+import hashlib, json, os, re, subprocess, sys
+from pathlib import Path
+t = json.loads(Path(&quot;tasks/b-limit-currencies.json&quot;).read_text())
+for item in [t[&quot;acceptance&quot;], *t[&quot;support&quot;]]:
+    assert hashlib.sha256(Path(item[&quot;path&quot;]).read_bytes()).hexdigest() == item[&quot;sha256&quot;], item[&quot;path&quot;]
+env = {&quot;PATH&quot;: &quot;/usr/bin:/bin&quot;, &quot;PRODUCT_PROJECT&quot;: os.path.abspath(&quot;product&quot;)}
+r = subprocess.run([sys.executable, &quot;-I&quot;, t[&quot;acceptance&quot;][&quot;path&quot;]], capture_output=True, text=True, env=env)
+failing = set(re.findall(r&quot;^FAIL: (test_b\d)&quot;, r.stderr, re.M))
+lines = r.stderr.strip().splitlines()
+assert r.returncode == 1 and &quot;Ran 6 tests&quot; in r.stderr and lines[-1] == &quot;FAILED (failures=5)&quot; and &quot;ERROR:&quot; not in r.stderr, &quot;setup problem or unexpected result: &quot; + r.stderr[-300:]
+assert failing == {&quot;test_b1&quot;, &quot;test_b2&quot;, &quot;test_b3&quot;, &quot;test_b4&quot;, &quot;test_b5&quot;}, &quot;unexpected failures: &quot; + str(failing)
+g = subprocess.run([sys.executable, &quot;run_a6.py&quot;, &quot;tasks/b-limit-currencies.json&quot;, &quot;attempts/mine&quot;], capture_output=True, text=True)
+assert g.returncode == 0 and g.stdout.startswith(&quot;ACCEPT&quot;), g.stdout + g.stderr
+print(&quot;ch04 OK: the tests fail on the baseline for the right reasons, and the builder's attempt is accepted&quot;)
+EOF
+</code></pre>
+<p>It passes only when the fingerprints match, the tests fail on the baseline for the five card checks (not for a setup problem), and the builder's attempt is accepted. At the start of this chapter the fingerprints are empty, so it fails.</p>
+<h2>If it fails</h2>
+<ul>
+<li><code>could not run: this check needs macOS</code>: the gate needs <code>sandbox-exec</code>, which comes with macOS. Pair with someone on a Mac, or follow along on screen. (The tests run directly in step 1 report <code>test_b6</code> as failed on such a system.)</li>
+<li><code>No module named zeo_core</code>: activate the environment and install <code>zeocore==0.35.6</code>.</li>
+<li>Fingerprint mismatch: you changed a protected file after locking. Lock again.</li>
+</ul>
+<h2>Good to know</h2>
+<ul>
+<li>On a system that isn't macOS, the gate (<code>run_a6.py</code>) prints <code>could not run: this check needs macOS</code> and exits 2 before it judges anything. The protected tests you run directly in step 1 then report their network check (<code>test_b6</code>) as failed. Pair with someone on a Mac, or follow along on screen.</li>
+</ul>
+<h2>What you just learned</h2>
+<p>The acceptance tests stay outside the builder workspace. Sandbox permissions control access; fingerprints detect changes but do not prevent reading or editing by themselves. The factory accepted the attempt only because it passed those tests.</p>
+<p>Next: <a href="05-the-builder.html">Chapter 5</a> puts a real builder, a confined coding agent, behind the same gates.</p>
+</main></html>

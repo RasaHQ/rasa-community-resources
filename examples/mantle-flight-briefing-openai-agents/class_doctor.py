@@ -59,8 +59,13 @@ def main(argv=None):
     except ValueError:
         print('Refused: use only the documented doctor options; supply keys in the environment.')
         return 2
-    for name in KEYS.values():
+    for name in (*KEYS.values(), 'DEEPGRAM_API_KEY', 'RASA_LICENSE'):
         print(name + ': ' + ('SET' if os.environ.get(name, '').strip() else 'MISSING'))
+    print('Request your free Developer Edition licence at https://rasa.com/rasa-pro-developer-edition-license-key-request and set RASA_LICENSE only in your terminal.')
+    if os.environ.get('DEEPGRAM_API_KEY', '').strip():
+        print('VOICE: key present for Flux / Aura-2; readiness only, no voice call made.')
+    else:
+        print('VOICE: unavailable without DEEPGRAM_API_KEY; continue with text.')
     if args.probe and args.probe_agents:
         print('Refused: select one live probe per invocation.')
         return 2

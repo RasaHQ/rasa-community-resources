@@ -1,64 +1,41 @@
-# Optional live model, constructed source fixtures
+# Managed specialist worker
 
 sow: flagship-resources-SOW-01
+sow: software-factories-masterclass-SOW-02
 
-This follow-on uses the real managed Agents model path with the same validated,
-explicitly labelled constructed flight and weather fixtures. It does not call
-live flight or weather providers. Model prose never supplies delivered card
-values. Only named `Replay DEMO101` scenarios are supported here.
+Use the [maintained example launcher](README.md): from the example directory,
+run `make setup`, then `make run`. It owns the worker, authenticated MCP transport,
+actual Mantle Inspector and shutdown. Do not combine the launcher with an older
+two-shell backend or a manually staged development wheel.
 
-The class's default `worker` stays on Core dev17. Mantle's `project` stays on
-OpenAI 2.44.0. The separate `live-worker` pins OpenAI 3.29.0 and Core dev20
-(`e271d9d4fa01ba8ea2a83e5b2eba03b587675ee4a317f638d41fb2a3a04f3fbe`).
-Wheel publication and adoption require Council's independent source comparison
-MATCH under the Architect's conditional pin. Preparation is not that verdict.
+The current `worker` installs Core and the managed Agents SDK from its committed
+registry lock. `worker/core-artifact.json` records the exact published wheel and
+hash; `worker/uv.lock` records its dependency closure. The separate Mantle project
+has its own compatible SDK. Historical experiments in `live-worker/` are not the
+current class runtime or a substitute for the final released finder pin.
 
-After that gate, from the repository root:
+With the facilitator's own OpenAI key, the specialist uses Core's native managed
+session adapter. Without it, tool selection is explicitly SCRIPTED. Source
+handlers, not model prose, supply the card values. Constructed `Replay DEMO101`
+is available only when explicitly requested and remains labelled Replay.
 
-```sh
-python3 scripts/workspace.py start examples/mantle-flight-briefing-openai-agents/live-worker --owner facilitator-live-agents
-```
+Credentials stay in the facilitator's ignored example-root `.env` or process
+environment; no key belongs in arguments, MCP metadata, URLs or logs. The
+launcher refuses alternate provider base URLs and does not grant the hosted
+specialist network access. Local public-source handlers retain their fixed-host,
+cache, response-size and request-budget boundaries.
 
-Then, from `examples/mantle-flight-briefing-openai-agents`, the facilitator
-privately sets `OPENAI_API_KEY` and `BRIEFING_AGENTS_MODEL` for a model their
-account can use. Do not put a key in command arguments, files, logs or MCP
-metadata. The existing runtime-only `BRIEFING_MCP_TOKEN` must be supplied to
-the service and its Mantle peer. No credentials are requested from participants
-or from another seat.
+The service rejected `spend_control`, so the current native path omits it.
+Call, event, deadline and timeout limits are execution bounds, not an enforced
+per-session monetary cap. A stated expected cost is an estimate, not observed
+billing. Follow the facilitator's recorded rehearsal budget and session limit.
 
-The live launcher refuses a nonblank `OPENAI_BASE_URL` or `ANTHROPIC_BASE_URL`
-before constructing a client or opening the listener, without printing its
-value. This kit uses only the providers' default endpoints.
+Each native revision starts a fresh managed session with the prior validated
+brief. Core's finite limits and the briefing revision fence remain required:
+cancelling a Python thread is not hostile-process isolation. Failed or incomplete
+native turns cannot become completed briefings. Sharing a private briefing
+capability grants access; this does not establish engine-user binding.
 
-```sh
-live-worker/.venv/bin/python class_doctor.py --probe-agents
-live-worker/.venv/bin/python -m briefing --live-model
-```
-
-The first command makes an explicit live facilitator smoke request. It refuses
-plainly before a provider request if the client lacks `beta.agents.sessions`.
-The second starts the existing localhost-only MCP service using a live model;
-it requires the facilitator's explicit choice. Mantle and the authenticated MCP
-capability boundary are otherwise the same as the scripted example. Neither
-command is part of a keyless test or automatically run during setup.
-
-Every native revision starts a new managed session containing the prior
-validated source brief. It does not resume the legacy stream-per-post adapter
-or carry unchecked model prose. Core bounds requests, events, time and callback
-sizes/counts. Native callbacks expose tool names, not call IDs, so this mode
-does not claim application-level `(turn_id, call_id)` deduplication. A failed
-native turn or a model that omits the source callbacks cannot complete a job.
-The existing request/revision fence prevents late results from replacing a
-newer view. Cancellation of a Python thread is not a hostile-process isolation
-boundary; Core's finite native deadline remains required.
-
-The default service command and the guaranteed class script remain unchanged:
-
-```sh
-worker/.venv/bin/python -m briefing
-project/.venv/bin/python scripted_demo.py
-```
-
-Offline fake-client tests check the resource integration and failure paths.
-They are not a live model, provider, voice, final-main cold-clone or classroom
-acceptance. The facilitator's first live check remains separate.
+Offline injected-source and SDK tests do not establish live model, provider,
+voice, browser, fresh-clone or factory acceptance. The main README records the
+current integration checkpoint and remaining consuming checks.

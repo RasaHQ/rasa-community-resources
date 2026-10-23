@@ -10,13 +10,42 @@ import httpx
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from briefing.identity import SENDER_META
-from briefing.jobs import Jobs
+from briefing.jobs import Jobs, Owner
 from briefing.mcp_app import create_app
 from briefing.replay import ReplayRunner
 from project.lib.capability_logging import contains_api_key
 
 
 class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
+    async def test_local_display_delegates_board_to_core_without_mcp_capability_in_url(self):
+        from types import ModuleType
+        module = ModuleType('zeo_core.adapters.widget_html')
+        seen = []
+        def render(cards, *, document=False, title='Briefing', place=None):
+            seen.append((cards, document, title))
+            return '<p>REPLAY shared renderer contract control</p>'
+        module.render_snapshot_html = render
+        jobs = Jobs(ReplayRunner(), ownership_mode='capability')
+        started = await jobs.briefing(Owner('mantle', 'renderer-control'), action='start', request='Replay DEMO101')
+        await jobs._jobs[started['job_id']].task
+        self.assertTrue(jobs.display_snapshot())
+        app = create_app(jobs, transport_token='synthetic-transport-with-no-real-authority')
+        with patch.dict(sys.modules, {'zeo_core.adapters.widget_html': module}):
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app),
+                                        base_url='http://127.0.0.1:8942') as client:
+                response = await client.get('/cards')
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.text, '<p>REPLAY shared renderer contract control</p>')
+                self.assertEqual(len(seen), 1)
+                self.assertTrue(seen[0][1])
+                refused = await client.get('/cards?briefing_id=brf_synthetic')
+                self.assertEqual(refused.status_code, 400)
+                self.assertEqual(len(seen), 1)
+                self.assertNotIn('brf_synthetic', refused.text)
+                private = await client.post('/mcp', json={})
+                self.assertEqual(private.status_code, 401)
+        await jobs.close()
+
     async def test_synthetic_keys_refused_in_meta_and_arguments_without_echo(self):
         runner = ReplayRunner()
         jobs = Jobs(runner, replacement_plan=runner.replacement_plan, ownership_mode='capability')
@@ -103,7 +132,7 @@ class McpRoundtrip(unittest.IsolatedAsyncioTestCase):
                 await rpc("initialize", {"protocolVersion": "2025-06-18", "capabilities": {},
                                          "clientInfo": {"name": "author-control", "version": "1"}})
                 tools = (await rpc("tools/list", {}))["tools"]
-                self.assertEqual([tool["name"] for tool in tools], ["briefing"])
+                self.assertEqual([tool["name"] for tool in tools], ["briefing", "find_flights"])
                 self.assertFalse(tools[0]["inputSchema"].get("additionalProperties", True))
                 self.assertFalse({"ctx", "user_id", "session_id", "owner"} &
                                  set(tools[0]["inputSchema"]["properties"]))

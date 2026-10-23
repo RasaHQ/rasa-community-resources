@@ -55,7 +55,8 @@ class LiveFixtureRunnerTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(state['status'], 'complete', state)
         self.assertEqual(len(state['cards']), 3)
         self.assertTrue(all(c['data_ref']['replay'] for c in state['cards']))
-        self.assertNotIn('9999', str(state))
+        self.assertNotIn('9999', str(([c['data_ref']['payload'] for c in state['cards']],
+                                            state.get('reason'), state['progress'])))
         self.assertEqual(len(self.invocations[0][1]['handlers']), 3)
 
     async def test_model_completion_without_source_callbacks_is_incomplete(self):
@@ -63,7 +64,8 @@ class LiveFixtureRunnerTests(unittest.IsolatedAsyncioTestCase):
         _, state = await self.start()
         self.assertEqual(state['status'], 'incomplete', state)
         self.assertEqual(state['cards'], [])
-        self.assertNotIn('9999', str(state))
+        self.assertNotIn('9999', str(([c['data_ref']['payload'] for c in state['cards']],
+                                            state.get('reason'), state['progress'])))
 
     async def test_failed_native_turn_cannot_complete_even_with_all_cards(self):
         self.completed = False

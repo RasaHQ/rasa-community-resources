@@ -1,0 +1,147 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>README</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="README.html">Start</a> · <a href="PARTICIPANT-GUIDE.html">Short route</a> · <a href="book/README.html">Book</a> · <a href="slides/index.html">Slides</a></nav><main><h1>Build a software factory that checks an AI agent's changes</h1>
+<p>A workshop by Rod Rivera, using Rasa Mantle and the OpenAI Agents API.</p>
+<p>Today: build, reject and accept a change. Next: build it by voice.</p>
+<h2>The problem this workshop solves</h2>
+<p>Your flight lands at 5 pm. Your meeting across town starts at 6 pm. Will you make it? To find out, you would open a flight tracker, a weather site, a map and a currency converter, and still have to work out the answer yourself.</p>
+<p>An AI agent can help answer that question in one place. In this workshop you run such an agent: it shows four cards, for the flight, the weather at landing, your arrival timeline and the exchange rate. The timeline uses your transfer allowance. It is an estimate, not a live route prediction.</p>
+<p>Then comes the harder question. Coding agents can change software for you, but they also tell you a change works when it doesn't. Nobody has time to read every line they write. So how do you let an agent change your agent safely?</p>
+<p>The answer you will build is a <strong>software factory</strong>: a fixed set of steps that turns a written request into a change, checks that change with tests the coding agent can't see or edit, and then decides ACCEPT or REJECT. You will watch it accept a good change and reject a bad one.</p>
+<h2>What you will be able to do afterwards</h2>
+<ul>
+<li>Run the supplied travel agent built with Rasa Mantle.</li>
+<li>Write a request for a change that a machine can check, then run a separate builder exercise.</li>
+<li>Protect the tests that decide, so the agent making the change can't quietly bend them.</li>
+<li>Read a factory's decision and explain why ACCEPT or REJECT was the right answer.</li>
+<li>Explain a “dark” factory: people set the rules and machines do routine building and checking, with exceptions sent back to a person.</li>
+</ul>
+<p>You don't need to know Rasa, Mantle or the OpenAI Agents API before you start. Read the <a href="BEGINNER-PRIMER.html">beginner introduction</a> for the same explanations used in the slides.</p>
+<h2>Before you start (about 10 minutes, plus a short wait)</h2>
+<p>You need:</p>
+<ul>
+<li>A laptop. Chapters 3 to 7 need a Mac for the protective code checks. No Mac? Pair with someone who has one, or follow <strong>Track B</strong> in the participant guide: Python 3.12 only; 3.13 and 3.14 stop with NOT_READY. Windows is untested.</li>
+<li>Python 3.12, <a href="https://docs.astral.sh/uv/">uv</a>, Git and Make.</li>
+<li>A free <a href="https://rasa.com/rasa-pro-developer-edition-license-key-request">Rasa Developer Edition license</a>. Request it first: the form's confirmation page is not the key, and the key reaches you after you submit.</li>
+<li>An OpenAI API key for live mode. Rasa Mantle has no model of its own: in live mode it asks a language model, OpenAI by default, to understand what you type and to choose a tool. Chapter 0 starts in scripted mode, where teaching code chooses the tools, so leave the key empty there.</li>
+<li>Chapter 5 has an optional paid live builder using the Agents API and <code>gpt-6-astra</code>.</li>
+</ul>
+<p>Get your own copy. On GitHub, click <strong>Fork</strong> on <a href="https://github.com/RasaHQ/rasa-community-resources">RasaHQ/rasa-community-resources</a>, then clone your fork:</p>
+<pre><code class="language-bash">git clone https://github.com/YOUR-GITHUB-NAME/rasa-community-resources.git
+cd rasa-community-resources/workshops/software-factories-masterclass
+export PACK=&quot;$PWD&quot;
+</code></pre>
+<p>This folder is the one the book calls <code>PACK</code>. Everything here is plain Markdown and code, so you can open it in your editor and point your coding agent, such as Claude Code or Codex, at a chapter. Keep the deciding acceptance tests outside the builder's readable and writable workspace. Your changes stay in your fork.</p>
+<h2>Where everything is</h2>
+<p>You will spend most of your time in four places:</p>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="PARTICIPANT-GUIDE.html"><code>PARTICIPANT-GUIDE.md</code></a></td>
+<td>The guided path through the class, with checkpoints. Start here if you have about two hours.</td>
+</tr>
+<tr>
+<td><a href="book/README.html"><code>book/</code></a></td>
+<td>The self-paced course. One file per chapter, from <code>00-run-the-finished-agent.md</code> to <code>08-going-further.md</code>.</td>
+</tr>
+<tr>
+<td><code>book/ready/</code></td>
+<td>Ready-made starting folders for chapter 0 and chapters 3 to 8 (<code>ch00</code>, <code>ch03</code> … <code>ch08</code>). Chapters 1 and 2 only read files and use the chapter 0 folder. If a chapter goes wrong, start again from its ready folder, as the chapter's &quot;Get the ready folder&quot; step shows.</td>
+</tr>
+<tr>
+<td><a href="../../examples/README.md"><code>../../examples/</code></a></td>
+<td>The two finished agents from the class, each with its own README: the <a href="../../examples/mantle-flight-briefing-openai-agents/README.md">travel agent</a> and the <a href="../../examples/mantle-factory-agent/README.md">dark software factory</a>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Where are the exercises?</strong> Each chapter is an exercise. Open a chapter file, run what &quot;See how it works&quot; tells you to run, then do the task under <strong>&quot;Now change it&quot;</strong>. Chapters 1 and 2 have no change step: you read the agent's files and run a listing command. &quot;You are done when&quot; tells you how to check your work; several chapters end with a check that prints <code>chNN OK</code>. If something goes wrong in chapters 0 or 3 to 8, read the <strong>If it fails</strong> section at the end of the same chapter.</p>
+<p>To learn on your own, go through the chapters in order, from 0 to 8. Each one builds on the one before. You can point your own coding agent at a chapter file, but keep the acceptance tests out of its reach: that is the point of chapter 4.</p>
+<h2>Choose how you want to learn</h2>
+<p><strong>In the room, or with about two hours:</strong> follow the <a href="PARTICIPANT-GUIDE.html">participant guide</a>. It tells you what to run, what you should see and what to do if you don't.</p>
+<p><strong>On your own, at your own pace (about three hours):</strong> work through <a href="book/README.html">the book</a>, one chapter at a time. Each chapter introduces the problem, gives you something to run and asks you to change it. Ready-made folders let you restart. Chapter checks tell you when you've met the learning goal; a factory ACCEPT alone does not always mean a chapter is done.</p>
+<table>
+<thead>
+<tr>
+<th>Chapter</th>
+<th>What you do</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="book/00-run-the-finished-agent.html">0</a></td>
+<td>Run the agent you will learn to build</td>
+<td>about 5 minutes to install, then 20</td>
+</tr>
+<tr>
+<td><a href="book/01-what-a-mantle-agent-is.html">1</a></td>
+<td>See what a Rasa Mantle agent is made of</td>
+<td>about 10 minutes</td>
+</tr>
+<tr>
+<td><a href="book/02-cards-from-real-sources.html">2</a></td>
+<td>See how each card says where its data came from</td>
+<td>about 10 minutes</td>
+</tr>
+<tr>
+<td><a href="book/03-a-factory-starts-with-a-task.html">3</a></td>
+<td>Give the factory a written task</td>
+<td>about 25 minutes</td>
+</tr>
+<tr>
+<td><a href="book/04-acceptance-before-code.html">4</a></td>
+<td>Lock the tests before a change is made</td>
+<td>about 30 minutes</td>
+</tr>
+<tr>
+<td><a href="book/05-the-builder.html">5</a></td>
+<td>Ask a builder to make the change</td>
+<td>about 20 minutes</td>
+</tr>
+<tr>
+<td><a href="book/06-the-gates-and-the-decision.html">6</a></td>
+<td>Watch the factory accept and reject changes</td>
+<td>about 15 minutes</td>
+</tr>
+<tr>
+<td><a href="book/07-integrate-and-run-it-dark.html">7</a></td>
+<td>Integrate an accepted change locally</td>
+<td>about 15 minutes</td>
+</tr>
+<tr>
+<td><a href="book/08-going-further.html">8</a></td>
+<td>Measure results and recover from a crash</td>
+<td>about 20 minutes</td>
+</tr>
+</tbody>
+</table>
+<p>In Track A checkpoint 3, the supplied task has <code>&quot;limit&quot;: 2</code>. Its first build can satisfy that task, but <code>check_build.py attempts/first</code> prints <strong>NOT DONE</strong>: the learning exercise asks you to change the limit to <strong>1 or 3 and build fresh</strong>. Only then should the chapter check print <code>ch05 OK</code>.</p>
+<h2>Words you will meet</h2>
+<ul>
+<li><strong>Rasa Mantle:</strong> the framework the travel agent is built with. It coordinates conversations, skills and tools. A skill groups instructions and tools for a particular job.</li>
+<li><strong>Tool:</strong> a function the agent can ask to run, such as finding flight information.</li>
+<li><strong>Deepgram:</strong> the speech service used in the voice extension to turn audio into text and text into audio.</li>
+<li><strong>OpenAI Agents API:</strong> an OpenAI service that manages an agent session. Here it powers the optional live coding builder. It is different from the Agents SDK, a separate framework.</li>
+<li><strong>Acceptance test:</strong> a check that the change does what was asked. The builder may see example tests. It never sees or edits the acceptance tests that decide.</li>
+<li><strong>Software factory:</strong> repeatable steps from a written request to a checked decision.</li>
+</ul>
+<h2>What this workshop does not show yet</h2>
+<ul>
+<li>With a model choosing the tools, the travel agent was slow to answer in our rehearsal on 22 October. The scripted mode is the reliable path today.</li>
+<li>Tool selection is <strong>scripted</strong> in the exercises so results are repeatable. Source data may be fetched, recorded or unavailable; read the card's label.</li>
+<li><strong>Voice:</strong> both finished agents have an opt-in voice command for your own Mac and your own Deepgram key: <code>make run-voice</code> for the <a href="../../examples/mantle-flight-briefing-openai-agents/README.md">travel agent</a> and <code>./demo run --voice --env-file .env</code> for the <a href="../../examples/mantle-factory-agent/README.md">factory</a>. A patched run completed a recorded-audio request on 22 October, and earlier unpatched attempts did not. Your own microphone has not been tested, so typing stays the reliable path.</li>
+<li>The travel agent and coding builder run separately. Asking the travel agent to change its own code is not a completed capability.</li>
+<li>The full journey, where you <strong>ask by voice</strong> for a new agent and the factory builds and releases it, is the next step. <a href="BUILD-CONTRACT.html">BUILD-CONTRACT.md</a> describes what it needs.</li>
+</ul>
+<p>Chapter 0 runs on <strong>Rasa Pro 3.21.0</strong>. The standalone example in <code>examples/</code> stays on <strong>3.21.0.dev5</strong>.</p>
+<h2>For facilitators</h2>
+<p>Use the <a href="RUN-SHEET.html">run sheet</a>, <a href="slides/PRESENTER-NOTES.md">presenter notes</a>, <a href="slides/index.html">slides</a> and <a href="slides/masterclass-slides.pdf">PDF</a>. The <a href="TECHNICAL-AUDIT.html">technical audit</a> distinguishes tests run here from earlier course-team evidence. <a href="LEARNING-CHECKPOINTS.html">Learning checkpoints</a> provide explanation prompts.</p>
+<p>Other folders (<code>openai-mcp/</code>, <code>brief-me-before-i-fly/</code>, <code>archive/</code>) are earlier material and are not required. The standalone travel agent has its own <a href="../../examples/mantle-flight-briefing-openai-agents/SELF-PACED-GUIDE.md">self-paced guide</a>.</p>
+<ul>
+<li>Want to ask for a change and watch the factory decide? See the <a href="../../examples/mantle-factory-agent/README.md">Mantle factory agent</a>.</li>
+</ul>
+</main></html>

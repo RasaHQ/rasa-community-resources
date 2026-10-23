@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>README</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="../README.html">Start</a> · <a href="../PARTICIPANT-GUIDE.html">Short route</a> · <a href="../book/README.html">Book</a> · <a href="../slides/index.html">Slides</a></nav><main><blockquote>
+<p><strong>22 October revision:</strong> Start with <a href="../PARTICIPANT-GUIDE.html">the participant guide</a> for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.</p>
+</blockquote>
+<h1>The software factories book</h1>
+<p>A hands-on book that takes you from a running Rasa Mantle agent to a dark software factory that builds a new
+card for that agent. You can follow it alone from a clone of this repository. You do not need to have attended
+the workshop.</p>
+<p>A coding agent says its change works, and you have no time to read every line it changed. A software factory checks the change against independently controlled acceptance criteria. This exercise also withholds the protected suite from the builder. You build one here, chapter by chapter, and watch it accept a good change and reject a bad one.</p>
+<p>Time: each chapter opens with its own estimate. Chapter 0 takes about 5 minutes to install and then about 20. Chapters 1 to 8 take about 10, 10, 25, 30, 20, 15, 15 and 20. Every chapter ends with a check that prints <code>chNN OK</code>, so you always know whether you're done. If a chapter goes wrong, start it again from its ready folder.</p>
+<h2>What you need first</h2>
+<ul>
+<li>Python 3.12 and <a href="https://docs.astral.sh/uv/">uv</a></li>
+<li>A free Rasa Developer Edition license for chapter 0, set as <code>RASA_LICENSE</code> in your own terminal</li>
+<li>An OpenAI API key, set as <code>OPENAI_API_KEY</code>, only if you want the optional live builder run in chapter 5. Every <code>chNN OK</code> check runs without it.</li>
+<li>A Deepgram key is optional and only adds voice</li>
+<li>About 3 GB of disk space and a network connection for the first install</li>
+</ul>
+<p>Keys and the license go in the example's Git-ignored <code>.env</code> (created by <code>make env</code> with mode 600) or in your shell. Never commit that file, and never paste a key anywhere else.</p>
+<p>Use the supplied ZIP and run <code>git init</code> at its root, as PREWORK.md explains.</p>
+<h2>How the chapters work</h2>
+<p>Every chapter opens with a short scene, then a <strong>Time</strong> line and what you need. After that it has the same parts:</p>
+<ol>
+<li><strong>See how it works.</strong> Run the working code, watch what happens and read the two or three files that matter.</li>
+<li><strong>Now change it.</strong> Ask for a change. In a factory you do that by changing the task, and the gates decide, with no code written by hand. Chapters 1 and 2 are short reading chapters, and their change step follows after the class.</li>
+<li><strong>You're done when.</strong> A real command that prints <code>chNN OK</code>. In chapters 3 to 8 it fails before you make your change and passes after.</li>
+<li><strong>If you get stuck.</strong> The working code for the chapter is in its ready folder under <code>ready/</code>, so you can start any chapter without doing the earlier ones. Chapters 1 and 2 use the chapter 0 folder.</li>
+</ol>
+<p>Chapters 3, 4, 6 and 7 each work in their own folder (<code>my-factory-ch03</code> and so on), outside the workshop folder, copied from the chapter's ready folder. <code>PACK</code> is the <code>software-factories-masterclass</code> folder. After a clone it is <code>rasa-community-resources/workshops/software-factories-masterclass</code>. After unzipping it is the unzipped folder. For example, <code>export PACK=~/rasa-community-resources/workshops/software-factories-masterclass</code> after a clone, or <code>export PACK=/path/to/the/unzipped/software-factories-masterclass</code> after unzipping.</p>
+<h2>The chapters</h2>
+<table>
+<thead>
+<tr>
+<th>Chapter</th>
+<th>Title</th>
+<th>You build</th>
+<th>You are done when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="00-run-the-finished-agent.html">0</a></td>
+<td>Run the agent you will learn to build</td>
+<td>Run the recorded briefing agent, see four REPLAY cards, then ask it to change its transfer allowance</td>
+<td><code>ch00 OK</code>: <code>check_demo.py</code> shows four REPLAY cards and your 30 minute allowance</td>
+</tr>
+<tr>
+<td><a href="01-what-a-mantle-agent-is.html">1</a></td>
+<td>What a Rasa Mantle agent is</td>
+<td>Find the agent, the skill and the tool in the folder (short chapter: the change step follows after the class)</td>
+<td><code>ch01 OK</code>: you can point to the agent, the skill and the tool</td>
+</tr>
+<tr>
+<td><a href="02-cards-from-real-sources.html">2</a></td>
+<td>Cards from real sources</td>
+<td>Find where one card's data comes from and the rules that label it (short chapter: the change step follows after the class)</td>
+<td><code>ch02 OK</code>: you can point to the skill, the tool and one reader</td>
+</tr>
+<tr>
+<td><a href="03-a-factory-starts-with-a-task.html">3</a></td>
+<td>A factory starts with a task</td>
+<td>See a task judged, then set your own limit and let the builder's attempt be judged</td>
+<td><code>ch03 OK</code>: the builder's attempt for your task is accepted</td>
+</tr>
+<tr>
+<td><a href="04-acceptance-before-code.html">4</a></td>
+<td>Acceptance before code</td>
+<td>See the tests that judge the card, lock them for your task and watch them accept the attempt</td>
+<td><code>ch04 OK</code>: the tests fail on the baseline for the right reasons, the fingerprints match and the attempt is accepted</td>
+</tr>
+<tr>
+<td><a href="05-the-builder.html">5</a></td>
+<td>The builder, on the OpenAI Agents API</td>
+<td>A builder session with file tools confined to a scratch copy</td>
+<td>The builder produces a change you can check in an offline run, and a live run is the extra</td>
+</tr>
+<tr>
+<td><a href="06-the-gates-and-the-decision.html">6</a></td>
+<td>The gates and the decision</td>
+<td>The gate runner and the recorded decision</td>
+<td><code>ch06 OK</code>: the builder's attempt for your task is accepted and the bad one is rejected, offline</td>
+</tr>
+<tr>
+<td><a href="07-integrate-and-run-it-dark.html">7</a></td>
+<td>Integrate and run it dark</td>
+<td>Integration, then the whole loop</td>
+<td><code>ch07 OK</code>: your change is integrated and the card shows your number of currencies, offline</td>
+</tr>
+<tr>
+<td><a href="08-going-further.html">8</a></td>
+<td>Going further</td>
+<td>Policy, measurement, recovery and escalation</td>
+<td>The measure and recover commands run on your own factory</td>
+</tr>
+</tbody>
+</table>
+<p>The book teaches the factory one part per chapter. The finished factory in <code>../factory/</code> is the reference result you can compare with.</p>
+<h2>What to know before you start</h2>
+<ul>
+<li>Chapters 3 to 7 run their protected checks on macOS, because the no-network check uses <code>sandbox-exec</code>. On Linux or Windows, pair with someone on a Mac, or follow along on screen. Chapter 0 was run on macOS, and other systems haven't been tried. Chapters 1 and 2 only read files, and chapter 8 uses only Python's standard library. On another system the gate says <code>could not run: this check needs macOS</code> and exits 2 before it judges anything, so a good attempt is never shown as rejected.</li>
+<li>A factory that accepts a change has judged it against the tests you wrote. It has not proved the change is right.</li>
+<li>Chapters 3, 4, 6 and 7 build the factory step by step. The finished factory is in <code>../factory/</code> and the task is in <code>../factory/a6-market-watchlist/</code>.</li>
+<li>Live data and voice depend on public sources and your own keys, and they can fail on the day. Each chapter says
+what to do when they do.</li>
+</ul>
+</main></html>

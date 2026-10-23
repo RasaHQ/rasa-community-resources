@@ -1,4 +1,6 @@
-# An OpenAI agent behind an MCP server that a Mantle project calls
+> **Historical extension, not the current workshop entry point.** This folder retains its original prerelease fixtures and results. Start with [the participant guide](../PARTICIPANT-GUIDE.md). `openai-mcp` uses the separate Agents SDK, not the Agents API taught today. Do not upgrade these fixtures or reinterpret their recorded results as 3.21.0 results.
+
+# Historical Agents SDK exercise behind MCP (outside the Agents API workshop)
 
 An offline exercise. Nothing here has run against a model, a license or a key.
 
@@ -16,6 +18,8 @@ A Mantle skill imports `mcp/reviewer:ask_reviewer`. The server behind it (`serve
 | `RESULTS-offline.md` | What the above produced, and what it does not show. |
 
 ## Run it (no license, no key, no network beyond loopback)
+
+First, once, from the `factory/` folder: `uv sync --frozen`. That creates `factory/.venv`, which the commands below use. It needs the internet for the install and nothing after that.
 
 Use the pack's pinned environment (`factory/uv.lock`: `rasa-pro` 3.21.0.dev5, `mcp` 1.28.1, `openai-agents` 0.13.6). From this folder, use the pack's own interpreter `../factory/.venv/bin/python` (this folder has no `pyproject`, so a bare `python` can miss the Mantle packages):
 

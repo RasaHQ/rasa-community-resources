@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ACCEPTANCE HANDOFF</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="README.html">Start</a> · <a href="PARTICIPANT-GUIDE.html">Short route</a> · <a href="book/README.html">Book</a> · <a href="slides/index.html">Slides</a></nav><main><h1>V7 review handoff — based on PRs 146 and 147</h1>
+<p><strong>Candidate, not a deployed or council-approved release.</strong> Baseline: main <code>47497e7c861abd8fd2cd76ddd30a35467ee52e83</code>. The supplied v6 workshop matches that commit byte for byte. V7 starts from this baseline, not v5.</p>
+<h2>The rejection was correct</h2>
+<p>V5 was built against an earlier uploaded snapshot and would revert chapter 0 to dev5 if copied over post-PR146 main. Do not apply it. PR146's 3.21.0 migration and PR147's documentation are retained here. The operator reports a fresh-clone licensed qualification of PR146; this review neither repeats nor contradicts that external run.</p>
+<p>The earlier cleanup result was <strong>one failing test in a single 94-test run</strong>, not one failure in 94 repeated shutdown runs and not a measured failure rate.</p>
+<h2>Runtime boundaries preserved</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Rasa Pro</th>
+<th>Core</th>
+<th>Selection / speech</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workshop chapter 0</td>
+<td>3.21.0</td>
+<td>0.36.2</td>
+<td>agent.yml orchestrator.model_group; deepgram_flux ASR</td>
+</tr>
+<tr>
+<td>Standalone example</td>
+<td>3.21.0.dev5</td>
+<td>0.36.3</td>
+<td>Its existing version-specific configuration</td>
+</tr>
+</tbody>
+</table>
+<p>All pyproject.toml, uv.lock, requirements.txt, integrations.yml and voice_config.py files in both included trees are byte-identical to the baseline. The workshop's migrated agent.yml and doctor code are retained. No downgrade, lock regeneration, broad folder replacement from v5 or new runtime dependency is included.</p>
+<h2>Proposed changes</h2>
+<ol>
+<li><strong>Launcher fixes:</strong> wait for descendants within the existing TERM/KILL deadlines; refuse a process group that outlives them. Accept “yes, that one” using the same validated suggestion. Includes regression tests in each runtime copy. The existing guide continues to use “that one”; it does not depend on this optional punctuation fix.</li>
+<li><strong>Teaching and documentation:</strong> explanation checkpoints; browser-readable book; corrected nested chapter-0 setup/model-selection instructions; precise API/client wording; distinguish historical audit counts from current candidate results; put the agenda second and align Track B restrictions on the slide. Preserve the v6 responsive design and the three-hour/125-minute group-work schedule.</li>
+<li><strong>Source-failure instructions:</strong> reconcile the skill's unconditional access claim with the workshop's already-honest persona; correct the same inconsistency in the standalone example. This affects live-model instructions and is a separate reviewable patch. No live-model behavior is certified by the scripted tests.</li>
+</ol>
+<p>The review bundle supplies separate patches for these three groups. Apply selected patches on a branch after checking the base; do not overwrite the frozen class checkout. Teaching and slide changes travel together so their numbering stays consistent.</p>
+<h2>Executed for this candidate</h2>
+<p>Both environments were installed from the baseline's committed locks with <code>uv sync --frozen</code>, into fresh external environment directories. No lock was changed and no extra test dependency was installed.</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chapter 0 focused suite</td>
+<td>107 passed</td>
+<td>Real 3.21.0 engine with scripted provider, MCP/hooks, voice schemas, public-source input contracts, traveller, credentials and launcher controls</td>
+</tr>
+<tr>
+<td>Standalone focused suite</td>
+<td>87 passed</td>
+<td>Actual dev5/Core 0.36.3 environment; traveller, credentials and launcher controls</td>
+</tr>
+<tr>
+<td>Desktop slides</td>
+<td>29 slides, no layout failures at 1600×900 and 1280×720</td>
+<td>Navigation/notes pass; zero remote asset requests; PDF rebuilt</td>
+</tr>
+<tr>
+<td>Responsive slides</td>
+<td>No text overflow at 390×844, 768×1024 and 1024×768</td>
+<td>Mobile reading layout; projection and print retain desktop composition</td>
+</tr>
+<tr>
+<td>Version preservation</td>
+<td>Protected runtime files match baseline hashes</td>
+<td>Exact list in the review bundle baseline.json</td>
+</tr>
+</tbody>
+</table>
+<p>The 194 passing focused tests are not a complete repository test run, a new licensed Mac rehearsal, a paid Agents session or a voice qualification. No credentials were requested. The automated build/release bridge remains unfinished. The freeze report names 16:30 UTC on 22 October, which is 17:30 London time; this artifact does not change that freeze or publish anything.</p>
+<h2>Reviewer acceptance checklist</h2>
+<ul>
+<li>Verify the base commit and runtime-file hashes before applying patches.</li>
+<li>Review each patch's own scope, rather than treating the ZIP as an instruction to replace main.</li>
+<li>Re-run the focused suites in the intended environments; retain their versions and results.</li>
+<li>For the launcher fix, exercise start/stop on the actual Mac after the freeze.</li>
+<li>For live instruction changes, rehearse a source outage with the live provider before making new behavior claims.</li>
+<li>Approve independently. This handoff provides evidence, not approval on behalf of the reviewers.</li>
+</ul>
+<h2>Beginner teaching revision</h2>
+<p>The operator supplied a new README after v6. This candidate adopts its travel-first explanation, with capability claims narrowed to what the exercises support. The 29-slide deck introduces agents, tools, Mantle, Deepgram, the Agents API and software factories before the labs. Slides 5–18 take 20 minutes; a matching beginner primer supports independent study. The 125 minutes of lab and networking time remain unchanged.</p>
+</main></html>

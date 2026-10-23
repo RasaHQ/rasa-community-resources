@@ -1,0 +1,132 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>05 the builder</title><style>body{max-width:1000px;margin:60px auto;padding:0 28px;background:#FAF6F0;color:#181210;font:18px/1.65 system-ui}h1,h2,h3{font-family:Georgia;font-weight:400;line-height:1.2}h1{font-size:48px}h2{margin-top:48px;font-size:32px}a{color:#AA1E54}pre{padding:22px;background:#181210;color:#FAF6F0;overflow:auto;font-size:14px;border-radius:6px}code{font-size:.9em}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #C8C0B6}th{background:#EDE8E0}blockquote{border-left:4px solid #E85A91;margin:24px 0;padding:4px 24px;background:#FFFBF5}nav{padding-bottom:20px;border-bottom:1px solid #C8C0B6;font-size:15px}@media print{body{margin:0;font-size:11pt}pre{white-space:pre-wrap}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><nav><a href="../README.html">Start</a> · <a href="../PARTICIPANT-GUIDE.html">Short route</a> · <a href="../book/README.html">Book</a> · <a href="../slides/index.html">Slides</a></nav><main><blockquote>
+<p><strong>22 October revision:</strong> Start with <a href="../PARTICIPANT-GUIDE.html">the participant guide</a> for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.</p>
+</blockquote>
+<h1>Chapter 5: Ask a builder to make the change</h1>
+<p>A traveler asks for a shorter currency list. The change looks small, but someone still has to write it and prove that the card respects the limit. Hand that request to a builder and keep the checks outside its reach.</p>
+<p>Time: about 20 minutes after installation. You need: Python 3.12, <a href="https://docs.astral.sh/uv/">uv</a>, a clone of this repository and macOS for the network-blocking test. After installation you can do the exercise offline without a key. A paid model run is optional.</p>
+<p>You're done when <code>ch05 OK</code> confirms that your chosen limit, the protected ACCEPT and the exported files agree.</p>
+<p>If you get stuck, use <a href="ready/ch05">the ready folder</a> and follow <strong>Get the ready folder</strong> below in a fresh work folder.</p>
+<h2>Words used here</h2>
+<p>A <strong>builder</strong> proposes changed files. A <strong>tool</strong> is a function it may ask to run: here, list files, read a file or write a file. A <strong>scratch copy</strong> is a disposable copy of the product. The original product stays untouched. An <strong>attempt</strong> holds the proposed files.</p>
+<p>The OpenAI Agents API runs a model session and its tool requests. <strong>zeocore</strong>, the Python package that holds the card code, connects the factory to that service. For this exercise, a <strong>scripted stream</strong> sends prepared file actions through the same connection.</p>
+<pre><code class="language-mermaid">flowchart LR
+    A[Your written task] --&gt; B[Builder edits a scratch copy]
+    B --&gt; C[Separate protected checks]
+    C --&gt; D[ACCEPT or REJECT]
+</code></pre>
+<p>The factory keeps the protected tests outside the scratch copy, where the builder cannot read them.</p>
+<h2>Get the ready folder</h2>
+<p>Use a fresh work folder (<code>WORK</code> below), not an earlier exercise folder. Set <code>PACK</code> as in Chapter 0.</p>
+<pre><code class="language-bash">export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
+export WORK=~/factory-work/my-factory-ch05
+if [ -e &quot;$WORK&quot; ]; then
+  printf '%s\n' 'Refused: that folder already exists. Choose a fresh WORK name.'
+else
+  mkdir -p ~/factory-work &amp;&amp;
+  cp -R &quot;$PACK/book/ready/ch05&quot; &quot;$WORK&quot; &amp;&amp;
+  cd &quot;$WORK&quot; &amp;&amp;
+  uv venv --python 3.12 .venv &amp;&amp;
+  . .venv/bin/activate &amp;&amp;
+  uv pip install -r requirements.txt
+fi
+</code></pre>
+<p>The refusal leaves your current directory and earlier work unchanged; it does not
+run setup inside the old folder or close your terminal. If it refuses, edit the
+<code>WORK</code> line to a fresh name and repeat the whole block. The installation downloads
+the pinned dependencies once; it does not read a license or an API key.</p>
+<h2>See how it works</h2>
+<ol>
+<li>
+<p>Ask the supplied offline builder to make the initial two-currency card:</p>
+<pre><code class="language-bash">python build.py tasks/b-limit-currencies.json attempts/see --scripted
+</code></pre>
+<p>You see <code>ACCEPT; exported checked files to attempts/see</code>, followed by <code>SCRIPTED; zero provider calls</code>. The protected tests really ran. The files came from a teaching script, not a model.</p>
+</li>
+<li>
+<p>Open the evidence page in another terminal, with the same <code>WORK</code> folder:</p>
+<p>Set the folder again: a new terminal does not inherit <code>WORK</code>. If you chose a
+different name during setup, use that same name here.</p>
+<pre><code class="language-bash">export WORK=~/factory-work/my-factory-ch05
+cd &quot;$WORK&quot;
+.venv/bin/python factory_engine/factory_console.py runs/see/run --port 8943
+</code></pre>
+<p>Visit <a href="http://127.0.0.1:8943/">the local factory page</a>. It shows the task, file actions, diff, protected result and decision. Use <strong>Pause automatic refresh</strong> to read. This is a read-only page: start the builder with the terminal command, not a Run button. If port 8943 is already occupied, choose <code>--port 8945</code> and open that port instead. Stop your own viewer with Ctrl-C when finished.</p>
+</li>
+<li>
+<p>Read these two files in your editor:</p>
+<ul>
+<li><code>build.py</code> prepares the run, asks the builder and exports files only after ACCEPT.</li>
+<li><code>factory_engine/agent-runs/drivers/openai_factory_driver.py</code> registers three confined file tools and stops an incomplete session before any ACCEPT decision.</li>
+</ul>
+<p>The separate tests live under <code>acceptance/</code>. They remain on the factory side, outside the builder's scratch copy.</p>
+</li>
+</ol>
+<h2>Now change it</h2>
+<p>You choose the requirement. The builder writes the product code.</p>
+<ol>
+<li>
+<p>Change the public task's <code>limit</code> from 2 to <strong>1 or 3</strong>. This example asks for three currencies:</p>
+<pre><code class="language-bash">python - &lt;&lt;'PY'
+import json
+from pathlib import Path
+path = Path('tasks/b-limit-currencies.json')
+task = json.loads(path.read_text())
+task['limit'] = 3
+path.write_text(json.dumps(task, indent=2) + '\n')
+PY
+</code></pre>
+<p>The builder receives that limit with the written request. It receives no protected test paths or fingerprints. The verifier uses its own exact task copy, so it judges the same limit.</p>
+</li>
+<li>
+<p>Ask for a fresh attempt:</p>
+<pre><code class="language-bash">python build.py tasks/b-limit-currencies.json attempts/mine --scripted
+</code></pre>
+<p>You see ACCEPT and the explicit SCRIPTED label. The exported files are in <code>attempts/mine</code>; the original <code>product/</code> remains the baseline. To inspect this run in the viewer, stop your viewer and start it with <code>runs/mine/run</code> instead of <code>runs/see/run</code>.</p>
+</li>
+<li>
+<p>Check the exact exported files:</p>
+<pre><code class="language-bash">python check_build.py attempts/mine
+</code></pre>
+<p>You see a line starting <code>ch05 OK</code>. Changing an exported file afterward makes this check fail. That is useful: a checked change and a later edited change are different things.</p>
+</li>
+</ol>
+<h2>You are done when</h2>
+<p>From <code>WORK</code>, with its environment active:</p>
+<pre><code class="language-bash">python check_build.py attempts/mine
+</code></pre>
+<p>This must exit 0 and print <code>ch05 OK</code>: your chosen limit, a completed builder session, protected ACCEPT and the exact exported files all agree. It fails in the ready folder before your change. Use this check before carrying the attempt into another exercise.</p>
+<p>To continue with the same chosen limit, use the later chapter's <code>set_limit.py N</code>,
+with your number in place of <code>N</code>. It keeps that chapter's protected-test pins and
+makes a compatible offline attempt. To carry this exact checked attempt instead,
+copy <strong>both</strong> <code>tasks/b-limit-currencies.json</code> and <code>attempts/mine</code> into the later
+ready folder after its setup and before its <strong>See how it works</strong> steps. Start with
+a fresh destination for the attempt; do not merge it into another attempt. If the
+protected-test fingerprints differ, use the later ready folder and regenerate
+there. Never edit protected tests to force a match. Do not copy credentials,
+<code>runs/</code> or the virtual environment.</p>
+<h2>Optional: ask a model to make the change</h2>
+<p>The scripted result above does not test a model. To use the real API, you need your own <code>OPENAI_API_KEY</code> in the builder process environment. Never put its value on a command line, in this task or in a committed file.</p>
+<p>There is <strong>no per-session money cap</strong>. The provider rejected the <code>spend_control</code> field in a bounded run on 22 October 2026, so the driver sends no such field. An account owner can configure an <strong>enforced hard project or organization spend limit</strong>. A budget alert alone does not stop requests. Enforcement can lag slightly, so recorded spend may exceed the configured amount. See the <a href="https://developers.openai.com/api/docs/guides/spend-limits">official spend-limit guide</a>. No account settings have been inspected by this chapter. The builder is locally bounded to 30 tool calls, a 120-second deadline, a 20-second transport timeout, one named model and no retry loop. These bounds limit execution; they do not guarantee a monetary ceiling.</p>
+<p>Before a paid run, check your account budget and state an expected cost range from the model's current price and your planned usage. No measured live price is supplied by this offline exercise. Enter the model and your expected range in cents; these prompts never ask for a key:</p>
+<pre><code class="language-bash">printf 'Model approved for your Agents session: '; IFS= read -r MODEL
+printf 'Expected lower cost, USD cents: '; IFS= read -r MIN
+printf 'Expected upper cost, USD cents: '; IFS= read -r MAX
+python build.py tasks/b-limit-currencies.json attempts/funded --live \
+  --model &quot;$MODEL&quot; --expected-cost-cents-min &quot;$MIN&quot; --expected-cost-cents-max &quot;$MAX&quot;
+</code></pre>
+<p>Inspect the resulting native status, file actions and protected decision. Then inspect actual usage on the provider's account page. Run at most three paid builds in a practice session, recording each outcome and actual cost. If a session fails, becomes incomplete or hits a limit, it cannot produce ACCEPT. Preserve the evidence and use the offline path; do not run a retry loop.</p>
+<h2>If it fails</h2>
+<ul>
+<li><strong>Choose a new attempt name:</strong> the factory preserves earlier runs. Use a fresh name rather than deleting evidence.</li>
+<li><strong>No module named zeo_core or openai:</strong> activate this chapter's environment and repeat its pinned installation.</li>
+<li><strong>Protected tests cannot run:</strong> missing macOS sandbox support prints <code>could not run: this check needs macOS</code> and exits 2 before a model request or test. Pair with someone on a Mac or follow along on screen. Check Python setup too. A setup failure is not ACCEPT or evidence that the requested change is wrong.</li>
+<li><strong>The live session could not complete:</strong> inspect its fixed status/error record under <code>runs/NAME/run/native.json</code>; no raw provider body is displayed. Use the scripted exercise while resolving the API or account restriction.</li>
+<li><strong>The exported files differ:</strong> do not patch them by hand. Make a new task/attempt and let the builder and gates decide again.</li>
+</ul>
+<h2>Good to know</h2>
+<p>The scripted stream makes no model request. It shows the file tools and checks, rather than measuring a model's ability. A successful file-tool call still needs a protected ACCEPT, and this exercise exports files without restarting the product.</p>
+<h2>What you just learned</h2>
+<p>You asked a builder for a currency limit and checked the files it produced against that request. Keep the task with those files so the next exercise can judge the same change.</p>
+<p>Next: <a href="06-the-gates-and-the-decision.html">judge the attempt</a>.</p>
+</main></html>

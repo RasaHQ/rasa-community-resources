@@ -1,191 +1,32 @@
-# Facilitator script: agentic software factories on Rasa Mantle
+# Facilitator rehearsal and teaching notes
 
-Thursday 22 October 2026, 14:30 to 17:30 London time (13:30 to 16:30 UTC), in person, three hours. You are the facilitator and this is your script. The one-page version for the table is `FACILITATOR-CARD.md`.
+The timing authority is `RUN-SHEET.md`. Slide-by-slide cues are in `slides/PRESENTER-NOTES.md`.
 
-Status: DRAFT 2026-10-18. The author ran every command below, in order, on a Mac, through `factory/rehearse.py` (27 of 27 steps matched, 80 to 100 seconds in all; each step checks its output and its exit status, and the steps that state a landing line also check it; `--self-check` runs stub commands to show that a wrong exit status, wrong output, a weakened variant table or a RAISED line fails a step), with the pinned environment (`rasa-pro` 3.21.0.dev5), and the outputs match what the script says. That run was the author's, not yours: rehearse it on your own machine ("Before the day"). The author did not run the profrod.ai lessons in the room's setting, did not run a live model and did not test the pre-synced copy on a second machine.
+## Rehearsal sequence
 
-The room is unknown: 5 to 40 people, so everything is done in pairs or small groups of up to four. With 5 people, sit them at one table but work as a pair and a group of three; with 40, ten tables of up to four. You work the room, not the screen.
+1. Unzip into a fresh directory. Follow `PREWORK.md` exactly, including local Git initialization if using this ZIP. Do not use an existing virtual environment as evidence of clean setup.
+2. Run the travel demo in explicitly scripted replay mode. Confirm four REPLAY cards and that changing the transfer allowance changes only the timeline. This tests the fallback, not voice or model reasoning.
+3. Optional extension rehearsal only (voice failed on the second turn in today's audio-file test, so the class types): with your license and keys, start `make run`. Confirm the selected Mantle provider and the separate Agents API worker. Make a spoken request, a short “yes”, an interruption and a transfer-time correction. Check both what is spoken and what appears on the cards. A silent transition to text is a fallback, not a voice pass.
+4. In a fresh chapter 5 folder on macOS, run the scripted builder and then one live Agents API build with the default gpt-6-astra (or an explicitly approved alternative) and expected spend. Inspect native status and protected decision. Test one bad candidate in chapter 6 and local integration in chapter 7.
+5. Check `BUILD-CONTRACT.md`. Unless the spoken build request actually starts a bounded build, passes gates, launches the checked travel artifact and returns its URL, mark the complete voice factory **not yet demonstrated**. Do not fill this gap with narration.
+6. Test the data-only fallback on a second laptop using Python 3.12. This route does not need API keys or a Rasa license.
+7. Open the slides offline at projector resolution. Keep the participant guide open in another tab. Prepare an actual recording of the live demo if available; this pack contains no new recording.
 
-## What the room leaves with
+## Group facilitation
 
-1. A factory they ran: a task, an isolated change, a protected check, a decision (`factory/factory.py`). The method is the one in profrod.ai Lessons 1 and 2, run here with this pack's own commands.
-2. One failure no test of their own would catch: a Mantle confirmation gate that compiles away with no engine finding (`factory/show_gate.py`).
-3. A vendor agent behind a tool boundary: its answer is advice, and the write that follows still waits for a person (`openai-mcp/`). The vendor in the room is a stub.
-4. A coding agent's work, read and judged, from the 18 recorded runs.
-5. A number with an interval, and a sentence about what it does not support (`factory/measure.py`).
+Use groups of three or four, formed around an available machine rather than operating-system preference. The driver runs commands. The requirements owner writes the brief and examples. The evaluator predicts what should fail and checks evidence. An observer records surprises and asks another table for a counterexample. Rotate roles after the break.
 
-## What this session does not show
+Use a two-minute intervention: ask for the last successful checkpoint, read the exact error, offer the documented recovery, then let the group continue. A participant who cannot install can still author acceptance cases and evaluate results. Do not spend the workshop debugging credentials publicly.
 
-No live model call, no OpenAI call and no Mantle conversation is part of the plan. Every check reads what the engine compiles from project files. Decide before the day whether you will do the optional live coding-agent run at 16:10 (the plan does not need it). Then say one of these out loud in the first ten minutes: if there is no live run, "Nothing today runs against a live model. The vendor agent is a stub." If you will do the live run, "One run today uses a live coding agent, and I will say when. Nothing else runs against a live model. The vendor agent is a stub." At 17:25 say the matching closing line (see that block). A live run is one run.
+Ask groups to explain why a test failed before editing anything. A missing dependency is NOT_READY, not a rejected product. An accepted candidate needs integration and user-facing checks before release.
 
-## Before the day
+## Demonstration modes
 
-Do these on the machine and network you will use, at least a day before.
+- **LIVE:** a provider actually ran in this demonstration. Identify which provider and which part.
+- **SCRIPTED:** teaching code chose actions. It can still call real tools.
+- **REPLAY:** recorded input data. Its date is not the current date.
+- **ILLUSTRATION:** a slide or mockup explains a design. It is not an application screenshot.
 
-- [ ] Clone this repository and note the commit. Participants use that commit. There is no zip.
-- [ ] From `workshops/software-factories-masterclass/factory/`: `uv sync --frozen`, then `uv run python factory.py tasks/a1-block-card.json candidates/block-card-good runs/check`. Expect ACCEPT. (The author's four-factory-run block took 82 seconds including the first import.)
-- [ ] `uv sync` downloads about 750 MB. Do not do it in class. The fallback is a pre-synced copy of the cloned folder, including `factory/.venv`, on two USB drives. It is not reliable: a venv holds an absolute path to the interpreter of the machine that made it, so it may fail on another laptop, and the author has not tested it on a second machine. A sturdier fallback is the uv cache and the managed Python on the drive, then `uv sync --frozen --offline` on each laptop; that is also untested. Test whichever you choose on a spare laptop of each kind that will be in the room, and where it fails, have those people sync at home or pair up.
-- [ ] Rehearse: from `factory/`, `uv run python rehearse.py`. It runs the commands of every block in session order, offline (the two opening blocks as `OFFLINE-OPENING.md` teaches them, not the profrod.ai lessons), and prints the time and result of each block. A step passes only if its output and its exit status both match. `uv run python rehearse.py --self-check` proves that rule on stub commands. It exits 0 only if all 27 steps match. Run it on the machine you will present from, and keep the printout.
-- [ ] Read `PREWORK.md`, the draft of the message participants get beforehand. It is yours to send or change.
-- [ ] Print `FACILITATOR-CARD.md`, one copy for you and one for each table.
-- [ ] Decide the fallback in advance (see "If something fails").
+## What to leave out of the main session
 
-## Room checklist
-
-| Item | Check |
-| --- | --- |
-| Laptops | Every pair has at least one laptop with the pre-synced folder and a terminal. People without one pair up. |
-| Python and uv | `uv --version` works ([install uv](https://docs.astral.sh/uv/getting-started/installation/)); Python 3.11 or 3.12 (the pack requires at least 3.11 and below 3.13). |
-| wifi | No block needs it once the repository is cloned and synced: the two opening blocks have an offline version (`OFFLINE-OPENING.md`). Test it anyway, then do not depend on it. |
-| Projector | Terminal font large enough for the back row. |
-| Power | Strips for the number of laptops. |
-| Spare laptop | One, pre-synced, to take over a pair whose machine fails. |
-| USB drives | Two, with the pre-synced folder. |
-| Printouts | The card for you and for each table. |
-| Shared place for results | Only if pairs ran a coding agent and recorded it: a folder with one subfolder per pair. Nothing else is pooled. |
-| Clock | A visible clock; the blocks below are time-boxed. |
-
-## Run of show
-
-All times London. "Say" is what you say, in your words; "Show" is what is on the screen; "Do" is what participants do. Commands run from `workshops/software-factories-masterclass/factory/` unless a block says otherwise; write `uv run` in front of `python` if you did not activate the environment.
-
-| Clock | Min | Block |
-| --- | --- | --- |
-| 14:30 | 10 | A grader the builder cannot edit is the only review a dark factory has |
-| 14:40 | 20 | A forged pass fools the first factory and is rejected by the second |
-| 15:00 | 30 | The engine reports nothing when a confirmation gate has silently disappeared |
-| 15:30 | 10 | Break |
-| 15:40 | 30 | A vendor agent's answer is advice, and the write that follows still waits for a person |
-| 16:10 | 30 | A coding agent's summary is a claim until you have read its diff |
-| 16:40 | 10 | Break |
-| 16:50 | 20 | Two changes that pass alone can fail together, and the builder cannot approve its own release |
-| 17:10 | 15 | A few runs support a count with an error bar, not a pass rate |
-| 17:25 | 5 | You leave knowing who may edit the check, where the engine is silent and why advice is not permission |
-
-### 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
-
-- Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Then say the opening line you chose in the section about what the session leaves out.
-- Show: the 14:30 section of `OFFLINE-OPENING.md`, online or not. profrod.ai Lesson 1 is background reading for the same idea.
-- Do: Answer the one question in the offline page with your partner.
-
-### 14:40 A forged pass fools the first factory and is rejected by the second (20 min)
-
-- Say: The forged pass you're about to run is constructed for this exercise. It isn't an agent's work. The case it stands for is a defect the agent's own tests missed. That's the one in the profrod.ai background lesson, and it's the whole course in one run.
-- Run the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository, online or not. They print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT. This is the only exercise run in the room; profrod.ai Lesson 2 is a different exercise with its own steps and is background reading, not part of this block.
-- If a pair is stuck: the NOT_READY message in the terminal names the cause, almost always Python or the environment. Read it aloud.
-
-### 15:00 The engine reports nothing when a confirmation gate has silently disappeared (30 min)
-
-- Say: The engine reported nothing and the gate was gone. Who owns that requirement?
-- Show and Do, in this order:
-
-      python factory.py tasks/a1-block-card.json candidates/block-card-good runs/good                 # ACCEPT
-      python factory.py tasks/a1-block-card.json candidates/block-card-gate-omitted runs/omitted     # REJECT
-      python factory.py tasks/a1-block-card.json candidates/block-card-gate-false runs/false         # REJECT
-      python factory.py tasks/a1-block-card.json candidates/block-card-gate-deleted runs/deleted     # REJECT
-      python show_gate.py candidates/block-card-gate-omitted
-
-  The last command prints `engine findings: 0` and `block_card gate: OFF (compiled to None)`.
-- Land it: the engine said nothing and the gate is off. The builder's own tests pass on all three; only the protected suite catches them. Ask each pair for one sentence: what did the engine say, and what did the gate do?
-
-### 15:30 Break (10 min)
-
-Walk the room. Fix any machine that did not run the previous block now.
-
-### 15:40 A vendor agent's answer is advice, and the write that follows still waits for a person (30 min)
-
-- Say: You can't put a vendor's agent under your acceptance suite. You can put the line between its answer and your system's next action under it. The vendor's answer is advice. The write that follows still waits for a person.
-- Show: `openai-mcp/project/skills/review_dispute/skill.md` and `openai-mcp/server/reviewer_server.py`. Say again that the server is a stub and that the OpenAI path has not run.
-- Do, from the `openai-mcp/` folder. Type the pack's interpreter in full: `uv run python` does not work here, because this folder has no `pyproject.toml`, so the interpreter would lack the Mantle packages.
-  1. Write down which of the seven edits the suite will reject, and why.
-  2. `../factory/.venv/bin/python -I experiments.py project`, then `../factory/.venv/bin/python grade_variants.py project`.
-  3. Compare with your list. Where did the engine say nothing, and where did the suite?
-- Land it: six edits are REJECTED. The seventh, the confirmation question replaced by "Done.", is ACCEPTED, although the control is weakened. The suite was written after these edits were known. Here it rejected six and accepted the seventh. That does not show it catches every edit of those kinds, nor that the seventh is the only one it accepts: any other edit is untested. Ask each pair: what check would reject it?
-- Stretch: write that check into a copy of `acceptance/a4_review_dispute.py` and rerun; then find a different edit it also accepts. There always is one.
-- The author's run of both commands took 23 seconds.
-
-### 16:10 A coding agent's summary is a claim until you have read its diff (30 min)
-
-- Say: Read the diff before you read the summary.
-- Show: one recorded run, for example `agent-runs/claude-code-2026-10-15/claude-a1-block-card-1/`: the final message, the patch, the decision.
-- Do: Each pair reads a different recorded run (there are nine per agent, under `agent-runs/claude-code-2026-10-15/` and `agent-runs/codex-2026-10-15/`) and compares what the agent said with what the diff changed.
-- Say: all 18 recorded runs were accepted. Don't promise the room a failure.
-- Optional, only if a live run is available and you decide to: one run of a coding agent on task A1 in front of the room, once. It is one run and says nothing about a rate. The plan does not need it. If you do it, you have chosen the "live run" opening and closing lines; if you do not, the "no live run" ones.
-
-### 16:40 Break (10 min)
-
-### 16:50 Two changes that pass alone can fail together, and the builder cannot approve its own release (20 min)
-
-- Say: Passing alone says nothing about the trunk. And the builder can't approve its own work.
-- Do, integration (each candidate is judged first, then merged):
-
-      python factory.py tasks/a2-rule-digits.json candidates/rule-digits-good runs/digits-01
-      python factory.py tasks/a3-rule-confirm.json candidates/rule-confirm-on-baseline runs/confirm-alone
-      python factory.py tasks/a3-rule-confirm.json candidates/rule-confirm-on-digits runs/confirm-rebased
-      python integrate.py trunk integration/m1-digits.json                  # MERGED
-      python integrate.py trunk integration/m2-confirm-on-baseline.json     # REFUSED - STALE_BASE
-      python integrate.py trunk integration/m3-confirm-on-digits.json       # MERGED
-
-  The second candidate passes alone and is refused because it was built on a trunk that has moved.
-- Do, release (needs an `approvals` folder: `mkdir approvals`):
-
-      python approve.py allow releases reviewer
-      python approve.py sign candidates/block-card-good codex approvals/by-codex.json
-      python release.py publish runs/good/decision.json candidates/block-card-good approvals/by-codex.json releases     # REFUSED
-      python approve.py sign candidates/block-card-good reviewer approvals/by-reviewer.json
-      python release.py publish runs/good/decision.json candidates/block-card-good approvals/by-reviewer.json releases  # published
-      python release.py verify releases                                                                                 # SERVING
-
-  This needs `runs/good` from the 15:00 block and an `approvals/` folder (`mkdir approvals`). The first publish is refused because `codex` is not on the approvers list.
-- The author's run of this block took 18 seconds for the integration part.
-
-### 17:10 A few runs support a count with an error bar, not a pass rate (15 min)
-
-- Say first: the runs in `factory/runs/` on the room's laptops are hand-written examples (good, tamper, forged, silent-gate). They aren't an agent's work, and they aren't a result. The only agent results in the room are the 18 recorded runs. Then you run:
-
-      python measure.py report agent-runs/claude-code-2026-10-15 agent-runs/codex-2026-10-15
-      python measure.py needed 0.9
-      python policy.py what-if policy.json 35 35
-
-  The report prints `18 runs, rasa-pro 3.21.0.dev5`, `accepted: 18 of 18 = 1.00` and a Wilson 95% interval of 0.82 to 1.00. `needed 0.9` prints 35 runs with none failing. `what-if 35 35` prints ELIGIBLE for promotion to L1, which is arithmetic only, with no data behind it.
-- Say: What do these runs support? What would we need to claim more? A blank field stays blank.
-- Only if pairs ran a coding agent in the room and recorded it with a `meta.json`: each pair copies that run folder into its own subfolder of the shared place (for example `shared/pair-3/a1-1`), and you run `measure.py report` over those folders, say how many runs there are and that they are this room's. If nobody did, say so and skip this.
-
-### 17:25 You leave knowing who may edit the check, where the engine is silent and why advice is not permission (5 min)
-
-- Say: Three things to take. The grader isn't the builder's to edit. The engine can be silent where the gate is gone. The vendor's answer is advice. And what we didn't do. If there was no live run, say: "we didn't run a live model." If you did the live coding-agent run, say: "we ran one live coding agent, once, and it says nothing about a rate." Either way, say: "the vendor agent was a stub."
-- Hand out: the repository link and the commit.
-
-## If something fails
-
-| What happens | What you do |
-| --- | --- |
-| A laptop will not sync or run | Pair that person with a neighbor, or hand them the spare laptop. |
-| A pair gets NOT_READY | Read the reason aloud; it is almost always Python or `uv sync`. |
-| Everything is slow | Skip the stretch tasks, not the "Land it" lines. |
-| The projector or your laptop fails | Use the printed card and the recorded runs under `agent-runs/`; read one decision aloud. |
-| wifi is down | No block depends on it. |
-| An agent edited files it should not have | `collect.py` reports it and the factory refuses it. A teaching moment. |
-| A run passes everything | Good. Say so. Do not coach the room toward failures. |
-
-## Reset after a practice run
-
-The factory refuses to reuse a run folder (it exits with status 2 and says so), and `trunk/`, `releases/` and `approvals/` keep their state. If you practiced in the same checkout, the live 15:00 run fails on a reused name and the 16:50 integration says STALE_BASE on the first candidate. Before class, from `factory/`, move your practice state aside; do not delete anything someone else made:
-
-    mv runs runs-practice
-    mv trunk trunk-practice
-    mv releases releases-practice
-    mv approvals approvals-practice
-
-Skip a line if that folder does not exist. Then create `approvals` again (`mkdir approvals`) when you reach the release step. `rehearse.py` uses fresh run names and a temporary folder each time, so it does not cause this, but it does leave `runs/rh-*` folders behind; they are ignored by git. If a pair reuses a run name in class, give it a new name rather than deleting the old folder.
-
-## What not to claim afterwards
-
-- Not "Mantle agents are safe" or "unsafe". The checks read compiled configuration. Nothing here tests an agent in conversation with a live model.
-- Not "coding agents are X percent reliable". The pool is two agents on three tasks, on one pre-release engine build (3.21.0.dev5).
-- If the room does not reach 35 clean runs, do not claim a 90 percent lower bound. `measure.py` uses the Wilson 95% interval, and `measure.py needed 0.9` says how many runs that takes.
-- Nothing about the vendor agent's real behavior: the vendor in the room is a stub.
-
-## After the session
-
-- [ ] If agent runs were pooled, publish the `report` output exactly as printed, with the date and the engine build, and file those run folders, failed ones included. If none were, publish nothing about pass rates.
+The old card-blocking exercise, the SDK reviewer stub, Wilson intervals, forged test-runner output and historical prerelease compiler behavior are optional follow-up topics. They should not displace participants building and evaluating the travel assistant. Keep historical findings tied to their exact original engine pin.
