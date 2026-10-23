@@ -1985,6 +1985,62 @@ class TestBrowserAudioDriver(unittest.TestCase):
         self.assertEqual(sorted(server.acked), sorted(server.sent_markers))
         self.assertEqual(voice["markers_pending"], 0)
 
+    def test_tracker_completion_waits_for_expected_reply_audio(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "bot", "text": "old greeting"},
+                              {"event": "user", "text": "hello"},
+                              {"event": "bot", "text": "new reply"},
+                              {"event": "bot_turn_ended"}]}
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=lambda _: tracker,
+                                     settle_s=0.1, turn_timeout_s=1)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        clock = [10.0]
+        def receive_audio(_):
+            clock[0] += 0.05
+            turn.first_audio = clock[0]
+        with mock.patch.object(self.v.time, "monotonic", side_effect=lambda: clock[0]), \
+             mock.patch.object(self.v.time, "sleep", side_effect=receive_audio) as wait:
+            ended, _ = call._wait_bot_turn(turn, 0, 0)
+        self.assertEqual(ended, "tracker")
+        self.assertIsNotNone(turn.first_audio)
+        wait.assert_called_once()
+
+    def test_tracker_text_without_received_audio_times_out(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "user"}, {"event": "bot", "text": "reply"},
+                              {"event": "bot_turn_ended"}]}
+        fetch = mock.Mock(return_value=tracker)
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=fetch,
+                                     settle_s=0.1, turn_timeout_s=0.2)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        clock = [10.0]
+        def advance(seconds):
+            clock[0] += seconds
+        with mock.patch.object(self.v.time, "monotonic", side_effect=lambda: clock[0]), \
+             mock.patch.object(self.v.time, "sleep", side_effect=advance):
+            ended, _ = call._wait_bot_turn(turn, 0, 0)
+        self.assertEqual(ended, "timeout")
+        self.assertIsNone(turn.first_audio)
+        self.assertEqual(fetch.call_count, 2)  # initial poll and final timeout read
+
+    def test_silent_tracker_turn_does_not_wait_for_old_greeting_audio(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "bot", "text": "old greeting"},
+                              {"event": "user"}, {"event": "bot_turn_ended"}]}
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=lambda _: tracker,
+                                     settle_s=0.1, turn_timeout_s=1)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        with mock.patch.object(self.v.time, "monotonic", return_value=10), \
+             mock.patch.object(self.v.time, "sleep", side_effect=AssertionError("silent turn must finish")):
+            ended, _ = call._wait_bot_turn(turn, 0, 0, 1)
+        self.assertEqual(ended, "tracker")
+
     def test_quiet_window_ends_the_turn_without_a_tracker(self):
         server = FakeBrowserAudioServer()
         call = self.call(server, fetch_tracker=None)

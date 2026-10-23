@@ -194,5 +194,13 @@ class SpokenMeetingHours(unittest.TestCase):
         now = datetime(2026, 10, 22, 14, 0, tzinfo=timezone.utc)
         for words in ['six tomorrow', 'six hours tomorrow', 'sixish pm tomorrow',
                       'six thirty pm tomorrow', 'around six', 'around six pm tomorrow',
-                      'six or seven pm tomorrow', 'sixteen pm tomorrow', 'someone pm tomorrow']:
+                      'six or seven pm tomorrow', 'sixteen pm tomorrow', 'someone pm tomorrow',
+                      'half six pm tomorrow', 'half past six pm tomorrow',
+                      'quarter to six pm tomorrow', 'a quarter past 6pm tomorrow',
+                      'half 6 pm tomorrow', 'quarter to 18:00 tomorrow',
+                      'past six pm tomorrow', 'past 6 pm tomorrow',
+                      'to six pm tomorrow', 'to 6 pm tomorrow',
+                      'till six pm tomorrow', 'till 6 pm tomorrow',
+                      'before six pm tomorrow', 'before 6 pm tomorrow',
+                      'after six pm tomorrow', 'after 6 pm tomorrow']:
             self.assertIsNone(meeting_time(words, airport_row('KEWR'), now))

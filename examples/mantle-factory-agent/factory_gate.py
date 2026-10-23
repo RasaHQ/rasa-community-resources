@@ -98,7 +98,7 @@ def _live(result, *, worker_python, evidence_root, env_file, max_funded_runs):
         directory = Path(tempfile.mkdtemp(prefix='live-', dir=root))
         directory.chmod(0o700)
         work = directory / 'ch05'
-        shutil.copytree(_pack('ch05'), work, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+        shutil.copytree(_pack('ch05'), work, ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.env', '.env.*'))
         task_path = work / 'tasks/b-limit-currencies.json'
         task = json.loads(task_path.read_text())
         task['limit'] = 3
@@ -185,7 +185,7 @@ def run_factory(request: str, *, mode='SCRIPTED', worker_python=None,
             return result
         with tempfile.TemporaryDirectory(prefix='mantle-factory-agent-') as directory:
             work = Path(directory) / 'ch06'
-            shutil.copytree(_pack(), work, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+            shutil.copytree(_pack(), work, ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.env', '.env.*'))
             task_path = work / 'tasks/b-limit-currencies.json'
             task = json.loads(task_path.read_text())
             task['limit'] = 3

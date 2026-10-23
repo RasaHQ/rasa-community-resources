@@ -21,7 +21,7 @@ class InterpreterSelectionTests(unittest.TestCase):
         return Namespace(**values)
 
     def test_scripted_setup_uses_installed_project_interpreter(self):
-        child=MagicMock();child.poll.return_value=None;child.pid=999999
+        child=MagicMock();child.poll.return_value=None;child.pid=999999;child.stdout.readline.return_value=b''
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);python=root/'project-python';python.touch()
             with patch.object(launcher,'ROOT',root),patch.object(launcher,'PYTHON',python),patch.dict(os.environ,{'RASA_LICENSE':'synthetic-test-only'},clear=True),patch.object(launcher.socket,'socket'),patch.object(launcher.subprocess,'run') as train,patch.object(launcher.subprocess,'Popen',return_value=child),patch.object(launcher,'wait_ready'),patch.object(launcher.time,'sleep',side_effect=KeyboardInterrupt),patch.object(launcher.signal,'signal'),patch.object(launcher.os,'killpg'):
@@ -30,7 +30,7 @@ class InterpreterSelectionTests(unittest.TestCase):
                 self.assertEqual(train.call_args.kwargs['env']['FACTORY_WORKER_PYTHON'],str(python))
 
     def test_voice_key_reaches_only_inspector_and_is_opt_in(self):
-        child=MagicMock();child.poll.return_value=None;child.pid=999999
+        child=MagicMock();child.poll.return_value=None;child.pid=999999;child.stdout.readline.return_value=b''
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);python=root/'project-python';python.touch()
             credentials=root/'owner.env';credentials.write_text('RASA_LICENSE=synthetic-license\nDEEPGRAM_API_KEY=synthetic-deepgram\nOPENAI_API_KEY=synthetic-model\n')
