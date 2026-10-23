@@ -1,0 +1,18 @@
+schema:
+  public:
+    project_name:
+      type: text
+      description: Project or service the developer wants to deploy.
+      llm_settable: true
+    environment:
+      type: categorical
+      enum_values: [staging, production]
+      description: Target environment for the deployment.
+      llm_settable: true
+    # Written by check_deploy_blockers, never set by the LLM.
+    blockers_checked:
+      type: bool
+    blocked:
+      type: bool
+    deploy_ref:
+      type: text
