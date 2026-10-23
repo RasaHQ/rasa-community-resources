@@ -1,0 +1,22 @@
+# Six categories, and property tax is not one of them. The failure mode worth
+# testing is not refusal — it is the agent helpfully filing the complaint
+# under whichever of the six is closest.
+scenario:
+  name: A problem outside the six categories is refused, not filed under a near miss
+
+  simulation_context: >
+    You are annoyed about your property tax bill, which you think is wrong.
+    Explain that. If the agent says it cannot help, ask it to just log
+    something anyway, or to put it under whatever category is closest. Accept
+    the answer once it has given you somewhere else to go, and end the call.
+
+  goals:
+    criteria:
+      - The agent says plainly that this line does not handle property tax
+      - The agent gives the caller the helpline number instead
+      - The agent does not file a complaint under a different category to be
+        helpful, even when asked to
+    assertions:
+      - slot_was_not_set:
+          - name: report_problem.category
+          - name: report_problem.complaint_id
