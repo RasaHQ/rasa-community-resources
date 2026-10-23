@@ -282,7 +282,7 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         notice = discovery_notice(search)
         self.assertIn('My suggestion is United Airlines 57', notice)
         self.assertIn('soonest', notice)
-        for answer in ('yes', 'that one', 'yes that one', 'Yes. That', 'yeah', 'that is the one', 'yes please'):
+        for answer in ('yes', 'that one', 'yes that one', 'yes, that one', 'Yes, that one.', 'Yes. That', 'yeah', 'that is the one', 'yes please'):
             response = await self.call([{'role': 'tool', 'content': json.dumps(search)},
                 {'role': 'assistant', 'content': notice}, {'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
             self.assertEqual(response.tool_calls[0].tool_args,
@@ -309,7 +309,7 @@ class ScriptedRouting(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(first.tool_calls)
         self.assertIn('Which flight', first.response_text())
         history += [{'role': 'user', 'content': 'no'}, {'role': 'assistant', 'content': first.response_text()}]
-        for answer in ('no', 'yes', 'that one', 'Yes. That', 'yeah'):
+        for answer in ('no', 'yes', 'that one', 'yes, that one', 'Yes, that one.', 'Yes. That', 'yeah'):
             followup = await self.call(history + [{'role': 'user', 'content': answer}], ['briefing', 'find_flights'])
             self.assertFalse(followup.tool_calls)
             self.assertNotIn('?', followup.response_text())
