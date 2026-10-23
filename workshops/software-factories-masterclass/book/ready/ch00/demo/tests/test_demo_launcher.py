@@ -122,6 +122,44 @@ class LauncherControls(unittest.TestCase):
         with socket.socket() as client:
             self.assertNotEqual(client.connect_ex(('127.0.0.1', port)), 0)
 
+    def test_close_waits_for_descendants_after_leader_exits(self):
+        children = demo.Children()
+        process = unittest.mock.Mock(pid=123456)
+        children.processes = [process]
+        clock = [0.0]
+        probes = [0]
+        sent = []
+        def signal_group(pid, sig):
+            if sig:
+                sent.append(sig)
+            else:
+                probes[0] += 1
+                if probes[0] >= 3:
+                    raise ProcessLookupError()
+        def advance(seconds):
+            clock[0] += seconds
+        with patch.object(demo.os, 'killpg', side_effect=signal_group), \
+                patch.object(demo.time, 'monotonic', side_effect=lambda: clock[0]), \
+                patch.object(demo.time, 'sleep', side_effect=advance):
+            children.close()
+        self.assertGreater(clock[0], 0)
+        self.assertEqual(sent, [demo.signal.SIGTERM])
+        process.wait.assert_called_once()
+
+    def test_close_still_refuses_a_group_that_outlives_both_deadlines(self):
+        children = demo.Children()
+        children.processes = [unittest.mock.Mock(pid=123456)]
+        clock = [0.0]
+        def advance(seconds):
+            clock[0] += seconds
+        with patch.object(demo.os, 'killpg') as killpg, \
+                patch.object(demo.time, 'monotonic', side_effect=lambda: clock[0]), \
+                patch.object(demo.time, 'sleep', side_effect=advance):
+            with self.assertRaises(demo.DemoError):
+                children.close()
+        self.assertAlmostEqual(clock[0], 5.0)
+        self.assertIn(unittest.mock.call(123456, demo.signal.SIGKILL), killpg.call_args_list)
+
     def test_failed_voice_start_retries_text_once_without_stopping_source(self):
         first, second = object(), object()
         children = unittest.mock.Mock()
