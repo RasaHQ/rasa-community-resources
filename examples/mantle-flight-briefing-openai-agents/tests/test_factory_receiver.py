@@ -97,6 +97,100 @@ class FactoryReceiverTests(unittest.TestCase):
             self.stage()
         self.assertFalse(self.target.exists())
 
+    def test_receipt_identifies_exact_self_attested_evidence_bytes(self):
+        first = self.stage()
+        expected = {name: hashlib.sha256((self.source / name).read_bytes()).hexdigest()
+                    for name in receiver.EVIDENCE_FILES}
+        self.assertEqual(first['evidence_sha256'], expected)
+        self.assertEqual(first['evidence_basis'], 'self_attested_records_not_authenticated')
+        native = self.source / 'native.json'
+        native.write_bytes(native.read_bytes() + b'\n')  # Same JSON fields, different input record.
+        second = receiver.stage_accepted_run(self.source, self.root / 'second-received',
+            source_head=receiver.SOURCE_HEAD, target_head=TARGET)
+        self.assertNotEqual(first['evidence_sha256']['native.json'], second['evidence_sha256']['native.json'])
+        self.assertEqual(first['candidate_digest'], second['candidate_digest'])
+        for name in receiver.EVIDENCE_FILES[1:]:
+            self.assertEqual(first['evidence_sha256'][name], second['evidence_sha256'][name])
+
+    def test_hardlink_on_allowed_candidate_with_identical_bytes_is_refused_by_link_guard(self):
+        path = self.source / 'candidate' / receiver.FILES[0]
+        original = path.read_bytes()
+        outside = self.root / 'identical-market.py'
+        outside.write_bytes(original)
+        path.unlink()
+        os.link(outside, path)
+        with self.assertRaisesRegex(receiver.ReceiverRefused, '^candidate_paths_mismatch$'):
+            self.stage()
+        self.assertFalse(self.target.exists())
+        self.assertEqual(outside.read_bytes(), original)
+
+    def test_hardlink_on_allowed_metadata_with_valid_json_is_refused_by_read_guard(self):
+        path = self.source / 'native.json'
+        original = path.read_bytes()
+        outside = self.root / 'identical-native.json'
+        outside.write_bytes(original)
+        path.unlink()
+        os.link(outside, path)
+        with self.assertRaisesRegex(receiver.ReceiverRefused, '^regular_unlinked_evidence_required$'):
+            self.stage()
+        self.assertFalse(self.target.exists())
+
+    def test_fifo_on_allowed_candidate_path_is_refused_before_reading_or_hashing(self):
+        path = self.source / 'candidate' / receiver.FILES[0]
+        path.unlink()
+        os.mkfifo(path)
+        with self.assertRaisesRegex(receiver.ReceiverRefused, '^candidate_paths_mismatch$'):
+            self.stage()
+        self.assertFalse(self.target.exists())
+
+    def test_target_inside_source_is_refused_without_mutating_source_tree(self):
+        target = self.source / 'received'
+        before = sorted(str(p.relative_to(self.source)) for p in self.source.rglob('*'))
+        with self.assertRaisesRegex(receiver.ReceiverRefused, '^new_separate_receiving_directory_required$'):
+            receiver.stage_accepted_run(self.source, target, source_head=receiver.SOURCE_HEAD, target_head=TARGET)
+        self.assertFalse(target.exists())
+        self.assertEqual(before, sorted(str(p.relative_to(self.source)) for p in self.source.rglob('*')))
+
+    def test_metadata_64k_limit_accepts_boundary_and_refuses_one_more_byte(self):
+        path = self.source / 'native.json'
+        original = path.read_bytes()
+        path.write_bytes(original + b' ' * (65536 - len(original)))
+        self.stage()  # Padded but valid JSON at the exact boundary.
+        shutil.rmtree(self.target)
+        path.write_bytes(path.read_bytes() + b' ')
+        with self.assertRaisesRegex(receiver.ReceiverRefused, '^evidence_size_limit$'):
+            self.stage()
+        self.assertFalse(self.target.exists())
+
+    def test_files_supplied_must_match_the_exact_candidate_allowlist(self):
+        path = self.source / 'verification/decision.json'
+        data = json.loads(path.read_text())
+        data['files_supplied'] = [receiver.FILES[0]]
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(receiver.ReceiverRefused, '^protected_task_or_decision_mismatch$'):
+            self.stage()
+        self.assertFalse(self.target.exists())
+
+    def test_console_task_hash_must_match_the_exact_task_bytes(self):
+        path = self.source / 'console.json'
+        data = json.loads(path.read_text())
+        data['task_sha256'] = '0' * 64
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(receiver.ReceiverRefused, '^protected_task_or_decision_mismatch$'):
+            self.stage()
+        self.assertFalse(self.target.exists())
+
+    def test_non_list_protected_checks_are_refused(self):
+        path = self.source / 'verification/decision.json'
+        data = json.loads(path.read_text())
+        for checks in (None, {'name': 'protected acceptance', 'passed': True}, 'protected acceptance'):
+            with self.subTest(checks=checks):
+                data['checks'] = checks
+                path.write_text(json.dumps(data))
+                with self.assertRaisesRegex(receiver.ReceiverRefused, '^protected_acceptance_required$'):
+                    self.stage()
+                self.assertFalse(self.target.exists())
+
     def test_extra_paths_links_and_special_files_are_refused(self):
         product = self.source / 'candidate/product'
         outside = self.root / 'outside'
@@ -154,7 +248,10 @@ class FactoryReceiverTests(unittest.TestCase):
         receipt = self.target / 'staging.json'
         original = receipt.read_bytes()
         for change in ({'product_acceptance': 'APPLIED_RESTARTED'}, {'module': 'untrusted.py'},
-                       {'candidate_digest': '0' * 64}, {'target_head': None}):
+                       {'candidate_digest': '0' * 64}, {'target_head': None},
+                       {'evidence_sha256': {}}, {'evidence_basis': 'authenticated-run'},
+                       {'evidence_sha256': {name: '0' * 64 for name in receiver.EVIDENCE_FILES}},
+                       {'evidence_sha256': {name: 'not-a-sha256' for name in receiver.EVIDENCE_FILES}}):
             data = json.loads(original)
             data.update(change)
             receipt.write_text(json.dumps(data))

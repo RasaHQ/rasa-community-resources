@@ -276,6 +276,8 @@ from briefing.factory_receiver import SOURCE_HEAD, stage_accepted_run
 
 target_head = subprocess.check_output(
     ['git', 'rev-parse', 'HEAD'], text=True).strip()
+if subprocess.check_output(['git', 'status', '--porcelain'], text=True).strip():
+    raise RuntimeError('Use a clean committed receiving tree')
 Path('.demo-cache').mkdir(exist_ok=True)
 receipt = stage_accepted_run(
     '/path/to/original-reviewed-run', '.demo-cache/f7-received',
@@ -284,8 +286,16 @@ assert receipt['status'] == 'STAGED'
 assert receipt['product_acceptance'] == 'NOT_RUN'
 ```
 
-Staging checks the completed native turn, exact task, protected ACCEPT, file
-allowlist and candidate bytes. It copies only the two admitted candidate files
+Staging checks the supplied records for a completed native turn, exact task and
+protected ACCEPT, then verifies the file allowlist and fixed reviewed candidate
+bytes. These JSON records are self-attested: anyone can write such fields, and
+the included fixture can pass the same checks. They do not authenticate a model
+run. The receipt records the SHA256 of the exact native, console, decision and
+task bytes that were parsed, labelled `self_attested_records_not_authenticated`,
+so different input records remain distinguishable. Hashing does not establish
+their origin. `source_head` names the owner-declared acquisition driver revision,
+which predates the staging hook; it is not an observed runtime revision.
+The receiver copies only the two admitted candidate files
 and a staging receipt. It never writes into the original run, executes the
 builder's tests or starts a process. Reusing a receiving directory is refused.
 The target head is the owner's declared source revision, not an observed

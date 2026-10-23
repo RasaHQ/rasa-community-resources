@@ -19,6 +19,8 @@ CHILD_SHA256 = '277cfb159ee6ce8e71496e6ce74574f0a77303a160e09d9e8e5e3320b5b55c37
 MARKET_SHA256 = 'c3cabc1b5a9ddeadb522f3c45387e7d7afa960454c330e80b0b07422283172b4'
 FILES = ('product/briefing/market_card.py', 'product/tests/test_market_card.py')
 SCHEMA = 'rasa.factory-staging/v1'
+EVIDENCE_FILES = ('native.json', 'console.json', 'verification/decision.json', 'task/a6-market-watchlist.json')
+EVIDENCE_BASIS = 'self_attested_records_not_authenticated'
 
 
 class ReceiverRefused(ValueError):
@@ -55,11 +57,15 @@ def _unique(pairs):
     return result
 
 
-def _json(root_fd, relative):
-    value = json.loads(_read(root_fd, relative), object_pairs_hook=_unique)
+def _decode(data):
+    value = json.loads(data, object_pairs_hook=_unique)
     if not isinstance(value, dict):
         raise ReceiverRefused('evidence_object_required')
     return value
+
+
+def _json(root_fd, relative):
+    return _decode(_read(root_fd, relative))
 
 
 def _files(root_fd, prefix):
@@ -96,8 +102,10 @@ def _files(root_fd, prefix):
 def stage_accepted_run(run_directory, new_receiving_directory, *, source_head, target_head):
     """Copy reviewed bytes into NEW evidence, binding explicit owner-supplied heads.
 
-    source_head is pinned to the qualified factory driver. target_head is the
-    receiving owner's declared source revision, not proof of a running process.
+    source_head is the required owner-declared acquisition driver revision;
+    it predates this receiving hook and is not observed from a running process.
+    target_head is likewise the owner's declared receiving source revision.
+    Evidence hashes identify the parsed bytes, not their authenticated origin.
     The original run is opened read-only. Nothing claims APPLIED_RESTARTED.
     """
     if source_head != SOURCE_HEAD or not isinstance(target_head, str) or not re.fullmatch(r'[0-9a-f]{40}', target_head):
@@ -110,10 +118,11 @@ def stage_accepted_run(run_directory, new_receiving_directory, *, source_head, t
     try:
         root_fd = os.open(source, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         try:
-            native = _json(root_fd, 'native.json')
-            console = _json(root_fd, 'console.json')
-            decision = _json(root_fd, 'verification/decision.json')
-            task = _read(root_fd, 'task/a6-market-watchlist.json')
+            evidence = {name: _read(root_fd, name) for name in EVIDENCE_FILES}
+            native = _decode(evidence['native.json'])
+            console = _decode(evidence['console.json'])
+            decision = _decode(evidence['verification/decision.json'])
+            task = evidence['task/a6-market-watchlist.json']
             if (native.get('status') != 'completed' or native.get('ok') is not True or
                     console.get('mode') != 'LIVE_NATIVE' or console.get('state') != 'ACCEPT'):
                 raise ReceiverRefused('completed_native_accept_required')
@@ -134,6 +143,8 @@ def stage_accepted_run(run_directory, new_receiving_directory, *, source_head, t
         receipt = {'schema': SCHEMA, 'status': 'STAGED', 'source_head': source_head,
                    'target_head': target_head, 'task_sha256': TASK_SHA256,
                    'candidate_digest': CANDIDATE_DIGEST,
+                   'evidence_sha256': {name: hashlib.sha256(data).hexdigest() for name, data in evidence.items()},
+                   'evidence_basis': EVIDENCE_BASIS,
                    'files': {name: hashlib.sha256(data).hexdigest() for name, data in contents.items()},
                    'product_acceptance': 'NOT_RUN'}
         target.mkdir(mode=0o700)
@@ -177,11 +188,17 @@ def load_accepted_market(receiving_directory):
         finally:
             os.close(root_fd)
         expected_files = {name: hashlib.sha256(data).hexdigest() for name, data in contents.items()}
+        hashes = receipt.get('evidence_sha256')
         if (set(receipt) != {'schema', 'status', 'source_head', 'target_head', 'task_sha256',
-                             'candidate_digest', 'files', 'product_acceptance'} or
+                             'candidate_digest', 'files', 'product_acceptance', 'evidence_sha256', 'evidence_basis'} or
                 receipt.get('schema') != SCHEMA or receipt.get('status') != 'STAGED' or
                 receipt.get('source_head') != SOURCE_HEAD or receipt.get('task_sha256') != TASK_SHA256 or
                 receipt.get('candidate_digest') != CANDIDATE_DIGEST or receipt.get('files') != expected_files or
+                receipt.get('evidence_basis') != EVIDENCE_BASIS or
+                not isinstance(hashes, dict) or set(hashes) != set(EVIDENCE_FILES) or
+                hashes.get('task/a6-market-watchlist.json') != TASK_SHA256 or
+                any(not isinstance(value, str) or re.fullmatch(r'[0-9a-f]{64}', value) is None
+                    for value in hashes.values()) or
                 not isinstance(receipt.get('target_head'), str) or
                 not re.fullmatch(r'[0-9a-f]{40}', receipt['target_head']) or
                 receipt.get('product_acceptance') != 'NOT_RUN'):
