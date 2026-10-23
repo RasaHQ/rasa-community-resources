@@ -253,3 +253,63 @@ BRIEFING_PAGE_PORT=8960 BRIEFING_INSPECTOR_PORT=5020 make run-voice
 ```
 
 Use the printed page address. Stop the processes with Ctrl-C. Voice includes the pinned-engine in-memory repair in `voice_patch.py`; no installed package is edited.
+## Receive the reviewed factory candidate
+
+The normal public-source runner already has four cards. The factory receiving
+exercise is a separate opt-in mode: `--factory-baseline` reads only flight,
+weather and arrival timeline sources. It makes no market request.
+`--factory-received RECEIVING_DIR` adds the exact reviewed A6 market module
+from a staged receiving directory. Both options belong to `python -m briefing`,
+are mutually exclusive with the other source/model modes, and use SCRIPTED tool
+control. Ambient model credentials do not turn either option into a model run.
+
+This receiver admits only the recorded A6 candidate with digest
+`ee6fafca627dcb6a07a7f7def556c2887f3c73dcf667684d38b45316f15031c1`.
+It is not a general loader for new Python plugins or arbitrary ACCEPT records.
+The owning facilitator supplies the original run directory and a new, separate
+receiving directory. From this example folder, using the locked worker:
+
+```python
+from pathlib import Path
+import subprocess
+from briefing.factory_receiver import SOURCE_HEAD, stage_accepted_run
+
+target_head = subprocess.check_output(
+    ['git', 'rev-parse', 'HEAD'], text=True).strip()
+Path('.demo-cache').mkdir(exist_ok=True)
+receipt = stage_accepted_run(
+    '/path/to/original-reviewed-run', '.demo-cache/f7-received',
+    source_head=SOURCE_HEAD, target_head=target_head)
+assert receipt['status'] == 'STAGED'
+assert receipt['product_acceptance'] == 'NOT_RUN'
+```
+
+Staging checks the completed native turn, exact task, protected ACCEPT, file
+allowlist and candidate bytes. It copies only the two admitted candidate files
+and a staging receipt. It never writes into the original run, executes the
+builder's tests or starts a process. Reusing a receiving directory is refused.
+The target head is the owner's declared source revision, not an observed
+running revision. `make_receiver_hook` supplies the existing trusted driver
+callback shape with `NOT_RECORDED/candidate_staged` and null runtime heads;
+staging cannot claim `APPLIED_RESTARTED`.
+
+Received mode rechecks the staging receipt and module bytes before each
+briefing, then calls the fixed reviewed `market_card(sources, currencies)`
+function. Core supplies and validates its reference rates, computed changes,
+provenance and unavailable result. A missing market source keeps the fourth
+card unavailable and the job incomplete; it never invents a rate or substitutes
+a replay. The candidate's test file remains opaque evidence.
+
+Run the offline controls without a model, provider request or service restart:
+
+```sh
+worker/.venv/bin/python -m unittest discover -s tests -p 'test_factory_*.py' -v
+```
+
+Those controls use explicit synthetic HTTP responses with real Core contracts,
+Jobs and the HTTP app. They show three cards before receiving and four after,
+with unchanged flight/weather/timeline values and meeting input. They are not
+an actual process-restart receipt. The receiving owner still has to review the
+source, restart an isolated owned runtime with the chosen option and verify
+the three-to-four-card change over product HTTP. A factory ACCEPT, staging
+receipt or injected HTTP test alone does not complete that product acceptance.
