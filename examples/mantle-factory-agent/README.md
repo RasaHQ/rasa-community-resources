@@ -113,3 +113,19 @@ Open http://127.0.0.1:8947 in Chrome, allow microphone access, and start the voi
 For the LIVE builder, first run `./demo setup-live`, add OPENAI_API_KEY to the same owner file, then use `./demo run --voice --builder-mode LIVE --env-file .env`. This makes a funded builder attempt; Mantle selection stays SCRIPTED. Only the builder child receives OpenAI credentials. The existing run-count and deadline bounds still apply.
 
 If the ports are occupied, add `--entry-port 8964 --inspector-port 5024 --mcp-port 8965` and use the printed page address. The launcher stops at the printed expiry (default 16:30 UTC today) or Ctrl-C; after that time supply `--expires-at` with a future UTC timestamp. Loopback needs no tailnet, TLS or Chrome flags. Audio-file speech completed a LIVE gate ACCEPT on the patched runtime; physical microphone permission/device behavior must still be checked locally.
+
+## Live Mantle orchestration
+
+To let the actual OpenAI Mantle model interpret free phrasing and choose the factory tool, use an owner `.env` with RASA_LICENSE and OPENAI_API_KEY. The model key is given only to the Inspector's orchestrator and the builder child. Training, MCP and entry environments do not receive it.
+
+```sh
+./demo setup
+./demo setup-live
+./demo run --mantle-mode LIVE --builder-mode LIVE --env-file .env
+```
+
+Ask “Can you limit the market card to three currencies?” and then “Try the version that ignores the limit”. The model chooses one of the closed factory request kinds; it cannot supply code, paths or modes. The first request starts a funded Agents API build followed by the protected gate. The second judges the supplied bad attempt with zero builder calls. Only actual gate results establish ACCEPT or REJECT; nothing is deployed. A build is normally about one to two minutes and up to about 1.50 USD as an estimate, not a spending cap. Failures are reported without an automatic funded retry.
+
+For voice, add DEEPGRAM_API_KEY to the same owner file and `--voice`. Text qualification and physical microphone qualification are separate. The default `--mantle-mode SCRIPTED` remains the teaching fallback.
+
+Each `good` request in LIVE builder mode starts a new funded build, including a repeated request. The one-at-a-time lock and the default limit of 12 funded runs per evidence folder bound these builds. A started run counts even if it fails; the `ignores-limit` request uses no funded build.
