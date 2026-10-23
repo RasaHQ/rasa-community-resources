@@ -36,7 +36,7 @@ def probe_agents():
     from openai import OpenAI
     # Default SDK auth reads OPENAI_API_KEY only in this facilitator process.
     with OpenAI(timeout=20, max_retries=0) as client:
-        result = native_turn(client, agent={'model': os.environ.get('BRIEFING_AGENTS_MODEL', 'gpt-4.1-mini'),
+        result = native_turn(client, agent={'model': os.environ.get('BRIEFING_AGENTS_MODEL', 'gpt-6-astra'),
             'instructions': 'Reply with READY only; no tools or files.'},
             text='Reply with READY only.')
         return result.ok
