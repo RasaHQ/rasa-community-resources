@@ -1,0 +1,41 @@
+[project]
+name = "elarbib-terra-energy"
+version = "0.1.0"
+description = "Multilingual (EN/FR/DE/ES) Mantle agent assessing solar & wind energy potential of any worldwide location from satellite and reanalysis data, with a FastAPI backend and a Vite/React voice-orb frontend."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "rasa-pro==3.20.0.dev6",
+    # Skill tools talk to the FastAPI backend over HTTP.
+    "httpx>=0.27",
+    # FastAPI backend (single uv install path — no separate pip requirements).
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "plotly>=5.18",
+    "python-dotenv>=1.0",
+    "pydantic>=2.6",
+    "pvlib>=0.15",
+    "scipy>=1.10",
+    "pytest>=7.0",
+]
+
+[project.optional-dependencies]
+# Local voice layer: Whisper bridge (ASR) + pyttsx3/Neuphonic (TTS) for the
+# frontend orb. Not needed by `rasa train` / `validate_project`; install with
+# `uv sync --extra voice` when you want the full voice experience.
+voice = [
+    "faster-whisper>=1.0",
+    "pyttsx3>=2.90",
+    "websockets>=12.0",
+    "aiohttp>=3.9",
+    "openai-whisper>=20231117",
+    "structlog>=24.1",
+]
+
+[tool.rasa-catalog]
+required-secrets = ["RASA_LICENSE", "MISTRAL_API_KEY", "NEUPHONIC_API_KEY", "NSRDB_API_KEY", "CDS_API_KEY"]
+
+[tool.uv]
+prerelease = "allow"
