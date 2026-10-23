@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -1293,7 +1294,28 @@ def check_heroes_layout() -> list[Finding]:
 
         # Projects belong under `projects/`. A pyproject anywhere else in the
         # wave is invisible to discovery, so it would silently skip every check.
-        for pyproject in sorted(wave.rglob("pyproject.toml")):
+        # Installation creates third-party pyprojects inside virtualenvs.
+        # Prune those trees before walking: their contents are dependencies,
+        # not contributed projects, and may contain many thousands of files.
+        for directory, directories, filenames in os.walk(wave):
+            directory = Path(directory)
+            location = directory.relative_to(wave).parts
+            project_root = (
+                len(location) == 2
+                and location[0] == WAVE_DIR
+                and "pyproject.toml" in filenames
+            )
+            directories[:] = sorted(
+                name for name in directories
+                if not (
+                    project_root
+                    and name in {".venv", "venv"}
+                    and (directory / name / "pyvenv.cfg").is_file()
+                )
+            )
+            if "pyproject.toml" not in filenames:
+                continue
+            pyproject = directory / "pyproject.toml"
             parts = pyproject.relative_to(wave).parts
             if parts[0] != WAVE_DIR or len(parts) != 3:
                 findings.append(
