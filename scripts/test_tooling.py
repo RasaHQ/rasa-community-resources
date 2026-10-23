@@ -1370,6 +1370,33 @@ class TestHeroesLayout(unittest.TestCase):
         self.assertEqual(len(found), 1)
         self.assertIn("wave-NN-<theme>", found[0].message)
 
+    def test_installed_dependencies_do_not_become_wave_projects(self):
+        for environment in (".venv", "venv"):
+            with self.subTest(environment=environment), FakeRepo() as repo:
+                self._wave(repo, "wave-01-voice")
+                project = "heroes/wave-01-voice/projects/handle-agent"
+                repo.project(project)
+                # These are the two installed paths reported by compatibility
+                # after the native project check has populated its environment.
+                for dependency in ("", "pandas/"):
+                    path = repo.root / project / environment / (
+                        f"lib/python3.12/site-packages/{dependency}pyproject.toml"
+                    )
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("[project]\nname = 'dependency'\n")
+                self.assertEqual(lint_repo.check_heroes_layout(), [])
+
+    def test_nested_authored_project_is_still_reported(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            project = "heroes/wave-01-voice/projects/handle-agent"
+            repo.project(project)
+            repo.project(f"{project}/nested-agent")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertIn("nested-agent/pyproject.toml", found[0].path)
+        self.assertIn("skipped by every check", found[0].message)
+
     def test_missing_charter_is_reported(self):
         with FakeRepo() as repo:
             self._wave(repo, "wave-01-voice", charter=False)
