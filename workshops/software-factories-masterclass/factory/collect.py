@@ -26,13 +26,14 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def main(workspace, out_candidate, out_review, prefix="", only=None, stdout_file=None):
+def main(workspace, out_candidate, out_review, prefix="", only=None, stdout_file=None, pack_root=None):
     workspace, out_candidate, out_review = Path(workspace), Path(out_candidate), Path(out_review)
     for target in (out_candidate, out_review):
         if target.exists():
             print("refusing to reuse %s; choose a new folder" % target, file=sys.stderr)
             return 2
-    baseline = ROOT / "product"
+    root = Path(pack_root).resolve() if pack_root is not None else ROOT
+    baseline = root / "product"
     changed, patch = [], []
     # Files scratch.py wrote outside product/ are skipped only while they are byte for byte what it wrote.
     manifest_file = workspace / ".scratch.json"
@@ -45,7 +46,7 @@ def main(workspace, out_candidate, out_review, prefix="", only=None, stdout_file
         if untouched.get(path.relative_to(workspace).as_posix()) == sha(path):
             continue
         rel = (Path(prefix) / path.relative_to(workspace)).as_posix()
-        old = ROOT / rel
+        old = root / rel
         before = old.read_text().splitlines(keepends=True) if old.exists() else []
         after = path.read_text().splitlines(keepends=True)
         if before == after:

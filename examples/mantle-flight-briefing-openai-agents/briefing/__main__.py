@@ -22,6 +22,10 @@ def main():
                        help='SCRIPTED tool control with real keyless public source references')
     modes.add_argument('--live-model', action='store_true',
                         help='Real managed model with constructed REPLAY source fixtures')
+    modes.add_argument('--factory-baseline', action='store_true',
+                       help='Opt-in three public-source cards; no market request')
+    modes.add_argument('--factory-received', metavar='RECEIVING_DIR',
+                       help='Three public-source cards plus the fixed reviewed staged market module')
     parser.add_argument('--host', default=os.environ.get('BRIEFING_VIEWER_HOST', '127.0.0.1'))
     args = parser.parse_args()
     from demo_host import require_viewer_access
@@ -37,10 +41,16 @@ def main():
     if not token:
         raise SystemExit("Set the runtime-only BRIEFING_MCP_TOKEN in both facilitator processes")
     runner = ReplayRunner()
-    if args.public_sources:
+    factory_mode = args.factory_baseline or args.factory_received is not None
+    public_mode = args.public_sources or factory_mode
+    if public_mode:
         try:
-            from briefing.public_sources import PublicSourcesRunner
-            runner = PublicSourcesRunner()
+            if factory_mode:
+                from briefing.factory_runner import FactoryRunner
+                runner = FactoryRunner(received_directory=args.factory_received)
+            else:
+                from briefing.public_sources import PublicSourcesRunner
+                runner = PublicSourcesRunner()
         except ImportError:
             raise SystemExit('Public sources need the reviewed adapter release; update the locked Core pin after it is published.') from None
     if args.live_model or managed_sources:
@@ -65,12 +75,12 @@ def main():
             runner = LivePublicSourcesRunner(client_factory, model=model)
         else:
             runner = LiveFixtureRunner(client_factory, model=model)
-    app = create_app(Jobs(runner, replacement_plan=runner.replacement_plan,
-                          ownership_mode="capability"), transport_token=token, host=args.host)
     try:
+        app = create_app(Jobs(runner, replacement_plan=runner.replacement_plan,
+                              ownership_mode="capability"), transport_token=token, host=args.host)
         uvicorn.run(app, host=args.host, port=runtime_ports()[0], log_level="warning")
     finally:
-        if args.public_sources:
+        if public_mode:
             runner.close()
 
 
