@@ -40,7 +40,9 @@ advice or an employee-specific decision.
 ```text
 agent.yml                 Agent persona, voice settings, and global rules
 integrations.yml          LLM, embedding, and channel configuration
-references/hr_policies.md General HR guidance and privacy boundaries
+references/               General HR guidance and source/demo-data notes
+  README.md               Text provenance and fictional-data status
+  hr_policies.md          General HR guidance and privacy boundaries
 skills/
   hr_concierge/           Welcome and route employees
   hr_policies/            Explain general HR policies
