@@ -1370,6 +1370,58 @@ class TestHeroesLayout(unittest.TestCase):
         self.assertEqual(len(found), 1)
         self.assertIn("wave-NN-<theme>", found[0].message)
 
+    def test_installed_dependencies_do_not_become_wave_projects(self):
+        for environment in (".venv", "venv"):
+            with self.subTest(environment=environment), FakeRepo() as repo:
+                self._wave(repo, "wave-01-voice")
+                project = "heroes/wave-01-voice/projects/handle-agent"
+                repo.project(project)
+                environment_root = repo.root / project / environment
+                environment_root.mkdir()
+                (environment_root / "pyvenv.cfg").write_text("home = /python\n")
+                # These are the two installed paths reported by compatibility
+                # after the native project check has populated its environment.
+                for dependency in ("", "pandas/"):
+                    path = repo.root / project / environment / (
+                        f"lib/python3.12/site-packages/{dependency}pyproject.toml"
+                    )
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("[project]\nname = 'dependency'\n")
+                self.assertEqual(lint_repo.check_heroes_layout(), [])
+
+    def test_authored_environment_names_are_not_hidden(self):
+        for environment in (".venv", "venv"):
+            for parent in ("", "projects/handle-agent/"):
+                with self.subTest(environment=environment, parent=parent), FakeRepo() as repo:
+                    self._wave(repo, "wave-01-voice")
+                    repo.project("heroes/wave-01-voice/projects/handle-agent")
+                    misplaced = f"heroes/wave-01-voice/{parent}{environment}"
+                    repo.project(misplaced)
+                    found = lint_repo.check_heroes_layout()
+                self.assertEqual(len(found), 1)
+                self.assertEqual(found[0].path, f"{misplaced}/pyproject.toml")
+
+    def test_environment_marker_outside_a_project_does_not_hide_a_project(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            misplaced = "heroes/wave-01-voice/venv"
+            repo.project(misplaced)
+            (repo.root / misplaced / "pyvenv.cfg").write_text("home = /python\n")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].path, f"{misplaced}/pyproject.toml")
+
+    def test_nested_authored_project_is_still_reported(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            project = "heroes/wave-01-voice/projects/handle-agent"
+            repo.project(project)
+            repo.project(f"{project}/nested-agent")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertIn("nested-agent/pyproject.toml", found[0].path)
+        self.assertIn("skipped by every check", found[0].message)
+
     def test_missing_charter_is_reported(self):
         with FakeRepo() as repo:
             self._wave(repo, "wave-01-voice", charter=False)
