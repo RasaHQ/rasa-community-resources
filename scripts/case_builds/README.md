@@ -36,7 +36,7 @@ Server logs and raw usage logs stay in `case-build/results/raw/` (gitignored).
 |---|---|
 | Turn latency | REST: request sent to full response received. Voice: end of caller speech to first bot audio with sound (see Voice builds). |
 | Tokens per call | The provider's usage block, as LiteLLM parses it, captured by a LiteLLM `CustomLogger` inside the agent process (`usage_launcher.py`). Reasoning and cached tokens are recorded when the provider reports them. |
-| Cost | LiteLLM's `response_cost` for each call, priced from LiteLLM's bundled price map (`LITELLM_LOCAL_MODEL_COST_MAP=True`). The price row used is written to the usage log. A model the map lacks can be given the vendor's published price in the spec (`model_price`); it is registered with LiteLLM only when the map has no row for it, LiteLLM still does the arithmetic (cache reads and writes included), and the summary names the source. Otherwise a call LiteLLM cannot price leaves the cost `null` and the report says the total is incomplete; the harness never estimates. |
+| list-price cost from token counts | LiteLLM's `response_cost` for each model call is calculated from the provider's token counts and a price row. Retain the provider's published list prices and their date/source with the run. The row comes from LiteLLM's bundled map (`LITELLM_LOCAL_MODEL_COST_MAP=True`) or the spec's `model_price` when the map lacks the model; the usage log records which row was used, including cache-read/write rates. A missing price leaves the cost `null` and the total incomplete. Missing token evidence must be disclosed; it is not a measured zero-charge result. This is price-derived usage, not an observed provider-billed charge. |
 | Cross-check | Rasa's own per-conversation token total, `GET /conversations/<id>/engine_tokens`, enabled with `RASA_FEATURE_FLAG_SIM_EVAL_EXTENDED=true`. Stored per conversation next to the LiteLLM figures. |
 | Attribution | Main-loop calls carry the conversation id from Mantle's turn context. Side-channel calls that run after the reply (fact discovery after a skill switch) carry it in Rasa's structlog context. Anything else is counted as unattributed; its cost is still in the run total. |
 | Log events | Structured server-log lines whose `event` is listed in the spec's `log_events` and whose `conversation_id` or `sender_id` is the conversation. |
@@ -101,8 +101,9 @@ Verbatim responses are excluded.
 
 ## Budget
 
-`--budget-usd` caps the build's total recorded spend in its ledger, across
-runs. Before each conversation the harness projects its cost from the run's
+`--budget-usd` limits the build's recorded price-derived total in its ledger,
+across runs; it is not a provider-enforced ceiling on billed charges. Before
+each conversation the harness projects its cost from the run's
 cost per turn so far (or `prior_cost_per_turn_usd` for the first one) with a
 1.5x margin, and skips it if the projection crosses the cap. An interrupted
 run still writes its spend to the ledger.
