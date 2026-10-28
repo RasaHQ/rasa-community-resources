@@ -212,7 +212,7 @@ than no claim at all.
    `intent.details` was empty on every real handoff and the desk still asked
    "which account is this about?" — while the eval suite reported green, because
    it built its own session dict containing the key. Green tests, false claim;
-   the same shape RULING-007 landed on. The fix was not just adding the key: it
+   the same shape as an earlier review finding. The fix was not just adding the key: it
    was `test_the_agent_path_retires_every_desk_question`, which parses the
    agent's *actual* `_MEMORY_KEYS` and the dispute skill's *actual*
    `memory.set` calls and drives the assertion from those, so the claim is

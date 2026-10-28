@@ -1,6 +1,5 @@
 # Managed specialist worker
 
-
 Use the [maintained example launcher](README.md): from the example directory,
 run `make setup`, then `make run`. It owns the worker, authenticated MCP transport,
 actual Mantle Inspector and shutdown. Do not combine the launcher with an older

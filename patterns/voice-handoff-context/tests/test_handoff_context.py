@@ -414,7 +414,7 @@ class TestTheAgentPathSpecifically(unittest.TestCase):
 class TestStatedLimits(unittest.TestCase):
     """The allowlist's limits, asserted so the README cannot overclaim.
 
-    RULING-007 landed because a repository asserted a property nothing checked.
+    An earlier review finding landed because a repository asserted a property nothing checked.
     The inverse discipline applies here: the README says the allowlist does NOT
     police free text, and that statement is tested too — a claim about a
     limitation is still a claim.

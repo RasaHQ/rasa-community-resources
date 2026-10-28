@@ -177,7 +177,7 @@ class TestStaleDocVersionsIgnoreMarker(unittest.TestCase):
     Without the exemption, the only way an upgrade illustration could pass
     the stale-version scan was to rewrite its FROM side to the current pin,
     which produces degenerate `X → X` prose that teaches nothing — the same
-    defect shape RULING-004/F-A caught in a tutorial's landed bytes.
+    defect shape a review caught in a tutorial's landed bytes.
     """
 
     def _project_with_readme(self, text: str) -> "rasa_projects.Project":
