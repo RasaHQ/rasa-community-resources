@@ -2,7 +2,7 @@
 
 # mantle-factory-v1: a small software factory whose product is a Rasa Mantle agent
 
-The factory for the Rasa Mantle masterclass in this pack. The loop is the one from the technology-neutral course "Towards Dark Software Factories" on profrod.ai: **task -> isolated change -> independent verification -> decision.** The product is a Mantle project, and the independent verification asks the real Mantle engine.
+The factory for the Rasa Mantle masterclass in this pack. The loop is the one from the technology-neutral course "Towards Dark Software Factories": **task -> isolated change -> independent verification -> decision.** The product is a Mantle project, and the independent verification asks the real Mantle engine.
 
 **Pinned engine:** `rasa-pro==3.21.0.dev5` (a pre-release). No model call, no Rasa license, no network after install, and none of your environment variables reach a check. Python 3.11 or 3.12.
 

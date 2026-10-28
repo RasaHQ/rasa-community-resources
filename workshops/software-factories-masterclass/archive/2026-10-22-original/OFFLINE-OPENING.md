@@ -1,6 +1,6 @@
-# Offline opening: the 14:30 and 14:40 blocks without profrod.ai
+# Offline opening: the 14:30 and 14:40 blocks without the online lessons
 
-The first two blocks of `FACILITATOR.md` run from this page, with or without a network. profrod.ai Lessons 1 and 2 cover the same ideas with different exercises; they are background reading, not part of these blocks. Everything here runs from this repository after `uv sync --frozen`. Nothing runs against a live model.
+The first two blocks of `FACILITATOR.md` run from this page, with or without a network. The background Lessons 1 and 2 cover the same ideas with different exercises; they are background reading, not part of these blocks. Everything here runs from this repository after `uv sync --frozen`. Nothing runs against a live model.
 
 ## 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
 
@@ -35,4 +35,4 @@ The pack's own factory is the toy. Run from `factory/`:
 
 Say: the third candidate ends the process early with status 0 and the first factory takes that for a pass. The second factory requires the test runner's own closing lines. A grader is code too, and it has to be graded.
 
-Run folder names must be new each time: the factory refuses to reuse one. This is the pack's analogue of profrod.ai Lessons 1 and 2, not a copy of them.
+Run folder names must be new each time: the factory refuses to reuse one. This is the pack's analogue of the background Lessons 1 and 2, not a copy of them.

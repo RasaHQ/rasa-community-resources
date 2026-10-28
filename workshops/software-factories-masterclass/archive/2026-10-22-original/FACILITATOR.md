@@ -2,13 +2,13 @@
 
 Thursday 22 October 2026, 14:30 to 17:30 London time (13:30 to 16:30 UTC), in person, three hours. You are the facilitator and this is your script. The one-page version for the table is `FACILITATOR-CARD.md`.
 
-Status: DRAFT 2026-10-18. The author ran every command below, in order, on a Mac, through `factory/rehearse.py` (27 of 27 steps matched, 80 to 100 seconds in all; each step checks its output and its exit status, and the steps that state a landing line also check it; `--self-check` runs stub commands to show that a wrong exit status, wrong output, a weakened variant table or a RAISED line fails a step), with the pinned environment (`rasa-pro` 3.21.0.dev5), and the outputs match what the script says. That run was the author's, not yours: rehearse it on your own machine ("Before the day"). The author did not run the profrod.ai lessons in the room's setting, did not run a live model and did not test the pre-synced copy on a second machine.
+Status: DRAFT 2026-10-18. The author ran every command below, in order, on a Mac, through `factory/rehearse.py` (27 of 27 steps matched, 80 to 100 seconds in all; each step checks its output and its exit status, and the steps that state a landing line also check it; `--self-check` runs stub commands to show that a wrong exit status, wrong output, a weakened variant table or a RAISED line fails a step), with the pinned environment (`rasa-pro` 3.21.0.dev5), and the outputs match what the script says. That run was the author's, not yours: rehearse it on your own machine ("Before the day"). The author did not run the background lessons in the room's setting, did not run a live model and did not test the pre-synced copy on a second machine.
 
 The room is unknown: 5 to 40 people, so everything is done in pairs or small groups of up to four. With 5 people, sit them at one table but work as a pair and a group of three; with 40, ten tables of up to four. You work the room, not the screen.
 
 ## What the room leaves with
 
-1. A factory they ran: a task, an isolated change, a protected check, a decision (`factory/factory.py`). The method is the one in profrod.ai Lessons 1 and 2, run here with this pack's own commands.
+1. A factory they ran: a task, an isolated change, a protected check, a decision (`factory/factory.py`). The method is the one in the background Lessons 1 and 2, run here with this pack's own commands.
 2. One failure no test of their own would catch: a Mantle confirmation gate that compiles away with no engine finding (`factory/show_gate.py`).
 3. A vendor agent behind a tool boundary: its answer is advice, and the write that follows still waits for a person (`openai-mcp/`). The vendor in the room is a stub.
 4. A coding agent's work, read and judged, from the 18 recorded runs.
@@ -25,7 +25,7 @@ Do these on the machine and network you will use, at least a day before.
 - [ ] Clone this repository and note the commit. Participants use that commit. There is no zip.
 - [ ] From `workshops/software-factories-masterclass/factory/`: `uv sync --frozen`, then `uv run python factory.py tasks/a1-block-card.json candidates/block-card-good runs/check`. Expect ACCEPT. (The author's four-factory-run block took 82 seconds including the first import.)
 - [ ] `uv sync` downloads about 750 MB. Do not do it in class. The fallback is a pre-synced copy of the cloned folder, including `factory/.venv`, on two USB drives. It is not reliable: a venv holds an absolute path to the interpreter of the machine that made it, so it may fail on another laptop, and the author has not tested it on a second machine. A sturdier fallback is the uv cache and the managed Python on the drive, then `uv sync --frozen --offline` on each laptop; that is also untested. Test whichever you choose on a spare laptop of each kind that will be in the room, and where it fails, have those people sync at home or pair up.
-- [ ] Rehearse: from `factory/`, `uv run python rehearse.py`. It runs the commands of every block in session order, offline (the two opening blocks as `OFFLINE-OPENING.md` teaches them, not the profrod.ai lessons), and prints the time and result of each block. A step passes only if its output and its exit status both match. `uv run python rehearse.py --self-check` proves that rule on stub commands. It exits 0 only if all 27 steps match. Run it on the machine you will present from, and keep the printout.
+- [ ] Rehearse: from `factory/`, `uv run python rehearse.py`. It runs the commands of every block in session order, offline (the two opening blocks as `OFFLINE-OPENING.md` teaches them, not the background lessons), and prints the time and result of each block. A step passes only if its output and its exit status both match. `uv run python rehearse.py --self-check` proves that rule on stub commands. It exits 0 only if all 27 steps match. Run it on the machine you will present from, and keep the printout.
 - [ ] Read `PREWORK.md`, the draft of the message participants get beforehand. It is yours to send or change.
 - [ ] Print `FACILITATOR-CARD.md`, one copy for you and one for each table.
 - [ ] Decide the fallback in advance (see "If something fails").
@@ -65,13 +65,13 @@ All times London. "Say" is what you say, in your words; "Show" is what is on the
 ### 14:30 A grader the builder cannot edit is the only review a dark factory has (10 min)
 
 - Say: In a dark factory the evaluation is the only review. If the builder can edit the check, the check proves nothing. A pass rate is a count with an error bar. Then say the opening line you chose in the section about what the session leaves out.
-- Show: the 14:30 section of `OFFLINE-OPENING.md`, online or not. profrod.ai Lesson 1 is background reading for the same idea.
+- Show: the 14:30 section of `OFFLINE-OPENING.md`, online or not. Online Lesson 1 is background reading for the same idea.
 - Do: Answer the one question in the offline page with your partner.
 
 ### 14:40 A forged pass fools the first factory and is rejected by the second (20 min)
 
-- Say: The forged pass you're about to run is constructed for this exercise. It isn't an agent's work. The case it stands for is a defect the agent's own tests missed. That's the one in the profrod.ai background lesson, and it's the whole course in one run.
-- Run the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository, online or not. They print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT. This is the only exercise run in the room; profrod.ai Lesson 2 is a different exercise with its own steps and is background reading, not part of this block.
+- Say: The forged pass you're about to run is constructed for this exercise. It isn't an agent's work. The case it stands for is a defect the agent's own tests missed. That's the one in the background lesson, and it's the whole course in one run.
+- Run the four commands in `OFFLINE-OPENING.md`, 14:40 section, from this repository, online or not. They print ACCEPT, REJECT, ACCEPT (the first factory is fooled), REJECT. This is the only exercise run in the room; Online Lesson 2 is a different exercise with its own steps and is background reading, not part of this block.
 - If a pair is stuck: the NOT_READY message in the terminal names the cause, almost always Python or the environment. Read it aloud.
 
 ### 15:00 The engine reports nothing when a confirmation gate has silently disappeared (30 min)

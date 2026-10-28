@@ -10,7 +10,7 @@ the expected text AND the command exits with the expected status (refusals and r
 Some steps also check the landing lines the facilitator will say aloud: the six variants that must be REJECTED
 and the one that is ACCEPTED, no engine findings, and the reason a silent-gate candidate is rejected.
 A FAIL means that block would not behave as FACILITATOR.md says on this machine.
-The two profrod.ai blocks are not here; their offline stand-in is OFFLINE-OPENING.md, which this script runs.
+The two online-lesson blocks are not here; their offline stand-in is OFFLINE-OPENING.md, which this script runs.
 Exit 0 only if every step matched.
 """
 import os
