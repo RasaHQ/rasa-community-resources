@@ -1,5 +1,4 @@
 """Unsupported machines must not produce product verdicts.
-sow: software-factories-masterclass-SOW-02
 """
 import contextlib
 import io

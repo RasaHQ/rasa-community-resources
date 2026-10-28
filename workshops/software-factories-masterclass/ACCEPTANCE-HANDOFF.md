@@ -1,6 +1,6 @@
 # V7 review handoff — based on PRs 146 and 147
 
-**Candidate, not a deployed or council-approved release.** Baseline: main `47497e7c861abd8fd2cd76ddd30a35467ee52e83`. The supplied v6 workshop matches that commit byte for byte. V7 starts from this baseline, not v5.
+**Candidate, not a deployed or approved release.** Baseline: main `47497e7c861abd8fd2cd76ddd30a35467ee52e83`. The supplied v6 workshop matches that commit byte for byte. V7 starts from this baseline, not v5.
 
 ## The rejection was correct
 

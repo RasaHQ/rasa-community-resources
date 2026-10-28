@@ -1,5 +1,4 @@
 # Acceptance scenarios v5 for "Brief me before I fly" (owner: the specification owner; kept apart from the implementation)
-sow: software-factories-masterclass-SOW-02
 Locked with SPEC-brief-me-before-i-fly-v5.md. v5 adds S17 to S20 and the factory-gate note; v4 changed only S10 from v3 (capability fallback, decided 2026-10-21). Scenario meanings are unchanged from v2; the tool is now the single briefing(action=start|get|revise) (v2 sha256 8ad308b3ee617c56730f54aa3fa1a356f0f2b51e74b181df02cb3e1819d3483b; v1 ( sha256 d71981eec8bf0612047f401e3932addd56bc3fd2d36d0deb46dbb59eb6841f2a). Each scenario is stated against the public contract only (MCP tools, widget.upsert events, data_ref); none reads implementation internals.
 Tag: [core] act 1, [m] act 2 market, [manual] rehearsal check, not automatable offline. All automatable scenarios run on labeled replay fixtures; live mode is a separate dated check, never a substitute.
 

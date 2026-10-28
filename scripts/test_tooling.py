@@ -769,7 +769,7 @@ class TestCliExitCodes(unittest.TestCase):
 
 class TestPublicAssessmentWording(unittest.TestCase):
     def test_assessor_and_pending_review_are_rejected(self):
-        for assessor in ("Cedar (Codex)", "Codex local validation; Architect review pending"):
+        for assessor in ("Cedar (Codex)", "Codex local validation; maintainer review pending"):
             text = ("Author: Rod\nAssessed on: 2026-10-11\n"
                     f"**Assessed by:** {assessor}\nVerified with: pinned native controls\n")
             with mock.patch("pathlib.Path.is_file", return_value=True), \

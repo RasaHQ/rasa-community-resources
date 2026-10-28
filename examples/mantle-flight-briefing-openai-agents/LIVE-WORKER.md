@@ -1,7 +1,5 @@
 # Managed specialist worker
 
-sow: flagship-resources-SOW-01
-sow: software-factories-masterclass-SOW-02
 
 Use the [maintained example launcher](README.md): from the example directory,
 run `make setup`, then `make run`. It owns the worker, authenticated MCP transport,

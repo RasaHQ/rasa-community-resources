@@ -244,7 +244,7 @@ class HandoffPackage:
         renderings and cannot drift. Change a field and the next read of
         ``summary`` reflects it; there is no second copy to forget to update.
 
-        This is the SOW's "derived rather than authored separately" requirement
+        This is the specification's "derived rather than authored separately" requirement
         implemented as a property rather than promised in a docstring.
         """
         return render_summary(self)

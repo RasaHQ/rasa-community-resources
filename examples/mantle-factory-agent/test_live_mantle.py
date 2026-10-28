@@ -1,5 +1,4 @@
 """Live orchestration custody and credential-redaction controls.
-sow: software-factories-masterclass-SOW-02
 """
 from pathlib import Path
 from tempfile import TemporaryDirectory

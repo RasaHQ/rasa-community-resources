@@ -1,6 +1,5 @@
 """Opt-in three-card baseline and reviewed market-card receiving seam.
 
-sow: software-factories-masterclass-SOW-02
 Normal PublicSourcesRunner remains the existing four-card product. This runner
 uses the same journey parser, Core references, tool control, Jobs and HTTP app.
 """

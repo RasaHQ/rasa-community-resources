@@ -1,6 +1,5 @@
 """Stage one independently reviewed A6 candidate; never apply or restart a service.
 
-sow: software-factories-masterclass-SOW-02
 This is a fixed receiving contract for the recorded candidate below, not an
 arbitrary Python plugin loader. Candidate tests are retained as opaque evidence.
 """

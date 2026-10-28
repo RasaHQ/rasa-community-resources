@@ -1,5 +1,4 @@
 """Existing factory pack-root and strict verifier compatibility controls.
-sow: software-factories-masterclass-SOW-02
 """
 import hashlib
 import json

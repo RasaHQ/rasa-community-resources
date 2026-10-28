@@ -1,6 +1,5 @@
 """Local class entrypoint; real Mantle inspector, explicitly scripted without keys.
 
-sow: software-factories-masterclass-SOW-02
 No installed engine files are changed. The keyless child supplies deterministic
 LLM responses at the pinned engine's LLMClient factory; everything downstream is
 actual engine orchestration, MCP, hooks and the Inspector channel.

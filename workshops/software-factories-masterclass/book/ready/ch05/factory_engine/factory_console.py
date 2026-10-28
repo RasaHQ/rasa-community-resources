@@ -1,6 +1,5 @@
 """Read-only view of ONE mantle-factory-v1 run, never an executor.
 
-sow: software-factories-masterclass-SOW-02
 """
 import argparse
 from datetime import datetime, timezone

@@ -1,6 +1,5 @@
 """Launcher controls; no provider/voice call or independent acceptance claim.
 
-sow: software-factories-masterclass-SOW-02
 """
 import asyncio
 from contextlib import redirect_stderr

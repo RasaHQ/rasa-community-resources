@@ -1,6 +1,5 @@
 # Facilitator script: "Brief me before I fly" (DRAFT v1, replaces the frozen agenda as the primary plan)
 
-sow: software-factories-masterclass-SOW-02
 
 Thursday 22 October 2026, 14:30 to 17:30 London (13:30 to 16:30 UTC), in person, three hours. The organizer decides by 10:00 UTC on Thursday 22 October: the live check or the scripted path. Run the frozen plan in `../FACILITATOR.md` at its pinned commit only if neither works, and then say nothing about this one.
 Everything marked [PRODUCT] uses the companion example `examples/mantle-flight-briefing-openai-agents`, which is merged. The participant commit and the optional facilitator commit are named in the next section. If the new session isn't selected, use the frozen pack at `95512574`.

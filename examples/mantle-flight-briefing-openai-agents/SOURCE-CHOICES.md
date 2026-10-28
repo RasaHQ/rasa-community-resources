@@ -1,6 +1,5 @@
 # Four real-source cards: implementation target
 
-sow: flagship-resources-SOW-01
 
 Operator decision v3, 22 October 2026, supersedes the constructed-only primary route. This records the selected sources and terms assessment; it does not attest that the adapters, released Core install or live smoke have passed. Core receives the adapters first. The frozen74adca16 REPLAY class remains the separate fallback.
 
@@ -41,4 +40,4 @@ adsbdb is not selected: its public route-data notice restricts copying, publicat
 
 ## Outstanding acceptance
 
-Actual Core source-adapter SOW coverage and receiving compatibility, nullable missing schedule/probability fields and explicit provenance/date metadata, recorded-response tests with named failing mutants, live keyless smoke, published Core renderer/adapters, regenerated PyPI locks, screenshots and the independent class fresh clone remain required. The market card is a finished second-act checkpoint, not specification-only work.
+Actual Core source-adapter coverage and receiving compatibility, nullable missing schedule/probability fields and explicit provenance/date metadata, recorded-response tests with named failing mutants, live keyless smoke, published Core renderer/adapters, regenerated PyPI locks, screenshots and the independent class fresh clone remain required. The market card is a finished second-act checkpoint, not specification-only work.

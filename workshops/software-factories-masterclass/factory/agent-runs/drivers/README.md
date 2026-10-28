@@ -2,7 +2,6 @@ The scripts that produced the recorded runs, as they ran. `run_claude_experiment
 
 ## Managed Agents builder and factory console
 
-sow: software-factories-masterclass-SOW-02
 
 `openai_factory_driver.py` is a current driver alongside the preserved historical
 scripts above. Give it a task, a workspace already prepared by `scratch.py`, a

@@ -1,4 +1,4 @@
-"""Deepgram Flux turn-taking fixes for the Inspector voice path (sow: software-factories-masterclass-SOW-02).
+"""Deepgram Flux turn-taking fixes for the Inspector voice path.
 
 Three defects in the pinned engine, each patched in memory (nothing under site-packages is edited):
 

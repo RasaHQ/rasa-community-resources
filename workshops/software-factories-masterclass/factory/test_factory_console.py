@@ -1,5 +1,4 @@
 """Read-only console controls; no model, keys or production services.
-sow: software-factories-masterclass-SOW-02
 """
 from datetime import datetime, timezone
 import http.client
