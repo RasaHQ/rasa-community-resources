@@ -15,7 +15,7 @@ suite the builder cannot edit, and records ACCEPT or REJECT. You run it, break
 it, hand it to an agent, and pool what the room's agents did.
 
 The technology-neutral version of the method is the course "Towards Dark
-Software Factories". This pack is the Rasa version.
+Software Factories" on profrod.ai. This pack is the Rasa version.
 
 ## What you will see
 

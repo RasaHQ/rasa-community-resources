@@ -82,7 +82,7 @@ Your job: walk the room. The three common stops are a missing license (point to 
 Say once at the start: "Keys and the license stay in your own shell or your own Git-ignored .env. Never put one in a tracked file, a tool result, a report or a chat."
 
 ### 17:20 Close (10 min)
-Show: slide 30. Say what they built and where to go next: the book chapters, and the course "Towards Dark Software Factories". Ask what stopped them, and note it for the book.
+Show: slide 30. Say what they built and where to go next: the book chapters, and the course "Towards Dark Software Factories" on profrod.ai. Ask what stopped them, and note it for the book.
 
 ## If something fails
 | What fails | What you do |
