@@ -1,0 +1,16 @@
+# Fixture integrations for rasa-pro 3.20.0.dev6, Mantle.
+# Inline llm.provider is a breaking reject. Credentials stay on the model group.
+
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-4.1-mini
+        api_key_env: OPENAI_API_KEY
+
+channels:
+  rest:
+    enabled: true

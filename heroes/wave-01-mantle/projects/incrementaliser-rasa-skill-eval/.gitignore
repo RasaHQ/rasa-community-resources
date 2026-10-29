@@ -1,0 +1,69 @@
+# Secrets and local env
+.env
+
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Fetched corpora (pins/ is committed)
+corpus/*
+!corpus/pins/
+!corpus/pins/**
+!corpus/README.md
+
+# Runs and logs. One slim snapshot is committed for the Heroes write-up.
+runs/*
+!runs/.gitkeep
+!runs/heroes_eval_20260920_182120/
+!runs/heroes_eval_20260920_182120/REPORT.md
+!runs/heroes_eval_20260920_182120/IMPROVER_DELTA.md
+!runs/heroes_eval_20260920_182120/MANIFEST.md
+!runs/heroes_eval_20260920_182120/plots/
+!runs/heroes_eval_20260920_182120/plots/*.png
+!runs/heroes_eval_20260920_182120/improved/
+!runs/heroes_eval_20260920_182120/improved/*
+!runs/heroes_eval_20260920_182120/improved/*/*
+!runs/heroes_eval_20260920_182120/improved/*/*/SKILL.md
+
+# Regenerable / duplicate / runtime subdirectories remain ignored on the PR branch
+runs/heroes_eval_20260920_182120/projected/
+runs/heroes_eval_20260920_182120/improved/*/*/config/
+runs/heroes_eval_20260920_182120/improved/*/*/scripts/
+runs/heroes_eval_20260920_182120/improved/*/*/references/
+runs/heroes_eval_20260920_182120/*.json
+runs/heroes_eval_20260920_182120/HEROES_REPORT.md
+runs/heroes_eval_20260920_182120/agents/
+runs/heroes_eval_20260920_182120/logs/
+runs/heroes_eval_20260920_182120/llama/
+runs/heroes_eval_20260920_182120/tsr/
+runs/heroes_eval_20260920_182120/nvidia/
+runs/heroes_eval_20260920_182120/deepeval/
+runs/heroes_eval_20260920_182120/eval/
+runs/**/*.log
+
+# Local GGUF weights (see scripts/download_local_llms.py)
+models/*
+!models/.gitkeep
+
+# Local llama.cpp CUDA checkout/build
+llama.cpp/
+
+# Weights & Biases local run cache
+wandb/
+
+# Rasa packaged models
+*.tar.gz
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
