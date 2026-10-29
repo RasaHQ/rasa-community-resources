@@ -41,15 +41,13 @@ pull request that adds their project.
 
 | Participant | GitHub | Project |
 |---|---|---|
-| _TBD — roster not yet announced_ | — | — |
+| Damilola P | [@phlenfyl](https://github.com/phlenfyl) | [`phlenfyl-notevs-agent`](projects/phlenfyl-notevs-agent) |
 
 ## Projects
 
-No projects have landed yet. This wave is open.
-
 | Project | What it does | Author | Verified with | Assessed on |
 |---|---|---|---|---|
-| _none yet_ | — | — | — | — |
+| [`phlenfyl-notevs-agent`](projects/phlenfyl-notevs-agent) | Chat agent for reading, searching, and managing your NoteVs VS Code notes | Damilola P | rasa-pro 3.19.0.dev5 | 2026-09-20 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a
