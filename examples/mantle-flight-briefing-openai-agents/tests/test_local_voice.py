@@ -1,5 +1,4 @@
 """Opt-in voice custody and configured listener regression tests.
-sow: software-factories-masterclass-SOW-02
 """
 import os
 import sys

@@ -1,5 +1,4 @@
 # Feature specification v5: "Brief me before I fly" (spec owner: the specification owner)
-sow: software-factories-masterclass-SOW-02
 v5 (15:4xZ): fixes the normative references found in review MC120-F1 and F2; adds the key and provider rules of the decision of 2026-10-21 (section 7) and scenarios S17 to S20. The product contract is otherwise v4. v4 locked Wed 21 Oct 2026 14:1xZ (capability fallback, decided 2026-10-21: no published Mantle wheel has the metadata seam). v4 changes ONLY the job-binding wording in section 3 and scenario S10; the tool is still the one tool briefing. v3 (one tool) changed section 3 earlier. v2 (sha256 5330a60628e773926615cc1db4a27a323462a60e8879bd68494ab81b6180e8da) and v1 (sha256 0dbfeb92c64cadf044f5046c1e16ca288fa14d8b751ab0d1b8c683d4e69dbb78) are superseded; the 12:22Z desk-widgets plan too.
 v2 text follows. Supersedes v1 (sha256 0dbfeb92c64cadf044f5046c1e16ca288fa14d8b751ab0d1b8c683d4e69dbb78) and the 12:22Z desk-widgets plan.
 CHANGES FROM v1 (change of 2026-10-21 (brief v2, sha256 d6863de69dd7767c47a1c3851ec3ff01fb70e6cd124464d9391c0cf41662d5b5)):

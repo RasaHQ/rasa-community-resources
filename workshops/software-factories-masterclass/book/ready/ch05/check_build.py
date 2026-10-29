@@ -1,5 +1,4 @@
 """Check the reader's task, native outcome and exact exported factory attempt.
-sow: software-factories-masterclass-SOW-02
 """
 import json
 from pathlib import Path

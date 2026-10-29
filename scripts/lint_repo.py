@@ -458,7 +458,7 @@ def check_resource_metadata(projects: list[Project]) -> list[Finding]:
                         f"metadata block is missing {key!r}",
                     )
                 )
-        if re.search(r"Assessed by:\*{0,2}[^\n]*\(Codex\)|Architect review pending", text, re.I):
+        if re.search(r"Assessed by:\*{0,2}[^\n]*\(Codex\)|maintainer review pending", text, re.I):
             findings.append(Finding(
                 "resource-metadata", _rel(readme), None,
                 "name the qualification checks, not a model assessor or pending review",

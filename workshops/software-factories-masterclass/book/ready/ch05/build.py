@@ -1,5 +1,4 @@
 """Run one builder through the existing factory, then export its accepted attempt.
-sow: software-factories-masterclass-SOW-02
 """
 import argparse
 import importlib.util

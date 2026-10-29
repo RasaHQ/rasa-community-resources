@@ -1,6 +1,5 @@
 """One managed Agents session over confined scratch-file tools, then the existing factory.
 
-sow: software-factories-masterclass-SOW-02
 The model never receives a shell, a network tool, a protected suite or verifier records.
 """
 import argparse

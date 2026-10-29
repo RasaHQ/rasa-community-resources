@@ -1,5 +1,4 @@
 """Offline Core/Jobs/HTTP proof; no provider call, process restart or live acceptance.
-sow: software-factories-masterclass-SOW-02
 """
 import asyncio
 from datetime import datetime, timedelta, timezone

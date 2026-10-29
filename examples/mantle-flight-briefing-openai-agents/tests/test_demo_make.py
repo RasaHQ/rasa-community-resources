@@ -1,6 +1,5 @@
 """Make target controls, synthetic credentials and owned local processes only.
 
-sow: software-factories-masterclass-SOW-02
 """
 from contextlib import chdir, redirect_stdout, redirect_stderr
 import io

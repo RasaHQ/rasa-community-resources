@@ -1,5 +1,4 @@
 """Regression: SCRIPTED must run after setup without the optional LIVE worker.
-sow: software-factories-masterclass-SOW-02
 """
 from argparse import Namespace
 from datetime import datetime, timedelta, timezone

@@ -1,6 +1,5 @@
 """Offline A6 control through the released run_native adapter and the real factory.
 
-sow: software-factories-masterclass-SOW-02
 The SDK-shaped stream supplies a labelled teaching action, not model-generated code.
 There is no OpenAI client, API key read or network request.
 """

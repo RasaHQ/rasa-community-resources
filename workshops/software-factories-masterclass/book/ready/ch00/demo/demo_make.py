@@ -1,6 +1,5 @@
 """Friendly Make targets and checkout-owned lifecycle controls.
 
-sow: software-factories-masterclass-SOW-02
 """
 import errno
 import json

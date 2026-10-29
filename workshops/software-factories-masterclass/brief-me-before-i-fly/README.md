@@ -2,7 +2,6 @@
 
 # Brief me before I fly: the Mantle side, graded offline
 
-sow: software-factories-masterclass-SOW-02
 
 Status: DRAFT for the Thursday 22 October session. Not in the frozen pack read on 21 October 12:03Z; added as a routed delta.
 

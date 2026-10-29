@@ -1,5 +1,4 @@
 """Quote the validated factory tool result instead of a model-authored verdict.
-sow: software-factories-masterclass-SOW-02
 """
 import json
 import math

@@ -1,4 +1,4 @@
-"""Fixed-byte staging controls, not a new live run. sow: software-factories-masterclass-SOW-02"""
+"""Fixed-byte staging controls, not a new live run."""
 import hashlib
 import json
 import os

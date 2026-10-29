@@ -1,5 +1,4 @@
 """Clean setup and isolated-port regression checks.
-sow: software-factories-masterclass-SOW-02
 """
 from argparse import Namespace
 from datetime import datetime, timedelta, timezone

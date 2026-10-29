@@ -1,5 +1,4 @@
 """Backend voice qualification is explicit when either dependency pin changes.
-sow: software-factories-masterclass-SOW-02
 The private engine repair itself remains byte-equal to the qualified v1.
 """
 from importlib.metadata import PackageNotFoundError, version

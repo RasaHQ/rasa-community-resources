@@ -1,5 +1,4 @@
 """Injected native-boundary and actual filesystem confinement controls.
-sow: software-factories-masterclass-SOW-02
 """
 import importlib.util
 import json

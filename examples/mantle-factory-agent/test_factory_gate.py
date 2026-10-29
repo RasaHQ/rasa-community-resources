@@ -1,4 +1,4 @@
-"""Real protected-gate integration cases. sow: software-factories-masterclass-SOW-02"""
+"""Real protected-gate integration cases."""
 import hashlib
 import json
 import os

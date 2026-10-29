@@ -329,7 +329,7 @@ The number is not the argument, though. Two properties are:
    `step-02-check-balance/skill.md` against the shipped
    `skills/check_balance/skill.md`: they differ substantively, and correctly —
    the snippet is the pre-constraints version that step-03 then upgrades. So
-   they cannot be generated, and a generator (RULING-011 approach C) does not
+   they cannot be generated, and a generator does not
    remove this cost.
 2. **Nothing checks them.** `grep -c snippet scripts/lint_repo.py` returns 0.
    No gate verifies a snippet still corresponds to the project it teaches. It
@@ -390,7 +390,7 @@ Mantle. A green suite here is not evidence. This half is a permanent ban unless
 the engine changes.
 
 `rasa test e2e` files MAY ship — as **observations, never as the proof of a
-guarantee** (RULING-010; `patterns/voice-auth-stepup/tests/e2e/tiering.yml` is
+guarantee** (`patterns/voice-auth-stepup/tests/e2e/tiering.yml` is
 the model, and its header comment is the required shape: the file itself says
 what it can and cannot establish). An e2e pass says the model chose well on one
 sampled run; it catches a guard that is correct but unreachable, which a direct

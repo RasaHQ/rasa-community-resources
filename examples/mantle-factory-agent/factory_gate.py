@@ -1,6 +1,5 @@
 """Scripted and LIVE teaching requests through the existing protected factory.
 
-sow: software-factories-masterclass-SOW-02
 SCRIPTED is keyless. LIVE uses the existing Chapter 5 Agents API builder in a
 separate worker, with the key in that child only. Neither mode integrates code
 into the running product.
