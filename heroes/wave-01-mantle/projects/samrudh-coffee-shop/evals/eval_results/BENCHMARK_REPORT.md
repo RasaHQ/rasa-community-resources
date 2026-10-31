@@ -30,13 +30,16 @@ This report documents the performance progression of the **Artisan Roast Coffee 
 * **API Calls**: 78 calls
 * **Key Observations**: Upgrading Rasa Pro introduced stricter engine schema validation on tool arguments (e.g. `category="coffee beans"` failed validation against `Beans`) and memory locks, temporarily causing a pass rate drop before skill adaptation.
 
-### Phase Z: Refactored Skills & `complete_when` (`rasa-pro==3.20.0`)
+### Phase Z: Refactored Skills & `complete_when` (`rasa-pro==3.20.0.dev9`)
 * **Overall Pass Rate**: **80.0%** (12/15)
 * **API Calls**: 71 calls
 * **Key Improvements**:
   1. **Single-Turn Default Combination Prompting**: Reduced turn count and solved consecutive ordering failures (**0% $\rightarrow$ 100%**).
   2. **`complete_when` Frontmatter Mappings**: Handled skill lifecycle deterministically.
   3. **Category Normalization**: Fixed tool parameter validation errors (**0% $\rightarrow$ 100%** on Op 5).
+
+> [!NOTE]
+> **Provenance & Version Note**: The historical Phase Z benchmark run (80.0% pass rate, 12/15 passed, 71 LLM calls) was generated under `rasa-pro==3.20.0.dev9`. The reference project codebase itself is pinned to the stable release `rasa-pro==3.20.0` (in `pyproject.toml` and `uv.lock`). To maintain historical accuracy without running unnecessary paid evaluations, these benchmark results retain their original run environment.
 
 ---
 

@@ -29,6 +29,8 @@ We evaluated the Coffee Shop Agent across **5 operational dialogue scenarios** (
 | **Overall Pass Rate** | **46.7%** (7/15) | **20.0%** (3/15) | **80.0%** (12/15) | **+33.3% vs X (+60.0% vs Y)** |
 | **LLM API Calls Consumed** | 77 calls | 78 calls | **71 calls** | **-6 calls (-7.8%)** |
 
+> *Note: Phase Z evaluation was historically executed on `rasa-pro==3.20.0.dev9`; the project is pinned to `rasa-pro==3.20.0` for distribution.*
+
 ---
 
 ## Key Learnings & Rasa Pro Best Practices
