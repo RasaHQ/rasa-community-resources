@@ -49,7 +49,13 @@ The wording can differ a little. The meaning must match. If any row does not mat
 
 ## Minutes 10 to 30: the Studio path
 
-Studio takes a long time to start the first time: a cold start took about 9 minutes (533 seconds) after the codespace was ready. So start Studio the day before, as in `ATTENDEE-PACK-PREWORK.md`, step 4, and stop the codespace. If you did not, start it now and do the Mantle path while it starts. Follow `workshops/software-factories-masterclass/router-helper/studio/STEPS.md` in the repository. Start Studio first in a codespace terminal:
+Studio starts by itself, in the background, as soon as your codespace is created. A cold start took about 9 minutes, so do the Mantle path first and come back. Check on it any time:
+
+```bash
+bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/studio-status.sh
+```
+
+When it says `Studio is ready.`, it prints two addresses. If it says Studio did not start, it shows the last lines of the log (`~/studio-start.log`); tell the presenter. Then follow `workshops/software-factories-masterclass/router-helper/studio/STEPS.md` in the repository. If you need to start Studio yourself, run this in a codespace terminal:
 
 ```bash
 bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/start-studio.sh

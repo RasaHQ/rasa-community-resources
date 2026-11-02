@@ -28,5 +28,7 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/workshops/software-factories-masterclass",
   // onCreateCommand runs when a prebuild is made and reads no key. postCreateCommand runs for the person, with their secrets.
   "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/install.sh\"",
+  // postStartCommand runs after creation and on every start, with the person's own secrets. It starts Studio in the background.
+  "postStartCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/start-studio-background.sh\"",
   "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/setup.sh\""
 }
