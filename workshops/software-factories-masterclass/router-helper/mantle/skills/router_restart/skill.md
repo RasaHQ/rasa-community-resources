@@ -6,6 +6,7 @@ description: >
   stuck, can you restart it".
 tool_constraints:
   - restart_router:
+      on_success: utter_restart_sent
       requires_confirmation:
         enabled: true
         utter_for_confirmation: utter_confirm_restart
