@@ -6,7 +6,7 @@ Three hours. Minutes count from the start. This sheet is for the session that us
 
 ## The one small agent: the router restart helper
 
-Everyone builds the same small agent. A customer says "restart my router". The helper asks them to confirm, then records a restart command and nothing else. It never records a factory reset, which would erase the customer's Wi-Fi name and password. The workshop simulates the command. It does not contact a router or change anyone's internet connection.
+Everyone builds the same small agent, and later an agent that uses the OpenAI Agents API (application programming interface, or API). A customer says "restart my router". The helper asks them to confirm, then records a restart command and nothing else. It never records a factory reset, which would erase the customer's Wi-Fi name and password. The workshop simulates the command. It does not contact a router or change anyone's internet connection.
 
 Why this agent:
 
@@ -155,14 +155,15 @@ These are peer-reported observations from the workshop team's test codespaces. T
 |---|---|---|---|
 | Mantle first win, cold | Source `81dc3efa`, Linux codespace, 4 CPU and 16 GiB, no prebuild, tester account, automated browser (Nov 2) | Codespace requested 04:03:16Z, setup finished 04:09:36Z, install and train 27 seconds, working restart confirmation 04:13:44Z, 10 minutes 28 seconds from opening. All four checks behaved. | A fresh account, an unaided person, and a different room network |
 | Mantle tool calls | Same run | Expanded event cards: one sent `REBOOT` after consent, none after a denial or for reset requests, and no router was contacted (mock tool) | A real device |
-| Studio start, cold | Same codespace, Studio 1.15.2, model service 3.15.8 | Launcher healthy at 04:19:18Z, 16 minutes 02 seconds from opening | The background start in the final design, timed |
+| Studio start, cold | Same codespace, Studio 1.15.2, model service 3.15.8 | Launcher healthy at 04:19:18Z, 16 minutes 02 seconds from opening and about 9 minutes after the setup finished. Startup time varies, so the pack uses a readiness check. | The background start in the final design, timed |
 | Studio authoring by hand | Same run, manual launch | Restart-only flow saved at 04:43:35Z after QA tooling errors. This missed minute 30. | Not a learner number |
 | Studio import | Studio 1.15.2, Mantle environment CLI 3.21.0.dev5, warm | Configuration, login, and upload succeeded, 11.8 seconds for the CLI. The import script, unmodified, then finished in 33 seconds on a healthy licensed 4-core Studio (configuration at 10.6 seconds, login at 20.3, upload at 31.8). The imported assistant exists and shows the restart flow. | Cold start of this exact design with a new account, and an unaided person. The warm end-to-end run (import script, wording edit that survived a reload, training with Draft selected in 37 seconds, then a chat showing the edited confirmation and the exact REBOOT acknowledgement) passed on a healthy licensed 4-core Studio. |
 | Studio trained export | Studio 1.15.2 and model service 3.15.8 | The exported restart flow trained in 38 seconds, and chat confirmed and recorded `REBOOT` | The same on the imported copy |
 | First check | Mac, Python only | Passed on the real Studio export and on the Mantle tool file. Five tests pass. | An attendee's downloaded export, and a run-time trace |
-| Gate | Mac, Python only | Seven tests pass: ACCEPT for the good change, REJECT by name for each bad one, no file written by a change that tries | A change a real builder wrote, and Linux |
+| Gate | Mac, Python only | Seven tests pass: ACCEPT for the good change, REJECT by name for each bad one, no file written by a change that tries | Linux, and a change written through the tool server on a workshop key (one existing-key builder file was accepted, see the builder row) |
 | Chapter 6 gate on Linux | Linux codespace, operator run | Wrapper proven, 11 of 11 isolation tests, 5 gate tests OK, good ACCEPT, ignores-limit REJECT | The router helper's gate on Linux |
-| Builder and tool server | Mac, with stand-ins and no key | The tool server's cancel and one-build-at-a-time behavior passes 2 tests. A builder run on an existing key took 27.5 seconds and produced a 114-byte file that the gate accepted. | A run on a workshop key through the tool server, and the Mantle and Studio wiring |
+| Tool server behavior | Mac, Python only, stand-ins and no key | Cancel and one-build-at-a-time behavior passes 2 tests | Anything with a real key |
+| Builder, live key | Existing key, run through `builder.py` alone, not through the tool server (platform not recorded in this sheet) | One run took 27.5 seconds and produced a 114-byte file. The same gate as above judged it ACCEPT. | A run on a workshop key through the tool server, and the Mantle and Studio wiring |
 
 ## Appendix: what the room needs
 

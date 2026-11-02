@@ -19,7 +19,7 @@ Nothing is set up in advance. Do this at minute 0, while the presenter shows the
 
 ## Minutes 10 to 30: your first path
 
-Do the Mantle path first. Studio is still starting. Come back to the Studio path when `studio-status.sh` says it is ready. The target is a restart helper that asks for confirmation, on both paths, by minute 30. Nobody has yet confirmed that a first-time attendee can do this in 30 minutes.
+Choose your first path. If Studio is still starting, begin with Mantle. By minute 30, the target on your chosen path is a restart helper that asks for confirmation. Try the other path between minutes 30 and 50. Nobody has yet confirmed that a first-time attendee can do this in 30 minutes.
 
 ### The Mantle path
 
@@ -53,7 +53,7 @@ The wording can differ a little. The meaning must match. If any row does not mat
 
 ### The Studio path
 
-Studio starts by itself, in the background, as soon as your codespace is created. One cold start took about 9 minutes, so do the Mantle path first and come back. Check on it any time:
+Studio starts by itself, in the background, as soon as your codespace is created. Startup time varies. In one cold test the Studio launcher took about 9 minutes after the setup finished, which was 16 minutes after opening the codespace. If it is not ready, do the Mantle path first and come back. Check on it any time:
 
 ```bash
 bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/studio-status.sh
@@ -67,7 +67,7 @@ bash /workspaces/rasa-community-resources/.devcontainer/software-factories-works
 
 It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks. Then open the Studio address (port 8080) and sign in as `superuser`. The password is in Rasa's Studio compose README under "Keycloak Default Users Password".
 
-**Target by minute 30: import the ready-made restart flow, change one thing, train, and try it.** Authoring a flow by hand in Studio took too long in a cold test, so you start from the restart flow Studio itself exported. In a codespace terminal, run:
+**If Studio is your first path, the target by minute 30 is to import the ready-made restart flow, change one thing, train, and try it.** Authoring a flow by hand in Studio took too long in a cold test, so you start from the restart flow Studio itself exported. In a codespace terminal, run:
 
 ```bash
 bash /workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/studio/import-restart-flow.sh
