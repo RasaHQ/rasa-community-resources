@@ -37,7 +37,8 @@ and returns the dictionary {"operation": "check_line_status", "status": "ok", "c
 It must not send a restart or a factory reset, and it must not change any state."""
 
 OUTPUT_PATH = "/workspace/outputs/check_line_status.py"
-SCRATCH = Path("scratch")
+# Anchored to this file, not the current folder, so the saved path is absolute and the same wherever the server was started.
+SCRATCH = Path(__file__).resolve().parent / "scratch"
 # One build may not run longer than this, and one request to OpenAI may not wait longer than REQUEST_SECONDS.
 # MAX_SECONDS is checked when an event arrives, so it is not a hard limit on the whole build: the last event can take up to
 # REQUEST_SECONDS more, and the artifact download comes after it. Closing the stream does not confirm that the hosted session ended.

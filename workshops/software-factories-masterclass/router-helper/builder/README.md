@@ -4,7 +4,7 @@
 2. Your OpenAI key (the `OPENAI_API_KEY` Codespaces secret) needs the permissions `api.agents.read`,
    `api.agents.write`, and `api.responses.write`. Never paste it into a file or a command.
 3. Edit `INSTRUCTIONS` in `builder.py`, then run `~/.venv-builder/bin/python builder.py`. Watch the session's
-   events. Each build writes to its own folder, `scratch/build-<id>/check_line_status.py`, and prints the file's path and sha256. Use that exact path.
+   events. Each build writes to its own folder, `scratch/build-<id>/check_line_status.py` next to `builder.py`, and prints the absolute the file's path and sha256. Use that exact path.
 4. Start the tool server in a second terminal: `~/.venv-builder/bin/python builder_server.py`.
 
 **Mantle path.** Copy the `change_builder` folder next to this file into your agent's `skills/` folder
