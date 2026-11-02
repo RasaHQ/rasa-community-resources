@@ -119,7 +119,9 @@ You build: your builder agent, and the connection to it.
 You see: the session's events, then the helper calling your builder and showing the proposed change.
 Complete at minute 115: a request goes in and a proposed change comes out.
 
-Proof so far: nothing here has been run by anyone for this workshop on a workshop key, and the code for this block is not written yet. The existing live builder (chapter 5 of the book) runs the same kind of session, and its protected path is macOS only.
+The code is in `router-helper/builder/`: `builder.py` (your agent, with the instructions you edit) and `builder_server.py` (the tool server), with a README for the Mantle and Studio wiring.
+
+Proof so far: nothing here has been run by anyone for this workshop on a workshop key. The code follows OpenAI's Agents API quickstart and its page on files, and Rasa's MCP docs. The existing live builder (chapter 5 of the book) runs the same kind of session, and its protected path is macOS only.
 
 ## Minutes 115 to 140: the gate
 
@@ -128,7 +130,9 @@ Run the protected check on your builder's change. Then run it on a deliberately 
 You see: one ACCEPT, one REJECT, and the name of the failing test.
 Complete at minute 140: a line that can say no.
 
-Proof so far: a Linux path for the chapter 6 gate has passed its refusal tests on macOS and Linux. The real accept and reject cases have not been judged on Linux yet. The checks for the router helper are not written yet.
+The gate is `router-helper/gate/gate.py`, with a good change and two bad ones in `router-helper/gate/candidates/`. It refuses a change that imports the network or process modules, names a restart or factory-reset command, or returns the wrong answer, and it runs the change under a no-network wrapper that was proven by behavior and checked against its pinned hash before use. It prints the name of the test that rejected a change and exits 2, judging nothing, when it cannot prove the wrapper.
+
+Proof so far: the gate's five tests pass on a Mac, including ACCEPT for the good change, REJECT by name for each bad one, and no judgment when the isolation helper has been edited. It has not been run on Linux or on a change that a real builder wrote. The Linux path for the chapter 6 gate has passed its refusal tests on macOS and Linux.
 
 ## Minutes 140 to 160: release
 
