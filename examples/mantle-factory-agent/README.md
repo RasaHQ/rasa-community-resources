@@ -6,7 +6,7 @@ Here you run it in scripted mode, which needs no OpenAI key. A live coding build
 
 ## What you need
 
-- A Mac. The locked tests run inside macOS `sandbox-exec`. Without it the factory says NOT_READY and never claims ACCEPT.
+- A machine with a proven no-network wrapper: macOS `sandbox-exec`, or on Linux `unshare` or bubblewrap (see `isolation.py` in the chapter 6 folder). A wrapper counts only after it runs Python and stops a connection to a local listener. Without one the factory says NOT_READY and never claims ACCEPT.
 - Python 3.12 and `uv`. Other Python versions are not supported.
 - This example runs on Rasa Pro 3.21.0.dev5, the same as the travel example in `examples/`. Chapter 0 of the book runs on 3.21.0.
 - For the live run only: your own OpenAI API key. Rasa Mantle has no model of its own, but in this example Mantle's choice of tool is scripted, so the key is used only by the coding builder.
@@ -76,7 +76,7 @@ Use the opt-in local command below. A patched runtime completed a Deepgram audio
 
 ## Troubleshooting
 
-- **NOT_READY, "requires macOS sandbox-exec":** run on a Mac, or pair with someone who has one.
+- **NOT_READY, "needs a proven no-network wrapper":** on Linux, check that `unshare --net` works for your user (or with `sudo -n`), or install `bubblewrap`. Otherwise run on a Mac. The gate never skips the check.
 - **NOT_READY, "could not run to completion":** read the reason in the reply. In the scripted run you can type request 1 again. In the live run, another try can fund another build, so choose the scripted run first. If it repeats, a protected file may have changed: restore it from a fresh clone.
 - **"Port in use":** the demo uses 8947, 5007 and 8948. Another program is using one of them. Stop it only if you know what it is, or wait until it is free.
 - **"License missing":** export `RASA_LICENSE` in the same terminal where you run `./demo run`.
@@ -127,6 +127,8 @@ To let the actual OpenAI Mantle model interpret free phrasing and choose the fac
 Ask “Can you limit the market card to three currencies?” and then “Try the version that ignores the limit”. The model chooses one of the closed factory request kinds; it cannot supply code, paths or modes. The first request starts a funded Agents API build followed by the protected gate. The second judges the supplied bad attempt with zero builder calls. Only actual gate results establish ACCEPT or REJECT; nothing is deployed. A build is normally about one to two minutes and up to about 1.50 USD as an estimate, not a spending cap. Failures are reported without an automatic funded retry.
 
 For voice, add DEEPGRAM_API_KEY to the same owner file and `--voice`. Text qualification and physical microphone qualification are separate. The default `--mantle-mode SCRIPTED` remains the teaching fallback.
+
+On Linux, LIVE `good` requests stay NOT_READY and start no funded build: the LIVE path copies the chapter 5 protected check, which is still macOS-only. Only the scripted chapter 6 path runs on Linux.
 
 Each `good` request in LIVE builder mode starts a new funded build, including a repeated request. The one-at-a-time lock and the default limit of 12 funded runs per evidence folder bound these builds. A started run counts even if it fails; the `ignores-limit` request uses no funded build.
 

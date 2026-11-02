@@ -1,0 +1,23 @@
+// Draft, Nov 2, 2026, for the Nov 3 workshop. Mantle only. Still being tested in real codespaces.
+{
+  "name": "Rasa Mantle workshop (draft)",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.12" },
+    // Lets `gh codespace ssh` work, so a tester can run commands and read logs from a terminal.
+    "ghcr.io/devcontainers/features/sshd:1": {}
+  },
+  "hostRequirements": { "cpus": 4, "memory": "8gb", "storage": "32gb" },
+  "forwardPorts": [5010],
+  "portsAttributes": {
+    "5010": { "label": "Mantle Inspector", "onAutoForward": "silent" }
+  },
+  "secrets": {
+    "RASA_LICENSE": { "description": "Your Rasa Developer Edition licence key" },
+    "OPENAI_API_KEY": { "description": "Your OpenAI API key" }
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/workshops/software-factories-masterclass",
+  // onCreateCommand runs when a prebuild is made and reads no key. postCreateCommand runs for the person, with their secrets.
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/install.sh\"",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/setup.sh\""
+}

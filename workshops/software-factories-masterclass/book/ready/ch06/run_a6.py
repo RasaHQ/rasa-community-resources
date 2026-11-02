@@ -4,9 +4,10 @@
     python run_a6.py tasks/a6-market-watchlist.json candidates/market-good
     python run_a6.py tasks/a6-market-watchlist.json baseline        # the product with nothing built: REJECT
 Gates in order: protected files (hash and presence), allowed paths, the protected acceptance suite.
-Exit 0 ACCEPT, 1 REJECT, 2 could not run (including a machine without sandbox-exec).
+Exit 0 ACCEPT, 1 REJECT, 2 could not run (including a machine with no proven no-network wrapper).
 """
 import hashlib
+import importlib.util
 import json
 import os
 import shutil
@@ -18,14 +19,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 
 
+def _load_isolation():
+    spec = importlib.util.spec_from_file_location("isolation", ROOT / "isolation.py")
+    if spec is None or spec.loader is None or not (ROOT / "isolation.py").is_file():
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def main(task_path, candidate):
-    if shutil.which("sandbox-exec") is None:
-        # The no-network check needs macOS. Without it every attempt would fail, so say so instead of judging.
-        print("could not run: this check needs macOS (sandbox-exec). The attempt was not judged."); return 2
     task = json.loads(Path(task_path).read_text())
     baseline = candidate == "baseline"  # judge the product as it is, with no candidate change
     candidate = ROOT / "candidates" / "_baseline_none" if baseline else Path(candidate)
@@ -34,6 +41,13 @@ def main(task_path, candidate):
     for item in pinned:
         if sha(ROOT / item["path"]) != item["sha256"]:
             print("could not run: the protected file", item["path"], "does not match its pin"); return 2
+    if "isolation.py" not in [item["path"] for item in pinned]:
+        print("could not run: isolation.py is not a pinned protected file in this task"); return 2
+    # Only now, after every pinned file matched, may isolation.py be executed.
+    isolation = _load_isolation()
+    if isolation is None or isolation.first_blocking() is None:
+        # No proven no-network wrapper. Without one every attempt would pass or fail for the wrong reason, so say so instead of judging.
+        print("could not run: this check needs a proven no-network wrapper (macOS sandbox-exec, or Linux unshare or bubblewrap). The attempt was not judged."); return 2
     for item in pinned:
         if not baseline and (candidate / item["path"]).exists():
             reasons.append("protected file edited: " + item["path"])
