@@ -38,7 +38,9 @@ It must not send a restart or a factory reset, and it must not change any state.
 OUTPUT_PATH = "/workspace/outputs/check_line_status.py"
 SCRATCH = Path("scratch")
 # One build may not run longer than this, and one request to OpenAI may not wait longer than REQUEST_SECONDS.
-# Keep MAX_SECONDS below the tool timeout that Mantle waits for (360 seconds in the wiring README).
+# MAX_SECONDS is checked when an event arrives, so it is not a hard limit on the whole build: the last event can take up to
+# REQUEST_SECONDS more, and the artifact download comes after it. Closing the stream does not confirm that the hosted session ended.
+# Mantle waits 360 seconds (see the wiring README).
 MAX_SECONDS = float(os.environ.get("BUILDER_MAX_SECONDS", "300"))
 REQUEST_SECONDS = float(os.environ.get("BUILDER_REQUEST_SECONDS", "120"))
 

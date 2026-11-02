@@ -4,7 +4,7 @@
 2. Your OpenAI key (the `OPENAI_API_KEY` Codespaces secret) needs the permissions `api.agents.read`,
    `api.agents.write`, and `api.responses.write`. Never paste it into a file or a command.
 3. Edit `INSTRUCTIONS` in `builder.py`, then run `~/.venv-builder/bin/python builder.py`. Watch the session's
-   events. The file the agent saves is downloaded to `scratch/check_line_status.py`.
+   events. Each build writes to its own folder, `scratch/build-<id>/check_line_status.py`, and prints the file's path and sha256. Use that exact path.
 4. Start the tool server in a second terminal: `~/.venv-builder/bin/python builder_server.py`.
 
 **Mantle path.** In your agent's `integrations.yml` add:
@@ -28,5 +28,5 @@ session can take minutes, and the Mantle default is 10 seconds.
 
 The tool server keeps a build "running" until its worker really finishes, even if the caller cancels. A second request
 meanwhile is refused. Each build writes to its own folder under `scratch/` and returns its build id and the sha256 of
-the file. A build stops after `BUILDER_MAX_SECONDS` (300), which is below Mantle's 360-second wait. Those two behaviors
+the file. The builder stops waiting for new events once `BUILDER_MAX_SECONDS` (300) have passed. That is not a hard limit on the whole build: the check happens when an event arrives, so the last event can take up to 120 more seconds (the request timeout), and the artifact list and download come after the check. Closing the stream does not confirm that OpenAI ended the hosted session. Mantle waits 360 seconds. Those two behaviors
 are tested with stand-ins and no key in `test_builder_server.py`.

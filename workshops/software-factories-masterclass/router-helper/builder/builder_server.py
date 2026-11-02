@@ -6,7 +6,7 @@ It listens on 127.0.0.1 only. The tool URL is http://127.0.0.1:8765/mcp.
 
 One build at a time. The server keeps the build "running" until the worker thread has really finished, even if the
 caller gives up and cancels its request. A second request while a build is running is refused. Each build writes
-to its own folder, and a build is stopped after BUILDER_MAX_SECONDS.
+to its own folder. The builder stops waiting for new events after BUILDER_MAX_SECONDS, which is not a hard limit on the whole build.
 
 Run it:  python3 builder_server.py        (needs: pip install --upgrade openai mcp==1.28.1)
 The same FastMCP setup is used by examples/mantle-factory-agent/server.py in this repository.
@@ -32,7 +32,7 @@ def _work(request: str) -> dict:
     """Runs on a worker thread. The lock is released only when this function has really finished."""
     try:
         outcome = builder.build(request, False)
-        return {key: outcome[key] for key in ("build_id", "saved", "sha256", "session_id") if key in outcome} | {
+        return {key: outcome[key] for key in ("build_id", "saved", "file", "sha256", "session_id") if key in outcome} | {
             "builder_said": outcome["builder_said"][:2000]}
     finally:
         _running.release()
