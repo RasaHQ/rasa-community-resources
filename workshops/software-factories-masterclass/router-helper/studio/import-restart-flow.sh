@@ -1,23 +1,28 @@
 #!/usr/bin/env bash
 # Stages the ready-made restart flow as a project and uploads it to your Studio. Reads no key value.
-# The flow and domain files are the ones Studio itself exported (see restart-project/PINS.txt).
-# NOT run yet by anyone. Open questions are listed at the end of this file.
+# The flow, domain, config and endpoints files are the ones Studio itself exported (see restart-project/PINS.txt).
+# The settings below were proven once by a tester (CLI-VALUES.txt). Not yet run by an attendee.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RASA="$HOME/.venv-mantle/bin/rasa"
-PROJECT="$HOME/restart-router-helper"
+NAME="${1:-restart-router-helper}"
+PROJECT="$HOME/restart-router-project"
 bash "$HERE/../../../../.devcontainer/software-factories-workshop/studio-status.sh" || { echo "NOT READY: Studio is not ready yet. Do the Mantle path and run this again."; exit 1; }
-[ -f "$HERE/restart-project/config.yml" ] && [ -f "$HERE/restart-project/endpoints.yml" ] || { echo "NOT READY: restart-project/config.yml or endpoints.yml is missing from the repository"; exit 1; }
-[ -e "$PROJECT" ] && { echo "NOT READY: $PROJECT already exists. Remove it or choose another folder."; exit 1; }
-[ -f "$HERE/CLI-VALUES.txt" ] || { echo "NOT READY: the Studio CLI settings for this codespace (CLI-VALUES.txt) have not been proven yet"; exit 1; }
+[ -e "$PROJECT" ] && { echo "NOT READY: $PROJECT already exists. Remove it, then run this again."; exit 1; }
 cp -R "$HERE/restart-project" "$PROJECT"
 cd "$PROJECT"
-echo "Next, the Rasa CLI asks where Studio is. Studio is at http://localhost:8080 from inside this codespace."
-"$RASA" studio config
-echo "Now sign in with the Studio login the presenter gives you (the CLI asks for username and password)."
+echo
+echo "Step 1 of 3: tell the Rasa CLI where Studio is. It asks four questions. Type exactly:"
+echo "  Studio URL:   http://localhost:4000"
+echo "  Keycloak URL: http://localhost:8081/auth/"
+echo "  Realm:        press Enter"
+echo "  Client ID:    press Enter"
+"$RASA" studio config --advanced
+echo
+echo "Step 2 of 3: sign in. Username: superuser. The password is in Rasa's Studio compose README under 'Keycloak Default Users Password'."
 "$RASA" studio login
-"$RASA" studio upload
-echo "Uploaded. The assistant is named cold_router_recovery_20261102 (the assistant_id in config.yml). Open Studio, open that assistant, change one thing in the confirmation message, train, and try it."
-# Open questions, to be answered by a run: whether rasa studio config accepts http://localhost:8080 while Studio's login address is
-# the forwarded HTTPS one; whether the Mantle environment's CLI (3.21.0.dev5) uploads to Studio 1.15.2 with model service 3.15.8;
-# which login to use. The pack says what actually happened.
+echo
+echo "Step 3 of 3: upload the restart flow as a new assistant named '$NAME'."
+"$RASA" studio upload "$NAME"
+echo
+echo "Done. Open Studio, open the assistant '$NAME', change the confirmation wording, train, and try it."

@@ -59,7 +59,19 @@ When it says `Studio is ready.`, it prints two addresses. If it says Studio did 
 bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/start-studio.sh
 ```
 
-It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks, then open the Studio address (port 8080) and sign in. The presenter gives you the sign-in details. By minute 30, build the restart flow only (steps 1 to 5 in STEPS.md), train, and run the first two rows of the table: it asks, and it restarts. Build the reset flow (step 6) between minutes 30 and 50, and run the last two rows then. The Mantle path has all four rows by minute 30. In a cold test the Studio authoring was the slow part, so work steadily and tell the presenter early if you are behind.
+It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks, then open the Studio address (port 8080) and sign in as `superuser` (the password is in Rasa's Studio compose README under "Keycloak Default Users Password").
+
+**Minute 30: import the ready-made restart flow, change one thing, train, and try it.** Authoring a flow by hand in Studio took too long in a cold test, so you start from the restart flow Studio itself exported. In a codespace terminal, run:
+
+```bash
+bash /workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/studio/import-restart-flow.sh
+```
+
+It asks the Studio questions for you to type (it prints them), signs you in as `superuser`, and uploads the flow as an assistant named `restart-router-helper`. Then in Studio, open that assistant, open the response `utter_ask_confirm_restart`, and change the confirmation wording (for example, add "This takes about a minute."). Choose **Train**, select **Draft** for the flow, wait for **Training successful**, open **Try your assistant**, and run the first two rows of the table. At minute 30 you have shown the imported, edited restart flow working. The full helper, with the reset flow, is by minute 50.
+
+Between minutes 30 and 50, build the reset flow by hand with step 6 of `workshops/software-factories-masterclass/router-helper/studio/STEPS.md` and run the last two rows of the table.
+
+The import has been proven in pieces by a tester (config, login and upload took about 12 seconds in all). It has not been proven end to end with the edit, the training and the reply, and not by an attendee.
 
 ## Minutes 30 to 50: the other path
 
