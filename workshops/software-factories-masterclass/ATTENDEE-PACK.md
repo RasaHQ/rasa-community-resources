@@ -61,7 +61,7 @@ When it says `Studio is ready.`, it prints two addresses. If it says Studio did 
 bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/start-studio.sh
 ```
 
-It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks, then open the Studio address (port 8080) and sign in. The presenter gives you the sign-in details. Then build the two flows in STEPS.md, train, and run the same four checks as in the table above.
+It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks, then open the Studio address (port 8080) and sign in. The presenter gives you the sign-in details. By minute 30, build only the first flow (steps 1 to 5 in STEPS.md, the restart flow), train, and run the first two rows of the table. Build the second flow (step 6, the reset flow) between minutes 30 and 50 and run the last two rows then.
 
 ## Minutes 30 to 50: the other path
 
