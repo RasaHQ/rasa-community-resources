@@ -106,15 +106,17 @@ python3 -m venv "$HOME/.venv-builder"
 "$HOME/.venv-builder/bin/python" "$B/builder.py"
 ```
 
-It runs one builder session (one paid run, a few minutes), prints the session's events, and ends with `saved: True`, the file's absolute path, and its sha256. Keep that path for the gate. In terminal 2 start the tool server and leave it running:
+It runs one builder session (one paid run, a few minutes), prints the session's events, and ends with `saved: True`, the file's absolute path, and its sha256. Keep that path for the gate. Open a second terminal (each terminal needs its own `B`) and start the tool server. Leave it running:
 
 ```bash
+B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/builder
 "$HOME/.venv-builder/bin/python" "$B/builder_server.py"
 ```
 
-In terminal 3, copy the skill into your helper, train, and open the Inspector again:
+Open a third terminal. First stop the Inspector from minute 0 to 30: click its terminal and press Ctrl+C (leave the tool server running). Then copy the skill into your helper, train, and open the Inspector again:
 
 ```bash
+B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/builder
 cp -r "$B/change_builder" "$HOME/router-helper-agent/skills/"
 cd "$HOME/router-helper-agent"
 "$HOME/.venv-mantle/bin/rasa" train
