@@ -67,7 +67,7 @@ bash /workspaces/rasa-community-resources/.devcontainer/software-factories-works
 
 It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks. Then open the Studio address (port 8080) and sign in as `superuser`. The password is in Rasa's Studio compose README under "Keycloak Default Users Password".
 
-On first sign-in, Studio shows "Welcome to Rasa Studio" and "Please provide a valid license to start using it". Choose **Upload a license** and pick the Studio license text file from your laptop. The secret in your codespace does not activate this screen, so you must upload the file. Do not paste the license anywhere else. A tester did this step by hand on a fresh codespace. It was missing from the first version of this page.
+On first sign-in, Studio shows "Welcome to Rasa Studio" and "Please provide a valid license to start using it". Choose **Upload a license** and pick the Studio license text file from your laptop. After the upload, choose **Get Started** (Rasa's license activation page shows this button) and you should see Studio's project list. The secret in your codespace does not activate this screen, so you must upload the file. Do not paste the license anywhere else. A tester did this step by hand on a fresh codespace. It was missing from the first version of this page.
 
 **If Studio is your first path, the target by minute 30 is to import the ready-made restart flow, change one thing, train, and try it.** Authoring a flow by hand in Studio took too long in a cold test, so you start from the restart flow Studio itself exported. In a codespace terminal, run:
 
