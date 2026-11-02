@@ -122,3 +122,44 @@ tool for this confirmed choice; presenting an offer never silently cancels it.
 ## Check what the appointment booleans leave out
 
 Run `python3 -B appointment_binding_demo.py`. It changes the confirmation question while keeping the three adjudicated facts true. The lab replays its original record. Adding an explicit channel is refused as `unknown_fact`: this generic lab models rule outcomes, while a real booking adapter must bind the actual channel, purpose and slot to the confirmed request. The script also checks that the two explicit appointment payloads have different hashes. All values and database actions are synthetic; the temporary database is removed after the check.
+
+
+## Reconcile separate billing observations
+
+Assessment of this added exercise: Rasa Community (Codex), 2 November 2026;
+Python 3.14.3, nine billing tests and 28 casebook tests passed. The commands
+below require only the standard library; no Rasa runtime was exercised.
+
+Run this read-only exercise with Python 3.11 or later, without installing Rasa:
+
+```bash
+python3 -B billing_reconciliation.py
+python3 -B -m unittest discover -s tests -p test_billing_reconciliation.py -v
+```
+
+The fixture has two revisions each for one payment, invoice and policy, all for
+one synthetic account and policy. Across all 720 delivery orders, the reducer
+selects each source's highest revision and reports settled, paid and active.
+An intentionally defective comparison freezes the first invoice and infers
+policy status from its label. It disagrees in 360 orders. These are exhaustive
+permutations of six invented observations, not sampled production error rates.
+The nine tests also cover missing policy data, duplicates, older revisions,
+contradictory revisions, wrong account/policy and invalid inputs. A settled
+payment does not override a policy service observation that says lapsed.
+
+The reducer checks scope and source-specific state names. Revisions are ordered
+only within one source. Contradictory observations at the same revision put the
+report into investigation, including when that revision is older than the
+current one. Later observations do not clear a conflict automatically.
+
+This is a source-selection model, not a service adapter or coverage decision.
+It trusts its fixture source identities and monotonic revision numbers. It has
+no signature, freshness deadline, payment-reference lookup, persistence or
+cross-service snapshot transaction. The permutation check reads the final report after all six messages arrive.
+Before replying during delivery, a live adapter needs an observation-age limit
+and a consistency contract agreed with its service owners. This module
+never charges a customer, changes coverage or instructs a payment provider.
+
+Calendar manuscript: the held insurance-billing case will use this exercise
+only after independent source and editorial review. No publication approval
+or release date is implied by adding the companion code.
