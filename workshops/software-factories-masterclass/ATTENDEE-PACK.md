@@ -59,7 +59,7 @@ When it says `Studio is ready.`, it prints two addresses. If it says Studio did 
 bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/start-studio.sh
 ```
 
-It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks, then open the Studio address (port 8080) and sign in. The presenter gives you the sign-in details. Build the two flows in STEPS.md, train, and run the four checks in the table above. The target is both paths working by minute 30. In a cold test the Studio authoring was the slow part, so work steadily and tell the presenter early if you are behind.
+It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks, then open the Studio address (port 8080) and sign in. The presenter gives you the sign-in details. By minute 30, build the restart flow only (steps 1 to 5 in STEPS.md), train, and run the first two rows of the table: it asks, and it restarts. Build the reset flow (step 6) between minutes 30 and 50, and run the last two rows then. The Mantle path has all four rows by minute 30. In a cold test the Studio authoring was the slow part, so work steadily and tell the presenter early if you are behind.
 
 ## Minutes 30 to 50: the other path
 
