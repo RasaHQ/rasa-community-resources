@@ -123,7 +123,7 @@ Complete at minute 115: a request goes in and a proposed change comes out.
 
 The code is in `router-helper/builder/`: `builder.py` (your agent, with the instructions you edit) and `builder_server.py` (the tool server), with a README for the Mantle and Studio wiring.
 
-Proof so far: nothing here has been run by anyone for this workshop on a workshop key. The code follows OpenAI's Agents API quickstart and its page on files, and Rasa's MCP docs. The existing live builder (chapter 5 of the book) runs the same kind of session, and its protected path is macOS only.
+Proof so far: nothing here has been run by anyone for this workshop on a workshop key. The code follows OpenAI's Agents API quickstart and its page on files, and Rasa's MCP docs. The existing live builder (chapter 5 of the book) runs the same kind of session. Its protected path now has a Linux readiness change with nine offline tests that pass on a Mac. No real accept or reject has been judged on Linux through it, and the example's live requests stay not ready on Linux until the whole path is shown.
 
 ## Minutes 115 to 140: the gate
 
