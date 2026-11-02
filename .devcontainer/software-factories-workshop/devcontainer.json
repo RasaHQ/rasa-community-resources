@@ -29,6 +29,8 @@
   // onCreateCommand runs when a prebuild is made and reads no key. postCreateCommand runs for the person, with their secrets.
   "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/install.sh\"",
   // postStartCommand runs after creation and on every start, with the person's own secrets. It starts Studio in the background.
+  // postAttachCommand runs each time someone opens the codespace in an editor. It repeats the same safe start, in case the post-start one did not run or was stopped.
+  "postAttachCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/start-studio-background.sh\"",
   "postStartCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/start-studio-background.sh\"",
   "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/setup.sh\""
 }

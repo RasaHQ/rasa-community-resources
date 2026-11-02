@@ -13,7 +13,10 @@ if [ -z "${RASA_STUDIO_LICENSE:-}" ]; then
   exit 0
 fi
 if bash "$DIR/studio-ready.sh"; then echo "$(date -u +%T) Studio was already healthy; nothing to start." > "$LOG"; exit 0; fi
-if pgrep -f "[s]tart-studio.sh" >/dev/null 2>&1; then echo "$(date -u +%T) a start is already running" > "$LOG"; exit 0; fi
+if { [ -f "$HOME/.studio-start.pid" ] && kill -0 "$(cat "$HOME/.studio-start.pid")" 2>/dev/null; } || pgrep -f "[s]tart-studio.sh" >/dev/null 2>&1; then
+  [ -f "$LOG.prev" ] && mv -f "$LOG.prev" "$LOG"   # keep the running attempt's log
+  echo "$(date -u +%T) a start is already running; this call did nothing" >> "$LOG"; exit 0
+fi
 PIDFILE="$HOME/.studio-start.pid"
 echo "$(date -u +%T) postStart ran; launching the background start (user $(id -un), docker socket: $(ls /var/run/docker.sock 2>&1 | head -1))" > "$LOG"
 nohup setsid bash -c '
