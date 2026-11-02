@@ -11,6 +11,7 @@ Needs:   pip install --upgrade openai   and an OpenAI key in OPENAI_API_KEY with
 Run on a real key by a test seat on Nov 2 (a saved 114-byte file, the gate accepted it). The calls follow OpenAI's Agents API quickstart and its page on files
 and artifacts, both read on Nov 2.
 """
+import argparse
 import hashlib
 import os
 import sys
@@ -48,6 +49,28 @@ SCRATCH = Path(__file__).resolve().parent / "scratch"
 # Mantle waits 360 seconds (see the wiring README).
 MAX_SECONDS = float(os.environ.get("BUILDER_MAX_SECONDS", "300"))
 REQUEST_SECONDS = float(os.environ.get("BUILDER_REQUEST_SECONDS", "120"))
+
+
+def build_fixture() -> dict:
+    """Copy the public good example through the file contract without an API call.
+
+    This tests local transport and the gate. It is not an Agents session or a
+    newly generated proposal. The result carries that distinction to the UI.
+    """
+    build_id = "fixture-" + uuid.uuid4().hex[:12]
+    folder = SCRATCH / ("build-" + build_id)
+    folder.mkdir(parents=True, exist_ok=False)
+    destination = folder / "check_line_status.py"
+    sample = Path(__file__).resolve().parent.parent / "gate" / "candidates" / "good.py"
+    destination.write_bytes(sample.read_bytes())
+    return {
+        "mode": "fixture",
+        "build_id": build_id,
+        "saved": True,
+        "file": str(destination.resolve()),
+        "sha256": hashlib.sha256(destination.read_bytes()).hexdigest(),
+        "builder_said": "Copied the public good example. No Agents session was started; nothing was executed or applied.",
+    }
 
 
 def build(task: str = TASK, show_events: bool = True) -> dict:
@@ -89,8 +112,12 @@ def build(task: str = TASK, show_events: bool = True) -> dict:
 
 
 if __name__ == "__main__":
-    if not os.environ.get("OPENAI_API_KEY"):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--fixture", action="store_true", help="Use the public sample; do not start an Agents session")
+    args = parser.parse_args()
+    if not args.fixture and not os.environ.get("OPENAI_API_KEY"):
         sys.exit("Set the OPENAI_API_KEY Codespaces secret for this repository, then restart the codespace.")
-    outcome = build()
+    print("mode:", "fixture (no Agents session)" if args.fixture else "live (model usage is billed)")
+    outcome = build_fixture() if args.fixture else build()
     print("\nsaved:", outcome["saved"], outcome.get("file", ""), outcome.get("sha256", ""))
     print("builder said:", outcome["builder_said"])

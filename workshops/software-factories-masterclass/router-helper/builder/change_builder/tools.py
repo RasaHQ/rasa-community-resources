@@ -40,7 +40,9 @@ def describe(result: dict) -> str:
         path, digest = result.get("file"), result.get("sha256")
         if not (_text(path) and isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest)):
             return f"Build {build_id} reported a saved file, but its path or sha256 is missing or malformed. Do not use it."
-        return f"Build {build_id} saved a file. Path: {path}. sha256: {digest}. Nothing was applied to the helper."
+        label = "Fixture build" if result.get("mode") == "fixture" else "Build"
+        provenance = " No Agents session was started." if result.get("mode") == "fixture" else ""
+        return f"{label} {build_id} saved a file. Path: {path}. sha256: {digest}. Nothing was applied to the helper.{provenance}"
     return (f"Build {build_id} reported no saved file (saved=false). {said} "
             "I cannot confirm that the build has ended. Nothing was applied to the helper.")
 

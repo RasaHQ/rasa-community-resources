@@ -1,52 +1,31 @@
 # Rasa Community Resources
 
-**Tutorials, example projects, and reference code for practitioners building and operating agents with Rasa.**
+Choose what you want to do:
 
-This is the code companion to [rasa.community](https://rasa.community/). Every resource is a directory you can run in full, study, or copy piece by piece into your own project. Each one states who wrote it, when it was last verified, and which versions it was verified against.
+- **Learn at your own pace:** [Build your first Mantle agent](https://rasa.community/library/tutorials/mantle-starter-pack/) with a self-paced tutorial and a runnable companion.
+- **Join the live workshop:** [Open the Mantle Codespace](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/software-factories-workshop/devcontainer.json) to build in your browser with your own Rasa and OpenAI keys.
+- **Run a finished agent:** [Start with the Atlas voice agent](examples/mantle-voice-agent/README.md) to try a complete travel assistant before adapting it.
+- **Find a reusable pattern:** [Browse patterns](patterns/README.md) for focused implementations you can bring into an existing agent.
+- **Contribute a resource:** [Read the contribution guide](CONTRIBUTING.md) to choose a folder, check your example, and keep its authors credited.
 
-> **Here for the Software Factories masterclass?** Everything for it is in one folder: [`workshops/software-factories-masterclass/`](workshops/software-factories-masterclass/README.md). Open its README first. It tells you what to install, then lets you choose between the participant guide (about two hours) and the book (about three hours, at your own pace). The two finished agents from the class live in [`examples/mantle-flight-briefing-openai-agents/`](examples/mantle-flight-briefing-openai-agents/README.md) (the travel agent) and [`examples/mantle-factory-agent/`](examples/mantle-factory-agent/README.md) (the dark software factory).
+This is the code companion to [rasa.community](https://rasa.community/). Tutorials, examples, and reference code live in their own folders, with setup instructions and the versions they were tested against. For the presenter-led Software Factories workshop, follow the [attendee pack](workshops/software-factories-masterclass/ATTENDEE-PACK.md). It needs your own Rasa and OpenAI keys and uses a billed builder, with no local installation.
 
----
+## Browse the repository
 
-## Find it fast
-
-- **Case builds:** live agents, one per casebook case, grouped by industry and by model and voice stack in [`CATALOG.md`](CATALOG.md) (data: [`catalog/case-builds.json`](catalog/case-builds.json)).
-- **Patterns:** reusable parts in [`patterns/`](patterns/README.md), including the voice vendor router, [`patterns/voice-vendor-router`](patterns/voice-vendor-router/): ASR and TTS failover across Deepgram, Speechmatics, Rime, faster-whisper, NeuTTS and more.
-- **Tutorials:** step-by-step builds in [`tutorials/`](tutorials/README.md), including the [AI team casebook](tutorials/rasa-ai-team-casebook/) that the case builds implement.
-- **Finished example agents:** clone-and-run voice agents in [`examples/`](examples/README.md), starting with [`examples/mantle-voice-agent`](examples/mantle-voice-agent).
-- **Case-build harness:** [`scripts/case_builds/`](scripts/case_builds/), which runs a build's scripted conversations over web chat or browser audio and records results and spend.
-
----
-
-## Start here
-
-For development worktrees, start with [workspaces and isolated environments](docs/WORKSPACES.md). Install only the resource you plan to run.
-
-**New to Rasa Skills / Mantle voice agents.** Request a free [Developer Edition licence key](https://rasa.community/license/), then clone and run the flagship Atlas travel agent:
-
-1. [`examples/mantle-voice-agent`](examples/mantle-voice-agent) — finished agent you can run with `make install` → `make inspect`
-2. Hosted walkthrough: [Build a Voice AI Agent with Rasa Skills](https://rasa.community/library/tutorials/voice-ai-agent/)
-
-**Building something specific.** Browse [Featured resources](#featured-resources) or open the category catalog that matches your goal ([examples](examples/README.md), [tutorials](tutorials/README.md), [patterns](patterns/README.md)).
-
-**Looking for people.** Apply to the [community](https://info.rasa.com/community/) for Discord access. Practitioners who maintain and extend this material spend time there.
-
-**Want the discipline behind the material.** The community library lives at [rasa.community/library/](https://rasa.community/library/) and Rod also writes about harness-engineering at [profrod.ai](https://profrod.ai).
-
----
+Use the category catalogs below when you already know what you need. For isolated local development, read [workspaces and environments](docs/WORKSPACES.md) before installing a resource.
 
 ## What this is
 
-- **Tutorials** — end-to-end walkthroughs, each self-contained, each runnable
-- **Example projects** — complete agents you can clone and adapt, not fragments
-- **Reference code** — patterns for recurring problems: tool design, evaluation, deployment, observability, human handover
-- **Workshop material** — slides, exercises, and solutions from community sessions and conferences
+- **Tutorials**—end-to-end walkthroughs, each self-contained, each runnable
+- **Example projects**—complete agents you can clone and adapt, not fragments
+- **Reference code**—patterns for recurring problems: tool design, evaluation, deployment, observability, human handover
+- **Workshop material**—slides, exercises, and solutions from community sessions and conferences
 
 ## What this is not
 
 - **Not the product documentation.** The canonical reference is [rasa.com/docs](https://rasa.com/docs/). This repository is educational material.
-- **Not the Rasa framework itself.** Rasa Pro is commercial. Running these resources requires a licence key (free for developers — see Requirements).
-- **Not a support channel.** Product issues belong with Rasa support or the product repositories. Questions about material here belong in [Discussions](../../discussions/) or in the [community](https://info.rasa.com/community).
+- **Not the Rasa framework itself.** Rasa Pro is commercial. Running these resources requires a license key (free for developers—see Requirements).
+- **Not a support channel.** Product issues belong with Rasa support or the product repositories. Questions about material here belong in the [community](https://info.rasa.com/community).
 
 ---
 
@@ -60,10 +39,10 @@ For development worktrees, start with [workspaces and isolated environments](doc
 | Poly voice insurance | Poly | Insurance | [`examples/mantle-voice-insurance-skills`](examples/mantle-voice-insurance-skills) |
 | Schedora voice appointments | Schedora | Clinic booking | [`examples/mantle-voice-appointment-skills`](examples/mantle-voice-appointment-skills) |
 | Autono voice car purchase | Autono | Auto retail | [`examples/mantle-voice-car-purchase-skills`](examples/mantle-voice-car-purchase-skills) |
-| Vela voice banking (Rime TTS) | Vela | Retail banking | [`examples/mantle-voice-rime-skills`](examples/mantle-voice-rime-skills) |
-| Vela voice banking (Speechmatics ASR) | Vela | Retail banking | [`examples/mantle-voice-speechmatics-skills`](examples/mantle-voice-speechmatics-skills) |
+| Vela voice banking (Rime text-to-speech (TTS)) | Vela | Retail banking | [`examples/mantle-voice-rime-skills`](examples/mantle-voice-rime-skills) |
+| Vela voice banking (Speechmatics automatic speech recognition (ASR)) | Vela | Retail banking | [`examples/mantle-voice-speechmatics-skills`](examples/mantle-voice-speechmatics-skills) |
 | Atlas voice tutorial tree | Atlas | Horizon Travel | [`tutorials/rasa-voice-agent-tutorial`](tutorials/rasa-voice-agent-tutorial) |
-| Voice vendor router (ASR/TTS failover and vendor swapping) | — | Voice infrastructure | [`patterns/voice-vendor-router`](patterns/voice-vendor-router) |
+| Voice vendor router (ASR/TTS failover and vendor swapping) |—| Voice infrastructure | [`patterns/voice-vendor-router`](patterns/voice-vendor-router) |
 
 Full catalogs (including empty areas accepting contributions) live in each category README below.
 
@@ -73,7 +52,7 @@ Full catalogs (including empty areas accepting contributions) live in each categ
 
 The repository holds two kinds of material under two different promises.
 
-**Maintained catalog** — one shared Rasa Pro pin, migrated together, expected to
+**Maintained catalog**—one shared Rasa Pro pin, migrated together, expected to
 stay green for as long as it is checked in. Contributed work lives here too:
 an example pinned to a release the catalog has moved off is one nobody clones.
 
@@ -81,22 +60,22 @@ an example pinned to a release the catalog has moved off is one nobody clones.
 |---|---|---|
 | [`tutorials/`](tutorials/) | Step-by-step walkthroughs with runnable code | [tutorials/README.md](tutorials/README.md) |
 | [`examples/`](examples/) | Complete clone-and-run agents | [examples/README.md](examples/README.md) |
-| [`patterns/`](patterns/) | Small reference implementations of recurring problems | [patterns/README.md](patterns/README.md) — accepting contributions |
-| [`workshops/`](workshops/) | Slides, exercises, and solutions from sessions | [workshops/README.md](workshops/README.md) — accepting contributions |
-| [`snippets/`](snippets/) | Short pieces too small to be a pattern | [snippets/README.md](snippets/README.md) — accepting contributions |
-| [`community/`](community/) | Resources written by practitioners, credited to their authors | [community/README.md](community/README.md) — accepting contributions |
+| [`patterns/`](patterns/) | Small reference implementations of recurring problems | [patterns/README.md](patterns/README.md)—accepting contributions |
+| [`workshops/`](workshops/) | Slides, exercises, and solutions from sessions | [workshops/README.md](workshops/README.md)—accepting contributions |
+| [`snippets/`](snippets/) | Short pieces too small to be a pattern | [snippets/README.md](snippets/README.md)—accepting contributions |
+| [`community/`](community/) | Resources written by practitioners, credited to their authors | [community/README.md](community/README.md)—accepting contributions |
 
-**Frozen snapshots** — dated cohort records, pinned to the version their authors
+**Frozen snapshots**—dated cohort records, pinned to the version their authors
 verified and not migrated forward. Still required to be reproducible: a real
 `uv.lock`, a name, and a date.
 
 | Path | What it holds | Index |
 |---|---|---|
-| [`heroes/`](heroes/) | Rasa Heroes cohort projects, one directory per wave | [heroes/README.md](heroes/README.md) — accepting waves |
+| [`heroes/`](heroes/) | Rasa Heroes cohort projects, one directory per wave | [heroes/README.md](heroes/README.md)—accepting waves |
 
 Why the split, and what each tier guarantees: [`docs/SNAPSHOTS.md`](docs/SNAPSHOTS.md).
 
-As the repository grows, **category READMEs are the live inventory**. This root page stays a map and a starting point — not a list of every subdirectory.
+As the repository grows, **category READMEs are the live inventory**. This root page stays a map and a starting point—not a list of every subdirectory.
 
 ---
 
@@ -115,7 +94,7 @@ Time:          75–90 minutes
 
 Read **Assessed on** first. If it is more than six months old, the pin has likely moved. Open an issue if something no longer runs. Material that cannot be re-verified is archived rather than left implying it still works.
 
-Multiple authors are listed comma-separated on the `Author` line. Credit is permanent — see [MAINTAINERS.md](MAINTAINERS.md).
+Multiple authors are listed comma-separated on the `Author` line. Credit is permanent—see [MAINTAINERS.md](MAINTAINERS.md).
 
 ---
 
@@ -125,8 +104,8 @@ Resources here typically assume:
 
 - Python 3.11 or later (see each resource’s `Verified with` line)
 - [uv](https://docs.astral.sh/uv/) for dependency management
-- A `RASA_LICENSE` key — the [Developer Edition](https://rasa.community/license/) key is free
-- An LLM provider key, typically `OPENAI_API_KEY`
+- A `RASA_LICENSE` key—the [Developer Edition](https://rasa.community/license/) key is free
+- A large language model (LLM) provider key, typically `OPENAI_API_KEY`
 - For voice examples: a `DEEPGRAM_API_KEY`
 
 Individual resources state any additional requirements.
@@ -139,24 +118,24 @@ Correctness here is checked by running a command, not by reading the tree. From
 the repository root:
 
 ```bash
-make validate        # ~2s, offline, no uv needed — run before every commit
+make validate        # ~2s, offline, no uv needed—run before every commit
 make ci              # + install every resource and run validate_project
 make validate-full   # + rasa train everywhere (needs RASA_LICENSE)
 ```
 
 `make validate` unit-tests the tooling, then lints both tiers: version and
 lockfile consistency, skill authoring rules, resource metadata, committed
-secrets, and — for frozen snapshots — that each one's pin, lock, and
-`Verified with:` line agree. The same target runs in CI on every pull request
-and weekly. What each check enforces — and how to fix a failure — is in
+secrets, and—for frozen snapshots—that each one's pin, lock, and
+`Verified with:` line agree. The same target runs in continuous integration (CI) on every pull request
+and weekly. What each check enforces—and how to fix a failure—is in
 [`docs/VALIDATION.md`](docs/VALIDATION.md).
 
 ---
 
 ## Keeping resources on the latest Rasa Pro
 
-Every resource in the **maintained catalog** — including everything under
-`community/` — pins the same Rasa Pro version, recorded in
+Every resource in the **maintained catalog**—including everything under
+`community/`—pins the same Rasa Pro version, recorded in
 [`RASA_PRO_VERSION`](RASA_PRO_VERSION). Only frozen wave projects under
 `heroes/` are left out, and [`docs/SNAPSHOTS.md`](docs/SNAPSHOTS.md) explains
 why. From the repository root:
@@ -174,7 +153,7 @@ Override the target with `make migrate VERSION=3.21.0.dev5`, preview it first wi
 `make latest`. Full maintainer and local-user notes:
 [`docs/MIGRATING.md`](docs/MIGRATING.md).
 
-Frozen material has its own two commands — `make snapshots` to see what is
+Frozen material has its own two commands—`make snapshots` to see what is
 frozen and at which pin, `make check-snapshots` to install each one against the
 pin it carries.
 
@@ -187,13 +166,13 @@ Contributions are welcome. Contributors are credited by name on the resources th
 The three things that matter most:
 
 1. **One resource per pull request**
-2. **It has to run** — with versions and an assessment date in the README
-3. **Write for peers** — including what breaks
+2. **It has to run**—with versions and an assessment date in the README
+3. **Write for peers**—including what breaks
 
-If your resource is not the canonical answer to its problem — a provider swap, a
-deployment shape, a specific integration — contribute it to
+If your resource is not the canonical answer to its problem—a provider swap, a
+deployment shape, a specific integration—contribute it to
 [`community/`](community/). It is maintained on the catalog pin like everything
-else, so it does not go stale; migration is the maintainers' job, and whoever
+else, so it does not go stale. Migration is the maintainers' job, and whoever
 bumps it re-runs it and puts their own name on `Assessed by`. `Author` stays
 yours permanently.
 
@@ -203,21 +182,21 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) for folder choice, the resource template
 
 ## Going further
 
-- **[Rasa University](https://rasa.com/university/)** — structured courses and Developer Certification
-- **[rasa.community](https://rasa.community/)** — community hub, heroes programme, and educational library
-- **[`heroes/`](heroes/)** — what each Rasa Heroes cohort actually built, wave by wave
-- **[rasa.com/docs](https://rasa.com/docs/)** — product documentation
+- **[Rasa University](https://rasa.com/university/)**—structured courses and Developer Certification
+- **[rasa.community](https://rasa.community/)**—community hub, heroes program, and educational library
+- **[`heroes/`](heroes/)**—what each Rasa Heroes cohort actually built, wave by wave
+- **[rasa.com/docs](https://rasa.com/docs/)**—product documentation
 
 ---
 
 ## Maintainers
 
-Editorial direction and day-to-day stewardship of this catalog are led by **[Rod Rivera](https://profrod.ai/)** (DevRel at Rasa), with area ownership open to practitioners who contribute and stay. The goal is a multi-author commons: resources name their authors, area owners review their folders, and credit is never stripped.
+Editorial direction and day-to-day stewardship of this catalog are led by **[Rod Rivera](https://profrod.ai/)** (developer relations at Rasa), with area ownership open to practitioners who contribute and stay. The goal is a multi-author commons: resources name their authors, area owners review their folders, and credit is never stripped.
 
 Full ownership tables, review standards, and succession notes: [MAINTAINERS.md](MAINTAINERS.md).
 
-Security reports: [SECURITY.md](SECURITY.md) — do not open a public issue.
+Security reports: [SECURITY.md](SECURITY.md)—do not open a public issue.
 
-## Licence
+## License
 
-The tutorials, examples, and reference code in this repository are released under the Apache License 2.0 — see [LICENSE](LICENSE). That licence covers the teaching material here only. Rasa Pro is a commercial framework under its own terms.
+The tutorials, examples, and reference code in this repository are released under the Apache License 2.0—see [LICENSE](LICENSE). That license covers the teaching material here only. Rasa Pro is a commercial framework under its own terms.
