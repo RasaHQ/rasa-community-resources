@@ -2,61 +2,58 @@
 
   python3 gate.py CANDIDATE.py
 
-The candidate is a Python file that must define check_line_status(), a read-only operation. The gate:
-  1. reads the file as text and refuses it if it imports the network or process modules, or names a restart
-     or factory-reset command,
-  2. runs the candidate in a separate process under a no-network wrapper that was proven by behavior
-     (book/ready/ch06/isolation.py, checked against its pinned hash before it is run), and
-  3. compares what check_line_status() returns with the expected answer.
+The change must be a Python file that holds exactly one function, check_line_status(), which takes no arguments
+and has one statement: return a dictionary written out as plain values. The gate reads the file once and judges
+those bytes. It never runs the change, so the change cannot write a file, open the network, or do anything
+else while it is judged. A change that needs more than a literal answer is rejected, and a person decides
+what to do next. That fits this small read-only operation and is not a general sandbox.
 
-Exit 0 ACCEPT, 1 REJECT (it prints the name of the test that failed), 2 could not judge. If no wrapper can be
-proven, or isolation.py does not match its pin, the gate exits 2 and judges nothing.
+Exit 0 ACCEPT, 1 REJECT (it prints the name of every test that failed), 2 could not judge.
 """
 import ast
-import hashlib
-import importlib.util
-import json
-import subprocess
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
-ISOLATION = HERE.parent.parent / "book/ready/ch06/isolation.py"
-ISOLATION_SHA256 = "3b603913b621e56215b9157eaa3ef488b63ea98e14653d8aa87529ce49adf981"
 EXPECTED = {"operation": "check_line_status", "status": "ok", "changes_anything": False}
-FORBIDDEN_IMPORTS = {"socket", "subprocess", "os", "shutil", "http", "urllib", "requests", "httpx", "ctypes", "asyncio"}
 FORBIDDEN_WORDS = ("REBOOT", "FACTORY_RESET")
 
 
-def load_isolation():
-    if hashlib.sha256(ISOLATION.read_bytes()).hexdigest() != ISOLATION_SHA256:
-        return None
-    spec = importlib.util.spec_from_file_location("isolation", ISOLATION)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+def is_docstring(node):
+    return isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant) and isinstance(node.value.value, str)
 
 
-def static_failures(text):
-    failures = []
+def failures_for(text):
     try:
         tree = ast.parse(text)
-    except SyntaxError:
+    except (SyntaxError, ValueError):
         return ["test_candidate_is_valid_python"]
-    names = set()
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            names.update(alias.name.split(".")[0] for alias in node.names)
-        elif isinstance(node, ast.ImportFrom) and node.module:
-            names.add(node.module.split(".")[0])
-        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in {"exec", "eval", "open", "__import__", "compile"}:
-            names.add(node.func.id)
-    if names & (FORBIDDEN_IMPORTS | {"exec", "eval", "open", "__import__", "compile"}):
-        failures.append("test_no_network_process_or_file_access")
+    failures = []
+    body = list(tree.body)
+    if body and is_docstring(body[0]):
+        body = body[1:]
+    if len(body) != 1 or not isinstance(body[0], ast.FunctionDef) or body[0].name != "check_line_status":
+        failures.append("test_only_the_one_function_and_nothing_else")
+    else:
+        function = body[0]
+        arguments = function.args
+        if (arguments.args or arguments.posonlyargs or arguments.kwonlyargs or arguments.vararg or arguments.kwarg
+                or arguments.defaults or arguments.kw_defaults or function.decorator_list or function.returns):
+            failures.append("test_takes_no_arguments_and_has_no_decorators")
+        statements = list(function.body)
+        if statements and is_docstring(statements[0]):
+            statements = statements[1:]
+        if len(statements) != 1 or not isinstance(statements[0], ast.Return) or statements[0].value is None:
+            failures.append("test_body_is_one_return")
+        else:
+            try:
+                value = ast.literal_eval(statements[0].value)
+            except (ValueError, SyntaxError, TypeError, MemoryError, RecursionError):
+                failures.append("test_returns_a_plain_literal")
+            else:
+                if value != EXPECTED:
+                    failures.append("test_returns_the_expected_read_only_answer")
     if any(word in text for word in FORBIDDEN_WORDS):
         failures.append("test_no_restart_or_reset_command")
-    if not any(isinstance(n, ast.FunctionDef) and n.name == "check_line_status" for n in tree.body):
-        failures.append("test_defines_check_line_status")
     return failures
 
 
@@ -65,25 +62,11 @@ def main(argv):
         print("usage: gate.py CANDIDATE.py")
         return 2
     try:
-        text = Path(argv[1]).read_text(encoding="utf-8")
-    except OSError as error:
+        text = Path(argv[1]).read_bytes().decode("utf-8")
+    except (OSError, UnicodeDecodeError) as error:
         print("could not judge:", type(error).__name__)
         return 2
-    isolation = load_isolation()
-    prefix = isolation.first_blocking() if isolation else None
-    if prefix is None:
-        print("could not judge: no proven no-network wrapper, or isolation.py does not match its pin")
-        return 2
-    failures = static_failures(text)
-    if not failures:
-        runner = "import json,runpy,sys\nns = runpy.run_path(sys.argv[1])\nprint('GATE-RESULT ' + json.dumps(ns['check_line_status']()))\n"
-        done = subprocess.run([*prefix, sys.executable, "-I", "-c", runner, argv[1]], capture_output=True, text=True,
-                              timeout=60, env={"PATH": "/usr/bin:/bin", "HOME": "/nonexistent", "PYTHONDONTWRITEBYTECODE": "1"})
-        lines = [line for line in done.stdout.splitlines() if line.startswith("GATE-RESULT ")]
-        if done.returncode != 0 or len(lines) != 1:
-            failures.append("test_candidate_runs_and_returns_once")
-        elif json.loads(lines[0][len("GATE-RESULT "):]) != EXPECTED:
-            failures.append("test_returns_the_expected_read_only_answer")
+    failures = failures_for(text)
     if failures:
         print("REJECT - failed:", ", ".join(failures))
         return 1

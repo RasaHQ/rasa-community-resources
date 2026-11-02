@@ -20,12 +20,13 @@ In the helper's `skill.md`, import the tool (`import_tools:` with `- mcp/builder
 skill to call `@tool.build_change` when the customer asks for a change to the helper. Then `rasa train` and
 `rasa inspect --port 5010`.
 
-**Studio path.** Download the assistant (`rasa studio download`), add the same server to `endpoints.yml`
-(`mcp_servers:` with `name: builder`, `url: http://127.0.0.1:8765`, `type: http`), and add a flow step
-`call: build_change` with `mcp_server: builder`, mapping a text slot to the `request` parameter, as in Rasa's
-MCP integration docs. Rasa lists MCP servers as a beta feature since Rasa 3.14. Studio's own flow builder
-may not offer this step, so you may edit the downloaded `flows.yml` instead.
+**Studio path.** Studio's own chat runs in containers and reads its endpoints from Studio's assistant settings, so it cannot reach this server at 127.0.0.1 in the codespace, and Rasa's docs do not say whether those settings accept MCP servers. The documented route is the downloaded project: `rasa studio download`, add the server to the downloaded `endpoints.yml` (`mcp_servers:` with `name: builder`, `url: http://127.0.0.1:8765/mcp`, `type: http`), add a flow step `call: build_change` with `mcp_server: builder` that maps a text slot to the `request` parameter, as in Rasa's MCP integration docs, then run it from files with `rasa train` and `rasa inspect`. Rasa lists MCP servers as a beta feature since Rasa 3.14. Studio's flow builder may not offer this step, so you may edit the downloaded `flows.yml` instead. Say plainly in the room that this leaves the Studio chat itself unable to call the builder, unless a test shows Studio's settings accept it.
 
-None of this has been run. The Mantle snippet follows the working pattern in
+None of this has been run on a real key. The Mantle snippet follows the working pattern in
 `examples/mantle-factory-agent`, which uses the same server setup and a longer `tool_timeout`. A real builder
 session can take minutes, and the Mantle default is 10 seconds.
+
+The tool server keeps a build "running" until its worker really finishes, even if the caller cancels. A second request
+meanwhile is refused. Each build writes to its own folder under `scratch/` and returns its build id and the sha256 of
+the file. A build stops after `BUILDER_MAX_SECONDS` (300), which is below Mantle's 360-second wait. Those two behaviors
+are tested with stand-ins and no key in `test_builder_server.py`.

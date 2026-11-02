@@ -1,16 +1,22 @@
 """A small tool server that puts your builder behind the router helper.
 
-Mantle (and, in files, a Rasa flow) can call this server's one tool, build_change. The tool runs one builder
-session (builder.py) and returns what the builder said and whether it saved a file. It listens on 127.0.0.1 only.
+Mantle (and a Rasa project run from files) can call this server's one tool, build_change. The tool runs one builder
+session (builder.py) and returns the build id, whether it saved a file, the file's sha256, and what the builder said.
+It listens on 127.0.0.1 only. The tool URL is http://127.0.0.1:8765/mcp.
+
+One build at a time. The server keeps the build "running" until the worker thread has really finished, even if the
+caller gives up and cancels its request. A second request while a build is running is refused. Each build writes
+to its own folder, and a build is stopped after BUILDER_MAX_SECONDS.
 
 Run it:  python3 builder_server.py        (needs: pip install --upgrade openai mcp==1.28.1)
 The same FastMCP setup is used by examples/mantle-factory-agent/server.py in this repository.
 
-Not run yet by anyone for this workshop.
+Not run yet by anyone for this workshop on a real key. The cancel behavior was reproduced with a fake builder and no key.
 """
 import asyncio
 import os
 import sys
+import threading
 
 from mcp.server.fastmcp import FastMCP
 
@@ -19,18 +25,32 @@ import builder
 PORT = int(os.environ.get("BUILDER_MCP_PORT", "8765"))
 
 server = FastMCP("builder", host="127.0.0.1", port=PORT, stateless_http=True, json_response=True)
-busy = asyncio.Lock()
+_running = threading.Lock()
+
+
+def _work(request: str) -> dict:
+    """Runs on a worker thread. The lock is released only when this function has really finished."""
+    try:
+        outcome = builder.build(request, False)
+        return {key: outcome[key] for key in ("build_id", "saved", "sha256", "session_id") if key in outcome} | {
+            "builder_said": outcome["builder_said"][:2000]}
+    finally:
+        _running.release()
 
 
 @server.tool()
 async def build_change(request: str) -> dict:
     """Ask the builder agent to build one small change to the router helper. Describe the change in one sentence.
-    Returns whether a file was saved and what the builder said. Nothing is applied to the helper."""
-    if busy.locked():
+    Returns the build id, whether a file was saved, its sha256, and what the builder said. Nothing is applied."""
+    if not _running.acquire(blocking=False):
         return {"saved": False, "builder_said": "A build is already running. Wait for it to finish."}
-    async with busy:
-        outcome = await asyncio.to_thread(builder.build, request, False)
-    return {"saved": outcome["saved"], "builder_said": outcome["builder_said"][:2000]}
+    try:
+        future = asyncio.get_running_loop().run_in_executor(None, _work, request)
+    except BaseException:
+        _running.release()
+        raise
+    # shield: if the caller cancels this request, the worker thread keeps going and keeps the lock until it ends.
+    return await asyncio.shield(future)
 
 
 if __name__ == "__main__":

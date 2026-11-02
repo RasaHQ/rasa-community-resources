@@ -103,7 +103,7 @@ You build: a check.
 You see: the check pass, then fail on the wrong command, even though the helper's reply still sounds right.
 Complete at minute 70: a check the helper cannot talk its way past.
 
-The check is `router-helper/check_helper.py`. It reads the command the helper records, from the Mantle tool file or from the downloaded Studio flows file, and exits 2 when it cannot find one so a missing command is never a pass. Its tests pass with Python alone. It has not been run against a real Studio export, whose file layout is not yet confirmed.
+The check is `router-helper/check_helper.py`. It reads the command the helper records, from the Mantle tool file or from the downloaded Studio flows file, and exits 2 when it cannot find one so a missing command is never a pass. Its tests pass with Python alone. It reads the table or the slot value in the file, not a command recorded in a live conversation, so treat it as a source check until a runtime trace shows the recorded command. It has not been run against a real Studio export, whose file layout is not yet confirmed.
 
 People who leave at minute 70 have a working helper on both paths and a check for it.
 
@@ -123,7 +123,7 @@ Complete at minute 115: a request goes in and a proposed change comes out.
 
 The code is in `router-helper/builder/`: `builder.py` (your agent, with the instructions you edit) and `builder_server.py` (the tool server), with a README for the Mantle and Studio wiring.
 
-Proof so far: nothing here has been run by anyone for this workshop on a workshop key. The code follows OpenAI's Agents API quickstart and its page on files, and Rasa's MCP docs. The existing live builder (chapter 5 of the book) runs the same kind of session. Its protected path now has a Linux readiness change with nine offline tests that pass on a Mac. No real accept or reject has been judged on Linux through it, and the example's live requests stay not ready on Linux until the whole path is shown.
+Proof so far: nothing here has been run by anyone for this workshop on a workshop key. The code follows OpenAI's Agents API quickstart and its page on files, and Rasa's MCP docs. The tool server's cancel and one-build-at-a-time behavior is tested with stand-ins and no key. On the Studio path, Studio's own chat cannot reach this server, so the Studio route runs the downloaded project from files. The existing live builder (chapter 5 of the book) runs the same kind of session. Its protected path now has a Linux readiness change with nine offline tests that pass on a Mac. No real accept or reject has been judged on Linux through it, and the example's live requests stay not ready on Linux until the whole path is shown.
 
 ## Minutes 115 to 140: the gate
 
@@ -132,9 +132,9 @@ Run the protected check on your builder's change. Then run it on a deliberately 
 You see: one ACCEPT, one REJECT, and the name of the failing test.
 Complete at minute 140: a line that can say no.
 
-The gate is `router-helper/gate/gate.py`, with a good change and two bad ones in `router-helper/gate/candidates/`. It refuses a change that imports the network or process modules, names a restart or factory-reset command, or returns the wrong answer, and it runs the change under a no-network wrapper that was proven by behavior and checked against its pinned hash before use. It prints the name of the test that rejected a change and exits 2, judging nothing, when it cannot prove the wrapper.
+The gate is `router-helper/gate/gate.py`, with a good change and three bad ones in `router-helper/gate/candidates/`. It accepts only a file that holds one function, `check_line_status()`, with no arguments and one statement: a return of a dictionary written out as plain values. It reads the file once and judges those bytes. It never runs the change, so a change cannot write a file or open the network while it is judged. It rejects anything else, names every test that failed, and rejects a change that names a restart or a factory-reset command. This fits one small read-only operation and is not a general sandbox.
 
-Proof so far: the gate's five tests pass on a Mac, including ACCEPT for the good change, REJECT by name for each bad one, and no judgment when the isolation helper has been edited. It has not been run on Linux or on a change that a real builder wrote. The Linux path for the chapter 6 gate has passed its refusal tests on macOS and Linux.
+Proof so far: the gate's seven tests pass on a Mac, including ACCEPT for the good change, REJECT by name for each bad one, no file written by a change that tries, and no judgment for a missing file. It has not been run on a change that a real builder wrote. The Linux path for the chapter 6 gate is separate: it has passed its refusal tests on macOS and Linux.
 
 ## Minutes 140 to 160: release
 
