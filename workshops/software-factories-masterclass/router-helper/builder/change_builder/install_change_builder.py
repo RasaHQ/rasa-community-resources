@@ -3,7 +3,7 @@
 Usage:  python3 install_change_builder.py AGENT_FOLDER
 
 Mantle stops a custom tool after agent.yml's `tool_timeout` seconds (default 10). The tool waits up to 360 seconds for the
-builder, so this raises `tool_timeout` to at least 400. A larger value you already have is kept. Needs PyYAML, which Rasa's
+builder, so this raises `tool_timeout` to at least 450. A larger value you already have is kept. Needs PyYAML, which Rasa's
 environment has. Nothing is changed if agent.yml cannot be read.
 """
 import os
@@ -15,7 +15,7 @@ from pathlib import Path
 import yaml
 
 HERE = Path(__file__).resolve().parent
-MINIMUM_TIMEOUT = 400.0
+MINIMUM_TIMEOUT = 450.0
 
 
 def main(argv):

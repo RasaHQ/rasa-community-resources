@@ -28,7 +28,7 @@ class Install(unittest.TestCase):
             done = install(agent)
             self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
             self.assertEqual(sorted(p.name for p in (agent / "skills/change_builder").iterdir()), ["skill.md", "tools.py"])
-            self.assertEqual(yaml.safe_load((agent / "agent.yml").read_text())["tool_timeout"], 400.0)
+            self.assertEqual(yaml.safe_load((agent / "agent.yml").read_text())["tool_timeout"], 450.0)
 
     def test_a_larger_timeout_is_kept_and_a_second_run_is_safe(self):
         agent = make("agent:\n  id: a\ntool_timeout: 900\n")
