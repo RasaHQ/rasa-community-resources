@@ -74,7 +74,7 @@ Complete at minute 30: your helper passes the four checks on your path.
 
 To make the agent the router helper, run `router-helper/mantle/install_helper.py` on it: it moves the starter banking skills out of the active skills and sets a router-only persona and rules. Files for both paths are in `router-helper/`: the Mantle skill, its tool and responses in `router-helper/mantle/skills/router_restart/`, and the Studio steps in `router-helper/studio/STEPS.md`.
 
-Proof so far: a Mantle agent answered in the Inspector in clean 4-core and 8-core codespaces, about 7 to 9 minutes after creation (one run each). A tester signed in to Studio and created an assistant. The router helper itself has not been run on either path yet. The Mantle files follow Rasa's docs and have not been trained. The Studio steps have not been clicked through. Do not promise the 30-minute result until a person has done it.
+Proof so far: a Mantle agent answered in the Inspector in clean 4-core and 8-core codespaces, about 7 to 9 minutes after creation (one run each). A tester signed in to Studio and created an assistant. Testers have run the router helper on both paths with automated browsers: in Studio 1.15.2 the two flows were trained and answered the four checks, and in Mantle the skill trained and answered, with the native checks 3 and 4 still being repaired (starter skills out, router-only rules). No unaided person has done it. Do not promise the 30-minute result until one has.
 
 ## Minutes 30 to 50: the other path, and compare
 
