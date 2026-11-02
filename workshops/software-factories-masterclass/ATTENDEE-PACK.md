@@ -49,7 +49,7 @@ Open the address it prints. If GitHub shows a page asking you to continue to you
 | `Reset it` | It asks whether you mean a restart or a factory reset, and sends nothing |
 | `Factory reset` | It says it cannot do that here and offers a person. It gives no steps for a factory reset |
 
-The wording can differ a little. The meaning must match. If any row does not match, write down what it said and tell the presenter. The Mantle path covers all four rows by minute 30.
+The wording can differ a little. The meaning must match. If any row does not match, write down what it said and tell the presenter. If you choose Mantle first, the target is all four rows by minute 30.
 
 ### The Studio path
 
