@@ -52,6 +52,8 @@ Say: "In 30 minutes you will have a small agent that handles one risky request s
 
 Show: the finished helper, once, handling the four checks above. No other demo.
 
+**Everyone opens their codespace now, at minute 0, while the result is on the screen.** In tests the setup took 5 to 6 minutes, and a first reply came 7 to 9 minutes after the codespace was created. Wait for the setup to print its finished line before you start building at minute 10 to 15.
+
 ## Minutes 10 to 30: build the helper on your path
 
 **Mantle path.**
@@ -147,6 +149,19 @@ Switch speech on for the Mantle helper. Mantle's docs list the speech providers 
 ## Minutes 175 to 180: close
 
 Show the line again with the pieces each person built. Name the one check each person could not edit. Hand out the recap.
+
+## If a station fails: the fallback at each stage
+
+| Stage | If this breaks | Fall back to |
+|---|---|---|
+| Minutes 0 to 30 | A codespace will not open or the setup stalls | Pair with a neighbor who has one. The presenter keeps one working codespace for the room. |
+| Minutes 0 to 30 | Your key or licence is rejected | Say so at once. Watch your neighbor's path until a key is fixed. Never retry a key that was rejected. |
+| Minutes 10 to 50 | One path will not work | Build the other path, and compare on the presenter's screen. Both must not fail together, because they use different keys. |
+| Minutes 50 to 70 | The check cannot find a command | Read the exit code. 2 means it found nothing, and the file layout is the first thing to look at. |
+| Minutes 75 to 115 | Your Agents API session fails (permissions, quota, model) | The presenter runs one builder on the screen. You watch its events and take the saved change in `router-helper/gate/candidates/good.py` to the next block. |
+| Minutes 90 to 115 | The tool server or its wiring will not work | Call the builder from its script and carry the saved change forward. Tell the presenter, who tells the Architect, by 12:00Z the day before if this block cannot be shown. |
+| Minutes 115 to 160 | The gate says it could not judge | That is the gate refusing to run unprotected. The presenter shows a recorded ACCEPT and REJECT, labelled as recorded. |
+| Minutes 160 to 175 | Anything | Voice goes first. |
 
 ## Appendix: what the room needs
 
