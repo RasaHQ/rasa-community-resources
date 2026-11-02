@@ -1,6 +1,6 @@
 # Revised workshop presentation
 
-The 16-slide deck uses the Rasa brand repository's Ink #181210, Cream #FAF6F0, Pink #E85A91, bright panel #FFFBF5 and the supplied official horizontal Ink logo. Newsreader, Inter and JetBrains Mono are the documented open fallback families. Their licences remain in FONT-LICENSES.txt. No proprietary font binary is added.
+The 16-slide deck uses the Rasa brand repository's Ink #181210, Cream #FAF6F0, Pink #E85A91, bright panel #FFFBF5 and the supplied official horizontal Ink logo. Newsreader, Inter and JetBrains Mono are the documented open fallback families. Their licenses remain in FONT-LICENSES.txt. No proprietary font binary is added.
 
 Edit slides.json for content and presenter notes; run `node build-deck.mjs` to rebuild index.html. The self-contained template.html carries the embedded fonts, exact logo asset, styles and keyboard navigation. workshop.css is a readable copy of the styling. The original slide source and HTML are in archive/2026-10-22-original/slides.
 

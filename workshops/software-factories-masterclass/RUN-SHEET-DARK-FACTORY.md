@@ -1,8 +1,6 @@
 # Run sheet: build a dark software factory with Rasa Mantle and the OpenAI Agents API
 
-sow: public
-
-Three hours, Tuesday 3 November, 3:00 to 6:00 PM New York time. Minutes count from the start, so minute 0 is 3:00 PM and minute 180 is 6:00 PM. The slides are in `slides/` and the notes for each are in `slides/PRESENTER-NOTES.md`. This sheet is for the session that uses GitHub Codespaces. It says what each person builds and sees, minute by minute. All times below are planned targets. Nobody has yet confirmed that a first-time attendee can reach them. The evidence table near the end says what was observed, by whom, and what is still open.
+Three hours, Tuesday, November 3, 3:00 to 6:00 PM New York time. Minutes count from the start, so minute 0 is 3:00 PM and minute 180 is 6:00 PM. The slides are in `slides/` and the notes for each are in `slides/PRESENTER-NOTES.md`. This sheet is for the session that uses GitHub Codespaces. It says what each person builds and sees, minute by minute. All times below are planned targets. Nobody has yet confirmed that a first-time attendee can reach them. The evidence table near the end says what was observed, by whom, and what is still open.
 
 ## The one small agent: the router restart helper
 
@@ -76,10 +74,10 @@ Target at minute 50: a helper that never records anything the customer did not a
 
 The helper must never record `FACTORY_RESET` when asked to restart. A check can look at the configured restart command in a file instead of at what the helper said.
 
-Run `router-helper/check_helper.py` on the Mantle tool file. It reads the configured command and fails if it is not `REBOOT`. Then change the file to `FACTORY_RESET` and run the check again. It fails, and names why.
+Run `router-helper/check_helper.py` on the Mantle tool file. It reads the configured command and fails if it is not `REBOOT`. Then change the file to `FACTORY_RESET` and run the check again. It fails, and names why. Then restore `REBOOT` and run it again to see `PASS` before anyone retrains or restarts the Inspector: the builder block retrains the helper from that file, so a wrong command left in it would be carried forward. Keep the conversation checks and the source-file check as separate observations.
 
 You build: a source-file check.
-You see: the check pass, then fail on the wrong command, even though the helper's reply could still sound right.
+You see: the check pass, then fail on the wrong command, even though the helper's reply could still sound right, then pass again once `REBOOT` is restored.
 Target at minute 70: a check that reads the configured command, not the reply.
 
 This is a source-file check of the configured restart command. It does not watch a live conversation, so a pass does not prove the helper ran that command at run time. It exits 2 when it cannot find a command, so a missing command is never a pass. If every check passes by minute 70, people who leave then have a working helper and a check for it.
@@ -138,23 +136,16 @@ Open the workshop codespace on the room's network about 20 minutes before 3:00 P
 | Minutes 115 to 140 | The gate says it could not judge | The presenter shows a recorded ACCEPT and REJECT, labeled as recorded. |
 | Minutes 160 to 175 | The live preview will not start | Show the recording, or skip the preview and give the community link. |
 
-## Test evidence: what was observed, by whom, and what is still open
+## What was observed, and what was not
 
-These are peer-reported observations from the workshop team's test codespaces. The retained logs are held by the team and available on request. None of them is an unaided attendee run.
+Testers ran these in fresh 4-core test codespaces on November 2, with help and an existing account. None was an unaided attendee run. The detailed table is in `archive/2026-11-02-before-new-york/RUN-SHEET-EVIDENCE-TABLE.md`.
 
-| What | Revision and platform | Observation | Still open |
-|---|---|---|---|
-| Mantle first win, cold | Source `81dc3efa`, Linux codespace, 4 cores and 16 GiB, no prebuild, tester account, automated browser (Nov 2) | Codespace requested 04:03:16Z, setup finished 04:09:36Z, install and train 27 seconds, working restart confirmation 04:13:44Z, 10 minutes 28 seconds from opening. All four checks behaved. | A fresh account, an unaided person, and a different room network |
-| Mantle, second cold codespace | Source `1282548e`, Linux codespace, 4 cores and 16 GiB, no prebuild, existing account, automated browser (Nov 2, opening 06:04:24Z) | Full restart confirmation 11 minutes 52 seconds after opening, REBOOT after consent, reset clarified, factory reset answered with the exact refusal and person offer in all three tested positions (followed by an unwanted long resume paragraph). A later change, tested on the same machine with a fresh agent and no new full cold run, replaced it with the short question "Do you want to carry on with your router restart, or leave it?" in the clarification case. After the first message or after a restart, the engine can still add its normal follow-up question, so the refusal is not the only text in those positions. | A fresh account, an unaided person, and the unchanged latest pack |
-| Mantle tool calls | Source `81dc3efa`, the earlier codespace of the first row (opened about 04:03Z) | Expanded event cards: one sent `REBOOT` after consent, none after a denial or for reset requests, and no router was contacted (mock tool) | A real device |
-| First check | Mac, Python only | Passed on the Mantle tool file. The tests pass. | A run-time trace |
-| Gate | Mac, Python only | Seven tests pass: ACCEPT for the good change, REJECT by name for each bad one, no file written by a change that tries | Linux, and a change written through the tool server on a workshop key (one existing-key builder file was accepted, see the builder row) |
-| Chapter 6 gate on Linux | Linux codespace, then a real run on the team's own test machine | Wrapper proven, 11 of 11 isolation tests, 5 gate tests OK, good ACCEPT, ignores-limit REJECT. The workshop lead reported that a later real gate run also passed. The router helper's gate then ran on Linux in a test codespace and returned ACCEPT for a freshly built file (next rows). | The router helper's gate on the four candidate files, run on Linux by someone following the pack |
-| Tool server behavior | Mac, Python only, stand-ins and no key | Cancel and one-build-at-a-time behavior passes 2 tests | Anything with a real key |
-| Builder, live key, first run | Existing key, run through `builder.py` alone, not the tool server (platform not recorded in this sheet) | One run took 27.5 seconds and produced a 114-byte file that the gate judged ACCEPT. | Not through the tool server |
-| Builder, live key, first whole chain | Source `6f2bf1fc`, the cold 4-core machine, existing authorized key, one paid run (Nov 2, 07:00Z) | Mantle called the tool server, which started a real Agents session that returned in 30.5 seconds and saved a 114-byte file. The unchanged gate judged it ACCEPT. The file was not run or applied. The helper's reply did not show the build id, path, or hash, so this was not a pass. | Fixed afterwards (next rows) |
-| Builder through Mantle, second run | Source `e0a6513f`, same machine, one paid run (08:38Z) | The build finished in about 25 seconds, but Mantle stopped the tool after its default 10 seconds and told the customer to retry. The saved 160-byte file returned an "unknown" answer, because the free-form request replaced the task and the build lost the required return value. The unchanged gate REJECTED it. | Fixed afterwards (next row) |
-| Builder through Mantle, repaired | Source `00d6f4d9`, same machine, third and last paid run (08:52Z) | From the customer's message to the helper's reply took 28.2 seconds. The reply showed the real build id, an absolute path, and the full sha256, with no timeout. The file was 114 bytes with the expected return value, and the unchanged gate returned ACCEPT from a different folder. Nothing was run or applied. The three paid runs allowed are spent. Cost was not returned. | A new build on the latest text, a cold run, an unaided attendee, and cost |
+- **The helper:** the first restart confirmation came about 10 minutes after the codespace opened, and all four rows passed by about 11 minutes.
+- **The practice builder, tool server, skill and gate:** ran end to end with no billed Agents session.
+- **One billed build** through the tool server on earlier code, with a real key: 28.2 seconds from the customer's message to the helper's reply, which showed the build id, an absolute path and the full sha256. The saved file was 114 bytes, and the unchanged gate returned `ACCEPT` from a different folder. The cost was not returned.
+- **The gate on Linux:** ran in a test codespace and returned `ACCEPT` for a freshly built file.
+
+Not shown: an unaided first-time attendee, a fresh account on the room's network, the cost of a build, a real router, and a cold run of the refreshed image.
 
 ## Appendix: what the room needs
 

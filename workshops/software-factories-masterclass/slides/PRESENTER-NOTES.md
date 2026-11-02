@@ -1,6 +1,6 @@
 # Presenter notes
 
-Sixteen slides for the New York edition, Tuesday 3 November, 3:00 to 6:00 PM New York time. Minute 0 is 3:00 PM. The timing source is `../RUN-SHEET-DARK-FACTORY.md`. Press N in the deck to show these notes on screen.
+Sixteen slides for the New York edition, Tuesday, November 3, 3:00 to 6:00 PM New York time. Minute 0 is 3:00 PM. The timing source is `../RUN-SHEET-DARK-FACTORY.md`. Press N in the deck to show these notes on screen.
 
 Every attendee works in a GitHub Codespace on Rasa Mantle only. Nothing is set up in advance. Say what was measured and what was not: testers have run the first 30 minutes in fresh codespaces with help, and nobody has yet done it unaided.
 
@@ -10,11 +10,11 @@ Welcome briefly. Say where the work happens: everyone builds in a GitHub Codespa
 
 ## 2. Three hours, mostly your hands on the keys.
 
-Use elapsed minutes and the clock: minute 0 is 3:00 PM, minute 30 is 3:30, the break is minutes 70 to 75 (4:10 to 4:15), the builder starts at minute 75, the gate at 115 (4:55), release at 140 (5:20), the Studio 2 preview at 160 (5:40) and the close at 175 (5:55). If time is short, shorten the release block first and keep the first 30 minutes whole. The preview is short; the rest of its block is slack.
+Use elapsed minutes and the clock: minute 0 is 3:00 PM, minute 30 is 3:30, the break is minutes 70 to 75 (4:10 to 4:15), the builder starts at minute 75, the gate at 115 (4:55), release at 140 (5:20), the Studio 2 preview at 160 (5:40) and the close at 175 (5:55). If time is short, shorten the Studio 2 preview first, then the decision block, and keep the first 30 minutes whole.
 
 ## 3. Open your codespace now, at minute 0.
 
-Keep this slide up while people open codespaces and show the finished helper from the next slide on a second screen if you can. Exact steps are in ATTENDEE-PACK.md. The install can run for several minutes after the codespace shows as available: wait for the line that starts Setup finished. NOT READY names the secret to fix; fix it, then stop and start the codespace. Never let anyone paste a key into a chat, a command or a file. Pair anyone who cannot open a codespace with a neighbor and do not troubleshoot billing in the room. Setup time for a first-time attendee has not been measured.
+Keep this slide up while people open codespaces and show the finished helper from the next slide on a second screen if you can. Exact steps are in ATTENDEE-PACK.md. The install can run for several minutes after the codespace shows as available: wait for the line that starts Setup finished. NOT READY names the secret to fix: fix it, stop and start the same codespace, run setup.sh again, and wait for the line that starts Setup finished. If it is still NOT READY, stop and send the person to the owner of the secret. Never let anyone paste a key into a chat, a command or a file. Pair anyone who cannot open a codespace with a neighbor and do not troubleshoot billing in the room. Setup time for a first-time attendee has not been measured.
 
 ## 4. One small agent: a router restart helper.
 
@@ -62,7 +62,7 @@ Run the whole line once, end to end, and record the decision. The exercise outco
 
 ## 15. A Studio 2 preview.
 
-Say it is an early preview that attendees cannot try yet, then show it live from your own machine for a few minutes. Keep your own setup notes outside this repository; do not say how to get the preview, and keep keys, licences and any command line off the shared screen. Have a recording ready in case the live start fails. End with the call to action: join the Rasa Community at info.rasa.com/community to hear when Studio is released.
+Say it is an early preview that attendees cannot try yet, then show it live from your own machine for a few minutes. Keep your own setup notes outside this repository; do not say how to get the preview, and keep keys, licenses and any command line off the shared screen. Have a recording ready in case the live start fails. End with the call to action: join the Rasa Community at info.rasa.com/community to hear when Studio is released.
 
 ## 16. Describe, build, check, release.
 

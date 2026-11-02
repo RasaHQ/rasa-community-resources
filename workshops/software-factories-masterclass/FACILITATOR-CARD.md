@@ -4,7 +4,7 @@
 
 **Entry:** `ATTENDEE-PACK.md`. Everyone works in their own codespace on Mantle.
 
-**Stuck?** Last step that worked, exact words on screen (never a key), the documented fix, then continue. `NOT READY`: fix the named secret, then stop and start the codespace. Cannot open a codespace: pair with a neighbor.
+**Stuck?** Last step that worked, exact words on screen (never a key), the documented fix, then continue. `NOT READY`: fix the named secret, stop and start the same codespace, run `setup.sh` again, and wait for the line that starts `Setup finished`. Still `NOT READY`: stop and send them to the owner of the secret. Cannot open a codespace: pair with a neighbor.
 
 **Minute 30:** move on. **Minute 115:** no builder file yet? Take `router-helper/gate/candidates/good.py` to the gate.
 
