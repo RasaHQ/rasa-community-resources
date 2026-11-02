@@ -6,6 +6,6 @@ Edit slides.json for content and presenter notes; run `node build-deck.mjs` to r
 
 The revised composition is 1600 × 900 and scales to fit the screen. One principal claim per slide, concrete examples, 66 px headings and mostly 24–28 px body text. Sparse diagrams and comparison tables explain relationships.
 
-The original check-layout.mjs applies the superseded 12-body-word limit and geometry of the original SVG deck. It is retained as historical tooling, not the gate for this revision. Revised verification checks text bounds, horizontal overflow, offline loading, keyboard navigation and notes at 1600 × 900 and 1280 × 720. All 16 slides were rendered and visually reviewed on 2 November 2026.
+Run the deck check with `PLAYWRIGHT_MODULE=<path to playwright-core> DECK_QA_OUT=<report file> node check-revised.mjs`. It checks text bounds, horizontal overflow, offline loading, keyboard navigation and notes at 1600 × 900 and 1280 × 720, and rebuilds `masterclass-slides.pdf`. Keep the report outside the repository.
 
 Source: https://github.com/RasaHQ/brand . Checked 22 October 2026. This presentation is an adaptation of the brand system, not a supplied corporate template.
