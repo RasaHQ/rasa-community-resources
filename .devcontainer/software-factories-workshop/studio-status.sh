@@ -10,6 +10,6 @@ if bash "$DIR/studio-ready.sh"; then
   echo "Studio:              https://${CODESPACE_NAME}-8080.${d}"
   exit 0
 fi
-if pgrep -f "[s]tart-studio.sh" >/dev/null 2>&1; then echo "Studio is still starting (a cold start took about 9 minutes). Keep going with the Mantle path. Last log line:"; tail -1 "$LOG" 2>/dev/null; exit 1; fi
+if { [ -f "$HOME/.studio-start.pid" ] && kill -0 "$(cat "$HOME/.studio-start.pid")" 2>/dev/null; } || pgrep -f "[s]tart-studio.sh" >/dev/null 2>&1; then echo "Studio is still starting (a cold start took about 9 minutes). Keep going with the Mantle path. Last log line:"; tail -1 "$LOG" 2>/dev/null; exit 1; fi
 if [ ! -f "$LOG" ]; then echo "Studio has not been started. Start it with: bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/start-studio-background.sh"; exit 1; fi
 echo "Studio is not running and is not ready. Last lines of $LOG:"; tail -8 "$LOG"; exit 2

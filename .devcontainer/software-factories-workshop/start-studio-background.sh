@@ -14,9 +14,14 @@ if [ -z "${RASA_STUDIO_LICENSE:-}" ]; then
 fi
 if bash "$DIR/studio-ready.sh"; then echo "$(date -u +%T) Studio was already healthy; nothing to start." > "$LOG"; exit 0; fi
 if pgrep -f "[s]tart-studio.sh" >/dev/null 2>&1; then echo "$(date -u +%T) a start is already running" > "$LOG"; exit 0; fi
+PIDFILE="$HOME/.studio-start.pid"
+echo "$(date -u +%T) postStart ran; launching the background start (user $(id -un), docker socket: $(ls /var/run/docker.sock 2>&1 | head -1))" > "$LOG"
 nohup setsid bash -c '
-  for i in $(seq 1 60); do docker info >/dev/null 2>&1 && break; sleep 2; done
+  echo $$ > "'"$PIDFILE"'"
+  echo "$(date -u +%T) background start running as pid $$, waiting for Docker"
+  for i in $(seq 1 90); do docker info >/dev/null 2>&1 && break; sleep 2; done
+  docker info >/dev/null 2>&1 && echo "$(date -u +%T) Docker is up" || echo "$(date -u +%T) Docker is NOT up after 3 minutes"
   echo "$(date -u +%T) starting Studio"
   if bash "'"$ROOT"'/.devcontainer/software-factories-workshop/start-studio.sh"; then echo "$(date -u +%T) START-FINISHED"; else echo "$(date -u +%T) STUDIO-FAILED: read the lines above"; fi
-' > "$LOG" 2>&1 < /dev/null &
+' >> "$LOG" 2>&1 < /dev/null &
 exit 0
