@@ -26,7 +26,7 @@ The slide shows the shape of the steps; the attendee pack has the exact commands
 
 ## 6. Target at minute 30: all four rows.
 
-Walk the room and ask each person to read one reply aloud. If someone is stuck at minute 25, pair them with a neighbor and keep going. A row that does not match: write down the words on screen, not keys, and ask early. Do not retry an unchanged key that was rejected. The measured numbers come from automated-assisted test runs; do not present them as a promise.
+Walk the room and ask each person to read one reply aloud. If someone is stuck at minute 25, pair them with a neighbor and keep going. The measured times are for the presenter, not the slide: in test codespaces the first confirmation came about 10 minutes after opening and all four rows by about 11 minutes, with help and an existing account. A row that does not match: write down the words on screen, not keys, and ask early. Do not retry an unchanged key that was rejected. The measured numbers come from automated-assisted test runs; do not present them as a promise.
 
 ## 7. Minutes 30 to 50: try to break your helper.
 
