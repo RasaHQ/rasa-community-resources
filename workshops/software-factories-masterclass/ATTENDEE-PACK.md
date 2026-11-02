@@ -11,7 +11,7 @@ This workshop simulates a router command. It does not contact a router or change
 Nothing is set up in advance. Do this at minute 0, while the presenter shows the finished helper. Nobody has timed this step for a first-time attendee. The presenter will track setup time and help if you get stuck.
 
 1. Use a personal GitHub account that is not managed by an enterprise.
-2. Have these three values ready, from your own accounts and from Rasa: a free Rasa Developer Edition key, your OpenAI application programming interface (API) key, and the Studio license Rasa gives you at the session. Get the Developer Edition key from Rasa's Developer Edition page. The confirmation page is not the key. For the builder part, your OpenAI key needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write`. Do not share these values.
+2. Have these three values ready, from your own accounts and from Rasa: a free Rasa Developer Edition key, your OpenAI application programming interface (API) key, and the Studio license Rasa gives you at the session, as a text file. Save that file on your laptop. You use it twice: its contents go into the `RASA_STUDIO_LICENSE` secret, and later you upload the file itself in Studio. Get the Developer Edition key from Rasa's Developer Edition page. The confirmation page is not the key. For the builder part, your OpenAI key needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write`. Do not share these values.
 3. Open the workshop repository on GitHub. Choose **Code**, then **Codespaces**, then the three dots, then **New with options**. Set **Dev container configuration** to `software-factories-workshop`, choose at least 4 cores, and set the branch the presenter names.
 4. The creation page asks for three secrets, named `RASA_LICENSE` (your Developer key), `OPENAI_API_KEY`, and `RASA_STUDIO_LICENSE` (the Studio license). Paste each value into its own box. They are saved to your GitHub account for this repository. If you create the codespace without that page, add them afterward under **Settings**, then **Codespaces**, then **New secret**. Set **Repository access** to the exact repository you opened, and then stop and start the codespace.
 5. Choose **Create codespace**. Studio starts by itself in the background as soon as the codespace is up.
@@ -66,6 +66,8 @@ bash /workspaces/rasa-community-resources/.devcontainer/software-factories-works
 ```
 
 It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks. Then open the Studio address (port 8080) and sign in as `superuser`. The password is in Rasa's Studio compose README under "Keycloak Default Users Password".
+
+On first sign-in, Studio shows "Welcome to Rasa Studio" and "Please provide a valid license to start using it". Choose **Upload a license** and pick the Studio license text file from your laptop. The secret in your codespace does not activate this screen, so you must upload the file. Do not paste the license anywhere else. A tester did this step by hand on a fresh codespace. It was missing from the first version of this page.
 
 **If Studio is your first path, the target by minute 30 is to import the ready-made restart flow, change one thing, train, and try it.** Authoring a flow by hand in Studio took too long in a cold test, so you start from the restart flow Studio itself exported. In a codespace terminal, run:
 

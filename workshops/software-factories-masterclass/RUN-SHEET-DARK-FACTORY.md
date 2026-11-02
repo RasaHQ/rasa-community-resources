@@ -168,7 +168,7 @@ These are peer-reported observations from the workshop team's test codespaces. T
 ## Appendix: what the room needs
 
 - Each person brings their own free Rasa Developer Edition key and their own OpenAI key, saved as Codespaces secrets named `RASA_LICENSE` and `OPENAI_API_KEY`, selected for this repository. The Developer key cannot be shared. The OpenAI key needs the Agents API permissions listed above.
-- Studio is hands-on. It needs a license with a Studio entitlement, saved as the Codespaces secret `RASA_STUDIO_LICENSE`. The free Developer key did not unlock Studio in testing. Rasa will provide the Studio keys.
+- Studio is hands-on. It needs a license with a Studio entitlement, saved as the Codespaces secret `RASA_STUDIO_LICENSE`. The free Developer key did not unlock Studio in testing. Rasa will provide the Studio license as a text file. The secret supplies the model service, and the first Studio sign-in also asks you to upload the same file in the Studio interface (**Upload a license**). Both steps are needed.
 - Studio runs from the Docker setup in `.devcontainer/software-factories-workshop/start-studio.sh`, inside the codespace, and needs a codespace with at least 4 cores. It starts by itself in the background.
 - The codespace can show as available while the Mantle install is still running. Wait for the setup to print its finished line.
 - The codespace opens in the workshop folder. Use absolute paths for helper scripts: `/workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/`.
