@@ -16,6 +16,10 @@ STUDIO_COMPOSE_COMMIT=deb6b8fa0dac6991fdb3584ab3143a04b5de3b6c
 git -C "$dir" checkout --quiet "$STUDIO_COMPOSE_COMMIT"
 git -C "$dir" rev-parse HEAD
 export RASA_PRO_LICENSE="$RASA_STUDIO_LICENSE"
+# To try other images, set STUDIO_IMAGE_TAG and RASA_PRO_IMAGE in the environment before running this script, for example
+# STUDIO_IMAGE_TAG=1.17.7 RASA_PRO_IMAGE=rasa/rasa-pro:3.21.2. The compose file's own .env pins the tested defaults, and
+# variables set in the shell take precedence over it. Nothing was tested with other tags yet.
+echo "Studio image tag: ${STUDIO_IMAGE_TAG:-from the compose .env}  Rasa Pro image: ${RASA_PRO_IMAGE:-from the compose .env}"
 url() { echo "https://${CODESPACE_NAME}-$1.${DOMAIN}"; }
 # The web client serves /usr/share/nginx/html/config.js with the Studio API and Keycloak addresses set to localhost, which
 # points at the attendee's own laptop. Nothing in the service environment rewrites it. Take the image's own file, change
