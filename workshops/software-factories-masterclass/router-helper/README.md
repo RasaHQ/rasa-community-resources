@@ -13,6 +13,13 @@ You can tell it works when:
 
 Build it on Rasa Mantle:
 
+The self-paced tutorial builds a fresh agent with the installer below. The `mantle/`
+folder also holds a completed reference project, pinned by its `pyproject.toml` and
+`uv.lock`. To inspect that reference independently, run `uv sync --locked`,
+`uv run rasa train`, and `uv run python -m unittest discover -s . -v` from `mantle/`,
+with your own `RASA_LICENSE` and `OPENAI_API_KEY` in the environment. Training and the
+archive tests are separate from a live conversation test.
+
 - Create a Mantle agent (`rasa init --engine mantle --no-prompt` in a new folder), then turn it
   into the router helper. The script checks first and changes nothing if anything is wrong, moves the starter (banking) skills out of `skills/` into `starter-skills-moved/` without deleting them, copies in the router skill, and sets
   a router-only persona and rules, keeping everything else in `agent.yml`:
