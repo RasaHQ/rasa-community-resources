@@ -19,12 +19,34 @@ if { [ -f "$HOME/.studio-start.pid" ] && kill -0 "$(cat "$HOME/.studio-start.pid
 fi
 PIDFILE="$HOME/.studio-start.pid"
 echo "$(date -u +%T) postStart ran; launching the background start (user $(id -un), docker socket: $(ls /var/run/docker.sock 2>&1 | head -1))" > "$LOG"
-nohup setsid bash -c '
-  echo $$ > "'"$PIDFILE"'"
-  echo "$(date -u +%T) background start running as pid $$, waiting for Docker"
-  for i in $(seq 1 90); do docker info >/dev/null 2>&1 && break; sleep 2; done
-  docker info >/dev/null 2>&1 && echo "$(date -u +%T) Docker is up" || echo "$(date -u +%T) Docker is NOT up after 3 minutes"
-  echo "$(date -u +%T) starting Studio"
-  if bash "'"$ROOT"'/.devcontainer/software-factories-workshop/start-studio.sh"; then echo "$(date -u +%T) START-FINISHED"; else echo "$(date -u +%T) STUDIO-FAILED: read the lines above"; fi
-' >> "$LOG" 2>&1 < /dev/null &
+# Launch with Python's Popen in a new session. Popen returns only after the child has started, so the lifecycle
+# command cannot exit before the background start exists. (Contributed after a fresh codespace showed an empty log
+# and no process when a shell background job was used.) STUDIO_START_SCRIPT can name another script, for tests.
+STUDIO_START_SCRIPT="${STUDIO_START_SCRIPT:-$ROOT/.devcontainer/software-factories-workshop/start-studio.sh}" \
+python3 - "$LOG" "$PIDFILE" <<'PY_LAUNCH'
+import os
+import subprocess
+import sys
+
+log_path, pid_path = sys.argv[1:]
+script = r'''
+echo "$(date -u +%T) background start running as pid $$, waiting for Docker"
+for i in $(seq 1 90); do docker info >/dev/null 2>&1 && break; sleep 2; done
+if docker info >/dev/null 2>&1; then echo "$(date -u +%T) Docker is up"; else echo "$(date -u +%T) Docker is NOT up after 3 minutes"; fi
+echo "$(date -u +%T) starting Studio"
+if bash "$STUDIO_START_SCRIPT"; then echo "$(date -u +%T) START-FINISHED"; else echo "$(date -u +%T) STUDIO-FAILED: read the lines above"; fi
+'''
+with open(log_path, "a") as log:
+    child = subprocess.Popen(
+        ["bash", "-c", script, "studio-background"],
+        stdin=subprocess.DEVNULL,
+        stdout=log,
+        stderr=subprocess.STDOUT,
+        start_new_session=True,
+        env=os.environ,
+    )
+with open(pid_path, "w") as handle:
+    handle.write(str(child.pid))
+print(f"Studio startup launched (PID {child.pid}); follow {log_path}")
+PY_LAUNCH
 exit 0

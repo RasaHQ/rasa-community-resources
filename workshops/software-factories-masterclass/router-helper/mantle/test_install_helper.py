@@ -29,7 +29,7 @@ class Install(unittest.TestCase):
         agent = make()
         done = install(agent)
         self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
-        self.assertEqual(sorted(p.name for p in (agent / "skills").iterdir()), ["router_restart"])
+        self.assertEqual(sorted(p.name for p in (agent / "skills").iterdir()), ["factory_reset_refusal", "router_restart"])
         self.assertEqual((agent / "starter-skills-moved/custom/skill.md").read_text(), "custom")
         data = yaml.safe_load((agent / "agent.yml").read_text())
         self.assertEqual((data["agent"]["id"], data["tool_timeout"]), ("x1", 30))
@@ -50,7 +50,7 @@ class Install(unittest.TestCase):
         agent = make()
         self.assertEqual(install(agent).returncode, 0)
         self.assertEqual(install(agent).returncode, 0)
-        self.assertEqual(sorted(p.name for p in (agent / "skills").iterdir()), ["router_restart"])
+        self.assertEqual(sorted(p.name for p in (agent / "skills").iterdir()), ["factory_reset_refusal", "router_restart"])
         self.assertEqual((agent / "starter-skills-moved/custom/skill.md").read_text(), "custom")
 
     def test_a_folder_that_is_not_an_agent_is_refused(self):

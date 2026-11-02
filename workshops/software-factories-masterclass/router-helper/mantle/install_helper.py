@@ -33,8 +33,8 @@ RULES = [
     "A restart preserves the Wi-Fi name and password. Call the restart tool only for a restart request; the engine owns its confirmation. Never report a command as sent before the tool succeeds.",
 ]
 ROUTING_NO_ACTIVE_SKILL = (
-    "Router restart, ambiguous-reset clarification and factory-reset refusal are supported conversations in router_restart. "
-    "Activate that skill for requests such as \"restart my router\", \"reset it\" or \"factory reset\". "
+    "Router restart and ambiguous-reset clarification are supported conversations in router_restart, and factory-reset refusal is a supported conversation in factory_reset_refusal. "
+    "Activate router_restart for requests such as \"restart my router\" or \"reset it\", and factory_reset_refusal for \"factory reset\". "
     "Refusing a factory reset with a human-handoff offer is supported; do not route these router requests to the generic cannot-help fallback."
 )
 
@@ -45,13 +45,13 @@ def main(argv):
         return 2
     agent = Path(argv[1]).resolve()
     skills, config = agent / "skills", agent / "agent.yml"
-    source = HERE / "skills" / "router_restart"
+    SKILLS = ("router_restart", "factory_reset_refusal")
     # 1. Check everything before changing anything.
     if not skills.is_dir() or not config.is_file():
         print("not a Mantle agent folder (no skills/ or agent.yml):", agent)
         return 2
-    if not (source / "skill.md").is_file():
-        print("the router_restart skill is missing next to this script:", source)
+    if not all((HERE / "skills" / name / "skill.md").is_file() for name in SKILLS):
+        print("a router skill is missing next to this script:", HERE / "skills")
         return 2
     try:
         data = yaml.safe_load(config.read_text()) or {}
@@ -64,7 +64,7 @@ def main(argv):
     except (yaml.YAMLError, ValueError, OSError) as error:
         print("nothing changed: agent.yml could not be read:", type(error).__name__)
         return 2
-    others = sorted(p for p in skills.iterdir() if p.name != "router_restart")
+    others = sorted(p for p in skills.iterdir() if p.name not in SKILLS)
     # 2. Change things. Other skills are moved, never deleted.
     if others:
         moved = agent / "starter-skills-moved"
@@ -77,9 +77,10 @@ def main(argv):
                 target = moved / f"{path.name}-{n}"
             print("moving out of skills/:", path.name, "->", target.relative_to(agent))
             shutil.move(str(path), str(target))
-    if (skills / "router_restart").exists():
-        shutil.rmtree(skills / "router_restart")
-    shutil.copytree(source, skills / "router_restart")
+    for name in SKILLS:
+        if (skills / name).exists():
+            shutil.rmtree(skills / name)
+        shutil.copytree(HERE / "skills" / name, skills / name)
     handle, temp = tempfile.mkstemp(dir=agent, prefix=".agent.yml.")
     with os.fdopen(handle, "w") as stream:
         stream.write(new_config)

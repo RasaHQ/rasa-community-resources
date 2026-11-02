@@ -12,10 +12,11 @@ def run(script, home, docker_states, env_extra=None):
     """docker_states maps container name -> 'status health' or None for 'no such container'."""
     bin_dir = Path(home) / "bin"
     bin_dir.mkdir(exist_ok=True)
+    (bin_dir / "fake-start.sh").write_text("exit 0\n")
     cases = "\n".join(f'  {name}) echo "{state}";;' if state else f"  {name}) exit 1;;" for name, state in docker_states.items())
     (bin_dir / "docker").write_text(f'#!/bin/sh\nif [ "$1" = inspect ]; then eval "last=\\${{$#}}"; case "$last" in\n{cases}\n  *) exit 1;; esac; exit 0; fi\nexit 0\n')
     (bin_dir / "docker").chmod(0o755)
-    env = {"PATH": f"{bin_dir}:/usr/bin:/bin", "HOME": home, "CODESPACE_NAME": "cs1"}
+    env = {"PATH": f"{bin_dir}:/usr/bin:/bin", "HOME": home, "CODESPACE_NAME": "cs1", "STUDIO_START_SCRIPT": str(bin_dir / "fake-start.sh")}
     env.update(env_extra or {})
     return subprocess.run(["bash", str(HERE / script)], capture_output=True, text=True, env=env, timeout=30)
 
@@ -59,6 +60,20 @@ class Background(unittest.TestCase):
         h = tempfile.mkdtemp(prefix="studio-home-")
         done = run("start-studio-background.sh", h, HEALTHY, {"RASA_STUDIO_LICENSE": "x"})
         self.assertIn("already healthy", Path(h, "studio-start.log").read_text())
+
+    def test_the_launch_writes_a_first_line_and_a_pid_and_the_child_survives_the_caller(self):
+        import time
+        h = tempfile.mkdtemp(prefix="studio-home-")
+        done = run("start-studio-background.sh", h, {n: None for n in ALL}, {"RASA_STUDIO_LICENSE": "x"})
+        self.assertEqual(done.returncode, 0, done.stderr)
+        text = Path(h, "studio-start.log").read_text()
+        self.assertIn("postStart ran", text)
+        self.assertTrue(Path(h, ".studio-start.pid").read_text().strip().isdigit())
+        for _ in range(40):
+            if "START-FINISHED" in Path(h, "studio-start.log").read_text():
+                break
+            time.sleep(0.25)
+        self.assertIn("START-FINISHED", Path(h, "studio-start.log").read_text(), "the detached child did not finish after the caller exited")
 
     def test_no_licence_says_so_and_starts_nothing(self):
         h = tempfile.mkdtemp(prefix="studio-home-")
