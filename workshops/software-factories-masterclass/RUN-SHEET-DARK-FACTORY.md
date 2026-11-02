@@ -103,7 +103,7 @@ Now the helper becomes the front desk of a factory. The factory's builder is an 
 
 Facts from OpenAI's Agents API quickstart (read Nov 2): your key needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write`. A session starts with `client.beta.agents.sessions.create(...)`. An agent is a model, instructions, tools, and optional MCP servers. Model use is billed at the model's API rates.
 
-**Minutes 90 to 115: put the builder behind the helper.** A small tool server wraps your builder. On the Mantle path, add it as an MCP server in `integrations.yml` and import its tool into the skill. On the Studio path, download the assistant, add the same server to `endpoints.yml`, and add a flow step that calls its tool.
+**Minutes 90 to 115: put the builder behind the helper.** A small tool server wraps your builder. On the Mantle path, copy the `change_builder` skill folder into the agent's `skills/` folder and train again. Its tool calls the server and shows the customer the build id, saved flag, file path and sha256. On the Studio path, download the assistant, add the same server to `endpoints.yml`, and add a flow step that calls its tool.
 
 You build: your builder agent, and the connection to it.
 You see: the session's events, then the helper calling your builder and showing the proposed change.

@@ -7,20 +7,17 @@
    events. Each build writes to its own folder, `scratch/build-<id>/check_line_status.py`, and prints the file's path and sha256. Use that exact path.
 4. Start the tool server in a second terminal: `~/.venv-builder/bin/python builder_server.py`.
 
-**Mantle path.** In your agent's `integrations.yml` add:
-
-```yaml
-mcp_servers:
-  - name: builder
-    url: http://127.0.0.1:8765/mcp
-    tool_timeout: 360
-```
-
-In the helper's `skill.md`, import the tool (`import_tools:` with `- mcp/builder:build_change`) and tell the
-skill to call `@tool.build_change` when the customer asks for a change to the helper. Then `rasa train` and
-`rasa inspect --port 5010`.
+**Mantle path.** Copy the `change_builder` folder next to this file into your agent's `skills/` folder
+(`cp -r change_builder ~/mantle-agent/skills/`, using your agent's folder), then `rasa train` and
+`rasa inspect --port 5010`. No `integrations.yml` entry is needed. The skill's tool calls the tool server for you and
+sends the customer the build id, whether a file was saved, the file's path, and its sha256, straight from the server's
+answer. The model does not reword them. Ask the helper for a change, for example "add a check that tells me the
+line status". Keep `builder_server.py` running in the second terminal. If it is not running, the helper says it could
+not reach the builder.
 
 **Studio path.** Studio's own chat runs in containers and reads its endpoints from Studio's assistant settings, so it cannot reach this server at 127.0.0.1 in the codespace, and Rasa's docs do not say whether those settings accept MCP servers. The documented route is the downloaded project: `rasa studio download`, add the server to the downloaded `endpoints.yml` (`mcp_servers:` with `name: builder`, `url: http://127.0.0.1:8765/mcp`, `type: http`), add a flow step `call: build_change` with `mcp_server: builder` that maps a text slot to the `request` parameter, as in Rasa's MCP integration docs, then run it from files with `rasa train` and `rasa inspect`. Rasa lists MCP servers as a beta feature since Rasa 3.14. Studio's flow builder may not offer this step, so you may edit the downloaded `flows.yml` instead. Say plainly in the room that this leaves the Studio chat itself unable to call the builder, unless a test shows Studio's settings accept it.
+
+`change_builder`'s message formatting is tested with stand-ins (`change_builder/test_change_builder.py`). Not yet run inside Mantle or on a real key by this author.
 
 None of this has been run on a real key. The Mantle snippet follows the working pattern in
 `examples/mantle-factory-agent`, which uses the same server setup and a longer `tool_timeout`. A real builder
