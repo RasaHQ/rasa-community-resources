@@ -131,7 +131,7 @@ Ask the helper: `add a check that tells me the line status`. Expected: one messa
 python3 /workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/gate/gate.py PATH_TO_THE_SAVED_FILE
 ```
 
-Use the exact path the builder printed. Also run it on the three files in `router-helper/gate/candidates/` and compare. The gate prints `ACCEPT` or `REJECT` and the names of the tests that failed. It never runs the change it judges. Then, as the person at the last gate, decide whether to release or refuse the change, and write your decision down.
+Use the exact path the builder printed. Also run it on the four files in `router-helper/gate/candidates/` (one good, three bad) and compare. Expected: `good.py` is `ACCEPT`, and the three `bad_` files are `REJECT`. The gate prints `ACCEPT` or `REJECT` and the names of the tests that failed. It never runs the change it judges. Then, as the person at the last gate, decide whether to release or refuse the change, and write your decision down.
 
 ## If something fails
 
