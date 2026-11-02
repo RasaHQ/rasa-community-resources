@@ -26,5 +26,7 @@
     "RASA_STUDIO_LICENSE": { "description": "Presenter only: a Rasa licence with a Studio entitlement" }
   },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/workshops/software-factories-masterclass",
+  // onCreateCommand runs when a prebuild is made and reads no key. postCreateCommand runs for the person, with their secrets.
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/install.sh\"",
   "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/setup.sh\""
 }
