@@ -1,6 +1,6 @@
 # Attendee pack, variant B: prepare the day before
 
-Use this variant if opening a codespace and building the first agent takes too long to do inside the session. Variant A is `ATTENDEE-PACK.md`, where you do everything in the session. The organizers pick one variant for the room.
+Use this variant if opening a codespace and building the first agent takes too long to do inside the session. In one cold test the Mantle path took about 10.5 minutes from opening to a working reply, but starting Studio took about 9 more minutes, 16 minutes from opening in all. So anyone who will use Studio in the session should do at least step 4 below the day before. Variant A is `ATTENDEE-PACK.md`, where you do everything in the session. The organizers pick one variant for the room.
 
 Never paste a key into a command, a file, or a chat.
 
