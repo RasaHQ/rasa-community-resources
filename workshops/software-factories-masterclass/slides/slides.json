@@ -10,7 +10,7 @@
  {
   "title": "Three hours, mostly your hands on the keys.",
   "sub": "Tuesday, November 3, 2026, 3:00 to 6:00 PM New York time.",
-  "body": "<div class=\"schedule\"><div style=\"flex:10\" class=\"soft\">Result<br><b>10</b></div><div style=\"flex:20\" class=\"pink\">Helper<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Reset handling<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Source check<br><b>20</b></div><div style=\"flex:5\" class=\"mint\">Break<br><b>5</b></div><div style=\"flex:40\" class=\"pink\">Builder<br><b>40</b></div><div style=\"flex:25\" class=\"soft\">Gate<br><b>25</b></div><div style=\"flex:20\" class=\"soft\">Release<br><b>20</b></div><div style=\"flex:20\" class=\"mint\">Preview<br><b>20</b></div></div><p class=\"caption\">Block lengths in minutes. Break at 4:10 PM. The builder starts at 4:15 PM. Close at 6:00 PM.</p>",
+  "body": "<div class=\"schedule\"><div style=\"flex:10\" class=\"soft\">Result<br><b>10</b></div><div style=\"flex:20\" class=\"pink\">Helper<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Reset handling<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Source check<br><b>20</b></div><div style=\"flex:5\" class=\"mint\">Break<br><b>5</b></div><div style=\"flex:40\" class=\"pink\">Builder<br><b>40</b></div><div style=\"flex:25\" class=\"soft\">Gate<br><b>25</b></div><div style=\"flex:20\" class=\"soft\">Decision<br><b>20</b></div><div style=\"flex:20\" class=\"mint\">Preview<br><b>20</b></div></div><p class=\"caption\">Block lengths in minutes. Break at 4:10 PM. The builder starts at 4:15 PM. Close at 6:00 PM.</p>",
   "notes": "Use elapsed minutes and the clock: minute 0 is 3:00 PM, minute 30 is 3:30, the break is minutes 70 to 75 (4:10 to 4:15), the builder starts at minute 75, the gate at 115 (4:55), release at 140 (5:20), the Studio 2 preview at 160 (5:40) and the close at 175 (5:55). If time is short, shorten the release block first and keep the first 30 minutes whole. The preview is short; the rest of its block is slack.",
   "kind": "",
   "section": "WELCOME"
@@ -72,26 +72,26 @@
   "section": "BREAK"
  },
  {
-  "title": "The factory begins: your builder.",
-  "sub": "An agent made with the OpenAI Agents API writes one small change.",
-  "body": "<table><tr><td>Task</td><td>Add one read-only operation, &ldquo;check line status&rdquo;</td></tr><tr><td>Your key needs</td><td><code>api.agents.read</code>, <code>api.agents.write</code>, <code>api.responses.write</code></td></tr><tr><td>One run</td><td>A few minutes and a paid model call on your own key</td></tr><tr><td>It ends with</td><td><code>saved: True</code>, the file&rsquo;s absolute path, and its sha256</td></tr></table>",
-  "notes": "In a new terminal, run builder.py from the pack's builder block. Keep the printed path for the gate. The builder is told to write and save a file but not to run it. Model use is billed at the model's rates; the cost of one run was not measured, so do not quote a number. If a session fails (permissions, quota, model), the presenter runs one builder on the screen and everyone takes router-helper/gate/candidates/good.py to the gate.",
+  "title": "The factory begins: a practice builder.",
+  "sub": "It saves a file and a receipt. It starts no paid session.",
+  "body": "<table><tr><td>Task</td><td>Add one read-only operation, &ldquo;check line status&rdquo;</td></tr><tr><td>Practice mode</td><td>Copies a public sample into a new folder. No Agents session, no new code</td></tr><tr><td>It saves</td><td>A file, its absolute path, and its sha256</td></tr><tr><td>Optional</td><td>One billed Agents API build, on your own key</td></tr></table>",
+  "notes": "The default route needs no paid build. The tool server runs with --fixture in its own terminal and copies the public good example into a new folder, labeled Fixture build. Mantle's own conversation still uses each person's OpenAI key. Optional: one billed Agents API build, on the person's own key; their key needs api.agents.read, api.agents.write and api.responses.write. It takes minutes, the cost was not measured, and nobody needs it to finish. If the optional build fails, go back to the practice builder. A billed build ran once through the tool server on earlier code with a real key, 28 seconds from message to reply.",
   "kind": "",
   "section": "FACTORY"
  },
  {
   "title": "Put the builder behind your helper.",
   "sub": "A small tool server hands your request to the builder.",
-  "body": "<table><tr><td>Terminal 1</td><td>Runs the builder once. It ends by itself.</td></tr><tr><td>Terminal 2</td><td>The tool server. Leave it running until the end.</td></tr><tr><td>Terminal 3</td><td>Stop the Inspector, install the skill, train, open the Inspector again.</td></tr></table><p class=\"caption\">Your message goes to the Mantle helper, to the tool server, to the builder.</p>",
-  "notes": "Three terminals, each with its own B variable; the pack's builder block has all three exact commands. The installer copies the change_builder skill into the agent and raises Mantle's tool wait from 10 seconds to at least 450, because a build takes minutes. Stop the Inspector with Ctrl+C in its own terminal, never terminal 2. This part ran once on the latest code with a real key: 28 seconds from message to reply in a test codespace. It has not been followed by an attendee, so say so if it fails.",
+  "body": "<table><tr><td>Terminal 1</td><td>The tool server, started with <code>--fixture</code>. Leave it running.</td></tr><tr><td>Terminal 2</td><td>Stop the Inspector, install the skill, train, open the Inspector again.</td></tr></table><p class=\"caption\">Your message goes to the Mantle helper, to the tool server, to the builder. The exact commands are in ATTENDEE-PACK.md.</p>",
+  "notes": "Two terminals; the attendee pack has the exact commands, so tell people to copy from the pack. The installer copies the change_builder skill into the agent and raises Mantle's tool wait from 10 seconds to at least 450, because a live build takes minutes. Stop the Inspector with Ctrl+C in its own terminal, never the tool server's. If it says it cannot tell whether a build started, read the tool server terminal before asking again; missing output is not permission to start another build.",
   "kind": "",
   "section": "FACTORY"
  },
  {
-  "title": "A request goes in. A proposed change comes out.",
+  "title": "A request goes in. A saved file comes out.",
   "sub": "Ask the helper: <code>add a check that tells me the line status</code>.",
-  "body": "<div class=\"contrast\"><div><h2>Expected: one message</h2><p>Starts with <code>Build</code> and a build id.<br>Says it saved a file, with an absolute path ending in <code>check_line_status.py</code>.<br>Shows a sha256.<br>Ends: Nothing was applied to the helper.</p></div><div><h2>Read the other replies</h2><p><code>No build started</code>: another build was running.<br><code>I cannot tell whether a build started</code>: look at terminal 2 before asking again.</p></div></div>",
-  "notes": "Target at minute 115: a request goes in and a proposed change comes out. Nothing is applied: the file sits in the builder's own folder. If the tool server or its wiring will not work, call the builder from its script and carry the saved file forward. Never ask a second time before reading terminal 2.",
+  "body": "<div class=\"contrast\"><div><h2>Expected: one message</h2><p>A <code>Fixture build</code> label and a build id.<br>Says it saved a file, with an absolute path ending in <code>check_line_status.py</code>.<br>Shows a sha256.<br>Ends: nothing was applied to the helper.</p></div><div><h2>Read the other replies</h2><p><code>No build started</code>: another build was running.<br><code>I cannot tell whether a build started</code>: look at the tool server terminal before asking again.</p></div></div>",
+  "notes": "Target at minute 115: a request goes in and a saved file comes out. Nothing is applied: the file sits in the builder's own output folder. The sample function returns fixed teaching values; it does not probe an internet line. If the tool server or its wiring will not work, start it again with --fixture; if it still fails, show a recorded receipt, labeled as recorded, and take good.py to the gate.",
   "kind": "",
   "section": "FACTORY"
  },
@@ -99,7 +99,7 @@
   "title": "A gate the builder cannot edit.",
   "sub": "It judges the saved file and never runs it.",
   "body": "<table><tr><th>File</th><th>Verdict</th></tr><tr><td>Your builder&rsquo;s saved file</td><td>The gate decides</td></tr><tr><td><code>good.py</code></td><td>ACCEPT</td></tr><tr><td><code>bad_opens_network.py</code></td><td>REJECT</td></tr><tr><td><code>bad_sends_reset.py</code></td><td>REJECT</td></tr><tr><td><code>bad_writes_a_file.py</code></td><td>REJECT</td></tr></table><p class=\"caption\">One function, <code>check_line_status()</code>, plain values. Not a general sandbox.</p>",
-  "notes": "Run gate.py on the saved path, then on the four candidate files, and compare. The gate prints ACCEPT or REJECT and the names of the tests that failed. It reads the file once and judges those bytes, so a change cannot write a file or open the network while it is judged. This fits one small read-only operation and is not a general sandbox. If the gate says it could not judge, show a recorded ACCEPT and REJECT, labeled as recorded. On Linux this ran in a test codespace and returned ACCEPT for a freshly built file.",
+  "notes": "First check the saved file against its printed sha256 (the pack has the sha256sum command) and expect OK. Then run gate.py on the saved path, then on the four candidate files, and compare. A hash match identifies bytes and a gate ACCEPT checks the finite contract; neither is an atomic release step. The gate prints ACCEPT or REJECT and the names of the tests that failed. It reads the file once and judges those bytes, so a change cannot write a file or open the network while it is judged. This fits one small read-only operation and is not a general sandbox. If the gate says it could not judge, show a recorded ACCEPT and REJECT, labeled as recorded. On Linux this ran in a test codespace and returned ACCEPT for a freshly built file.",
   "kind": "",
   "section": "GATE"
  },

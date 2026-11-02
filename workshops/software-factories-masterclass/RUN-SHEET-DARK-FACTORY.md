@@ -36,10 +36,9 @@ Everyone builds on Rasa Mantle: the Mantle Inspector, a skill file, a tool, and 
 | 30 to 50 (3:30) | Reset handling and your own change | Your own wording and requests against the helper | How it handles a changed mind and a reset request | The helper never records anything you did not ask for |
 | 50 to 70 (3:50) | Source-file check | A check that reads the configured restart command | The check passing, then failing when the file says `FACTORY_RESET` | A check the helper's replies cannot satisfy |
 | 70 to 75 (4:10) | Break | | | |
-| 75 to 90 (4:15) | The factory begins: your builder | An OpenAI Agents API agent that you create, with your own key | Its session events and the file it saves | Your builder agent has proposed a change |
-| 90 to 115 (4:30) | The builder behind the helper | A small tool server that hands a request to your builder | The helper calling your builder | A request goes in and a proposed change comes out |
-| 115 to 140 (4:55) | The gate | A deliberately bad change, and the gate run on both | One change accepted, one rejected, and the name of the failing test | A line that can say no |
-| 140 to 160 (5:20) | Release | The final human gate and a decision record | You approving or refusing one change | The line run once, end to end |
+| 75 to 115 (4:15) | Connect the practice builder | A tool server and the builder skill, in the two prepared environments | The helper's reply with a Fixture build label, build id, saved path and sha256 | A request goes in and a saved file comes out. One optional billed Agents API build |
+| 115 to 140 (4:55) | Check the exact proposal | The receipt check, then the gate on the saved file and the four fixed candidates | One ACCEPT, three REJECT, and the names of the failing tests | A line that can say no |
+| 140 to 160 (5:20) | Record your decision | A short review note: path, hash, mode, gate results, approve or refuse | Your written decision | A human record. Nothing is installed, applied or deployed |
 | 160 to 175 (5:40) | Studio 2 preview | Nothing | The presenter's own screen | Hear about the preview, then join the Rasa Community |
 | 175 to 180 (5:55) | Close | Nothing | The line with your pieces on it | A take-home recap |
 
@@ -85,36 +84,34 @@ Target at minute 70: a check that reads the configured command, not the reply.
 
 This is a source-file check of the configured restart command. It does not watch a live conversation, so a pass does not prove the helper ran that command at run time. It exits 2 when it cannot find a command, so a missing command is never a pass. If every check passes by minute 70, people who leave then have a working helper and a check for it.
 
-## Minutes 75 to 115: the factory begins, with the OpenAI Agents API
+## Minutes 75 to 115: connect the practice builder
 
-Now the helper becomes the front desk of a factory. The factory's builder is an agent you create with the OpenAI Agents API, using your own key.
+Now the helper becomes the front desk of a factory. The default is a practice builder. It copies the public good example into a new output folder, starts no OpenAI Agents session, and generates no new code. It lets everyone check the tool connection, the saved-file receipt and the gate in the two environments the image prepared (`~/.venv-mantle` and `~/.venv-builder`). Mantle's own conversation still uses each person's OpenAI key.
 
-**Minutes 75 to 90: create your builder.** You choose the model and write its instructions, run a session, and watch the stream of events. The task is a small change to the helper: add one read-only operation, "check line status". The agent works in OpenAI's hosted sandbox and reports what it wrote.
+Steps, as the attendee pack shows: start the tool server with `--fixture` in its own terminal and leave it running. In a second new terminal, stop the Inspector, run the `change_builder` installer, train, and open the Inspector again. The installer copies the skill into the agent's `skills/` folder and raises Mantle's tool wait from 10 seconds to at least 450, because a live build takes minutes. Ask: `add a check that tells me the line status`. The reply carries a Fixture build label, a build id, `saved a file`, an absolute path ending in `check_line_status.py`, a sha256, and says nothing was applied to the helper.
 
-Facts from OpenAI's Agents API quickstart (read Nov 2): your key needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write`. A session starts with `client.beta.agents.sessions.create(...)`. An agent is a model, instructions, tools, and optional MCP servers. Model use is billed at the model's API rates.
+**Optional, one billed build.** A person who wants a generated proposal restarts the tool server without `--fixture` and asks once. It takes minutes and is billed on their own key; the cost was not measured. Their key needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write` (from OpenAI's Agents API quickstart, read Nov 2). Nobody needs it to finish the default route. Practice and generated files stay labeled separately.
 
-**Minutes 90 to 115: put the builder behind the helper.** A small tool server wraps your builder. On the Mantle path, run the `change_builder` installer, then train and open the Inspector again, as the attendee pack shows. The installer copies the skill into the agent's `skills/` folder and raises Mantle's tool wait from 10 seconds to at least 450, because a build takes minutes. The skill's tool calls the server and shows the customer the build id, saved flag, file path, and sha256.
+You build: the connection from the helper to a builder.
+You see: the helper calling the builder and showing a saved-file receipt.
+Target at minute 115: a request goes in and a saved file comes out.
 
-You build: your builder agent, and the connection to it.
-You see: the session's events, then the helper calling your builder and showing the proposed change.
-Target at minute 115: a request goes in and a proposed change comes out.
+The code is in `router-helper/builder/`: `builder.py`, `builder_server.py` and the `change_builder` skill, with a README.
 
-The code is in `router-helper/builder/`: `builder.py` (your agent, with the instructions you edit) and `builder_server.py` (the tool server), with a README for the Mantle wiring.
+## Minutes 115 to 140: check the exact proposal
 
-## Minutes 115 to 140: the gate
+Everyone checks that the saved file matches its receipt (`sha256sum --check` against the printed hash), then runs the gate on it, then on the four fixed candidates. The gate names the test that rejected each bad candidate, and neither the builder nor the helper can edit it.
 
-Run the gate on your builder's change. Then run it on a deliberately bad change that records `FACTORY_RESET`. The gate names the test that rejected it, and neither the builder nor the helper can edit it.
-
-You see: one ACCEPT, one REJECT, and the name of the failing test.
+You see: `OK` for the hash, one ACCEPT for the saved file and for `good.py`, and three REJECT with the names of the failing tests.
 Target at minute 140: a line that can say no.
 
-The gate is `router-helper/gate/gate.py`, with a good change and three bad ones in `router-helper/gate/candidates/`. It accepts only a file that holds one function, `check_line_status()`, with no arguments and one statement: a return of a dictionary written out as plain values. It reads the file once and judges those bytes. It never runs the change, so a change cannot write a file or open the network while it is judged. This fits one small read-only operation and is not a general sandbox.
+The gate is `router-helper/gate/gate.py`, with a good change and three bad ones in `router-helper/gate/candidates/`. It accepts only a file that holds one function, `check_line_status()`, with no arguments and one statement: a return of a dictionary written out as plain values. It reads the file once and judges those bytes. It never runs the change, so a change cannot write a file or open the network while it is judged. A hash match identifies bytes and a gate ACCEPT checks the finite contract. Neither is an atomic release step. This fits one small read-only operation and is not a general sandbox.
 
-## Minutes 140 to 160: release
+## Minutes 140 to 160: record your decision
 
-Run the whole line once: ask the helper for the change, let the builder propose it, let the gate judge it, then approve or refuse as the person at the last gate. Record your decision.
+Everyone writes a short review note: the proposal's exact path and hash, its mode (practice or generated), the gate result and control results, and approval or refusal with a reason. Nothing is installed, applied or deployed by writing the note. An operational release would need its own protected artifact and deployment procedure.
 
-Target at minute 160: one change built, checked, and released or refused by you.
+Target at minute 160: one change built, checked, and approved or refused by you, on paper.
 
 ## Minutes 160 to 175: Studio 2 preview
 
@@ -136,9 +133,9 @@ Open the workshop codespace on the room's network about 20 minutes before 3:00 P
 | Minutes 0 to 30 | Your key or license is rejected | Say so at once. Watch your neighbor's path until a key is fixed. Never retry a key that was rejected. |
 | Minutes 10 to 50 | The helper will not work | Pair with a neighbor whose helper works. If it still fails, follow the presenter's demonstrated or recorded example, and note which parts you could not complete. |
 | Minutes 50 to 70 | The check cannot find a command | Read the exit code. 2 means it found nothing, and the file layout is the first thing to look at. |
-| Minutes 75 to 115 | Your Agents API session fails (permissions, quota, model) | The presenter runs one builder on the screen. You watch its events and take the saved change in `router-helper/gate/candidates/good.py` to the next block. |
-| Minutes 90 to 115 | The tool server or its wiring will not work | Call the builder from its script and carry the saved change forward. |
-| Minutes 115 to 160 | The gate says it could not judge | The presenter shows a recorded ACCEPT and REJECT, labeled as recorded. |
+| Minutes 75 to 115 | The optional billed build fails (permissions, quota, model) | Go back to the practice builder. Nobody needs the billed build to finish. |
+| Minutes 75 to 115 | The tool server or its wiring will not work | Read the tool server terminal before asking again. Start it again with `--fixture`. If it still fails, the presenter shows a recorded receipt, labeled as recorded, and everyone takes `router-helper/gate/candidates/good.py` to the gate. |
+| Minutes 115 to 140 | The gate says it could not judge | The presenter shows a recorded ACCEPT and REJECT, labeled as recorded. |
 | Minutes 160 to 175 | The live preview will not start | Show the recording, or skip the preview and give the community link. |
 
 ## Test evidence: what was observed, by whom, and what is still open

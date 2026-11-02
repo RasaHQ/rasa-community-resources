@@ -40,21 +40,21 @@ Run it, see PASS, change REBOOT to FACTORY_RESET in tools.py, run it again, see 
 
 Anyone who needs to leave now leaves with a working helper (four conversation checks passing) and a source-file check that catches a wrong command and passes again once REBOOT is restored. Check those two things separately. Use the break to help anyone who is behind catch up on the four rows.
 
-## 10. The factory begins: your builder.
+## 10. The factory begins: a practice builder.
 
-In a new terminal, run builder.py from the pack's builder block. Keep the printed path for the gate. The builder is told to write and save a file but not to run it. Model use is billed at the model's rates; the cost of one run was not measured, so do not quote a number. If a session fails (permissions, quota, model), the presenter runs one builder on the screen and everyone takes router-helper/gate/candidates/good.py to the gate.
+The default route needs no paid build. The tool server runs with --fixture in its own terminal and copies the public good example into a new folder, labeled Fixture build. Mantle's own conversation still uses each person's OpenAI key. Optional: one billed Agents API build, on the person's own key; their key needs api.agents.read, api.agents.write and api.responses.write. It takes minutes, the cost was not measured, and nobody needs it to finish. If the optional build fails, go back to the practice builder. A billed build ran once through the tool server on earlier code with a real key, 28 seconds from message to reply.
 
 ## 11. Put the builder behind your helper.
 
-Three terminals, each with its own B variable; the pack's builder block has all three exact commands. The installer copies the change_builder skill into the agent and raises Mantle's tool wait from 10 seconds to at least 450, because a build takes minutes. Stop the Inspector with Ctrl+C in its own terminal, never terminal 2. This part ran once on the latest code with a real key: 28 seconds from message to reply in a test codespace. It has not been followed by an attendee, so say so if it fails.
+Two terminals; the attendee pack has the exact commands, so tell people to copy from the pack. The installer copies the change_builder skill into the agent and raises Mantle's tool wait from 10 seconds to at least 450, because a live build takes minutes. Stop the Inspector with Ctrl+C in its own terminal, never the tool server's. If it says it cannot tell whether a build started, read the tool server terminal before asking again; missing output is not permission to start another build.
 
-## 12. A request goes in. A proposed change comes out.
+## 12. A request goes in. A saved file comes out.
 
-Target at minute 115: a request goes in and a proposed change comes out. Nothing is applied: the file sits in the builder's own folder. If the tool server or its wiring will not work, call the builder from its script and carry the saved file forward. Never ask a second time before reading terminal 2.
+Target at minute 115: a request goes in and a saved file comes out. Nothing is applied: the file sits in the builder's own output folder. The sample function returns fixed teaching values; it does not probe an internet line. If the tool server or its wiring will not work, start it again with --fixture; if it still fails, show a recorded receipt, labeled as recorded, and take good.py to the gate.
 
 ## 13. A gate the builder cannot edit.
 
-Run gate.py on the saved path, then on the four candidate files, and compare. The gate prints ACCEPT or REJECT and the names of the tests that failed. It reads the file once and judges those bytes, so a change cannot write a file or open the network while it is judged. This fits one small read-only operation and is not a general sandbox. If the gate says it could not judge, show a recorded ACCEPT and REJECT, labeled as recorded. On Linux this ran in a test codespace and returned ACCEPT for a freshly built file.
+First check the saved file against its printed sha256 (the pack has the sha256sum command) and expect OK. Then run gate.py on the saved path, then on the four candidate files, and compare. A hash match identifies bytes and a gate ACCEPT checks the finite contract; neither is an atomic release step. The gate prints ACCEPT or REJECT and the names of the tests that failed. It reads the file once and judges those bytes, so a change cannot write a file or open the network while it is judged. This fits one small read-only operation and is not a general sandbox. If the gate says it could not judge, show a recorded ACCEPT and REJECT, labeled as recorded. On Linux this ran in a test codespace and returned ACCEPT for a freshly built file.
 
 ## 14. You are the last gate.
 
