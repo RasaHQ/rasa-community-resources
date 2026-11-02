@@ -1,14 +1,14 @@
 """Your builder agent, made with the OpenAI Agents API.
 
-You choose the model and write the instructions. The agent works in OpenAI's hosted sandbox: it writes a file,
-runs it, and saves it under /workspace/outputs. This script watches the session and downloads the file into a
+You choose the model and write the instructions. The agent works in OpenAI's hosted sandbox: it writes a file
+and saves it under /workspace/outputs. The instructions below tell it not to run the file, and nothing here runs it. This script watches the session and downloads the file into a
 scratch folder. It never touches the router helper's own files.
 
 Run it:  python3 builder.py
 Needs:   pip install --upgrade openai   and an OpenAI key in OPENAI_API_KEY with the permissions
          api.agents.read, api.agents.write and api.responses.write (OpenAI's Agents API quickstart).
 
-Not run yet by anyone for this workshop. The calls follow OpenAI's Agents API quickstart and its page on files
+Run on a real key by a test seat on Nov 2 (a saved 114-byte file, the gate accepted it). The calls follow OpenAI's Agents API quickstart and its page on files
 and artifacts, both read on Nov 2.
 """
 import hashlib

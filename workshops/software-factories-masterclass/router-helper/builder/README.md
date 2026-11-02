@@ -16,11 +16,7 @@ line status". Keep `builder_server.py` running in the second terminal. If the he
 
 **Studio path.** Studio's own chat runs in containers and reads its endpoints from Studio's assistant settings, so it cannot reach this server at 127.0.0.1 in the codespace, and Rasa's docs do not say whether those settings accept MCP servers. The documented route is the downloaded project: `rasa studio download`, add the server to the downloaded `endpoints.yml` (`mcp_servers:` with `name: builder`, `url: http://127.0.0.1:8765/mcp`, `type: http`), add a flow step `call: build_change` with `mcp_server: builder` that maps a text slot to the `request` parameter, as in Rasa's MCP integration docs, then run it from files with `rasa train` and `rasa inspect`. Rasa lists MCP servers as a beta feature since Rasa 3.14. Studio's flow builder may not offer this step, so you may edit the downloaded `flows.yml` instead. Say plainly in the room that this leaves the Studio chat itself unable to call the builder, unless a test shows Studio's settings accept it.
 
-`change_builder`'s message formatting is tested with stand-ins (`change_builder/test_change_builder.py`). Not yet run inside Mantle or on a real key by this author.
-
-None of this has been run on a real key. The Mantle snippet follows the working pattern in
-`examples/mantle-factory-agent`, which uses the same server setup and a longer `tool_timeout`. A real builder
-session can take minutes, and the Mantle default is 10 seconds.
+What has been run, by a test seat on Nov 2 (not by anyone following this page): the builder on a real key saved a 114-byte file that the gate accepted, and the helper's reply shown from a recorded real result, with no new paid call. `change_builder`'s message formatting is also tested with stand-ins (`change_builder/test_change_builder.py`). Not yet proven: the whole chain from one helper request to a new real build and its reply, and the absolute path from a live build. A real builder session can take minutes, and Mantle's default tool timeout is 10 seconds, which is why the skill waits up to 360 seconds itself.
 
 The tool server keeps a build "running" until its worker really finishes, even if the caller cancels. A second request
 meanwhile is refused. Each build writes to its own folder under `scratch/` and returns its build id and the sha256 of
