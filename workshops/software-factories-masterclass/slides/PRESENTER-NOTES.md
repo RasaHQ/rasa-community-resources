@@ -66,4 +66,4 @@ Say it is an early preview that attendees cannot try yet, then show it live from
 
 ## 16. Describe, build, check, release.
 
-Show the line once more with the pieces each person built: the helper, the source-file check, the builder, the gate and their own decision. Name the one check each person could not edit. Close on the question and the community link from the previous slide.
+Show the line once more with the pieces each person built: the helper, the source-file check, the builder, the gate and their own decision. Name the one check each person could not edit. Close on the question and the community link from the previous slide. Last, tell everyone to keep their review note and any failure evidence, press Ctrl+C in the terminals running the Inspector and the tool server, and stop the codespace from GitHub (the storage persists). Stopping it also stops the compute use.

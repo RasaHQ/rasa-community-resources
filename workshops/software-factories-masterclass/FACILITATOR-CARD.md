@@ -12,4 +12,4 @@
 
 **Studio 2 preview:** early preview, shown from your own machine, nothing for attendees to do. End with https://info.rasa.com/community/
 
-**Close:** one check you could not edit, one decision you made.
+**Close:** one check you could not edit, one decision you made. Then: keep the note, Ctrl+C the Inspector and tool server, stop the codespace.

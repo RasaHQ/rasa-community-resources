@@ -36,3 +36,7 @@ Everything runs in GitHub Codespaces on Rasa Mantle. Nothing is installed on a l
 ## Closing prompt
 
 Ask each person to name the one check they could not edit, and the one decision they made at the last gate.
+
+## Finish
+
+Ask everyone to keep their review note and any failure evidence, press Ctrl+C in the terminals running the Inspector and the tool server, and stop their codespace from GitHub. The storage persists, and stopping ends the compute use.
