@@ -13,17 +13,18 @@ You can tell it works when:
 
 Two paths build the same result:
 
-- **Mantle path.** Create a Mantle agent (`rasa init --engine mantle --no-prompt` in a new folder),
-  then copy the skill folder into it and train:
+- **Mantle path.** Create a Mantle agent (`rasa init --engine mantle --no-prompt` in a new folder), then turn it
+  into the router helper. The script removes the starter (banking) skills, copies in the router skill, and sets
+  a router-only persona and rules, keeping everything else in `agent.yml`:
 
   ```
-  cp -R <this folder>/mantle/skills/router_restart <your agent>/skills/
-  rasa train
-  rasa inspect --port 5010
+  ~/.venv-mantle/bin/python <this folder>/mantle/install_helper.py <your agent>
+  cd <your agent> && ~/.venv-mantle/bin/rasa train
+  ~/.venv-mantle/bin/rasa inspect --port 5010
   ```
 
-  Not yet run in a clean codespace. The skill follows Rasa's Mantle docs for a tool with a
-  confirmation.
+  Not yet run in a clean codespace. It needs PyYAML, which Rasa's environment has, and its two tests pass in an
+  environment with PyYAML. The skill follows Rasa's Mantle docs for a tool with a confirmation.
 - **Studio path.** Follow `studio/STEPS.md`.
 
 First check: `python3 check_helper.py mantle/skills/router_restart/tools.py` for the Mantle path, or

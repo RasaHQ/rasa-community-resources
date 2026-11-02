@@ -27,7 +27,8 @@ MODEL = os.environ.get("BUILDER_MODEL", "gpt-6-astra")
 INSTRUCTIONS = """You are the builder in a small software factory.
 You change one small thing and nothing else.
 Write exactly one Python file and save it to /workspace/outputs/check_line_status.py.
-The file holds only one function, with no imports and no other statements. A docstring is allowed.
+The file holds exactly one function, check_line_status, and nothing else: no imports, no if __name__ == "__main__" block,
+no print calls, no other statements. A docstring is allowed. Do not run the file.
 The function has one statement: a return of a dictionary written out as plain values.
 Say what you saved. Never write code that contacts a device or the network."""
 
