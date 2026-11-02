@@ -1,14 +1,16 @@
 # Rasa Community Resources
 
+**Here for the router-helper tutorial?** [Start the browser workshop](workshops/software-factories-masterclass/router-helper/README.md#start-here-from-a-browser-tab-to-your-first-check). It walks through the two keys, saving them on GitHub and opening the prepared Codespace.
+
 Choose what you want to do:
 
 - **Learn at your own pace:** [Build your first Mantle agent](https://rasa.community/library/tutorials/mantle-starter-pack/) with a self-paced tutorial and a runnable companion.
-- **Join the live workshop:** [Open the Mantle Codespace](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/software-factories-workshop/devcontainer.json) to build in your browser with your own Rasa and OpenAI keys.
+- **Join the live workshop:** [Open the Mantle Codespace](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/software-factories-workshop/devcontainer.json) to build in your browser with your own Rasa and OpenAI keys. [First time? Follow the step-by-step guide.](workshops/software-factories-masterclass/README.md#start-here-at-minute-0--from-a-browser-tab-to-your-first-router-check)
 - **Run a finished agent:** [Start with the Atlas voice agent](examples/mantle-voice-agent/README.md) to try a complete travel assistant before adapting it.
 - **Find a reusable pattern:** [Browse patterns](patterns/README.md) for focused implementations you can bring into an existing agent.
 - **Contribute a resource:** [Read the contribution guide](CONTRIBUTING.md) to choose a folder, check your example, and keep its authors credited.
 
-This is the code companion to [rasa.community](https://rasa.community/). Tutorials, examples, and reference code live in their own folders, with setup instructions and the versions they were tested against. For the presenter-led Software Factories workshop, follow the [attendee pack](workshops/software-factories-masterclass/ATTENDEE-PACK.md). It needs your own Rasa and OpenAI keys and uses a billed builder, with no local installation.
+This is the code companion to [rasa.community](https://rasa.community/). Tutorials, examples, and reference code live in their own folders, with setup instructions and the versions they were tested against. For the presenter-led Software Factories workshop, follow the [attendee pack](workshops/software-factories-masterclass/ATTENDEE-PACK.md). It needs your own Rasa and OpenAI keys and no local installation. Chatting with the helper uses your OpenAI key; the practice builder starts no Agents session, and one optional Agents build is billed separately.
 
 ## Browse the repository
 
