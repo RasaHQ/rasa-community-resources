@@ -155,9 +155,9 @@ current one. Later observations do not clear a conflict automatically.
 This is a source-selection model, not a service adapter or coverage decision.
 It trusts its fixture source identities and monotonic revision numbers. It has
 no signature, freshness deadline, payment-reference lookup, persistence or
-cross-service snapshot transaction. Final convergence after all six messages
-arrive does not establish that any intermediate report is current. A real
-adapter must resolve those contracts with its service owners. This module
+cross-service snapshot transaction. The permutation check reads the final report after all six messages arrive.
+Before replying during delivery, a live adapter needs an observation-age limit
+and a consistency contract agreed with its service owners. This module
 never charges a customer, changes coverage or instructs a payment provider.
 
 Calendar manuscript: the held insurance-billing case will use this exercise
