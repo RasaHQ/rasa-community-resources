@@ -1,39 +1,18 @@
 # Rasa Community Resources
 
-**Tutorials, example projects, and reference code for practitioners building and operating agents with Rasa.**
+Choose what you want to do:
 
-This is the code companion to [rasa.community](https://rasa.community/). Every resource is a directory you can run in full, study, or copy piece by piece into your own project. Each one states who wrote it, when it was last verified, and which versions it was verified against.
+- **Learn at your own pace:** [Build a software factory](workshops/software-factories-masterclass/ATTENDEE-PACK.md) takes you from a router restart helper in Mantle to an agent that proposes a change and a gate that checks it.
+- **Join the live workshop:** [Open the Mantle Codespace](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/software-factories-workshop/devcontainer.json) to build in your browser with your own Rasa and OpenAI keys.
+- **Run a finished agent:** [Start with the Atlas voice agent](examples/mantle-voice-agent/README.md) to try a complete travel assistant before adapting it.
+- **Find a reusable pattern:** [Browse patterns](patterns/README.md) for focused implementations you can bring into an existing agent.
+- **Contribute a resource:** [Read the contribution guide](CONTRIBUTING.md) to choose a folder, check your example and keep its authors credited.
 
-> **Here for the Software Factories masterclass?** Everything for it is in one folder: [`workshops/software-factories-masterclass/`](workshops/software-factories-masterclass/README.md). Open its README first. It tells you what to install, then lets you choose between the participant guide (about two hours) and the book (about three hours, at your own pace). The two finished agents from the class live in [`examples/mantle-flight-briefing-openai-agents/`](examples/mantle-flight-briefing-openai-agents/README.md) (the travel agent) and [`examples/mantle-factory-agent/`](examples/mantle-factory-agent/README.md) (the dark software factory).
+This is the code companion to [rasa.community](https://rasa.community/). Tutorials, examples and reference code live in their own folders, with setup instructions and the versions they were tested against. The Software Factories attendee pack above is the current Mantle-only workshop path; it needs no local installation.
 
----
+## Browse the repository
 
-## Find it fast
-
-- **Case builds:** live agents, one per casebook case, grouped by industry and by model and voice stack in [`CATALOG.md`](CATALOG.md) (data: [`catalog/case-builds.json`](catalog/case-builds.json)).
-- **Patterns:** reusable parts in [`patterns/`](patterns/README.md), including the voice vendor router, [`patterns/voice-vendor-router`](patterns/voice-vendor-router/): ASR and TTS failover across Deepgram, Speechmatics, Rime, faster-whisper, NeuTTS and more.
-- **Tutorials:** step-by-step builds in [`tutorials/`](tutorials/README.md), including the [AI team casebook](tutorials/rasa-ai-team-casebook/) that the case builds implement.
-- **Finished example agents:** clone-and-run voice agents in [`examples/`](examples/README.md), starting with [`examples/mantle-voice-agent`](examples/mantle-voice-agent).
-- **Case-build harness:** [`scripts/case_builds/`](scripts/case_builds/), which runs a build's scripted conversations over web chat or browser audio and records results and spend.
-
----
-
-## Start here
-
-For development worktrees, start with [workspaces and isolated environments](docs/WORKSPACES.md). Install only the resource you plan to run.
-
-**New to Rasa Skills / Mantle voice agents.** Request a free [Developer Edition licence key](https://rasa.community/license/), then clone and run the flagship Atlas travel agent:
-
-1. [`examples/mantle-voice-agent`](examples/mantle-voice-agent) — finished agent you can run with `make install` → `make inspect`
-2. Hosted walkthrough: [Build a Voice AI Agent with Rasa Skills](https://rasa.community/library/tutorials/voice-ai-agent/)
-
-**Building something specific.** Browse [Featured resources](#featured-resources) or open the category catalog that matches your goal ([examples](examples/README.md), [tutorials](tutorials/README.md), [patterns](patterns/README.md)).
-
-**Looking for people.** Apply to the [community](https://info.rasa.com/community/) for Discord access. Practitioners who maintain and extend this material spend time there.
-
-**Want the discipline behind the material.** The community library lives at [rasa.community/library/](https://rasa.community/library/) and Rod also writes about harness-engineering at [profrod.ai](https://profrod.ai).
-
----
+Use the category catalogs below when you already know what you need. For isolated local development, read [workspaces and environments](docs/WORKSPACES.md) before installing a resource.
 
 ## What this is
 
