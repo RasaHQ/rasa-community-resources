@@ -67,7 +67,7 @@ You should see `PASS: a restart records REBOOT`. Now change `"REBOOT"` to `"FACT
 
 ## Minutes 75 to 115: your builder, with the OpenAI Agents API
 
-This part is not yet proven end to end by someone following this page, so say so if it fails. In terminal 1:
+This part is not yet proven end to end by someone following this page, so say so if it fails. The Inspector from minute 0 to 30 can keep running for now. Open a new terminal (call it terminal 1) and run:
 
 ```bash
 B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/builder
@@ -76,14 +76,14 @@ python3 -m venv "$HOME/.venv-builder"
 "$HOME/.venv-builder/bin/python" "$B/builder.py"
 ```
 
-It runs one builder session (one paid run, a few minutes), prints the session's events, and ends with `saved: True`, the file's absolute path, and its sha256. Keep that path for the gate. Open a second terminal (each terminal needs its own `B`) and start the tool server. Leave it running:
+It runs one builder session (one paid run, a few minutes), prints the session's events, and ends with `saved: True`, the file's absolute path, and its sha256. Keep that path for the gate. The builder ends by itself when it prints those lines. Open a second terminal (each terminal needs its own `B`) and start the tool server. Leave it running until the end of the session:
 
 ```bash
 B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/builder
 "$HOME/.venv-builder/bin/python" "$B/builder_server.py"
 ```
 
-Open a third terminal. First stop the Inspector from minute 0 to 30: click its terminal and press Ctrl+C (leave the tool server running). Then install the skill into your helper (this also raises Mantle's tool wait from 10 seconds to 450, because a build takes minutes), train, and open the Inspector again:
+Open a third terminal. First stop the Inspector from minute 0 to 30: click the terminal where it is running and press Ctrl+C. Do not stop terminal 2, the tool server. Then install the skill into your helper (this also raises Mantle's tool wait from 10 seconds to 450, because a build takes minutes), train, and open the Inspector again:
 
 ```bash
 B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/builder

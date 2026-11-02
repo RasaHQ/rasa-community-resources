@@ -2,14 +2,14 @@
 
 The one small agent for the dark software factory session. A customer says "restart my router".
 The helper asks them to confirm, then records one command, `REBOOT`. It never records
-`FACTORY_RESET` unless the customer asks for a factory reset in their own words and confirms it.
+`FACTORY_RESET`. If the customer asks for a factory reset, it says it cannot do that here and offers a person.
 
 You can tell it works when:
 
 1. "Restart my router" makes it ask you to confirm.
 2. "Yes" makes it record `REBOOT`.
 3. "Reset it" makes it ask which one you mean, and it sends nothing until you answer.
-4. It never records `FACTORY_RESET` unasked.
+4. A factory reset request gets a refusal and an offer of a person, and nothing is recorded.
 
 Build it on Rasa Mantle:
 
@@ -23,7 +23,7 @@ Build it on Rasa Mantle:
   ~/.venv-mantle/bin/rasa inspect --port 5010
   ```
 
-  Not yet run in a clean codespace. It needs PyYAML, which Rasa's environment has, and its two tests pass in an
+  It was run in a fresh test codespace on Nov 2 by a tester, not by an unaided attendee. It needs PyYAML, which Rasa's environment has, and its two tests pass in an
   environment with PyYAML. The skill follows Rasa's Mantle docs for a tool with a confirmation.
 
 First check: `python3 check_helper.py mantle/skills/router_restart/tools.py`. It passes when a restart records
