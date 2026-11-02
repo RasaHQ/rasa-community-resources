@@ -18,6 +18,7 @@ K4 also: with one reference day the change is unavailable, never zero
 N1 the candidate has no network of its own (enforced by an OS sandbox)
 """
 import html as _html
+import importlib.util
 import os
 import re
 import secrets
@@ -36,8 +37,11 @@ PRODUCT = os.environ.get("PRODUCT_PROJECT") or os.environ["MANTLE_PROJECT"]
 NONCE = "A6RESULT:" + secrets.token_hex(8) + ":"
 
 
-SANDBOX = shutil.which("sandbox-exec")
-PROFILE = "(version 1)(allow default)(deny network*)"
+ISOLATION_PATH = HERE.parent / "isolation.py"
+_spec = importlib.util.spec_from_file_location("isolation", ISOLATION_PATH)
+ISOLATION = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(ISOLATION)
+SANDBOX = ISOLATION.first_blocking()  # a proven no-network wrapper, or None (then the test below refuses)
 
 
 def plain(text):
@@ -47,7 +51,7 @@ def plain(text):
 
 def command(*args):
     base = [sys.executable, "-I", *args]
-    return [SANDBOX, "-p", PROFILE, *base] if SANDBOX else base
+    return [*SANDBOX, *base] if SANDBOX else base
 
 
 def run(scenario):
@@ -149,16 +153,8 @@ class MarketWatchlist(unittest.TestCase):
 
     def test_n1_the_candidate_has_no_network_of_its_own(self):
         """Enforced by the OS sandbox the candidate runs in: a connection from inside it must fail."""
-        self.assertIsNotNone(SANDBOX, "N1 cannot be enforced on this machine: no sandbox-exec; run the factory where it exists")
-        listener = socket.socket()
-        listener.bind(("127.0.0.1", 0))
-        listener.listen(1)
-        port = listener.getsockname()[1]
-        probe = "import socket,sys\ntry:\n socket.create_connection(('127.0.0.1',%d),timeout=2)\nexcept OSError:\n sys.exit(0)\nsys.exit(1)\n" % port
-        done = subprocess.run([SANDBOX, "-p", PROFILE, sys.executable, "-I", "-c", probe], timeout=20,
-                              env={"PATH": "/usr/bin:/bin", "HOME": "/nonexistent"})
-        listener.close()
-        self.assertEqual(done.returncode, 0, "the sandbox did not stop a connection")
+        self.assertIsNotNone(SANDBOX, "this check cannot be enforced on this machine: no proven no-network wrapper (macOS sandbox-exec, or Linux unshare or bubblewrap)")
+        self.assertTrue(ISOLATION.blocks(SANDBOX), "the sandbox did not stop a connection")
 
     def test_k2_a_weekend_card_shows_the_last_publication_day_never_today(self):
         result = built("weekend")
