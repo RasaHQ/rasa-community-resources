@@ -44,10 +44,33 @@ class Show(unittest.TestCase):
             self.assertIn(value, text)
 
     def test_unsaved_build_says_so(self):
-        self.assertIn("without saving a file", tools.describe({"build_id": "b-9", "saved": False}))
+        self.assertIn("ended without a saved file", tools.describe({"build_id": "b-9", "saved": False}))
 
-    def test_refused_build_has_no_id(self):
-        self.assertTrue(tools.describe({"saved": False, "builder_said": "A build is already running."}).startswith("No build started."))
+    def test_only_the_busy_refusal_says_no_build_started(self):
+        busy = {"started": False, "saved": False, "builder_said": "A build is already running."}
+        self.assertTrue(tools.describe(busy).startswith("No build started."))
+        for unknown in ({}, {"saved": False}, {"builder_said": "odd"}):
+            text = tools.describe(unknown)
+            self.assertNotIn("No build started", text)
+            self.assertIn("cannot tell whether a build started", text)
+
+    def test_error_result_and_non_dict_are_unknown(self):
+        self.assertEqual(tools.parse(types.SimpleNamespace(isError=True, structuredContent=DONE, content=[])), {})
+        self.assertEqual(tools.parse(types.SimpleNamespace(structuredContent=None, content=[types.SimpleNamespace(text="[1]")])), {})
+
+    def test_malformed_text_and_timeout_are_unknown_and_not_retried(self):
+        for failure in (ValueError("bad json"), TimeoutError()):
+            calls = []
+
+            async def fail(request, failure=failure):
+                calls.append(request)
+                raise failure
+            tools._call_server = fail
+            context = Context()
+            asyncio.run(tools.build_change("x", context=context))
+            self.assertEqual(len(calls), 1)
+            self.assertIn("cannot tell whether a build started", context.sent[0])
+            self.assertNotIn("No build started", context.sent[0])
 
     def test_parse_reads_structured_then_text(self):
         structured = types.SimpleNamespace(structuredContent=DONE, content=[])
@@ -70,7 +93,7 @@ class Show(unittest.TestCase):
         tools._call_server = broken
         context = Context()
         asyncio.run(tools.build_change("x", context=context))
-        self.assertIn("could not be reached", context.sent[0])
+        self.assertIn("cannot tell whether a build started", context.sent[0])
 
 
 if __name__ == "__main__":

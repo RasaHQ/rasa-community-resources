@@ -12,8 +12,7 @@
 `rasa inspect --port 5010`. No `integrations.yml` entry is needed. The skill's tool calls the tool server for you and
 sends the customer the build id, whether a file was saved, the file's path, and its sha256, straight from the server's
 answer. The model does not reword them. Ask the helper for a change, for example "add a check that tells me the
-line status". Keep `builder_server.py` running in the second terminal. If it is not running, the helper says it could
-not reach the builder.
+line status". Keep `builder_server.py` running in the second terminal. If the helper says it cannot tell whether a build started, look at the server's terminal before asking again. Only the busy refusal says "No build started".
 
 **Studio path.** Studio's own chat runs in containers and reads its endpoints from Studio's assistant settings, so it cannot reach this server at 127.0.0.1 in the codespace, and Rasa's docs do not say whether those settings accept MCP servers. The documented route is the downloaded project: `rasa studio download`, add the server to the downloaded `endpoints.yml` (`mcp_servers:` with `name: builder`, `url: http://127.0.0.1:8765/mcp`, `type: http`), add a flow step `call: build_change` with `mcp_server: builder` that maps a text slot to the `request` parameter, as in Rasa's MCP integration docs, then run it from files with `rasa train` and `rasa inspect`. Rasa lists MCP servers as a beta feature since Rasa 3.14. Studio's flow builder may not offer this step, so you may edit the downloaded `flows.yml` instead. Say plainly in the room that this leaves the Studio chat itself unable to call the builder, unless a test shows Studio's settings accept it.
 

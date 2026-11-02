@@ -43,7 +43,7 @@ async def build_change(request: str) -> dict:
     """Ask the builder agent to build one small change to the router helper. Describe the change in one sentence.
     Returns the build id, whether a file was saved, its sha256, and what the builder said. Nothing is applied."""
     if not _running.acquire(blocking=False):
-        return {"saved": False, "builder_said": "A build is already running. Wait for it to finish."}
+        return {"started": False, "saved": False, "builder_said": "A build is already running. Wait for it to finish."}
     try:
         future = asyncio.get_running_loop().run_in_executor(None, _work, request)
     except BaseException:
