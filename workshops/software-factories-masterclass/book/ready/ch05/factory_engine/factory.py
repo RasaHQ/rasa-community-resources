@@ -93,9 +93,40 @@ def run_tests(test_path, project, scratch, discover=False, strict=False):
     return {"passed": passed, "summary": summary, "output": result.stderr[-2000:]}
 
 
-def sandbox_unavailable(environment_path):
+def load_isolation(environment_path, *, pack_root=None, task_path=None):
+    """Load a trusted network wrapper only after every protected task pin matches.
+
+    The helper lives beside the acceptance suites so their flattened protected
+    scratch copy can import the same verified bytes.
+    """
+    if pack_root is None or task_path is None:
+        return None
+    try:
+        root = Path(pack_root).resolve()
+        profile = json.loads(Path(environment_path).read_text())
+        relative = profile['network_isolation_module']
+        task = json.loads(Path(task_path).read_text())
+        pinned = [task['acceptance'], *task['support']]
+        if sum(item['path'] == relative for item in pinned) != 1:
+            return None
+        for item in pinned:
+            path = (root / item['path']).resolve()
+            if not path.is_relative_to(root) or sha256_file(path) != item['sha256']:
+                return None
+        spec = importlib.util.spec_from_file_location('protected_network_isolation', root / relative)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    except (OSError, ValueError, KeyError, TypeError, ImportError, AttributeError):
+        return None
+
+
+def sandbox_unavailable(environment_path, *, pack_root=None, task_path=None):
     """A missing required sandbox is a setup failure, never a product rejection."""
     profile = json.loads(Path(environment_path).read_text())
+    if profile.get('requires_network_isolation'):
+        isolation = load_isolation(environment_path, pack_root=pack_root, task_path=task_path)
+        return isolation is None or isolation.first_blocking() is None
     return bool(profile.get('requires_sandbox_exec') and
                 (platform.system() != 'Darwin' or shutil.which('sandbox-exec') is None))
 
@@ -108,8 +139,8 @@ def main(task_path, candidate_dir, run_dir, environment_path=None, pack_root=Non
         print("refusing to reuse a run directory; keep failed runs and choose a new one", file=sys.stderr)
         return 2
     profile_path = environment_path or ROOT / "environment.json"
-    if strict and sandbox_unavailable(profile_path):
-        print("could not run: this check needs macOS (sandbox-exec). The attempt was not judged.")
+    if strict and sandbox_unavailable(profile_path, pack_root=root, task_path=task_path):
+        print("could not run: no verified no-network wrapper is available. The attempt was not judged.")
         return 2
     installed, problems = prepare(profile_path)
     if problems:
