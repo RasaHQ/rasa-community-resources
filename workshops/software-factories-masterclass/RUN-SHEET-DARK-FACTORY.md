@@ -164,7 +164,8 @@ These are peer-reported observations from the workshop team's test codespaces. T
 | Gate | Mac, Python only | Seven tests pass: ACCEPT for the good change, REJECT by name for each bad one, no file written by a change that tries | Linux, and a change written through the tool server on a workshop key (one existing-key builder file was accepted, see the builder row) |
 | Chapter 6 gate on Linux | Linux codespace, operator run | Wrapper proven, 11 of 11 isolation tests, 5 gate tests OK, good ACCEPT, ignores-limit REJECT | The router helper's gate on Linux |
 | Tool server behavior | Mac, Python only, stand-ins and no key | Cancel and one-build-at-a-time behavior passes 2 tests | Anything with a real key |
-| Builder, live key | Existing key, run through `builder.py` alone, not through the tool server (platform not recorded in this sheet) | One run took 27.5 seconds and produced a 114-byte file. The same gate as above judged it ACCEPT. | A run on a workshop key through the tool server, and the Mantle and Studio wiring |
+| Builder, live key, first run | Existing key, run through `builder.py` alone, not the tool server (platform not recorded in this sheet) | One run took 27.5 seconds and produced a 114-byte file that the gate judged ACCEPT. | Not through the tool server |
+| Builder, live key, whole chain | Source `6f2bf1fc`, the cold 4-core machine, existing authorized key, one paid run with a spending guard (Nov 2, 07:00Z) | Mantle called the tool server, which started a real Agents session that returned in 30.5 seconds and saved a new 114-byte file. The unchanged gate judged it ACCEPT. The file was not run or applied. Cost was not observed. The helper's own reply to the customer did not show the build id, path, or hash, so the whole workflow is not a pass. | Showing the build result in the helper's reply, cost, a second run, and an unaided attendee |
 
 ## Appendix: what the room needs
 
