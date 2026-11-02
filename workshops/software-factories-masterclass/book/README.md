@@ -20,7 +20,7 @@ Time: each chapter opens with its own estimate. Chapter 0 takes about 5 minutes 
 
 Keys and the license go in the example's Git-ignored `.env` (created by `make env` with mode 600) or in your shell. Never commit that file, and never paste a key anywhere else.
 
-Use the supplied ZIP and run `git init` at its root, as PREWORK.md explains.
+Use the supplied ZIP and run `git init` at its root. (The earlier pre-work page that explained this was removed; this follow-up route is not part of the workshop.)
 
 ## How the chapters work
 
