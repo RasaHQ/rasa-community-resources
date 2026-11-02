@@ -14,7 +14,7 @@ You can tell it works when:
 Two paths build the same result:
 
 - **Mantle path.** Create a Mantle agent (`rasa init --engine mantle --no-prompt` in a new folder), then turn it
-  into the router helper. The script removes the starter (banking) skills, copies in the router skill, and sets
+  into the router helper. The script checks first and changes nothing if anything is wrong, moves the starter (banking) skills out of `skills/` into `starter-skills-moved/` without deleting them, copies in the router skill, and sets
   a router-only persona and rules, keeping everything else in `agent.yml`:
 
   ```
