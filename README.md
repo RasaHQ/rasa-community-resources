@@ -10,7 +10,7 @@ Choose what you want to do:
 - **Find a reusable pattern:** [Browse patterns](patterns/README.md) for focused implementations you can bring into an existing agent.
 - **Contribute a resource:** [Read the contribution guide](CONTRIBUTING.md) to choose a folder, check your example, and keep its authors credited.
 
-This is the code companion to [rasa.community](https://rasa.community/). Tutorials, examples, and reference code live in their own folders, with setup instructions and the versions they were tested against. For the presenter-led Software Factories workshop, follow the [attendee pack](workshops/software-factories-masterclass/ATTENDEE-PACK.md). It needs your own Rasa and OpenAI keys and uses a billed builder, with no local installation.
+This is the code companion to [rasa.community](https://rasa.community/). Tutorials, examples, and reference code live in their own folders, with setup instructions and the versions they were tested against. For the presenter-led Software Factories workshop, follow the [attendee pack](workshops/software-factories-masterclass/ATTENDEE-PACK.md). It needs your own Rasa and OpenAI keys and no local installation. Chatting with the helper uses your OpenAI key; the practice builder starts no Agents session, and one optional Agents build is billed separately.
 
 ## Browse the repository
 
