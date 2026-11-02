@@ -75,7 +75,7 @@ bash /workspaces/rasa-community-resources/workshops/software-factories-mastercla
 
 It prints the Studio questions for you to type, signs you in as `superuser`, and uploads the flow as an assistant named `restart-router-helper`. Then in Studio, open that assistant and open its `restart_router` flow. Click the confirmation question node (its label is the question text), then click **Edit response**, which opens the content management system (CMS) **Responses** page. Do not use the top **Edit** button there. It only renames the response. The confirmation wording is in the plain-text box on that page ("Type to add response"). Change it (for example, change "for a short time" to "briefly"), and check the new wording is still there after you reload the page. Choose **Train**, select **Draft** for the flow, wait for **Training successful**, open **Try your assistant**, and run the first two rows of the table above: it asks for confirmation, and it records REBOOT.
 
-The import has been checked in pieces by a tester. Configuration, login, and upload took about 12 seconds in all. The edit, the training, and the reply on the imported assistant have not been checked end to end, and no attendee has done it.
+The import has been checked in pieces by a tester. Configuration, login, and upload took about 12 seconds in all. A tester has also done the whole route once on a warm, already running Studio: the import script, the wording edit, training, and a chat that showed the edited confirmation and the REBOOT reply. No attendee has done it, and it has not been timed cold.
 
 ## Minutes 30 to 50: the other path, and the Studio reset flow
 
