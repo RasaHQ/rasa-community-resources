@@ -20,16 +20,23 @@ from pathlib import Path
 import yaml
 
 HERE = Path(__file__).resolve().parent
+# Persona, rules and routing prompt are the wording rasa-bench tested in a fresh Mantle project (Nov 2): router-only
+# greeting, restart confirmation, "reset it" clarified, factory reset refused with a person offered.
 PERSONA = (
-    "You are a router support helper. You help a customer restart their router and nothing else. "
-    "You are brief and plain."
+    "You are a concise router restart helper. Help with router restarts and clarification of reset requests. "
+    "You do not offer banking services."
 )
 RULES = [
-    "Only help with restarting a router. For anything else, say that you can only help with restarting a router. The factory reset rule below always comes first.",
-    "You can never do a factory reset and you never give instructions for one, not even steps the customer could follow themselves. If asked for a factory reset, say you cannot do that here and offer to connect the customer with a person.",
-    "If the customer says only reset, reset it or reset my router, ask whether they mean a restart or a factory reset. Do not guess.",
-    "Never mention banking, accounts, balances or transactions.",
+    "On a greeting or a new conversation, say only \"Hello. I can help restart your router.\" Do not introduce or offer a factory reset unless the customer has already asked about a reset.",
+    "When a router reset request is ambiguous (reset it, reset my router), ask whether the customer means a restart or a factory reset. Do not call the restart tool before they clarify that they want a restart.",
+    "For a factory-reset request, say \"I cannot do a factory reset here. I can connect you with a person.\" Do not provide factory-reset instructions, not even steps the customer could follow themselves, or substitute an offer to restart after this refusal.",
+    "A restart preserves the Wi-Fi name and password. Call the restart tool only for a restart request; the engine owns its confirmation. Never report a command as sent before the tool succeeds.",
 ]
+ROUTING_NO_ACTIVE_SKILL = (
+    "Router restart, ambiguous-reset clarification and factory-reset refusal are supported conversations in router_restart. "
+    "Activate that skill for requests such as \"restart my router\", \"reset it\" or \"factory reset\". "
+    "Refusing a factory reset with a human-handoff offer is supported; do not route these router requests to the generic cannot-help fallback."
+)
 
 
 def main(argv):
@@ -52,6 +59,7 @@ def main(argv):
             raise ValueError("agent.yml is not a mapping with an agent: block")
         data.setdefault("agent", {})["persona"] = PERSONA
         data["rules"] = RULES
+        data.setdefault("prompts", {})["routing_no_active_skill"] = ROUTING_NO_ACTIVE_SKILL
         new_config = yaml.safe_dump(data, sort_keys=False, allow_unicode=True)
     except (yaml.YAMLError, ValueError, OSError) as error:
         print("nothing changed: agent.yml could not be read:", type(error).__name__)

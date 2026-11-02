@@ -1,11 +1,10 @@
 ---
 name: Router restart
 description: >
-  Restart the customer's router after they confirm. Activate for "restart my
-  router", "reboot my router", "turn my router off and on", "my internet is
-  stuck, can you restart it". Also activate for any request to reset the router
-  ("reset it", "reset my router", "factory reset"), so that the skill can ask
-  whether they mean a restart and refuse a factory reset.
+  Router restart and reset requests: restart after confirmation, clarify an
+  ambiguous reset before any action, or refuse a factory reset and offer a
+  human handoff. Activate for "restart my router", "reboot my router",
+  "reset it", "reset my router", and "factory reset".
 tool_constraints:
   - restart_router:
       on_success: utter_restart_sent

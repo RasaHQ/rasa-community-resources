@@ -34,7 +34,8 @@ class Install(unittest.TestCase):
         data = yaml.safe_load((agent / "agent.yml").read_text())
         self.assertEqual((data["agent"]["id"], data["tool_timeout"]), ("x1", 30))
         self.assertIn("router", data["agent"]["persona"])
-        self.assertTrue(any("never give instructions" in r for r in data["rules"]))
+        self.assertTrue(any("not even steps" in r for r in data["rules"]))
+        self.assertIn("router_restart", data["prompts"]["routing_no_active_skill"])
 
     def test_malformed_agent_yml_changes_nothing(self):
         agent = make("agent: [unclosed\n  persona: x")
