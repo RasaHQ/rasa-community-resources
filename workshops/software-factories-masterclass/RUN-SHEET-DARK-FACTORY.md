@@ -70,7 +70,9 @@ You build: the helper.
 You see: the confirmation, then `REBOOT` recorded.
 Complete at minute 30: your helper passes the four checks on your path.
 
-Proof so far: a Mantle agent answered in the Inspector in clean 4-core and 8-core codespaces, about 7 to 9 minutes after creation (one run each). A tester signed in to Studio and created an assistant. The router helper itself has not been built on either path in this workshop yet, and the exact files for the Mantle path are still being written. Do not promise the 30-minute result until a person has done it.
+Files for both paths are in `router-helper/`: the Mantle skill, its tool and responses in `router-helper/mantle/skills/router_restart/`, and the Studio steps in `router-helper/studio/STEPS.md`.
+
+Proof so far: a Mantle agent answered in the Inspector in clean 4-core and 8-core codespaces, about 7 to 9 minutes after creation (one run each). A tester signed in to Studio and created an assistant. The router helper itself has not been run on either path yet. The Mantle files follow Rasa's docs and have not been trained. The Studio steps have not been clicked through. Do not promise the 30-minute result until a person has done it.
 
 ## Minutes 30 to 50: the other path, and compare
 
@@ -99,7 +101,7 @@ You build: a check.
 You see: the check pass, then fail on the wrong command, even though the helper's reply still sounds right.
 Complete at minute 70: a check the helper cannot talk its way past.
 
-Proof so far: the router-support example in this repository has a command test of this kind that needs no key. The small check for the Studio path and the Mantle path built in the earlier blocks does not exist yet.
+The check is `router-helper/check_helper.py`. It reads the command the helper records, from the Mantle tool file or from the downloaded Studio flows file, and exits 2 when it cannot find one so a missing command is never a pass. Its tests pass with Python alone. It has not been run against a real Studio export, whose file layout is not yet confirmed.
 
 People who leave at minute 70 have a working helper on both paths and a check for it.
 
