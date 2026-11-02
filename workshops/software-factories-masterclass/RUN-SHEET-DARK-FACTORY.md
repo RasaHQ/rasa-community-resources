@@ -103,7 +103,7 @@ You build: a check.
 You see: the check pass, then fail on the wrong command, even though the helper's reply still sounds right.
 Complete at minute 70: a check the helper cannot talk its way past.
 
-The check is `router-helper/check_helper.py`. It reads the command the helper records, from the Mantle tool file or from the downloaded Studio flows file, and exits 2 when it cannot find one so a missing command is never a pass. Its tests pass with Python alone. It reads the table or the slot value in the file, not a command recorded in a live conversation, so treat it as a source check until a runtime trace shows the recorded command. It has not been run against a real Studio export, whose file layout is not yet confirmed.
+The check is `router-helper/check_helper.py`. It reads the command the helper records, from the Mantle tool file or from the downloaded Studio flows file, and exits 2 when it cannot find one so a missing command is never a pass. Its tests pass with Python alone. It reads the table or the slot value in the file, not a command recorded in a live conversation, so treat it as a source check until a runtime trace shows the recorded command. It was run on the Mac against the real Studio export of the restart flow (`router-helper/studio/restart-project/data/flows.yml`) and against the Mantle tool file, and passed on both. It has not been run on a Studio export that an attendee downloaded.
 
 People who leave at minute 70 have a working helper on both paths and a check for it.
 
