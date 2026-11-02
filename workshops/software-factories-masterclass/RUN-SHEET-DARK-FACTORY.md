@@ -159,7 +159,7 @@ Show the line again with the pieces each person built. Name the one check each p
 | Minutes 10 to 50 | One path will not work | Build the other path, and compare on the presenter's screen. Both must not fail together, because they use different keys. |
 | Minutes 50 to 70 | The check cannot find a command | Read the exit code. 2 means it found nothing, and the file layout is the first thing to look at. |
 | Minutes 75 to 115 | Your Agents API session fails (permissions, quota, model) | The presenter runs one builder on the screen. You watch its events and take the saved change in `router-helper/gate/candidates/good.py` to the next block. |
-| Minutes 90 to 115 | The tool server or its wiring will not work | Call the builder from its script and carry the saved change forward. Tell the presenter, who tells the Architect, by 12:00Z the day before if this block cannot be shown. |
+| Minutes 90 to 115 | The tool server or its wiring will not work | Call the builder from its script and carry the saved change forward. |
 | Minutes 115 to 160 | The gate says it could not judge | That is the gate refusing to run unprotected. The presenter shows a recorded ACCEPT and REJECT, labelled as recorded. |
 | Minutes 160 to 175 | Anything | Voice goes first. |
 
