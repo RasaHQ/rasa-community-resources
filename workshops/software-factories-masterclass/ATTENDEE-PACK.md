@@ -10,7 +10,7 @@ Follow this page in order. Copy commands exactly. Never paste a key into a comma
 2. Get a free Rasa Developer Edition key from Rasa's Developer Edition page. The confirmation page is not the key. The key is sent to you after you submit. You cannot share it.
 3. Get an OpenAI API key from your own OpenAI account. For the builder part it needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write`.
 4. Rasa gives you a Studio licence before the session. Keep it for step 6.
-5. In your GitHub settings, open Codespaces, add three secrets, and for each one select the workshop repository as the repository that can read it: `RASA_LICENSE` (your Developer key), `OPENAI_API_KEY`, and `RASA_STUDIO_LICENSE` (the Studio licence). Add them before you open a codespace. If you add one afterward, stop the codespace and start it again.
+5. In your GitHub account, open **Settings**, then **Codespaces**, choose **New secret**, and add three secrets. For each one, under **Repository access**, select the exact repository you will create the codespace from (the repository the presenter names; access to a different repository, or only to the Rasa organization's, will not reach a codespace made from a fork): `RASA_LICENSE` (your Developer key), `OPENAI_API_KEY`, and `RASA_STUDIO_LICENSE` (the Studio licence). Add them before you open a codespace. If you add one afterward, stop the codespace and start it again.
 
 ## Minute 0: open your codespace
 
