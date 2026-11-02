@@ -201,6 +201,22 @@ The presenter may finish with a short Studio 2 preview and a
 [Rasa Community invitation](https://info.rasa.com/community/). Attendees have
 no Studio setup task.
 
+## Finish and stop your workspace
+
+1. Save your proposal, its path and hash, the review note, and any failure
+   outputs you want to keep. Save terminal output explicitly; the visible
+   terminal window is not preserved across a stop and start. Keep keys out of
+   those files.
+2. If a build is still running or its outcome is unknown, use the recovery
+   steps below first. Closing a terminal does not confirm that a hosted Agents
+   session was canceled.
+3. In each terminal where you started the Inspector or builder server, press
+   **Ctrl+C** and wait for the prompt. Stop your own workshop servers only.
+4. Open [Your Codespaces](https://github.com/codespaces). Beside this workshop's
+   Codespace, open the **…** menu and choose **Stop codespace**. Closing the
+   browser tab alone leaves it running. Stopping keeps your saved workspace;
+   it does not delete it. See [GitHub's stop and start instructions](https://docs.github.com/en/codespaces/developing-in-a-codespace/stopping-and-starting-a-codespace).
+
 ## Recover without guessing
 
 | What you see | What to do |
