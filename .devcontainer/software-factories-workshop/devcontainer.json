@@ -1,36 +1,23 @@
-// Draft, Nov 1, 2026, for the Nov 3 workshop. Still being tested in real codespaces.
+// Draft, Nov 2, 2026, for the Nov 3 workshop. Mantle only. Still being tested in real codespaces.
 {
-  "name": "Rasa Studio and Mantle workshop (draft)",
-  // The python image carries a Yarn apt source whose signing key fails apt update (NO_PUBKEY 62D54FD4003F6525), which
-  // broke the docker-in-docker feature in a first test run. The base image has no Yarn source (not yet confirmed
-  // by a run), and Python comes from the python feature. Package signature checks stay on.
+  "name": "Rasa Mantle workshop (draft)",
   "image": "mcr.microsoft.com/devcontainers/base:bookworm",
   "features": {
     "ghcr.io/devcontainers/features/python:1": { "version": "3.12" },
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     // Lets `gh codespace ssh` work, so a tester can run commands and read logs from a terminal.
     "ghcr.io/devcontainers/features/sshd:1": {}
   },
   "hostRequirements": { "cpus": 4, "memory": "8gb", "storage": "32gb" },
-  "forwardPorts": [5010, 8080, 8081, 4000, 8000],
+  "forwardPorts": [5010],
   "portsAttributes": {
-    "5010": { "label": "Mantle Inspector", "onAutoForward": "silent" },
-    "8080": { "label": "Studio" },
-    "8081": { "label": "Studio login (Keycloak)" },
-    "4000": { "label": "Studio API" },
-    "8000": { "label": "Model service" }
+    "5010": { "label": "Mantle Inspector", "onAutoForward": "silent" }
   },
   "secrets": {
     "RASA_LICENSE": { "description": "Your Rasa Developer Edition licence key" },
-    "OPENAI_API_KEY": { "description": "Your OpenAI API key" },
-    "RASA_STUDIO_LICENSE": { "description": "The Studio licence Rasa gives you before the session" }
+    "OPENAI_API_KEY": { "description": "Your OpenAI API key" }
   },
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/workshops/software-factories-masterclass",
   // onCreateCommand runs when a prebuild is made and reads no key. postCreateCommand runs for the person, with their secrets.
   "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/install.sh\"",
-  // postStartCommand runs after creation and on every start, with the person's own secrets. It starts Studio in the background.
-  // postAttachCommand runs each time someone opens the codespace in an editor. It repeats the same safe start, in case the post-start one did not run or was stopped.
-  "postAttachCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/start-studio-background.sh\"",
-  "postStartCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/start-studio-background.sh\"",
   "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/setup.sh\""
 }

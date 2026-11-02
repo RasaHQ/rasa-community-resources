@@ -11,9 +11,9 @@ You can tell it works when:
 3. "Reset it" makes it ask which one you mean, and it sends nothing until you answer.
 4. It never records `FACTORY_RESET` unasked.
 
-Two paths build the same result:
+Build it on Rasa Mantle:
 
-- **Mantle path.** Create a Mantle agent (`rasa init --engine mantle --no-prompt` in a new folder), then turn it
+- Create a Mantle agent (`rasa init --engine mantle --no-prompt` in a new folder), then turn it
   into the router helper. The script checks first and changes nothing if anything is wrong, moves the starter (banking) skills out of `skills/` into `starter-skills-moved/` without deleting them, copies in the router skill, and sets
   a router-only persona and rules, keeping everything else in `agent.yml`:
 
@@ -25,10 +25,8 @@ Two paths build the same result:
 
   Not yet run in a clean codespace. It needs PyYAML, which Rasa's environment has, and its two tests pass in an
   environment with PyYAML. The skill follows Rasa's Mantle docs for a tool with a confirmation.
-- **Studio path.** Follow `studio/STEPS.md`.
 
-First check: `python3 check_helper.py mantle/skills/router_restart/tools.py` for the Mantle path, or
-`python3 check_helper.py data/studio_flows.yml` for a Studio export. It passes when a restart records
+First check: `python3 check_helper.py mantle/skills/router_restart/tools.py`. It passes when a restart records
 `REBOOT`, fails when it records anything else, and exits 2 when it cannot find a command. Change
 `REBOOT` to `FACTORY_RESET` in `tools.py` and run it again to see it fail. Its tests are in
 `test_check_helper.py` and need only Python.

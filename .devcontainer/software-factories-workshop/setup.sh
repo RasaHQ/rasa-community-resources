@@ -17,4 +17,3 @@ elif echo "$version_output" | grep -q -i -E 'active_license\.invalid|LicenseEnco
 else
   echo "Setup finished. Mantle is installed and the licence was not rejected. Activate it with: source ~/.venv-mantle/bin/activate"
 fi
-echo "Start Studio with: bash $ROOT/.devcontainer/software-factories-workshop/start-studio.sh"

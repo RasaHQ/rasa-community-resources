@@ -4,7 +4,7 @@ It looks at the command the helper records for a restart, not at what the helper
 
   python3 check_helper.py PATH
 
-PATH is the Mantle helper's tools.py, or the Studio helper's exported flows file. Exit 0
+PATH is the Mantle helper's tools.py, or a flows YAML file. Exit 0
 when every command found for a restart is REBOOT, 1 when one is not, 2 when no command
 could be found, so a missing command is never read as a pass.
 """

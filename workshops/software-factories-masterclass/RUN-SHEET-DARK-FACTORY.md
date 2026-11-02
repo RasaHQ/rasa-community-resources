@@ -1,4 +1,4 @@
-# Run sheet: build a dark software factory with Rasa Mantle, Rasa Studio, and the OpenAI Agents API
+# Run sheet: build a dark software factory with Rasa Mantle and the OpenAI Agents API
 
 sow: public
 
@@ -10,7 +10,7 @@ Everyone builds the same small agent, and later an agent that uses the OpenAI Ag
 
 Why this agent:
 
-- It is small enough to build on either path in a short time.
+- It is small enough to build in a short time.
 - It has one real risk: a restart and a factory reset sound alike and do very different things. That makes the value easy to see (a confirmation, then the right command) and gives the later blocks something to check.
 - A public exercise and a Mantle example already exist for the same situation (the router-support example in this repository).
 
@@ -21,20 +21,19 @@ You can tell it works when:
 3. "Reset it" makes it ask which one you mean, and it sends nothing until you answer.
 4. A request for a factory reset makes it say it cannot do that here and offer help from a person. It records no factory-reset command.
 
-## Two paths to the same result
+## One path: Rasa Mantle
 
-- **Mantle path:** the Mantle Inspector, a skill file, a tool, and an installer script that makes a fresh Mantle agent into the helper.
-- **Studio path:** Rasa Studio's visual builder. You import a ready-made restart flow that Studio itself exported, change one thing, train, and try it. You build the reset flow by hand afterward.
+Everyone builds on Rasa Mantle: the Mantle Inspector, a skill file, a tool, and an installer script that makes a fresh Mantle agent into the helper. Then the rest of the session grows the helper into a station on a dark software factory.
 
-The routes differ in what they reach by minute 30 (see the schedule). Then you do the other path, compare, and the rest of the session grows the helper into a station on a dark software factory.
+**Studio 2 preview (presenter only).** At a point the presenter chooses, the presenter shows a Studio 2 preview from their own machine. It is an early preview that attendees cannot try yet. The presenter ends it with a call to action: join the Rasa Community at https://info.rasa.com/community/ to hear when Studio is released. Nothing in this workshop needs it, and attendees do nothing for it.
 
 ## At a glance (planned targets)
 
 | Minutes | Block | You build | You see | Target result |
 |---|---|---|---|---|
 | 0 to 10 | The result | Nothing yet. Everyone opens a codespace | The finished helper handling the four checks above | You know what "working" means |
-| 10 to 30 | First path | Mantle: install, train, inspect. Studio: import, edit one wording, train | Your helper asking to confirm and recording `REBOOT` | Mantle: all four checks. Studio: the first two checks |
-| 30 to 50 | The other path, and compare | The other path. On Studio, the reset flow by hand | The same checks on both, and the files each path keeps | All four checks on both paths |
+| 10 to 30 | Your router helper | Install, train, inspect | Your helper asking to confirm and recording `REBOOT` | All four checks |
+| 30 to 50 | Reset handling and your own change | Your own wording and requests against the helper | How it handles a changed mind and a reset request | The helper never records anything you did not ask for |
 | 50 to 70 | Source-file check | A check that reads the configured restart command | The check passing, then failing when the file says `FACTORY_RESET` | A check the helper's replies cannot satisfy |
 | 70 to 75 | Break | | | |
 | 75 to 90 | The factory begins: your builder | An OpenAI Agents API agent that you create, with your own key | Its session events and the file it saves | Your builder agent has proposed a change |
@@ -54,46 +53,37 @@ Show: the finished helper, once, handling the four checks above. No other demo. 
 
 **Everyone opens their codespace now, at minute 0, while the result is on the screen.** The setup includes an install that can run for several minutes after the codespace shows as available. Wait for the setup to print its finished line before you start building at minute 10 to 15. The presenter tracks setup time and helps anyone who is stuck.
 
-## Minutes 10 to 30: the first path
+## Minutes 10 to 30: your router helper
 
-**Mantle path.** In a new folder, run `rasa init --engine mantle --no-prompt`, then the installer `router-helper/mantle/install_helper.py` on that folder, then `rasa train`, then `rasa inspect --port 5010`, and open the Inspector address. The installer moves the starter banking skills out of the active skills and sets a router-only persona and rules. Then run the four checks.
+In a new folder, run `rasa init --engine mantle --no-prompt`, then the installer `router-helper/mantle/install_helper.py` on that folder, then `rasa train`, then `rasa inspect --port 5010`, and open the Inspector address. The installer moves the starter banking skills out of the active skills and sets a router-only persona and rules. Then run the four checks.
 
-**Studio path.** Studio starts in the background when the codespace starts. When `studio-status.sh` says it is ready, run `router-helper/studio/import-restart-flow.sh`. It uploads the restart flow that Studio exported. Open the assistant, edit the confirmation wording through **Edit response**, train with Draft selected, try it, and run the first two checks.
-
-You build: the helper on one path.
+You build: the helper.
 You see: the confirmation, then `REBOOT` recorded.
-Target at minute 30: Mantle shows all four checks. Studio shows the imported, edited restart flow working (the first two checks).
+Target at minute 30: all four checks.
 
-The exact steps are in the attendee pack. The files for both paths are in `router-helper/`.
+The exact steps are in the attendee pack. The files are in `router-helper/`.
 
-## Minutes 30 to 50: the other path, and compare
+## Minutes 30 to 50: reset handling and your own change
 
-Do the path you did not take. On Studio, build the reset flow by hand (step 6 of `router-helper/studio/STEPS.md`) and run the last two checks. Then put the two side by side with these questions:
+Everyone works the four checks again in a different order and in their own words: a changed mind, a reset asked for in different words, a factory reset asked for outright. Put these questions to the room:
 
-- Which one asked you to confirm, and who wrote the confirmation, you or the engine?
-- Where is the command `REBOOT` stored on each path?
-- What does each path keep as files?
+- Who wrote the confirmation, you or the engine?
+- Where is the command `REBOOT` stored?
+- What does the helper keep as files?
 
-**What Studio exports and how it connects** (from Rasa's Studio tutorial and compatibility pages, read Nov 2):
-
-- `rasa studio download` writes the assistant to files: flows (`data/studio_flows.yml`), language data (`data/studio_nlu.yml`), the domain, and, from Rasa Pro 3.9.8, the config and endpoints.
-- Some things are done only in files after the download: tracing, an interactive voice response (IVR) channel, end-to-end tests, secrets management, personally identifiable information (PII) management, markers, custom information retrieval, conversation tracking, and the generation prompt in `flows.yml`.
-- A Studio assistant reaches other systems through a custom action endpoint (Assistant Settings, Action Endpoint), or, after a download, through a Model Context Protocol (MCP) server in `endpoints.yml` and a flow `call` step with `mcp_server`. Rasa lists MCP servers as a beta feature since Rasa 3.14.
-- Rasa's Mantle changelog says Studio trains and runs a Mantle assistant and that Copilot refers to Studio. Rasa's Studio changelog and compatibility matrix do not mention Mantle, and the Studio build we tested pairs with an older Rasa Pro. Whether the Studio build in the room shows a Mantle agent is not yet shown.
-
-Target at minute 50: two paths, one result.
+Target at minute 50: a helper that never records anything the customer did not ask for.
 
 ## Minutes 50 to 70: the source-file check
 
 The helper must never record `FACTORY_RESET` when asked to restart. A check can look at the configured restart command in a file instead of at what the helper said.
 
-Run `router-helper/check_helper.py` on the Mantle tool file, or on a downloaded Studio flows file. It reads the configured command and fails if it is not `REBOOT`. Then change the file to `FACTORY_RESET` and run the check again. It fails, and names why.
+Run `router-helper/check_helper.py` on the Mantle tool file. It reads the configured command and fails if it is not `REBOOT`. Then change the file to `FACTORY_RESET` and run the check again. It fails, and names why.
 
 You build: a source-file check.
 You see: the check pass, then fail on the wrong command, even though the helper's reply could still sound right.
 Target at minute 70: a check that reads the configured command, not the reply.
 
-This is a source-file check of the configured restart command. It does not watch a live conversation, so a pass does not prove the helper ran that command at run time. It exits 2 when it cannot find a command, so a missing command is never a pass. If every check passes by minute 70, people who leave then have a working helper on both paths and a check for it.
+This is a source-file check of the configured restart command. It does not watch a live conversation, so a pass does not prove the helper ran that command at run time. It exits 2 when it cannot find a command, so a missing command is never a pass. If every check passes by minute 70, people who leave then have a working helper and a check for it.
 
 ## Minutes 75 to 115: the factory begins, with the OpenAI Agents API
 
@@ -103,13 +93,13 @@ Now the helper becomes the front desk of a factory. The factory's builder is an 
 
 Facts from OpenAI's Agents API quickstart (read Nov 2): your key needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write`. A session starts with `client.beta.agents.sessions.create(...)`. An agent is a model, instructions, tools, and optional MCP servers. Model use is billed at the model's API rates.
 
-**Minutes 90 to 115: put the builder behind the helper.** A small tool server wraps your builder. On the Mantle path, run the `change_builder` installer, then train and open the Inspector again, as the attendee pack shows. The installer copies the skill into the agent's `skills/` folder and raises Mantle's tool wait from 10 seconds to at least 450, because a build takes minutes. The skill's tool calls the server and shows the customer the build id, saved flag, file path, and sha256. On the Studio path the builder runs on its own, because Studio's own chat cannot reach the server. Wiring the downloaded Studio project to the server through `endpoints.yml` is an optional extension that nobody has tested.
+**Minutes 90 to 115: put the builder behind the helper.** A small tool server wraps your builder. On the Mantle path, run the `change_builder` installer, then train and open the Inspector again, as the attendee pack shows. The installer copies the skill into the agent's `skills/` folder and raises Mantle's tool wait from 10 seconds to at least 450, because a build takes minutes. The skill's tool calls the server and shows the customer the build id, saved flag, file path, and sha256.
 
 You build: your builder agent, and the connection to it.
 You see: the session's events, then the helper calling your builder and showing the proposed change.
 Target at minute 115: a request goes in and a proposed change comes out.
 
-The code is in `router-helper/builder/`: `builder.py` (your agent, with the instructions you edit) and `builder_server.py` (the tool server), with a README for the Mantle and Studio wiring. On the Studio path, Studio's own chat cannot reach this server, so on that path the builder runs on its own. Wiring the downloaded project to the server from files is an optional extension, not the workshop route, and it is untested.
+The code is in `router-helper/builder/`: `builder.py` (your agent, with the instructions you edit) and `builder_server.py` (the tool server), with a README for the Mantle wiring.
 
 ## Minutes 115 to 140: the gate
 
@@ -128,7 +118,7 @@ Target at minute 160: one change built, checked, and released or refused by you.
 
 ## Minutes 160 to 175: voice (drop first)
 
-Switch speech on for the Mantle helper. Mantle's docs list the speech providers and their keys, which attendees may not have. Drop this block if time is short.
+Switch speech on for the helper. Mantle's docs list the speech providers and their keys, which attendees may not have. Drop this block if time is short.
 
 ## Minutes 175 to 180: close
 
@@ -140,7 +130,7 @@ Show the line again with the pieces each person built. Name the one check each p
 |---|---|---|
 | Minutes 0 to 30 | A codespace will not open or the setup stalls | Pair with a neighbor who has one. The presenter keeps one working codespace for the room. |
 | Minutes 0 to 30 | Your key or license is rejected | Say so at once. Watch your neighbor's path until a key is fixed. Never retry a key that was rejected. |
-| Minutes 10 to 50 | One path will not work | Try the other path. If both paths fail, follow the presenter's demonstrated or recorded example, and note which parts you could not complete. |
+| Minutes 10 to 50 | The helper will not work | Pair with a neighbor whose helper works. If it still fails, follow the presenter's demonstrated or recorded example, and note which parts you could not complete. |
 | Minutes 50 to 70 | The check cannot find a command | Read the exit code. 2 means it found nothing, and the file layout is the first thing to look at. |
 | Minutes 75 to 115 | Your Agents API session fails (permissions, quota, model) | The presenter runs one builder on the screen. You watch its events and take the saved change in `router-helper/gate/candidates/good.py` to the next block. |
 | Minutes 90 to 115 | The tool server or its wiring will not work | Call the builder from its script and carry the saved change forward. |
@@ -154,13 +144,9 @@ These are peer-reported observations from the workshop team's test codespaces. T
 | What | Revision and platform | Observation | Still open |
 |---|---|---|---|
 | Mantle first win, cold | Source `81dc3efa`, Linux codespace, 4 cores and 16 GiB, no prebuild, tester account, automated browser (Nov 2) | Codespace requested 04:03:16Z, setup finished 04:09:36Z, install and train 27 seconds, working restart confirmation 04:13:44Z, 10 minutes 28 seconds from opening. All four checks behaved. | A fresh account, an unaided person, and a different room network |
-| Both paths, one cold codespace | Source `1282548e`, Linux codespace, 4 cores and 16 GiB, no prebuild, no manual Studio start, existing account, automated browser (Nov 2, opening 06:04:24Z) | Mantle: full restart confirmation 11 minutes 52 seconds after opening, REBOOT after consent, reset clarified, factory reset answered with the exact refusal and person offer in all three tested positions (followed by an unwanted long resume paragraph). A later change, tested on the same machine with a fresh agent and no new full cold run, replaced it with the short question "Do you want to carry on with your router restart, or leave it?" in the clarification case. After the first message or after a restart, the engine can still add its normal follow-up question, so the refusal is not the only text in those positions. Studio: started by itself and healthy at 14 minutes 53 seconds. After one Studio license upload that the first pack version did not describe, the import script finished in 35 seconds, the wording edit survived a reload, Draft training took 41 seconds, and chat showed the edited confirmation and the `REBOOT` reply 22 minutes 22 seconds after opening. | A fresh account, an unaided person, the unchanged earlier pack as written (it lacked the license upload step), and delivery of the license file to attendees |
+| Mantle, second cold codespace | Source `1282548e`, Linux codespace, 4 cores and 16 GiB, no prebuild, existing account, automated browser (Nov 2, opening 06:04:24Z) | Full restart confirmation 11 minutes 52 seconds after opening, REBOOT after consent, reset clarified, factory reset answered with the exact refusal and person offer in all three tested positions (followed by an unwanted long resume paragraph). A later change, tested on the same machine with a fresh agent and no new full cold run, replaced it with the short question "Do you want to carry on with your router restart, or leave it?" in the clarification case. After the first message or after a restart, the engine can still add its normal follow-up question, so the refusal is not the only text in those positions. | A fresh account, an unaided person, and the unchanged latest pack |
 | Mantle tool calls | Source `81dc3efa`, the earlier codespace of the first row (opened about 04:03Z) | Expanded event cards: one sent `REBOOT` after consent, none after a denial or for reset requests, and no router was contacted (mock tool) | A real device |
-| Studio start, cold | Same earlier codespace (`81dc3efa`, opened about 04:03Z), Studio 1.15.2, model service 3.15.8 | Launcher healthy at 04:19:18Z, 16 minutes 02 seconds from opening and about 9 minutes after the setup finished. Startup time varies, so the pack uses a readiness check. | The background start in the final design, timed |
-| Studio authoring by hand | Same earlier codespace (`81dc3efa`), manual launch | Restart-only flow saved at 04:43:35Z after test tooling errors. This missed minute 30. | Not a learner number |
-| Studio import | Studio 1.15.2, Mantle environment command-line interface 3.21.0.dev5, warm | Configuration, login, and upload succeeded, 11.8 seconds for the command-line interface. The import script, unmodified, then finished in 33 seconds on a healthy licensed 4-core Studio (configuration at 10.6 seconds, login at 20.3, upload at 31.8). The imported assistant exists and shows the restart flow. The whole route also passed once on a healthy licensed 4-core Studio that was already running: import script, a wording edit that survived a reload, training with Draft selected in 37 seconds, and a chat that showed the edited confirmation and the exact REBOOT acknowledgement. | Cold start of this exact design with a new account, and an unaided person. |
-| Studio trained export | Studio 1.15.2 and model service 3.15.8 | The exported restart flow trained in 38 seconds, and chat confirmed and recorded `REBOOT`. The imported copy then passed the same route warm: wording edit kept after reload, training in 37 seconds, and a chat showing the edited confirmation and the `REBOOT` reply. | Cold start, a new account, and an unaided person |
-| First check | Mac, Python only | Passed on the real Studio export and on the Mantle tool file. Five tests pass. | An attendee's downloaded export, and a run-time trace |
+| First check | Mac, Python only | Passed on the Mantle tool file. The tests pass. | A run-time trace |
 | Gate | Mac, Python only | Seven tests pass: ACCEPT for the good change, REJECT by name for each bad one, no file written by a change that tries | Linux, and a change written through the tool server on a workshop key (one existing-key builder file was accepted, see the builder row) |
 | Chapter 6 gate on Linux | Linux codespace, then a real run on the team's own test machine | Wrapper proven, 11 of 11 isolation tests, 5 gate tests OK, good ACCEPT, ignores-limit REJECT. The workshop lead reported that a later real gate run also passed. The router helper's gate then ran on Linux in a test codespace and returned ACCEPT for a freshly built file (next rows). | The router helper's gate on the four candidate files, run on Linux by someone following the pack |
 | Tool server behavior | Mac, Python only, stand-ins and no key | Cancel and one-build-at-a-time behavior passes 2 tests | Anything with a real key |
@@ -172,8 +158,6 @@ These are peer-reported observations from the workshop team's test codespaces. T
 ## Appendix: what the room needs
 
 - Each person brings their own free Rasa Developer Edition key and their own OpenAI key, saved as Codespaces secrets named `RASA_LICENSE` and `OPENAI_API_KEY`, selected for this repository. The Developer key cannot be shared. The OpenAI key needs the Agents API permissions listed above.
-- Studio is hands-on. It needs a license with a Studio entitlement, saved as the Codespaces secret `RASA_STUDIO_LICENSE`. The free Developer key did not unlock Studio in testing. Rasa will provide the Studio license as a text file. The secret supplies the model service, and the first Studio sign-in also asks you to upload the same file in the Studio interface (**Upload a license**). Both steps are needed.
-- Studio runs from the Docker setup in `.devcontainer/software-factories-workshop/start-studio.sh`, inside the codespace, and needs a codespace with at least 4 cores. It starts by itself in the background.
 - The codespace can show as available while the Mantle install is still running. Wait for the setup to print its finished line.
 - The codespace opens in the workshop folder. Use absolute paths for helper scripts: `/workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/`.
 - Never paste a key into a command, a file, or a chat. If a step prints an error, copy the words and not the keys, and ask for help early. Each block stands on the one before it.

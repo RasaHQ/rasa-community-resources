@@ -32,17 +32,17 @@ class CheckHelper(unittest.TestCase):
         self.assertEqual(code, 1, out)
         self.assertIn("FACTORY_RESET", out)
 
-    def test_a_studio_export_with_the_right_command_passes(self):
-        path = self.write("studio_flows.yml", "flows:\n  restart_router:\n    steps:\n      - set_slots:\n          - command_sent: \"REBOOT\"\n")
+    def test_a_flows_file_with_the_right_command_passes(self):
+        path = self.write("flows.yml", "flows:\n  restart_router:\n    steps:\n      - set_slots:\n          - command_sent: \"REBOOT\"\n")
         self.assertEqual(run(path)[0], 0)
 
-    def test_a_studio_export_with_the_wrong_command_fails(self):
-        path = self.write("studio_flows.yml", "flows:\n  restart_router:\n    steps:\n      - set_slots:\n          - command_sent: FACTORY_RESET\n")
+    def test_a_flows_file_with_the_wrong_command_fails(self):
+        path = self.write("flows.yml", "flows:\n  restart_router:\n    steps:\n      - set_slots:\n          - command_sent: FACTORY_RESET\n")
         self.assertEqual(run(path)[0], 1)
 
     def test_no_command_found_is_not_a_pass(self):
         self.assertEqual(run(self.write("tools.py", "OPERATIONS = {}\n"))[0], 2)
-        self.assertEqual(run(self.write("studio_flows.yml", "flows: {}\n"))[0], 2)
+        self.assertEqual(run(self.write("flows.yml", "flows: {}\n"))[0], 2)
         self.assertEqual(run(Path("/nonexistent/file.py"))[0], 2)
 
 

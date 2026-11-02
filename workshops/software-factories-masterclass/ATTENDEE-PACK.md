@@ -1,4 +1,4 @@
-# Attendee pack: build a dark software factory with Rasa Mantle, Rasa Studio, and the OpenAI Agents API
+# Attendee pack: build a dark software factory with Rasa Mantle and the OpenAI Agents API
 
 sow: public
 
@@ -11,17 +11,15 @@ This workshop simulates a router command. It does not contact a router or change
 Nothing is set up in advance. Do this at minute 0, while the presenter shows the finished helper. Nobody has timed this step for a first-time attendee. The presenter will track setup time and help if you get stuck.
 
 1. Use a personal GitHub account that is not managed by an enterprise.
-2. Have these three values ready, from your own accounts and from Rasa: a free Rasa Developer Edition key, your OpenAI application programming interface (API) key, and the Studio license Rasa gives you at the session, as a text file. Save that file on your laptop. You use it twice: its contents go into the `RASA_STUDIO_LICENSE` secret, and later you upload the file itself in Studio. Get the Developer Edition key from Rasa's Developer Edition page. The confirmation page is not the key. For the builder part, your OpenAI key needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write`. Do not share these values.
+2. Have these two values ready, from your own accounts: a free Rasa Developer Edition key and your OpenAI application programming interface (API) key. Get the Developer Edition key from Rasa's Developer Edition page. The confirmation page is not the key. For the builder part, your OpenAI key needs the permissions `api.agents.read`, `api.agents.write`, and `api.responses.write`. Do not share these values.
 3. Open the workshop repository on GitHub. Choose **Code**, then **Codespaces**, then the three dots, then **New with options**. Set **Dev container configuration** to `software-factories-workshop`, choose at least 4 cores, and set the branch the presenter names.
-4. The creation page asks for three secrets, named `RASA_LICENSE` (your Developer key), `OPENAI_API_KEY`, and `RASA_STUDIO_LICENSE` (the Studio license). Paste each value into its own box. They are saved to your GitHub account for this repository. If you create the codespace without that page, add them afterward under **Settings**, then **Codespaces**, then **New secret**. Set **Repository access** to the exact repository you opened, and then stop and start the codespace.
-5. Choose **Create codespace**. Studio starts by itself in the background as soon as the codespace is up.
+4. The creation page asks for two secrets, named `RASA_LICENSE` (your Developer key) and `OPENAI_API_KEY`. Paste each value into its own box. They are saved to your GitHub account for this repository. If you create the codespace without that page, add them afterward under **Settings**, then **Codespaces**, then **New secret**. Set **Repository access** to the exact repository you opened, and then stop and start the codespace.
+5. Choose **Create codespace**.
 6. Wait. The codespace can show as available while the install is still running. In the terminal, wait for the line that starts `Setup finished`. If you see `NOT READY`, read the sentence after it. It tells you which secret to fix. Fix it, then stop and start the codespace.
 
-## Minutes 10 to 30: your first path
+## Minutes 10 to 30: your router helper
 
-Choose your first path. If Studio is still starting, begin with Mantle. By minute 30, the target on your chosen path is a restart helper that asks for confirmation. Try the other path between minutes 30 and 50. Nobody has yet confirmed that a first-time attendee can do this in 30 minutes.
-
-### The Mantle path
+By minute 30, the target is a restart helper that asks for confirmation. Nobody has yet confirmed that a first-time attendee can do this in 30 minutes.
 
 Run these in the codespace terminal, one at a time:
 
@@ -49,41 +47,13 @@ Open the address it prints. If GitHub shows a page asking you to continue to you
 | `Reset it` | It asks whether you mean a restart or a factory reset, and sends nothing |
 | `Factory reset` | It says it cannot do that here and offers a person. It gives no steps for a factory reset |
 
-The wording can differ a little. The meaning must match. If any row does not match, write down what it said and tell the presenter. If you choose Mantle first, the target is all four rows by minute 30.
+The wording can differ a little. The meaning must match. If any row does not match, write down what it said and tell the presenter. The target is all four rows by minute 30. A tester ran an earlier version of this path cold on an existing account, with help, in 11 minutes 52 seconds. The latest text of this page has not been followed unchanged in a full cold, unaided run.
 
-### The Studio path
+## Minutes 30 to 50: reset handling and your own change
 
-Studio starts by itself, in the background, as soon as your codespace is created. Startup time varies. In one cold test the Studio launcher took about 9 minutes after the setup finished, which was 16 minutes after opening the codespace. If it is not ready, do the Mantle path first and come back. Check on it any time:
+Work through the four rows again, in a different order, and try your own wording. Ask for a restart, then change your mind. Ask for a reset in different words. Write down what the helper did each time and whether it ever recorded anything you did not ask for.
 
-```bash
-bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/studio-status.sh
-```
-
-When it says `Studio is ready.`, it prints two addresses. If it says Studio did not start, it shows the last lines of the log (`~/studio-start.log`). Tell the presenter. If you need to start Studio yourself, run this in a codespace terminal:
-
-```bash
-bash /workspaces/rasa-community-resources/.devcontainer/software-factories-workshop/start-studio.sh
-```
-
-It prints two addresses when it is ready. Open the login address (port 8081) first and choose **Continue** if GitHub asks. Then open the Studio address (port 8080) and sign in as `superuser`. The password is in Rasa's Studio compose README under "Keycloak Default Users Password".
-
-On first sign-in, Studio shows "Welcome to Rasa Studio" and "Please provide a valid license to start using it". Choose **Upload a license** and pick the Studio license text file from your laptop. After the upload, choose **Get Started** (Rasa's license activation page shows this button) and you should see Studio's project list. The secret in your codespace does not activate this screen, so you must upload the file. Do not paste the license anywhere else. A tester completed this step through Studio's normal upload interface on a fresh codespace, with automated assistance. It was missing from the first version of this page.
-
-**If Studio is your first path, the target by minute 30 is to import the ready-made restart flow, change one thing, train, and try it.** Authoring a flow by hand in Studio took too long in a cold test, so you start from the restart flow Studio itself exported. In a codespace terminal, run:
-
-```bash
-bash /workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/studio/import-restart-flow.sh
-```
-
-It prints the Studio questions for you to type, signs you in as `superuser`, and uploads the flow as an assistant named `restart-router-helper`. Then in Studio, open that assistant and open its `restart_router` flow. Click the confirmation question node (its label is the question text), then click **Edit response**, which opens the content management system (CMS) **Responses** page. Do not use the top **Edit** button there. It only renames the response. The confirmation wording is in the plain-text box on that page ("Type to add response"). Change it (for example, change "for a short time" to "briefly"), and check the new wording is still there after you reload the page. Choose **Train**, select **Draft** for the flow, wait for **Training successful**, open **Try your assistant**, and run the first two rows of the table above: it asks for confirmation, and it records REBOOT.
-
-The import has been checked in pieces by a tester. Configuration, login, and upload took about 12 seconds in all. A tester has also done the whole route once on a warm, already running Studio: the import script, the wording edit, training, and a chat that showed the edited confirmation and the REBOOT reply. No attendee has done it unaided. A tester also ran the corrected route cold on an existing account, with help: Mantle took 11 minutes 52 seconds and Studio 22 minutes 22 seconds. The latest text of this page has not been followed unchanged in a full cold, unaided run.
-
-## Minutes 30 to 50: the other path, and the Studio reset flow
-
-If you did the Mantle path first, do the Studio import above. If you did Studio first, do the Mantle path above. On the Studio path, then build the reset flow by hand with step 6 of `workshops/software-factories-masterclass/router-helper/studio/STEPS.md` (the earlier steps are replaced by the import), and run the last two rows of the table. The target is all four rows on both paths by minute 50.
-
-Then answer these three questions on paper: Which path asked you to confirm, and who wrote the confirmation? Where is `REBOOT` stored on each? What files does each path keep?
+Then answer these questions on paper: Who wrote the confirmation, you or the engine? Where is `REBOOT` stored? What files does the helper keep?
 
 ## Minutes 50 to 70: the source-file check
 
@@ -97,7 +67,7 @@ You should see `PASS: a restart records REBOOT`. Now change `"REBOOT"` to `"FACT
 
 ## Minutes 75 to 115: your builder, with the OpenAI Agents API
 
-Mantle path only. This part is not yet proven end to end by someone following this page, so say so if it fails. In terminal 1:
+This part is not yet proven end to end by someone following this page, so say so if it fails. In terminal 1:
 
 ```bash
 B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/builder
@@ -123,7 +93,7 @@ cd "$HOME/router-helper-agent"
 "$HOME/.venv-mantle/bin/rasa" inspect --port 5010
 ```
 
-Ask the helper: `add a check that tells me the line status`. Expected: one message that begins `Build ` and gives a build id, `saved a file`, an absolute path ending in `check_line_status.py`, a sha256, and `Nothing was applied to the helper.` If it says `I cannot tell whether a build started`, look at terminal 2 before asking again. Only `No build started` means the request was refused because another build was running. The Studio path does not reach this server from the Studio chat, so on that path the builder runs on its own (the first block above).
+Ask the helper: `add a check that tells me the line status`. Expected: one message that begins `Build ` and gives a build id, `saved a file`, an absolute path ending in `check_line_status.py`, a sha256, and `Nothing was applied to the helper.` If it says `I cannot tell whether a build started`, look at terminal 2 before asking again. Only `No build started` means the request was refused because another build was running.
 
 ## Minutes 115 to 160: the gate and the release
 
@@ -141,4 +111,3 @@ Use the exact path the builder printed. Also run it on the four files in `router
 | `NOT READY` in setup | Fix the secret it names, then stop and start the codespace |
 | The first command in a block is not found | Wait for `Setup finished`, then try again |
 | The Inspector says something went wrong | Do not retry an unchanged key. Write down the words on screen, without keys, and tell the presenter |
-| Studio's login page will not load | Open port 8081 first and choose Continue, then try 8080 |
