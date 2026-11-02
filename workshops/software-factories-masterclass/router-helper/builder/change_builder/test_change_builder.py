@@ -44,7 +44,7 @@ class Show(unittest.TestCase):
             self.assertIn(value, text)
 
     def test_unsaved_build_says_so(self):
-        self.assertIn("ended without a saved file", tools.describe({"build_id": "b-9", "saved": False}))
+        self.assertIn("reported no saved file", tools.describe({"build_id": "b-9", "saved": False}))
 
     def test_only_the_busy_refusal_says_no_build_started(self):
         busy = {"started": False, "saved": False, "builder_said": "A build is already running."}
@@ -53,6 +53,24 @@ class Show(unittest.TestCase):
             text = tools.describe(unknown)
             self.assertNotIn("No build started", text)
             self.assertIn("cannot tell whether a build started", text)
+
+    def test_malformed_fields_are_unknown_or_refused(self):
+        good = dict(DONE)
+        for bad in ({**good, "saved": "true"}, {**good, "saved": 1}, {**good, "build_id": ["bad"]}, {**good, "build_id": ""}):
+            self.assertIn("cannot tell whether a build started", tools.describe(bad))
+            self.assertNotIn("saved a file", tools.describe(bad))
+        for bad in ({k: v for k, v in good.items() if k != "sha256"}, {**good, "sha256": "ab"}, {**good, "sha256": "AB" * 32},
+                    {**good, "file": ""}, {k: v for k, v in good.items() if k != "file"}):
+            text = tools.describe(bad)
+            self.assertIn("Do not use it", text)
+            self.assertNotIn("saved a file.", text)
+        self.assertIn("cannot tell", tools.describe([1]))
+
+    def test_saved_false_does_not_claim_the_build_ended(self):
+        text = tools.describe({"build_id": "b-9", "saved": False, "builder_said": "x"})
+        self.assertIn("saved=false", text)
+        self.assertNotIn("ended without", text)
+        self.assertIn("cannot confirm", text)
 
     def test_error_result_and_non_dict_are_unknown(self):
         self.assertEqual(tools.parse(types.SimpleNamespace(isError=True, structuredContent=DONE, content=[])), {})

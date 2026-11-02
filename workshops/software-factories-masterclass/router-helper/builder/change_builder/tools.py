@@ -6,6 +6,7 @@ The builder server must be running (builder_server.py, 127.0.0.1:8765).
 """
 import json
 import os
+import re
 from datetime import timedelta
 
 from rasa.mantle.tools.decorator import ToolContext, tool
@@ -15,23 +16,33 @@ URL = os.environ.get("BUILDER_MCP_URL", "http://127.0.0.1:8765/mcp")
 WAIT_SECONDS = 360
 
 
-def describe(result: dict) -> str:
-    """The message the customer sees. Built only from fields the builder server returned.
+def _text(value) -> bool:
+    return isinstance(value, str) and bool(value.strip())
 
-    "No build started" is said only when the server itself says so (started is False, the busy refusal). Anything else
-    without a build id is unknown: the request may have reached the builder.
+
+def describe(result: dict) -> str:
+    """The message the customer sees. Built only from fields the builder server returned, and only if they are well formed.
+
+    "No build started" is said only when the server itself says so (started is False, the busy refusal). A result that
+    is incomplete or malformed is unknown: the request may have reached the builder.
     """
-    build_id = result.get("build_id")
+    unknown = ("I cannot tell whether a build started or what it produced. "
+               "I did not try again. Check the tool server's terminal before asking for another build.")
+    if not isinstance(result, dict):
+        return unknown
     said = str(result.get("builder_said", ""))[:300]
     if result.get("started") is False:
         return "No build started. " + said
-    if not build_id:
-        return ("I cannot tell whether a build started. " + (said + " " if said else "")
-                + "I did not try again. Check the tool server's terminal before asking for another build.")
-    if result.get("saved"):
-        return (f"Build {build_id} saved a file. Path: {result.get('file', 'not reported')}. "
-                f"sha256: {result.get('sha256', 'not reported')}. Nothing was applied to the helper.")
-    return f"Build {build_id} ended without a saved file. {said} Nothing was applied to the helper."
+    build_id, saved = result.get("build_id"), result.get("saved")
+    if not _text(build_id) or not isinstance(saved, bool):
+        return unknown
+    if saved:
+        path, digest = result.get("file"), result.get("sha256")
+        if not (_text(path) and isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest)):
+            return f"Build {build_id} reported a saved file, but its path or sha256 is missing or malformed. Do not use it."
+        return f"Build {build_id} saved a file. Path: {path}. sha256: {digest}. Nothing was applied to the helper."
+    return (f"Build {build_id} reported no saved file (saved=false). {said} "
+            "I cannot confirm that the build has ended. Nothing was applied to the helper.")
 
 
 def parse(call_result) -> dict:
