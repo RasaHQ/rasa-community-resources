@@ -25,7 +25,7 @@ Use the category catalogs below when you already know what you need. For isolate
 
 - **Not the product documentation.** The canonical reference is [rasa.com/docs](https://rasa.com/docs/). This repository is educational material.
 - **Not the Rasa framework itself.** Rasa Pro is commercial. Running these resources requires a licence key (free for developers — see Requirements).
-- **Not a support channel.** Product issues belong with Rasa support or the product repositories. Questions about material here belong in [Discussions](../../discussions/) or in the [community](https://info.rasa.com/community).
+- **Not a support channel.** Product issues belong with Rasa support or the product repositories. Questions about material here belong in the [community](https://info.rasa.com/community).
 
 ---
 
