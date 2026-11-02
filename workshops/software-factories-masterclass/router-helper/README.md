@@ -11,6 +11,57 @@ You can tell it works when:
 3. "Reset it" makes it ask which one you mean, and it sends nothing until you answer.
 4. A factory reset request gets a refusal and an offer of a person, and nothing is recorded.
 
+## Start here: from a browser tab to your first check
+
+Nothing needs to be installed on your laptop. You need a browser, your own GitHub
+account, a free Rasa Developer Edition key and an OpenAI API key. Do A to D once,
+in order.
+
+> [!TIP]
+> **Your first conversation.** Ask **Restart my router**, wait for the
+> confirmation question, then answer **Yes**. In the Inspector, look for
+> `command_sent: REBOOT` in the tool result.
+
+**A. Sign in to GitHub.** A Codespace is a computer that GitHub runs for you; its
+editor and terminal open in your browser. Use a personal account with Codespaces
+available and enough allowance for a four-core machine.
+
+**B. Collect two values.**
+
+| Name to enter in GitHub | Where to get the value |
+| --- | --- |
+| `RASA_LICENSE` | [Request a Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). The confirmation page is not the key; copy the full license string you receive. |
+| `OPENAI_API_KEY` | [Create a key in your OpenAI project](https://platform.openai.com/api-keys) with API billing and model access, and copy it while it is visible. A ChatGPT subscription is billed separately. |
+
+**C. Save both as personal Codespaces secrets.** Open [GitHub → Settings →
+Codespaces](https://github.com/settings/codespaces), choose **New secret** for
+each name, paste its value, and under **Repository access** select
+**RasaHQ/rasa-community-resources**. If a name already exists, edit its access
+and keep any other repository you use. Never paste a key into a command, a file
+or chat.
+
+**D. Open the workshop.** [Open the workshop in GitHub
+Codespaces](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/software-factories-workshop/devcontainer.json).
+On the creation form, check the repository, the configuration **New York
+workshop: Rasa Mantle** and **at least 4 cores**, then choose **Create
+codespace**. To return later, open it from [Your
+codespaces](https://github.com/codespaces).
+
+When the terminal prints a line beginning `Setup finished`, choose **Terminal →
+New Terminal** and run the source-file check on the completed example. It spends
+no model call:
+
+```bash
+ROUTER="$(git rev-parse --show-toplevel)/workshops/software-factories-masterclass/router-helper"
+python3 "$ROUTER/check_helper.py" "$ROUTER/mantle/skills/router_restart/tools.py"
+```
+
+You should see **`PASS: a restart records REBOOT`**. If a secret was missing or
+you added it after the Codespace started, stop and open the same Codespace again,
+then rerun `setup.sh` as the [workshop README](../README.md#if-a-key-was-added-or-its-repository-access-changed)
+describes. Then build your own helper with the commands in the
+[attendee pack](../ATTENDEE-PACK.md#your-router-helper-minutes-1030).
+
 ## What is in this folder
 
 | Path | What it is | Used at |

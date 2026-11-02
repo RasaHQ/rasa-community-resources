@@ -10,43 +10,112 @@ accept or reject it with a separate check. The exercise contacts no router.
 Its final result is a recorded review decision, with nothing installed or
 applied automatically. Attendees use Mantle throughout.
 
-## Start here at minute 0
+## Start here at minute 0 · From a browser tab to your first router check
 
 Nothing needs to be set up before the workshop. You need a browser, your own
-GitHub account, your own free [Rasa Developer Edition key](https://rasa.com/rasa-pro-developer-edition-license-key-request),
-and your own [OpenAI API key](https://platform.openai.com/api-keys). Request or
-retrieve the keys at minute 0 if needed. The Rasa form's confirmation page is
-not the key. Model usage is billed to your OpenAI account; the practice builder
-starts no Agents session.
+GitHub account, your own free Rasa Developer Edition key, and your own OpenAI
+API key. Request or retrieve the keys at minute 0 if needed. Model usage is
+billed to your OpenAI account; the practice builder starts no Agents session.
 
-1. In GitHub, open **Settings → Codespaces**. Add `RASA_LICENSE` and
-   `OPENAI_API_KEY` as account secrets. Under **Repository access**, include
-   **RasaHQ/rasa-community-resources**, the repository opened by the link below.
-   If either secret already exists, edit its access instead of creating a
-   duplicate, and retain any other repository access you still use. Never put a
-   key in source, a command, a shared log, or chat.
-2. **[Open the workshop Codespace](https://codespaces.new/RasaHQ/rasa-community-resources?devcontainer_path=.devcontainer/software-factories-workshop/devcontainer.json).**
-   Select the **New York workshop: Rasa Mantle** configuration and at least
-   **4 cores**. Create the Codespace. Python, uv, and the two locked environments
-   are prepared automatically; you do not install them on your laptop.
-3. Wait for dependency preparation, then the terminal line beginning
-   **`Setup finished`**. An available editor alone does not mean setup finished.
-   The setup check verifies license handling and the presence of the model key;
-   the helper conversation checks model access.
-4. Open the [attendee pack](ATTENDEE-PACK.md), starting with **Your router
-   helper**. Copy its full commands in order. Keep the terminal running where a
-   server is running; the pack names when to open another one.
+> [!TIP]
+> **Your first conversation.** Ask **Restart my router**, wait for the
+> confirmation question, then answer **Yes**. In the Inspector, look for
+> `command_sent: REBOOT` in the tool result.
+
+### A. Sign in to GitHub
+
+A Codespace is a computer that GitHub runs for you. Its editor and terminal open
+in your browser. Use a personal GitHub account that has Codespaces available and
+enough allowance for a four-core machine. Keep this page open in a separate tab.
+
+### B. Collect two values
+
+If your workshop host supplied either value, use it in the matching row.
+Otherwise follow the link in that row.
+
+| Name to enter in GitHub | Where to get the value | What uses it |
+| --- | --- | --- |
+| `RASA_LICENSE` | [Request a Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). The form's confirmation page is not the key; copy the entire license string you receive. | Rasa Mantle uses it to run the helper. |
+| `OPENAI_API_KEY` | [Open your OpenAI project's API keys](https://platform.openai.com/api-keys), choose **Create new secret key**, and copy the value while it is visible. Use a project with API billing and model access. | The helper uses it when you chat. ChatGPT subscriptions and API billing are separate. |
+
+The first file check runs inside the Codespace and spends no model call.
+Chatting with the helper uses the OpenAI API. The practice builder copies a
+supplied sample file. Generating a new file with the optional billed builder
+needs Agents API access and can incur a separate charge.
+
+### C. Save both values as personal Codespaces secrets
+
+1. Open [GitHub → Settings → Codespaces](https://github.com/settings/codespaces).
+   Scroll to **Codespaces secrets** and choose **New secret**.
+2. In **Name**, enter `RASA_LICENSE`. In **Value**, paste the license string.
+   Under **Repository access**, select **RasaHQ/rasa-community-resources**
+   and save.
+3. Repeat for `OPENAI_API_KEY`, pasting the OpenAI key. If either name already
+   exists, edit its repository access to include the workshop repository, and
+   keep any other repository access you still use.
+4. Check that both names appear in the list. GitHub supplies their values to
+   your Codespace. No fork, local installation or `.env` file is needed. Never
+   put a key in source, a command, a shared log, or chat.
+
+If GitHub does not offer the repository in your settings, use the matching
+secret fields on the creation form in step D instead.
+
+### D. Open the workshop
+
+**[Open the workshop in GitHub Codespaces →](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/software-factories-workshop/devcontainer.json)**
+
+On GitHub's creation form, check that the repository is
+**RasaHQ/rasa-community-resources**, the configuration is **New York workshop:
+Rasa Mantle**, and the machine has **at least 4 cores**. Fill in any secret the
+form asks for, then choose **Create codespace**. The editor opens while Python,
+uv and the two locked environments are prepared; you do not install them on your
+laptop.
+
+Already created this workshop's Codespace? [Open it from Your
+codespaces](https://github.com/codespaces) to keep your files.
+
+### Your first win: check the restart command
+
+When the terminal shows a line beginning **`Setup finished`**, installation is
+done. An available editor alone does not mean setup finished. In the editor,
+choose **Terminal → New Terminal**, copy one box at a time and press Enter.
+
+Check that GitHub supplied both values without printing either:
+
+```bash
+for name in RASA_LICENSE OPENAI_API_KEY; do if [ -n "${!name:-}" ]; then echo "$name present"; else echo "$name missing"; fi; done
+```
+
+Then run the source-file check on the completed example in your workspace:
+
+```bash
+ROUTER="$(git rev-parse --show-toplevel)/workshops/software-factories-masterclass/router-helper"
+python3 "$ROUTER/check_helper.py" "$ROUTER/mantle/skills/router_restart/tools.py"
+```
+
+You should see **`PASS: a restart records REBOOT`**. You just checked the
+command in a real Python file without spending a model call. Next you build your
+own helper and find out whether it waits for permission before it uses that
+command: continue with **Your router helper** in the
+[attendee pack](ATTENDEE-PACK.md#your-router-helper-minutes-1030), or follow the
+[browser tutorial](https://rasa.community/library/tutorials/software-factory/).
+
+The setup check verifies license handling and the presence of the model key; the
+helper conversation checks model access. A present key still needs billing and
+permission for the model.
 
 **Reviewing an unmerged change:** use the repository and branch named in the
 review handoff. Open that branch on GitHub, choose **Code → Codespaces → New
 with options**, and select the same workshop configuration. Scope your own
-secrets to that exact repository. Continue with step 3 above; do not create a
+secrets to that exact repository. Continue from **Your first win** above; do not create a
 main-branch Codespace and patch it silently afterward.
 
 ### If a key was added or its repository access changed
 
-Stop and start the **same Codespace** after saving the secret. Restarting alone
-does not rerun the creation check. In a new terminal, run:
+Fix the secret and its repository access in step C. Then, in [Your
+codespaces](https://github.com/codespaces), use the **…** menu to stop the
+**same Codespace** and open it again. Restarting alone does not rerun the
+creation check. In a new terminal, run:
 
 ```bash
 bash "$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/setup.sh"
