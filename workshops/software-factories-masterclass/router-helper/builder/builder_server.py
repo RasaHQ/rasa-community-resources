@@ -13,6 +13,7 @@ The same FastMCP setup is used by examples/mantle-factory-agent/server.py in thi
 
 Not run yet by anyone for this workshop on a real key. The cancel behavior was reproduced with a fake builder and no key.
 """
+import argparse
 import asyncio
 import os
 import sys
@@ -26,13 +27,14 @@ PORT = int(os.environ.get("BUILDER_MCP_PORT", "8765"))
 
 server = FastMCP("builder", host="127.0.0.1", port=PORT, stateless_http=True, json_response=True)
 _running = threading.Lock()
+_fixture_mode = False
 
 
 def _work(request: str) -> dict:
     """Runs on a worker thread. The lock is released only when this function has really finished."""
     try:
-        outcome = builder.build(request, False)
-        return {key: outcome[key] for key in ("build_id", "saved", "file", "sha256", "session_id") if key in outcome} | {
+        outcome = builder.build_fixture() if _fixture_mode else builder.build(request, False)
+        return {key: outcome[key] for key in ("mode", "build_id", "saved", "file", "sha256", "session_id") if key in outcome} | {
             "builder_said": outcome["builder_said"][:2000]}
     finally:
         _running.release()
@@ -54,6 +56,11 @@ async def build_change(request: str) -> dict:
 
 
 if __name__ == "__main__":
-    if not os.environ.get("OPENAI_API_KEY"):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--fixture", action="store_true", help="Return labelled local samples without Agents sessions")
+    args = parser.parse_args()
+    _fixture_mode = args.fixture
+    if not _fixture_mode and not os.environ.get("OPENAI_API_KEY"):
         sys.exit("Set the OPENAI_API_KEY Codespaces secret for this repository, then restart the codespace.")
+    print("Builder mode:", "fixture (no Agents sessions)" if _fixture_mode else "live (model usage is billed)", flush=True)
     server.run(transport="streamable-http")

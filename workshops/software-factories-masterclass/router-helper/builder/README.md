@@ -1,5 +1,11 @@
 # Your builder, behind the router helper
 
+For a local rehearsal, add `--fixture` to both `builder.py` and `builder_server.py`.
+They copy the public `gate/candidates/good.py` example into a new output folder instead of calling the Agents API.
+The terminal and helper label the result **Fixture build** and say that no Agents session started.
+This checks file handling, MCP transport, the visible receipt and the gate; it does not test code generation.
+Mantle's own model calls still use your OpenAI key and can incur charges. Omit `--fixture` only when you intend a live, billed build.
+
 1. Make a virtual environment and install: `python3 -m venv ~/.venv-builder && ~/.venv-builder/bin/pip install --upgrade openai mcp==1.28.1`.
 2. Your OpenAI key (the `OPENAI_API_KEY` Codespaces secret) needs the permissions `api.agents.read`,
    `api.agents.write`, and `api.responses.write`. Never paste it into a file or a command.

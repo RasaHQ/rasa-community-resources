@@ -9,6 +9,7 @@ import threading
 import time
 import types
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -34,6 +35,19 @@ sys.modules.setdefault("openai", openai)
 
 import builder  # noqa: E402
 import builder_server  # noqa: E402
+
+
+class FixtureTransport(unittest.TestCase):
+    def test_fixture_mode_never_dispatches_the_live_builder(self):
+        sample = {"mode": "fixture", "build_id": "fixture-1", "saved": True,
+                  "file": "/sample.py", "sha256": "ab" * 32, "builder_said": "No Agents session"}
+        with patch.object(builder_server, "_fixture_mode", True), \
+                patch.object(builder, "build", side_effect=AssertionError("no live dispatch")) as live, \
+                patch.object(builder, "build_fixture", return_value=sample):
+            result = asyncio.run(builder_server.build_change("a requested change"))
+            self.assertEqual(result["mode"], "fixture")
+            self.assertEqual(result["file"], sample["file"])
+            live.assert_not_called()
 
 
 class Ownership(unittest.TestCase):

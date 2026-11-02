@@ -38,6 +38,12 @@ class Context:
 
 
 class Show(unittest.TestCase):
+    def test_fixture_keeps_its_label_in_the_customer_message(self):
+        text = tools.describe({**DONE, "mode": "fixture"})
+        self.assertTrue(text.startswith("Fixture build "))
+        self.assertIn("No Agents session was started.", text)
+        self.assertIn(DONE["sha256"], text)
+
     def test_saved_build_shows_id_path_and_hash_exactly(self):
         text = tools.describe(DONE)
         for value in ("b-123", "scratch/build-b-123/check_line_status.py", "ab" * 32):
