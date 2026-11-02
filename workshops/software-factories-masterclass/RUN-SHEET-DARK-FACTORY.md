@@ -2,7 +2,7 @@
 
 sow: public
 
-Three hours. Minutes count from the start. This sheet is for the session that uses GitHub Codespaces. It says what each person builds and sees, minute by minute. All times below are planned targets. Nobody has yet confirmed that a first-time attendee can reach them. The evidence table near the end says what was observed, by whom, and what is still open.
+Three hours, Tuesday 3 November, 3:00 to 6:00 PM New York time. Minutes count from the start, so minute 0 is 3:00 PM and minute 180 is 6:00 PM. The slides are in `slides/` and the notes for each are in `slides/PRESENTER-NOTES.md`. This sheet is for the session that uses GitHub Codespaces. It says what each person builds and sees, minute by minute. All times below are planned targets. Nobody has yet confirmed that a first-time attendee can reach them. The evidence table near the end says what was observed, by whom, and what is still open.
 
 ## The one small agent: the router restart helper
 
@@ -29,21 +29,21 @@ Everyone builds on Rasa Mantle: the Mantle Inspector, a skill file, a tool, and 
 
 ## At a glance (planned targets)
 
-| Minutes | Block | You build | You see | Target result |
+| Minutes (clock) | Block | You build | You see | Target result |
 |---|---|---|---|---|
-| 0 to 10 | The result | Nothing yet. Everyone opens a codespace | The finished helper handling the four checks above | You know what "working" means |
-| 10 to 30 | Your router helper | Install, train, inspect | Your helper asking to confirm and recording `REBOOT` | All four checks |
-| 30 to 50 | Reset handling and your own change | Your own wording and requests against the helper | How it handles a changed mind and a reset request | The helper never records anything you did not ask for |
-| 50 to 70 | Source-file check | A check that reads the configured restart command | The check passing, then failing when the file says `FACTORY_RESET` | A check the helper's replies cannot satisfy |
-| 70 to 75 | Break | | | |
-| 75 to 90 | The factory begins: your builder | An OpenAI Agents API agent that you create, with your own key | Its session events and the file it saves | Your builder agent has proposed a change |
-| 90 to 115 | The builder behind the helper | A small tool server that hands a request to your builder | The helper calling your builder | A request goes in and a proposed change comes out |
-| 115 to 140 | The gate | A deliberately bad change, and the gate run on both | One change accepted, one rejected, and the name of the failing test | A line that can say no |
-| 140 to 160 | Release | The final human gate and a decision record | You approving or refusing one change | The line run once, end to end |
-| 160 to 175 | Voice (drop first if time is short) | Speech switched on for the Mantle helper | The same helper answering by voice | Voice on the same helper |
-| 175 to 180 | Close | Nothing | The line with your pieces on it | A take-home recap |
+| 0 to 10 (3:00) | The result | Nothing yet. Everyone opens a codespace | The finished helper handling the four checks above | You know what "working" means |
+| 10 to 30 (3:10) | Your router helper | Install, train, inspect | Your helper asking to confirm and recording `REBOOT` | All four checks |
+| 30 to 50 (3:30) | Reset handling and your own change | Your own wording and requests against the helper | How it handles a changed mind and a reset request | The helper never records anything you did not ask for |
+| 50 to 70 (3:50) | Source-file check | A check that reads the configured restart command | The check passing, then failing when the file says `FACTORY_RESET` | A check the helper's replies cannot satisfy |
+| 70 to 75 (4:10) | Break | | | |
+| 75 to 90 (4:15) | The factory begins: your builder | An OpenAI Agents API agent that you create, with your own key | Its session events and the file it saves | Your builder agent has proposed a change |
+| 90 to 115 (4:30) | The builder behind the helper | A small tool server that hands a request to your builder | The helper calling your builder | A request goes in and a proposed change comes out |
+| 115 to 140 (4:55) | The gate | A deliberately bad change, and the gate run on both | One change accepted, one rejected, and the name of the failing test | A line that can say no |
+| 140 to 160 (5:20) | Release | The final human gate and a decision record | You approving or refusing one change | The line run once, end to end |
+| 160 to 175 (5:40) | Studio 2 preview | Nothing | The presenter's own screen | Hear about the preview, then join the Rasa Community |
+| 175 to 180 (5:55) | Close | Nothing | The line with your pieces on it | A take-home recap |
 
-If time is short, drop voice first. Then shorten the release block. Never shorten the first 30 minutes.
+If time is short, shorten the Studio 2 preview first, then the release block. Never shorten the first 30 minutes.
 
 ## Minutes 0 to 10: the result
 
@@ -116,13 +116,17 @@ Run the whole line once: ask the helper for the change, let the builder propose 
 
 Target at minute 160: one change built, checked, and released or refused by you.
 
-## Minutes 160 to 175: voice (drop first)
+## Minutes 160 to 175: Studio 2 preview
 
-Switch speech on for the helper. Mantle's docs list the speech providers and their keys, which attendees may not have. Drop this block if time is short.
+Say plainly that this is an early preview that attendees cannot try yet, and show it live from your own machine. Nothing in this workshop needs it and attendees do nothing. Keep keys, licenses and any command line off the shared screen, and do not say how to get the preview. Have a recording ready in case the live start fails. End with the call to action: join the Rasa Community at https://info.rasa.com/community/ to hear when Studio is released. Setup for the preview is the presenter's own and is not part of this repository.
 
 ## Minutes 175 to 180: close
 
 Show the line again with the pieces each person built. Name the one check each person could not edit. Hand out the recap.
+
+## Before the room opens
+
+Open the workshop codespace on the room's network about 20 minutes before 3:00 PM and wait for `Setup finished`. Run the four checks once. Open the deck offline. Prepare the Studio 2 preview and its recording on your own machine. The full list is in `FACILITATOR.md`.
 
 ## If a station fails: the fallback at each stage
 
@@ -135,7 +139,7 @@ Show the line again with the pieces each person built. Name the one check each p
 | Minutes 75 to 115 | Your Agents API session fails (permissions, quota, model) | The presenter runs one builder on the screen. You watch its events and take the saved change in `router-helper/gate/candidates/good.py` to the next block. |
 | Minutes 90 to 115 | The tool server or its wiring will not work | Call the builder from its script and carry the saved change forward. |
 | Minutes 115 to 160 | The gate says it could not judge | The presenter shows a recorded ACCEPT and REJECT, labeled as recorded. |
-| Minutes 160 to 175 | Anything | Voice goes first. |
+| Minutes 160 to 175 | The live preview will not start | Show the recording, or skip the preview and give the community link. |
 
 ## Test evidence: what was observed, by whom, and what is still open
 

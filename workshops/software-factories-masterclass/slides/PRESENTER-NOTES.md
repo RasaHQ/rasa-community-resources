@@ -1,119 +1,69 @@
 # Presenter notes
 
-Slides 1–4: 10-minute typed teaser. Slides 5–18: 20-minute beginner introduction. Slides 19–26 support the group work; slides 27–29 support sharing.
+Sixteen slides for the New York edition, Tuesday 3 November, 3:00 to 6:00 PM New York time. Minute 0 is 3:00 PM. The timing source is `../RUN-SHEET-DARK-FACTORY.md`. Press N in the deck to show these notes on screen.
 
-## 1. A software factory that checks an agent’s changes.
+Every attendee works in a GitHub Codespace on Rasa Mantle only. Nothing is set up in advance. Say what was measured and what was not: testers have run the first 30 minutes in fresh codespaces with help, and nobody has yet done it unaided.
 
-Welcome briefly, then move straight to the teaser. The cover describes the target experience. The supplied package does not yet connect the entire voice factory. State the implemented scope before showing anything. Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. Rod Rivera, three-hour masterclass.
+## 1. A dark software factory built in your own codespace.
 
-## 2. Most of today belongs to your group.
+Welcome briefly. Say where the work happens: everyone builds in a GitHub Codespace in the browser, so nothing is installed on a laptop. The helper simulates a router command. It contacts no router and changes nobody's internet connection. Do not demo anything before slide 4.
 
-Use elapsed time. Explain the two lab blocks and the break. Do not teach every reference chapter on stage. There are 125 minutes for group work and networking.
+## 2. Three hours, mostly your hands on the keys.
 
-## 3. “Will I make my meeting?”
+Use elapsed minutes and the clock: minute 0 is 3:00 PM, minute 30 is 3:30, the break is minutes 70 to 75 (4:10 to 4:15), the builder starts at minute 75, the gate at 115 (4:55), release at 140 (5:20), the Studio 2 preview at 160 (5:40) and the close at 175 (5:55). If time is short, shorten the release block first and keep the first 30 minutes whole. The preview is short; the rest of its block is slack.
 
-Show the real travel demo now. This slide is an illustration, never a screenshot or current travel data. Use a live returned flight or explicitly labeled replay. Change the transfer to two hours. Show what stayed unchanged. The timeline assumes one local date; real implementation must use timezone-aware timestamps.
+## 3. Open your codespace now, at minute 0.
 
-## 4. See the agent answer, then see it handle a problem.
+Keep this slide up while people open codespaces and show the finished helper from the next slide on a second screen if you can. Exact steps are in ATTENDEE-PACK.md. The install can run for several minutes after the codespace shows as available: wait for the line that starts Setup finished. NOT READY names the secret to fix; fix it, then stop and start the codespace. Never let anyone paste a key into a chat, a command or a file. Pair anyone who cannot open a codespace with a neighbor and do not troubleshoot billing in the room. Setup time for a first-time attendee has not been measured.
 
-Finish the 10-minute teaser. If using scripted tool selection or recorded data, say so. A card should show source/freshness, and estimates must not masquerade as airline schedules. Show the factory verdict separately if the end-to-end bridge is unavailable.
+## 4. One small agent: a router restart helper.
 
-## 5. What makes this an AI agent?
+This is the one risk the whole session protects: a restart and a factory reset sound alike, and a factory reset would erase the customer's Wi-Fi name and password. Show the finished helper once, typing the four rows. The wording differs a little between runs; the meaning must match. Say plainly that the command is simulated.
 
-1 minute. A language model generates language; the surrounding application supplies instructions, conversation state and tools. Today tool selection is scripted for repeatability. Ask: can fluent wording tell us when a plane lands? No: we need a source.
+## 5. Minutes 10 to 30: build your helper.
 
-## 6. A tool brings in information.
+The slide shows the shape of the steps; the attendee pack has the exact commands with full paths, so tell people to copy from the pack, not from the slide. The installer moves the starter banking skills out of the active skills and sets a router-only persona. After rasa inspect says the server is up and running, a second terminal runs print-inspector-url.sh to print the Inspector address; if GitHub asks to continue to a private port, choose Continue. In test codespaces the helper first confirmed a restart about 10 minutes after the codespace opened. Testers had help and used an existing account. Nobody has done this unaided yet, so say so if people run slow.
 
-1 minute. A function is a named piece of code with inputs and outputs. A tool result can fail or be out of date. The timeline is an estimate using assumptions, not a live road journey prediction.
+## 6. Target at minute 30: all four rows.
 
-## 7. Rasa Mantle runs the conversation.
+Walk the room and ask each person to read one reply aloud. If someone is stuck at minute 25, pair them with a neighbor and keep going. A row that does not match: write down the words on screen, not keys, and ask early. Do not retry an unchanged key that was rejected. The measured numbers come from automated-assisted test runs; do not present them as a promise.
 
-2 minutes. Define framework: reusable software that gives our application its structure. Define skill: a focused set of instructions and tools for a job, here preparing a travel briefing. Mantle does not provide this flight dashboard automatically. Our exercise scripts tool choice; do not imply a live model made every decision.
+## 7. Minutes 30 to 50: try to break your helper.
 
-## 8. Follow one turn through Mantle.
+Ask three questions on paper: who wrote the confirmation, you or the engine? Where is REBOOT stored? What files does the helper keep? The target at minute 50 is a helper that never records anything the customer did not ask for. After a first message or a restart the engine can still add its normal follow-up question, so the refusal may not be the only text. Treat that as normal, not as a failure.
 
-1 minute. Show these stages in the typed teaser. Conversation state means details remembered across turns. If the traveler says no to a suggested flight, the corrected demo lets them choose another. Ask: which stage should report a missing weather source? The tool result and visible answer.
+## 8. A check that reads the file, not the reply.
 
-## 9. Deepgram adds a speech interface.
+Run it, see PASS, change REBOOT to FACTORY_RESET in tools.py, run it again, see FAIL, change it back. The point: the helper's reply can still sound right while the file is wrong, and a check on the file catches it. Be clear about the limit: it exits 2 when it finds no command, so a missing command is never a pass, but it is a source-file check, not a run-time trace.
 
-1 minute. Define speech recognition and speech synthesis with the first two examples. Voice is a separate integration to validate. The current workshop does not claim tested end-to-end voice or voice-driven software construction.
+## 9. Break.
 
-## 10. The coding agent has a different job.
+Anyone who needs to leave now leaves with a working helper (minute 30) and a check that catches a wrong command (minute 70). Use the break to help anyone who is behind catch up on the four rows.
 
-1 minute. Ask the room which role needs file-writing permission. Today these are separate exercises. Asking the travel agent to change itself is not a completed workshop capability.
+## 10. The factory begins: your builder.
 
-## 11. The OpenAI Agents API runs a builder session.
+In a new terminal, run builder.py from the pack's builder block. Keep the printed path for the gate. The builder is told to write and save a file but not to run it. Model use is billed at the model's rates; the cost of one run was not measured, so do not quote a number. If a session fails (permissions, quota, model), the presenter runs one builder on the screen and everyone takes router-helper/gate/candidates/good.py to the gate.
 
-2 minutes. Session means one managed run of the agent’s work. The optional live builder uses this service; the default workshop builder is repeatable and needs no OpenAI key. Use gpt-6-astra for the documented optional live run; mention cost before starting.
+## 11. Put the builder behind your helper.
 
-## 12. Agents API and Agents SDK are different.
+Three terminals, each with its own B variable; the pack's builder block has all three exact commands. The installer copies the change_builder skill into the agent and raises Mantle's tool wait from 10 seconds to at least 450, because a build takes minutes. Stop the Inspector with Ctrl+C in its own terminal, never terminal 2. This part ran once on the latest code with a real key: 28 seconds from message to reply in a test codespace. It has not been followed by an attendee, so say so if it fails.
 
-1 minute. Define protocol as an agreed format for requests and responses. MCP stands for Model Context Protocol. These names describe different responsibilities, not competing names for the same component. Runnable code is in chapter 5; do not begin with an incomplete API snippet.
+## 12. A request goes in. A proposed change comes out.
 
-## 13. What is a software factory?
+Target at minute 115: a request goes in and a proposed change comes out. Nothing is applied: the file sits in the builder's own folder. If the tool server or its wiring will not work, call the builder from its script and carry the saved file forward. Never ask a second time before reading terminal 2.
 
-2 minutes. Candidate or attempt means the proposed files, not the final product. Acceptance test means an executable check of a requirement. The product is the travel application; the factory is the process for changing it. This is our workshop definition, not a claim that the label has a universal standard.
+## 13. A gate the builder cannot edit.
 
-## 14. What makes a factory “dark”?
+Run gate.py on the saved path, then on the four candidate files, and compare. The gate prints ACCEPT or REJECT and the names of the tests that failed. It reads the file once and judges those bytes, so a change cannot write a file or open the network while it is judged. This fits one small read-only operation and is not a general sandbox. If the gate says it could not judge, show a recorded ACCEPT and REJECT, labeled as recorded. On Linux this ran in a test codespace and returned ACCEPT for a freshly built file.
 
-2 minutes. The term comes from factories able to operate without people on the production floor. Here it describes bounded automation, not the absence of human responsibility. A production system also needs release policy, monitoring and recovery. Today we practice one small local slice.
+## 14. You are the last gate.
 
-## 15. Try the rule before the code.
+Run the whole line once, end to end, and record the decision. The principle: the check belongs to someone other than the builder, and a person stands at a few defined gates. Passing is bounded evidence, not proof of all future behavior. If the line is not working for someone, they follow the presenter's recorded run and note which parts they could not complete.
 
-1 minute. Ask participants to predict the first decision before revealing it. This is a teaching example; the supplied chapter 5 task starts with limit 2, and its learner checkpoint asks you to build fresh with 1 or 3.
+## 15. A Studio 2 preview.
 
-## 16. The builder cannot grade its own homework.
+Say it is an early preview that attendees cannot try yet, then show it live from your own machine for a few minutes. Keep your own setup notes outside this repository; do not say how to get the preview, and keep keys, licences and any command line off the shared screen. Have a recording ready in case the live start fails. End with the call to action: join the Rasa Community at info.rasa.com/community to hear when Studio is released.
 
-1 minute. A copied directory is not an operating-system sandbox, so protect execution as well as files. Explain both logical separation and actual execution isolation. Hashes detect mismatches but are not permissions. The existing Python code gate uses macOS sandbox-exec; the fallback checks JSON as data.
+## 16. Describe, build, check, release.
 
-## 17. A completed session still needs a decision.
-
-1 minute. Ask for examples of each result. A timed-out API request cannot be labeled REJECT solely because the provider failed. Passing a suite is bounded evidence, not proof of all future behavior.
-
-## 18. Check your understanding with a neighbor.
-
-2 minutes, including answers. Travel agent answers; builder proposes files; independent verifier applies the tests. Builder completion is not acceptance. NOT_READY means the check could not run. People own exception policy. Allow someone to say what remains unclear before forming groups.
-
-## 19. Your group owns one small change.
-
-This begins the ten-minute group briefing. Groups of three or four. An optional observer records evidence and visits another group. Participants use PARTICIPANT-GUIDE.md; stop installing after ten minutes of lab time.
-
-## 20. One guide, two routes.
-
-Be transparent: B does not use the three providers. It keeps people actively learning rather than watching failed installs. A includes separate components; the full bridge remains extension work.
-
-## 21. Lab A: a brief and a first attempt.
-
-Leave this slide up during Lab A. Participants can vary their pace. On A, first run scripted to verify setup, then a live Agents API run when access and budget are ready. On B, run the recovery exercise and design travel cases. Do not interrupt with mini lectures.
-
-## 22. A source label changes what the answer means.
-
-Optional table-side slide. Return to lab work. Do not describe the position-based ETA as a published airline schedule or claim a delay without an authoritative status source.
-
-## 23. Meet another group.
-
-Networking break. Encourage a concrete failure rather than a general product pitch. Example: daylight-saving transition, stale flight observation, ambiguous meeting date, or source outage.
-
-## 24. Lab B: rejection, integration and handoff.
-
-Leave this up for Lab B. The existing integration creates a standalone card, not a new live Mantle release. Groups should label their evidence accurately and identify the missing production step.
-
-## 25. Release exactly the version that passed.
-
-Optional table-side slide. An attempt accepted before integration may fail after integration. The supplied chapter 7 demonstrates local integration and stale-base refusal; it does not implement live deployment.
-
-## 26. Voice has its own acceptance tests.
-
-Explanation only today: Voice was tested with Deepgram audio files today and failed on the second turn, so type your requests. The microphone path is untested. Optional later: check ASR, TTS, timing, interruption and state retention. The version update uses deepgram_flux for Flux ASR and deepgram for Aura-2 TTS. If voice falls back to text, mark voice incomplete.
-
-## 27. Your demo starts with the requirement.
-
-Start closing at minute 165. Take three two-minute demos and use remaining time for discussion. Ask which exact output each group checked. Do not rank groups by number of generated lines or green tests.
-
-## 28. The next step is the complete build-to-voice journey.
-
-Close honestly. Reference BUILD-CONTRACT.md for the remaining implementation and scenarios. A scaffold-based factory is valid, but we must say what the scaffold supplied and what the builder changed.
-
-## 29. One question to take back to work.
-
-Invite one answer. End with a concrete next step: choose one small recurring change in their own system and write independent acceptance examples before building it.
+Show the line once more with the pieces each person built: the helper, the source-file check, the builder, the gate and their own decision. Name the one check each person could not edit. Close on the question and the community link from the previous slide.
