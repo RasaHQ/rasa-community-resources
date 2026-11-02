@@ -1,0 +1,18 @@
+version: "3.1"
+flows:
+  restart_router:
+    name: Restart router
+    description: Start this flow ONLY when the customer explicitly asks to restart or reboot their router. Do not start this flow for any request containing the word reset, including reset it or reset my router; those requests belong exclusively to reset_router and need clarification.
+    steps:
+      - collect: confirm_restart
+        description: Confirmation that the customer wants a restart.
+        next:
+          - if: slots.confirm_restart
+            then: set_slots_command_sent
+          - else:
+              - action: utter_restart_declined
+                next: END
+      - id: set_slots_command_sent
+        set_slots:
+          - command_sent: REBOOT
+      - action: utter_restart_sent
