@@ -9,8 +9,8 @@
  },
  {
   "title": "Three hours, mostly your hands on the keys.",
-  "sub": "Tuesday 3 November, 3:00 to 6:00 PM New York time.",
-  "body": "<div class=\"schedule\"><div style=\"flex:10\" class=\"soft\">Result<br><b>10</b></div><div style=\"flex:20\" class=\"pink\">Helper<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Reset handling<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Source check<br><b>20</b></div><div style=\"flex:5\" class=\"mint\">Break<br><b>5</b></div><div style=\"flex:40\" class=\"pink\">Builder<br><b>40</b></div><div style=\"flex:25\" class=\"soft\">Gate<br><b>25</b></div><div style=\"flex:20\" class=\"soft\">Release<br><b>20</b></div><div style=\"flex:20\" class=\"mint\">Preview<br><b>20</b></div></div><p class=\"caption\">Minutes from the start. Break at 4:10 PM. The builder starts at 4:15 PM. Close at 6:00 PM.</p>",
+  "sub": "Tuesday, November 3, 2026, 3:00 to 6:00 PM New York time.",
+  "body": "<div class=\"schedule\"><div style=\"flex:10\" class=\"soft\">Result<br><b>10</b></div><div style=\"flex:20\" class=\"pink\">Helper<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Reset handling<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Source check<br><b>20</b></div><div style=\"flex:5\" class=\"mint\">Break<br><b>5</b></div><div style=\"flex:40\" class=\"pink\">Builder<br><b>40</b></div><div style=\"flex:25\" class=\"soft\">Gate<br><b>25</b></div><div style=\"flex:20\" class=\"soft\">Release<br><b>20</b></div><div style=\"flex:20\" class=\"mint\">Preview<br><b>20</b></div></div><p class=\"caption\">Block lengths in minutes. Break at 4:10 PM. The builder starts at 4:15 PM. Close at 6:00 PM.</p>",
   "notes": "Use elapsed minutes and the clock: minute 0 is 3:00 PM, minute 30 is 3:30, the break is minutes 70 to 75 (4:10 to 4:15), the builder starts at minute 75, the gate at 115 (4:55), release at 140 (5:20), the Studio 2 preview at 160 (5:40) and the close at 175 (5:55). If time is short, shorten the release block first and keep the first 30 minutes whole. The preview is short; the rest of its block is slack.",
   "kind": "",
   "section": "WELCOME"
@@ -18,7 +18,7 @@
  {
   "title": "Open your codespace now, at minute 0.",
   "sub": "You bring two keys and a personal GitHub account. Nothing is set up in advance.",
-  "body": "<table><tr><td>1 · Account</td><td>A personal GitHub account, not one managed by an enterprise</td></tr><tr><td>2 · Keys</td><td>Your free Rasa Developer Edition key and your OpenAI key</td></tr><tr><td>3 · Secrets</td><td><code>RASA_LICENSE</code> and <code>OPENAI_API_KEY</code>, scoped to the repository you open</td></tr><tr><td>4 · Create</td><td>New with options, the <code>software-factories-workshop</code> configuration, at least 4 cores</td></tr></table><p class=\"caption\">Added a secret to a codespace that was already running? Stop it and start it again.</p>",
+  "body": "<table><tr><td>1 · Account</td><td>A personal GitHub account, not one managed by an enterprise</td></tr><tr><td>2 · Keys</td><td>Your free Rasa Developer Edition key and your OpenAI key</td></tr><tr><td>3 · Secrets</td><td><code>RASA_LICENSE</code> and <code>OPENAI_API_KEY</code>, scoped to the repository you open</td></tr><tr><td>4 · Create</td><td>New with options, the <code>software-factories-workshop</code> configuration, at least 4 cores</td></tr></table><p class=\"caption\">Added a secret to a codespace that was already running? Stop it, start it again, run the setup script again, and wait for the line that starts Setup finished. Steps: ATTENDEE-PACK.md.</p>",
   "notes": "Keep this slide up while people open codespaces and show the finished helper from the next slide on a second screen if you can. Exact steps are in ATTENDEE-PACK.md. The install can run for several minutes after the codespace shows as available: wait for the line that starts Setup finished. NOT READY names the secret to fix; fix it, then stop and start the codespace. Never let anyone paste a key into a chat, a command or a file. Pair anyone who cannot open a codespace with a neighbor and do not troubleshoot billing in the room. Setup time for a first-time attendee has not been measured.",
   "kind": "",
   "section": "SETUP"
@@ -33,8 +33,8 @@
  },
  {
   "title": "Minutes 10 to 30: build your helper.",
-  "sub": "Five commands in the codespace terminal, then the Inspector.",
-  "body": "<pre><code>mkdir ~/router-helper-agent &amp;&amp; cd ~/router-helper-agent\nrasa init --engine mantle --no-prompt\npython install_helper.py .\nrasa train\nrasa inspect --port 5010</code></pre><p class=\"caption\">Copy the exact commands from ATTENDEE-PACK.md. They use full paths into the codespace.</p>",
+  "sub": "The steps in short. The exact commands are in the attendee pack.",
+  "body": "<pre><code>mkdir ~/router-helper-agent &amp;&amp; cd ~/router-helper-agent\nrasa init --engine mantle --no-prompt\npython install_helper.py .\nrasa train\nrasa inspect --port 5010</code></pre><p class=\"caption\">A summary, not for copying: the real commands use full paths into the codespace. Copy them from ATTENDEE-PACK.md.</p>",
   "notes": "The slide shows the shape of the steps; the attendee pack has the exact commands with full paths, so tell people to copy from the pack, not from the slide. The installer moves the starter banking skills out of the active skills and sets a router-only persona. After rasa inspect says the server is up and running, a second terminal runs print-inspector-url.sh to print the Inspector address; if GitHub asks to continue to a private port, choose Continue. In test codespaces the helper first confirmed a restart about 10 minutes after the codespace opened. Testers had help and used an existing account. Nobody has done this unaided yet, so say so if people run slow.",
   "kind": "",
   "section": "BUILD"
@@ -58,16 +58,16 @@
  {
   "title": "A check that reads the file, not the reply.",
   "sub": "The helper must never record <code>FACTORY_RESET</code> for a restart.",
-  "body": "<pre><code>python3 check_helper.py skills/router_restart/tools.py\nPASS: a restart records REBOOT\n\n(change \"REBOOT\" to \"FACTORY_RESET\" in tools.py)\nFAIL</code></pre><p class=\"caption\">A pass reads the configured command. It does not prove the helper ran it in a live conversation.</p>",
-  "notes": "Run it, see PASS, change REBOOT to FACTORY_RESET in tools.py, run it again, see FAIL, change it back. The point: the helper's reply can still sound right while the file is wrong, and a check on the file catches it. Be clear about the limit: it exits 2 when it finds no command, so a missing command is never a pass, but it is a source-file check, not a run-time trace.",
+  "body": "<pre><code>run check_helper.py on tools.py\n  PASS: a restart records REBOOT\nchange \"REBOOT\" to \"FACTORY_RESET\", run it again\n  FAIL\nchange it back to \"REBOOT\", run it again\n  PASS</code></pre><p class=\"caption\">A summary, not for copying: the exact command is in ATTENDEE-PACK.md. A pass reads the configured command. It does not prove the helper ran it in a live conversation.</p>",
+  "notes": "Run it, see PASS, change REBOOT to FACTORY_RESET in tools.py, run it again, see FAIL, then change it back to REBOOT and run it again to see PASS before anyone moves on. The builder part later retrains the helper, so a wrong command left in tools.py would be carried into it. The point: the helper's reply can still sound right while the file is wrong, and a check on the file catches it. Be clear about the limit: it exits 2 when it finds no command, so a missing command is never a pass, but it is a source-file check, not a run-time trace.",
   "kind": "",
   "section": "CHECK"
  },
  {
   "title": "Break.",
   "sub": "Five minutes. Back at 4:15 PM.",
-  "body": "<div class=\"big-question\">Back at 4:15 PM.</div><p class=\"caption\">Leave your codespace open. Everyone who passed the four rows has a working helper and a check for it.</p>",
-  "notes": "Anyone who needs to leave now leaves with a working helper (minute 30) and a check that catches a wrong command (minute 70). Use the break to help anyone who is behind catch up on the four rows.",
+  "body": "<div class=\"big-question\">Back at 4:15 PM.</div><p class=\"caption\">Leave your codespace open. If your four conversation checks pass, and the source-file check passes again after you restore REBOOT, you have a working helper and a check for it.</p>",
+  "notes": "Anyone who needs to leave now leaves with a working helper (four conversation checks passing) and a source-file check that catches a wrong command and passes again once REBOOT is restored. Check those two things separately. Use the break to help anyone who is behind catch up on the four rows.",
   "kind": "",
   "section": "BREAK"
  },
@@ -105,9 +105,9 @@
  },
  {
   "title": "You are the last gate.",
-  "sub": "Release it or refuse it, and write down why.",
-  "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Ask</h2><p>Request the change through the helper.</p></article><article><span class=\"num\">02</span><h2>Judge</h2><p>The builder proposes. The gate says ACCEPT or REJECT.</p></article><article><span class=\"num\">03</span><h2>Decide</h2><p>You approve or refuse, and record your decision.</p></article></div>",
-  "notes": "Run the whole line once, end to end, and record the decision. The principle: the check belongs to someone other than the builder, and a person stands at a few defined gates. Passing is bounded evidence, not proof of all future behavior. If the line is not working for someone, they follow the presenter's recorded run and note which parts they could not complete.",
+  "sub": "Record approve or refuse, and why. Nothing is installed or applied.",
+  "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Ask</h2><p>Request the change through the helper.</p></article><article><span class=\"num\">02</span><h2>Judge</h2><p>The builder proposes. The gate says ACCEPT or REJECT.</p></article><article><span class=\"num\">03</span><h2>Decide</h2><p>You record approve or refuse, for manual review.</p></article></div>",
+  "notes": "Run the whole line once, end to end, and record the decision. The exercise outcome is a recorded approval or refusal for manual review: nothing is installed or applied to the helper, and a gate ACCEPT is not a deployment. The principle: the check belongs to someone other than the builder, and a person stands at a few defined gates. Passing is bounded evidence, not proof of all future behavior. If the line is not working for someone, they follow the presenter's recorded run and note which parts they could not complete.",
   "kind": "",
   "section": "RELEASE"
  },

@@ -34,11 +34,11 @@ Ask three questions on paper: who wrote the confirmation, you or the engine? Whe
 
 ## 8. A check that reads the file, not the reply.
 
-Run it, see PASS, change REBOOT to FACTORY_RESET in tools.py, run it again, see FAIL, change it back. The point: the helper's reply can still sound right while the file is wrong, and a check on the file catches it. Be clear about the limit: it exits 2 when it finds no command, so a missing command is never a pass, but it is a source-file check, not a run-time trace.
+Run it, see PASS, change REBOOT to FACTORY_RESET in tools.py, run it again, see FAIL, then change it back to REBOOT and run it again to see PASS before anyone moves on. The builder part later retrains the helper, so a wrong command left in tools.py would be carried into it. The point: the helper's reply can still sound right while the file is wrong, and a check on the file catches it. Be clear about the limit: it exits 2 when it finds no command, so a missing command is never a pass, but it is a source-file check, not a run-time trace.
 
 ## 9. Break.
 
-Anyone who needs to leave now leaves with a working helper (minute 30) and a check that catches a wrong command (minute 70). Use the break to help anyone who is behind catch up on the four rows.
+Anyone who needs to leave now leaves with a working helper (four conversation checks passing) and a source-file check that catches a wrong command and passes again once REBOOT is restored. Check those two things separately. Use the break to help anyone who is behind catch up on the four rows.
 
 ## 10. The factory begins: your builder.
 
@@ -58,7 +58,7 @@ Run gate.py on the saved path, then on the four candidate files, and compare. Th
 
 ## 14. You are the last gate.
 
-Run the whole line once, end to end, and record the decision. The principle: the check belongs to someone other than the builder, and a person stands at a few defined gates. Passing is bounded evidence, not proof of all future behavior. If the line is not working for someone, they follow the presenter's recorded run and note which parts they could not complete.
+Run the whole line once, end to end, and record the decision. The exercise outcome is a recorded approval or refusal for manual review: nothing is installed or applied to the helper, and a gate ACCEPT is not a deployment. The principle: the check belongs to someone other than the builder, and a person stands at a few defined gates. Passing is bounded evidence, not proof of all future behavior. If the line is not working for someone, they follow the presenter's recorded run and note which parts they could not complete.
 
 ## 15. A Studio 2 preview.
 
