@@ -97,7 +97,31 @@ You should see `PASS: a restart records REBOOT`. Now change `"REBOOT"` to `"FACT
 
 ## Minutes 75 to 115: your builder, with the OpenAI Agents API
 
-Follow `workshops/software-factories-masterclass/router-helper/builder/README.md`. In short: make a separate environment for the builder, edit the instructions in `builder.py`, run it, and watch the session's events. It prints the path and sha256 of the file it saved. Then start the tool server in a second terminal and connect it to your helper as the README shows.
+Mantle path only. This part is not yet proven end to end by someone following this page, so say so if it fails. In terminal 1:
+
+```bash
+B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/builder
+python3 -m venv "$HOME/.venv-builder"
+"$HOME/.venv-builder/bin/pip" install --upgrade openai mcp==1.28.1
+"$HOME/.venv-builder/bin/python" "$B/builder.py"
+```
+
+It runs one builder session (one paid run, a few minutes), prints the session's events, and ends with `saved: True`, the file's absolute path, and its sha256. Keep that path for the gate. In terminal 2 start the tool server and leave it running:
+
+```bash
+"$HOME/.venv-builder/bin/python" "$B/builder_server.py"
+```
+
+In terminal 3, copy the skill into your helper, train, and open the Inspector again:
+
+```bash
+cp -r "$B/change_builder" "$HOME/router-helper-agent/skills/"
+cd "$HOME/router-helper-agent"
+"$HOME/.venv-mantle/bin/rasa" train
+"$HOME/.venv-mantle/bin/rasa" inspect --port 5010
+```
+
+Ask the helper: `add a check that tells me the line status`. Expected: one message that begins `Build ` and gives a build id, `saved a file`, an absolute path ending in `check_line_status.py`, a sha256, and `Nothing was applied to the helper.` If it says `I cannot tell whether a build started`, look at terminal 2 before asking again. Only `No build started` means the request was refused because another build was running. The Studio path does not reach this server from the Studio chat, so on that path the builder runs on its own (the first block above).
 
 ## Minutes 115 to 160: the gate and the release
 
