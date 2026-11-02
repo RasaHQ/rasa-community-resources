@@ -1,3 +1,5 @@
+// Deck check: text bounds, horizontal overflow, offline loading, keyboard navigation and notes at two sizes, then the PDF.
+// Set PLAYWRIGHT_MODULE to an installed playwright-core and DECK_QA_OUT to where the report goes (default: deck-qa.json in the current folder).
 import fs from 'node:fs';import {createRequire} from 'node:module';const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE || 'playwright-core');
 const root=new URL('../',import.meta.url).pathname;
@@ -17,4 +19,4 @@ for(const [width,height] of [[1600,900],[1280,720]]){
  await page.close();
 }
 const pdfPage=await browser.newPage({viewport:{width:1600,height:900}});await pdfPage.goto('file://'+root+'slides/index.html');await pdfPage.evaluate(()=>document.fonts.ready);await pdfPage.pdf({path:root+'slides/masterclass-slides.pdf',preferCSSPageSize:true,printBackground:true});
-fs.writeFileSync(root+'verification/deck-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));await browser.close();
+const out=process.env.DECK_QA_OUT||'deck-qa.json';fs.writeFileSync(out,JSON.stringify(report,null,2));console.log(JSON.stringify(report));await browser.close();

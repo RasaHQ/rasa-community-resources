@@ -222,6 +222,7 @@ catalog: ## Rebuild CATALOG.md and catalog/case-builds.json from the case builds
 	@$(PYTHON) $(SCRIPTS)/catalog_case_builds.py $(if $(SITE),--site $(SITE) --site-ref origin/main,)
 
 validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
+	@$(PYTHON) -m unittest discover -s scripts -p test_workshop_codespaces.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_public_tutorial_delta.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_casebook_explanations.py
 	@echo "$(MAGENTA)▸ tooling unit tests$(RESET)"

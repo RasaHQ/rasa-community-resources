@@ -1,3 +1,5 @@
+> **Historical follow-up reading, not the workshop route.** The New York workshop starts from [the workshop README](../README.md) and runs in a codespace. This chapter is from the earlier travel design and does not restart the removed setup route.
+>
 > **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
 
 # Chapter 0: Run the agent you will learn to build
@@ -37,7 +39,7 @@ The position, forecast and rates were recorded on **22 October 2026**, so every 
    git init
    ```
 
-   No GitHub account, remote repository or commit is needed. Follow [the prework](../PREWORK.md) if you need setup help.
+   No GitHub account, remote repository or commit is needed. For setup in the workshop codespace, start from [the workshop README](../README.md).
 
    `PACK` is the `software-factories-masterclass` folder. After a clone it is `rasa-community-resources/workshops/software-factories-masterclass`. After unzipping it is the unzipped folder.
 
