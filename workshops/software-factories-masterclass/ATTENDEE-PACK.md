@@ -113,11 +113,11 @@ B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/
 "$HOME/.venv-builder/bin/python" "$B/builder_server.py"
 ```
 
-Open a third terminal. First stop the Inspector from minute 0 to 30: click its terminal and press Ctrl+C (leave the tool server running). Then copy the skill into your helper, train, and open the Inspector again:
+Open a third terminal. First stop the Inspector from minute 0 to 30: click its terminal and press Ctrl+C (leave the tool server running). Then install the skill into your helper (this also raises Mantle's tool wait from 10 seconds to 400, because a build takes minutes), train, and open the Inspector again:
 
 ```bash
 B=/workspaces/rasa-community-resources/workshops/software-factories-masterclass/router-helper/builder
-cp -r "$B/change_builder" "$HOME/router-helper-agent/skills/"
+"$HOME/.venv-mantle/bin/python" "$B/change_builder/install_change_builder.py" "$HOME/router-helper-agent"
 cd "$HOME/router-helper-agent"
 "$HOME/.venv-mantle/bin/rasa" train
 "$HOME/.venv-mantle/bin/rasa" inspect --port 5010

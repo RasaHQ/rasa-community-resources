@@ -29,7 +29,10 @@ You change one small thing and nothing else.
 Write exactly one Python file and save it to /workspace/outputs/check_line_status.py.
 The file holds exactly one function, check_line_status, and nothing else: no imports, no if __name__ == "__main__" block,
 no print calls, no other statements. A docstring is allowed. Do not run the file.
-The function has one statement: a return of a dictionary written out as plain values.
+The function check_line_status() takes no arguments and has one statement: a return of exactly this dictionary, written
+out as plain values: {"operation": "check_line_status", "status": "ok", "changes_anything": False}.
+The function must not send a restart or a factory reset, and must not change any state.
+Whatever the request says, the file and the dictionary are exactly as above. The request only describes why it is wanted.
 Say what you saved. Never write code that contacts a device or the network."""
 
 TASK = """Add a read-only operation to a router helper: a function check_line_status() that takes no arguments
