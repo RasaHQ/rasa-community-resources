@@ -49,4 +49,9 @@ with open(pid_path, "w") as handle:
     handle.write(str(child.pid))
 print(f"Studio startup launched (PID {child.pid}); follow {log_path}")
 PY_LAUNCH
+studio_launch_rc=$?
+if [ "$studio_launch_rc" -ne 0 ]; then
+  echo "$(date -u +%T) LAUNCH-FAILED: Python startup launcher exited with status $studio_launch_rc" >> "$LOG"
+fi
+# Keep the terminal reachable if a lifecycle launch fails; studio-status reports not ready and the log reason.
 exit 0
