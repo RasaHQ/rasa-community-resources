@@ -37,6 +37,23 @@ class Install(unittest.TestCase):
         self.assertTrue(any("not even steps" in r for r in data["rules"]))
         self.assertIn("router_restart", data["prompts"]["routing_no_active_skill"])
 
+    def test_the_resume_response_is_replaced_and_existing_responses_are_kept(self):
+        agent = make()
+        (agent / "responses.yml").write_text("responses:\n  utter_keep:\n    - text: kept\n")
+        self.assertEqual(install(agent).returncode, 0)
+        data = yaml.safe_load((agent / "responses.yml").read_text())["responses"]
+        self.assertIn("utter_keep", data)
+        resume = data["utter_ask_wants_to_resume"][0]
+        self.assertNotIn("{", resume["text"])
+        self.assertIs(resume["metadata"]["rephrase"], False)
+
+    def test_a_malformed_responses_yml_changes_nothing(self):
+        agent = make()
+        (agent / "responses.yml").write_text("responses: [unclosed")
+        before = sorted(str(p.relative_to(agent)) for p in agent.rglob("*"))
+        self.assertEqual(install(agent).returncode, 2)
+        self.assertEqual(sorted(str(p.relative_to(agent)) for p in agent.rglob("*")), before)
+
     def test_malformed_agent_yml_changes_nothing(self):
         agent = make("agent: [unclosed\n  persona: x")
         before = sorted(str(p.relative_to(agent)) for p in agent.rglob("*"))

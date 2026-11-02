@@ -39,6 +39,16 @@ ROUTING_NO_ACTIVE_SKILL = (
 )
 
 
+# Engine built-in (rasa/mantle/default_skills/default_continue_interrupted/responses.yml): after a digression the engine asks
+# whether to resume the paused task. By default it names the task with its long description and lets the model rephrase it,
+# which leaked routing text in a test. Declaring the same name in the project's responses.yml replaces it.
+RESUME_RESPONSE = {
+    "utter_ask_wants_to_resume": [
+        {"text": "Do you want to carry on with your router restart, or leave it?", "metadata": {"rephrase": False}}
+    ]
+}
+
+
 def main(argv):
     if len(argv) != 2:
         print(__doc__)
@@ -64,6 +74,15 @@ def main(argv):
     except (yaml.YAMLError, ValueError, OSError) as error:
         print("nothing changed: agent.yml could not be read:", type(error).__name__)
         return 2
+    try:
+        existing = agent / "responses.yml"
+        if existing.is_file():
+            parsed = yaml.safe_load(existing.read_text()) or {}
+            if not isinstance(parsed, dict) or not isinstance(parsed.get("responses", {}), dict):
+                raise ValueError("responses.yml is not a mapping with a responses: block")
+    except (yaml.YAMLError, ValueError, OSError) as error:
+        print("nothing changed: responses.yml could not be read:", type(error).__name__)
+        return 2
     others = sorted(p for p in skills.iterdir() if p.name not in SKILLS)
     # 2. Change things. Other skills are moved, never deleted.
     if others:
@@ -81,6 +100,11 @@ def main(argv):
         if (skills / name).exists():
             shutil.rmtree(skills / name)
         shutil.copytree(HERE / "skills" / name, skills / name)
+    responses_path = agent / "responses.yml"
+    responses = yaml.safe_load(responses_path.read_text()) if responses_path.is_file() else {}
+    responses = responses if isinstance(responses, dict) else {}
+    responses.setdefault("responses", {}).update(RESUME_RESPONSE)
+    responses_path.write_text(yaml.safe_dump(responses, sort_keys=False, allow_unicode=True))
     handle, temp = tempfile.mkstemp(dir=agent, prefix=".agent.yml.")
     with os.fdopen(handle, "w") as stream:
         stream.write(new_config)
