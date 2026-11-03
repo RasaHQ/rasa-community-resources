@@ -1,4 +1,5 @@
 """The shipped reference agent is exactly what the compiler produces from its specification."""
+import ast
 from pathlib import Path
 import sys
 import tempfile
@@ -44,6 +45,48 @@ class ReferenceSyncTests(unittest.TestCase):
             skill = (project / "skills/travel_briefing/skill.md").read_text()
             self.assertIn("weather at an airport", skill)
             self.assertNotIn("flight number and the arrival date", skill)
+
+
+def weather_parameters(source):
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.AsyncFunctionDef) and node.name == "destination_weather":
+            return [a.arg for a in node.args.args if a.arg != "context"]
+    raise AssertionError("no destination_weather tool")
+
+
+class WeatherInterfaceTests(unittest.TestCase):
+    """A flight-briefing agent forecasts a landing from the flight and date only; the starter keeps airport mode."""
+
+    def compiled(self, spec):
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / spec
+            build.generate((ROOT / "reference" / (spec + ".json")).read_bytes(), project)
+            return (project / "skills/travel_briefing/tools.py").read_text()
+
+    def test_agents_with_a_flight_lookup_get_arrival_mode_only(self):
+        arrival = ["flight_number", "flight_date"]
+        self.assertEqual(weather_parameters(self.compiled("full")), arrival)
+        reference = (ROOT / "reference/finished-agent/skills/travel_briefing/tools.py").read_text()
+        self.assertEqual(weather_parameters(reference), arrival)
+
+    def test_the_starter_keeps_airport_mode(self):
+        self.assertEqual(weather_parameters(self.compiled("starter")), ["airport_code", "arrival_time"])
+
+    def test_the_old_call_shape_cannot_reach_the_full_agents_weather_tool(self):
+        _, parameters, _, _ = build.tool_spec("weather", ["weather", "fx", "flights", "status"])
+        namespace = {}
+        exec(f"def destination_weather({parameters}):\n    return 'called'", namespace)
+        with self.assertRaises(TypeError):
+            namespace["destination_weather"](airport_code="BGO", arrival_time="2026-11-03T20:10:00+01:00")
+        self.assertEqual(namespace["destination_weather"]("ZZ201", ""), "called")
+
+    def test_an_empty_flight_returns_no_forecast_and_asks_for_flight_and_date(self):
+        import travel_data
+
+        result = travel_data.read("weather", "", "", "", "")
+        self.assertEqual(result["state"], "needs_flight")
+        self.assertIsNone(result["forecast"])
+        self.assertIn("flight number and the arrival date", result["reason"])
 
 
 if __name__ == "__main__":

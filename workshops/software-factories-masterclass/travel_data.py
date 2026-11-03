@@ -121,6 +121,9 @@ def flight_weather(number, date, request, now, result):
     """Forecast at landing for one flight, resolving the record here so no agent can pick one by guesswork.
 
     Without a date, or with a date that fits no single record, nothing is forecast and the traveller is asked first."""
+    if not number:
+        return result | {"state": "needs_flight", "forecast": None,
+                         "reason": "Give the flight number and the arrival date. Ask the traveller for them first."}
     status = read("status", number, request=request, now=now)
     if status.get("state") != "ok":
         return result | {"state": "unavailable", "reason": status.get("reason", "Flight lookup failed.")}
@@ -164,7 +167,7 @@ def read(kind, *args, request=fetch, now=None):
         if kind not in ("status", "weather"):
             return result | {"state": "unavailable", "reason": "Use ZZ201 status and Bergen weather in this case."}
     try:
-        if kind == "weather" and len(args) > 2 and args[2]:
+        if kind == "weather" and len(args) > 2:
             return flight_weather(args[2].upper().replace(" ", ""), args[3] if len(args) > 3 else "", request, now, result)
         if kind == "weather":
             lat, lon, zone, _ = AIRPORTS[airport(args[0])]

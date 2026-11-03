@@ -16,9 +16,9 @@ ROOT = Path(__file__).resolve().parents[1]
 TOOLS = {
     "weather": (
         "destination_weather",
-        "airport_code: str, arrival_time: str, flight_number: str = '', flight_date: str = ''",
-        "airport_code, arrival_time, flight_number, flight_date",
-        "Forecast at an airport. For the weather when a flight lands, pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller chose; empty if not yet known) and leave airport_code and arrival_time empty: the tool finds the record itself and returns no forecast, asking you to ask the traveller which date first, when the date is missing or fits no single record. Otherwise pass an airport and an ISO timestamp with offset, or an empty timestamp for the current hour.",
+        "airport_code: str, arrival_time: str",
+        "airport_code, arrival_time",
+        "Forecast at an airport. Use an ISO timestamp with offset, or an empty string for the current hour.",
     ),
     "fx": (
         "convert_currency",
@@ -39,6 +39,24 @@ TOOLS = {
         "Look up flight records by IATA flight number; distinguish scheduled and estimated arrival.",
     ),
 }
+# A full travel desk looks flights up, so its weather tool has no airport-and-time form to call with a time taken
+# from a record: it forecasts a flight's landing from the flight number and the date, and nothing else.
+ARRIVAL_WEATHER = (
+    "destination_weather",
+    "flight_number: str, flight_date: str",
+    "'', '', flight_number, flight_date",
+    "Weather when a flight lands. Pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller "
+    "chose; an empty string if you do not know it yet). The tool finds the record itself and returns no forecast, "
+    "telling you to ask the traveller, when the flight number or the date is missing or fits no single record. "
+    "It cannot forecast any other time or place.",
+)
+
+
+def tool_spec(key, tools):
+    """(name, parameters, reader arguments, description) for one selected tool in this agent."""
+    return ARRIVAL_WEATHER if key == "weather" and "status" in tools else TOOLS[key]
+
+
 TASK = """Create a Rasa Mantle travel agent specification for this brief. Return a JSON object with exactly these keys: name (lowercase slug), description (one sentence routing description), instructions (plain text skill guidance), tools (array drawn from weather, fx, flights, status). The full travel desk needs all four. Clarify ambiguous airports, use flight status to establish arrival time before an arrival forecast, use the departure airport's local evening and cite providers and dates. Do not invent data or bookings."""
 RULES = """Speak in short turns. Read airport names and currencies clearly. Ask one clarification at a time. Supported airports are OSL, BGO, JFK, LHR, CDG, MAD and MEX (flight tools cover only Oslo–Bergen in either direction). Flight status uses the arrival board; never treat a departure timestamp as arrival. When flight records share a number, ask which date and route the traveler means. Clarify origin, destination, flight number or time when ambiguous. Obtain a tool result for every external fact. State provider, time or rate date and coverage. If unavailable, say which fact is unavailable and continue with other tools. An empty or partial board does not establish that no flights exist. Never claim seats or bookings. Name the provider exactly as the result's source field says. Keep estimates, forecasts and observed facts distinct."""
 LANDING_RULES = """For weather at landing, call the weather tool with the flight number and the arrival date the traveller chose; it uses the estimated arrival if supplied, otherwise the scheduled one, and reports which in arrival_basis, so say which. If the tool says to ask which date, ask and wait for the answer before calling it again. If no arrival time is known ask for one."""
@@ -108,7 +126,7 @@ def generate(raw, out):
             + rules_for(spec["tools"])
             + "\n\n"
             + "\n".join(
-                "Use @tool." + TOOLS[k][0] + " to " + TOOLS[k][3] for k in spec["tools"]
+                "Use @tool." + tool_spec(k, spec["tools"])[0] + " to " + tool_spec(k, spec["tools"])[3] for k in spec["tools"]
             )
         )
         (skill / "skill.md").write_text(
@@ -121,7 +139,7 @@ def generate(raw, out):
         source = (ROOT / "travel_data.py").read_text().split("if __name__")[0]
         source += "\nimport asyncio\nfrom rasa.mantle.tools.decorator import ToolContext, tool\nfrom rasa.mantle.tools.result import ToolResult\n"
         for k in spec["tools"]:
-            name, params, args, doc = TOOLS[k]
+            name, params, args, doc = tool_spec(k, spec["tools"])
             source += f"\n@tool(description={doc!r})\nasync def {name}(context: ToolContext, {params}) -> ToolResult:\n    data = await asyncio.to_thread(read, {k!r}, {args})\n    return ToolResult(llm_response=data)\n"
         compile(source, "tools.py", "exec")
         (skill / "tools.py").write_text(source)
