@@ -23,6 +23,8 @@ class Readers(unittest.TestCase):
     def test_evening_in_origin_zone(self):
         result=travel.read("flights","OSL","BGO",now=NOW,request=lambda u,p:xml_board(p["airport"],p["direction"]))
         self.assertEqual([f["scheduled_departure"] for f in result["records"]],["2026-11-02T19:00:00Z"])
+        self.assertEqual([f["scheduled_departure_local"] for f in result["records"]],["2026-11-02T20:00+01:00"])
+        self.assertIn("_local", result["times_note"])
     def test_unsupported_route(self):
         self.assertEqual(travel.read("flights","JFK","LHR")["state"],"unavailable")
 
