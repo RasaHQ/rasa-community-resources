@@ -128,14 +128,18 @@ def flight_weather(number, date, request, now, result, airport_code="", arrival_
         return result | {"state": "needs_flight", "forecast": None,
                          "reason": "Give the flight number and the arrival date. Ask the traveller for them first."}
     status = read("status", number, request=request, now=now)
-    if status.get("state") != "ok":
-        return result | {"state": "unavailable", "reason": status.get("reason", "Flight lookup failed.")}
-    records = status["records"]
+    unavailable = status.get("state") != "ok"
+    if unavailable and not (airport_code and arrival_time):
+        return result | {"state": "unavailable", "forecast": None,
+                         "reason": status.get("reason", "Flight lookup failed.") + " Ask the traveller for an airport and a "
+                                   "time if they want an independent forecast."}
+    records = [] if unavailable else status["records"]
     if not records:
         if airport_code and arrival_time:
             forecast = read("weather", airport_code, arrival_time, request=request, now=now)
-            return forecast | {"independent_forecast": True,
-                               "note": "The board lists no record for this flight, so this forecast is not tied to a flight."}
+            note = ("Board unavailable, forecast not tied to a flight." if unavailable
+                    else "The board lists no record for this flight, so this forecast is not tied to a flight.")
+            return forecast | {"independent_forecast": True, "note": note}
         return result | {"state": "no_record", "forecast": None,
                          "reason": "The board lists no record for this flight. Ask the traveller for an airport and a time "
                                    "if they want an independent forecast."}
@@ -304,7 +308,7 @@ async def flight_status(context: ToolContext, flight_number: str) -> ToolResult:
     data = await asyncio.to_thread(read, 'status', flight_number)
     return ToolResult(llm_response=data)
 
-@tool(description='Weather when a flight lands. Pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller chose; an empty string if you do not know it yet). The tool finds the record on the board itself and forecasts at its arrival, and ignores any airport or time you add. With several records it returns no forecast and tells you to ask the traveller which date first. Only when the board lists no record for the flight, pass airport_code and an ISO arrival_time with offset to get an independent forecast, which is labelled as such.')
+@tool(description='Weather when a flight lands. Pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller chose; an empty string if you do not know it yet). The tool finds the record on the board itself and forecasts at its arrival, and ignores any airport or time you add. With several records it returns no forecast and tells you to ask the traveller which date first. Only when the board lists no record for the flight, or the board is unavailable, pass airport_code and an ISO arrival_time with offset to get an independent forecast, which is labelled as such.')
 async def destination_weather(context: ToolContext, flight_number: str, flight_date: str, airport_code: str = '', arrival_time: str = '') -> ToolResult:
     data = await asyncio.to_thread(read, 'weather', airport_code, arrival_time, flight_number, flight_date)
     return ToolResult(llm_response=data)

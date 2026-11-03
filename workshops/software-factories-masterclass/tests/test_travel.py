@@ -46,6 +46,21 @@ class EmptyBoardFallback(unittest.TestCase):
         self.assertEqual((result["temperature_c"], result["independent_forecast"]), (6, True))
         self.assertIn("not tied to a flight", result["note"])
 
+    def unreachable_board(self, url, params):
+        if url == travel.BOARD_URL:
+            raise OSError("board unreachable")
+        return self.request(url, params)
+
+    def test_an_unreachable_board_still_allows_the_independent_forecast_and_says_so(self):
+        result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", "DY000", "", now=NOW, request=self.unreachable_board)
+        self.assertEqual((result["temperature_c"], result["independent_forecast"]), (6, True))
+        self.assertEqual(result["note"], "Board unavailable, forecast not tied to a flight.")
+
+    def test_an_unreachable_board_without_an_airport_returns_no_forecast(self):
+        result = travel.read("weather", "", "", "DY000", "", now=NOW, request=self.unreachable_board)
+        self.assertEqual(result["state"], "unavailable")
+        self.assertIsNone(result["forecast"])
+
     def test_no_record_and_no_airport_asks_for_one(self):
         result = travel.read("weather", "", "", "DY000", "", now=NOW, request=self.request)
         self.assertEqual(result["state"], "no_record")

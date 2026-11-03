@@ -49,8 +49,9 @@ ARRIVAL_WEATHER = (
     "Weather when a flight lands. Pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller "
     "chose; an empty string if you do not know it yet). The tool finds the record on the board itself and forecasts "
     "at its arrival, and ignores any airport or time you add. With several records it returns no forecast and "
-    "tells you to ask the traveller which date first. Only when the board lists no record for the flight, pass "
-    "airport_code and an ISO arrival_time with offset to get an independent forecast, which is labelled as such.",
+    "tells you to ask the traveller which date first. Only when the board lists no record for the flight, or the "
+    "board is unavailable, pass airport_code and an ISO arrival_time with offset to get an independent forecast, "
+    "which is labelled as such.",
 )
 
 
