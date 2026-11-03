@@ -38,13 +38,20 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertTrue(body["workspaceFolder"].endswith("/" + entry["path"]))
             self.assertIn("ready.sh", body["postCreateCommand"])
 
-    def test_license_alias_is_set_for_resources_that_read_the_older_name(self):
+    def test_license_alias_comes_from_remote_env_for_resources_that_read_the_older_name(self):
         aliased = [g.manifest(p)["path"] for p in discover_projects("catalog") if g.manifest(p)["alias_license"]]
-        self.assertTrue(aliased)
-        for path in aliased:
-            body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(path) / "devcontainer.json").read_text())
-            self.assertIn("alias-license", body["onCreateCommand"])
-            self.assertNotIn(g.LICENSE_ALIAS, body["secrets"])
+        self.assertEqual(len(aliased), 5)
+        for path in discover_projects("catalog"):
+            body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(path.rel) / "devcontainer.json").read_text())
+            if path.rel in aliased:
+                self.assertEqual(body["remoteEnv"], {g.LICENSE_ALIAS: "${containerEnv:RASA_LICENSE}"}, path.rel)
+                self.assertNotIn(g.LICENSE_ALIAS, body["secrets"])
+            else:
+                self.assertNotIn("remoteEnv", body, path.rel)
+            self.assertNotIn("alias-license", body["onCreateCommand"])
+
+    def test_installer_does_not_edit_shell_startup_files(self):
+        self.assertNotIn("bashrc", (REPO_ROOT / ".devcontainer/resource-base/install.sh").read_text())
 
 
 class ParsingTests(unittest.TestCase):

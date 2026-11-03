@@ -161,8 +161,7 @@ def manifest(project) -> dict:
         "slug": slug(project.rel),
         "secrets": secrets,
         "alias_license": LICENSE_ALIAS in keys,
-        "install": 'bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh" ' + project.rel
-        + (" alias-license" if LICENSE_ALIAS in keys else ""),
+        "install": 'bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh" ' + project.rel,
         "ready": None,
         "first": first,
         "see": see,
@@ -204,6 +203,9 @@ def config(entry: dict) -> str:
         "onCreateCommand": install,
         "postCreateCommand": ready,
     }
+    if entry["alias_license"]:
+        # Holds for non-interactive shells, tasks and launch configurations, unlike a line in ~/.bashrc.
+        body["remoteEnv"] = {LICENSE_ALIAS: "${containerEnv:RASA_LICENSE}"}
     return json.dumps(body, indent=2) + "\n"
 
 

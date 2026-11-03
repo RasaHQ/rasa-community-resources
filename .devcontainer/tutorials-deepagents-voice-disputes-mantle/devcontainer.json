@@ -39,6 +39,9 @@
       "description": "Required. Rime key for spoken replies"
     }
   },
-  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" tutorials/deepagents-voice-disputes/mantle alias-license",
-  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" tutorials/deepagents-voice-disputes/mantle"
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" tutorials/deepagents-voice-disputes/mantle",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" tutorials/deepagents-voice-disputes/mantle",
+  "remoteEnv": {
+    "RASA_PRO_LICENSE": "${containerEnv:RASA_LICENSE}"
+  }
 }

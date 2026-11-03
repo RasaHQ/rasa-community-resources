@@ -33,6 +33,9 @@
       "description": "Required. OpenAI project key used for this resource's model calls"
     }
   },
-  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" tutorials/deepagents-to-mantle/mantle alias-license",
-  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" tutorials/deepagents-to-mantle/mantle"
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" tutorials/deepagents-to-mantle/mantle",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" tutorials/deepagents-to-mantle/mantle",
+  "remoteEnv": {
+    "RASA_PRO_LICENSE": "${containerEnv:RASA_LICENSE}"
+  }
 }
