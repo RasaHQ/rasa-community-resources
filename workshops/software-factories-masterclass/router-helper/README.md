@@ -64,8 +64,15 @@ describes. Then build your own helper with the commands in the
 
 ## Create and train the helper
 
-Open a terminal in the Codespace. The commands start a fresh folder. First check
-whether `$HOME/router-helper-agent` already exists:
+Open a terminal in the Codespace. A new terminal starts in the repository, so set
+the workshop path first, before you change folder. Run this in each terminal where
+you use `$WORKSHOP`:
+
+```bash
+WORKSHOP="$(git rev-parse --show-toplevel)/workshops/software-factories-masterclass"
+```
+
+Then check whether `$HOME/router-helper-agent` already exists:
 
 - If it is your earlier attempt and contains `agent.yml` and `integrations.yml`,
   change into it, skip `mkdir` and `rasa init`, and resume at `install_helper.py`.
@@ -78,11 +85,10 @@ whether `$HOME/router-helper-agent` already exists:
 **1. Create your agent.** This makes the folder your changes will live in.
 
 ```bash
-WORKSHOP="$(git rev-parse --show-toplevel)/workshops/software-factories-masterclass"
 mkdir "$HOME/router-helper-agent" && cd "$HOME/router-helper-agent" && "$HOME/.venv-mantle/bin/rasa" init --engine mantle --no-prompt
 ```
 
-**2. Give it the router skill.** Run this from your agent folder.
+**2. Give it the router skill.** Run this from your agent folder, in a terminal where you set `WORKSHOP`.
 
 ```bash
 "$HOME/.venv-mantle/bin/python" "$WORKSHOP/router-helper/mantle/install_helper.py" .
