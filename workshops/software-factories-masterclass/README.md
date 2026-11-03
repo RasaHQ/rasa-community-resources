@@ -4,6 +4,8 @@
 
 By the end you will have built a **traveler-facing Mantle agent** that calls public data services. You will also have used a different **Mantle factory agent** that takes a developer brief, asks permission to start an OpenAI hosted Agents API session and returns a candidate for another travel agent. You can inspect every tool call and run the resulting agent yourself.
 
+**Join the Rasa Community:** [rasa.community/join](https://rasa.community/join/)
+
 **Printing for the room?** The one-page [printed setup sheet (PDF)](handout/rasa-travel-workshop-one-pager.pdf) walks a participant through steps A to D with a QR code for the Codespace.
 
 ## Before you start
@@ -16,8 +18,8 @@ If the workshop host gave you a value, use it in the matching row. One Deepgram 
 
 | Exact GitHub secret name | Where to get the value | What it unlocks |
 | --- | --- | --- |
-| `RASA_LICENSE` | Open the [Rasa Developer Edition form](https://rasa.com/rasa-pro-developer-edition-license-key-request), submit it and copy the full license string delivered to you. | Training and running the Mantle factory and traveler agents. |
-| `OPENAI_API_KEY` | Open [OpenAI project API keys](https://platform.openai.com/api-keys), select the intended project, choose **Create new secret key**, name it and copy the value when shown. Use a project with billing and access to the configured models. | Mantle conversations, Codex API-key login, and hosted builds. The hosted exercise also needs Agents read/write and Responses write permissions. |
+| `RASA_LICENSE` | Open the [Rasa Developer Edition request](https://rasa.community/#request-license), submit it and copy the full license string delivered to you. | Training and running the Mantle factory and traveler agents. |
+| `OPENAI_API_KEY` | At a Rasa workshop the team hands out keys with AI credits; ask them. To use your own, open [OpenAI project API keys](https://platform.openai.com/api-keys), select the intended project, choose **Create new secret key**, name it and copy the value when shown. Use a project with billing and access to the configured models. | Mantle conversations, Codex API-key login, and hosted builds. The hosted exercise also needs Agents read/write and Responses write permissions. |
 | `DEEPGRAM_API_KEY` | Open the [Deepgram Console](https://console.deepgram.com/), choose your project at the top left, then **Settings → API Keys → Create a New API Key**. Name it, choose a role that permits speech requests, create it and copy the secret while visible. Your project needs speech usage available. | Flux transcribes the user’s speech. Aura-2 speaks the reply. Both the developer and the traveler use this key. |
 
 [Avinor](https://partner.avinor.no/en/services/flight-data/) supplies public airport boards. The flight exercise covers Oslo and Bergen in either direction. The weather tool uses Open-Meteo and the currency tool uses Frankfurter. The workshop endpoints require no additional participant keys. The [Avinor feed documentation](https://partner.avinor.no/en/services/flight-data/) describes the board and its update interval. The server reuses each board for three minutes within the running agent. For a commercial event, the organizer should check [Open-Meteo’s non-commercial free endpoint terms](https://open-meteo.com/en/terms) or provision appropriate access.
