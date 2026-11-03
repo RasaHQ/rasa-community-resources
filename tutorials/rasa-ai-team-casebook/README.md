@@ -1,5 +1,13 @@
 # AI team casebook lab
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-ai-team-casebook/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `python3 casebook.py --case contextual-handoff --prove`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** ten observed fixtures printed; this one needs no license and no network.
+<!-- codespaces:end -->
+
 Author:        Rasa Community
 Assessed on:   2026-09-08
 Assessed by:   Codex Principal (offline checks; runtime scope recorded below)

@@ -1,5 +1,13 @@
 # Test confirmation before a Rasa tool runs
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-mcp-confirmation-gate/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `uv run --locked python -m unittest discover -s tests -v`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** the tests finish with `OK`.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rod Rivera
 Assessed on:   2026-10-15

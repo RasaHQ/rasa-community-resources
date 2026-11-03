@@ -16,8 +16,7 @@ class TravelFactoryProfileTests(unittest.TestCase):
     def config(self):
         return json.loads((PROFILE / 'devcontainer.json').read_text())
 
-    def test_profile_is_the_only_workshop_configuration(self):
-        self.assertEqual(sorted(path.name for path in (ROOT / '.devcontainer').iterdir()), ['travel-factory'])
+    def test_workshop_profile_name(self):
         self.assertEqual(self.config()['name'], 'Rasa Travel Agent Factory')
 
     def test_profile_uses_the_image_ports_and_four_cores(self):

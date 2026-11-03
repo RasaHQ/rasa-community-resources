@@ -1,5 +1,13 @@
 # Add return checks to an Agno and Rasa shopping assistant
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-frameworks-with-rasa-agno-mantle/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make run`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** the server starts on port 5005.
+<!-- codespaces:end -->
+
 Willow Shop's existing native Agno adviser keeps its registered product tool,
 model and SQLite customer memory. Mantle exposes the read-only public product
 task. Application code maps the channel sender to a stable demo customer and a
