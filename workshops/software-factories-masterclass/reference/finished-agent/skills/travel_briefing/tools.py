@@ -117,6 +117,9 @@ def rehearsal_response(url, params):
     raise ValueError("This rehearsal covers only flight ZZ201 and its Bergen forecast.")
 
 
+FLIGHT_NUMBER = r"[A-Z0-9]{2}[0-9]{1,4}[A-Z]?"
+
+
 def flight_weather(number, date, request, now, result, airport_code="", arrival_time=""):
     """Forecast at landing for one flight, resolving the record here so no agent can pick one by guesswork.
 
@@ -127,6 +130,10 @@ def flight_weather(number, date, request, now, result, airport_code="", arrival_
     if not number:
         return result | {"state": "needs_flight", "forecast": None,
                          "reason": "Give the flight number and the arrival date. Ask the traveller for them first."}
+    if not re.fullmatch(FLIGHT_NUMBER, number):
+        # Malformed input is not an outage: it must never open the independent forecast, so check it before any lookup.
+        return result | {"state": "invalid_flight", "forecast": None,
+                         "reason": "That is not an IATA flight number such as DY628. Ask the traveller for the flight number."}
     status = read("status", number, request=request, now=now)
     unavailable = status.get("state") != "ok"
     if unavailable and not (airport_code and arrival_time):
@@ -248,7 +255,7 @@ def read(kind, *args, request=fetch, now=None):
                 boards=[(origin, "D")]
             else:
                 number=args[0].upper().replace(" ","")
-                if not re.fullmatch(r"[A-Z0-9]{2}[0-9]{1,4}[A-Z]?",number):
+                if not re.fullmatch(FLIGHT_NUMBER,number):
                     raise ValueError("Use an IATA flight number.")
                 boards=[("OSL","A"),("BGO","A")]
             zone=ZoneInfo("Europe/Oslo")

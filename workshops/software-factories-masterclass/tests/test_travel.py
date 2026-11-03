@@ -67,6 +67,31 @@ class EmptyBoardFallback(unittest.TestCase):
         self.assertIsNone(result["forecast"])
 
 
+class MalformedFlightNumbers(unittest.TestCase):
+    """A flight number the model makes up badly must never open the independent forecast, and must reach no provider."""
+
+    def no_provider(self, *args, **kwargs):
+        raise AssertionError("a provider was called")
+
+    def test_malformed_numbers_with_an_airport_and_time_return_no_forecast_and_call_nothing(self):
+        for number in ["?", "A", "12345678", "DY", "DY62817X9", "DY 6 28 9999", "../x", "DY628;"]:
+            result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", number, "", now=NOW, request=self.no_provider)
+            self.assertEqual(result["state"], "invalid_flight", number)
+            self.assertIsNone(result["forecast"], number)
+            self.assertNotIn("temperature_c", result, number)
+
+    def test_a_well_formed_number_with_spaces_and_lower_case_is_normalised(self):
+        calls = []
+
+        def board_only(url, params):
+            calls.append(url)
+            raise OSError("down")
+
+        result = travel.read("weather", "", "", "dy 628", "", now=NOW, request=board_only)
+        self.assertEqual(result["state"], "unavailable")
+        self.assertTrue(calls)
+
+
 class OvernightArrival(unittest.TestCase):
     def test_each_time_keeps_its_own_date_when_a_delay_crosses_midnight(self):
         def board(code, direction):
