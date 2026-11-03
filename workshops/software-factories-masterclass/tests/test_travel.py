@@ -19,11 +19,20 @@ def xml_board(code, direction):
             travel.ET.SubElement(leg,k).text=v
     return root
 
+class LocalClock(unittest.TestCase):
+    def test_november_utc_becomes_the_airport_clock_time(self):
+        from zoneinfo import ZoneInfo
+        oslo = ZoneInfo("Europe/Oslo")
+        self.assertEqual(travel.local_clock("2026-11-03T17:25:00Z", oslo), "18:25 CET (Oslo)")
+        self.assertEqual(travel.local_clock("2026-07-03T17:25:00Z", oslo), "19:25 CEST (Oslo)")
+        self.assertIsNone(travel.local_clock(None, oslo))
+
+
 class Readers(unittest.TestCase):
     def test_evening_in_origin_zone(self):
         result=travel.read("flights","OSL","BGO",now=NOW,request=lambda u,p:xml_board(p["airport"],p["direction"]))
         self.assertEqual([f["scheduled_departure"] for f in result["records"]],["2026-11-02T19:00:00Z"])
-        self.assertEqual([f["scheduled_departure_local"] for f in result["records"]],["2026-11-02T20:00+01:00"])
+        self.assertEqual([f["scheduled_departure_local"] for f in result["records"]],["20:00 CET (Oslo)"])
         self.assertIn("_local", result["times_note"])
     def test_unsupported_route(self):
         self.assertEqual(travel.read("flights","JFK","LHR")["state"],"unavailable")
