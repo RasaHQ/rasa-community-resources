@@ -117,6 +117,72 @@ def rehearsal_response(url, params):
     raise ValueError("This rehearsal covers only flight ZZ201 and its Bergen forecast.")
 
 
+FLIGHT_NUMBER = r"[A-Z0-9]{2}[0-9]{1,4}[A-Z]?"
+
+
+def flight_weather(number, date, request, now, result, airport_code="", arrival_time=""):
+    """Forecast at landing for one flight, resolving the record here so no agent can pick one by guesswork.
+
+    The flight number and date are looked up on the board first. One record: the forecast at its arrival, and any
+    airport or time given is ignored. Several, or a date that fits none: no forecast, and the traveller is asked.
+    Only when the board lists no record for the flight at all does an airport and a time give an independent
+    forecast, labelled as such."""
+    if not number:
+        return result | {"state": "needs_flight", "forecast": None,
+                         "reason": "Give the flight number and the arrival date. Ask the traveller for them first."}
+    # Malformed input is not an outage: it must never open the independent forecast, so check both before any lookup.
+    if not re.fullmatch(FLIGHT_NUMBER, number):
+        return result | {"state": "invalid_input", "forecast": None,
+                         "reason": "That is not an IATA flight number such as DY628. Ask the traveller for the flight number."}
+    if date:
+        try:
+            well_formed = bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", date)) and datetime.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            well_formed = False
+        if not well_formed:
+            return result | {"state": "invalid_input", "forecast": None,
+                             "reason": "The date must be written YYYY-MM-DD. Ask the traveller which date they mean."}
+    status = read("status", number, request=request, now=now)
+    unavailable = status.get("state") != "ok"
+    if unavailable and not (airport_code and arrival_time):
+        return result | {"state": "unavailable", "forecast": None,
+                         "reason": status.get("reason", "Flight lookup failed.") + " Ask the traveller for an airport and a "
+                                   "time if they want an independent forecast."}
+    records = [] if unavailable else status["records"]
+    if not records:
+        if airport_code and arrival_time:
+            forecast = read("weather", airport_code, arrival_time, request=request, now=now)
+            note = ("Board unavailable, forecast not tied to a flight." if unavailable
+                    else "The board lists no record for this flight, so this forecast is not tied to a flight.")
+            return forecast | {"independent_forecast": True, "note": note}
+        return result | {"state": "no_record", "forecast": None,
+                         "reason": "The board lists no record for this flight. Ask the traveller for an airport and a time "
+                                   "if they want an independent forecast."}
+
+    def arrival_date(record):
+        return record["estimated_arrival_local_date"] or record["scheduled_arrival_local_date"]
+
+    dates = sorted({arrival_date(record) for record in records})
+    if not date:
+        if len(records) > 1:
+            return result | {"state": "needs_date", "forecast": None, "dates": dates,
+                             "reason": "Several records match this flight number. Ask the traveller which date first."}
+        matches = records
+    else:
+        matches = [record for record in records if arrival_date(record) == date]
+        if not matches:
+            return result | {"state": "no_match", "forecast": None, "dates": dates,
+                             "reason": "No record arrives on that date. Ask the traveller which date they mean."}
+        if len(matches) > 1:
+            return result | {"state": "needs_date", "forecast": None, "dates": dates,
+                             "reason": "More than one record arrives on that date. Ask the traveller which flight they mean."}
+    record = matches[0]
+    basis, stamp = ("estimated", record["estimated_arrival"]) if record["estimated_arrival"] else ("scheduled", record["scheduled_arrival"])
+    forecast = read("weather", record["to"], stamp, request=request, now=now)
+    return forecast | {"flight": record["flight"], "arrival_basis": basis,
+                       "arrival_local": record[basis + "_arrival_local"], "arrival_local_date": record[basis + "_arrival_local_date"]}
+
+
 def read(kind, *args, request=fetch, now=None):
     now = now or datetime.now(timezone.utc)
     result = {
@@ -129,6 +195,9 @@ def read(kind, *args, request=fetch, now=None):
         if kind not in ("status", "weather"):
             return result | {"state": "unavailable", "reason": "Use ZZ201 status and Bergen weather in this case."}
     try:
+        if kind == "weather" and len(args) > 2:
+            return flight_weather(args[2].upper().replace(" ", ""), args[3] if len(args) > 3 else "", request, now, result,
+                                  args[0], args[1] if len(args) > 1 else "")
         if kind == "weather":
             lat, lon, zone, _ = AIRPORTS[airport(args[0])]
             target = moment(args[1]) if len(args) > 1 and args[1] else now
@@ -194,7 +263,7 @@ def read(kind, *args, request=fetch, now=None):
                 boards=[(origin, "D")]
             else:
                 number=args[0].upper().replace(" ","")
-                if not re.fullmatch(r"[A-Z0-9]{2}[0-9]{1,4}[A-Z]?",number):
+                if not re.fullmatch(FLIGHT_NUMBER,number):
                     raise ValueError("Use an IATA flight number.")
                 boards=[("OSL","A"),("BGO","A")]
             zone=ZoneInfo("Europe/Oslo")
@@ -225,6 +294,7 @@ def read(kind, *args, request=fetch, now=None):
                         **local_times("estimated_arrival", status_time, direction == "A" and flag == "E", zone)})
             value={"records":records[:12],"times_note":"Say times exactly as written in the fields ending in _local (airport clock time with the zone named). Each has its own date in the matching field ending in _local_date; use that date for that time only, since a delayed flight can land on the next day. Fields without _local are UTC (Z) and must not be read aloud as local time.","board_updated":updates,"coverage":"Avinor Oslo–Bergen boards, requested from 2 hours ago to 24 hours ahead. Up to 12 matches shown. No seat inventory."}
             if kind=="flights":value.update(origin_timezone=str(zone),origin_date=str(day),window="remaining departures from 18:00 to midnight")
+            if kind=="status" and len(records)>1:value["next_step"]="Several records match this flight number. Ask which date the traveler means and wait for the answer before any weather lookup."
         return result | {"state": "ok"} | value
     except (
         ValueError,
@@ -253,9 +323,9 @@ async def flight_status(context: ToolContext, flight_number: str) -> ToolResult:
     data = await asyncio.to_thread(read, 'status', flight_number)
     return ToolResult(llm_response=data)
 
-@tool(description='Forecast at an airport. Use an ISO timestamp with offset, or an empty string for the current hour.')
-async def destination_weather(context: ToolContext, airport_code: str, arrival_time: str) -> ToolResult:
-    data = await asyncio.to_thread(read, 'weather', airport_code, arrival_time)
+@tool(description='Weather when a flight lands. Pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller chose; an empty string if you do not know it yet). The tool finds the record on the board itself and forecasts at its arrival, and ignores any airport or time you add. With several records it returns no forecast and tells you to ask the traveller which date first. Only when the board lists no record for the flight, or the board is unavailable, pass airport_code and an ISO arrival_time with offset to get an independent forecast, which is labelled as such.')
+async def destination_weather(context: ToolContext, flight_number: str, flight_date: str, airport_code: str = '', arrival_time: str = '') -> ToolResult:
+    data = await asyncio.to_thread(read, 'weather', airport_code, arrival_time, flight_number, flight_date)
     return ToolResult(llm_response=data)
 
 @tool(description='Convert an amount using a dated reference exchange rate.')

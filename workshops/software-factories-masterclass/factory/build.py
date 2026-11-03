@@ -39,8 +39,37 @@ TOOLS = {
         "Look up flight records by IATA flight number; distinguish scheduled and estimated arrival.",
     ),
 }
+# A full travel desk looks flights up. Its weather tool resolves the flight number and date on the board itself and
+# ignores any airport or time when it finds a record, so a time copied from a record cannot skip the date question. The
+# airport and time give an independent forecast only when the board lists no record for the flight.
+ARRIVAL_WEATHER = (
+    "destination_weather",
+    "flight_number: str, flight_date: str, airport_code: str = '', arrival_time: str = ''",
+    "airport_code, arrival_time, flight_number, flight_date",
+    "Weather when a flight lands. Pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller "
+    "chose; an empty string if you do not know it yet). The tool finds the record on the board itself and forecasts "
+    "at its arrival, and ignores any airport or time you add. With several records it returns no forecast and "
+    "tells you to ask the traveller which date first. Only when the board lists no record for the flight, or the "
+    "board is unavailable, pass airport_code and an ISO arrival_time with offset to get an independent forecast, "
+    "which is labelled as such.",
+)
+
+
+def tool_spec(key, tools):
+    """(name, parameters, reader arguments, description) for one selected tool in this agent."""
+    return ARRIVAL_WEATHER if key == "weather" and "status" in tools else TOOLS[key]
+
+
 TASK = """Create a Rasa Mantle travel agent specification for this brief. Return a JSON object with exactly these keys: name (lowercase slug), description (one sentence routing description), instructions (plain text skill guidance), tools (array drawn from weather, fx, flights, status). The full travel desk needs all four. Keep to these limits: name 2 to 49 characters of lowercase letters, digits and hyphens starting with a letter; description one sentence under 300 characters; instructions plain text of at most 2000 characters (the compiler rejects anything over 2500); the whole JSON file under 16 KB. Write short, specific instructions. Clarify ambiguous airports, use flight status to establish arrival time before an arrival forecast, use the departure airport's local evening and cite providers and dates. Do not invent data or bookings."""
-RULES = """Speak in short turns. Read airport names and currencies clearly. Ask one clarification at a time. Supported airports are OSL, BGO, JFK, LHR, CDG, MAD and MEX (flight tools cover only Oslo–Bergen in either direction). Flight status uses the arrival board; never treat a departure timestamp as arrival. When flight records share a number, ask which date and route the traveler means. Clarify origin, destination, flight number or time when ambiguous. Obtain a tool result for every external fact. State provider, time or rate date and coverage. If unavailable, say which fact is unavailable and continue with other tools. An empty or partial board does not establish that no flights exist. Never claim seats or bookings. For weather at landing, use estimated arrival if supplied, otherwise scheduled arrival, and identify which you used. If neither is known ask for a time. Keep estimates, forecasts and observed facts distinct."""
+RULES = """Speak in short turns. Read airport names and currencies clearly. Ask one clarification at a time. Supported airports are OSL, BGO, JFK, LHR, CDG, MAD and MEX (flight tools cover only Oslo–Bergen in either direction). Flight status uses the arrival board; never treat a departure timestamp as arrival. When flight records share a number, ask which date and route the traveler means. Clarify origin, destination, flight number or time when ambiguous. Obtain a tool result for every external fact. State provider, time or rate date and coverage. If unavailable, say which fact is unavailable and continue with other tools. An empty or partial board does not establish that no flights exist. Never claim seats or bookings. Name the provider exactly as the result's source field says. Keep estimates, forecasts and observed facts distinct."""
+LANDING_RULES = """For weather at landing, call the weather tool with the flight number and the arrival date the traveller chose; it uses the estimated arrival if supplied, otherwise the scheduled one, and reports which in arrival_basis, so say which. If the tool says to ask which date, ask and wait for the answer before calling it again. If no arrival time is known ask for one."""
+AIRPORT_WEATHER_RULES = """For weather at an airport, call the weather tool with the airport and an ISO time with offset, or an empty time for the current hour."""
+
+
+def rules_for(tools):
+    """The agent rules for a tool selection. The date gate applies only where there is a flight lookup to gate."""
+    extra = LANDING_RULES if {"status", "weather"} <= set(tools) else AIRPORT_WEATHER_RULES if "weather" in tools else ""
+    return RULES + (" " + extra if extra else "")
 
 
 def digest(raw):
@@ -91,17 +120,17 @@ def generate(raw, out):
             "agent:\n  id: "
             + json.dumps(spec["name"])
             + "\n  language: en\n  persona: You are a travel desk assistant.\nrules:\n  - "
-            + json.dumps(RULES)
+            + json.dumps(rules_for(spec["tools"]))
             + "\n"
         )
         shutil.copy(ROOT / "reference/integrations.yml", project / "integrations.yml")
         body = (
             spec["instructions"]
             + "\n\n"
-            + RULES
+            + rules_for(spec["tools"])
             + "\n\n"
             + "\n".join(
-                "Use @tool." + TOOLS[k][0] + " to " + TOOLS[k][3] for k in spec["tools"]
+                "Use @tool." + tool_spec(k, spec["tools"])[0] + " to " + tool_spec(k, spec["tools"])[3] for k in spec["tools"]
             )
         )
         (skill / "skill.md").write_text(
@@ -114,7 +143,7 @@ def generate(raw, out):
         source = (ROOT / "travel_data.py").read_text().split("if __name__")[0]
         source += "\nimport asyncio\nfrom rasa.mantle.tools.decorator import ToolContext, tool\nfrom rasa.mantle.tools.result import ToolResult\n"
         for k in spec["tools"]:
-            name, params, args, doc = TOOLS[k]
+            name, params, args, doc = tool_spec(k, spec["tools"])
             source += f"\n@tool(description={doc!r})\nasync def {name}(context: ToolContext, {params}) -> ToolResult:\n    data = await asyncio.to_thread(read, {k!r}, {args})\n    return ToolResult(llm_response=data)\n"
         compile(source, "tools.py", "exec")
         (skill / "tools.py").write_text(source)

@@ -28,6 +28,82 @@ class LocalClock(unittest.TestCase):
         self.assertIsNone(travel.local_clock(None, oslo))
 
 
+class EmptyBoardFallback(unittest.TestCase):
+    """The published course step: when the board lists no record, an airport and a time give an independent forecast."""
+
+    def request(self, url, params):
+        if url == travel.BOARD_URL:
+            root = xml_board(params["airport"], params["direction"])
+            rows = root.find("flights")
+            for leg in list(rows):
+                rows.remove(leg)
+            return root
+        stamp = int(datetime(2026, 11, 2, 19, tzinfo=timezone.utc).timestamp())
+        return {"hourly": {"time": [stamp], "temperature_2m": [6], "precipitation_probability": [40]}}
+
+    def test_no_record_allows_the_independent_forecast_and_labels_it(self):
+        result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", "DY000", "", now=NOW, request=self.request)
+        self.assertEqual((result["temperature_c"], result["independent_forecast"]), (6, True))
+        self.assertIn("not tied to a flight", result["note"])
+
+    def unreachable_board(self, url, params):
+        if url == travel.BOARD_URL:
+            raise OSError("board unreachable")
+        return self.request(url, params)
+
+    def test_an_unreachable_board_still_allows_the_independent_forecast_and_says_so(self):
+        result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", "DY000", "", now=NOW, request=self.unreachable_board)
+        self.assertEqual((result["temperature_c"], result["independent_forecast"]), (6, True))
+        self.assertEqual(result["note"], "Board unavailable, forecast not tied to a flight.")
+
+    def test_an_unreachable_board_without_an_airport_returns_no_forecast(self):
+        result = travel.read("weather", "", "", "DY000", "", now=NOW, request=self.unreachable_board)
+        self.assertEqual(result["state"], "unavailable")
+        self.assertIsNone(result["forecast"])
+
+    def test_no_record_and_no_airport_asks_for_one(self):
+        result = travel.read("weather", "", "", "DY000", "", now=NOW, request=self.request)
+        self.assertEqual(result["state"], "no_record")
+        self.assertIsNone(result["forecast"])
+
+
+class MalformedFlightNumbers(unittest.TestCase):
+    """A flight number the model makes up badly must never open the independent forecast, and must reach no provider."""
+
+    def no_provider(self, *args, **kwargs):
+        raise AssertionError("a provider was called")
+
+    def test_malformed_numbers_with_an_airport_and_time_return_no_forecast_and_call_nothing(self):
+        for number in ["?", "A", "12345678", "DY", "DY62817X9", "DY 6 28 9999", "../x", "DY628;"]:
+            result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", number, "", now=NOW, request=self.no_provider)
+            self.assertEqual(result["state"], "invalid_input", number)
+            self.assertIsNone(result["forecast"], number)
+            self.assertNotIn("temperature_c", result, number)
+
+    def test_malformed_dates_with_an_airport_and_time_return_no_forecast_and_call_nothing(self):
+        for date in ["tomorrow", "2026-13-45", "03/11/2026", "2026-11-3", "2026-11-03T20:10", "?"]:
+            result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", "DY628", date, now=NOW, request=self.no_provider)
+            self.assertEqual(result["state"], "invalid_input", date)
+            self.assertIsNone(result["forecast"], date)
+            self.assertNotIn("temperature_c", result, date)
+
+    def test_an_empty_flight_number_with_an_airport_and_time_returns_no_forecast_and_calls_nothing(self):
+        result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", "", "", now=NOW, request=self.no_provider)
+        self.assertEqual(result["state"], "needs_flight")
+        self.assertIsNone(result["forecast"])
+
+    def test_a_well_formed_number_with_spaces_and_lower_case_is_normalised(self):
+        calls = []
+
+        def board_only(url, params):
+            calls.append(url)
+            raise OSError("down")
+
+        result = travel.read("weather", "", "", "dy 628", "", now=NOW, request=board_only)
+        self.assertEqual(result["state"], "unavailable")
+        self.assertTrue(calls)
+
+
 class OvernightArrival(unittest.TestCase):
     def test_each_time_keeps_its_own_date_when_a_delay_crosses_midnight(self):
         def board(code, direction):

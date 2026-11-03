@@ -35,6 +35,10 @@ def load(name, path):
     return module
 
 
+# A flight-briefing agent forecasts a landing from the flight number and date; the starter takes an airport and a time.
+ARRIVAL_WEATHER_ARGS = {"flight_number": "ZZ201", "flight_date": "2026-11-03"}
+ARRIVAL_WEATHER_READ = ["", "", "ZZ201", "2026-11-03"]
+
 ARGS = {
     "destination_weather": {"airport_code": "LHR", "arrival_time": ""},
     "convert_currency": {"base": "USD", "quote": "GBP", "amount": 200.0},
@@ -95,13 +99,15 @@ async def check(root):
                     name, _, _, _ = build.TOOLS[key]
                     if name not in names:
                         continue
-                    arguments = ARGS[name]
+                    arrival_mode = name == "destination_weather" and label != "generated-starter"
+                    arguments = ARRIVAL_WEATHER_ARGS if arrival_mode else ARGS[name]
+                    read_arguments = ARRIVAL_WEATHER_READ if arrival_mode else list(arguments.values())
                     expected = {"offline_native_probe": True, "kind": key,
-                                "arguments": list(arguments.values())}
+                                "arguments": read_arguments}
                     before = len(calls)
                     await invoke(label, module, name, arguments, expected)
                     if results[-1]["pass"]:
-                        assert calls[before:] == [(key, list(arguments.values()))]
+                        assert calls[before:] == [(key, read_arguments)]
         studio = load("native_probe_studio", root / "studio/skills/build_agent/tools.py")
 
         class OfflineProcess:
