@@ -191,11 +191,11 @@ class FirstUseHonestyTests(unittest.TestCase):
         self.assertIn("nothing for the first command", readme)
         self.assertNotIn("required `RASA_LICENSE`", readme)
 
-    def test_resources_that_embed_references_say_training_is_a_billed_call(self):
+    def test_resources_that_embed_references_say_training_uses_the_openai_key(self):
         marked = 0
         for project in discover_projects("catalog"):
             readme = (project.path / "README.md").read_text(encoding="utf-8").split(g.END)[0]
-            has = "reference documents with calls to your OpenAI account" in readme
+            has = "uses your OpenAI key (a small embedding call)" in readme
             self.assertEqual(has, g.uses_references(project.path) and g.manifest(project)["first"] is not None
                              and project.rel not in g.FIRST, project.rel)
             marked += has

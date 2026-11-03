@@ -274,7 +274,7 @@ def readme_block(entry: dict, depth: int) -> str:
     if first:
         first_line = f"`{first}`. The terminal opens in this folder, and the creation log ends with `READY`."
         if entry.get("embeds_references"):
-            first_line += " Training embeds this resource's reference documents with calls to your OpenAI account, a small billed call."
+            first_line += " Training uses your OpenAI key (a small embedding call) to index this resource's reference documents."
         see = entry["see"]
     else:
         first_line = "follow the steps below; the creation log ends with `READY`."
