@@ -10,6 +10,13 @@ accept or reject it with a separate check. The exercise contacts no router.
 Its final result is a recorded review decision, with nothing installed or
 applied automatically. Attendees use Mantle throughout.
 
+## Following the router-helper tutorial?
+
+The [browser tutorial](https://rasa.community/library/tutorials/software-factory/)
+and this workshop use the same simulated router helper, so you can start from
+either page. The command is simulated; no router is contacted. The steps below
+get you from a browser tab to your first check.
+
 ## Start here at minute 0 · From a browser tab to your first router check
 
 Nothing needs to be set up before the workshop. You need a browser, your own
@@ -163,3 +170,64 @@ own cold walkthrough.
 
 Studio 2 is a presenter-only preview, not an attendee setup task. Join the
 [Rasa Community](https://info.rasa.com/community/) to hear about its release.
+
+## The problem this workshop solves
+
+A customer asks to restart their router. A coding agent can change the helper
+that handles that request. But coding agents also say a change works when it
+doesn't, and nobody has time to read every line they write. So how do you let an
+agent change your agent safely?
+
+The answer you will build is a **software factory**: fixed steps that turn a
+written request into a proposed change, check that proposal with a gate the
+builder does not control, and end with a person's recorded decision. You will
+watch one proposal get ACCEPT and three get REJECT. An ACCEPT is not a
+deployment: nothing is installed or applied automatically.
+
+## What you will be able to do afterwards
+
+- Run a Mantle helper that asks before it records a restart, and check that it
+  refuses a factory reset.
+- Change one value in the helper's source, catch the change with the source-file
+  check, and restore it.
+- Connect a builder and compare its saved proposal with a printed SHA-256 hash.
+- Read the gate's ACCEPT or REJECT and explain which rule decided it.
+- Record a human approval or refusal that names the exact proposal and the reason.
+- Explain a "dark" factory: people set the rules, machines do the routine
+  building and checking, and exceptions go back to a person.
+
+You don't need to know Rasa, Mantle or the OpenAI Agents API before you start.
+The [beginner primer](BEGINNER-PRIMER.md) explains the same terms used in the
+slides.
+
+## Words you will meet
+
+- **Rasa Mantle:** the framework the helper is built with. It coordinates
+  conversations, skills and tools.
+- **Skill:** a group of instructions and tools for one job.
+- **Tool:** a function the helper can ask to run. Here it records a simulated
+  command.
+- **Proposal:** a saved Python file that a builder produced, to be checked before
+  anyone uses it.
+- **Gate:** a check that reads the proposal's bytes against a fixed contract. It
+  never runs the file.
+- **OpenAI Agents API:** an OpenAI service that manages an agent session. It
+  powers the one optional billed build. It is different from the Agents SDK, a
+  separate framework.
+- **Software factory:** repeatable steps from a written request to a checked
+  decision.
+
+## What this workshop does not show yet
+
+- The router is simulated. Nothing contacts a device, and a gate ACCEPT is not a
+  deployment.
+- The gate judges a saved file against a small fixed contract. It does not show
+  that a proposal is safe in general.
+- Model wording varies between runs. The target is the meanings listed in the
+  attendee pack, not a fixed transcript.
+- Tested runs in fresh Codespaces were assisted and used an existing account. An
+  unaided first-time attendee run has not been measured.
+- The optional billed Agents build has not been costed for this
+  workshop. The practice builder starts no Agents session.
+- Building a new agent by voice is the next step. [BUILD-CONTRACT.md](BUILD-CONTRACT.md)
+  says what the proposal and gate establish today.

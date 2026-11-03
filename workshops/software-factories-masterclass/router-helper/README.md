@@ -62,6 +62,77 @@ then rerun `setup.sh` as the [workshop README](../README.md#if-a-key-was-added-o
 describes. Then build your own helper with the commands in the
 [attendee pack](../ATTENDEE-PACK.md#your-router-helper-minutes-1030).
 
+## Create and train the helper
+
+Open a terminal in the Codespace. The commands start a fresh folder. First check
+whether `$HOME/router-helper-agent` already exists:
+
+- If it is your earlier attempt and contains `agent.yml` and `integrations.yml`,
+  change into it, skip `mkdir` and `rasa init`, and resume at `install_helper.py`.
+  Keep an existing Inspector stopped while you retrain.
+- If it is unrelated, keep it intact. Use `$HOME/router-helper-tutorial` instead,
+  replacing every later `router-helper-agent` path. Do not delete a project to
+  make a copied command succeed.
+- If it is empty, change into it, skip `mkdir`, and start with `rasa init`.
+
+**1. Create your agent.** This makes the folder your changes will live in.
+
+```bash
+WORKSHOP="$(git rev-parse --show-toplevel)/workshops/software-factories-masterclass"
+mkdir "$HOME/router-helper-agent" && cd "$HOME/router-helper-agent" && "$HOME/.venv-mantle/bin/rasa" init --engine mantle --no-prompt
+```
+
+**2. Give it the router skill.** Run this from your agent folder.
+
+```bash
+"$HOME/.venv-mantle/bin/python" "$WORKSHOP/router-helper/mantle/install_helper.py" .
+```
+
+The installer moves the starter banking skills aside so the conversation uses the
+router rules.
+
+**3. Train it and start the Inspector.** The second command runs only if training
+succeeds. Leave this terminal running.
+
+```bash
+"$HOME/.venv-mantle/bin/rasa" train && "$HOME/.venv-mantle/bin/rasa" inspect --port 5010
+```
+
+When it says `Rasa server is up and running`, choose **Terminal → New Terminal**
+and run this in the second terminal:
+
+```bash
+bash "$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/print-inspector-url.sh"
+```
+
+Open the address it prints. If GitHub asks whether to continue to your own
+private forwarded port, choose **Continue**. Do not make the port public to work
+around a sign-in problem.
+
+## Ask, then confirm
+
+In the Inspector, type `Restart my router`. The helper should ask you to confirm
+and explain that the connection will drop briefly while the Wi-Fi name and
+password stay the same. Only then type `Yes`. It should say a restart was
+recorded as `REBOOT`. These are expected meanings, not a transcript; the wording
+can differ.
+
+Open the conversation's **Inspect** view and find the restart tool call and its
+result:
+
+```json
+{ "status": "sent", "command_sent": "REBOOT" }
+```
+
+If the reply sounds right but you cannot find a tool result, you have not yet
+shown that the tool ran. Check the conversation's events instead of confirming
+again. Then try `Reset it` and a factory-reset request, as the
+[attendee pack](../ATTENDEE-PACK.md#your-router-helper-minutes-1030) lists.
+
+**Next:** [test cancellation and factory-reset requests](https://rasa.community/library/tutorials/software-factory/02-reset-and-checks/),
+[connect the builder](https://rasa.community/library/tutorials/software-factory/03-builder/)
+and [judge the saved proposal](https://rasa.community/library/tutorials/software-factory/04-gate-release/).
+
 ## What is in this folder
 
 | Path | What it is | Used at |
