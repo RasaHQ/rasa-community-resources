@@ -215,6 +215,7 @@ def read(kind, *args, request=fetch, now=None):
                         "local_date":str(moment(status_time if direction=="A" and flag=="E" else scheduled).astimezone(zone).date())})
             value={"records":records[:12],"times_note":"Say times exactly as written in the fields ending in _local (airport clock time with the zone named) and use local_date for the day. Fields without _local are UTC (Z) and must not be read aloud as local time.","board_updated":updates,"coverage":"Avinor Oslo–Bergen boards, requested from 2 hours ago to 24 hours ahead. Up to 12 matches shown. No seat inventory."}
             if kind=="flights":value.update(origin_timezone=str(zone),origin_date=str(day),window="remaining departures from 18:00 to midnight")
+            if kind=="status" and len(records)>1:value["next_step"]="Several records match this flight number. Ask which date the traveler means and wait for the answer before any weather lookup."
         return result | {"state": "ok"} | value
     except (
         ValueError,

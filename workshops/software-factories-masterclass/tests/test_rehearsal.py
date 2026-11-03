@@ -22,5 +22,6 @@ class Rehearsal(unittest.TestCase):
         first, second = travel_data.read("status", "ZZ201")["records"]
         self.assertEqual((first["local_date"], first["estimated_arrival_local"], first["scheduled_arrival_local"]),
                          ("2026-11-03", "20:10 CET (Oslo)", "19:20 CET (Oslo)"))
+        self.assertIn("wait for the answer before any weather lookup", travel_data.read("status", "ZZ201")["next_step"])
         self.assertEqual((second["local_date"], second["scheduled_arrival_local"], second["estimated_arrival_local"]),
                          ("2026-11-04", "19:20 CET (Oslo)", None))
