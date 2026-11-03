@@ -19,6 +19,9 @@ class Choose(unittest.TestCase):
     def test_push_with_no_config_change_builds_nothing(self):
         self.assertEqual(scope.choose("push", RES, set()), [])
 
+    def test_push_with_a_shared_change_builds_everything(self):
+        self.assertEqual(scope.choose("push", RES, None), RES)
+
     def test_push_ignores_a_name_that_is_not_a_resource(self):
         self.assertEqual(scope.choose("push", RES, {"no-such-slug"}), [])
 
@@ -70,13 +73,37 @@ class ChangedSlugs(unittest.TestCase):
         self.write(".devcontainer/two/devcontainer.json", "y")
         self.assertEqual(self.changed(self.commit()), {"two"})
 
-    def test_shared_base_and_other_files_name_no_slug(self):
+    def test_a_shared_base_change_means_everything(self):
         self.write(".devcontainer/resource-base/install.sh", "y")
+        self.assertIsNone(self.changed(self.commit()))
+
+    def test_a_shared_base_change_beside_a_config_change_still_means_everything(self):
+        self.write(".devcontainer/resource-base/install.sh", "y")
+        self.write(".devcontainer/two/devcontainer.json", "y")
+        self.assertIsNone(self.changed(self.commit()))
+
+    def test_the_generator_the_scope_script_and_the_workflow_mean_everything(self):
+        for rel in ("scripts/generate_codespaces.py", "scripts/codespaces_scope.py", ".github/workflows/codespaces-build.yml"):
+            self.write(rel, "x")
+            self.git("add", "-A")
+            self.git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "add " + rel)
+            base = self.git("rev-parse", "HEAD").strip()
+            self.write(rel, "y")
+            sha = self.commit()
+            original = scope.ROOT
+            scope.ROOT = self.dir
+            try:
+                self.assertIsNone(scope.changed_slugs(base, sha), rel)
+            finally:
+                scope.ROOT = original
+
+    def test_unrelated_files_change_nothing(self):
         self.write("README.md", "y")
         self.assertEqual(self.changed(self.commit()), set())
 
-    def test_a_new_push_with_no_before_commit_names_nothing(self):
-        self.assertEqual(scope.changed_slugs("0" * 40, self.base), set())
+    def test_a_new_push_with_no_before_commit_means_everything(self):
+        self.assertIsNone(scope.changed_slugs("0" * 40, self.base))
+        self.assertIsNone(scope.changed_slugs("", self.base))
 
 
 class Real(unittest.TestCase):

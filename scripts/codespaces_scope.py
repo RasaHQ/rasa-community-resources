@@ -4,7 +4,9 @@
 
 Prints the resources to build as a JSON list of {"path", "slug"}, the same shape as
 `generate_codespaces.py --list-json`. On a push, only resources whose own
-`.devcontainer/<slug>/` directory changed between BEFORE and SHA are built. Every other
+`.devcontainer/<slug>/` directory changed between BEFORE and SHA are built, unless a shared file
+changed (`.devcontainer/resource-base/`, the generator, this script or the workflow), or BEFORE is
+unknown: then every resource is built. Every other
 event (schedule, pull request, a manual run) builds all of them, or only the slugs
 named in ONLY (space separated) on a manual run.
 """
@@ -28,21 +30,36 @@ def every_resource() -> list[dict]:
     return json.loads(out)
 
 
-def changed_slugs(before: str, sha: str) -> set[str]:
-    """Slugs whose `.devcontainer/<slug>/` directory differs between the two commits."""
+SHARED = (".devcontainer", "scripts/generate_codespaces.py", "scripts/codespaces_scope.py",
+          ".github/workflows/codespaces-build.yml")
+
+
+def changed_slugs(before: str, sha: str) -> set[str] | None:
+    """Slugs whose own `.devcontainer/<slug>/` directory changed between the two commits.
+
+    None means everything must be built: the earlier commit is unknown, or a file every
+    configuration depends on changed (`.devcontainer/resource-base/`, the generator, this
+    script or the workflow).
+    """
     if not before or before == ZERO:
-        return set()
+        return None
     names = subprocess.run(
-        ["git", "diff", "--name-only", before, sha, "--", ".devcontainer"],
+        ["git", "diff", "--name-only", before, sha, "--", *SHARED],
         check=True, capture_output=True, text=True, cwd=ROOT,
     ).stdout.split()
-    parts = (name.split("/") for name in names)
-    return {p[1] for p in parts if len(p) > 2 and p[0] == ".devcontainer" and p[1] != "resource-base"}
+    slugs: set[str] = set()
+    for name in names:
+        parts = name.split("/")
+        if len(parts) > 2 and parts[0] == ".devcontainer" and parts[1] != "resource-base":
+            slugs.add(parts[1])
+        else:
+            return None
+    return slugs
 
 
-def choose(event: str, resources: list[dict], changed: set[str], only: str = "") -> list[dict]:
+def choose(event: str, resources: list[dict], changed: set[str] | None, only: str = "") -> list[dict]:
     if event == "push":
-        return [r for r in resources if r["slug"] in changed]
+        return resources if changed is None else [r for r in resources if r["slug"] in changed]
     wanted = set(only.split())
     if wanted:
         return [r for r in resources if r["slug"] in wanted]
