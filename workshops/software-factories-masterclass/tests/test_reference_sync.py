@@ -25,9 +25,25 @@ class ReferenceSyncTests(unittest.TestCase):
                 self.assertEqual((project / name).read_bytes(), (ROOT / "reference/finished-agent" / name).read_bytes(), name)
 
     def test_rules_order_the_date_question_before_any_weather_lookup(self):
-        self.assertIn("wait for the answer before calling it again", build.RULES)
-        self.assertIn("flight number and the arrival date", build.RULES)
+        self.assertIn("wait for the answer before calling it again", build.LANDING_RULES)
+        self.assertIn("flight number and the arrival date", build.LANDING_RULES)
         self.assertIn("source field", build.RULES)
+
+    def test_the_date_gate_applies_only_where_there_is_a_flight_lookup(self):
+        full = build.rules_for(["weather", "fx", "flights", "status"])
+        self.assertIn(build.LANDING_RULES, full)
+        for tools in (["weather", "fx"], ["fx"], ["weather", "flights"]):
+            self.assertNotIn("flight number and the arrival date", build.rules_for(tools), tools)
+        self.assertIn(build.AIRPORT_WEATHER_RULES, build.rules_for(["weather", "fx"]))
+        self.assertNotIn("weather at an airport", build.rules_for(["fx"]))
+
+    def test_the_starter_agent_keeps_direct_airport_weather(self):
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "starter"
+            build.generate((ROOT / "reference/starter.json").read_bytes(), project)
+            skill = (project / "skills/travel_briefing/skill.md").read_text()
+            self.assertIn("weather at an airport", skill)
+            self.assertNotIn("flight number and the arrival date", skill)
 
 
 if __name__ == "__main__":
