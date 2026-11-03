@@ -76,9 +76,21 @@ class MalformedFlightNumbers(unittest.TestCase):
     def test_malformed_numbers_with_an_airport_and_time_return_no_forecast_and_call_nothing(self):
         for number in ["?", "A", "12345678", "DY", "DY62817X9", "DY 6 28 9999", "../x", "DY628;"]:
             result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", number, "", now=NOW, request=self.no_provider)
-            self.assertEqual(result["state"], "invalid_flight", number)
+            self.assertEqual(result["state"], "invalid_input", number)
             self.assertIsNone(result["forecast"], number)
             self.assertNotIn("temperature_c", result, number)
+
+    def test_malformed_dates_with_an_airport_and_time_return_no_forecast_and_call_nothing(self):
+        for date in ["tomorrow", "2026-13-45", "03/11/2026", "2026-11-3", "2026-11-03T20:10", "?"]:
+            result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", "DY628", date, now=NOW, request=self.no_provider)
+            self.assertEqual(result["state"], "invalid_input", date)
+            self.assertIsNone(result["forecast"], date)
+            self.assertNotIn("temperature_c", result, date)
+
+    def test_an_empty_flight_number_with_an_airport_and_time_returns_no_forecast_and_calls_nothing(self):
+        result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", "", "", now=NOW, request=self.no_provider)
+        self.assertEqual(result["state"], "needs_flight")
+        self.assertIsNone(result["forecast"])
 
     def test_a_well_formed_number_with_spaces_and_lower_case_is_normalised(self):
         calls = []

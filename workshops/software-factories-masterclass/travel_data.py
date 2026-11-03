@@ -130,10 +130,18 @@ def flight_weather(number, date, request, now, result, airport_code="", arrival_
     if not number:
         return result | {"state": "needs_flight", "forecast": None,
                          "reason": "Give the flight number and the arrival date. Ask the traveller for them first."}
+    # Malformed input is not an outage: it must never open the independent forecast, so check both before any lookup.
     if not re.fullmatch(FLIGHT_NUMBER, number):
-        # Malformed input is not an outage: it must never open the independent forecast, so check it before any lookup.
-        return result | {"state": "invalid_flight", "forecast": None,
+        return result | {"state": "invalid_input", "forecast": None,
                          "reason": "That is not an IATA flight number such as DY628. Ask the traveller for the flight number."}
+    if date:
+        try:
+            well_formed = bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", date)) and datetime.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            well_formed = False
+        if not well_formed:
+            return result | {"state": "invalid_input", "forecast": None,
+                             "reason": "The date must be written YYYY-MM-DD. Ask the traveller which date they mean."}
     status = read("status", number, request=request, now=now)
     unavailable = status.get("state") != "ok"
     if unavailable and not (airport_code and arrival_time):
