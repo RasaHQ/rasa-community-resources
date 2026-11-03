@@ -1,5 +1,11 @@
 name: Codespaces configurations
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.devcontainer/**'
+      - 'scripts/generate_codespaces.py'
+      - '.github/workflows/codespaces-build.yml'
   pull_request:
     paths:
       - '.devcontainer/**'
