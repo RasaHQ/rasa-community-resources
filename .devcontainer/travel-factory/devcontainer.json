@@ -1,0 +1,41 @@
+{
+  "name": "Rasa Travel Agent Factory",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/workshops/software-factories-masterclass",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5010
+  ],
+  "portsAttributes": {
+    "5010": {
+      "label": "Mantle Inspector",
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Full Rasa Developer Edition license"
+    },
+    "OPENAI_API_KEY": {
+      "description": "OpenAI project key for Mantle, Codex API-key login and hosted builds"
+    },
+    "DEEPGRAM_API_KEY": {
+      "description": "Deepgram project key for speech recognition and spoken replies in both agents"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/travel-factory/install.sh\""
+}

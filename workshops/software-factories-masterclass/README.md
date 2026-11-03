@@ -1,165 +1,87 @@
-# Build and check a router helper in GitHub Codespaces
+# Build a travel agent with Rasa Mantle and Codex
 
-**New York workshop — Tuesday, November 3, 2026, 3:00–6:00 PM Eastern.**
-A hands-on session by Rod Rivera for developers who want to connect an agent to
-tools, inspect a proposed code change, and decide whether to accept it.
+“I’m flying from Oslo to Bergen tonight. What other departures are scheduled? Will I need a coat when I land? How much is $200 in pounds?”
 
-You build a small Rasa Mantle helper that asks before recording a simulated
-router restart. Then you connect a builder, inspect its saved proposal, and
-accept or reject it with a separate check. The exercise contacts no router.
-Its final result is a recorded review decision, with nothing installed or
-applied automatically. Attendees use Mantle throughout.
+By the end you will have built a **traveler-facing Mantle agent** that calls public data services. You will also have used a different **Mantle factory agent** that takes a developer brief, asks permission to start an OpenAI hosted Agents API session and returns a candidate for another travel agent. You can inspect every tool call and run the resulting agent yourself.
 
-## Start here at minute 0 · From a browser tab to your first router check
+## Before you start
 
-Nothing needs to be set up before the workshop. You need a browser, your own
-GitHub account, your own free Rasa Developer Edition key, and your own OpenAI
-API key. Request or retrieve the keys at minute 0 if needed. Model usage is
-billed to your OpenAI account; the practice builder starts no Agents session.
+You need a GitHub account with Codespaces access, a browser, a microphone, speakers or headphones, and the credentials below. A **Codespace** is your own temporary computer on GitHub. Its editor and terminal open in your browser. Your microphone and speakers stay on your device.
 
-> [!TIP]
-> **Your first conversation.** Ask **Restart my router**, wait for the
-> confirmation question, then answer **Yes**. In the Inspector, look for
-> `command_sent: REBOOT` in the tool result.
+### A. Get the three values for the complete workshop
 
-### A. Sign in to GitHub
+If the workshop host gave you a value, use it in the matching row. One Deepgram key serves **both** agents and both directions of audio. The Rasa value is a license. GitHub itself needs only your sign-in.
 
-A Codespace is a computer that GitHub runs for you. Its editor and terminal open
-in your browser. Use a personal GitHub account that has Codespaces available and
-enough allowance for a four-core machine. Keep this page open in a separate tab.
-
-### B. Collect two values
-
-If your workshop host supplied either value, use it in the matching row.
-Otherwise follow the link in that row.
-
-| Name to enter in GitHub | Where to get the value | What uses it |
+| Exact GitHub secret name | Where to get the value | What it unlocks |
 | --- | --- | --- |
-| `RASA_LICENSE` | [Request a Rasa Developer Edition license](https://rasa.com/rasa-pro-developer-edition-license-key-request). The form's confirmation page is not the key; copy the entire license string you receive. | Rasa Mantle uses it to run the helper. |
-| `OPENAI_API_KEY` | [Open your OpenAI project's API keys](https://platform.openai.com/api-keys), choose **Create new secret key**, and copy the value while it is visible. Use a project with API billing and model access. | The helper uses it when you chat. ChatGPT subscriptions and API billing are separate. |
+| `RASA_LICENSE` | Open the [Rasa Developer Edition form](https://rasa.com/rasa-pro-developer-edition-license-key-request), submit it and copy the full license string delivered to you. | Training and running the Mantle factory and traveler agents. |
+| `OPENAI_API_KEY` | Open [OpenAI project API keys](https://platform.openai.com/api-keys), select the intended project, choose **Create new secret key**, name it and copy the value when shown. Use a project with billing and access to the configured models. | Mantle conversations, Codex API-key login, and hosted builds. The hosted exercise also needs Agents read/write and Responses write permissions. |
+| `DEEPGRAM_API_KEY` | Open the [Deepgram Console](https://console.deepgram.com/), choose your project at the top left, then **Settings → API Keys → Create a New API Key**. Name it, choose a role that permits speech requests, create it and copy the secret while visible. Your project needs speech usage available. | Flux transcribes the user’s speech. Aura-2 speaks the reply. Both the developer and the traveler use this key. |
 
-The first file check runs inside the Codespace and spends no model call.
-Chatting with the helper uses the OpenAI API. The practice builder copies a
-supplied sample file. Generating a new file with the optional billed builder
-needs Agents API access and can incur a separate charge.
+[Avinor](https://partner.avinor.no/en/services/flight-data/) supplies public airport boards. The flight exercise covers Oslo and Bergen in either direction. The weather tool uses Open-Meteo and the currency tool uses Frankfurter. The workshop endpoints require no additional participant keys. The [Avinor feed documentation](https://partner.avinor.no/en/services/flight-data/) describes the board and its update interval. The server reuses each board for three minutes within the running agent. For a commercial event, the organizer should check [Open-Meteo’s non-commercial free endpoint terms](https://open-meteo.com/en/terms) or provision appropriate access.
 
-### C. Save both values as personal Codespaces secrets
+### B. Put the values in your personal GitHub settings
 
-1. Open [GitHub → Settings → Codespaces](https://github.com/settings/codespaces).
-   Scroll to **Codespaces secrets** and choose **New secret**.
-2. In **Name**, enter `RASA_LICENSE`. In **Value**, paste the license string.
-   Under **Repository access**, select **RasaHQ/rasa-community-resources**
-   and save.
-3. Repeat for `OPENAI_API_KEY`, pasting the OpenAI key. If either name already
-   exists, edit its repository access to include the workshop repository, and
-   keep any other repository access you still use.
-4. Check that both names appear in the list. GitHub supplies their values to
-   your Codespace. No fork, local installation or `.env` file is needed. Never
-   put a key in source, a command, a shared log, or chat.
+1. **Open two browser tabs.** Keep this guide open. In the other tab, [sign in to GitHub](https://github.com/login) with the account you will use for the workshop.
+2. Click your **profile picture** at the top right, choose **Settings**, then choose **Codespaces** in the left sidebar. You can also [open that exact settings page](https://github.com/settings/codespaces).
+3. Scroll to **Codespaces secrets** and click **New secret**. Think of a secret as a label paired with a hidden value.
+4. Try the first one together. In **Name**, type `RASA_LICENSE`. In **Value**, paste the license string. Under **Repository access**, select **RasaHQ/rasa-community-resources**. Click **Add secret**.
+5. Repeat step 4 for `OPENAI_API_KEY` and `DEEPGRAM_API_KEY`. Use each provider’s value in its own row. Confirm the names appear in the list. GitHub hides the saved values.
+6. If a name already exists, edit its repository access to include the workshop. If the repository is absent from the picker, enter the value in the matching **recommended secret** field on the creation form in step C instead. For a fork, grant access to the fork you actually open.
 
-If GitHub does not offer the repository in your settings, use the matching
-secret fields on the creation form in step D instead.
+Use personal **Codespaces secrets**. GitHub’s **Actions secrets** belong to a different feature. You do not need a local installation or a file containing these keys.
 
-### D. Open the workshop
+### C. Create your first Codespace
 
-**[Open the workshop in GitHub Codespaces →](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/software-factories-workshop/devcontainer.json)**
+**[Open the travel factory in GitHub Codespaces](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/travel-factory/devcontainer.json)**
 
-On GitHub's creation form, check that the repository is
-**RasaHQ/rasa-community-resources**, the configuration is **New York workshop:
-Rasa Mantle**, and the machine has **at least 4 cores**. Fill in any secret the
-form asks for, then choose **Create codespace**. The editor opens while Python,
-uv and the two locked environments are prepared; you do not install them on your
-laptop.
-
-Already created this workshop's Codespace? [Open it from Your
-codespaces](https://github.com/codespaces) to keep your files.
-
-### Your first win: check the restart command
-
-When the terminal shows a line beginning **`Setup finished`**, installation is
-done. An available editor alone does not mean setup finished. In the editor,
-choose **Terminal → New Terminal**, copy one box at a time and press Enter.
-
-Check that GitHub supplied both values without printing either:
+1. On the form check the repository **RasaHQ/rasa-community-resources**, configuration **Rasa Travel Agent Factory**, and a machine with **at least four cores**. Check which account will pay for Codespaces usage. For an unmerged edition, use the review branch supplied by the host and choose **Code → Codespaces → New with options**.
+2. Click **Create codespace** once. A browser editor opens. Leave it open while the preparation log runs. Wait for **Travel factory dependencies ready** before starting Mantle.
+3. In the editor’s top menu, select **Terminal → New Terminal**. If the menu is collapsed, open **☰** first. The panel at the bottom is where you type commands. Paste the line below and press **Enter**.
 
 ```bash
-for name in RASA_LICENSE OPENAI_API_KEY; do if [ -n "${!name:-}" ]; then echo "$name present"; else echo "$name missing"; fi; done
+bash desk doctor
 ```
 
-Then run the source-file check on the completed example in your workspace:
+**What you should see:** three secret names followed by `present`, the Mantle and builder executables marked `ready`, and a Codex executable path. This checks availability inside the workspace. The voice exercise below tests the microphone, speech services and speaker together.
+
+**If a secret says missing:** return to step B, correct the name or repository access, then open [Your Codespaces](https://github.com/codespaces). Find this workspace, choose **… → Stop codespace**, wait for it to stop, then click its name to reopen it. Open a terminal and rerun `bash desk doctor`. Your existing project stays in place.
+
+### D. Get a useful answer
+
+In the browser editor choose **Terminal → New Terminal**. The terminal starts in `workshops/software-factories-masterclass`. Paste one command and press Enter:
 
 ```bash
-ROUTER="$(git rev-parse --show-toplevel)/workshops/software-factories-masterclass/router-helper"
-python3 "$ROUTER/check_helper.py" "$ROUTER/mantle/skills/router_restart/tools.py"
+bash desk data fx USD GBP 200
 ```
 
-You should see **`PASS: a restart records REBOOT`**. You just checked the
-command in a real Python file without spending a model call. Next you build your
-own helper and find out whether it waits for permission before it uses that
-command: continue with **Your router helper** in the
-[attendee pack](ATTENDEE-PACK.md#your-router-helper-minutes-1030), or follow the
-[browser tutorial](https://rasa.community/library/tutorials/software-factory/).
+Find `converted` and `reference_date`. You can already tell a traveler approximately what $200 is worth in pounds and which day's rate you used. Try `bash desk data weather LHR` next. For flights, run `bash desk data flights OSL BGO` and use a returned flight number in `bash desk data status FLIGHT_NUMBER`. If a source is unavailable, keep that result and try the other one.
 
-The setup check verifies license handling and the presence of the model key; the
-helper conversation checks model access. A present key still needs billing and
-permission for the model.
-
-**Reviewing an unmerged change:** use the repository and branch named in the
-review handoff. Open that branch on GitHub, choose **Code → Codespaces → New
-with options**, and select the same workshop configuration. Scope your own
-secrets to that exact repository. Continue from **Your first win** above; do not create a
-main-branch Codespace and patch it silently afterward.
-
-### If a key was added or its repository access changed
-
-Fix the secret and its repository access in step C. Then, in [Your
-codespaces](https://github.com/codespaces), use the **…** menu to stop the
-**same Codespace** and open it again. Restarting alone does not rerun the
-creation check. In a new terminal, run:
-
-```bash
-bash "$(git rev-parse --show-toplevel)/.devcontainer/software-factories-workshop/setup.sh"
-```
-
-Wait for `Setup finished` before initializing, training, or chatting. If it still
-says `NOT READY`, stop and ask the presenter or the secret's owner. Keep the
-existing workspace and the error words, without the key. If you are not ready
-by minute 25, raise your hand and pair with a neighbor; share the screen, not
-credentials.
-
-## The order of the parts
-
-| Minutes | You do | What to show |
+| Elapsed minutes | Open | What you finish with |
 | --- | --- | --- |
-| 0–10 | Open Codespaces while the presenter shows the result | Setup status and the four target conversations |
-| 10–30 | Create, install, train, and open your Mantle helper | Confirmation, restart, clarification, and refusal |
-| 30–50 | Try corrections, cancellation, and different wording | What the helper recorded and what it refused |
-| 50–70 | Change one source value, catch it, then restore it | Source check FAIL, followed by restored PASS |
-| 70–75 | Break | |
-| 75–115 | Connect the practice builder; optionally use a billed Agents session | A labeled proposal, absolute saved path, and SHA-256 |
-| 115–140 | Compare the saved bytes and run the four gate controls | One ACCEPT and three REJECT results |
-| 140–160 | Record a human approval or refusal | The exact proposal and the reason; no automatic application |
-| 160–180 | Presenter preview, discussion, and next steps | A short Studio 2 preview; attendees install nothing |
+| 0–30 | [Your first travel briefing](course/01-briefing.md) | A provider result, then a two-tool Mantle conversation |
+| 30–75 | [Build the full agent with Codex](course/02-codex.md) | A separate four-tool Mantle project you can run |
+| 75–85 | Break | Save the candidate path and your agent directory |
+| 85–135 | [Operate the Mantle factory](course/03-factory.md) | A proposed agent specification, hosted session ID when live, and a reviewed build |
+| 135–180 | [Test a complete trip and take it home](course/04-trip.md) | A flight briefing with attributable sources and a next build |
 
-In today's fresh 4-core test Codespaces, a tester reached the first confirmation
-at about 10 minutes and all four conversation checks by about 11 minutes. Those
-runs used an existing account and assistance. They are observations, not a
-first-time attendee guarantee. The refreshed complete folder still needs its
-own cold walkthrough.
+**Presenting?** Open the [slide PDF](slides/masterclass-slides.pdf) and [instructor card](FACILITATOR.md). Working alone? Each chapter ends with an observable checkpoint.
 
-## Use one path
+## How the two agents fit together
 
-- **Attendees:** [the attendee pack](ATTENDEE-PACK.md) contains the commands and
-  recovery steps. [Learning checkpoints](LEARNING-CHECKPOINTS.md) help you explain
-  the result. [The build contract](BUILD-CONTRACT.md) says what the proposal and
-  gate establish.
-- **Presenters:** use [the run sheet](RUN-SHEET-DARK-FACTORY.md),
-  [facilitator notes](FACILITATOR.md), [table card](FACILITATOR-CARD.md),
-  [slides](slides/index.html), [PDF](slides/masterclass-slides.pdf), and
-  [presenter notes](slides/PRESENTER-NOTES.md).
-- **Source:** [router-helper](router-helper/README.md) contains the helper,
-  builder, and gate. The [archive](archive/) preserves older editions;
-  those local, travel, and voice routes are outside this session.
+```mermaid
+flowchart TD
+    brief["Developer brief"] --> codex["Codex CLI"]
+    brief --> studio["Mantle factory agent"]
+    studio --> hosted["OpenAI hosted Agents API"]
+    codex --> candidate["Candidate agent specification"]
+    hosted --> candidate
+    candidate --> review["Check hash and review skill"]
+    review --> product["Build and run the Mantle travel desk"]
+    traveler["Traveler question"] --> product
+    product --> tools["Flight, weather and currency providers"]
+```
 
-Studio 2 is a presenter-only preview, not an attendee setup task. Join the
-[Rasa Community](https://info.rasa.com/community/) to hear about its release.
+The build inputs are specifications. The output is a real agent directory you can open, edit, train and run. The live readers are reusable tools authored in the repository. Your builder decides how the travel skill should use them.
+
+**Repeatable flight exercise.** Use the [two-date rehearsal](course/04-trip.md#run-the-two-date-case-on-your-own-agent) to test contradictory schedules with the same inputs on every run. `bash desk case status ZZ201` needs no credentials. Use the approval and Inspector steps to test the generated voice agent itself.
