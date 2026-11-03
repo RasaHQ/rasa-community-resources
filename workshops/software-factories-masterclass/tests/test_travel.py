@@ -28,6 +28,30 @@ class LocalClock(unittest.TestCase):
         self.assertIsNone(travel.local_clock(None, oslo))
 
 
+class EmptyBoardFallback(unittest.TestCase):
+    """The published course step: when the board lists no record, an airport and a time give an independent forecast."""
+
+    def request(self, url, params):
+        if url == travel.BOARD_URL:
+            root = xml_board(params["airport"], params["direction"])
+            rows = root.find("flights")
+            for leg in list(rows):
+                rows.remove(leg)
+            return root
+        stamp = int(datetime(2026, 11, 2, 19, tzinfo=timezone.utc).timestamp())
+        return {"hourly": {"time": [stamp], "temperature_2m": [6], "precipitation_probability": [40]}}
+
+    def test_no_record_allows_the_independent_forecast_and_labels_it(self):
+        result = travel.read("weather", "BGO", "2026-11-02T19:00:00Z", "DY000", "", now=NOW, request=self.request)
+        self.assertEqual((result["temperature_c"], result["independent_forecast"]), (6, True))
+        self.assertIn("not tied to a flight", result["note"])
+
+    def test_no_record_and_no_airport_asks_for_one(self):
+        result = travel.read("weather", "", "", "DY000", "", now=NOW, request=self.request)
+        self.assertEqual(result["state"], "no_record")
+        self.assertIsNone(result["forecast"])
+
+
 class OvernightArrival(unittest.TestCase):
     def test_each_time_keeps_its_own_date_when_a_delay_crosses_midnight(self):
         def board(code, direction):

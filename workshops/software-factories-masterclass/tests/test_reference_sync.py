@@ -63,8 +63,8 @@ class WeatherInterfaceTests(unittest.TestCase):
             build.generate((ROOT / "reference" / (spec + ".json")).read_bytes(), project)
             return (project / "skills/travel_briefing/tools.py").read_text()
 
-    def test_agents_with_a_flight_lookup_get_arrival_mode_only(self):
-        arrival = ["flight_number", "flight_date"]
+    def test_agents_with_a_flight_lookup_get_the_flight_first_weather_tool(self):
+        arrival = ["flight_number", "flight_date", "airport_code", "arrival_time"]
         self.assertEqual(weather_parameters(self.compiled("full")), arrival)
         reference = (ROOT / "reference/finished-agent/skills/travel_briefing/tools.py").read_text()
         self.assertEqual(weather_parameters(reference), arrival)
@@ -79,6 +79,12 @@ class WeatherInterfaceTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             namespace["destination_weather"](airport_code="BGO", arrival_time="2026-11-03T20:10:00+01:00")
         self.assertEqual(namespace["destination_weather"]("ZZ201", ""), "called")
+
+    def test_an_airport_and_time_without_a_flight_cannot_start_the_weather_call(self):
+        _, parameters, _, _ = build.tool_spec("weather", ["weather", "fx", "flights", "status"])
+        self.assertIn("flight_number: str", parameters)
+        self.assertNotIn("flight_number: str =", parameters)
+        self.assertNotIn("flight_date: str =", parameters)
 
     def test_an_empty_flight_returns_no_forecast_and_asks_for_flight_and_date(self):
         import travel_data

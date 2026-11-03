@@ -39,16 +39,18 @@ TOOLS = {
         "Look up flight records by IATA flight number; distinguish scheduled and estimated arrival.",
     ),
 }
-# A full travel desk looks flights up, so its weather tool has no airport-and-time form to call with a time taken
-# from a record: it forecasts a flight's landing from the flight number and the date, and nothing else.
+# A full travel desk looks flights up. Its weather tool resolves the flight number and date on the board itself and
+# ignores any airport or time when it finds a record, so a time copied from a record cannot skip the date question. The
+# airport and time give an independent forecast only when the board lists no record for the flight.
 ARRIVAL_WEATHER = (
     "destination_weather",
-    "flight_number: str, flight_date: str",
-    "'', '', flight_number, flight_date",
+    "flight_number: str, flight_date: str, airport_code: str = '', arrival_time: str = ''",
+    "airport_code, arrival_time, flight_number, flight_date",
     "Weather when a flight lands. Pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller "
-    "chose; an empty string if you do not know it yet). The tool finds the record itself and returns no forecast, "
-    "telling you to ask the traveller, when the flight number or the date is missing or fits no single record. "
-    "It cannot forecast any other time or place.",
+    "chose; an empty string if you do not know it yet). The tool finds the record on the board itself and forecasts "
+    "at its arrival, and ignores any airport or time you add. With several records it returns no forecast and "
+    "tells you to ask the traveller which date first. Only when the board lists no record for the flight, pass "
+    "airport_code and an ISO arrival_time with offset to get an independent forecast, which is labelled as such.",
 )
 
 
