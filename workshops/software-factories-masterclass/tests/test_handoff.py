@@ -58,7 +58,7 @@ class Handoff(unittest.TestCase):
         self.assertEqual(stop.exception.code, 3)
         receipt = json.loads(next(self.root.glob("runs/*/receipt.json")).read_text())
         self.assertEqual(receipt["outcome"], "invalid_candidate")
-        self.assertEqual(receipt["reason"], "Invalid instructions")
+        self.assertEqual(receipt["reason"], f"Invalid instructions: {len(spec['instructions'])} characters, allowed 10 to 2500")
         self.assertEqual(receipt["session"], "simulated-id")
 
     def test_task_states_the_limits_the_compiler_enforces(self):

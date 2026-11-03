@@ -66,7 +66,8 @@ def validate(raw):
         raise ValueError("Invalid agent name")
     for k in ("instructions", "description"):
         if not isinstance(s[k], str) or not 10 <= len(s[k]) <= 2500:
-            raise ValueError("Invalid " + k)
+            size = len(s[k]) if isinstance(s[k], str) else type(s[k]).__name__
+            raise ValueError(f"Invalid {k}: {size} characters, allowed 10 to 2500")
     if (
         not isinstance(s["tools"], list)
         or not s["tools"]
