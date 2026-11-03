@@ -114,7 +114,7 @@ def generate(raw, out):
         source += "\nimport asyncio\nfrom rasa.mantle.tools.decorator import ToolContext, tool\nfrom rasa.mantle.tools.result import ToolResult\n"
         for k in spec["tools"]:
             name, params, args, doc = TOOLS[k]
-            source += f"\n@tool(description={doc!r})\nasync def {name}({params}, context: ToolContext = None) -> ToolResult:\n    data = await asyncio.to_thread(read, {k!r}, {args})\n    return ToolResult(llm_response=data)\n"
+            source += f"\n@tool(description={doc!r})\nasync def {name}(context: ToolContext, {params}) -> ToolResult:\n    data = await asyncio.to_thread(read, {k!r}, {args})\n    return ToolResult(llm_response=data)\n"
         compile(source, "tools.py", "exec")
         (skill / "tools.py").write_text(source)
         project.rename(out)

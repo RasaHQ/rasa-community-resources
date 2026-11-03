@@ -227,21 +227,21 @@ from rasa.mantle.tools.decorator import ToolContext, tool
 from rasa.mantle.tools.result import ToolResult
 
 @tool(description='Look up flight records by IATA flight number; distinguish scheduled and estimated arrival.')
-async def flight_status(flight_number: str, context: ToolContext = None) -> ToolResult:
+async def flight_status(context: ToolContext, flight_number: str) -> ToolResult:
     data = await asyncio.to_thread(read, 'status', flight_number)
     return ToolResult(llm_response=data)
 
 @tool(description='Forecast at an airport. Use an ISO timestamp with offset, or an empty string for the current hour.')
-async def destination_weather(airport_code: str, arrival_time: str, context: ToolContext = None) -> ToolResult:
+async def destination_weather(context: ToolContext, airport_code: str, arrival_time: str) -> ToolResult:
     data = await asyncio.to_thread(read, 'weather', airport_code, arrival_time)
     return ToolResult(llm_response=data)
 
 @tool(description='Convert an amount using a dated reference exchange rate.')
-async def convert_currency(base: str, quote: str, amount: float, context: ToolContext = None) -> ToolResult:
+async def convert_currency(context: ToolContext, base: str, quote: str, amount: float) -> ToolResult:
     data = await asyncio.to_thread(read, 'fx', base, quote, amount)
     return ToolResult(llm_response=data)
 
 @tool(description='List remaining scheduled departures tonight in the departure airport time zone.')
-async def tonight_departures(origin: str, destination: str, context: ToolContext = None) -> ToolResult:
+async def tonight_departures(context: ToolContext, origin: str, destination: str) -> ToolResult:
     data = await asyncio.to_thread(read, 'flights', origin, destination)
     return ToolResult(llm_response=data)
