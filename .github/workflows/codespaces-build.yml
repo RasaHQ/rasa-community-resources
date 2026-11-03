@@ -53,7 +53,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - name: Install the dev container CLI
-        run: npm install --global @devcontainers/cli@0.75.0
+        # 0.75.0 hangs after 'Container started' on the current runners (Docker 29); 0.86.1 and 0.89.0 finish.
+        run: npm install --global @devcontainers/cli@0.89.0
       - name: Build and create the Codespace configuration (no secrets, no model calls)
         run: >
           devcontainer up --workspace-folder "$PWD"
@@ -65,5 +66,9 @@ jobs:
         run: |
           config=".devcontainer/${{ matrix.resource.slug }}/devcontainer.json"
           command=$(jq -r .postCreateCommand "$config")
+          if [ "$command" = null ]; then
+            echo "This configuration has no READY command; the dev container starting is the check."
+            exit 0
+          fi
           devcontainer exec --workspace-folder "$PWD" --config "$config" bash -c "READY_SKIP_SECRETS=1 $command" | tee ready.txt
           grep -q '^READY' ready.txt

@@ -85,6 +85,11 @@ class Real(unittest.TestCase):
         self.assertGreater(len(resources), 60)
         self.assertTrue(all(set(r) == {"path", "slug"} for r in resources))
 
+    def test_the_workshop_configuration_is_in_the_list(self):
+        self.assertIn("travel-factory", [r["slug"] for r in scope.every_resource()])
+        for r in scope.every_resource():
+            self.assertTrue((scope.ROOT / ".devcontainer" / r["slug"] / "devcontainer.json").is_file(), r)
+
 
 if __name__ == "__main__":
     unittest.main()
