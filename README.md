@@ -1,6 +1,6 @@
 # Rasa Community Resources
 
-**New: the Rasa Travel Agent Factory masterclass.** [Start here: credentials, Codespaces and your first live result](workshops/software-factories-masterclass/README.md) · [Teaching deck](workshops/software-factories-masterclass/slides/masterclass-slides.pdf) · [Instructor card](workshops/software-factories-masterclass/FACILITATOR.md)
+**New: the Rasa Travel Agent Factory masterclass.** [Start here: credentials, Codespaces and your first live result](workshops/software-factories-masterclass/README.md) · [Teaching deck](workshops/software-factories-masterclass/slides/masterclass-slides.pdf) · [Instructor card](workshops/software-factories-masterclass/FACILITATOR.md) · [Printed setup sheet (PDF)](workshops/software-factories-masterclass/handout/rasa-travel-workshop-one-pager.pdf)
 
 Choose what you want to do:
 
