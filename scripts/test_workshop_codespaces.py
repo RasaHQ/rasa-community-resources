@@ -27,6 +27,10 @@ class TravelFactoryProfileTests(unittest.TestCase):
         self.assertGreaterEqual(config['hostRequirements']['cpus'], 4)
         self.assertIn('ghcr.io/astral-sh/uv:0.10.8', (PROFILE / 'Dockerfile').read_text())
 
+    def test_sshd_feature_is_pinned_to_an_exact_version(self):
+        features = self.config()["features"]
+        self.assertEqual([name for name in features if "/sshd:" in name], ["ghcr.io/devcontainers/features/sshd:1.1.0"])
+
     def test_profile_asks_for_exactly_the_three_secrets(self):
         self.assertEqual(sorted(self.config()['secrets']), sorted(SECRETS))
 
