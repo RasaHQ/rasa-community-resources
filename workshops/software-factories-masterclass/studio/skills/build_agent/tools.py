@@ -29,4 +29,8 @@ async def propose_travel_agent(context: ToolContext, brief: str) -> ToolResult:
         )
     else:
         state = "build uncertain; inspect runs before any retry"
-    return ToolResult(llm_response={"state": state, "receipt": output.decode()[-3000:]})
+    text = output.decode()
+    spoken = [line[len("Spoken: "):] for line in text.splitlines() if line.startswith("Spoken: ")]
+    if proc.returncode not in (0, 3) or not spoken:
+        spoken = ["The build outcome is uncertain, so nothing is confirmed. Check the screen before trying again."]
+    return ToolResult(llm_response={"state": state, "spoken": spoken[-1], "record": text[-3000:]})
