@@ -36,6 +36,8 @@ KNOWN_SECRETS = {
     "RIME_API_KEY": "Rime key for spoken replies",
     "SPEECHMATICS_API_KEY": "Speechmatics key for speech recognition",
 }
+# Exact feature version, so a published change to the feature cannot alter a configuration unseen.
+SSHD_FEATURE = "ghcr.io/devcontainers/features/sshd:1.1.0"
 LICENSE_ALIAS = "RASA_PRO_LICENSE"
 DEFAULT_SECRETS = ["RASA_LICENSE", "OPENAI_API_KEY"]
 START, END = "<!-- codespaces:start -->", "<!-- codespaces:end -->"
@@ -213,7 +215,7 @@ def config(entry: dict) -> str:
         "build": {"dockerfile": "../resource-base/Dockerfile"},
         "features": {
             "ghcr.io/devcontainers/features/python:1": {"version": "3.12"},
-            "ghcr.io/devcontainers/features/sshd:1": {"version": "latest"},
+            SSHD_FEATURE: {},
         },
         "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/" + entry["path"],
         "hostRequirements": {"cpus": 4, "memory": "8gb", "storage": "32gb"},

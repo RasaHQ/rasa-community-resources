@@ -41,6 +41,19 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertTrue(body["workspaceFolder"].endswith("/" + entry["path"]))
             self.assertIn("ready.sh", body["postCreateCommand"])
 
+    def test_sshd_feature_is_pinned_to_an_exact_version(self):
+        for project in discover_projects("catalog"):
+            body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(project.rel) / "devcontainer.json").read_text())
+            sshd = [name for name in body["features"] if "/sshd:" in name]
+            self.assertEqual(sshd, [g.SSHD_FEATURE], project.rel)
+            self.assertRegex(sshd[0], r":\d+\.\d+\.\d+$")
+            self.assertEqual(body["features"][sshd[0]], {})
+
+    def test_readme_discloses_what_the_ssh_feature_changes(self):
+        text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        for phrase in ("PermitRootLogin yes", "port 2222", "gh codespace ssh", "PAM"):
+            self.assertIn(phrase, text)
+
     def test_license_alias_comes_from_remote_env_for_resources_that_read_the_older_name(self):
         aliased = [g.manifest(p)["path"] for p in discover_projects("catalog") if g.manifest(p)["alias_license"]]
         self.assertEqual(len(aliased), 5)
