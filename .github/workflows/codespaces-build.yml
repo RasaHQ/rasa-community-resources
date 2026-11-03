@@ -14,6 +14,11 @@ on:
   schedule:
     - cron: '17 5 * * 1'
   workflow_dispatch:
+    inputs:
+      only:
+        description: 'Space-separated resource slugs to build; empty builds every resource'
+        required: false
+        default: ''
 permissions:
   contents: read
 concurrency:
@@ -26,15 +31,22 @@ jobs:
       resources: ${{ steps.list.outputs.resources }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
       - id: list
-        run: echo "resources=$(python3 scripts/generate_codespaces.py --list-json)" >> "$GITHUB_OUTPUT"
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          ONLY: ${{ inputs.only }}
+        run: echo "resources=$(python3 scripts/codespaces_scope.py "$EVENT" "$BEFORE" "$GITHUB_SHA" "$ONLY")" >> "$GITHUB_OUTPUT"
   build:
     needs: matrix
+    if: needs.matrix.outputs.resources != '[]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
-      max-parallel: 8
+      max-parallel: 6
       matrix:
         resource: ${{ fromJSON(needs.matrix.outputs.resources) }}
     name: ${{ matrix.resource.path }}
