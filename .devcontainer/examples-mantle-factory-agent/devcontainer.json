@@ -35,6 +35,6 @@
       "description": "Optional. OpenAI project key used for this resource's model calls"
     }
   },
-  "onCreateCommand": "cd \"$(git rev-parse --show-toplevel)\" && cd examples/mantle-factory-agent && bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . && ./demo setup",
+  "onCreateCommand": "cd \"$(git rev-parse --show-toplevel)\" && cd examples/mantle-factory-agent && bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . || echo \"NOTE: .env was not created; the secrets stay in your environment.\"; ./demo setup",
   "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" examples/mantle-factory-agent \"test -x project/.venv/bin/python\""
 }

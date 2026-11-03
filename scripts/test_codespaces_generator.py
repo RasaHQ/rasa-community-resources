@@ -126,19 +126,51 @@ class EnvFileTests(unittest.TestCase):
             self.assertEqual(env, ["# note", "RASA_LICENSE=license-sentinel", "OPENAI_API_KEY=model-sentinel", "LOG_LEVEL=INFO"])
             self.assertEqual(stat.S_IMODE((Path(directory) / ".env").stat().st_mode), 0o600)
 
-    def test_mode_is_600_even_when_the_umask_is_open_or_a_default_acl_would_override_it(self):
-        # In a Codespace the workspace directory may carry a default ACL that wins over the umask. Model that by
-        # running a copy of the script without its own `umask 077` line under an open umask: only the explicit chmod
-        # can leave the file private.
+    def stubbed(self, directory, body):
+        """A directory with a stub `chmod` first on the PATH, and the stub's log file."""
+        bin_dir = Path(directory) / "bin"
+        bin_dir.mkdir()
+        stub = bin_dir / "chmod"
+        stub.write_text("#!/bin/sh\n" + body)
+        stub.chmod(0o755)
+        return bin_dir
+
+    def run_stubbed(self, directory, bin_dir, without_umask=False):
+        """Run the script under an open umask. `without_umask` removes the script's own `umask 077`, modelling a
+        directory whose default ACL overrides it, so that only an applied chmod can make the file private."""
+        (Path(directory) / ".env.example").write_text("OPENAI_API_KEY=\n", encoding="utf-8")
+        script = self.SCRIPT
+        if without_umask:
+            script = Path(directory) / "make-env-no-umask.sh"
+            script.write_text(self.SCRIPT.read_text().replace("umask 077\n", ""), encoding="utf-8")
+            self.assertNotIn("umask 077", script.read_text())
+        environment = {"PATH": f"{bin_dir}:/usr/bin:/bin", "HOME": directory, "OPENAI_API_KEY": "model-sentinel"}
+        return subprocess.run(["/bin/bash", "-c", f'umask 000; bash "{script}" "{directory}"'], env=environment,
+                              capture_output=True, text=True)
+
+    def test_the_file_is_still_empty_when_chmod_runs(self):
         with tempfile.TemporaryDirectory() as directory:
-            (Path(directory) / ".env.example").write_text("OPENAI_API_KEY=\n", encoding="utf-8")
-            copy = Path(directory) / "make-env-no-umask.sh"
-            copy.write_text(self.SCRIPT.read_text().replace("umask 077\n", ""), encoding="utf-8")
-            self.assertNotIn("umask 077", copy.read_text())
-            environment = {"PATH": "/usr/bin:/bin", "HOME": directory, "OPENAI_API_KEY": "model-sentinel"}
-            subprocess.run(["/bin/bash", "-c", f'umask 000; bash "{copy}" "{directory}"'], env=environment,
-                           capture_output=True, text=True)
+            log = Path(directory) / "size.log"
+            bin_dir = self.stubbed(directory, f'wc -c < .env >> "{log}"\nexec /bin/chmod "$@"\n')
+            result = self.run_stubbed(directory, bin_dir)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(log.read_text().split(), ["0"])
             self.assertEqual(stat.S_IMODE((Path(directory) / ".env").stat().st_mode), 0o600)
+
+    def test_a_chmod_that_fails_writes_no_value_and_says_so_without_printing_one(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = self.run_stubbed(directory, self.stubbed(directory, "exit 1\n"))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("No secret was written", result.stderr)
+            self.assertNotIn("sentinel", result.stdout + result.stderr)
+            self.assertFalse((Path(directory) / ".env").exists())
+
+    def test_a_chmod_that_silently_changes_nothing_is_caught_before_any_value_is_written(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = self.run_stubbed(directory, self.stubbed(directory, "exit 0\n"), without_umask=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("did not apply mode 600", result.stderr)
+            self.assertFalse((Path(directory) / ".env").exists())
 
     def test_license_alias_is_filled_from_the_saved_license(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -201,8 +233,10 @@ class FirstUseHonestyTests(unittest.TestCase):
             marked += has
         self.assertGreaterEqual(marked, 5)
 
-    def test_make_env_sets_the_mode_explicitly(self):
-        self.assertIn("chmod 600 .env", (REPO_ROOT / ".devcontainer/resource-base/make-env.sh").read_text())
+    def test_make_env_sets_and_verifies_the_mode_before_writing(self):
+        text = (REPO_ROOT / ".devcontainer/resource-base/make-env.sh").read_text()
+        self.assertLess(text.index("chmod 600 .env"), text.index("while IFS="))
+        self.assertLess(text.index('mode_of .env'), text.index("while IFS="))
 
 
 class ParsingTests(unittest.TestCase):

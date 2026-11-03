@@ -38,6 +38,6 @@
       "description": "Optional. Deepgram key for speech recognition and spoken replies"
     }
   },
-  "onCreateCommand": "cd \"$(git rev-parse --show-toplevel)\" && cd examples/mantle-flight-briefing-openai-agents && bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . && make setup",
+  "onCreateCommand": "cd \"$(git rev-parse --show-toplevel)\" && cd examples/mantle-flight-briefing-openai-agents && bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . || echo \"NOTE: .env was not created; the secrets stay in your environment.\"; make setup",
   "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" examples/mantle-flight-briefing-openai-agents \"make doctor\""
 }
