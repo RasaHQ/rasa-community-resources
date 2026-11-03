@@ -150,6 +150,10 @@ def generate(raw, out):
         project.rename(out)
 
 
+# One line the voice agent may read aloud; ids and paths stay in the receipt above it.
+SPOKEN_PREFIX = "Spoken: "
+
+
 def propose(mode, brief):
     run = ROOT / "runs" / uuid.uuid4().hex
     run.mkdir(parents=True)
@@ -227,10 +231,12 @@ def propose(mode, brief):
         (run / "receipt.json").write_text(json.dumps(receipt, indent=2))
         print(json.dumps(receipt, indent=2))
         print("Candidate rejected by the compiler:", error, "- kept in", run.relative_to(ROOT), flush=True)
+        print(SPOKEN_PREFIX + "The hosted session finished, but the compiler rejected the candidate. " + str(error)[:160].rstrip(".") + ". Nothing was built.", flush=True)
         raise SystemExit(3)
     print(json.dumps(receipt, indent=2))
     print("Review:", dest)
     print("Run directory:", run.relative_to(ROOT))
+    print(SPOKEN_PREFIX + "The compiler accepted the candidate: %d tools and %d characters of instructions. The run and file are on screen." % (len(spec["tools"]), len(spec["instructions"])), flush=True)
     return run
 
 

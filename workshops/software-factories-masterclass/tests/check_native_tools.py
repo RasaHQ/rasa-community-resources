@@ -114,7 +114,7 @@ async def check(root):
             returncode = 0
 
             async def communicate(self):
-                return (b'{"OFFLINE_PROBE_NO_HOSTED_SESSION":true}', b"")
+                return (b'{"OFFLINE_PROBE_NO_HOSTED_SESSION":true}\nSpoken: Offline probe, no hosted session.\n', b"")
 
         proc = AsyncMock(return_value=OfflineProcess())
         with patch.dict(os.environ, {"TRAVEL_FACTORY_ROOT": str(root)}), \
@@ -122,7 +122,8 @@ async def check(root):
             await invoke(
                 "studio", studio, "propose_travel_agent", {"brief": "Offline probe"},
                 {"state": "candidate ready",
-                 "receipt": '{"OFFLINE_PROBE_NO_HOSTED_SESSION":true}'},
+                 "spoken": "Offline probe, no hosted session.",
+                 "record": '{"OFFLINE_PROBE_NO_HOSTED_SESSION":true}\nSpoken: Offline probe, no hosted session.\n'},
             )
             if results[-1]["pass"]:
                 proc.assert_awaited_once()
