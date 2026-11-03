@@ -1,42 +1,23 @@
-# Facilitator notes: dark software factory workshop
+# Teach the travel factory
 
-For the person presenting. The timing source is `RUN-SHEET-DARK-FACTORY.md`. The slides are in `slides/` and the note for each slide is in `slides/PRESENTER-NOTES.md`. Attendees follow `ATTENDEE-PACK.md`.
+Open the projector PDF and the learner README. For an interactive presentation, open the built slides/index.html in a browser; arrows navigate and N reveals the speaking cue. Each slide names the elapsed time. Open the teaching notes in slides/PRESENTER-NOTES.md beside the PDF.
 
-Everything runs in GitHub Codespaces on Rasa Mantle. Nothing is installed on a laptop and nothing is set up in advance.
+**Opening eight minutes.** Begin with the two calls participants will make. Ask why a current forecast cannot answer the landing question. Then introduce the developer’s change request: when two flight records match, ask which one the traveler means. Use that request to explain the factory, identify each technology’s job, and walk through the agenda. Invite learners to open the README and launch their Codespace during the introduction.
 
-## Before the room opens (about 20 minutes before 3:00 PM)
+| At minute | Ask a learner to show | If the live route is blocked |
+| --- | --- | --- |
+| 15 | The airport forecast hour and rate reference date | Try the other public endpoint. Work through the labeled FX fixture in tests/test_travel.py while waiting. |
+| 30 | Two tool events in the starter’s Inspector | Record live provider results and mark conversation pending. |
+| 75 | A four-tool project built from a reviewed Codex spec | Use the labeled sample; distinguish it from a Codex generation. |
+| 105 | The tool confirmation in the factory agent, and what happens on denial | Walk the request through studio/skills/build_agent and the builder source. |
+| 135 | A hosted artifact receipt and a separately running traveler project | Use a sample candidate through approval; list hosted generation as pending. |
+| 165 | Which local evening was searched, which arrival time drove the forecast and which date drove FX | Use the deterministic timezone and missing-provider tests. |
+| 180 | A reproducible build note and one home exercise | Keep the output folder and stop the Codespace. |
 
-1. Open the workshop codespace yourself, on the room's network, from the link the workshop lead sends. Use the `software-factories-workshop` configuration with at least 4 cores. Wait for the line that starts `Setup finished`. Note how long it took.
-2. Run the four checks of the router helper once, so you have seen the real replies (ATTENDEE-PACK.md, minutes 10 to 30).
-3. Open the deck (`slides/index.html`) offline and check the notes with the N key.
-4. Put the "If something fails" table of the attendee pack on a second screen.
-5. Prepare your Studio 2 preview on your own machine and a recording of it. Keep its setup out of this repository and off the shared screen.
+The supported airports for this edition are OSL, BGO, JFK, LHR, CDG, MAD and MEX (flight tools cover only Oslo–Bergen in either direction). Codespaces costs, provider quotas, Codex calls and hosted Agents sessions belong to the accounts used. Have workshop access ready. Jobs can take longer than scheduled; shorten discussion or move the second generation to home practice. Keep the first live-data exercise and the exercise that runs a generated Mantle product.
 
-## Running the room
+**Sample grading question.** A learner offers “there are no flights” when the provider cannot be reached. Ask them to show the `state` field, then rephrase their answer for a traveler who still needs a decision. Accept “I could not retrieve the board. I can still estimate your budget and look up weather if you give me an arrival time.”
 
-- Each person works alone at their own codespace. Pair anyone who cannot open one with a neighbor, and do not troubleshoot billing in the room.
-- Minute 0: everyone opens a codespace while you show the finished helper. The install can run for several minutes after the codespace shows as available.
-- Use a two-minute intervention. Ask for the last step that worked, read the exact words on screen (never a key), offer the documented recovery, then let them continue. A `NOT READY` line names the secret to fix, and a codespace that was already running needs a stop and start after a secret is added, and then `setup.sh` must be run again and must print `Setup finished` before anyone continues.
-- At minute 30 move on even if some rows do not match. At minute 70 take the break. At minute 115 anyone without a saved file from the practice builder takes `router-helper/gate/candidates/good.py` to the gate.
-- If time is short, shorten the Studio 2 preview first, then the release block. Never shorten the first 30 minutes.
+**Voice rehearsal.** Use the same private HTTPS path as attendees. Listen to two consecutive spoken traveler turns. Start a separate Studio call, speak the brief and decline the confirmation aloud. During an approved live build, confirm once, review the artifact, then call the newly generated traveler agent and verify its second spoken turn. Record transcription, audible playback and tool evidence separately for each agent.
 
-## Say what was measured, and what was not
-
-- In test codespaces the helper first confirmed a restart about 10 minutes after the codespace opened and all four checks passed by about 11 minutes. Testers had help and used an existing account.
-- The practice builder, the tool server, the skill and the gate ran in a fresh test codespace with no billed Agents session. A billed build through the tool server ran once on earlier code with a real key: 28 seconds from message to reply.
-- Not shown: an unaided first-time attendee, a fresh account on the room's network, the cost of a builder run, and a real router.
-
-## Never equate
-
-- A builder session that finished with an accepted change.
-- A source-file check passing with the helper running that command in a conversation.
-- A passing gate with proof of all future behavior.
-- The Studio 2 preview with something attendees can use.
-
-## Closing prompt
-
-Ask each person to name the one check they could not edit, and the one decision they made at the last gate.
-
-## Finish
-
-Ask everyone to keep their review note and any failure evidence, press Ctrl+C in the terminals running the Inspector and the tool server, and stop their codespace from GitHub. The storage persists, and stopping ends the compute use.
+**Repeatable flight exercise.** Use the [two-date rehearsal](course/04-trip.md#run-the-two-date-case-on-your-own-agent) to test contradictory schedules with the same inputs on every run. `bash desk case status ZZ201` needs no credentials. Use the approval and Inspector steps to test the generated voice agent itself.

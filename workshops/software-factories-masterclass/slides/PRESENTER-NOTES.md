@@ -1,69 +1,93 @@
-# Presenter notes
+# Presenting the travel factory
 
-Sixteen slides for the New York edition, Tuesday, November 3, 3:00 to 6:00 PM New York time. Minute 0 is 3:00 PM. The timing source is `../RUN-SHEET-DARK-FACTORY.md`. Press N in the deck to show these notes on screen.
+## 1. Build a voice agent that builds travel agents · 00–01 MIN  /  WELCOME
 
-Every attendee works in a GitHub Codespace on Rasa Mantle only. Nothing is set up in advance. Say what was measured and what was not: testers have run the first 30 minutes in fresh codespaces with help, and nobody has yet done it unaided.
+Say: “You will make two different calls today. On the first, you want travel advice. On the second, you want new software.” Ask participants to open the workshop README in a second tab so they can launch their Codespace while you introduce the problem.
 
-## 1. A dark software factory built in your own codespace.
+## 2. Which forecast belongs to my flight? · 01–02 MIN  /  THE TRAVELER
 
-Welcome briefly. Say where the work happens: everyone builds in a GitHub Codespace in the browser, so nothing is installed on a laptop. The helper simulates a router command. It contacts no router and changes nobody's internet connection. Do not demo anything before slide 4.
+Ask: “If I tell you the temperature in Bergen right now, have I told you what to pack for landing?” Wait for “What time do I land?” Draw attention to the dependency: the flight lookup supplies the hour for the forecast. Then introduce the travel team that must maintain this behavior.
 
-## 2. Three hours, mostly your hands on the keys.
+## 3. Tomorrow the travel team asks for a change · 02–04 MIN  /  THE ENGINEERING PROBLEM
 
-Use elapsed minutes and the clock: minute 0 is 3:00 PM, minute 30 is 3:30, the break is minutes 70 to 75 (4:10 to 4:15), the builder starts at minute 75, the gate at 115 (4:55), release at 140 (5:20), the Studio 2 preview at 160 (5:40) and the close at 175 (5:55). If time is short, shorten the Studio 2 preview first, then the decision block, and keep the first 30 minutes whole.
+Ask learners to name one observation that would convince them the change worked. Expected: a clarification on the ambiguous request, then a forecast for the selected record; the ordinary request still works. Say: “We have moved from answering a traveler to changing the software that answers them.”
 
-## 3. Open your codespace now, at minute 0.
+## 4. How a request becomes a second agent · 04–06 MIN  /  THE FACTORY
 
-Keep this slide up while people open codespaces and show the finished helper from the next slide on a second screen if you can. Exact steps are in ATTENDEE-PACK.md. The install can run for several minutes after the codespace shows as available: wait for the line that starts Setup finished. NOT READY names the secret to fix: fix it, stop and start the same codespace, run setup.sh again, and wait for the line that starts Setup finished. If it is still NOT READY, stop and send the person to the owner of the secret. Never let anyone paste a key into a chat, a command or a file. Pair anyone who cannot open a codespace with a neighbor and do not troubleshoot billing in the room. Setup time for a first-time attendee has not been measured.
+Make the boundary concrete: the builder writes agent.json; the workshop compiler creates agent.yml, integrations.yml and the skill directory. Matching a hash identifies the reviewed bytes. Only testing the generated desk tells us how it handles the traveler. The factory itself is a Mantle agent when we operate it by voice.
 
-## 4. One small agent: a router restart helper.
+## 5. What runs where? · 06–07 MIN  /  THE TOOLS
 
-This is the one risk the whole session protects: a restart and a factory reset sound alike, and a factory reset would erase the customer's Wi-Fi name and password. Show the finished helper once, typing the four rows. The wording differs a little between runs; the meaning must match. Say plainly that the command is simulated.
+Point out that Codex and the hosted API are two build routes. The traveler’s weather question calls a provider; it does not start a build. No travel-data account is needed for the workshop route.
 
-## 5. Minutes 10 to 30: build your helper.
+## 6. The route through the masterclass · 07–08 MIN  /  YOUR THREE HOURS
 
-The slide shows the shape of the steps; the attendee pack has the exact commands with full paths, so tell people to copy from the pack, not from the slide. The installer moves the starter banking skills out of the active skills and sets a router-only persona. After rasa inspect says the server is up and running, a second terminal runs print-inspector-url.sh to print the Inspector address; if GitHub asks to continue to a private port, choose Continue. In test codespaces the helper first confirmed a restart about 10 minutes after the codespace opened. Testers had help and used an existing account. Nobody has done this unaided yet, so say so if people run slow.
+Show participants where they can pause: after the first voice call or after their first generated project. Transition: “Let’s get one real number into your hands before we open up the factory.”
 
-## 6. Target at minute 30: all four rows.
+## 7. Open the travel Codespace · 08–12 MIN  /  SET UP
 
-Walk the room and ask each person to read one reply aloud. If someone is stuck at minute 25, pair them with a neighbor and keep going. The measured times are for the presenter, not the slide: in test codespaces the first confirmation came about 10 minutes after opening and all four rows by about 11 minutes, with help and an existing account. A row that does not match: write down the words on screen, not keys, and ask early. Do not retry an unchanged key that was rejected. The measured numbers come from automated-assisted test runs; do not present them as a promise.
+Open the README launch link on the review branch for rehearsal. Do not project a secret. While dependencies install, learners can run the two Python data tools. Walk through profile picture → Settings → Codespaces → New secret. Show names only. The same Deepgram key powers both voices.
 
-## 7. Minutes 30 to 50: try to break your helper.
+## 8. How much is $200 in pounds? · 12–17 MIN  /  FIRST LIVE RESULT
 
-Ask three questions on paper: who wrote the confirmation, you or the engine? Where is REBOOT stored? What files does the helper keep? The target at minute 50 is a helper that never records anything the customer did not ask for. After a first message or a restart the engine can still add its normal follow-up question, so the refusal may not be the only text. Treat that as normal, not as a failure.
+Let someone read their own number with its date. Use the deterministic test as a labeled example if the provider is unavailable. Ask learners to predict the result for $100 before rerunning the tool. Compare rate dates and rounding.
 
-## 8. A check that reads the file, not the reply.
+## 9. Ask for the right weather hour · 17–23 MIN  /  FIRST LIVE RESULT
 
-Run it, see PASS, change REBOOT to FACTORY_RESET in tools.py, run it again, see FAIL, then change it back to REBOOT and run it again to see PASS before anyone moves on. The builder part later retrains the helper, so a wrong command left in tools.py would be carried into it. The point: the helper's reply can still sound right while the file is wrong, and a check on the file catches it. Be clear about the limit: it exits 2 when it finds no command, so a missing command is never a pass, but it is a source-file check, not a run-time trace.
+Ask what extra information is required before making the second call. If the flight status has no arrival time, ask the traveler.
 
-## 9. Break.
+## 10. Call your first Mantle travel agent · 23–30 MIN  /  FIRST MANTLE AGENT
 
-Anyone who needs to leave now leaves with a working helper (four conversation checks passing) and a source-file check that catches a wrong command and passes again once REBOOT is restored. Check those two things separately. Use the break to help anyone who is behind catch up on the four rows.
+Wait for the server-ready message. Ask a learner which field supplied the exchange rate. If training is blocked, record the direct provider result and leave chat pending.
 
-## 10. The factory begins: a practice builder.
+## 11. Where would you change this answer? · 30–40 MIN  /  READ THE PRODUCT
 
-The default route needs no paid build. The tool server runs with --fixture in its own terminal and copies the public good example into a new folder, labeled Fixture build. Mantle's own conversation still uses each person's OpenAI key. Optional: one billed Agents API build, on the person's own key; their key needs api.agents.read, api.agents.write and api.responses.write. It takes minutes, the cost was not measured, and nobody needs it to finish. If the optional build fails, go back to the practice builder. A billed build ran once through the tool server on earlier code with a real key, 28 seconds from message to reply.
+Have learners locate destination_weather and convert_currency. Ask why a two-tool starter cannot know whether a flight is delayed.
 
-## 11. Put the builder behind your helper.
+## 12. Write the brief for the full agent · 40–55 MIN  /  BUILD WITH CODEX
 
-Two terminals; the attendee pack has the exact commands, so tell people to copy from the pack. The installer copies the change_builder skill into the agent and raises Mantle's tool wait from 10 seconds to at least 450, because a live build takes minutes. Stop the Inspector with Ctrl+C in its own terminal, never the tool server's. If it says it cannot tell whether a build started, read the tool server terminal before asking again; missing output is not permission to start another build.
+Use the exact commands in chapter 2. Ask learners to find the sentence that ties the arrival to the forecast. If access is delayed, use the labeled sample.
 
-## 12. A request goes in. A saved file comes out.
+## 13. Turn the candidate into a Mantle project · 55–65 MIN  /  BUILD WITH CODEX
 
-Target at minute 115: a request goes in and a saved file comes out. Nothing is applied: the file sits in the builder's own output folder. The sample function returns fixed teaching values; it does not probe an internet line. If the tool server or its wiring will not work, start it again with --fixture; if it still fails, show a recorded receipt, labeled as recorded, and take good.py to the gate.
+The displayed command wraps for projection; copy the single-line command in the workbook. The gate binds the bytes to the receipt. Review the authored behavior yourself. Once the full desk runs, use the chapter’s Codex editing exercise on a copy of the actual Mantle skill. Compare the two versions using an ambiguous destination.
 
-## 13. A gate the builder cannot edit.
+## 14. What does “tonight” mean at Oslo? · 65–75 MIN  /  FLIGHT BOARD
 
-First check the saved file against its printed sha256 (the pack has the sha256sum command) and expect OK. Then run gate.py on the saved path, then on the four candidate files, and compare. A hash match identifies bytes and a gate ACCEPT checks the finite contract; neither is an atomic release step. The gate prints ACCEPT or REJECT and the names of the tests that failed. It reads the file once and judges those bytes, so a change cannot write a file or open the network while it is judged. This fits one small read-only operation and is not a general sandbox. If the gate says it could not judge, show a recorded ACCEPT and REJECT, labeled as recorded. On Linux this ran in a test codespace and returned ACCEPT for a freshly built file.
+Ask what happens at 23:30 UTC when Oslo is already on the next date. Keep unavailable, zero matches and sold out distinct.
 
-## 14. You are the last gate.
+## 15. Save your place · 75–85 MIN  /  BREAK
 
-Run the whole line once, end to end, and record the decision. The exercise outcome is a recorded approval or refusal for manual review: nothing is installed or applied to the helper, and a gate ACCEPT is not a deployment. The principle: the check belongs to someone other than the builder, and a person stands at a few defined gates. Passing is bounded evidence, not proof of all future behavior. If the line is not working for someone, they follow the presenter's recorded run and note which parts they could not complete.
+Give the full ten minutes. Someone running at home can stop the same Codespace here.
 
-## 15. A Studio 2 preview.
+## 16. Two Mantle agents have different customers · 85–98 MIN  /  FACTORY ARCHITECTURE
 
-Say it is an early preview that attendees cannot try yet, then show it live from your own machine for a few minutes. Keep your own setup notes outside this repository; do not say how to get the preview, and keep keys, licenses and any command line off the shared screen. Have a recording ready in case the live start fails. End with the call to action: join the Rasa Community at info.rasa.com/community to hear when Studio is released.
+Ask which agent needs the aviation provider and which starts a hosted session. Make participants identify the two different Inspector conversations.
 
-## 16. Describe, build, check, release.
+## 17. How do the bytes leave the hosted workspace? · 98–110 MIN  /  HOSTED AGENTS API
 
-Show the line once more with the pieces each person built: the helper, the source-file check, the builder, the gate and their own decision. Name the one check each person could not edit. Close on the question and the community link from the previous slide. Last, tell everyone to keep their review note and any failure evidence, press Ctrl+C in the terminals running the Inspector and the tool server, and stop the codespace from GitHub (the storage persists). Stopping it also stops the compute use.
+Ask if a “done” message with only notes.txt is enough. It is not. The workshop uses the hosted Agents API; a local Runner is not involved.
+
+## 18. Commission a Bergen-to-Oslo desk · 110–125 MIN  /  OPERATE THE FACTORY
+
+If the result is uncertain, keep the run and inspect it before any retry. Use the sample route if the class is working without hosted access.
+
+## 19. Run the agent Studio commissioned · 125–135 MIN  /  RUN THE PRODUCT
+
+Ask a traveler question, not a build request. Require the product tool event; successful generation alone cannot establish that the agent answers the trip. End the Studio call and start a new voice call to the generated product. Require two spoken turns, audible replies and tool events.
+
+## 20. Produce a briefing someone can act on · 135–150 MIN  /  TRIP CHALLENGE
+
+Open one tool event with the room. If there are several matches ask for clarification. If Avinor is unavailable, continue with FX and an explicitly timed weather request.
+
+## 21. One flight number. Two possible forecasts. · 150–157 MIN  /  PREDICT
+
+Give the room 30 seconds to choose the first response. Run bash desk case status ZZ201. Ask for the weather hour on each date. Never use this invented flight as live travel data.
+
+## 22. Call the generated desk with the same two records · 157–165 MIN  /  REHEARSE
+
+Start a fresh call for November fourth; expect the scheduled hour and 7 °C. Ask learners to show the order of status, clarification and weather. Restore live providers with bash desk inspect builds/studio-desk.
+
+## 23. What will you ask the factory to build next? · 165–180 MIN  /  TAKE IT HOME
+
+Have one learner explain how Codex authors the spec and where the hosted service returns its artifact. Save notes, stop the Codespace and show chapter 4 for resuming.

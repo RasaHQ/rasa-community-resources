@@ -1,17 +1,8 @@
-# Participant guide
+# Travel desk workbook
 
-The participant instructions are now merged into the [attendee pack](ATTENDEE-PACK.md).
-Start with the [workshop README](README.md) at minute 0 to open the correct
-GitHub Codespace, scope your own keys to its repository, and wait for setup.
-No preparation or laptop installation is required before the session.
+Open the [Codespaces setup](README.md) first. Continue in order.
 
-Follow the pack in order: run the Mantle router helper, check its four
-conversation outcomes, catch and restore a source change, connect the practice
-builder, check the saved proposal, and record your review decision. The
-practice builder starts no Agents session; Mantle model conversations still
-use your own OpenAI account. The optional billed build is labeled separately.
-
-Use the [learning checkpoints](LEARNING-CHECKPOINTS.md) to explain what you
-observed and the [build contract](BUILD-CONTRACT.md) to understand the limits.
-The result is a review record, with no automatic installation or deployment.
-Studio 2 is a presenter-only preview; attendees need no Studio setup.
+1. [Get the first live briefing](course/01-briefing.md).
+2. [Build and refine the four-tool Mantle agent with Codex](course/02-codex.md).
+3. [Use a Mantle agent to commission a new desk through the hosted Agents API](course/03-factory.md).
+4. [Test a complete trip and continue at home](course/04-trip.md).
