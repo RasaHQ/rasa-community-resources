@@ -1,6 +1,9 @@
 """The per-resource Codespaces configurations are generated, complete and consistent."""
 import json
+import os
 from pathlib import Path
+import stat
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -52,6 +55,97 @@ class GeneratedFilesTests(unittest.TestCase):
 
     def test_installer_does_not_edit_shell_startup_files(self):
         self.assertNotIn("bashrc", (REPO_ROOT / ".devcontainer/resource-base/install.sh").read_text())
+
+
+class PortTests(unittest.TestCase):
+    EXPECTED = {
+        "tutorials/frameworks-with-rasa/agno-mantle": [5020],
+        "tutorials/frameworks-with-rasa/pipecat-mantle": [5020],
+        "tutorials/frameworks-with-rasa/crewai-mantle": [5019],
+        "tutorials/frameworks-with-rasa/langchain-mantle": [5017],
+        "tutorials/frameworks-with-rasa/strands-mantle": [5018],
+        "tutorials/jev-with-rasa/mantle": [5030],
+        "tutorials/rasa-hubspot-crm-tutorial": [5005, 8787, 8931],
+        "tutorials/voice-agent-three-frameworks/rasa": [5005, 8765],
+        "examples/mantle-voice-agent": [5005],
+    }
+
+    def forwarded(self, rel):
+        return json.loads((REPO_ROOT / ".devcontainer" / g.slug(rel) / "devcontainer.json").read_text())["forwardPorts"]
+
+    def test_known_resources_forward_the_ports_their_makefiles_use(self):
+        for rel, ports in self.EXPECTED.items():
+            self.assertEqual(self.forwarded(rel), ports, rel)
+
+    def test_every_resource_forwards_the_ports_derived_from_its_own_makefile(self):
+        for project in discover_projects("catalog"):
+            primary, forward = g.ports(project.path)
+            self.assertEqual(self.forwarded(project.rel), forward, project.rel)
+            self.assertIn(primary, forward, project.rel)
+            readme = (project.path / "README.md").read_text(encoding="utf-8")
+            if "starts on port" in readme:
+                self.assertIn(f"port {primary}.", readme.split(g.END)[0], project.rel)
+
+    def test_first_command_trains_before_it_inspects_or_runs(self):
+        for project in discover_projects("catalog"):
+            entry = g.manifest(project)
+            if "train" in g.make_targets(project.path) and entry["first"] and project.rel not in g.FIRST:
+                self.assertTrue(entry["first"].startswith("make train && make "), project.rel)
+
+
+class EnvFileTests(unittest.TestCase):
+    SCRIPT = REPO_ROOT / ".devcontainer/resource-base/make-env.sh"
+
+    def run_script(self, directory, **env):
+        environment = {"PATH": "/usr/bin:/bin", "HOME": directory}
+        environment.update(env)
+        return subprocess.run(["/bin/bash", str(self.SCRIPT), directory], env=environment, capture_output=True, text=True)
+
+    def test_env_is_filled_from_present_secrets_only_and_never_printed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / ".env.example").write_text(
+                "# note\nRASA_LICENSE=\nOPENAI_API_KEY=\nDEEPGRAM_API_KEY=\nLOG_LEVEL=INFO\n", encoding="utf-8")
+            result = self.run_script(directory, RASA_LICENSE="license-sentinel", OPENAI_API_KEY="model-sentinel")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertNotIn("sentinel", result.stdout + result.stderr)
+            env = (Path(directory) / ".env").read_text(encoding="utf-8").splitlines()
+            self.assertEqual(env, ["# note", "RASA_LICENSE=license-sentinel", "OPENAI_API_KEY=model-sentinel", "LOG_LEVEL=INFO"])
+            self.assertEqual(stat.S_IMODE((Path(directory) / ".env").stat().st_mode), 0o600)
+
+    def test_license_alias_is_filled_from_the_saved_license(self):
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / ".env.example").write_text("RASA_PRO_LICENSE=\n", encoding="utf-8")
+            self.run_script(directory, RASA_LICENSE="license-sentinel")
+            self.assertEqual((Path(directory) / ".env").read_text(encoding="utf-8"), "RASA_PRO_LICENSE=license-sentinel\n")
+
+    def test_existing_env_is_never_overwritten(self):
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / ".env.example").write_text("OPENAI_API_KEY=\n", encoding="utf-8")
+            (Path(directory) / ".env").write_text("mine\n", encoding="utf-8")
+            self.run_script(directory, OPENAI_API_KEY="model-sentinel")
+            self.assertEqual((Path(directory) / ".env").read_text(encoding="utf-8"), "mine\n")
+
+
+class ReadyTests(unittest.TestCase):
+    SCRIPT = REPO_ROOT / ".devcontainer/resource-base/ready.sh"
+    PROJECT = "tutorials/rasa-ai-team-casebook"
+
+    def ready(self, **env):
+        environment = {"PATH": "/usr/bin:/bin:" + os.path.dirname(sys.executable), "HOME": str(REPO_ROOT)}
+        environment.update(env)
+        return subprocess.run(["/bin/bash", str(self.SCRIPT), self.PROJECT, "true"], cwd=REPO_ROOT, env=environment,
+                              capture_output=True, text=True).stdout
+
+    def test_not_ready_names_missing_required_secrets(self):
+        out = self.ready()
+        self.assertIn("NOT READY", out)
+        self.assertIn("RASA_LICENSE", out)
+
+    def test_ready_when_required_secrets_are_set_or_ci_skips_them(self):
+        required = json.loads((REPO_ROOT / ".devcontainer" / g.slug(self.PROJECT) / "devcontainer.json").read_text())["secrets"]
+        names = [name for name, item in required.items() if item["description"].startswith("Required.")]
+        self.assertTrue(self.ready(**{name: "x" for name in names}).startswith("\nREADY"))
+        self.assertTrue(self.ready(READY_SKIP_SECRETS="1").startswith("\nREADY"))
 
 
 class ParsingTests(unittest.TestCase):

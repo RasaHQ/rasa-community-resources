@@ -108,7 +108,7 @@ MANUAL = [
     {
         "path": "examples/mantle-factory-agent",
         "secrets": {"RASA_LICENSE": True, "OPENAI_API_KEY": False},
-        "install": "cd examples/mantle-factory-agent && ./demo setup",
+        "install": "cd examples/mantle-factory-agent && bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . && ./demo setup",
         "ready": "test -x project/.venv/bin/python",
         "first": './demo run --expires-at "$(date -u -d \'+8 hours\' +%Y-%m-%dT%H:%M:%SZ)"',
         "see": "the log says it is ready; open forwarded port 8947. The factory needs a no-network sandbox wrapper "
@@ -118,13 +118,30 @@ MANUAL = [
     {
         "path": "examples/mantle-flight-briefing-openai-agents",
         "secrets": {"RASA_LICENSE": True, "OPENAI_API_KEY": False, "DEEPGRAM_API_KEY": False},
-        "install": "cd examples/mantle-flight-briefing-openai-agents && make setup",
+        "install": "cd examples/mantle-flight-briefing-openai-agents && bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . && make setup",
         "ready": "make doctor",
         "first": "make run-scripted",
         "see": "the launcher reports ready; open forwarded port 8942 for the card page.",
         "ports": [8942, 5005],
     },
 ]
+
+
+def recipe(makefile_text: str, target: str) -> str:
+    """The recipe lines of one Makefile target."""
+    match = re.search(rf"^{re.escape(target)}:[^\n]*\n((?:\t[^\n]*\n?)*)", makefile_text, re.M)
+    return match.group(1) if match else ""
+
+
+def ports(path: Path) -> tuple[int, list[int]]:
+    """(primary port, every port to forward): explicit --port/-p values in the run or inspect recipe, else 5005,
+    plus any other port the Makefile documents for a helper service."""
+    makefile = path / "Makefile"
+    text = makefile.read_text(encoding="utf-8") if makefile.is_file() else ""
+    explicit = [int(n) for target in ("inspect", "run") for n in re.findall(r"(?:--port|\s-p)\s+(\d{4,5})\b", recipe(text, target))]
+    documented = [int(n) for n in re.findall(r"(?:localhost|127\.0\.0\.1|\s):(\d{4,5})\b", text)]
+    primary = explicit[0] if explicit else 5005
+    return primary, sorted({primary, *explicit, *documented})
 
 
 def manifest(project) -> dict:
@@ -143,17 +160,23 @@ def manifest(project) -> dict:
             secrets.setdefault(name, True)
     targets = make_targets(project.path)
     first_target = "inspect" if "inspect" in targets else "run" if "run" in targets else None
+    primary, forward = ports(project.path)
+    train = "make train && " if "train" in targets and first_target else ""
     if project.rel in FIRST:
         first, see = FIRST[project.rel]
     elif first_target == "inspect":
-        first = "make inspect"
+        helper = '.devcontainer/resource-base/print-inspector-url.sh' + ("" if primary == 5005 else f" {primary}")
+        first = train + "make inspect"
         see = (
-            "the Inspector starts. In a second terminal, "
-            '`bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.'
+            "training finishes, then the Inspector starts. In a second terminal, "
+            f'`bash "$(git rev-parse --show-toplevel)/{helper}"` prints its address.'
+            if train
+            else "the Inspector starts. In a second terminal, "
+            f'`bash "$(git rev-parse --show-toplevel)/{helper}"` prints its address.'
         )
     elif first_target == "run":
-        first = "make run"
-        see = "the server starts on port 5005."
+        first = train + "make run"
+        see = f"{'training finishes, then ' if train else ''}the server starts on port {primary}."
     else:
         first, see = None, None
     return {
@@ -165,7 +188,7 @@ def manifest(project) -> dict:
         "ready": None,
         "first": first,
         "see": see,
-        "ports": [5005],
+        "ports": forward,
         "inspect_helper": first_target == "inspect" and project.rel not in FIRST,
     }
 

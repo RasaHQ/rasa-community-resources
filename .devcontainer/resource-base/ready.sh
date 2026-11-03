@@ -10,9 +10,25 @@ else
   python3 "$root/scripts/check_project.py" "$project" --skip-sync
 fi
 status=$?
+# READY must mean the first command can run: every required secret has to be set (CI has none and skips this).
+missing=""
+if [ -z "${READY_SKIP_SECRETS:-}" ]; then
+  slug="$(printf '%s' "$project" | tr / -)"
+  missing="$(python3 - "$root/.devcontainer/$slug/devcontainer.json" <<'PY'
+import json, os, sys
+secrets = json.load(open(sys.argv[1])).get("secrets", {})
+print(" ".join(name for name, item in secrets.items()
+               if item.get("description", "").startswith("Required.") and not os.environ.get(name)))
+PY
+)"
+fi
 echo
+if [ "$status" -eq 0 ] && [ -n "$missing" ]; then
+  echo "NOT READY: $project is installed, but these required secrets are not set: $missing. Save them as personal Codespaces secrets for this repository, then stop and reopen this Codespace."
+  exit 0
+fi
 if [ "$status" -eq 0 ]; then
-  echo "READY: $project is installed and passes its check. Missing secrets only matter once you start the agent."
+  echo "READY: $project is installed, its secrets are set, and it passes its check. Start with the first command in its README."
 else
   echo "NOT READY: $project did not pass its check (exit $status). Read the lines above. If you added a secret after this Codespace was created, stop and reopen it, then run the check again: $(printf '%s' "${2:-python3 scripts/check_project.py $project}")"
 fi

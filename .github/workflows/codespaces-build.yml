@@ -42,8 +42,10 @@ jobs:
           --config ".devcontainer/${{ matrix.resource.slug }}/devcontainer.json"
           --log-level info
       - name: Resource reports READY
+        env:
+          READY_SKIP_SECRETS: "1"
         run: |
           config=".devcontainer/${{ matrix.resource.slug }}/devcontainer.json"
           command=$(jq -r .postCreateCommand "$config")
-          devcontainer exec --workspace-folder "$PWD" --config "$config" bash -c "$command" | tee ready.txt
+          devcontainer exec --workspace-folder "$PWD" --config "$config" bash -c "READY_SKIP_SECRETS=1 $command" | tee ready.txt
           grep -q '^READY' ready.txt
