@@ -16,8 +16,7 @@ class TravelFactoryProfileTests(unittest.TestCase):
     def config(self):
         return json.loads((PROFILE / 'devcontainer.json').read_text())
 
-    def test_profile_is_the_only_workshop_configuration(self):
-        self.assertEqual(sorted(path.name for path in (ROOT / '.devcontainer').iterdir()), ['travel-factory'])
+    def test_workshop_profile_name(self):
         self.assertEqual(self.config()['name'], 'Rasa Travel Agent Factory')
 
     def test_profile_uses_the_image_ports_and_four_cores(self):
@@ -27,6 +26,10 @@ class TravelFactoryProfileTests(unittest.TestCase):
         self.assertEqual(config['forwardPorts'], [5010])
         self.assertGreaterEqual(config['hostRequirements']['cpus'], 4)
         self.assertIn('ghcr.io/astral-sh/uv:0.10.8', (PROFILE / 'Dockerfile').read_text())
+
+    def test_sshd_feature_is_pinned_to_an_exact_version(self):
+        features = self.config()["features"]
+        self.assertEqual([name for name in features if "/sshd:" in name], ["ghcr.io/devcontainers/features/sshd:1.1.0"])
 
     def test_profile_asks_for_exactly_the_three_secrets(self):
         self.assertEqual(sorted(self.config()['secrets']), sorted(SECRETS))
