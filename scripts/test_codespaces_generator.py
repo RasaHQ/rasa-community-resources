@@ -126,6 +126,20 @@ class EnvFileTests(unittest.TestCase):
             self.assertEqual(env, ["# note", "RASA_LICENSE=license-sentinel", "OPENAI_API_KEY=model-sentinel", "LOG_LEVEL=INFO"])
             self.assertEqual(stat.S_IMODE((Path(directory) / ".env").stat().st_mode), 0o600)
 
+    def test_mode_is_600_even_when_the_umask_is_open_or_a_default_acl_would_override_it(self):
+        # In a Codespace the workspace directory may carry a default ACL that wins over the umask. Model that by
+        # running a copy of the script without its own `umask 077` line under an open umask: only the explicit chmod
+        # can leave the file private.
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / ".env.example").write_text("OPENAI_API_KEY=\n", encoding="utf-8")
+            copy = Path(directory) / "make-env-no-umask.sh"
+            copy.write_text(self.SCRIPT.read_text().replace("umask 077\n", ""), encoding="utf-8")
+            self.assertNotIn("umask 077", copy.read_text())
+            environment = {"PATH": "/usr/bin:/bin", "HOME": directory, "OPENAI_API_KEY": "model-sentinel"}
+            subprocess.run(["/bin/bash", "-c", f'umask 000; bash "{copy}" "{directory}"'], env=environment,
+                           capture_output=True, text=True)
+            self.assertEqual(stat.S_IMODE((Path(directory) / ".env").stat().st_mode), 0o600)
+
     def test_license_alias_is_filled_from_the_saved_license(self):
         with tempfile.TemporaryDirectory() as directory:
             (Path(directory) / ".env.example").write_text("RASA_PRO_LICENSE=\n", encoding="utf-8")
@@ -142,7 +156,7 @@ class EnvFileTests(unittest.TestCase):
 
 class ReadyTests(unittest.TestCase):
     SCRIPT = REPO_ROOT / ".devcontainer/resource-base/ready.sh"
-    PROJECT = "tutorials/rasa-ai-team-casebook"
+    PROJECT = "examples/mantle-text-banking-transfer-gpt"
 
     def ready(self, **env):
         environment = {"PATH": "/usr/bin:/bin:" + os.path.dirname(sys.executable), "HOME": str(REPO_ROOT)}
@@ -155,11 +169,40 @@ class ReadyTests(unittest.TestCase):
         self.assertIn("NOT READY", out)
         self.assertIn("RASA_LICENSE", out)
 
+    def test_a_resource_whose_first_command_needs_nothing_is_ready_without_secrets(self):
+        environment = {"PATH": "/usr/bin:/bin:" + os.path.dirname(sys.executable), "HOME": str(REPO_ROOT)}
+        out = subprocess.run(["/bin/bash", str(self.SCRIPT), "tutorials/rasa-ai-team-casebook", "true"], cwd=REPO_ROOT,
+                             env=environment, capture_output=True, text=True).stdout
+        self.assertTrue(out.startswith("\nREADY"), out)
+
     def test_ready_when_required_secrets_are_set_or_ci_skips_them(self):
         required = json.loads((REPO_ROOT / ".devcontainer" / g.slug(self.PROJECT) / "devcontainer.json").read_text())["secrets"]
         names = [name for name, item in required.items() if item["description"].startswith("Required.")]
         self.assertTrue(self.ready(**{name: "x" for name in names}).startswith("\nREADY"))
         self.assertTrue(self.ready(READY_SKIP_SECRETS="1").startswith("\nREADY"))
+
+
+class FirstUseHonestyTests(unittest.TestCase):
+    def test_a_first_command_that_needs_nothing_does_not_demand_secrets(self):
+        rel = "tutorials/rasa-ai-team-casebook"
+        body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(rel) / "devcontainer.json").read_text())
+        self.assertTrue(all(item["description"].startswith("Optional.") for item in body["secrets"].values()))
+        readme = (REPO_ROOT / rel / "README.md").read_text(encoding="utf-8").split(g.END)[0]
+        self.assertIn("nothing for the first command", readme)
+        self.assertNotIn("required `RASA_LICENSE`", readme)
+
+    def test_resources_that_embed_references_say_training_is_a_billed_call(self):
+        marked = 0
+        for project in discover_projects("catalog"):
+            readme = (project.path / "README.md").read_text(encoding="utf-8").split(g.END)[0]
+            has = "reference documents with calls to your OpenAI account" in readme
+            self.assertEqual(has, g.uses_references(project.path) and g.manifest(project)["first"] is not None
+                             and project.rel not in g.FIRST, project.rel)
+            marked += has
+        self.assertGreaterEqual(marked, 5)
+
+    def test_make_env_sets_the_mode_explicitly(self):
+        self.assertIn("chmod 600 .env", (REPO_ROOT / ".devcontainer/resource-base/make-env.sh").read_text())
 
 
 class ParsingTests(unittest.TestCase):

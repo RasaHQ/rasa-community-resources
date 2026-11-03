@@ -23,3 +23,8 @@ while IFS= read -r line || [ -n "$line" ]; do
   esac
   printf '%s\n' "$line" >> .env
 done < .env.example
+# Do not rely on the umask alone: set the mode explicitly, and say so if the filesystem refuses (never print contents).
+chmod 600 .env
+if [ "$(stat -c '%a' .env 2>/dev/null || stat -f '%Lp' .env)" != "600" ]; then
+  echo "WARNING: could not restrict .env to mode 600 on this filesystem; it may hold your keys."
+fi

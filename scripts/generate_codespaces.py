@@ -105,6 +105,20 @@ FIRST = {
     ),
 }
 
+# Resources whose first command needs no license, key or network: their secrets are only for the later steps.
+FIRST_NEEDS_NONE = {"tutorials/rasa-ai-team-casebook"}
+
+
+def uses_references(path: Path) -> bool:
+    """Training builds a references index (embedding calls to the OpenAI account) for these resources."""
+    agent = path / "agent.yml"
+    if not agent.is_file():
+        return False
+    return (path / "references").is_dir() or any(
+        line.startswith("references:") for line in agent.read_text(encoding="utf-8").splitlines()
+    )
+
+
 # Resources without a pyproject.toml, each with its own launcher.
 MANUAL = [
     {
@@ -181,9 +195,14 @@ def manifest(project) -> dict:
         see = f"{'training finishes, then ' if train else ''}the server starts on port {primary}."
     else:
         first, see = None, None
+    first_needs_none = project.rel in FIRST_NEEDS_NONE
+    if first_needs_none:
+        secrets = {name: False for name in secrets}
     return {
         "path": project.rel,
         "slug": slug(project.rel),
+        "first_needs_none": first_needs_none,
+        "embeds_references": uses_references(project.path),
         "secrets": secrets,
         "alias_license": LICENSE_ALIAS in keys,
         "install": 'bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh" ' + project.rel,
@@ -244,12 +263,18 @@ def launch_url(entry: dict) -> str:
 def readme_block(entry: dict, depth: int) -> str:
     required = [f"`{n}`" for n, req in entry["secrets"].items() if req]
     optional = [f"`{n}`" for n, req in entry["secrets"].items() if not req]
-    need = "the free Rasa Developer Edition license and the keys it names: required " + ", ".join(required)
-    if optional:
-        need += "; optional " + ", ".join(optional) + " (the resource runs without them)"
+    if entry.get("first_needs_none"):
+        need = ("nothing for the first command, which needs no license and no network. Later steps use the free Rasa "
+                "Developer Edition license and the keys named: " + ", ".join(optional))
+    else:
+        need = "the free Rasa Developer Edition license and the keys it names: required " + ", ".join(required)
+        if optional:
+            need += "; optional " + ", ".join(optional) + " (the resource runs without them)"
     first = entry["first"]
     if first:
         first_line = f"`{first}`. The terminal opens in this folder, and the creation log ends with `READY`."
+        if entry.get("embeds_references"):
+            first_line += " Training embeds this resource's reference documents with calls to your OpenAI account, a small billed call."
         see = entry["see"]
     else:
         first_line = "follow the steps below; the creation log ends with `READY`."
