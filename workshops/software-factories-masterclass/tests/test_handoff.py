@@ -48,6 +48,28 @@ class Handoff(unittest.TestCase):
         self.assertEqual(r["sha256"], hashlib.sha256(self.raw).hexdigest())
         self.assertEqual(r["session"], "simulated-id")
 
+    def test_oversized_instructions_are_reported_as_a_rejected_candidate(self):
+        spec = json.loads(self.raw)
+        spec["instructions"] = "Say the times. " * 500
+        self.assertGreater(len(spec["instructions"]), 2500)
+        self.raw = json.dumps(spec).encode()
+        with self.assertRaises(SystemExit) as stop:
+            self.hosted("/workspace/outputs/agent.json")
+        self.assertEqual(stop.exception.code, 3)
+        receipt = json.loads(next(self.root.glob("runs/*/receipt.json")).read_text())
+        self.assertEqual(receipt["outcome"], "invalid_candidate")
+        self.assertEqual(receipt["reason"], f"Invalid instructions: {len(spec['instructions'])} characters, allowed 10 to 2500")
+        self.assertEqual(receipt["session"], "simulated-id")
+
+    def test_task_states_the_limits_the_compiler_enforces(self):
+        self.assertIn("2000 characters", build.TASK)
+        self.assertIn("2500", build.TASK)
+
+    def test_studio_tool_names_the_rejected_state(self):
+        source = (build.ROOT / "studio/skills/build_agent/tools.py").read_text()
+        self.assertIn("returncode == 3", source)
+        self.assertIn("nothing was built", source)
+
     def test_wrong_path_keeps_session(self):
         with self.assertRaises(ValueError):
             self.hosted("/workspace/outputs/notes.txt")

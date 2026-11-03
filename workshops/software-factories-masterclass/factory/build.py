@@ -60,7 +60,7 @@ def tool_spec(key, tools):
     return ARRIVAL_WEATHER if key == "weather" and "status" in tools else TOOLS[key]
 
 
-TASK = """Create a Rasa Mantle travel agent specification for this brief. Return a JSON object with exactly these keys: name (lowercase slug), description (one sentence routing description), instructions (plain text skill guidance), tools (array drawn from weather, fx, flights, status). The full travel desk needs all four. Clarify ambiguous airports, use flight status to establish arrival time before an arrival forecast, use the departure airport's local evening and cite providers and dates. Do not invent data or bookings."""
+TASK = """Create a Rasa Mantle travel agent specification for this brief. Return a JSON object with exactly these keys: name (lowercase slug), description (one sentence routing description), instructions (plain text skill guidance), tools (array drawn from weather, fx, flights, status). The full travel desk needs all four. Keep to these limits: name 2 to 49 characters of lowercase letters, digits and hyphens starting with a letter; description one sentence under 300 characters; instructions plain text of at most 2000 characters (the compiler rejects anything over 2500); the whole JSON file under 16 KB. Write short, specific instructions. Clarify ambiguous airports, use flight status to establish arrival time before an arrival forecast, use the departure airport's local evening and cite providers and dates. Do not invent data or bookings."""
 RULES = """Speak in short turns. Read airport names and currencies clearly. Ask one clarification at a time. Supported airports are OSL, BGO, JFK, LHR, CDG, MAD and MEX (flight tools cover only Oslo–Bergen in either direction). Flight status uses the arrival board; never treat a departure timestamp as arrival. When flight records share a number, ask which date and route the traveler means. Clarify origin, destination, flight number or time when ambiguous. Obtain a tool result for every external fact. State provider, time or rate date and coverage. If unavailable, say which fact is unavailable and continue with other tools. An empty or partial board does not establish that no flights exist. Never claim seats or bookings. Name the provider exactly as the result's source field says. Keep estimates, forecasts and observed facts distinct."""
 LANDING_RULES = """For weather at landing, call the weather tool with the flight number and the arrival date the traveller chose; it uses the estimated arrival if supplied, otherwise the scheduled one, and reports which in arrival_basis, so say which. If the tool says to ask which date, ask and wait for the answer before calling it again. If no arrival time is known ask for one."""
 AIRPORT_WEATHER_RULES = """For weather at an airport, call the weather tool with the airport and an ISO time with offset, or an empty time for the current hour."""
@@ -95,7 +95,8 @@ def validate(raw):
         raise ValueError("Invalid agent name")
     for k in ("instructions", "description"):
         if not isinstance(s[k], str) or not 10 <= len(s[k]) <= 2500:
-            raise ValueError("Invalid " + k)
+            size = len(s[k]) if isinstance(s[k], str) else type(s[k]).__name__
+            raise ValueError(f"Invalid {k}: {size} characters, allowed 10 to 2500")
     if (
         not isinstance(s["tools"], list)
         or not s["tools"]
@@ -216,9 +217,17 @@ def propose(mode, brief):
         "sha256": digest(raw),
     }
     (run / "receipt.json").write_text(json.dumps(receipt, indent=2))
-    spec = validate(raw)
-    if set(spec["tools"]) != set(TOOLS):
-        raise ValueError("Full desk requires all four tools. Inspect " + str(run))
+    try:
+        spec = validate(raw)
+        if set(spec["tools"]) != set(TOOLS):
+            raise ValueError("Full desk requires all four tools")
+    except ValueError as error:
+        # The session finished and the file was downloaded; only the compiler's check failed. Say exactly that.
+        receipt.update(outcome="invalid_candidate", reason=str(error))
+        (run / "receipt.json").write_text(json.dumps(receipt, indent=2))
+        print(json.dumps(receipt, indent=2))
+        print("Candidate rejected by the compiler:", error, "- kept in", run.relative_to(ROOT), flush=True)
+        raise SystemExit(3)
     print(json.dumps(receipt, indent=2))
     print("Review:", dest)
     print("Run directory:", run.relative_to(ROOT))

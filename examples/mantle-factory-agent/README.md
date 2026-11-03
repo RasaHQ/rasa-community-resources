@@ -1,5 +1,13 @@
 # Mantle factory agent
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-factory-agent/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`; optional `OPENAI_API_KEY` (the resource runs without them), saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `./demo run --expires-at "$(date -u -d '+8 hours' +%Y-%m-%dT%H:%M:%SZ)"`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** the log says it is ready; open forwarded port 8947. The factory needs a no-network sandbox wrapper and says `NOT_READY` if the Codespace has none.
+<!-- codespaces:end -->
+
 This is a Rasa Mantle agent that connects to a small, dark software factory (dark means no person reads each change; the locked tests decide). You ask for a change to the market card by typing in the Inspector. The agent's one tool, `run_factory`, sends your request to the factory. Locked acceptance tests that the builder never sees decide: ACCEPT or REJECT. A verdict is not a release. Nothing is deployed.
 
 Here you run it in scripted mode, which needs no OpenAI key. A live coding builder is optional and comes after.

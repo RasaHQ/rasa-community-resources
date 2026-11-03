@@ -1,0 +1,51 @@
+name: Codespaces configurations
+on:
+  pull_request:
+    paths:
+      - '.devcontainer/**'
+      - 'scripts/generate_codespaces.py'
+      - '.github/workflows/codespaces-build.yml'
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: codespaces-build-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      resources: ${{ steps.list.outputs.resources }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - id: list
+        run: echo "resources=$(python3 scripts/generate_codespaces.py --list-json)" >> "$GITHUB_OUTPUT"
+  build:
+    needs: matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        resource: ${{ fromJSON(needs.matrix.outputs.resources) }}
+    name: ${{ matrix.resource.path }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Install the dev container CLI
+        run: npm install --global @devcontainers/cli@0.75.0
+      - name: Build and create the Codespace configuration (no secrets, no model calls)
+        run: >
+          devcontainer up --workspace-folder "$PWD"
+          --config ".devcontainer/${{ matrix.resource.slug }}/devcontainer.json"
+          --log-level info
+      - name: Resource reports READY
+        env:
+          READY_SKIP_SECRETS: "1"
+        run: |
+          config=".devcontainer/${{ matrix.resource.slug }}/devcontainer.json"
+          command=$(jq -r .postCreateCommand "$config")
+          devcontainer exec --workspace-folder "$PWD" --config "$config" bash -c "READY_SKIP_SECRETS=1 $command" | tee ready.txt
+          grep -q '^READY' ready.txt
