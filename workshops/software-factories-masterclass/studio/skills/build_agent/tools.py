@@ -20,11 +20,13 @@ async def propose_travel_agent(context: ToolContext, brief: str) -> ToolResult:
         stderr=asyncio.subprocess.DEVNULL,
     )
     output, _ = await proc.communicate()
-    return ToolResult(
-        llm_response={
-            "state": "candidate ready"
-            if proc.returncode == 0
-            else "build uncertain; inspect runs before any retry",
-            "receipt": output.decode()[-3000:],
-        }
-    )
+    if proc.returncode == 0:
+        state = "candidate ready"
+    elif proc.returncode == 3:
+        state = (
+            "candidate rejected: the hosted session finished and its specification failed the compiler's check, "
+            "so nothing was built and no further result is coming"
+        )
+    else:
+        state = "build uncertain; inspect runs before any retry"
+    return ToolResult(llm_response={"state": state, "receipt": output.decode()[-3000:]})
