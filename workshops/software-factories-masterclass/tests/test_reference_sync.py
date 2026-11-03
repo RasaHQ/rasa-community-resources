@@ -25,7 +25,8 @@ class ReferenceSyncTests(unittest.TestCase):
                 self.assertEqual((project / name).read_bytes(), (ROOT / "reference/finished-agent" / name).read_bytes(), name)
 
     def test_rules_order_the_date_question_before_any_weather_lookup(self):
-        self.assertIn("wait for the answer before calling the weather tool", build.RULES)
+        self.assertIn("wait for the answer before calling it again", build.RULES)
+        self.assertIn("flight number and the arrival date", build.RULES)
         self.assertIn("source field", build.RULES)
 
 

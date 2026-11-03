@@ -16,9 +16,9 @@ ROOT = Path(__file__).resolve().parents[1]
 TOOLS = {
     "weather": (
         "destination_weather",
-        "airport_code: str, arrival_time: str",
-        "airport_code, arrival_time",
-        "Forecast at an airport. Use an ISO timestamp with offset, or an empty string for the current hour.",
+        "airport_code: str, arrival_time: str, flight_number: str = '', flight_date: str = ''",
+        "airport_code, arrival_time, flight_number, flight_date",
+        "Forecast at an airport. For the weather when a flight lands, pass flight_number and flight_date (YYYY-MM-DD, the arrival date the traveller chose; empty if not yet known) and leave airport_code and arrival_time empty: the tool finds the record itself and returns no forecast, asking you to ask the traveller which date first, when the date is missing or fits no single record. Otherwise pass an airport and an ISO timestamp with offset, or an empty timestamp for the current hour.",
     ),
     "fx": (
         "convert_currency",
@@ -40,7 +40,7 @@ TOOLS = {
     ),
 }
 TASK = """Create a Rasa Mantle travel agent specification for this brief. Return a JSON object with exactly these keys: name (lowercase slug), description (one sentence routing description), instructions (plain text skill guidance), tools (array drawn from weather, fx, flights, status). The full travel desk needs all four. Clarify ambiguous airports, use flight status to establish arrival time before an arrival forecast, use the departure airport's local evening and cite providers and dates. Do not invent data or bookings."""
-RULES = """Speak in short turns. Read airport names and currencies clearly. Ask one clarification at a time. Supported airports are OSL, BGO, JFK, LHR, CDG, MAD and MEX (flight tools cover only Oslo–Bergen in either direction). Flight status uses the arrival board; never treat a departure timestamp as arrival. When flight records share a number, ask which date and route the traveler means. Clarify origin, destination, flight number or time when ambiguous. Obtain a tool result for every external fact. State provider, time or rate date and coverage. If unavailable, say which fact is unavailable and continue with other tools. An empty or partial board does not establish that no flights exist. Never claim seats or bookings. For weather at landing, use estimated arrival if supplied, otherwise scheduled arrival, and identify which you used. If neither is known ask for a time. Do not look up weather until exactly one flight record is chosen: when several records match, ask which date and wait for the answer before calling the weather tool. Name the provider exactly as the result's source field says. Keep estimates, forecasts and observed facts distinct."""
+RULES = """Speak in short turns. Read airport names and currencies clearly. Ask one clarification at a time. Supported airports are OSL, BGO, JFK, LHR, CDG, MAD and MEX (flight tools cover only Oslo–Bergen in either direction). Flight status uses the arrival board; never treat a departure timestamp as arrival. When flight records share a number, ask which date and route the traveler means. Clarify origin, destination, flight number or time when ambiguous. Obtain a tool result for every external fact. State provider, time or rate date and coverage. If unavailable, say which fact is unavailable and continue with other tools. An empty or partial board does not establish that no flights exist. Never claim seats or bookings. For weather at landing, call the weather tool with the flight number and the arrival date the traveller chose; it uses the estimated arrival if supplied, otherwise the scheduled one, and reports which in arrival_basis, so say which. If the tool says to ask which date, ask and wait for the answer before calling it again. If no arrival time is known ask for one. Name the provider exactly as the result's source field says. Keep estimates, forecasts and observed facts distinct."""
 
 
 def digest(raw):

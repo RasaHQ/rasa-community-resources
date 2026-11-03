@@ -117,6 +117,41 @@ def rehearsal_response(url, params):
     raise ValueError("This rehearsal covers only flight ZZ201 and its Bergen forecast.")
 
 
+def flight_weather(number, date, request, now, result):
+    """Forecast at landing for one flight, resolving the record here so no agent can pick one by guesswork.
+
+    Without a date, or with a date that fits no single record, nothing is forecast and the traveller is asked first."""
+    status = read("status", number, request=request, now=now)
+    if status.get("state") != "ok":
+        return result | {"state": "unavailable", "reason": status.get("reason", "Flight lookup failed.")}
+    records = status["records"]
+
+    def arrival_date(record):
+        return record["estimated_arrival_local_date"] or record["scheduled_arrival_local_date"]
+
+    dates = sorted({arrival_date(record) for record in records})
+    if not records:
+        return result | {"state": "unavailable", "reason": "No record for that flight number on the boards."}
+    if not date:
+        if len(records) > 1:
+            return result | {"state": "needs_date", "forecast": None, "dates": dates,
+                             "reason": "Several records match this flight number. Ask the traveller which date first."}
+        matches = records
+    else:
+        matches = [record for record in records if arrival_date(record) == date]
+        if not matches:
+            return result | {"state": "no_match", "forecast": None, "dates": dates,
+                             "reason": "No record arrives on that date. Ask the traveller which date they mean."}
+        if len(matches) > 1:
+            return result | {"state": "needs_date", "forecast": None, "dates": dates,
+                             "reason": "More than one record arrives on that date. Ask the traveller which flight they mean."}
+    record = matches[0]
+    basis, stamp = ("estimated", record["estimated_arrival"]) if record["estimated_arrival"] else ("scheduled", record["scheduled_arrival"])
+    forecast = read("weather", record["to"], stamp, request=request, now=now)
+    return forecast | {"flight": record["flight"], "arrival_basis": basis,
+                       "arrival_local": record[basis + "_arrival_local"], "arrival_local_date": record[basis + "_arrival_local_date"]}
+
+
 def read(kind, *args, request=fetch, now=None):
     now = now or datetime.now(timezone.utc)
     result = {
@@ -129,6 +164,8 @@ def read(kind, *args, request=fetch, now=None):
         if kind not in ("status", "weather"):
             return result | {"state": "unavailable", "reason": "Use ZZ201 status and Bergen weather in this case."}
     try:
+        if kind == "weather" and len(args) > 2 and args[2]:
+            return flight_weather(args[2].upper().replace(" ", ""), args[3] if len(args) > 3 else "", request, now, result)
         if kind == "weather":
             lat, lon, zone, _ = AIRPORTS[airport(args[0])]
             target = moment(args[1]) if len(args) > 1 and args[1] else now
