@@ -20,7 +20,9 @@ class Rehearsal(unittest.TestCase):
     @patch.object(travel_data, "urlopen", side_effect=AssertionError("network used"))
     def test_two_date_case_gives_bergen_clock_times(self, network):
         first, second = travel_data.read("status", "ZZ201")["records"]
-        self.assertEqual((first["local_date"], first["estimated_arrival_local"], first["scheduled_arrival_local"]),
-                         ("2026-11-03", "20:10 CET (Oslo)", "19:20 CET (Oslo)"))
-        self.assertEqual((second["local_date"], second["scheduled_arrival_local"], second["estimated_arrival_local"]),
-                         ("2026-11-04", "19:20 CET (Oslo)", None))
+        self.assertEqual((first["estimated_arrival_local"], first["estimated_arrival_local_date"],
+                          first["scheduled_arrival_local"], first["scheduled_arrival_local_date"]),
+                         ("20:10 CET (Oslo)", "2026-11-03", "19:20 CET (Oslo)", "2026-11-03"))
+        self.assertEqual((second["scheduled_arrival_local"], second["scheduled_arrival_local_date"],
+                          second["estimated_arrival_local"], second["estimated_arrival_local_date"]),
+                         ("19:20 CET (Oslo)", "2026-11-04", None, None))
