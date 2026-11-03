@@ -124,7 +124,7 @@ MANUAL = [
     {
         "path": "examples/mantle-factory-agent",
         "secrets": {"RASA_LICENSE": True, "OPENAI_API_KEY": False},
-        "install": "cd examples/mantle-factory-agent && bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . || echo \"NOTE: .env was not created; the secrets stay in your environment.\"; ./demo setup",
+        "install": "cd examples/mantle-factory-agent && { bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . || echo \"NOTE: .env was not created; the secrets stay in your environment.\"; } && ./demo setup",
         "ready": "test -x project/.venv/bin/python",
         "first": './demo run --expires-at "$(date -u -d \'+8 hours\' +%Y-%m-%dT%H:%M:%SZ)"',
         "see": "the log says it is ready; open forwarded port 8947. The factory needs a no-network sandbox wrapper "
@@ -134,7 +134,7 @@ MANUAL = [
     {
         "path": "examples/mantle-flight-briefing-openai-agents",
         "secrets": {"RASA_LICENSE": True, "OPENAI_API_KEY": False, "DEEPGRAM_API_KEY": False},
-        "install": "cd examples/mantle-flight-briefing-openai-agents && bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . || echo \"NOTE: .env was not created; the secrets stay in your environment.\"; make setup",
+        "install": "cd examples/mantle-flight-briefing-openai-agents && { bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/make-env.sh\" . || echo \"NOTE: .env was not created; the secrets stay in your environment.\"; } && make setup",
         "ready": "make doctor",
         "first": "make run-scripted",
         "see": "the launcher reports ready; open forwarded port 8942 for the card page.",

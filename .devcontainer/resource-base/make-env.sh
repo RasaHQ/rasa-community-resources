@@ -11,7 +11,7 @@ cd "${1:?resource folder}"
 mode_of() { stat -c '%a' "$1" 2>/dev/null || stat -f '%Lp' "$1"; }
 fail() {
   rm -f .env
-  echo "ERROR: $1 No secret was written to .env; the resource will read the secrets from the environment instead." >&2
+  echo "ERROR: $1 The .env file was removed, so it holds no secret; the resource will read the secrets from the environment instead." >&2
   exit 1
 }
 

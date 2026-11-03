@@ -67,6 +67,12 @@ class GeneratedFilesTests(unittest.TestCase):
                 self.assertNotIn("remoteEnv", body, path.rel)
             self.assertNotIn("alias-license", body["onCreateCommand"])
 
+    def test_a_failed_env_file_does_not_hide_a_failed_cd_in_the_manual_examples(self):
+        for item in g.MANUAL:
+            command = json.loads((REPO_ROOT / ".devcontainer" / g.slug(item["path"]) / "devcontainer.json").read_text())["onCreateCommand"]
+            self.assertIn("&& { bash", command)
+            self.assertIn("; } && ", command)
+
     def test_installer_does_not_edit_shell_startup_files(self):
         self.assertNotIn("bashrc", (REPO_ROOT / ".devcontainer/resource-base/install.sh").read_text())
 
@@ -161,7 +167,7 @@ class EnvFileTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             result = self.run_stubbed(directory, self.stubbed(directory, "exit 1\n"))
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("No secret was written", result.stderr)
+            self.assertIn("holds no secret", result.stderr)
             self.assertNotIn("sentinel", result.stdout + result.stderr)
             self.assertFalse((Path(directory) / ".env").exists())
 
