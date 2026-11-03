@@ -1,6 +1,6 @@
 # Printed setup sheet
 
-`rasa-travel-workshop-one-pager.pdf` is a one-page US Letter handout that walks a participant from nothing to their first result: three keys, three GitHub secrets, the Codespace, `bash desk doctor`, and `bash desk data fx USD GBP 200`. `one-pager-preview.png` is a phone-sized preview.
+`rasa-travel-workshop-one-pager.pdf` is a one-page US Letter handout that walks a participant from nothing to their first result: three keys, three GitHub secrets, the Codespace, `bash desk doctor`, and `bash desk data fx USD GBP 200`. A band above the Join bar points to the Rasa Mantle credits page (`rasa.community/mantle-credits/`); its award terms must match that page. `one-pager-preview.png` is a phone-sized preview.
 
 - `one-pager.html` is the source, laid out from the Rasa brand repository: the supplied horizontal Ink logo, cream ground, STK Bureau Serif, Sans and Sans Mono, dark pink links, the Soundwave pattern as a quiet edge band.
 - `make-qr.mjs` writes `qr.svg` for the Codespaces launch link, which opens the workshop only once this edition is on `main`.
