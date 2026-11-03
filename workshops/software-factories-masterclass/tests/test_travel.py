@@ -19,10 +19,42 @@ def xml_board(code, direction):
             travel.ET.SubElement(leg,k).text=v
     return root
 
+class LocalClock(unittest.TestCase):
+    def test_november_utc_becomes_the_airport_clock_time(self):
+        from zoneinfo import ZoneInfo
+        oslo = ZoneInfo("Europe/Oslo")
+        self.assertEqual(travel.local_clock("2026-11-03T17:25:00Z", oslo), "18:25 CET (Oslo)")
+        self.assertEqual(travel.local_clock("2026-07-03T17:25:00Z", oslo), "19:25 CEST (Oslo)")
+        self.assertIsNone(travel.local_clock(None, oslo))
+
+
+class OvernightArrival(unittest.TestCase):
+    def test_each_time_keeps_its_own_date_when_a_delay_crosses_midnight(self):
+        def board(code, direction):
+            root = xml_board(code, direction)
+            flights = root.find("flights")
+            for leg in list(flights):
+                flights.remove(leg)
+            if code == "BGO":
+                leg = travel.ET.SubElement(flights, "flight")
+                for key, value in {"airport": "OSL", "arr_dep": "A", "flight_id": "DY999",
+                                   "schedule_time": "2026-11-03T22:30:00Z"}.items():
+                    travel.ET.SubElement(leg, key).text = value
+                travel.ET.SubElement(leg, "status", code="E", time="2026-11-03T23:10:00Z")
+            return root
+        record = travel.read("status", "DY999", now=NOW, request=lambda u, p: board(p["airport"], p["direction"]))["records"][0]
+        self.assertEqual((record["scheduled_arrival_local"], record["scheduled_arrival_local_date"]), ("23:30 CET (Oslo)", "2026-11-03"))
+        self.assertEqual((record["estimated_arrival_local"], record["estimated_arrival_local_date"]), ("00:10 CET (Oslo)", "2026-11-04"))
+        self.assertIsNone(record["scheduled_departure_local"])
+        self.assertEqual(record["estimated_arrival"], "2026-11-03T23:10:00Z")
+
+
 class Readers(unittest.TestCase):
     def test_evening_in_origin_zone(self):
         result=travel.read("flights","OSL","BGO",now=NOW,request=lambda u,p:xml_board(p["airport"],p["direction"]))
         self.assertEqual([f["scheduled_departure"] for f in result["records"]],["2026-11-02T19:00:00Z"])
+        self.assertEqual([f["scheduled_departure_local"] for f in result["records"]],["20:00 CET (Oslo)"])
+        self.assertIn("_local", result["times_note"])
     def test_unsupported_route(self):
         self.assertEqual(travel.read("flights","JFK","LHR")["state"],"unavailable")
 

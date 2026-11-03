@@ -76,6 +76,25 @@ def moment(value):
     return dt
 
 
+def local_clock(value, zone, place="Oslo"):
+    """A UTC instant as airport clock time with the zone named, e.g. '18:25 CET (Oslo)'."""
+    if not value:
+        return None
+    local = moment(value).astimezone(zone)
+    return f"{local:%H:%M} {local.tzname()} ({place})"
+
+
+def local_date(value, zone):
+    """The airport calendar date of a UTC instant, bound to the same timestamp as its clock time."""
+    return str(moment(value).astimezone(zone).date()) if value else None
+
+
+def local_times(name, value, active, zone):
+    """`<name>_local` and `<name>_local_date`, both from the same timestamp (None when the field does not apply)."""
+    return {name + "_local": local_clock(value, zone) if active else None,
+            name + "_local_date": local_date(value, zone) if active else None}
+
+
 def rehearsal_response(url, params):
     """Synthetic provider payloads used only in the two-date classroom case."""
     if url == BOARD_URL and params["direction"] == "A":
@@ -200,8 +219,11 @@ def read(kind, *args, request=fetch, now=None):
                     elif flight!=number: continue
                     records.append({"flight":flight,"from":code if direction=="D" else other,"to":other if direction=="D" else code,
                         "scheduled_departure":scheduled if direction=="D" else None,"scheduled_arrival":scheduled if direction=="A" else None,
-                        "estimated_arrival":status_time if direction=="A" and flag=="E" else None,"status_code":flag,"status_time":status_time})
-            value={"records":records[:12],"board_updated":updates,"coverage":"Avinor Oslo–Bergen boards, requested from 2 hours ago to 24 hours ahead. Up to 12 matches shown. No seat inventory."}
+                        "estimated_arrival":status_time if direction=="A" and flag=="E" else None,"status_code":flag,"status_time":status_time,
+                        **local_times("scheduled_departure", scheduled, direction == "D", zone),
+                        **local_times("scheduled_arrival", scheduled, direction == "A", zone),
+                        **local_times("estimated_arrival", status_time, direction == "A" and flag == "E", zone)})
+            value={"records":records[:12],"times_note":"Say times exactly as written in the fields ending in _local (airport clock time with the zone named). Each has its own date in the matching field ending in _local_date; use that date for that time only, since a delayed flight can land on the next day. Fields without _local are UTC (Z) and must not be read aloud as local time.","board_updated":updates,"coverage":"Avinor Oslo–Bergen boards, requested from 2 hours ago to 24 hours ahead. Up to 12 matches shown. No seat inventory."}
             if kind=="flights":value.update(origin_timezone=str(zone),origin_date=str(day),window="remaining departures from 18:00 to midnight")
         return result | {"state": "ok"} | value
     except (

@@ -15,3 +15,14 @@ class Rehearsal(unittest.TestCase):
                                 (second["scheduled_arrival"], 7)]:
             self.assertEqual(travel_data.read("weather", "BGO", stamp)["temperature_c"], expected)
         self.assertEqual(travel_data.read("fx", "USD", "GBP", 100)["state"], "unavailable")
+
+    @patch.dict(os.environ, TRAVEL_REHEARSAL="two-dates")
+    @patch.object(travel_data, "urlopen", side_effect=AssertionError("network used"))
+    def test_two_date_case_gives_bergen_clock_times(self, network):
+        first, second = travel_data.read("status", "ZZ201")["records"]
+        self.assertEqual((first["estimated_arrival_local"], first["estimated_arrival_local_date"],
+                          first["scheduled_arrival_local"], first["scheduled_arrival_local_date"]),
+                         ("20:10 CET (Oslo)", "2026-11-03", "19:20 CET (Oslo)", "2026-11-03"))
+        self.assertEqual((second["scheduled_arrival_local"], second["scheduled_arrival_local_date"],
+                          second["estimated_arrival_local"], second["estimated_arrival_local_date"]),
+                         ("19:20 CET (Oslo)", "2026-11-04", None, None))
