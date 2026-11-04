@@ -291,3 +291,42 @@ an allocated seat. The corrected answer retains `operation_outcome: reserved`
 and separately reports the observed reservation state/version. Missing status
 is unknown. A snapshot is not a guarantee about later changes. These are local
 invented allocation records, not tickets, payments, or real airline inventory.
+
+### Keep a selected offer separate from alternative offers
+
+`offer_identity.py` resolves two invented patch offers against the same base.
+A field cache applies only each patch's explicit fields, losing offer identity.
+Both patches pass base/value checks; the resulting terms equal neither issued
+alternative. A separate candidate cache resolves each offer against the base
+and returns the complete selected candidate, or unresolved if it was not received.
+
+```sh
+python3 -B offer_identity.py
+python3 -B -m unittest discover -s tests -p 'test_offer_identity.py' -v
+```
+
+Six tests cover both arrival orders, either selection, missing selection,
+conflicting identity reuse and stale bases. This contract concerns alternative
+whole offers, not cumulative endorsements. It makes no claim about a real
+insurer's authority, legal terms or live acceptance service.
+
+### Complete a display against both value and language revisions
+
+`display_revisions.py` queues two render jobs around an amount edit and a
+language switch. Under the same completion schedule, a locale-only check accepts
+old money and a value-only check accepts the old language. A pair check refuses
+both old jobs; a fresh job displays the current amount in the current language.
+Value-bound approval survives a locale-only change and fails after an amount
+edit; a coarse approval check unnecessarily invalidates the former under this
+fixture's explicit value-only approval contract.
+
+```sh
+python3 -B display_revisions.py
+python3 -B -m unittest discover -s tests -p 'test_display_revisions.py' -v
+```
+
+Seven tests cover those histories plus changed-away-and-back revisions and
+unsupported locales. Rejection does not itself refresh or clear an already
+visible display: this is an acceptance check for incoming completions. The
+fixture has no scheduler, cancellation, payment operation or actual model.
+The complete casebook suite now passes 114 tests.
