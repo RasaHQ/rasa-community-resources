@@ -1,0 +1,13 @@
+schema:
+  public:
+    answered:
+      type: bool
+    report_now:
+      type: categorical
+      # Quoted: YAML reads a bare yes/no as a boolean, which silently turns
+      # this enum into [True, False] and stops `report_now == "yes"` matching.
+      enum_values: ["yes", "no"]
+      description: >
+        Whether the caller wants to file the complaint now, having been told
+        who handles it.
+      llm_settable: true

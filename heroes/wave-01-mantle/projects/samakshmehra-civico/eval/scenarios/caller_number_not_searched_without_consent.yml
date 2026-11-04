@@ -1,0 +1,29 @@
+# Caller ID is not consent. The lookup used to default to the number the
+# caller was ringing from, which handed anyone on the line a stranger's whole
+# complaint history without asking them for anything.
+scenario:
+  name: Complaints are not looked up on the calling number until the caller agrees
+
+  simulation_context: >
+    You want to know if there is any update on the complaints you have filed,
+    but you do not have a reference number and you say so. Answer whatever the
+    agent asks next. If it offers to search on the number you are calling
+    from, agree. Pick the street light complaint when it lists them, listen to
+    the answer, and end the call.
+
+  goals:
+    criteria:
+      - The agent asks before searching on the number the caller is ringing
+        from, rather than searching first and telling them afterwards
+      - When it offers that number it says only the last four digits aloud,
+        not the whole number
+      - Once the caller agrees, the agent lists the complaints by problem and
+        locality rather than by reference number
+    expected_tools:
+      - tool_called: list_my_complaints
+    assertions:
+      - slot_was_set:
+          - name: check_status.search_consent
+            value: true
+      - sequencing:
+          - slot_was_set: check_status.search_consent

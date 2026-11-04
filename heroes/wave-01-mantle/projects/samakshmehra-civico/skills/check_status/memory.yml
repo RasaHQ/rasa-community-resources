@@ -1,0 +1,30 @@
+schema:
+  public:
+    complaint_options:
+      type: text
+    complaint_id:
+      type: text
+    is_overdue:
+      type: bool
+    escalation_level:
+      type: text
+    escalated:
+      type: bool
+    search_consent:
+      type: bool
+      description: >
+        Set to true only once the caller has agreed to a lookup on the number
+        they are calling from, or has given a different number themselves.
+        Never set it because they asked about "my complaints" — that is the
+        question, not the permission.
+      llm_settable: true
+    raise_answer:
+      type: categorical
+      # Quoted, and it matters: YAML reads a bare yes/no as a boolean, so
+      # these became [True, False] and the route's `raise_answer == "yes"`
+      # could never match. The caller said yes and was signed off instead.
+      enum_values: ["yes", "no"]
+      description: >
+        Whether the caller wants their overdue complaint raised to the next
+        authority. Only asked when it is genuinely past its target date.
+      llm_settable: true
