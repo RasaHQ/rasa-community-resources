@@ -171,3 +171,34 @@ never charges a customer, changes coverage or instructs a payment provider.
 Calendar manuscript: the held insurance-billing case will use this exercise
 only after independent source and editorial review. No publication approval
 or release date is implied by adding the companion code.
+
+## Old billing revisions can still contradict each other
+
+`billing_history.py` compares two otherwise identical reducers under an explicit
+synthetic contract: a source revision identifies immutable state. A common
+optimization discards obsolete replies before checking their evidence. The
+comparison retains input validation and equal-current-revision detection.
+
+```bash
+python3 -B billing_history.py
+python3 -B -m unittest discover -s tests -p test_billing_history.py -v
+```
+
+The seven invented observations have 5,040 orders. Latest-first filtering misses
+the old policy contradiction in 3,360; retained-history detection notices it in
+all 5,040. Both still select the same latest policy observation. The minimal
+policy sequence is revision 6 active, revision 5 lapsed, revision 5 active.
+Those are exhaustive fixture counts, not service failure rates.
+
+The `RetainedHistory` wrapper stores both validated conflicting observations,
+including their source and revision, rather than only a conflict flag. Duplicate
+delivery does not multiply those diagnostic entries. Storage is in memory and
+ends with the process; a deployed adapter needs its own durable evidence ledger.
+
+The test also exposes an availability choice. The original whole-report contract
+withholds invoice and payment states after a policy contradiction and stays
+blocked after a later revision 7. Separate-source reports retain those two
+unconflicted observations while keeping policy unknown. That is not a joined
+coverage decision or proof of freshness. A real adapter must establish source
+identity, revision immutability, snapshot freshness, retention and recovery.
+Neither teaching reducer supplies those service guarantees or makes a payment.
