@@ -243,3 +243,23 @@ batch on rasa.community, respectively `internal-shift-swap`,
 `travel-mass-rebooking`, `language-switch`, `internal-field-dispatch`,
 `insurance-renewal`, and `refund-allocation`. The companion code is ready for
 review; the six articles and publication approval remain separate deliverables.
+
+### Resume optional work after a crash
+
+`shift_resume.py` extends the absence exercise with a crash immediately after
+intake commits. Both request-level and stage-level replay retain exactly one
+absence. Returning an existing request too early leaves its optional swap
+pending; resuming the pending stage records the fixture's denial or approval.
+The table stores the obligation before the crash, and the comparison reopens
+the database before and after retry.
+
+```sh
+python3 -B shift_resume.py
+python3 -B -m unittest discover -s tests -p 'test_shift_resume.py' -v
+```
+
+Six focused tests pass. Recovery here requires a retry with the same operation
+identity and facts. The sample has no automatic pending-work scanner, manager
+notification, live qualification lookup, or external roster write. A terminal
+fixture state is not an authoritative staffing receipt. A changed replacement
+proposal needs its own supported identity contract before adapting the sample.
