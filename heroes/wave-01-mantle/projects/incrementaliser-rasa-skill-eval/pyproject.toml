@@ -1,0 +1,74 @@
+[project]
+name = "rasa-skill-eval"
+version = "0.1.0"
+description = "Evaluate Rasa Mantle skills with NVIDIA SkillEvaluator and Mantle TSR."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "rasa-pro==3.20.0.dev6",
+    "httpx>=0.28.0",
+    "huggingface-hub>=0.25.0,<1.31",
+    "loguru>=0.7.3",
+    "matplotlib>=3.9.0",
+    "numpy>=2.0.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "python-dotenv>=1.0.1",
+    "pyyaml>=6.0.2",
+    "rich>=13.9.0",
+    "scipy>=1.14.0",
+]
+
+[project.optional-dependencies]
+judge = [
+    "deepeval>=3.2.8,<4",
+]
+tracking = [
+    "mlflow>=2.15.0",
+    "wandb>=0.19.0",
+]
+
+[project.scripts]
+fetch-corpus = "rasa_skill_eval.cli:fetch_corpus_main"
+skill-eval = "rasa_skill_eval.cli:skill_eval_main"
+agent-eval = "rasa_skill_eval.cli:agent_eval_main"
+report = "rasa_skill_eval.cli:report_main"
+eval-all = "rasa_skill_eval.cli:eval_all_main"
+resume-missing = "rasa_skill_eval.cli:resume_missing_main"
+run-all2 = "rasa_skill_eval.cli:run_all2_main"
+test-pipeline = "rasa_skill_eval.cli:test_pipeline_main"
+progress = "rasa_skill_eval.cli:progress_main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "ruff>=0.9.0",
+]
+
+[tool.uv]
+prerelease = "allow"
+
+[tool.rasa-catalog]
+required-secrets = ["NVIDIA_API_KEY"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rasa_skill_eval"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/rasa_skill_eval/report.py" = ["E501"]
+"src/rasa_skill_eval/stats.py" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
