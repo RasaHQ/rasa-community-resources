@@ -202,3 +202,44 @@ unconflicted observations while keeping policy unknown. That is not a joined
 coverage decision or proof of freshness. A real adapter must establish source
 identity, revision immutability, snapshot freshness, retention and recovery.
 Neither teaching reducer supplies those service guarantees or makes a payment.
+
+## November 6–11 daily exercises
+
+These six independent, standard-library exercises use invented records. Run
+from this directory with Python 3.11 or later. They need no license, service,
+model, or credentials. Each script prints its comparison as JSON; the adjacent
+test file covers the declared contract and failure paths.
+
+| File | Comparison | Important limit |
+| --- | --- | --- |
+| `shift_intake.py` | One transaction rolls back an absence report when an optional swap is denied; separate transactions retain the report. | SQLite records are local; qualification is an authored Boolean, not a staffing decision. |
+| `seat_allocation.py` | Two stale availability reads create two reservations for one seat; one conditional transaction spends it once. | No fare, ticket, partner, or distributed database integration. |
+| `localized_amount.py` | A parser can accept a localized number and silently change its value; integer minor units survive a display-language change. | Only nonnegative USD, EUR, and GBP values and two display locales are supported. |
+| `dispatch_matching.py` | Greedy eligible assignments leave a job unserved; complete batch assignment preserves scarce skills. | Invented static costs, capacity one, and exhaustive search limited to eight jobs and technicians. |
+| `renewal_terms.py` | A fallback merge accepts omitted full-offer terms; explicit snapshot/patch semantics distinguish missing and unchanged. | Invented integer deductible/limit records and a trusted complete prior revision. |
+| `refund_allocation.py` | Recomputing the same rounding policy over remaining items changes an item's amount; retaining its original allocation preserves it. | One-unit line items, in-memory refund identities, and an invented allocation policy. |
+
+For example:
+
+```sh
+python3 -B shift_intake.py
+python3 -B seat_allocation.py
+python3 -B localized_amount.py
+python3 -B dispatch_matching.py
+python3 -B renewal_terms.py
+python3 -B refund_allocation.py
+python3 -B -m unittest discover -s tests -v
+```
+
+All 85 casebook tests passed under Python 3.14.3 on November 4, 2026, including
+46 tests for these six exercises. Read the persisted records as well as the
+returned status. In the seat comparison, both the defective and repaired paths
+keep the counter nonnegative; only the repaired path preserves the relationship
+between capacity and reservations. In the refund comparison, every return order
+conserves the total, but that alone does not preserve each item's amount.
+
+Publication plan: these examples support the reviewed November 6–11 casebook
+batch on rasa.community, respectively `internal-shift-swap`,
+`travel-mass-rebooking`, `language-switch`, `internal-field-dispatch`,
+`insurance-renewal`, and `refund-allocation`. The companion code is ready for
+review; the six articles and publication approval remain separate deliverables.
