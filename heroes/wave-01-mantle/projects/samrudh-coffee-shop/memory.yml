@@ -1,0 +1,44 @@
+# Shared project-wide memory schema across Artisan Roast skills (session.project.*)
+
+is_ceo:
+  type: bool
+  description: "Whether the active user possesses verified CEO / executive authorization."
+  initial_value: false
+
+user_role:
+  type: text
+  description: "Current active role ('guest', 'customer', 'operator', 'ceo')."
+  initial_value: guest
+
+active_store_id:
+  type: int
+  description: "Store ID currently in context (3 for Astoria, 5 for Lower Manhattan, 8 for Hell's Kitchen)."
+  initial_value: 5
+
+active_customer_id:
+  type: text
+  description: "Customer ID for the active customer profile."
+
+active_customer_name:
+  type: text
+  description: "Customer full name on file."
+
+loyalty_tier:
+  type: text
+  description: "Customer loyalty tier ('Regular', 'Silver', 'Gold')."
+
+loyalty_points:
+  type: int
+  description: "Customer current loyalty rewards point balance."
+
+active_order_id:
+  type: text
+  description: "Order ID currently being processed, prepared, or tracked."
+
+last_ordered_item:
+  type: text
+  description: "Name of the most recently ordered drink or pastry."
+
+user_mood:
+  type: text
+  description: "Customer expressed mood or energy state (e.g. sleepy, stressed, cozy)."

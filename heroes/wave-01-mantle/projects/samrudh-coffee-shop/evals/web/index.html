@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Evaluation Dashboard</title>
+  
+  <!-- Minimal Google Font & FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Solarized Theme Base Variables */
+    :root {
+      /* Solarized Color Palette */
+      --base03:  #002b36;
+      --base02:  #073642;
+      --base01:  #586e75;
+      --base00:  #657b83;
+      --base0:   #839496;
+      --base1:   #93a1a1;
+      --base2:   #eee8d5;
+      --base3:   #fdf6e3;
+      
+      --yellow:  #b58900;
+      --orange:  #cb4b16;
+      --red:     #dc322f;
+      --magenta: #d33682;
+      --violet:  #6c71c4;
+      --blue:    #268bd2;
+      --cyan:    #2aa198;
+      --green:   #859900;
+
+      /* Dark Mode Defaults (Solarized Dark) */
+      --bg-main: var(--base03);
+      --bg-panel: var(--base02);
+      --bg-input: rgba(0, 0, 0, 0.25);
+      --border: var(--base01);
+      --border-subtle: rgba(88, 110, 117, 0.3);
+      
+      --text-main: var(--base0);
+      --text-bright: var(--base1);
+      --text-muted: var(--base00);
+      --heading: var(--base3);
+      
+      --radius: 6px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* Light Mode (Solarized Light) */
+    body.light-theme {
+      --bg-main: var(--base3);
+      --bg-panel: var(--base2);
+      --bg-input: rgba(255, 255, 255, 0.6);
+      --border: var(--base1);
+      --border-subtle: rgba(147, 161, 161, 0.4);
+      
+      --text-main: var(--base00);
+      --text-bright: var(--base01);
+      --text-muted: var(--base1);
+      --heading: var(--base02);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); }
+    
+    body {
+      background: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    /* Header Bar */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 20px;
+      border-radius: var(--radius);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand h1 { font-size: 16px; font-weight: 700; color: var(--heading); letter-spacing: -0.3px; }
+    .brand-target { font-size: 12px; color: var(--cyan); font-family: var(--font-mono); font-weight: 500; }
+
+    .header-controls { display: flex; align-items: center; gap: 14px; }
+    
+    /* Port & Status Indicator */
+    .status-group { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .status-group input[type="number"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+      padding: 4px 8px;
+      border-radius: 4px;
+      width: 60px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      outline: none;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+    }
+    .status-badge.online { color: var(--green); border-color: var(--green); }
+    .status-badge.offline { color: var(--red); border-color: var(--red); }
+    .status-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    /* Theme Toggle Button */
+    .btn-theme {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-theme:hover { background: var(--border-subtle); }
+
+    /* Grid Layout */
+    .grid-layout { display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
+
+    /* Panel Card */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--heading);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+    }
+
+    /* Form Controls */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: flex; justify-content: space-between; }
+    .form-group label span.val { color: var(--cyan); font-family: var(--font-mono); }
+    .form-group select, .form-group input[type="text"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 12.5px;
+      outline: none;
+    }
+    .form-group input[type="range"] { accent-color: var(--cyan); cursor: pointer; }
+
+    /* Scenarios List */
+    .scenarios-list {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .scenario-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; cursor: pointer; }
+    .scenario-item input[type="checkbox"] { accent-color: var(--cyan); margin-top: 2px; }
+    .scenario-item-title { font-weight: 600; color: var(--text-main); }
+    .scenario-item-desc { font-size: 11px; color: var(--text-muted); }
+
+    /* Budget Summary Box */
+    .budget-info {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .budget-info strong { color: var(--cyan); font-size: 14px; }
+
+    /* Buttons */
+    .btn-group { display: grid; grid-template-columns: 1fr 90px; gap: 8px; }
+    .btn {
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity 0.15s ease;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    
+    .btn-run { background: var(--cyan); color: var(--base03); font-weight: 700; }
+    .btn-stop { background: transparent; border-color: var(--red); color: var(--red); }
+    .btn-save { background: transparent; border-color: var(--border); color: var(--text-bright); padding: 4px 10px; font-size: 11.5px; }
+
+    /* Progress Section */
+    .progress-section { display: flex; flex-direction: column; gap: 6px; }
+    .progress-bg { background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 4px; height: 10px; overflow: hidden; }
+    .progress-fill { background: var(--cyan); height: 100%; width: 0%; transition: width 0.3s ease; }
+    .progress-text { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono); }
+
+    /* Console Tabs & Window */
+    .console-header { display: flex; justify-content: space-between; align-items: center; }
+    .console-tabs { display: flex; gap: 4px; }
+    .tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+    }
+    .tab.active { background: var(--border-subtle); color: var(--text-bright); border-color: var(--border); }
+    .tab[data-role="eval_agent"].active { color: var(--cyan); border-color: var(--cyan); }
+    .tab[data-role="bot"].active { color: var(--green); border-color: var(--green); }
+    .tab[data-role="error"].active { color: var(--red); border-color: var(--red); }
+
+    .terminal-console {
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      height: 340px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Terminal Log Lines in Solarized Colors */
+    .log-row { display: flex; gap: 8px; align-items: flex-start; word-break: break-word; }
+    .log-time { color: var(--base01); font-size: 11px; flex-shrink: 0; }
+    .log-tag { font-weight: 700; flex-shrink: 0; font-size: 11px; }
+    .log-msg { color: var(--text-main); flex-grow: 1; }
+
+    .log-row.eval_agent .log-tag { color: var(--cyan); }
+    .log-row.eval_agent .log-msg { color: var(--text-bright); }
+
+    .log-row.bot .log-tag { color: var(--green); }
+    .log-row.bot .log-msg { color: var(--text-bright); }
+
+    .log-row.tool .log-tag { color: var(--blue); }
+    .log-row.tool .log-msg { color: var(--blue); font-style: italic; }
+
+    .log-row.error .log-tag, .log-row.error .log-msg { color: var(--red); font-weight: 600; }
+    .log-row.pass .log-tag, .log-row.pass .log-msg { color: var(--green); font-weight: 600; }
+    .log-row.fail .log-tag, .log-row.fail .log-msg { color: var(--red); font-weight: 600; }
+    .log-row.system .log-tag { color: var(--base00); }
+    .log-row.system .log-msg { color: var(--text-muted); }
+
+    /* Results KPI & Table */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .kpi-card { background: var(--bg-input); border: 1px solid var(--border-subtle); padding: 10px; border-radius: 4px; text-align: center; }
+    .kpi-card label { font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .kpi-card .val { font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--cyan); margin-top: 2px; }
+
+    .table-container { overflow-x: auto; margin-top: 4px; }
+    .summary-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .summary-table th, .summary-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+    .summary-table th { color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; background: var(--bg-input); }
+    .badge-pass { color: var(--green); font-weight: 700; font-family: var(--font-mono); }
+    .badge-fail { color: var(--red); font-weight: 700; font-family: var(--font-mono); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <h1>Agent Evaluation</h1>
+      <span class="brand-target" id="agent-target-display">[Target Agent]</span>
+    </div>
+
+    <div class="header-controls">
+      <div class="status-group">
+        <label for="rasa-port">Rasa Port:</label>
+        <input type="number" id="rasa-port" value="5005">
+      </div>
+
+      <div id="status-badge" class="status-badge offline">
+        <span class="dot"></span>
+        <span id="status-text">Checking...</span>
+      </div>
+
+      <button id="btn-theme-toggle" class="btn-theme" title="Toggle Light/Dark Theme">
+        <i class="fa-solid fa-moon"></i> <span id="theme-text">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <div class="grid-layout">
+
+    <!-- Sidebar / Controls Panel -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>Parameters</span>
+        <button id="btn-save-config" class="btn-save" title="Save config to eval_config.json"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+      </div>
+
+      <!-- Agent Title -->
+      <div class="form-group">
+        <label for="agent-title-input">Agent Name:</label>
+        <input type="text" id="agent-title-input" value="Artisan Roast Coffee Shop Agent">
+      </div>
+
+      <!-- LLM Model -->
+      <div class="form-group">
+        <label for="eval-model">LLM Simulator & Judge:</label>
+        <select id="eval-model">
+          <option value="deepseek/deepseek-chat" selected>DeepSeek V3 (deepseek/deepseek-chat)</option>
+          <option value="deepseek/deepseek-r1">DeepSeek R1 (deepseek/deepseek-r1)</option>
+          <option value="openai/gpt-4o-mini">GPT-4o Mini (openai/gpt-4o-mini)</option>
+          <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+        </select>
+      </div>
+
+      <!-- Sims per Scenario -->
+      <div class="form-group">
+        <label for="sims-per-op">Runs per Scenario: <span class="val" id="sims-val">3</span></label>
+        <input type="range" id="sims-per-op" min="1" max="10" value="3">
+      </div>
+
+      <!-- Max Turns -->
+      <div class="form-group">
+        <label for="max-turns">Max Turns: <span class="val" id="turns-val">5</span></label>
+        <input type="range" id="max-turns" min="1" max="10" value="5">
+      </div>
+
+      <!-- Scenarios List -->
+      <div class="form-group">
+        <label>Scenarios (<span id="scenarios-count">0</span> Active):</label>
+        <div class="scenarios-list" id="scenarios-list">
+          <div style="color:var(--text-muted); font-size:11px;">Loading scenarios...</div>
+        </div>
+      </div>
+
+      <!-- Pre-flight Budget Info -->
+      <div class="budget-info">
+        <span>Pre-flight Quota:</span>
+        <strong id="budget-number">90 calls</strong>
+      </div>
+
+      <!-- Run / Stop Actions -->
+      <div class="btn-group">
+        <button id="btn-start-eval" class="btn btn-run">
+          <i class="fa-solid fa-play"></i> Start Eval
+        </button>
+        <button id="btn-stop-eval" class="btn btn-stop" disabled>
+          <i class="fa-solid fa-stop"></i> Stop
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Results & Terminal Feed -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- Live Terminal Console -->
+      <div class="panel">
+        <div class="console-header">
+          <div class="console-tabs">
+            <button class="tab active" data-role="all">All</button>
+            <button class="tab" data-role="eval_agent">Eval Agent</button>
+            <button class="tab" data-role="bot">Rasa Bot</button>
+            <button class="tab" data-role="tool">Tools</button>
+            <button class="tab" data-role="error">Errors</button>
+          </div>
+          
+          <label style="font-size: 11px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="chk-autoscroll" checked> Auto-Scroll
+          </label>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-section">
+          <div class="progress-bg">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="progress-text">
+            <span id="progress-status">0 / 0 Sims Completed</span>
+            <span id="progress-calls">LLM Calls: 0</span>
+          </div>
+        </div>
+
+        <!-- Terminal Output Window -->
+        <div class="terminal-console" id="terminal-console">
+          <div class="log-row system">
+            <span class="log-time">00:00:00</span>
+            <span class="log-tag">[SYSTEM]</span>
+            <span class="log-msg">Ready. Configure parameters and click 'Start Eval'.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Summary Table -->
+      <div class="panel">
+        <div class="panel-title">Evaluation Summary</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <label>Pass Rate</label>
+            <div class="val" id="kpi-pass-rate">0.0%</div>
+          </div>
+          <div class="kpi-card">
+            <label>Passed Runs</label>
+            <div class="val" id="kpi-passed-runs">0 / 0</div>
+          </div>
+          <div class="kpi-card">
+            <label>LLM Calls</label>
+            <div class="val" id="kpi-llm-calls">0 / 0</div>
+          </div>
+          <div class="kpi-card">
+            <label>Active Scenarios</label>
+            <div class="val" id="kpi-active-scenarios">0</div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>Scenario Title</th>
+                <th>Total Runs</th>
+                <th>Passed</th>
+                <th>Pass Rate</th>
+              </tr>
+            </thead>
+            <tbody id="summary-table-body">
+              <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No eval data available.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    let pollInterval = null;
+    let loadedConfig = {};
+    let allLogs = [];
+    let activeFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const rasaPortInput = document.getElementById('rasa-port');
+      const statusBadge = document.getElementById('status-badge');
+      const statusText = document.getElementById('status-text');
+
+      const btnThemeToggle = document.getElementById('btn-theme-toggle');
+      const themeText = document.getElementById('theme-text');
+
+      const agentTitleInput = document.getElementById('agent-title-input');
+      const agentTargetDisplay = document.getElementById('agent-target-display');
+      const evalModelSelect = document.getElementById('eval-model');
+      const simsPerOpInput = document.getElementById('sims-per-op');
+      const simsVal = document.getElementById('sims-val');
+      const maxTurnsInput = document.getElementById('max-turns');
+      const turnsVal = document.getElementById('turns-val');
+
+      const scenariosList = document.getElementById('scenarios-list');
+      const scenariosCount = document.getElementById('scenarios-count');
+      const budgetNumber = document.getElementById('budget-number');
+
+      const btnSaveConfig = document.getElementById('btn-save-config');
+      const btnStartEval = document.getElementById('btn-start-eval');
+      const btnStopEval = document.getElementById('btn-stop-eval');
+
+      const progressFill = document.getElementById('progress-fill');
+      const progressStatus = document.getElementById('progress-status');
+      const progressCalls = document.getElementById('progress-calls');
+      const terminalConsole = document.getElementById('terminal-console');
+      const chkAutoscroll = document.getElementById('chk-autoscroll');
+
+      const kpiPassRate = document.getElementById('kpi-pass-rate');
+      const kpiPassedRuns = document.getElementById('kpi-passed-runs');
+      const kpiLlmCalls = document.getElementById('kpi-llm-calls');
+      const kpiActiveScenarios = document.getElementById('kpi-active-scenarios');
+      const summaryTableBody = document.getElementById('summary-table-body');
+
+      // --- Theme Switcher (Solarized Dark <-> Solarized Light) ---
+      const savedTheme = localStorage.getItem('eval_theme') || 'dark';
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeText.textContent = 'Light';
+        btnThemeToggle.querySelector('i').className = 'fa-solid fa-sun';
+      }
+
+      btnThemeToggle.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        themeText.textContent = isLight ? 'Light' : 'Dark';
+        btnThemeToggle.querySelector('i').className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        localStorage.setItem('eval_theme', isLight ? 'light' : 'dark');
+      });
+
+      // --- Budget Calculation ---
+      function updateBudget() {
+        const sims = parseInt(simsPerOpInput.value) || 1;
+        const turns = parseInt(maxTurnsInput.value) || 1;
+        const checkboxes = scenariosList.querySelectorAll('input[type="checkbox"]:checked');
+        const activeCount = checkboxes.length;
+
+        simsVal.textContent = sims;
+        turnsVal.textContent = turns;
+        scenariosCount.textContent = activeCount;
+        kpiActiveScenarios.textContent = activeCount;
+
+        const maxCalls = activeCount * sims * (turns + 1);
+        budgetNumber.textContent = `${maxCalls} calls`;
+      }
+
+      simsPerOpInput.addEventListener('input', updateBudget);
+      maxTurnsInput.addEventListener('input', updateBudget);
+
+      // --- Load Backend Config ---
+      async function fetchConfig() {
+        try {
+          const resp = await fetch('/api/config');
+          loadedConfig = await resp.json();
+
+          if (loadedConfig.agent_title) {
+            agentTitleInput.value = loadedConfig.agent_title;
+            agentTargetDisplay.textContent = `[${loadedConfig.agent_title}]`;
+          }
+          if (loadedConfig.eval_model) evalModelSelect.value = loadedConfig.eval_model;
+          if (loadedConfig.simulations_per_operation) simsPerOpInput.value = loadedConfig.simulations_per_operation;
+          if (loadedConfig.max_turns_per_simulation) maxTurnsInput.value = loadedConfig.max_turns_per_simulation;
+          if (loadedConfig.rasa_port) rasaPortInput.value = loadedConfig.rasa_port;
+
+          // Render scenario list
+          scenariosList.innerHTML = '';
+          const scenarios = loadedConfig.scenarios || {};
+          Object.entries(scenarios).forEach(([key, sc]) => {
+            const item = document.createElement('label');
+            item.className = 'scenario-item';
+            const isChecked = sc.enabled !== false;
+            item.innerHTML = `
+              <input type="checkbox" data-key="${key}" ${isChecked ? 'checked' : ''}>
+              <div>
+                <div class="scenario-item-title">${sc.title || key}</div>
+                <div class="scenario-item-desc">${sc.description || ''}</div>
+              </div>
+            `;
+            item.querySelector('input').addEventListener('change', updateBudget);
+            scenariosList.appendChild(item);
+          });
+
+          updateBudget();
+        } catch (e) {
+          console.error("Config fetch error:", e);
+        }
+      }
+
+      agentTitleInput.addEventListener('input', () => {
+        agentTargetDisplay.textContent = `[${agentTitleInput.value || 'Target Agent'}]`;
+      });
+
+      // --- Save Config ---
+      btnSaveConfig.addEventListener('click', async () => {
+        const scenarios = loadedConfig.scenarios || {};
+        scenariosList.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+          const k = chk.getAttribute('data-key');
+          if (scenarios[k]) scenarios[k].enabled = chk.checked;
+        });
+
+        const newConfig = {
+          ...loadedConfig,
+          agent_title: agentTitleInput.value,
+          rasa_port: parseInt(rasaPortInput.value),
+          eval_model: evalModelSelect.value,
+          simulations_per_operation: parseInt(simsPerOpInput.value),
+          max_turns_per_simulation: parseInt(maxTurnsInput.value),
+          scenarios: scenarios
+        };
+
+        try {
+          await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newConfig)
+          });
+          alert('Config saved to eval_config.json');
+        } catch (e) {
+          alert('Failed to save config.');
+        }
+      });
+
+      // --- Ping Rasa Server ---
+      async function pingRasa() {
+        const port = rasaPortInput.value;
+        statusBadge.className = 'status-badge offline';
+        statusText.textContent = 'Pinging...';
+
+        try {
+          const resp = await fetch('/api/status');
+          const data = await resp.json();
+          if (data.online) {
+            statusBadge.className = 'status-badge online';
+            statusText.textContent = `Online (Port ${port})`;
+          } else {
+            statusBadge.className = 'status-badge offline';
+            statusText.textContent = `Offline (Port ${port})`;
+          }
+        } catch (e) {
+          statusBadge.className = 'status-badge offline';
+          statusText.textContent = `Offline (Port ${port})`;
+        }
+      }
+
+      rasaPortInput.addEventListener('change', pingRasa);
+
+      // --- Render Terminal Log Line ---
+      function createLogRow(log) {
+        const logObj = (typeof log === 'object') ? log : {
+          type: log.includes('✅ PASS') ? 'pass' : log.includes('❌ FAIL') ? 'fail' : log.includes('Bot Uttered') ? 'bot' : 'system',
+          sender: 'System',
+          message: log,
+          timestamp: new Date().toLocaleTimeString()
+        };
+
+        const row = document.createElement('div');
+        row.className = `log-row ${logObj.type || 'system'}`;
+
+        let tag = (logObj.type || 'system').toUpperCase();
+        if (tag === 'EVAL_AGENT') tag = 'EVAL AGENT';
+        if (tag === 'BOT') tag = 'RASA BOT';
+
+        row.innerHTML = `
+          <span class="log-time">${logObj.timestamp || ''}</span>
+          <span class="log-tag">[${tag}]</span>
+          <span class="log-msg">${logObj.message || ''}</span>
+        `;
+        return row;
+      }
+
+      function renderConsole() {
+        terminalConsole.innerHTML = '';
+        const filtered = allLogs.filter(l => {
+          if (activeFilter === 'all') return true;
+          const t = (typeof l === 'object') ? l.type : 'system';
+          if (activeFilter === 'error') return t === 'error' || t === 'fail';
+          return t === activeFilter;
+        });
+
+        filtered.forEach(log => {
+          terminalConsole.appendChild(createLogRow(log));
+        });
+
+        if (chkAutoscroll.checked) {
+          terminalConsole.scrollTop = terminalConsole.scrollHeight;
+        }
+      }
+
+      // Filter Tabs
+      document.querySelectorAll('.console-tabs .tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.console-tabs .tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          activeFilter = tab.getAttribute('data-role');
+          renderConsole();
+        });
+      });
+
+      // --- Polling Progress ---
+      async function pollProgress() {
+        try {
+          const resp = await fetch('/api/eval/progress');
+          const state = await resp.json();
+
+          const total = state.total_simulations || 1;
+          const completed = state.completed_simulations || 0;
+          const currentTurn = state.current_turn || 0;
+          const maxTurns = parseInt(maxTurnsInput.value) || 5;
+
+          const turnFraction = Math.min(currentTurn / maxTurns, 1.0);
+          const fractionalSims = state.is_running ? completed + turnFraction : completed;
+          const pct = Math.min(Math.round((fractionalSims / total) * 100), 100);
+
+          progressFill.style.width = `${pct}%`;
+          progressStatus.textContent = state.is_running 
+            ? `${completed} / ${total} Sims (Turn ${currentTurn}/${maxTurns} - ${pct}%)`
+            : `${completed} / ${total} Sims Completed (${pct}%)`;
+
+          progressCalls.textContent = `LLM Calls: ${state.llm_calls_used} / ${state.max_llm_calls_quota}`;
+
+          if (state.logs && state.logs.length > 0) {
+            allLogs = state.logs;
+            renderConsole();
+          }
+
+          if (!state.is_running && (completed > 0 || state.summary)) {
+            clearInterval(pollInterval);
+            btnStartEval.disabled = false;
+            btnStopEval.disabled = true;
+            btnStartEval.innerHTML = '<i class="fa-solid fa-play"></i> Start Eval';
+
+            if (state.summary) {
+              const s = state.summary;
+              kpiPassRate.textContent = `${s.overall_pass_rate_pct.toFixed(1)}%`;
+              kpiPassedRuns.textContent = `${s.total_passed} / ${s.total_simulations}`;
+              kpiLlmCalls.textContent = `${s.llm_calls_used} / ${s.max_llm_quota}`;
+
+              summaryTableBody.innerHTML = Object.entries(s.summary_by_operation).map(([k, op]) => `
+                <tr>
+                  <td><strong>${op.title}</strong></td>
+                  <td>${op.total_runs}</td>
+                  <td>${op.passed_runs}</td>
+                  <td><span class="${op.pass_rate_pct > 50 ? 'badge-pass' : 'badge-fail'}">${op.pass_rate_pct.toFixed(1)}%</span></td>
+                </tr>
+              `).join('');
+            }
+          }
+        } catch (e) {
+          console.error("Polling error:", e);
+        }
+      }
+
+      // --- Start Eval ---
+      btnStartEval.addEventListener('click', async () => {
+        const selectedScenarios = [];
+        scenariosList.querySelectorAll('input[type="checkbox"]:checked').forEach(chk => {
+          selectedScenarios.push(chk.getAttribute('data-key'));
+        });
+
+        if (selectedScenarios.length === 0) {
+          alert('Please select at least one scenario!');
+          return;
+        }
+
+        btnStartEval.disabled = true;
+        btnStopEval.disabled = false;
+        btnStartEval.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Running...';
+
+        const payload = {
+          agent_title: agentTitleInput.value,
+          rasa_host: 'http://localhost',
+          rasa_port: parseInt(rasaPortInput.value),
+          simulations_per_operation: parseInt(simsPerOpInput.value),
+          max_turns_per_simulation: parseInt(maxTurnsInput.value),
+          eval_model: evalModelSelect.value,
+          selected_scenarios: selectedScenarios
+        };
+
+        try {
+          const resp = await fetch('/api/eval/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const res = await resp.json();
+
+          if (res.status === 'started') {
+            allLogs = [];
+            terminalConsole.innerHTML = '';
+            pollInterval = setInterval(pollProgress, 1000);
+          } else {
+            alert(res.error || 'Failed to start.');
+            btnStartEval.disabled = false;
+            btnStopEval.disabled = true;
+            btnStartEval.innerHTML = '<i class="fa-solid fa-play"></i> Start Eval';
+          }
+        } catch (e) {
+          alert('Failed to trigger start endpoint.');
+          btnStartEval.disabled = false;
+          btnStopEval.disabled = true;
+          btnStartEval.innerHTML = '<i class="fa-solid fa-play"></i> Start Eval';
+        }
+      });
+
+      // --- Stop Eval ---
+      btnStopEval.addEventListener('click', async () => {
+        try {
+          await fetch('/api/eval/stop', { method: 'POST' });
+          btnStopEval.disabled = true;
+        } catch (e) {
+          console.error("Stop error:", e);
+        }
+      });
+
+      // Initial Setup
+      fetchConfig();
+      pingRasa();
+    });
+  </script>
+</body>
+</html>

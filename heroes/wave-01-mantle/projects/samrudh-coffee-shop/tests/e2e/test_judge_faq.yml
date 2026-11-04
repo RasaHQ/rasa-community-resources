@@ -1,0 +1,33 @@
+# LLM-as-a-Judge E2E Evaluation Tests for Artisan Roast FAQ Responses
+# Evaluates Groundedness (fabrication check) and Relevance (topic drift check) paired together.
+
+test_cases:
+  - test_case: Ethiopian bean origin inquiry
+    steps:
+      - user: /session_start
+      - user: Where do your Ethiopian beans come from and what are their tasting notes?
+        assertions:
+          - flow_started: coffee_faq
+          - generative_response_is_grounded:
+              utter_source: rephrase
+              threshold: 0.7
+              ground_truth: >-
+                Our Ethiopian Yirgacheffe beans are a light roast grown at 1,800 to 2,200 meters elevation in the Sidama region, featuring floral jasmine, bergamot citrus, and honey tasting notes.
+          - generative_response_is_relevant:
+              utter_source: rephrase
+              threshold: 0.7
+
+  - test_case: Lower Manhattan store hours inquiry
+    steps:
+      - user: /session_start
+      - user: What are the opening hours for the Lower Manhattan store?
+        assertions:
+          - flow_started: coffee_faq
+          - generative_response_is_grounded:
+              utter_source: rephrase
+              threshold: 0.7
+              ground_truth: >-
+                Our Lower Manhattan store at 120 Broadway is open Monday to Friday from 6:30 AM to 7:00 PM, and Saturday to Sunday from 7:30 AM to 6:00 PM.
+          - generative_response_is_relevant:
+              utter_source: rephrase
+              threshold: 0.7
