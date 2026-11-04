@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from billing_history import LatestFirst, demonstrate, minimal_trace, old_conflict, separate_sources
+from billing_history import LatestFirst, RetainedHistory, demonstrate, minimal_trace, old_conflict, separate_sources
 from billing_reconciliation import Observation, Reconciliation, fixture
 
 
@@ -62,6 +62,21 @@ class BillingHistoryTests(unittest.TestCase):
         for revision, state in [(True, "active"), (1, "not-a-policy-state")]:
             with self.assertRaises(ValueError):
                 latest.receive(Observation("account-1", "policy-1", "policy", revision, state))
+
+    def test_diagnostic_history_keeps_both_states_and_revision(self):
+        strict = RetainedHistory("account-1", "policy-1")
+        for event in minimal_trace():
+            strict.receive(event)
+        evidence = strict.conflict_evidence()
+        self.assertEqual(len(evidence), 1)
+        self.assertEqual((evidence[0]["source"], evidence[0]["revision"]), ("policy", 5))
+        self.assertEqual({item["state"] for item in evidence[0]["observations"]}, {"lapsed", "active"})
+
+    def test_duplicate_observation_does_not_multiply_diagnostic_history(self):
+        strict = RetainedHistory("account-1", "policy-1")
+        for event in [*minimal_trace(), *minimal_trace()]:
+            strict.receive(event)
+        self.assertEqual(len(strict.conflict_evidence()[0]["observations"]), 2)
 
     def test_source_separation_never_uses_payment_to_fill_policy(self):
         strict = Reconciliation("account-1", "policy-1")

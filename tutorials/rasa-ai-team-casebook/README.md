@@ -190,6 +190,11 @@ all 5,040. Both still select the same latest policy observation. The minimal
 policy sequence is revision 6 active, revision 5 lapsed, revision 5 active.
 Those are exhaustive fixture counts, not service failure rates.
 
+The `RetainedHistory` wrapper stores both validated conflicting observations,
+including their source and revision, rather than only a conflict flag. Duplicate
+delivery does not multiply those diagnostic entries. Storage is in memory and
+ends with the process; a deployed adapter needs its own durable evidence ledger.
+
 The test also exposes an availability choice. The original whole-report contract
 withholds invoice and payment states after a policy contradiction and stays
 blocked after a later revision 7. Separate-source reports retain those two

@@ -3,12 +3,39 @@
 No service, Rasa runtime, model, payment, or legal policy is exercised.
 The teaching contract makes each (source, revision) immutable.
 """
+from dataclasses import asdict
 from itertools import permutations
 import json
 from billing_reconciliation import STATES, Observation, Reconciliation, fixture
 
 
-class LatestFirst(Reconciliation):
+class RetainedHistory(Reconciliation):
+    """Retain both validated observations, not just a Boolean conflict flag.
+
+    This is an in-memory diagnostic ledger, not a durable/authenticated audit.
+    """
+
+    def __init__(self, account, policy):
+        super().__init__(account, policy)
+        self.evidence = {}
+
+    def receive(self, observation):
+        result = super().receive(observation)
+        records = self.evidence.setdefault((observation.source, observation.revision), [])
+        if observation not in records:
+            records.append(observation)
+        return result
+
+    def conflict_evidence(self):
+        return [
+            {"source": source, "revision": revision,
+             "observations": [asdict(item) for item in observations]}
+            for (source, revision), observations in sorted(self.evidence.items())
+            if len(observations) > 1
+        ]
+
+
+class LatestFirst(RetainedHistory):
     """Plausible optimization: skip obsolete observations before validation.
 
     Equal current revisions still use the original contradiction check. The
@@ -62,14 +89,14 @@ def demonstrate():
     latest_missed = strict_detected = orders = 0
     for delivery in permutations([*fixture(), old_conflict()]):
         latest = LatestFirst("account-1", "policy-1")
-        strict = Reconciliation("account-1", "policy-1")
+        strict = RetainedHistory("account-1", "policy-1")
         for event in delivery:
             latest.receive(event)
             strict.receive(event)
         latest_missed += "policy" not in latest.conflicts
         strict_detected += "policy" in strict.conflicts
         orders += 1
-    strict = Reconciliation("account-1", "policy-1")
+    strict = RetainedHistory("account-1", "policy-1")
     for event in [*fixture(), old_conflict()]:
         strict.receive(event)
     before = strict.report()
@@ -93,6 +120,7 @@ def demonstrate():
             key: after[key] for key in ("status", "invoice_state", "payment_state", "policy_state")
         },
         "separate_source_reports": separate_sources(strict),
+        "retained_conflict_evidence": strict.conflict_evidence(),
         "model_calls": 0,
         "service_calls": 0,
         "payment_actions": 0,
