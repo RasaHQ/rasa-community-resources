@@ -263,3 +263,31 @@ identity and facts. The sample has no automatic pending-work scanner, manager
 notification, live qualification lookup, or external roster write. A terminal
 fixture state is not an authoritative staffing receipt. A changed replacement
 proposal needs its own supported identity contract before adapting the sample.
+
+### Read a reservation after replaying its creation
+
+`reservation_receipts.py` starts with atomic capacity allocation and correctly
+idempotent creation. It reserves for passenger A, cancels that reservation,
+allocates the returned seat to passenger B, and retries A's original request.
+The original receipt correctly remains `reserved`; A's reservation is now
+`cancelled`. An answer about current allocation needs the reservation
+observation, not another interpretation of the historical operation result.
+
+```sh
+python3 -B reservation_receipts.py
+python3 -B -m unittest discover -s tests -p 'test_reservation_receipts.py' -v
+```
+
+Ten focused tests pass; the complete casebook suite now passes 101 tests. The
+replay records zero SQL row changes and leaves the saved ledger unchanged.
+That observation concerns data rows, not filesystem I/O or a distributed
+service's storage behavior. Replaying cancellation also releases capacity only
+once, and repeating an old creation ID never reactivates its cancelled
+reservation. A new passenger uses a different operation and reservation ID.
+
+The API's operation replay is correct under its declared contract. The faulty
+consumer answers a different question from that receipt: whether A still has
+an allocated seat. The corrected answer retains `operation_outcome: reserved`
+and separately reports the observed reservation state/version. Missing status
+is unknown. A snapshot is not a guarantee about later changes. These are local
+invented allocation records, not tickets, payments, or real airline inventory.
