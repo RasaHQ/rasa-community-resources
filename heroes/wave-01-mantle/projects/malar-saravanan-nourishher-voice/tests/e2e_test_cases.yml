@@ -1,0 +1,82 @@
+# End-to-end conversation tests for the Rasa Mantle eval harness.
+#
+#   rasa test e2e tests/e2e_test_cases.yml                 # run
+#   rasa test e2e tests/e2e_test_cases.yml --coverage-report
+#   make e2e            # (wrapper)   make e2e-coverage   # (+ coverage report)
+#
+# Each case leads with a "hi" turn so the default_session_start greeting
+# resolves first, then asserts on the real intent turn. Assertions are
+# structural (flow_started) + response-text (bot_uttered) so the suite runs
+# against the orchestrator LLM alone, with no extra LLM-judge config.
+#
+# NOTE: these drive the live LLM. On Groq's free tier turns are slow and can hit
+# the 8000 TPM cap (an empty turn), which shows up as flaky failures; a clean
+# full run is most reliable on OpenAI gpt-4o or a paid tier. See
+# docs/mantle-features.md (TODO).
+
+test_cases:
+  - test_case: greets_on_session_start
+    steps:
+      - user: "hi there"
+        assertions:
+          - bot_uttered:
+              utter_name: utter_greet
+
+  - test_case: log_a_meal_naturally
+    steps:
+      - user: "hi there"
+        assertions:
+          - bot_uttered:
+              utter_name: utter_greet
+      - user: "I had oatmeal with a banana and coffee for breakfast"
+        assertions:
+          - flow_started: meal_logging
+          - bot_uttered:
+              text_matches: "(?i)(logged|breakfast|oatmeal|banana)"
+
+  - test_case: nutrition_lookup_uses_real_data
+    steps:
+      - user: "hi there"
+        assertions:
+          - bot_uttered:
+              utter_name: utter_greet
+      - user: "how much protein is in 100 grams of chicken breast?"
+        assertions:
+          # Routing is the deterministic check here. The reply text depends on a
+          # live USDA API call (occasionally down), so we don't assert on it.
+          - flow_started: nutrition_qna
+
+  - test_case: safety_escalation_on_hypoglycemia
+    steps:
+      - user: "hi there"
+        assertions:
+          - bot_uttered:
+              utter_name: utter_greet
+      - user: "I feel really dizzy and shaky and haven't eaten all day"
+        assertions:
+          - flow_started: safety_escalation
+          - bot_uttered:
+              text_matches: "(?i)(sugar|juice|emergency|urgent|blood sugar)"
+
+# ---------------------------------------------------------------------------
+# CONDITION-SKILL ROUTING — not automatable with fixtures (documented).
+#
+# The condition skills gate on project memory (`requires: session.project.*`),
+# which is stored as slots named `project.<entry>`. The e2e fixture schema
+# rejects dotted slot keys (`^[a-zA-Z_]+[a-zA-Z0-9_-]*$`), so a fixture cannot
+# seed `project.has_pcos` etc. — and those flags are only written by completing
+# the `intake_profile` flow. So condition routing must be verified by driving a
+# full intake conversation (multi-turn, LLM-dependent), not by a fixture.
+#
+# Manual check (run `make api` on a reliable provider, then converse):
+#   1. Complete intake stating a condition (e.g. "I have PCOS").
+#   2. Ask "what foods help with PCOS?"  -> expect flow `pcos_nutrition`.
+#   3. For Bug 7: intake with hypothyroidism + levothyroxine, then ask a thyroid
+#      diet question -> expect flow `hypothyroidism_reminder_gate` to fire the
+#      verbatim reminder ("...empty stomach...") before hypothyroidism_nutrition.
+#
+# NEXT STEP — generative grounding assertions (need an LLM judge configured):
+#   - generative_response_is_grounded:
+#       threshold: 0.8
+#       ground_truth: "low-glycemic, high-fiber, steady protein for insulin sensitivity"
+# ---------------------------------------------------------------------------
