@@ -325,7 +325,10 @@ def main() -> int:
     args = parser.parse_args()
     if args.list_json:
         paths = [project.rel for project in discover_projects("catalog")] + [item["path"] for item in MANUAL]
-        print(json.dumps([{"path": path, "slug": slug(path)} for path in paths]))
+        matrix = [{"path": path, "slug": slug(path)} for path in paths]
+        # The workshop's own configuration is kept by hand (it is not generated), so list it here for CI.
+        matrix.append({"path": "workshops/software-factories-masterclass", "slug": "travel-factory"})
+        print(json.dumps(matrix))
         return 0
     if args.list:
         for project in discover_projects("catalog"):
