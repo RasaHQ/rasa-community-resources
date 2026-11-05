@@ -405,3 +405,52 @@ The harness is shared by every case build:
 Teaching code under the repository's [Apache 2.0 licence](../../LICENSE).
 Rasa Pro has its own terms. The caller WAVs are AI-generated speech from
 Google's Gemini text-to-speech, as this README says.
+
+## Inspect which confirmation checks the tests protect
+
+This offline diagnostic uses the existing fictional service and standard
+library. It does not start Rasa, use a licence/key, call a model or contact a
+provider. From this project directory:
+
+```sh
+python3 -B -m unittest discover -s tests -v
+python3 -B diagnostics/confirmation_trace.py
+```
+
+The full suite contains 36 tests. The JSON trace runs six constructed histories
+against the full guard and three diagnostic variants. Each variant omits one
+clause from `_location_confirmed` in that Python process only. No source file
+or running server is changed. The controls include a confirmed draft, an
+unanswered question and deliberately mismatched memory; the last is a test
+input, not evidence that the live engine emits such memory.
+
+To check whether the guard suite detects an omitted clause:
+
+```sh
+python3 -B diagnostics/confirmation_trace.py --tests drop_location
+python3 -B diagnostics/confirmation_trace.py --tests drop_service
+python3 -B diagnostics/confirmation_trace.py --tests drop_tag
+```
+
+Each command deliberately runs a diagnostic mutant and should fail one of the
+26 guard tests, exiting 1. Those expected failures are not a failing release
+build: the unmodified implementation must pass its full suite. Do not deploy
+or keep a mutated guard. A detected mutant establishes only that these tests
+notice this particular change.
+
+At main revision `38d6e157881c1a97252229c88026c1e67b730b40`, before the two
+new independent controls, the 24 guard tests detected the location omission
+but passed with either the service or draft-tag clause omitted. The new
+service test holds the current memory version and place while the question
+still names the old service. The tag test holds the question's place, service
+and answer while deliberately changing only its memory tag. They prevent one
+confirmation check from masking the absence of another.
+
+`--project PATH` runs the same diagnostic against another committed checkout
+of this example, without copying its environment. Comparing the historical
+pre-repair source with merged main shows why the bad-edit fix and the
+confirmation guard are distinct: historical rejected edits changed the record
+under its old tag, but the full guard still refused dispatch on the mismatched
+place/service. The merged repair retains the old record on refusal. No
+production incident, model reliability rate or guarantee about all possible
+edits follows from these bounded observations.
