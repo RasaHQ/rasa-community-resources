@@ -232,6 +232,22 @@ class Children:
                     process.wait(timeout=max(0.01, until - time.monotonic()))
                 except subprocess.TimeoutExpired:
                     pass
+            # Waiting for a group leader does not wait for its descendants.
+            # Give the whole owned group the remaining signal deadline to exit.
+            while True:
+                group_present = False
+                for process in self.processes:
+                    try:
+                        os.killpg(process.pid, 0)
+                        group_present = True
+                    except ProcessLookupError:
+                        pass
+                remaining = until - time.monotonic()
+                if not group_present or remaining <= 0:
+                    break
+                time.sleep(min(0.05, remaining))
+            if not group_present:
+                break
         alive = []
         for process in self.processes:
             try:

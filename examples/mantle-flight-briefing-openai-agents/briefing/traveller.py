@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 from briefing.published_routes import load_routes
 
 REFERENCE = Path(__file__).with_name('traveller-reference-20261022.json')
-REFERENCE_SHA256 = 'a2a034c8770c4bccae8ba1fa71737f16a6ed433280b255b7429c422cf555222a'
+REFERENCE_SHA256 = 'fde21572caac12d2b909fd69d1bb41de8c9c6075e5648e1967389be7df8986bd'
 GREETING = "Hi, I can brief you on a flight: where it is, the weather when you land, whether you'll make your meeting, and the exchange rate. Where are you heading?"
 
 
@@ -52,12 +52,12 @@ def destination_hint(text):
     value = normalized(text)
 
     def role(position):
-        markers = list(re.finditer(r'\b(from|to|into|at)\s+', value[:position]))
+        markers = list(re.finditer(r'\b(from|to|into|at|via)\s+', value[:position]))
         return markers[-1][1] if markers else None
 
     def select(mentions):
         destinations = {code for position, code in mentions if role(position) in ('to', 'into', 'at')}
-        candidates = destinations or {code for position, code in mentions if role(position) != 'from'}
+        candidates = destinations or {code for position, code in mentions if role(position) not in ('from', 'via')}
         if len(candidates) > 1:
             raise TravellerQuestion('destination', 'Which airport are you arriving at? Please choose one airport.', {})
         return next(iter(candidates), None)
@@ -74,8 +74,10 @@ def destination_hint(text):
     for city in {a['city'] for a in reference()['airports']}:
         for match in re.finditer(r'\b' + re.escape(normalized(city)) + r'\b', value):
             cities.append((match.start(), city))
-    for match in re.finditer(r'\bnyc\b', value):
-        cities.append((match.start(), 'New York'))
+    for city, aliases in reference().get('city_aliases', {}).items():
+        for alias in aliases:
+            for match in re.finditer(r'\b' + re.escape(normalized(alias)) + r'\b', value):
+                cities.append((match.start(), city))
     return select(cities)
 
 

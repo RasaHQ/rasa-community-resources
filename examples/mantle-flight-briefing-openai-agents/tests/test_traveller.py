@@ -15,6 +15,25 @@ NOW = datetime(2026, 10, 22, 12, tzinfo=timezone.utc)
 
 
 class TravellerControls(unittest.TestCase):
+
+    def test_connection_city_does_not_override_the_destination(self):
+        self.assertEqual(destination_hint('to London via New York'), 'London')
+        self.assertEqual(destination_hint('from Frankfurt via London to JFK'), 'KJFK')
+        with self.assertRaises(TravellerQuestion):
+            destination_hint('to London or New York via Frankfurt')
+
+    def test_comma_does_not_hide_an_explicit_destination_alternative(self):
+        with self.assertRaises(TravellerQuestion):
+            destination_hint('to London, or New York')
+
+    def test_infinitive_does_not_hide_the_actual_destination(self):
+        self.assertEqual(destination_hint('to fly from London to New York'), 'New York')
+
+    def test_manhattan_resolves_to_the_new_york_airport_search(self):
+        self.assertEqual(destination_hint('Manhattan'), 'New York')
+        self.assertEqual(destination_hint('to Manhattan via London'), 'New York')
+
+
     def test_uncovered_search_never_reasks_flight_number_or_invents_no_flights(self):
         from briefing.traveller import discover, discovery_notice
         class NoNetwork:
