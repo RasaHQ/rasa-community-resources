@@ -535,7 +535,7 @@ async def escalate_outage_alert(
 # CEO / Executive Persona Tools (RBAC Gated)
 # ------------------------------------------------------------------------------
 
-@tool(description="Analyze aggregate sales revenue, order volumes, average ticket size, and top categories across 149k transactions.")
+@tool(description="Analyze aggregate sales revenue, order volumes, average ticket size, and top categories across the synthetic demo transactions.")
 @require_role("ceo")
 async def fetch_revenue_analytics(
     store_id: int = 0,

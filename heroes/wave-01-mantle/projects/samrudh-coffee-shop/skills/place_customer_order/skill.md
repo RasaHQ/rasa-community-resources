@@ -34,8 +34,7 @@ memory:
   order_completed:
     type: boolean
     description: "Set to True once the coffee/bakery order is successfully placed."
-complete_when:
-  condition: "session.place_customer_order.order_completed"
+complete_when: "session.place_customer_order.order_completed"
 ---
 
 Help the customer place an order for pickup at Artisan Roast Coffee Co.

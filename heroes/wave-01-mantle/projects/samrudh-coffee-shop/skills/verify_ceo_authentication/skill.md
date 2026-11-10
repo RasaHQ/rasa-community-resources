@@ -12,8 +12,7 @@ memory:
   pin_verified:
     type: boolean
     description: "Set to True once executive PIN authentication succeeds."
-complete_when:
-  condition: "session.verify_ceo_authentication.pin_verified"
+complete_when: "session.verify_ceo_authentication.pin_verified"
 tool_constraints:
   - verify_ceo_pin:
       requires: session.verify_ceo_authentication.pin_attempt

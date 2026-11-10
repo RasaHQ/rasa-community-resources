@@ -5,7 +5,7 @@ Author:        Samrudha Kelkar
 Wave:          wave-01-mantle
 Assessed on:   2026-09-11
 Assessed by:   Samrudha Kelkar
-Verified with: rasa-pro 3.20.0, Python 3.12, uv
+Verified with: rasa-pro 3.20.0.dev6, Python 3.12, uv
 ```
 
 > **Overview for Rasa Practitioners & Architects:**  
@@ -30,7 +30,7 @@ graph TD
     Orchestrator --> Memory[Typed Session Memory<br/>Slots & Verified Roles]
     Orchestrator --> Skills[Modular Skills<br/>Ordering, Loyalty, Queues, Analytics]
     Skills --> Tools[Mantle Python Tools<br/>coffeeshop.py]
-    Tools --> DB[(SQLite Database & Vector Embeddings<br/>149k Transaction Ledger)]
+    Tools --> DB[(SQLite Database & Vector Embeddings<br/>Synthetic Transaction Ledger)]
 ```
 
 ---
@@ -82,7 +82,7 @@ This project includes an autonomous multi-turn evaluation suite equipped with an
 coffee-shop/
 ├── agent.yml                  # Root agent persona, system instructions, and settings
 ├── memory.yml                 # Typed session memory schema
-├── pyproject.toml             # Dependencies (rasa-pro 3.20.0)
+├── pyproject.toml             # Dependencies (rasa-pro 3.20.0.dev6)
 ├── Makefile                   # Training and testing commands
 ├── tools/
 │   └── coffeeshop.py          # 16 Mantle tools with RBAC security
@@ -125,5 +125,5 @@ cd evals && python3 server.py
 
 ## 9. Data Sources & Acknowledgments
 
-* **Coffee Sales & Transaction Ledger**: Executive financial analytics and store transaction metrics are built upon and extended from the [Kaggle Coffee Sales Dataset](https://www.kaggle.com/datasets/ahmedabbas757/coffee-sales) by Ahmed Abbas.
+* **Coffee Sales & Transaction Ledger**: A deterministic, wholly synthetic workbook supplies demonstration transactions. It contains no Kaggle rows or real sales. Run `python scripts/generate_demo_sales.py` to regenerate it; see [data provenance](data/README.md).
 

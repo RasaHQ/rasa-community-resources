@@ -45,3 +45,6 @@ This report documents the performance progression of the **Artisan Roast Coffee 
 
 ## Security Compliance
 All result data in this report is generated autonomously from synthetic ground-truth test data. No real API keys, credentials, or private tokens are stored.
+
+
+Distribution update, 10 November 2026: the current successor uses `rasa-pro==3.20.0.dev6` and a wholly synthetic sales fixture. The results above remain historical; they were not rerun and do not qualify this changed pin or fixture.

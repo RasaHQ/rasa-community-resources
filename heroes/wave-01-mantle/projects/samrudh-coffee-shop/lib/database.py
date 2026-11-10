@@ -357,7 +357,7 @@ def get_executive_revenue_summary(
     start_date: str = "",
     end_date: str = "",
 ) -> dict[str, Any]:
-    """Aggregate total revenue, volume, and ticket sizes from 149k transactions."""
+    """Aggregate total revenue, volume, and ticket sizes from the synthetic demo transactions."""
     conn = get_db_connection()
     cursor = conn.cursor()
 
