@@ -1,0 +1,309 @@
+{
+ "schema": 1,
+ "build": "reminder-deduplication-gpt-text",
+ "case": "reminder-deduplication",
+ "project": "examples/mantle-text-reminder-deduplication-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T19:16:47.556979+00:00",
+ "finished_at": "2026-09-30T19:17:24.184442+00:00",
+ "model_file": "20260930-201650-grave-diffuse.tar.gz",
+ "train_seconds": 3.2,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 6828.8,
+   "p95": 11343.4,
+   "max": 11343.4,
+   "mean": 7880.5
+  },
+  "llm_calls": 8,
+  "llm_calls_per_turn": 2.67,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 23466,
+  "completion_tokens": 365,
+  "reasoning_tokens": 70,
+  "cached_prompt_tokens": 10752,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "sent_claim": 0,
+   "reminder_reference": 2
+  },
+  "tool_result_metrics": {
+   "reminders_delivered": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.079896,
+  "llm_cost_usd": 0.079896,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-confirm-after-resolve",
+   "kind": "correction",
+   "description": "The patient questions the time, hears the current booking, then confirms Thursday. Attendance is recorded for version 2 only after the patient's yes, with one reminder sent.",
+   "conversation_id": "reminder-deduplication-gpt-text-correction-confirm-after-resolve-20260930T191647",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Send me a reminder for my follow-up with Dr Marr.",
+     "latency_ms": 11343.4,
+     "bot": [
+      "Hi Lena, this is Cedar Clinic appointment messages. I can text you a reminder for an upcoming appointment, take your reply to one, or pass a change of time to our scheduling team.",
+      "Cedar Clinic reminder CC-RMD-E333CD: your follow-up visit with Dr Ilse Marr is on Thursday 8 October 2026 at 2:15 pm. This replaces the earlier reminder for Tuesday 6 October 2026 at 9:30 am, which is no longer your time. This is a reminder for the appointment time you selected. Would you like to confirm or change it?",
+      "Done. Please reply yes if you\u2019ll attend, or tell me if you need a change."
+     ]
+    },
+    {
+     "user": "Wait, isn't it Tuesday?",
+     "latency_ms": 5469.2,
+     "bot": [
+      "Your follow-up with Dr Marr is currently Thursday 8 October 2026 at 2:15 pm.",
+      "Tuesday 6 October at 9:30 am was the earlier time and is no longer your appointment time."
+     ]
+    },
+    {
+     "user": "Oh right, I moved it. Yes, I'll be there on Thursday.",
+     "latency_ms": 6828.8,
+     "bot": [
+      "Thank you. You have confirmed you will attend your follow-up visit with Dr Ilse Marr on Thursday 8 October 2026 at 2:15 pm (reminder CC-RMD-E333CD).",
+      "Confirmed. We have you down for Thursday 8 October at 2:15 pm."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_appointment_reminder",
+      "result": {
+       "status": "succeeded",
+       "appointment_id": "CC-APT-5512",
+       "revision": 2
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_reminder_reply",
+      "after_user_turn": 2,
+      "result": {
+       "status": "confirmed",
+       "appointment_id": "CC-APT-5512",
+       "current_revision": 2
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_reminder_reply",
+      "min": 1,
+      "after_user_turn": 2,
+      "result": {
+       "status": "confirmed"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "record_reminder_reply",
+      "result": {
+       "status": "confirmed",
+       "reminder_revision": 1
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "send_appointment_reminder",
+      "result": {
+       "status": "succeeded"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_patient_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "send_appointment_reminder",
+     "arguments": {
+      "appointment": "follow-up with Dr Marr"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "succeeded",
+     "result_reason": null
+    },
+    {
+     "tool": "list_appointments",
+     "arguments": {},
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "read",
+     "result_reason": null
+    },
+    {
+     "tool": "record_reminder_reply",
+     "arguments": {
+      "reminder_reference": "CC-RMD-E333CD"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_confirmed",
+     "result_reason": null
+    },
+    {
+     "tool": "record_reminder_reply",
+     "arguments": {
+      "reminder_reference": "CC-RMD-E333CD"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "confirmed",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "sent_claim": [],
+    "reminder_reference": [
+     "Cedar Clinic reminder CC-RMD-E333CD: your follow-up visit with Dr Ilse Marr is on Thursday 8 October 2026 at 2:15 pm. This replaces the earlier reminder for Tuesday 6 October 2026 at 9:30 am, which is no longer your time. This is a reminder for the appointment time you selected. Would you like to confirm or change it?",
+     "Thank you. You have confirmed you will attend your follow-up visit with Dr Ilse Marr on Thursday 8 October 2026 at 2:15 pm (reminder CC-RMD-E333CD)."
+    ],
+    "reminders_delivered": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+   },
+   "log_event_details": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": []
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 7,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 23466,
+    "completion_tokens": 365,
+    "reasoning_tokens": 70,
+    "cached_prompt_tokens": 10752,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.079896,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     3314.3,
+     2126.4,
+     2694.3,
+     2629.3,
+     3178.1,
+     2265.5,
+     2248.5,
+     4558.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "reminder-deduplication-gpt-text-correction-confirm-after-resolve-20260930T191647",
+    "prompt": 23466,
+    "completion": 365,
+    "total": 23831,
+    "generations": 8,
+    "fetched_at": "2026-09-30T19:17:23.928759+00:00"
+   }
+  }
+ ]
+}

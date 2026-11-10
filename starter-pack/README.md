@@ -40,7 +40,7 @@ real project actually made**. We stepped on the rakes so you don't have to.
 | **git** | Saves snapshots of your work | Usually pre-installed — check with `git --version` |
 | **uv** | Installs Python packages, fast | [docs.astral.sh/uv](https://docs.astral.sh/uv/) — one command to install |
 | **Claude Code** | The AI assistant this pack teaches | [claude.com/claude-code](https://claude.com/claude-code) |
-| **A Rasa license** | Free for developers | [Request a free Developer Edition key](https://rasa.com/rasa-pro-developer-edition-license-key-request/) |
+| **A Rasa license** | Free for developers | [Request a free Developer Edition key](https://rasa.community/license/) |
 | **An OpenAI API key** | Powers your agent's brain | [platform.openai.com](https://platform.openai.com/) |
 
 Don't have everything yet? That's fine — you can do steps 1–3 below with
@@ -249,7 +249,7 @@ it's wrong, bypass and say why in your commit message.
 **The checker says my Rasa version is wrong, but I picked the newest one!**
 That's the trap. The Mantle engine currently ships **only in pre-release
 ("dev") versions**. The newest stable release literally does not contain the
-engine. Pin `rasa-pro==3.20.0.dev9` — the skills do this for you.
+engine. Pin `rasa-pro==3.21.0.dev5` — the skills do this for you.
 
 **`make install` fails with a confusing message about versions.**
 Nine times out of ten this is the Python floor: Mantle needs Python 3.11+,

@@ -1,0 +1,42 @@
+{
+  "name": "Rasa resource: examples/mantle-voice-banking-dispute-claude",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/sshd:1.1.0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/examples/mantle-voice-banking-dispute-claude",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5005
+  ],
+  "portsAttributes": {
+    "5005": {
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Required. Full Rasa Developer Edition license"
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "Required. Anthropic key used for this resource's model calls"
+    },
+    "SPEECHMATICS_API_KEY": {
+      "description": "Required. Speechmatics key for speech recognition"
+    },
+    "RIME_API_KEY": {
+      "description": "Required. Rime key for spoken replies"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" examples/mantle-voice-banking-dispute-claude",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" examples/mantle-voice-banking-dispute-claude"
+}

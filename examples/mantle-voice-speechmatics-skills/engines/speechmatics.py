@@ -34,9 +34,9 @@ import os
 from typing import Any, Dict, List, Optional
 
 import structlog
-import websockets
+import websockets.exceptions
 from pydantic import BaseModel
-from websockets.legacy.client import WebSocketClientProtocol
+from websockets.asyncio.client import ClientConnection, connect
 
 from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine, ASREngineConfig
 from rasa.core.channels.voice_stream.asr.asr_event import (
@@ -129,23 +129,31 @@ class SpeechmaticsASR(ASREngine[SpeechmaticsASRConfig]):
             },
         }
 
-    async def open_websocket_connection(self) -> WebSocketClientProtocol:
-        """Connect, then send StartRecognition before any audio flows."""
+    async def open_websocket_connection(self) -> ClientConnection:
+        """Connect, then send StartRecognition before any audio flows.
+
+        The socket uses websockets' asyncio client and its `additional_headers`
+        argument, the same client Rasa's own ASR engines use. The legacy
+        `websockets.connect(..., extra_headers=...)` form raises TypeError on
+        websockets 14 and later, which rasa-pro 3.21.0.dev5 resolves to
+        (15.0.1), so every call failed before the caller was heard.
+        """
         api_key = os.environ[SPEECHMATICS_API_KEY_ENV_VAR]
         endpoint = self.config.endpoint or DEFAULT_ENDPOINT
         try:
-            socket = await websockets.connect(
-                endpoint, extra_headers={"Authorization": f"Bearer {api_key}"}
+            socket = await connect(
+                endpoint, additional_headers={"Authorization": f"Bearer {api_key}"}
             )
-        except websockets.exceptions.InvalidStatusCode as e:
+        except websockets.exceptions.InvalidStatus as e:
+            status_code = e.response.status_code
             reason = (
                 "Please make sure your Speechmatics API key is correct."
-                if e.status_code == 401
+                if status_code == 401
                 else "Connection to Speechmatics failed."
             )
             logger.error(
                 "speechmatics.connection.failed",
-                status_code=e.status_code,
+                status_code=status_code,
                 error=reason,
                 endpoint=endpoint,
             )

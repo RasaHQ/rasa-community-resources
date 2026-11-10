@@ -1,0 +1,27 @@
+# Written only by start_claim_draft, update_claim_draft and check_attachments
+# (never llm_settable), so the report the engine asks the customer to confirm
+# is always the draft the tools hold. One short field per value: Mantle cuts a
+# memory value at 100 characters in the prompt, silently.
+# claim_draft_id: the draft's id.
+# claim_draft_tag: id and version, read in the question; submit checks it.
+# claim_report_summary: loss type, date and policy.
+# claim_loss_summary: the customer's one-line account (at most 80 characters).
+# claim_material_received / claim_material_followup: from the attachment service.
+# claim_ready_to_submit: "yes" when every required attachment state is known;
+#   the engine offers submit_claim_report only then (`requires` in skill.md).
+schema:
+  public:
+    claim_draft_id:
+      type: text
+    claim_draft_tag:
+      type: text
+    claim_report_summary:
+      type: text
+    claim_loss_summary:
+      type: text
+    claim_material_received:
+      type: text
+    claim_material_followup:
+      type: text
+    claim_ready_to_submit:
+      type: text

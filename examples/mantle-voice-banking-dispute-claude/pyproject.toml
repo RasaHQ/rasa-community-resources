@@ -1,0 +1,26 @@
+[project]
+name = "mantle-voice-banking-dispute-claude"
+version = "0.1.0"
+description = "Northgate Bank dispute-intake voice agent on Claude Sonnet 5.5 with Speechmatics and Rime speech, the dispute guard enforced in the tool layer"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "rasa-pro==3.21.0.dev5",
+    # Speechmatics speech-to-text is not built into Rasa. The adapter is the
+    # companion's voice-vendor-router package, used as a plain engine class
+    # (voicerouter.providers.speechmatics.SpeechmaticsASR), not through RoutedASR.
+    "voice-vendor-router",
+]
+
+[tool.rasa-catalog]
+required-secrets = ["ANTHROPIC_API_KEY", "SPEECHMATICS_API_KEY", "RIME_API_KEY"]
+
+# A path source, because the router lives in this repository. Lifted out on its
+# own, replace it with a git source:
+#   voice-vendor-router = { git = "https://github.com/RasaHQ/rasa-community-resources", subdirectory = "patterns/voice-vendor-router" }
+[tool.uv.sources]
+voice-vendor-router = { path = "../../patterns/voice-vendor-router", editable = true }
+
+[tool.uv]
+prerelease = "allow"
+package = false

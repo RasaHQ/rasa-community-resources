@@ -1,0 +1,143 @@
+{
+  "bank": "Northgate Bank",
+  "note": "Entirely fictional. No real bank, person, account or payee.",
+  "as_of": "2026-09-30T14:00:00+00:00",
+  "currency": "GBP",
+  "customers": {
+    "NB-CUST-5126": {
+      "first_name": "Ruth",
+      "last_name": "Calloway",
+      "registered_phone_ending": "0917",
+      "session": {
+        "reference": "NB-SES-5126-1335",
+        "level": 1,
+        "method": "signed in to Northgate online banking web chat",
+        "issued_at": "2026-09-30T13:35:00+00:00",
+        "expires_at": "2026-09-30T21:35:00+00:00"
+      }
+    },
+    "NB-CUST-8840": {
+      "first_name": "Marcus",
+      "last_name": "Webb",
+      "registered_phone_ending": "2281",
+      "session": null
+    }
+  },
+  "accounts": {
+    "NB-ACC-3101": {
+      "customer_id": "NB-CUST-5126",
+      "label": "everyday current account",
+      "aliases": ["current", "everyday", "current account", "main account", "checking"],
+      "balance": 3240.15
+    },
+    "NB-ACC-3102": {
+      "customer_id": "NB-CUST-5126",
+      "label": "instant savings account",
+      "aliases": ["savings", "savings account", "instant savings"],
+      "balance": 12800.0
+    },
+    "NB-ACC-4401": {
+      "customer_id": "NB-CUST-8840",
+      "label": "everyday current account",
+      "aliases": ["current"],
+      "balance": 910.4
+    }
+  },
+  "payees": {
+    "NB-PAY-01": {
+      "customer_id": "NB-CUST-5126",
+      "nickname": "Mum",
+      "name": "Joan Calloway",
+      "aliases": ["mum", "my mum", "mom", "mother", "joan", "joan calloway"],
+      "account_ending": "4471",
+      "added_at": "2023-05-12T09:00:00+00:00",
+      "details_changed_at": null
+    },
+    "NB-PAY-02": {
+      "customer_id": "NB-CUST-5126",
+      "nickname": "Harbour Lettings",
+      "name": "Harbour Lettings Ltd",
+      "aliases": ["harbour lettings", "harbour", "landlord", "letting agent", "rent", "harbor lettings"],
+      "account_ending": "9038",
+      "previous_account_ending": "2265",
+      "added_at": "2024-08-01T10:00:00+00:00",
+      "details_changed_at": "2026-09-30T13:10:00+00:00",
+      "details_change": "bank details changed in online banking"
+    },
+    "NB-PAY-03": {
+      "customer_id": "NB-CUST-5126",
+      "nickname": "Ferris Builders",
+      "name": "Ferris Builders",
+      "aliases": ["ferris builders", "ferris", "builders", "the builders", "builder"],
+      "account_ending": "7712",
+      "added_at": "2026-09-29T18:20:00+00:00",
+      "details_changed_at": null
+    },
+    "NB-PAY-11": {
+      "customer_id": "NB-CUST-8840",
+      "nickname": "Dan",
+      "name": "Dan Webb",
+      "aliases": ["dan"],
+      "account_ending": "5530",
+      "added_at": "2022-01-04T09:00:00+00:00",
+      "details_changed_at": null
+    }
+  },
+  "prior_assessments": {
+    "NB-RA-3F1C0A27": {
+      "customer_id": "NB-CUST-5126",
+      "action": "transfer",
+      "from_account": "NB-ACC-3101",
+      "destination_id": "NB-PAY-02",
+      "amount": 1800.0,
+      "risk_tier": "elevated",
+      "required_level": 2,
+      "assessed_at": "2026-09-30T10:40:00+00:00",
+      "note": "Started this morning, before Harbour Lettings' bank details changed at 13:10; never submitted."
+    },
+    "NB-RA-B84E5D19": {
+      "customer_id": "NB-CUST-5126",
+      "action": "transfer",
+      "from_account": "NB-ACC-3101",
+      "destination_id": "NB-PAY-01",
+      "amount": 1500.0,
+      "risk_tier": "elevated",
+      "required_level": 2,
+      "assessed_at": "2026-09-30T11:15:00+00:00",
+      "note": "Started this morning and verified with a code, never submitted; the code's authority lapsed at 11:26."
+    }
+  },
+  "prior_verifications": {
+    "NB-VER-6D20E1A4": {
+      "customer_id": "NB-CUST-5126",
+      "level": 2,
+      "method": "one-time code to the registered phone",
+      "assessment_ref": "NB-RA-3F1C0A27",
+      "issued_at": "2026-09-30T10:42:00+00:00",
+      "expires_at": "2026-09-30T10:52:00+00:00"
+    },
+    "NB-VER-91C7F30B": {
+      "customer_id": "NB-CUST-5126",
+      "level": 2,
+      "method": "one-time code to the registered phone",
+      "assessment_ref": "NB-RA-B84E5D19",
+      "issued_at": "2026-09-30T11:16:00+00:00",
+      "expires_at": "2026-09-30T11:26:00+00:00"
+    }
+  },
+  "risk_policy": {
+    "levels": {
+      "1": "signed-in web chat session",
+      "2": "one-time code sent to the registered phone",
+      "3": "review by the Northgate identity risk team (not available in chat)"
+    },
+    "established_payee_daily_limit": 1000.0,
+    "changed_details_window_hours": 168,
+    "new_payee_window_hours": 24,
+    "high_risk_level_2_limit": 2500.0,
+    "code_verification_minutes": 10,
+    "challenge_minutes": 5,
+    "max_code_attempts": 3
+  },
+  "demo_codes": ["482915", "736204", "159370", "604428", "270583", "813649"]
+}

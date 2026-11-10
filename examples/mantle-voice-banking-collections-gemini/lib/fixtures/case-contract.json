@@ -1,0 +1,178 @@
+{
+  "slug": "banking-collections",
+  "title": "Collections with a hardship exit",
+  "organisation": "Northgate Bank",
+  "action": "record a permitted repayment-plan choice",
+  "failure": "The agent continued pressing for a plan after the customer explained they could not meet basic expenses.",
+  "lesson": "Make the hardship exit a first-class outcome, retain exact offer terms and never equate a promise to pay with received funds.",
+  "receipt": "A chosen-offer reference or a hardship referral; payment status remains separate.",
+  "evidence": "Inspect the selected offer, customer confirmation and hardship transition; report conversations that could not exit the plan flow.",
+  "recovery": "Disable automated offer collection if the hardship route fails. Preserve the referral request and route a human callback.",
+  "owner": "collections support owner",
+  "metric": "sessions continuing offer pressure after hardship was declared, divided by hardship sessions",
+  "question": "You can review the available option or speak to the hardship support team. Which would help?",
+  "correction": "The customer withdraws a plan choice; do not record acceptance or schedule a debit from that withdrawn answer.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "offer_terms_current",
+      "good": true,
+      "bad": false,
+      "reason": "stale_plan_terms",
+      "phase": "request"
+    },
+    {
+      "field": "hardship_exit_available",
+      "good": true,
+      "bad": false,
+      "reason": "hardship_path_missing",
+      "phase": "request"
+    },
+    {
+      "field": "choice_freely_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "choice_not_confirmed",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "offer_terms_current": true,
+    "hardship_exit_available": true,
+    "choice_freely_confirmed": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "offer_terms_current": true,
+        "hardship_exit_available": true,
+        "choice_freely_confirmed": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "offer_terms_current-false",
+      "facts": {
+        "offer_terms_current": false,
+        "hardship_exit_available": true,
+        "choice_freely_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_plan_terms",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_terms_current-missing",
+      "facts": {
+        "hardship_exit_available": true,
+        "choice_freely_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_plan_terms",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_terms_current-string",
+      "facts": {
+        "offer_terms_current": "true",
+        "hardship_exit_available": true,
+        "choice_freely_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_plan_terms",
+        "effects": 0
+      }
+    },
+    {
+      "name": "hardship_exit_available-false",
+      "facts": {
+        "offer_terms_current": true,
+        "hardship_exit_available": false,
+        "choice_freely_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "hardship_path_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "hardship_exit_available-missing",
+      "facts": {
+        "offer_terms_current": true,
+        "choice_freely_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "hardship_path_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "hardship_exit_available-string",
+      "facts": {
+        "offer_terms_current": true,
+        "hardship_exit_available": "true",
+        "choice_freely_confirmed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "hardship_path_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "choice_freely_confirmed-false",
+      "facts": {
+        "offer_terms_current": true,
+        "hardship_exit_available": true,
+        "choice_freely_confirmed": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "choice_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "choice_freely_confirmed-missing",
+      "facts": {
+        "offer_terms_current": true,
+        "hardship_exit_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "choice_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "choice_freely_confirmed-string",
+      "facts": {
+        "offer_terms_current": true,
+        "hardship_exit_available": true,
+        "choice_freely_confirmed": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "choice_not_confirmed",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

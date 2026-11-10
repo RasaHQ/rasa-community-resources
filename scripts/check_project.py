@@ -13,6 +13,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 _SCRIPTS = Path(__file__).resolve().parent
@@ -91,6 +92,59 @@ def _load_dotenv(project: Path) -> None:
 
 def _run(cmd: list[str], *, cwd: Path) -> None:
     subprocess.run(cmd, cwd=cwd, check=True)
+
+
+# Validation-only embedder swap. Mantle builds its references index with the
+# model group named in agent.yml references.embeddings, or the built-in OpenAI
+# default when that is empty. Setting this trains a temporary copy whose
+# references point at a local model instead, so a runner without an OpenAI key
+# still proves the project trains. Project files are never modified; readers
+# keep the provider the resource documents.
+LOCAL_EMBEDDINGS_GROUP = "catalog-local-embeddings"
+_LOCAL_EMBEDDINGS_EDIT = """
+import sys, yaml
+provider, model = sys.argv[1].split('/', 1)
+base = sys.argv[2]
+with open('agent.yml') as f:
+    agent = yaml.safe_load(f) or {}
+(agent.get('references') or agent.setdefault('references', {}))['embeddings'] = sys.argv[3]
+with open('agent.yml', 'w') as f:
+    yaml.safe_dump(agent, f, sort_keys=False)
+with open('integrations.yml') as f:
+    integrations = yaml.safe_load(f) or {}
+integrations.setdefault('model_groups', []).append(
+    {'id': sys.argv[3], 'models': [{'provider': provider, 'model': model, 'api_base': base}]}
+)
+with open('integrations.yml', 'w') as f:
+    yaml.safe_dump(integrations, f, sort_keys=False)
+"""
+
+
+def _uses_references(project: Path) -> bool:
+    """Mantle builds a references index from references/ or a references: block."""
+    agent = project / "agent.yml"
+    if not agent.is_file():
+        return False
+    return (project / "references").is_dir() or any(
+        line.startswith("references:") for line in agent.read_text().splitlines()
+    )
+
+
+def _train_with_local_embeddings(uv: str, project: Path, spec: str) -> None:
+    base = os.environ.get("RASA_CATALOG_LOCAL_EMBEDDINGS_BASE", "http://localhost:11434")
+    with tempfile.TemporaryDirectory(prefix="rcr-train-") as tmp:
+        work = Path(tmp) / project.name
+        shutil.copytree(
+            project,
+            work,
+            ignore=shutil.ignore_patterns(".venv", "models", ".rasa", "__pycache__"),
+        )
+        locked = [uv, "run", "--locked", "--project", str(project)]
+        _run(
+            [*locked, "python", "-c", _LOCAL_EMBEDDINGS_EDIT, spec, base, LOCAL_EMBEDDINGS_GROUP],
+            cwd=work,
+        )
+        _run([*locked, "rasa", "train"], cwd=work)
 
 
 def _has_license() -> bool:
@@ -242,9 +296,14 @@ print("validate_project: ok")
             )
             return 0
 
-        info("rasa train")
+        local = os.environ.get("RASA_CATALOG_LOCAL_EMBEDDINGS", "").strip()
         try:
-            _run([uv, "run", "--locked", "rasa", "train"], cwd=project)
+            if local and _uses_references(project):
+                info(f"rasa train (references embedded locally with {local})")
+                _train_with_local_embeddings(uv, project, local)
+            else:
+                info("rasa train")
+                _run([uv, "run", "--locked", "rasa", "train"], cwd=project)
             ok("rasa train passed")
         except subprocess.CalledProcessError:
             fail("rasa train failed")
@@ -288,6 +347,16 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--local-embeddings",
+        metavar="PROVIDER/MODEL",
+        default=None,
+        help=(
+            "Train a temporary copy whose references index uses this local "
+            "embedder (e.g. ollama/all-minilm) instead of the documented "
+            "provider. Validation only; project files are not modified"
+        ),
+    )
+    parser.add_argument(
         "--use-project-pin",
         action="store_true",
         help=(
@@ -319,6 +388,8 @@ def main() -> int:
     else:
         expected = read_expected_version(args.version)
 
+    if args.local_embeddings:
+        os.environ["RASA_CATALOG_LOCAL_EMBEDDINGS"] = args.local_embeddings
     return check_project(
         project,
         expected,

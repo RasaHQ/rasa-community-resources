@@ -1,0 +1,178 @@
+{
+  "slug": "retail-guided-selling",
+  "title": "Product choices with evidence boundaries",
+  "organisation": "Willow Shop",
+  "action": "recommend an available product option",
+  "failure": "The agent recommended a compatible accessory based on a similar product name, but its connector did not fit.",
+  "lesson": "Ground recommendations in declared requirements and verified catalogue attributes; distinguish a known mismatch from an unknown fit.",
+  "receipt": "A recommendation with its supporting attributes and unresolved fit questions, not a guarantee invented from prose.",
+  "evidence": "Compare the customer\u2019s required attribute IDs against catalogue values and retain which source established compatibility.",
+  "recovery": "When compatibility evidence is missing, say it is unknown and route a product specialist; do not guess from name similarity.",
+  "owner": "product catalogue owner",
+  "metric": "recommendations asserting compatibility without source attributes, divided by compatibility requests",
+  "question": "This option matches these recorded requirements; this other attribute is still unknown. Would you like a specialist to confirm it?",
+  "correction": "The shopper changes the device model; discard the earlier compatibility result and compare the new model.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "requirements_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "requirements_ambiguous",
+      "phase": "request"
+    },
+    {
+      "field": "compatibility_source_present",
+      "good": true,
+      "bad": false,
+      "reason": "compatibility_unverified",
+      "phase": "request"
+    },
+    {
+      "field": "availability_current",
+      "good": true,
+      "bad": false,
+      "reason": "availability_stale",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "requirements_confirmed": true,
+    "compatibility_source_present": true,
+    "availability_current": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "requirements_confirmed": true,
+        "compatibility_source_present": true,
+        "availability_current": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "requirements_confirmed-false",
+      "facts": {
+        "requirements_confirmed": false,
+        "compatibility_source_present": true,
+        "availability_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "requirements_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "requirements_confirmed-missing",
+      "facts": {
+        "compatibility_source_present": true,
+        "availability_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "requirements_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "requirements_confirmed-string",
+      "facts": {
+        "requirements_confirmed": "true",
+        "compatibility_source_present": true,
+        "availability_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "requirements_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "compatibility_source_present-false",
+      "facts": {
+        "requirements_confirmed": true,
+        "compatibility_source_present": false,
+        "availability_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "compatibility_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "compatibility_source_present-missing",
+      "facts": {
+        "requirements_confirmed": true,
+        "availability_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "compatibility_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "compatibility_source_present-string",
+      "facts": {
+        "requirements_confirmed": true,
+        "compatibility_source_present": "true",
+        "availability_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "compatibility_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "availability_current-false",
+      "facts": {
+        "requirements_confirmed": true,
+        "compatibility_source_present": true,
+        "availability_current": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "availability_stale",
+        "effects": 0
+      }
+    },
+    {
+      "name": "availability_current-missing",
+      "facts": {
+        "requirements_confirmed": true,
+        "compatibility_source_present": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "availability_stale",
+        "effects": 0
+      }
+    },
+    {
+      "name": "availability_current-string",
+      "facts": {
+        "requirements_confirmed": true,
+        "compatibility_source_present": true,
+        "availability_current": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "availability_stale",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

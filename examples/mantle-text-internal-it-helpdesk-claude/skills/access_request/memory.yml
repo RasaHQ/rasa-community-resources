@@ -1,0 +1,13 @@
+# Written only by open_access_ticket (never llm_settable), and only for a
+# ticket whose exact scope the role's owner approved, so the scope the engine
+# asks the employee to confirm is always one the owner approved. One short
+# field per value: Mantle cuts a memory value at 100 characters in the prompt,
+# silently (tests/test_guard.py checks every fixture role).
+# selected_ticket_ref: the ticket ready to grant, for example IT-TKT-48213.
+# selected_scope_label: the role and its expiry, read in the question.
+schema:
+  public:
+    selected_ticket_ref:
+      type: text
+    selected_scope_label:
+      type: text

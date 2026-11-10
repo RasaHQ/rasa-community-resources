@@ -1,0 +1,299 @@
+{
+ "schema": 1,
+ "build": "payment-plan-authority-gpt-text",
+ "case": "payment-plan-authority",
+ "project": "examples/mantle-text-payment-plan-authority-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T17:09:58.660593+00:00",
+ "finished_at": "2026-09-30T17:10:30.490535+00:00",
+ "model_file": "20260930-180937-nuclear-velocity.tar.gz",
+ "train_seconds": null,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 5614.0,
+   "p95": 7700.5,
+   "max": 7700.5,
+   "mean": 6005.1
+  },
+  "llm_calls": 11,
+  "llm_calls_per_turn": 2.75,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 28384,
+  "completion_tokens": 529,
+  "reasoning_tokens": 61,
+  "cached_prompt_tokens": 9216,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "resolved_claim": 0,
+   "relief_promise": 0,
+   "plan_reference": 2
+  },
+  "tool_result_metrics": {
+   "plans_recorded": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "ambergrid.words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 1,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.116318,
+  "llm_cost_usd": 0.116318,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-switch-offer-at-question",
+   "kind": "correction",
+   "description": "The customer switches from the three-month to the six-month offer in answer to the question. The first is never recorded; the second is asked about and recorded.",
+   "conversation_id": "payment-plan-authority-gpt-text-correction-switch-offer-at-question-20260930T170958",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Put my home electricity on the three-month plan, please.",
+     "latency_ms": 7700.5,
+     "bot": [
+      "Hello Dana, this is Amber Grid billing chat. I can show you the payment plans our billing team has authorized for an overdue account, record the one you choose, or put you in touch with our hardship team. How can I help?",
+      "For AG-4471 home electricity, the current authorized offers are:",
+      "- Offer AG-OFR-4471-A: 3 monthly payments of $214.00, first due 2026-10-15, total $642.00.\n- Offer AG-OFR-4471-B: 6 monthly payments of $107.00, first due 2026-10-15, total $642.00.",
+      "You asked for the three-month plan. Would you like to accept offer AG-OFR-4471-A, or speak with the billing support team?"
+     ]
+    },
+    {
+     "user": "Wait, make it the six-month plan instead.",
+     "latency_ms": 5614.0,
+     "bot": [
+      "The billing team has offered this schedule for account AG-4471 home electricity: 6 monthly payments of $107.00 from 2026-10-15, total $642.00 (offer AG-OFR-4471-B r2). Do you accept this plan? If you would rather review it or speak with the support team, say so."
+     ]
+    },
+    {
+     "user": "Yes, I accept the six-month plan.",
+     "latency_ms": 3513.1,
+     "bot": [
+      "Payment plan recorded: AG-PLN-BE246B for account AG-4471 (home electricity). 6 monthly payments of $107.00, first due 2026-10-15, total $642.00, as authorized by the Amber Grid billing service (offer AG-OFR-4471-B r2). The account stays in arrears until the payments are made; it is not resolved.",
+      "Your six-month payment plan has been recorded for AG-4471 home electricity.",
+      "Plan reference: AG-PLN-BE246B. The account stays in arrears until the payments are made."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 7192.8,
+     "bot": [
+      "Can I help you with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4471-B r2"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4471-A r2"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account": "AG-4471"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "resolved_claim": [],
+    "relief_promise": [],
+    "plan_reference": [
+     "Payment plan recorded: AG-PLN-BE246B for account AG-4471 (home electricity). 6 monthly payments of $107.00, first due 2026-10-15, total $642.00, as authorized by the Amber Grid billing service (offer AG-OFR-4471-B r2). The account stays in arrears until the payments are made; it is not resolved.",
+     "Your six-month payment plan has been recorded for AG-4471 home electricity.\n\nPlan reference: AG-PLN-BE246B. The account stays in arrears until the payments are made."
+    ],
+    "plans_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "ambergrid.words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "accept_plan_offer",
+      "conversation_id": "payment-plan-authority-gpt-text-correction-switch-offer-at-question-20260930T170958"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "ambergrid.words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 9,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 28384,
+    "completion_tokens": 529,
+    "reasoning_tokens": 61,
+    "cached_prompt_tokens": 9216,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.116318,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1563.9,
+     1962.3,
+     2155.3,
+     1673.4,
+     3473.9,
+     2108.5,
+     1839.2,
+     1646.6,
+     3158.1,
+     1812.2,
+     2187.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "payment-plan-authority-gpt-text-correction-switch-offer-at-question-20260930T170958",
+    "prompt": 28384,
+    "completion": 529,
+    "total": 28913,
+    "generations": 11,
+    "fetched_at": "2026-09-30T17:10:30.229031+00:00"
+   }
+  }
+ ]
+}

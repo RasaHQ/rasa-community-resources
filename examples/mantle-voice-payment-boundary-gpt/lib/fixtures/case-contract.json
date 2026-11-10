@@ -1,0 +1,178 @@
+{
+  "slug": "voice-payment-boundary",
+  "title": "Payment capture boundaries",
+  "organisation": "Willow Shop",
+  "action": "request payment through an approved payment channel",
+  "failure": "The caller started reading card details, and the conversation recorder captured them before payment processing began.",
+  "lesson": "Keep payment secrets out of conversational state and use a processor-owned collection channel; local speech hosting alone is not a payment-security certification.",
+  "receipt": "A processor reference and payment status, never a card number or security code.",
+  "evidence": "Inspect the channel boundary and confirm that only the processor reference reaches agent memory and telemetry.",
+  "recovery": "If the secure channel cannot be established, cancel collection and offer the approved alternative. Do not ask the caller to repeat secrets.",
+  "owner": "payments integration owner",
+  "metric": "conversation records containing payment secrets, divided by payment-assisted sessions",
+  "question": "Please use the secure payment step; do not read card details to me. Would you like that option?",
+  "correction": "The caller declines the secure step; leave payment pending and explain the approved alternative.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "secure_channel_selected",
+      "good": true,
+      "bad": false,
+      "reason": "unsafe_capture_channel",
+      "phase": "request"
+    },
+    {
+      "field": "recorder_excluded",
+      "good": true,
+      "bad": false,
+      "reason": "recording_not_excluded",
+      "phase": "request"
+    },
+    {
+      "field": "processor_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "unverified_processor_receipt",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "secure_channel_selected": true,
+    "recorder_excluded": true,
+    "processor_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "secure_channel_selected": true,
+        "recorder_excluded": true,
+        "processor_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "secure_channel_selected-false",
+      "facts": {
+        "secure_channel_selected": false,
+        "recorder_excluded": true,
+        "processor_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsafe_capture_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "secure_channel_selected-missing",
+      "facts": {
+        "recorder_excluded": true,
+        "processor_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsafe_capture_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "secure_channel_selected-string",
+      "facts": {
+        "secure_channel_selected": "true",
+        "recorder_excluded": true,
+        "processor_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unsafe_capture_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recorder_excluded-false",
+      "facts": {
+        "secure_channel_selected": true,
+        "recorder_excluded": false,
+        "processor_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "recording_not_excluded",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recorder_excluded-missing",
+      "facts": {
+        "secure_channel_selected": true,
+        "processor_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "recording_not_excluded",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recorder_excluded-string",
+      "facts": {
+        "secure_channel_selected": true,
+        "recorder_excluded": "true",
+        "processor_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "recording_not_excluded",
+        "effects": 0
+      }
+    },
+    {
+      "name": "processor_receipt_verified-false",
+      "facts": {
+        "secure_channel_selected": true,
+        "recorder_excluded": true,
+        "processor_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unverified_processor_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "processor_receipt_verified-missing",
+      "facts": {
+        "secure_channel_selected": true,
+        "recorder_excluded": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unverified_processor_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "processor_receipt_verified-string",
+      "facts": {
+        "secure_channel_selected": true,
+        "recorder_excluded": true,
+        "processor_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unverified_processor_receipt",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

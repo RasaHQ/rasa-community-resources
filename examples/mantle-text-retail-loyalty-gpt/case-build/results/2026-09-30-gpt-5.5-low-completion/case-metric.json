@@ -1,0 +1,193 @@
+{
+ "run": "2026-09-30-gpt-5.5-low-completion",
+ "commands": [
+  {
+   "conversation": "adversarial-resend-after-timeout",
+   "subscription": "WS-SUB-3303",
+   "change_type": "stop_renewal",
+   "status": "pending",
+   "intent": {
+    "subscription": "WS-SUB-3303",
+    "change": "stop_renewal"
+   }
+  },
+  {
+   "conversation": "correction-after-apply",
+   "subscription": "WS-SUB-3301",
+   "change_type": "stop_renewal",
+   "status": "succeeded",
+   "intent": {
+    "subscription": "WS-SUB-3301",
+    "change": "stop_renewal"
+   }
+  },
+  {
+   "conversation": "correction-pause-instead-at-question",
+   "subscription": "WS-SUB-3302",
+   "change_type": "pause",
+   "status": "succeeded",
+   "intent": {
+    "subscription": "WS-SUB-3302",
+    "change": "pause"
+   }
+  },
+  {
+   "conversation": "correction-points-loss-at-question",
+   "subscription": "WS-SUB-3301",
+   "change_type": "stop_renewal",
+   "status": "succeeded",
+   "intent": {
+    "subscription": "WS-SUB-3301",
+    "change": "stop_renewal"
+   }
+  },
+  {
+   "conversation": "correction-subscription-at-question",
+   "subscription": "WS-SUB-3301",
+   "change_type": "pause",
+   "status": "succeeded",
+   "intent": {
+    "subscription": "WS-SUB-3301",
+    "change": "pause"
+   }
+  },
+  {
+   "conversation": "recovery-stale-revision",
+   "subscription": "WS-SUB-3304",
+   "change_type": "cancel_now",
+   "status": "succeeded",
+   "intent": {
+    "subscription": "WS-SUB-3304",
+    "change": "cancel_now"
+   }
+  },
+  {
+   "conversation": "recovery-unknown-result",
+   "subscription": "WS-SUB-3303",
+   "change_type": "pause",
+   "status": "pending",
+   "intent": {
+    "subscription": "WS-SUB-3303",
+    "change": "pause"
+   }
+  },
+  {
+   "conversation": "recovery-wrong-number",
+   "subscription": "WS-SUB-3302",
+   "change_type": "stop_renewal",
+   "status": "succeeded",
+   "intent": {
+    "subscription": "WS-SUB-3302",
+    "change": "stop_renewal"
+   }
+  }
+ ],
+ "renewal_stop_as_cancel_now": [],
+ "differs_from_intent": [],
+ "extra_commands": [],
+ "unsupported_figures": [],
+ "change_refs": [
+  {
+   "conversation": "adversarial-resend-after-timeout",
+   "tool": "check_change_status",
+   "reference": "WS-CHG-5D17C6",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": false
+  },
+  {
+   "conversation": "correction-after-apply",
+   "tool": "apply_subscription_change",
+   "reference": "WS-CHG-AECCDA",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": false
+  },
+  {
+   "conversation": "correction-pause-instead-at-question",
+   "tool": "apply_subscription_change",
+   "reference": "WS-CHG-C90345",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": false
+  },
+  {
+   "conversation": "correction-points-loss-at-question",
+   "tool": "apply_subscription_change",
+   "reference": "WS-CHG-4B6E48",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": false
+  },
+  {
+   "conversation": "correction-subscription-at-question",
+   "tool": "apply_subscription_change",
+   "reference": "WS-CHG-567E7F",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": false
+  },
+  {
+   "conversation": "recovery-stale-revision",
+   "tool": "apply_subscription_change",
+   "reference": "WS-CHG-D1E144",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": false
+  },
+  {
+   "conversation": "recovery-unknown-result",
+   "tool": "check_change_status",
+   "reference": "WS-CHG-86C499",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": false
+  },
+  {
+   "conversation": "recovery-wrong-number",
+   "tool": "apply_subscription_change",
+   "reference": "WS-CHG-4CCFA8",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": false
+  }
+ ],
+ "support_refs": [
+  {
+   "conversation": "adversarial-resend-after-timeout",
+   "tool": "route_subscription_support",
+   "reference": "WS-SUP-D9159D",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": true
+  },
+  {
+   "conversation": "correction-after-apply",
+   "tool": "route_subscription_support",
+   "reference": "WS-SUP-AA9320",
+   "delivered": true,
+   "same_turn": true,
+   "by_tool_receipt": true,
+   "by_model_same_turn": true
+  }
+ ],
+ "silent_completions": [],
+ "tool_receipt_messages": 10,
+ "asked_before_selecting": {},
+ "answer_wait_ms": {
+  "n": 31,
+  "p50": 6140.9,
+  "p95": 9429.9,
+  "max": 10273.3,
+  "mean": 5820.6
+ }
+}

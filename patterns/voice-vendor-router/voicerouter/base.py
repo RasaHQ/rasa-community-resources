@@ -58,6 +58,8 @@ class ProviderSpec:
 class RouterPolicy:
     """How the router behaves when a provider misbehaves."""
 
+    # Fixed-provider evaluations may require transport failures to be explicit.
+    raise_on_failure: bool = False
     cooldown_seconds: float = 30.0
     failure_threshold: int = 1
     # Providers whose credentials are absent are skipped rather than raising.
@@ -92,7 +94,7 @@ class RouterPolicy:
         unknown = set(raw) - {
             "cooldown_seconds", "failure_threshold", "skip_unconfigured",
             "health_scope", "same_provider_retries", "retry_backoff_ms",
-            "selection", "explore_rate",
+            "selection", "explore_rate", "raise_on_failure",
         }
         if unknown:
             raise ValueError(
@@ -111,6 +113,7 @@ class RouterPolicy:
                 f"policy.selection must be 'order' or 'latency', got {selection!r}."
             )
         return cls(
+            raise_on_failure=bool(raw.get("raise_on_failure", False)),
             cooldown_seconds=float(raw.get("cooldown_seconds", 30.0)),
             failure_threshold=int(raw.get("failure_threshold", 1)),
             skip_unconfigured=bool(raw.get("skip_unconfigured", True)),

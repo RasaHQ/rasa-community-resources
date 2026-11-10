@@ -2,7 +2,7 @@
 
 Slides, exercises, and solutions from community sessions and conference workshops.
 
-This folder is **accepting contributions**. There are no workshop packs checked in yet.
+This folder is **accepting contributions**.
 
 ---
 
@@ -39,9 +39,7 @@ Examples: `voice-skills-pycon-2026`, `handoff-patterns-meetup`.
 
 | Name | Event / context | Path | Assessed on |
 |---|---|---|---|
-| — | — | — | — |
-
-_No workshops yet. Your PR can be the first row._
+| Software factories on Rasa Mantle | Three-hour in-person masterclass (date to be set) | [`software-factories-masterclass/`](software-factories-masterclass/) | 2026-10-16 |
 
 ---
 

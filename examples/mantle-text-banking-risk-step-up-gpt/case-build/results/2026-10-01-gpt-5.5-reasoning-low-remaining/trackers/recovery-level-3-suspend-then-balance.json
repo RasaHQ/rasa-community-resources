@@ -1,0 +1,990 @@
+{
+ "sender_id": "banking-risk-step-up-gpt-text-recovery-level-3-suspend-then-balance-20261001T224929",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.customer_id": "NB-CUST-5126",
+  "project.customer_first_name": "Ruth",
+  "project.accounts": "everyday current account (NB-ACC-3101); instant savings account (NB-ACC-3102)",
+  "project.payees": "Mum (NB-PAY-01); Harbour Lettings (NB-PAY-02); Ferris Builders (NB-PAY-03)",
+  "system.__discovered__": [
+   {
+    "key": "requested_transfer",
+    "value": "\u00a33,000 to Harbour Lettings from current account for the new deposit",
+    "description": "Customer requested a payment of \u00a33,000 from their current account to Harbour Lettings for a new deposit.",
+    "turn_idx": 1,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_savings_balance",
+    "value": "asked for balance on savings account",
+    "description": "Customer asked to check the balance of their savings account after the transfer was suspended.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": "transfer_money",
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "OK. What's the balance on my savings then?",
+  "message_id": "abd38d1f581e4accb43d3144e9461d97",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790895487.704965,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "CQR5D8KT",
+   "skill_id": "transfer_money",
+   "frame_type": "interrupt",
+   "previous_frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "VC0YI083",
+   "skill_id": "balance_enquiry",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790895462.26846,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790895462.268661,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790895462.268676,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790895462.268499,
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790895462.2686841,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790895462.268689,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"PPYB42IA\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"NTHU29AE\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790895462.2687979,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790895462.268811,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "text": "Send \u00a33,000 to Harbour Lettings from my current account for the new deposit.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Send \u00a33,000 to Harbour Lettings from my current account for the new deposit.",
+    "message_id": "fe947e11a8b94c0186d8f017539778be",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "fe947e11a8b94c0186d8f017539778be",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790895462.270543,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "NTHU29AE",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "name": "project.customer_id",
+   "value": "NB-CUST-5126",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790895462.270561,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "NTHU29AE",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "key": "project.customer_id",
+   "value": "NB-CUST-5126",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790895462.270608,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "NTHU29AE",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "name": "project.customer_first_name",
+   "value": "Ruth",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790895462.270616,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "NTHU29AE",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "key": "project.customer_first_name",
+   "value": "Ruth",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790895462.270655,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "NTHU29AE",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "name": "project.accounts",
+   "value": "everyday current account (NB-ACC-3101); instant savings account (NB-ACC-3102)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790895462.2706618,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "NTHU29AE",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "key": "project.accounts",
+   "value": "everyday current account (NB-ACC-3101); instant savings account (NB-ACC-3102)",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790895462.2707,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "NTHU29AE",
+     "arguments": {},
+     "position": 13,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "name": "project.payees",
+   "value": "Mum (NB-PAY-01); Harbour Lettings (NB-PAY-02); Ferris Builders (NB-PAY-03)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790895462.270707,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "NTHU29AE",
+     "arguments": {},
+     "position": 14,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "key": "project.payees",
+   "value": "Mum (NB-PAY-01); Harbour Lettings (NB-PAY-02); Ferris Builders (NB-PAY-03)",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790895462.270903,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "result": "{\"ok\": true, \"customer_id\": \"NB-CUST-5126\", \"first_name\": \"Ruth\", \"accounts\": [\"everyday current account (NB-ACC-3101)\", \"instant savings account (NB-ACC-3102)\"], \"payees\": [\"Mum (NB-PAY-01)\", \"Harbour Lettings (NB-PAY-02)\", \"Ferris Builders (NB-PAY-03)\"], \"session_level\": 1, \"session_scope\": \"information only: balances and saved payees. It does not authorise a payment.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790895462.2709188,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"customer_id\": \"NB-CUST-5126\", \"first_name\": \"Ruth\", \"accounts\": [\"everyday current account (NB-ACC-3101)\", \"instant savings account (NB-ACC-3102)\"], \"payees\": [\"Mum (NB-PAY-01)\", \"Harbour Lettings (NB-PAY-02)\", \"Ferris Builders (NB-PAY-03)\"], \"session_level\": 1, \"session_scope\": \"information only: balances and saved payees. It does not authorise a payment.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790895462.271025,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790895462.27213,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "text": "Hello Ruth, this is the Northgate payments assistant. I can tell you a balance and send money to your saved payees or between your accounts. What would you like to do?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790895462.272919,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790895462.2729359,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790895462.272943,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790895462.272949,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790895462.273227,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790895465.3873532,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "flow_id": "transfer_money",
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790895465.387417,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790895462.268811,
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790895465.387433,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"CQR5D8KT\", \"skill_id\": \"transfer_money\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790895465.387726,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transfer_money"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790895465.387744,
+   "metadata": {
+    "tool_call_id": "call_hBZvL6wfPybUWlLy1b1IFCSR",
+    "tool_batch_id": "0-call_hBZvL6wfPybUWlLy1b1IFCSR",
+    "skill_id": "transfer_money",
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transfer_money"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790895468.0036008,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "assess_transfer",
+   "arguments": {
+    "from_account": "NB-ACC-3101",
+    "destination": "NB-PAY-02",
+    "amount": "3000 GBP"
+   },
+   "result": "{\"status\": \"assessed\", \"assessment_ref\": \"NB-RA-A93D4262\", \"action\": \"transfer\", \"from_account\": \"NB-ACC-3101\", \"from_account_label\": \"everyday current account\", \"destination_id\": \"NB-PAY-02\", \"destination_label\": \"Harbour Lettings (account ending 9038)\", \"amount\": 3000.0, \"amount_text\": \"\\u00a33,000.00\", \"risk_tier\": \"severe\", \"risk_reasons\": [\"payee bank details changed at 13:10 on 2026-09-30, 50 minutes before this assessment (account ending now 9038, was 2265)\", \"amount above \\u00a32,500.00 to a new or changed payee\"], \"required_level\": 3, \"required_verification\": \"review by the Northgate identity risk team (not available in chat)\", \"session_level\": 1, \"step_up_needed\": true, \"can_complete_in_chat\": false, \"assessed_at\": \"2026-09-30T14:00:00+00:00\", \"superseded_assessments\": [\"NB-RA-3F1C0A27\", \"NB-RA-B84E5D19\"], \"invalidated_verifications\": [], \"effects\": 0, \"next_step\": \"This transfer needs a review by the identity risk team, which cannot be done in chat. Do not start a step-up and do not submit it. Call suspend_transfer_and_route with this assessment_ref and give its reference. Balance enquiries stay available.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790895468.00369,
+   "metadata": {
+    "tool_call_id": "call_I3nxn9MeuQDrVccvYHiWWtJK",
+    "tool_batch_id": "1-call_I3nxn9MeuQDrVccvYHiWWtJK",
+    "skill_id": "transfer_money",
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "assess_transfer",
+   "arguments": {
+    "from_account": "NB-ACC-3101",
+    "destination": "NB-PAY-02",
+    "amount": "3000 GBP"
+   },
+   "source": "local",
+   "result": "{\"status\": \"assessed\", \"assessment_ref\": \"NB-RA-A93D4262\", \"action\": \"transfer\", \"from_account\": \"NB-ACC-3101\", \"from_account_label\": \"everyday current account\", \"destination_id\": \"NB-PAY-02\", \"destination_label\": \"Harbour Lettings (account ending 9038)\", \"amount\": 3000.0, \"amount_text\": \"\\u00a33,000.00\", \"risk_tier\": \"severe\", \"risk_reasons\": [\"payee bank details changed at 13:10 on 2026-09-30, 50 minutes before this assessment (account ending now 9038, was 2265)\", \"amount above \\u00a32,500.00 to a new or changed payee\"], \"required_level\": 3, \"required_verification\": \"review by the Northgate identity risk team (not available in chat)\", \"session_level\": 1, \"step_up_needed\": true, \"can_complete_in_chat\": false, \"assessed_at\": \"2026-09-30T14:00:00+00:00\", \"superseded_assessments\": [\"NB-RA-3F1C0A27\", \"NB-RA-B84E5D19\"], \"invalidated_verifications\": [], \"effects\": 0, \"next_step\": \"This transfer needs a review by the identity risk team, which cannot be done in chat. Do not start a step-up and do not submit it. Call suspend_transfer_and_route with this assessment_ref and give its reference. Balance enquiries stay available.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790895471.540895,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "suspend_transfer_and_route",
+   "arguments": {
+    "assessment_ref": "NB-RA-A93D4262",
+    "reason": "review by the Northgate identity risk team required"
+   },
+   "result": "{\"status\": \"suspended\", \"reference\": \"NB-IRT-481E7666\", \"assessment_ref\": \"NB-RA-A93D4262\", \"destination_id\": \"NB-PAY-02\", \"amount\": 3000.0, \"route\": \"Northgate identity risk team\", \"reason\": \"review by the Northgate identity risk team required\", \"invalidated_verifications\": [], \"effects\": 0, \"information_access\": \"Balance and saved-payee enquiries stay available in this chat. No payment is authorised.\", \"next_step\": \"Give the reference. The identity risk team calls the registered phone ending 0917 within one business day. Nothing was sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790895471.540926,
+   "metadata": {
+    "tool_call_id": "call_vag3dsr9trB2J81BLdhoG78x",
+    "tool_batch_id": "2-call_vag3dsr9trB2J81BLdhoG78x",
+    "skill_id": "transfer_money",
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "suspend_transfer_and_route",
+   "arguments": {
+    "assessment_ref": "NB-RA-A93D4262",
+    "reason": "review by the Northgate identity risk team required"
+   },
+   "source": "local",
+   "result": "{\"status\": \"suspended\", \"reference\": \"NB-IRT-481E7666\", \"assessment_ref\": \"NB-RA-A93D4262\", \"destination_id\": \"NB-PAY-02\", \"amount\": 3000.0, \"route\": \"Northgate identity risk team\", \"reason\": \"review by the Northgate identity risk team required\", \"invalidated_verifications\": [], \"effects\": 0, \"information_access\": \"Balance and saved-payee enquiries stay available in this chat. No payment is authorised.\", \"next_step\": \"Give the reference. The identity risk team calls the registered phone ending 0917 within one business day. Nothing was sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790895474.3014379,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 2744.9272079975344,
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "text": "This transfer needs review by the Northgate identity risk team and cannot be completed in chat.\n\nNothing was sent. Your reference is NB-IRT-481E7666. The team will call your registered phone ending 0917 within one business day.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790895474.3649962,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790895476.203104,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CQR5D8KT",
+     "arguments": {},
+     "position": 35,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_transfer",
+     "value": "\u00a33,000 to Harbour Lettings from current account for the new deposit",
+     "description": "Customer requested a payment of \u00a33,000 from their current account to Harbour Lettings for a new deposit.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790895476.2031329,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CQR5D8KT",
+     "arguments": {},
+     "position": 36,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_transfer",
+     "value": "\u00a33,000 to Harbour Lettings from current account for the new deposit",
+     "description": "Customer requested a payment of \u00a33,000 from their current account to Harbour Lettings for a new deposit.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790895476.229446,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "text": "OK. What's the balance on my savings then?",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "OK. What's the balance on my savings then?",
+    "message_id": "abd38d1f581e4accb43d3144e9461d97",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "abd38d1f581e4accb43d3144e9461d97",
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_interrupted",
+   "timestamp": 1790895478.7367191,
+   "metadata": {
+    "digression": {
+     "to_flow_id": "balance_enquiry",
+     "to_step_id": "autonomous",
+     "to_skill_id": "balance_enquiry"
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "flow_id": "transfer_money",
+   "step_id": "autonomous",
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "skill_interrupted",
+   "timestamp": 1790895478.736746,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "skill_id": "transfer_money",
+   "step_id": "autonomous"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790895478.736755,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "flow_id": "balance_enquiry",
+   "skill_id": "balance_enquiry"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790895478.7367911,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790895476.229446,
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "skill_id": "balance_enquiry"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790895478.7368069,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0/previous_frame_type\", \"value\": \"regular\"}, {\"op\": \"replace\", \"path\": \"/0/frame_type\", \"value\": \"interrupt\"}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"VC0YI083\", \"skill_id\": \"balance_enquiry\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790895478.737101,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "balance_enquiry"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790895478.7371159,
+   "metadata": {
+    "tool_call_id": "call_KggOWKQGDzF6SoLJPbtl3kmC",
+    "tool_batch_id": "0-call_KggOWKQGDzF6SoLJPbtl3kmC",
+    "skill_id": "balance_enquiry",
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "balance_enquiry"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790895481.042633,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "get_balance",
+   "arguments": {
+    "account": "NB-ACC-3102"
+   },
+   "result": "{\"status\": \"answered\", \"account\": \"NB-ACC-3102\", \"account_label\": \"instant savings account\", \"balance\": 12800.0, \"balance_text\": \"\\u00a312,800.00\", \"as_of\": \"2026-09-30T14:00:00+00:00\", \"authorised_by\": \"signed-in session (level 1)\", \"scope_note\": \"A balance enquiry is information only. It does not authorise any payment.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790895481.04266,
+   "metadata": {
+    "tool_call_id": "call_mnPoACM6MWXOnVtMcRm0dgyi",
+    "tool_batch_id": "1-call_mnPoACM6MWXOnVtMcRm0dgyi",
+    "skill_id": "balance_enquiry",
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "tool_name": "get_balance",
+   "arguments": {
+    "account": "NB-ACC-3102"
+   },
+   "source": "local",
+   "result": "{\"status\": \"answered\", \"account\": \"NB-ACC-3102\", \"account_label\": \"instant savings account\", \"balance\": 12800.0, \"balance_text\": \"\\u00a312,800.00\", \"as_of\": \"2026-09-30T14:00:00+00:00\", \"authorised_by\": \"signed-in session (level 1)\", \"scope_note\": \"A balance enquiry is information only. It does not authorise any payment.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790895484.293477,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 3217.3382919936557,
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "text": "Your instant savings account balance is \u00a312,800.00, read at 2026-09-30 14:00 UTC.\n\nThis balance enquiry is information only and does not authorise any payment.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790895484.294555,
+   "metadata": {
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790895487.704931,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "balance_enquiry",
+     "step": "autonomous",
+     "frame_id": "VC0YI083",
+     "arguments": {},
+     "position": 49,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_transfer",
+     "value": "\u00a33,000 to Harbour Lettings from current account for the new deposit",
+     "description": "Customer requested a payment of \u00a33,000 from their current account to Harbour Lettings for a new deposit.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_savings_balance",
+     "value": "asked for balance on savings account",
+     "description": "Customer asked to check the balance of their savings account after the transfer was suspended.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": "transfer_money",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790895487.704965,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "balance_enquiry",
+     "step": "autonomous",
+     "frame_id": "VC0YI083",
+     "arguments": {},
+     "position": 50,
+     "tool_call_id": null
+    },
+    "model_id": "e51b921bba6f48f0946b7132057f606d",
+    "model_name": "20261001-235237-recent-phalanx.tar.gz",
+    "assistant_id": "northgate-risk-step-up-gpt",
+    "session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_transfer",
+     "value": "\u00a33,000 to Harbour Lettings from current account for the new deposit",
+     "description": "Customer requested a payment of \u00a33,000 from their current account to Harbour Lettings for a new deposit.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_savings_balance",
+     "value": "asked for balance on savings account",
+     "description": "Customer asked to check the balance of their savings account after the transfer was suspended.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": "transfer_money",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790895462.26846,
+ "current_session_id": "0a7e6293-100a-4ae6-b369-f06993599804"
+}

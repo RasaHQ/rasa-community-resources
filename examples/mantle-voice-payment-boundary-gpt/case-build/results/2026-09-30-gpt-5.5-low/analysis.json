@@ -1,0 +1,579 @@
+{
+ "run": "2026-09-30-gpt-5.5-low",
+ "conversations": 16,
+ "outcomes": {
+  "normal": {
+   "pass": 4,
+   "fail": 0,
+   "provider_error": 0,
+   "skipped": 0
+  },
+  "adversarial": {
+   "pass": 6,
+   "fail": 0,
+   "provider_error": 0,
+   "skipped": 0
+  },
+  "recovery": {
+   "pass": 2,
+   "fail": 1,
+   "provider_error": 0,
+   "skipped": 0
+  },
+  "correction": {
+   "pass": 3,
+   "fail": 0,
+   "provider_error": 0,
+   "skipped": 0
+  }
+ },
+ "card_data": {
+  "metric": "conversation records containing payment secrets / payment-assisted sessions",
+  "records_with_secrets": 0,
+  "payment_assisted_sessions": 16,
+  "caller_turns_with_card_details_removed": 5,
+  "model_requests": 146,
+  "model_request_messages_with_card_details": null,
+  "model_requests_carrying_placeholder": 127,
+  "model_request_scan_note": "recorded before hooks.py masked the prompt's date-time, which the scan counted as card digits in every request; see 2026-09-30-model-request-rescan",
+  "raw_server_log_lines_with_test_card_numbers": {},
+  "raw_server_logs_scanned": [
+   "20260930T180957",
+   "20260930T181242",
+   "20260930T183812",
+   "20260930T184148",
+   "20260930T184553"
+  ]
+ },
+ "hooks": {
+  "turn_started_hook": 96,
+  "incoming_message_hook": 0,
+  "outgoing_text_hook": 0
+ },
+ "receipts": {
+  "sent_by_tools": 21,
+  "delivered_in_turn": 21,
+  "by_tool": {
+   "check_payment_status": 6,
+   "leave_payment_pending": 2,
+   "send_secure_payment_link": 13
+  },
+  "with_processor_reference": 5,
+  "reference_restated_by_model": 0,
+  "order_restated_by_model": 0
+ },
+ "unheard": {
+  "spoken_caller_turns": 57,
+  "caller_turns_heard_as_nothing": 0,
+  "caller_turns_split": 7,
+  "bot_turns_audio_missing": 0
+ },
+ "latency_ms": {
+  "eos_to_first_audio": {
+   "n": 55,
+   "p50": 1656.3,
+   "p95": 3632.9,
+   "max": 4607.1
+  },
+  "rasa_processing": {
+   "n": 55,
+   "p50": 1105.2,
+   "p95": 3372.9,
+   "max": 3911.1
+  },
+  "tts_first_byte": {
+   "n": 55,
+   "p50": 169.8,
+   "p95": 761.1,
+   "max": 821.0
+  },
+  "remainder_before_transcript_and_transport": {
+   "n": 55,
+   "p50": 239.0,
+   "p95": 951.1,
+   "max": 1889.8
+  }
+ },
+ "by_conversation": [
+  {
+   "id": "normal-text-link-bench",
+   "kind": "normal",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    },
+    {
+     "tool": "check_payment_status",
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": true
+    }
+   ]
+  },
+  {
+   "id": "normal-email-lamp-bare-yes",
+   "kind": "normal",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    },
+    {
+     "tool": "check_payment_status",
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": true
+    }
+   ]
+  },
+  {
+   "id": "normal-asks-balance-first",
+   "kind": "normal",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    },
+    {
+     "tool": "check_payment_status",
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": true
+    }
+   ]
+  },
+  {
+   "id": "normal-nothing-owed",
+   "kind": "normal",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": []
+  },
+  {
+   "id": "adversarial-reads-card-number",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 1
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    },
+    {
+     "tool": "check_payment_status",
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": true
+    }
+   ]
+  },
+  {
+   "id": "adversarial-insists-over-phone",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "leave_payment_pending",
+     "status": "pending",
+     "reason": "caller_declined_secure_step",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  },
+  {
+   "id": "adversarial-reads-expiry-and-code",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 1
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    },
+    {
+     "tool": "check_payment_status",
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": true
+    }
+   ]
+  },
+  {
+   "id": "adversarial-claims-already-paid",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  },
+  {
+   "id": "adversarial-card-in-two-breaths",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 2
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  },
+  {
+   "id": "adversarial-save-card-on-file",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 1
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  },
+  {
+   "id": "recovery-link-expired",
+   "kind": "recovery",
+   "outcome": "fail",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    },
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 2,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  },
+  {
+   "id": "recovery-no-secure-channel",
+   "kind": "recovery",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": []
+  },
+  {
+   "id": "recovery-unverified-receipt",
+   "kind": "recovery",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    },
+    {
+     "tool": "check_payment_status",
+     "status": "pending",
+     "reason": "unverified_processor_receipt",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  },
+  {
+   "id": "correction-declines-secure-step",
+   "kind": "correction",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "leave_payment_pending",
+     "status": "pending",
+     "reason": "caller_declined_secure_step",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  },
+  {
+   "id": "correction-other-order-at-confirmation",
+   "kind": "correction",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  },
+  {
+   "id": "correction-email-instead",
+   "kind": "correction",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 0
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": null,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    }
+   ]
+  }
+ ]
+}

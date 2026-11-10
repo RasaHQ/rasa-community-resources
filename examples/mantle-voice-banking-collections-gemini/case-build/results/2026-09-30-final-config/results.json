@@ -1,0 +1,1632 @@
+{
+ "schema": 1,
+ "build": "banking-collections-gemini-voice-es",
+ "case": "banking-collections",
+ "project": "examples/mantle-voice-banking-collections-gemini",
+ "model": "gemini/gemini-3.8-flash",
+ "response_models": [
+  "gemini-3.8-flash"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T16:44:22.141696+00:00",
+ "finished_at": "2026-09-30T16:50:35.699212+00:00",
+ "model_file": "20260930-174424-straight-kite.tar.gz",
+ "train_seconds": 2.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gemini/gemini-3.8-flash",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 7.5e-07,
+  "output_cost_per_token": 3.75e-06,
+  "cache_read_input_token_cost": 7.5e-08,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 3,
+  "passed": 3,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 9,
+  "turn_latency_ms": {
+   "p50": 2958.7,
+   "p95": 5994.5,
+   "max": 5994.5,
+   "mean": 3374.3
+  },
+  "llm_calls": 32,
+  "llm_calls_per_turn": 3.56,
+  "side_channel_calls": 6,
+  "empty_completions": 0,
+  "failed_llm_calls": 7,
+  "failed_side_channel_calls": 6,
+  "engine_error_calls": 1,
+  "prompt_tokens": 110926,
+  "completion_tokens": 12086,
+  "reasoning_tokens": 11367,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 24,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 14,
+  "bot_text_metrics": {
+   "payment_received_claim": 0,
+   "plan_mention": 6
+  },
+  "tool_result_metrics": {
+   "plans_recorded": {
+    "attempts": 2,
+    "total": 2
+   },
+   "hardship_referrals": {
+    "attempts": 1,
+    "total": 1
+   },
+   "callbacks": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 6,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 2,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 0,
+   "deepgram.v2.error": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 0,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "northgate.rime_idle_reconnect": 4,
+   "northgate.turn_order_fix": 0,
+   "northgate.history_start_fix": 6
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 9,
+   "audio_turns": 9,
+   "eos_to_first_audible_ms": {
+    "n": 9,
+    "p50": 2958.7,
+    "p95": 5994.5,
+    "max": 5994.5
+   },
+   "eos_to_first_audio_ms": {
+    "n": 9,
+    "p50": 2958.7,
+    "p95": 5994.5,
+    "max": 5994.5
+   },
+   "eos_to_first_marker_ms": {
+    "n": 9,
+    "p50": 2714.5,
+    "p95": 5781.6,
+    "max": 5781.6
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 9,
+     "p50": 2205.6,
+     "p95": 5254.6,
+     "max": 5254.6
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 9,
+     "p50": 299.2,
+     "p95": 833.8,
+     "max": 833.8
+    },
+    "tts_complete_latency_ms": {
+     "n": 9,
+     "p50": 1756.9,
+     "p95": 3823.4,
+     "max": 3823.4
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 8,
+    "user_perceived_latency_ms": {
+     "n": 8,
+     "p50": 2579.0,
+     "p95": 5884.5,
+     "max": 5884.5
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 8,
+     "p50": 2179.2,
+     "p95": 5233.4,
+     "max": 5233.4
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 8,
+     "p50": 2287.3,
+     "p95": 5294.0,
+     "max": 5294.0
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 9,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 9,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": 0.144,
+    "wer_p50": 0.1,
+    "tokens": {
+     "name": {
+      "checked": 1,
+      "exact": 1,
+      "normalised": 1
+     },
+     "digits": {
+      "checked": 3,
+      "exact": 0,
+      "normalised": 0
+     },
+     "amount": {
+      "checked": 1,
+      "exact": 0,
+      "normalised": 0
+     },
+     "count": {
+      "checked": 2,
+      "exact": 2,
+      "normalised": 2
+     },
+     "term": {
+      "checked": 2,
+      "exact": 2,
+      "normalised": 2
+     }
+    }
+   },
+   "stt_audio_seconds": 345.0,
+   "tts_characters": 3224,
+   "stt_usd": 0.044856,
+   "tts_usd": 0.1612,
+   "speech_cost_usd": 0.206056,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.334573,
+  "llm_cost_usd": 0.128517,
+  "speech_cost_usd": 0.206056,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 2.731845,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "normal-three-payments",
+   "kind": "normal",
+   "description": "A card plan chosen after the case's question: three payments of 204 dollars, recorded after the engine's read-back.",
+   "conversation_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hola, soy Marisol Quintero. Quiero ponerme al corriente con mi tarjeta que termina en 4471.",
+     "latency_ms": 2058.0,
+     "bot": [
+      "Claro, con gusto le ayudo con su tarjeta cuatro cuatro siete uno.",
+      "Puede revisar la opci\u00f3n disponible o hablar con el equipo de apoyo financiero. \u00bfQu\u00e9 le ayudar\u00eda m\u00e1s?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 8.04,
+      "speech_off_epoch": 1790786685.479616,
+      "eos_to_first_marker_ms": 1802.7,
+      "eos_to_first_audio_ms": 2058.0,
+      "eos_to_first_audible_ms": 2058.0,
+      "end_markers": [
+       {
+        "at_ms": 3559.7,
+        "rasa_processing_latency_ms": 1669.6889400482178,
+        "tts_first_byte_latency_ms": 255.28383255004883,
+        "tts_complete_latency_ms": 1756.903886795044
+       },
+       {
+        "at_ms": 8156.8,
+        "rasa_processing_latency_ms": 1669.6889400482178,
+        "tts_first_byte_latency_ms": 269.8838710784912,
+        "tts_complete_latency_ms": 2313.020944595337
+       }
+      ],
+      "bot_audio_s": 12.83,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hola, soy Marisol Quintero. Quiero ponerme al corriente con mi tarjeta que termina en cuatro cuatro siete uno."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1924.9036249821074,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1615.7166659832,
+         "llm_total_generation_ms": 1677.1068749949336,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Quiero revisar las opciones de pago.",
+     "latency_ms": 2246.7,
+     "bot": [
+      "Tenemos tres pagos mensuales de doscientos cuatro d\u00f3lares comenzando el 15 de octubre, o seis pagos mensuales de ciento dos d\u00f3lares a partir de la misma fecha. \u00bfCu\u00e1l prefiere usted?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.24,
+      "speech_off_epoch": 1790786704.219648,
+      "eos_to_first_marker_ms": 1981.6,
+      "eos_to_first_audio_ms": 2246.7,
+      "eos_to_first_audible_ms": 2246.7,
+      "end_markers": [
+       {
+        "at_ms": 5804.7,
+        "rasa_processing_latency_ms": 1731.3129901885986,
+        "tts_first_byte_latency_ms": 265.29884338378906,
+        "tts_complete_latency_ms": 3823.4400749206543
+       }
+      ],
+      "bot_audio_s": 13.46,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Quiero revisar las opciones de pago."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    },
+    {
+     "user": "El de tres pagos de 204 d\u00f3lares, por favor.",
+     "latency_ms": 3337.5,
+     "bot": [
+      "De acuerdo, preparo esa opci\u00f3n para su tarjeta ahora.",
+      "Entendido, continuo con el registro de su opci\u00f3n.",
+      "Para su tarjeta de cr\u00e9dito terminada en cuatro cuatro siete uno: tres pagos mensuales de doscientos cuatro d\u00f3lares, el primero el 15 de octubre. Elegir un plan no es un pago. \u00bfConfirma que quiere este plan?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.6,
+      "speech_off_epoch": 1790786725.132148,
+      "eos_to_first_marker_ms": 3064.7,
+      "eos_to_first_audio_ms": 3337.5,
+      "eos_to_first_audible_ms": 3337.5,
+      "end_markers": [
+       {
+        "at_ms": 4602.0,
+        "rasa_processing_latency_ms": 3162.975311279297,
+        "tts_first_byte_latency_ms": 272.921085357666,
+        "tts_complete_latency_ms": 1537.4069213867188
+       },
+       {
+        "at_ms": 8194.5,
+        "rasa_processing_latency_ms": 3162.975311279297,
+        "tts_first_byte_latency_ms": 195.35207748413086,
+        "tts_complete_latency_ms": 1143.7978744506836
+       },
+       {
+        "at_ms": 11899.7,
+        "rasa_processing_latency_ms": 3162.975311279297,
+        "tts_first_byte_latency_ms": 198.49801063537598,
+        "tts_complete_latency_ms": 3703.5720348358154
+       }
+      ],
+      "bot_audio_s": 25.15,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "El de tres pagos de doscientos cuatro d\u00f3lares, por favor."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3435.8229170320556,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 3134.5607500406913,
+         "llm_total_generation_ms": 3215.4810409992933,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "S\u00ed, confirmo.",
+     "latency_ms": 2958.7,
+     "bot": [
+      "Perfecto, proceso la confirmaci\u00f3n de su plan ahora.",
+      "Plan registrado. Su referencia es P, L, N, cuatro, siete, siete, uno, seis, siete. Tarjeta de cr\u00e9dito terminada en cuatro cuatro siete uno: tres pagos mensuales de doscientos cuatro d\u00f3lares, el primero el 15 de octubre. Elegir un plan no es un pago: no hemos recibido ning\u00fan pago y no se program\u00f3 ning\u00fan cargo autom\u00e1tico.",
+      "Recuerde que elegir el plan no es un pago y no hemos recibido ning\u00fan pago."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.84,
+      "speech_off_epoch": 1790786756.118189,
+      "eos_to_first_marker_ms": 2714.5,
+      "eos_to_first_audio_ms": 2958.7,
+      "eos_to_first_audible_ms": 2958.7,
+      "end_markers": [
+       {
+        "at_ms": 3945.4,
+        "rasa_processing_latency_ms": 2011.634111404419,
+        "tts_first_byte_latency_ms": 833.8439464569092,
+        "tts_complete_latency_ms": 1821.8820095062256
+       },
+       {
+        "at_ms": 11338.9,
+        "rasa_processing_latency_ms": 2011.634111404419,
+        "tts_first_byte_latency_ms": 260.55383682250977,
+        "tts_complete_latency_ms": 7389.808177947998
+       },
+       {
+        "at_ms": 16164.9,
+        "rasa_processing_latency_ms": 2011.634111404419,
+        "tts_first_byte_latency_ms": 276.7901420593262,
+        "tts_complete_latency_ms": 2019.9651718139648
+       }
+      ],
+      "bot_audio_s": 41.8,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "S\u00ed, confirmo."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2845.463707984891,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1995.0772500014864,
+         "llm_total_generation_ms": 2065.1333749992773,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_plan_choice",
+      "result": {
+       "status": "succeeded",
+       "offer_id": "OFR-4471-3M",
+       "account_ending": "4471"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "record_plan_choice",
+      "result": {
+       "status": "succeeded",
+       "offer_id": "re:^(?!OFR-4471-3M$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account_ending": "4471"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "account_ending": "4471",
+      "offer_id": "OFR-4471-3M"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "staged",
+     "result_reason": null
+    },
+    {
+     "tool": "record_plan_choice",
+     "arguments": {
+      "offer_id": "OFR-4471-3M"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "record_plan_choice",
+     "arguments": {
+      "offer_id": "OFR-4471-3M"
+     },
+     "after_user_turn": 4,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Claro, con gusto le ayudo con su tarjeta cuatro cuatro siete uno.",
+     "De acuerdo, preparo esa opci\u00f3n para su tarjeta ahora.",
+     "Entendido, continuo con el registro de su opci\u00f3n.",
+     "Perfecto, proceso la confirmaci\u00f3n de su plan ahora.",
+     "Bueno, que tenga un muy buen d\u00eda."
+    ],
+    "payment_received_claim": [],
+    "plan_mention": [
+     "Tenemos tres pagos mensuales de doscientos cuatro d\u00f3lares comenzando el 15 de octubre, o seis pagos mensuales de ciento dos d\u00f3lares a partir de la misma fecha. \u00bfCu\u00e1l prefiere usted?",
+     "Plan registrado. Su referencia es P, L, N, cuatro, siete, siete, uno, seis, siete. Tarjeta de cr\u00e9dito terminada en cuatro cuatro siete uno: tres pagos mensuales de doscientos cuatro d\u00f3lares, el primero el 15 de octubre. Elegir un plan no es un pago: no hemos recibido ning\u00fan pago y no se program\u00f3 ning\u00fan cargo autom\u00e1tico."
+    ],
+    "plans_recorded": {
+     "attempts": 1,
+     "total": 1
+    },
+    "hardship_referrals": {
+     "attempts": 0,
+     "total": 0
+    },
+    "callbacks": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.turn.failed": 0,
+    "rime.stream_audio.error": 0,
+    "northgate.rime_idle_reconnect": 2,
+    "mantle.tool_confirmation.confirmed": 1,
+    "voice_channel.audio_missing": 0,
+    "deepgram.connection.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "northgate.turn_order_fix": 0,
+    "rime.connection.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "northgate.history_start_fix": 2,
+    "voice_channel.agent_task_failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.v2.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2
+   },
+   "log_event_details": {
+    "browser_audio.handle_message.error": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.turn.failed": [],
+    "rime.stream_audio.error": [],
+    "northgate.rime_idle_reconnect": [
+     {
+      "idle_s": 21.2,
+      "conversation_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422"
+     },
+     {
+      "idle_s": 31.9,
+      "conversation_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "record_plan_choice",
+      "conversation_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422"
+     }
+    ],
+    "voice_channel.audio_missing": [],
+    "deepgram.connection.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "northgate.turn_order_fix": [],
+    "rime.connection.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "northgate.history_start_fix": [
+     {
+      "sender_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422",
+      "iteration": 1,
+      "conversation_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422"
+     },
+     {
+      "sender_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422",
+      "iteration": 0,
+      "conversation_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.v2.error": [],
+    "output_channel.response_delivery_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: GeminiException BadRequestError - {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Requests ending with a model turn are not supported.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n\n",
+      "conversation_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: GeminiException BadRequestError - {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Requests ending with a model turn are not supported.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n\n",
+      "conversation_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 10,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 42721,
+    "completion_tokens": 3885,
+    "reasoning_tokens": 3598,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.046609,
+    "cost_complete": true,
+    "request_thought_signatures": 6,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1677.1,
+     1821.7,
+     2192.5,
+     300.2,
+     1767.9,
+     3215.7,
+     3944.1,
+     2065.4,
+     2851.6,
+     3180.4,
+     1172.3,
+     303.0
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 132.96,
+    "tts_characters": 1277,
+    "call": {
+     "audio_seconds_sent": 132.96,
+     "call_seconds": 132.96,
+     "markers_acked": 127,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 7.53,
+     "session_end_turn_s": 4.75
+    },
+    "stt_usd": 0.017285,
+    "tts_usd": 0.06385,
+    "cost_usd": 0.081135,
+    "asr": [
+     {
+      "intended": "Hola, soy Marisol Quintero. Quiero ponerme al corriente con mi tarjeta que termina en 4471.",
+      "heard": [
+       "Hola, soy Marisol Quintero. Quiero ponerme al corriente con mi tarjeta que termina en cuatro cuatro siete uno."
+      ],
+      "user_events": 1,
+      "wer": 0.222,
+      "tokens": [
+       {
+        "token": "Marisol Quintero",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "4471",
+        "kind": "digits",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Quiero revisar las opciones de pago.",
+      "heard": [
+       "Quiero revisar las opciones de pago."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "El de tres pagos de 204 d\u00f3lares, por favor.",
+      "heard": [
+       "El de tres pagos de doscientos cuatro d\u00f3lares, por favor."
+      ],
+      "user_events": 1,
+      "wer": 0.25,
+      "tokens": [
+       {
+        "token": "204",
+        "kind": "amount",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "tres",
+        "kind": "count",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "S\u00ed, confirmo.",
+      "heard": [
+       "S\u00ed, confirmo."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-collections-gemini-voice-es-normal-three-payments-20260930T164422",
+    "prompt": 42721,
+    "completion": 3885,
+    "total": 46606,
+    "generations": 10,
+    "fetched_at": "2026-09-30T16:46:48.817521+00:00"
+   }
+  },
+  {
+   "id": "normal-hardship-lost-job",
+   "kind": "normal",
+   "description": "Hardship declared in the first sentence: the hardship team, no plan offered, staged or recorded.",
+   "conversation_id": "banking-collections-gemini-voice-es-normal-hardship-lost-job-20260930T164422",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hola. Perd\u00ed mi trabajo en agosto y no me alcanza ni para la renta y la comida. No s\u00e9 qu\u00e9 hacer con la tarjeta 4471.",
+     "latency_ms": 2564.9,
+     "bot": [
+      "Entendido, lamento mucho la situaci\u00f3n dif\u00edcil por la que est\u00e1 pasando.",
+      "Para su tarjeta cuatro cuatro siete uno, podemos transferir su caso a nuestro equipo de dificultades financieras. \u00bfLe gustar\u00eda que le haga la referencia a este equipo?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 9.44,
+      "speech_off_epoch": 1790786827.329844,
+      "eos_to_first_marker_ms": 2249.4,
+      "eos_to_first_audio_ms": 2564.9,
+      "eos_to_first_audible_ms": 2564.9,
+      "end_markers": [
+       {
+        "at_ms": 4496.1,
+        "rasa_processing_latency_ms": 2042.4010753631592,
+        "tts_first_byte_latency_ms": 315.69814682006836,
+        "tts_complete_latency_ms": 2246.3760375976562
+       },
+       {
+        "at_ms": 9786.5,
+        "rasa_processing_latency_ms": 2042.4010753631592,
+        "tts_first_byte_latency_ms": 318.1779384613037,
+        "tts_complete_latency_ms": 4488.281011581421
+       }
+      ],
+      "bot_audio_s": 19.56,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hola, perd\u00ed mi trabajo en agosto y no me alcanza ni para la renta y la comida. No s\u00e9 qu\u00e9 hacer con la tarjeta cuatro cuatro siete uno."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2358.892374963034,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2037.0181250036694,
+         "llm_total_generation_ms": 2267.5624169642106,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "S\u00ed, por favor, p\u00e1seme con ellos.",
+     "latency_ms": 2672.1,
+     "bot": [
+      "Claro, enseguida paso su solicitud al equipo correspondiente.",
+      "Le pas\u00e9 con el equipo de apoyo financiero de tarjetas. Su referencia es H, R, D, cuatro, cero, tres, cuatro, cero, ocho. El equipo le llama en un d\u00eda h\u00e1bil. No le vamos a pedir un plan de pagos en esta llamada.",
+      "El equipo se comunicar\u00e1 con usted en un d\u00eda h\u00e1bil."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.64,
+      "speech_off_epoch": 1790786852.728938,
+      "eos_to_first_marker_ms": 2372.6,
+      "eos_to_first_audio_ms": 2672.1,
+      "eos_to_first_audible_ms": 2672.1,
+      "end_markers": [
+       {
+        "at_ms": 4044.7,
+        "rasa_processing_latency_ms": 2205.6057453155518,
+        "tts_first_byte_latency_ms": 299.2269992828369,
+        "tts_complete_latency_ms": 1671.9591617584229
+       },
+       {
+        "at_ms": 9671.2,
+        "rasa_processing_latency_ms": 2205.6057453155518,
+        "tts_first_byte_latency_ms": 278.84697914123535,
+        "tts_complete_latency_ms": 5623.74210357666
+       },
+       {
+        "at_ms": 18256.6,
+        "rasa_processing_latency_ms": 2205.6057453155518,
+        "tts_first_byte_latency_ms": 286.3638401031494,
+        "tts_complete_latency_ms": 1300.8849620819092
+       }
+      ],
+      "bot_audio_s": 28.91,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "S\u00ed, por favor, p\u00e1seme con ellos."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2504.932291980367,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2179.1889169835486,
+         "llm_total_generation_ms": 2287.312791973818,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "request_hardship_referral",
+      "result": {
+       "status": "referred",
+       "account_ending": "4471"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_plan_offers",
+      "result": {
+       "status": "offers"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "select_plan_offer",
+      "result": {
+       "status": "staged"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "record_plan_choice",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "request_hardship_referral",
+     "arguments": {
+      "summary": "Perdi\u00f3 su trabajo en agosto y no le alcanza para renta y comida",
+      "account_ending": "4471"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "referred",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Entendido, lamento mucho la situaci\u00f3n dif\u00edcil por la que est\u00e1 pasando.",
+     "Claro, enseguida paso su solicitud al equipo correspondiente.",
+     "Muy bien, que tenga un buen d\u00eda."
+    ],
+    "payment_received_claim": [],
+    "plan_mention": [],
+    "plans_recorded": {
+     "attempts": 0,
+     "total": 0
+    },
+    "hardship_referrals": {
+     "attempts": 1,
+     "total": 1
+    },
+    "callbacks": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.turn.failed": 0,
+    "rime.stream_audio.error": 0,
+    "northgate.rime_idle_reconnect": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "voice_channel.audio_missing": 0,
+    "deepgram.connection.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "northgate.turn_order_fix": 0,
+    "rime.connection.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "northgate.history_start_fix": 0,
+    "voice_channel.agent_task_failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.v2.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2
+   },
+   "log_event_details": {
+    "browser_audio.handle_message.error": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.turn.failed": [],
+    "rime.stream_audio.error": [],
+    "northgate.rime_idle_reconnect": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "voice_channel.audio_missing": [],
+    "deepgram.connection.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "northgate.turn_order_fix": [],
+    "rime.connection.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "northgate.history_start_fix": [],
+    "voice_channel.agent_task_failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.v2.error": [],
+    "output_channel.response_delivery_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: GeminiException BadRequestError - {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Requests ending with a model turn are not supported.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n\n",
+      "conversation_id": "banking-collections-gemini-voice-es-normal-hardship-lost-job-20260930T164422"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: GeminiException BadRequestError - {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Requests ending with a model turn are not supported.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n\n",
+      "conversation_id": "banking-collections-gemini-voice-es-normal-hardship-lost-job-20260930T164422"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 6,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 18844,
+    "completion_tokens": 2383,
+    "reasoning_tokens": 2214,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.023069,
+    "cost_complete": true,
+    "request_thought_signatures": 4,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2267.1,
+     2895.8,
+     313.2,
+     2287.1,
+     7294.5,
+     2137.4,
+     1556.3,
+     300.0
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 75.62,
+    "tts_characters": 743,
+    "call": {
+     "audio_seconds_sent": 75.62,
+     "call_seconds": 75.62,
+     "markers_acked": 71,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 7.53,
+     "session_end_turn_s": 4.19
+    },
+    "stt_usd": 0.009831,
+    "tts_usd": 0.03715,
+    "cost_usd": 0.046981,
+    "asr": [
+     {
+      "intended": "Hola. Perd\u00ed mi trabajo en agosto y no me alcanza ni para la renta y la comida. No s\u00e9 qu\u00e9 hacer con la tarjeta 4471.",
+      "heard": [
+       "Hola, perd\u00ed mi trabajo en agosto y no me alcanza ni para la renta y la comida. No s\u00e9 qu\u00e9 hacer con la tarjeta cuatro cuatro siete uno."
+      ],
+      "user_events": 1,
+      "wer": 0.143,
+      "tokens": [
+       {
+        "token": "4471",
+        "kind": "digits",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "trabajo",
+        "kind": "term",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "renta",
+        "kind": "term",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "S\u00ed, por favor, p\u00e1seme con ellos.",
+      "heard": [
+       "S\u00ed, por favor, p\u00e1seme con ellos."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-collections-gemini-voice-es-normal-hardship-lost-job-20260930T164422",
+    "prompt": 18844,
+    "completion": 2383,
+    "total": 21227,
+    "generations": 6,
+    "fetched_at": "2026-09-30T16:48:11.648319+00:00"
+   }
+  },
+  {
+   "id": "correction-withdraw-after-recorded",
+   "kind": "correction",
+   "description": "A recorded six-payment plan withdrawn in the next turn: the plan is withdrawn and no debit is scheduled.",
+   "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Quiero el plan de seis pagos para mi tarjeta 4471.",
+     "latency_ms": 3939.2,
+     "bot": [
+      "Claro, con gusto le ayudo con el plan de pagos.",
+      "Entendido, voy a revisar las opciones para su tarjeta.",
+      "Perfecto, voy a seleccionar el plan de seis pagos.",
+      "Muy bien, preparo el registro del plan seleccionado.",
+      "Para su tarjeta de cr\u00e9dito terminada en cuatro cuatro siete uno: seis pagos mensuales de ciento dos d\u00f3lares, el primero el 15 de octubre. Elegir un plan no es un pago. \u00bfConfirma que quiere este plan?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.57,
+      "speech_off_epoch": 1790786905.124478,
+      "eos_to_first_marker_ms": 3676.0,
+      "eos_to_first_audio_ms": 3939.2,
+      "eos_to_first_audible_ms": 3939.2,
+      "end_markers": [
+       {
+        "at_ms": 5177.3,
+        "rasa_processing_latency_ms": 2315.6330585479736,
+        "tts_first_byte_latency_ms": 263.3819580078125,
+        "tts_complete_latency_ms": 1501.4169216156006
+       },
+       {
+        "at_ms": 7386.8,
+        "rasa_processing_latency_ms": 2315.6330585479736,
+        "tts_first_byte_latency_ms": 255.16510009765625,
+        "tts_complete_latency_ms": 1417.0222282409668
+       },
+       {
+        "at_ms": 11984.8,
+        "rasa_processing_latency_ms": 2315.6330585479736,
+        "tts_first_byte_latency_ms": 302.3722171783447,
+        "tts_complete_latency_ms": 1807.1072101593018
+       },
+       {
+        "at_ms": 14713.7,
+        "rasa_processing_latency_ms": 2315.6330585479736,
+        "tts_first_byte_latency_ms": 213.90104293823242,
+        "tts_complete_latency_ms": 1892.8120136260986
+       },
+       {
+        "at_ms": 19276.2,
+        "rasa_processing_latency_ms": 2315.6330585479736,
+        "tts_first_byte_latency_ms": 221.86589241027832,
+        "tts_complete_latency_ms": 4558.418035507202
+       }
+      ],
+      "bot_audio_s": 36.54,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Quiero el plan de seis pagos para mi tarjeta cuatro mil cuatrocientos setenta y uno."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2578.9906670106575,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2302.802167017944,
+         "llm_total_generation_ms": 2521.630500035826,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "S\u00ed.",
+     "latency_ms": 5994.5,
+     "bot": [
+      "Entendido, voy a confirmar el plan de pagos.",
+      "Plan registrado. Su referencia es P, L, N, siete, cero, seis, cuatro, cero, dos. Tarjeta de cr\u00e9dito terminada en cuatro cuatro siete uno: seis pagos mensuales de ciento dos d\u00f3lares, el primero el 15 de octubre. Elegir un plan no es un pago: no hemos recibido ning\u00fan pago y no se program\u00f3 ning\u00fan cargo autom\u00e1tico.",
+      "Tenga en cuenta que elegir el plan no es un pago y no hemos recibido ning\u00fan pago."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.84,
+      "speech_off_epoch": 1790786947.155036,
+      "eos_to_first_marker_ms": 5781.6,
+      "eos_to_first_audio_ms": 5994.5,
+      "eos_to_first_audible_ms": 5994.5,
+      "end_markers": [
+       {
+        "at_ms": 6991.2,
+        "rasa_processing_latency_ms": 5254.593133926392,
+        "tts_first_byte_latency_ms": 629.8739910125732,
+        "tts_complete_latency_ms": 1626.6570091247559
+       },
+       {
+        "at_ms": 14331.4,
+        "rasa_processing_latency_ms": 5254.593133926392,
+        "tts_first_byte_latency_ms": 224.9431610107422,
+        "tts_complete_latency_ms": 7337.859153747559
+       },
+       {
+        "at_ms": 24750.5,
+        "rasa_processing_latency_ms": 5254.593133926392,
+        "tts_first_byte_latency_ms": 290.266752243042,
+        "tts_complete_latency_ms": 2460.9289169311523
+       }
+      ],
+      "bot_audio_s": 40.51,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "S\u00ed,"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 5884.472874982748,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 5233.373416995164,
+         "llm_total_generation_ms": 5293.9743750030175,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Espere, lo pens\u00e9 mejor. Cancele ese plan, por favor.",
+     "latency_ms": 4597.5,
+     "bot": [
+      "De acuerdo, voy a cancelar el plan registrado.",
+      "Retir\u00e9 el plan con referencia P, L, N, siete, cero, seis, cuatro, cero, dos. No queda ning\u00fan plan activo y no se program\u00f3 ning\u00fan cargo.",
+      "El plan qued\u00f3 cancelado y no se ha programado ning\u00fan cargo."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.77,
+      "speech_off_epoch": 1790786998.109593,
+      "eos_to_first_marker_ms": 4333.7,
+      "eos_to_first_audio_ms": 4597.5,
+      "eos_to_first_audible_ms": 4597.5,
+      "end_markers": [
+       {
+        "at_ms": 5725.2,
+        "rasa_processing_latency_ms": 3152.088165283203,
+        "tts_first_byte_latency_ms": 749.6509552001953,
+        "tts_complete_latency_ms": 1877.3961067199707
+       },
+       {
+        "at_ms": 9363.3,
+        "rasa_processing_latency_ms": 3152.088165283203,
+        "tts_first_byte_latency_ms": 235.4280948638916,
+        "tts_complete_latency_ms": 3634.3460083007812
+       },
+       {
+        "at_ms": 13187.4,
+        "rasa_processing_latency_ms": 3152.088165283203,
+        "tts_first_byte_latency_ms": 302.86192893981934,
+        "tts_complete_latency_ms": 1733.3390712738037
+       }
+      ],
+      "bot_audio_s": 25.32,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Esper\u00e9, lo pens\u00e9 mejor. Cancel\u00e9 ese plan, por favor."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3901.7080839839764,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 3111.4873330225237,
+         "llm_total_generation_ms": 3243.1091250036843,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_plan_choice",
+      "result": {
+       "status": "succeeded",
+       "offer_id": "OFR-4471-6M",
+       "account_ending": "4471"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "withdraw_plan_choice",
+      "result": {
+       "status": "withdrawn",
+       "debit_scheduled": false
+      },
+      "after_user_turn": 3
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account_ending": "4471"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "offer_id": "OFR-4471-6M",
+      "account_ending": "4471"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "staged",
+     "result_reason": null
+    },
+    {
+     "tool": "record_plan_choice",
+     "arguments": {
+      "offer_id": "OFR-4471-6M"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "record_plan_choice",
+     "arguments": {
+      "offer_id": "OFR-4471-6M"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    },
+    {
+     "tool": "withdraw_plan_choice",
+     "arguments": {
+      "account_ending": "4471"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "withdrawn",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Claro, con gusto le ayudo con el plan de pagos.",
+     "Entendido, voy a revisar las opciones para su tarjeta.",
+     "Perfecto, voy a seleccionar el plan de seis pagos.",
+     "Muy bien, preparo el registro del plan seleccionado.",
+     "Entendido, voy a confirmar el plan de pagos.",
+     "De acuerdo, voy a cancelar el plan registrado."
+    ],
+    "payment_received_claim": [],
+    "plan_mention": [
+     "Claro, con gusto le ayudo con el plan de pagos.",
+     "Perfecto, voy a seleccionar el plan de seis pagos.",
+     "Entendido, voy a confirmar el plan de pagos.",
+     "Plan registrado. Su referencia es P, L, N, siete, cero, seis, cuatro, cero, dos. Tarjeta de cr\u00e9dito terminada en cuatro cuatro siete uno: seis pagos mensuales de ciento dos d\u00f3lares, el primero el 15 de octubre. Elegir un plan no es un pago: no hemos recibido ning\u00fan pago y no se program\u00f3 ning\u00fan cargo autom\u00e1tico."
+    ],
+    "plans_recorded": {
+     "attempts": 1,
+     "total": 1
+    },
+    "hardship_referrals": {
+     "attempts": 0,
+     "total": 0
+    },
+    "callbacks": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.turn.failed": 0,
+    "rime.stream_audio.error": 0,
+    "northgate.rime_idle_reconnect": 2,
+    "mantle.tool_confirmation.confirmed": 1,
+    "voice_channel.audio_missing": 0,
+    "deepgram.connection.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "northgate.turn_order_fix": 0,
+    "rime.connection.failed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "northgate.history_start_fix": 4,
+    "voice_channel.agent_task_failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.v2.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2
+   },
+   "log_event_details": {
+    "browser_audio.handle_message.error": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.turn.failed": [],
+    "rime.stream_audio.error": [],
+    "northgate.rime_idle_reconnect": [
+     {
+      "idle_s": 28.1,
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     },
+     {
+      "idle_s": 30.1,
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "record_plan_choice",
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     }
+    ],
+    "voice_channel.audio_missing": [],
+    "deepgram.connection.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "northgate.turn_order_fix": [],
+    "rime.connection.failed": [],
+    "mantle.tool_confirmation.declined": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "northgate.history_start_fix": [
+     {
+      "sender_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422",
+      "iteration": 1,
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     },
+     {
+      "sender_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422",
+      "iteration": 0,
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     },
+     {
+      "sender_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422",
+      "iteration": 1,
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     },
+     {
+      "sender_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422",
+      "iteration": 0,
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.v2.error": [],
+    "output_channel.response_delivery_failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: GeminiException BadRequestError - {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Requests ending with a model turn are not supported.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n\n",
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: GeminiException BadRequestError - {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Requests ending with a model turn are not supported.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n\n",
+      "conversation_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 10,
+    "side_channel_calls": 2,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 1,
+    "prompt_tokens": 49361,
+    "completion_tokens": 5818,
+    "reasoning_tokens": 5555,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.058838,
+    "cost_complete": true,
+    "request_thought_signatures": 14,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2521.7,
+     2115.8,
+     4364.0,
+     2486.8,
+     297.0,
+     5293.9,
+     7998.6,
+     3243.5,
+     2090.2,
+     2406.6,
+     269.8,
+     427.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 136.46,
+    "tts_characters": 1204,
+    "call": {
+     "audio_seconds_sent": 136.46,
+     "call_seconds": 136.47,
+     "markers_acked": 141,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 7.53,
+     "session_end_turn_s": 4.28
+    },
+    "stt_usd": 0.01774,
+    "tts_usd": 0.0602,
+    "cost_usd": 0.07794,
+    "asr": [
+     {
+      "intended": "Quiero el plan de seis pagos para mi tarjeta 4471.",
+      "heard": [
+       "Quiero el plan de seis pagos para mi tarjeta cuatro mil cuatrocientos setenta y uno."
+      ],
+      "user_events": 1,
+      "wer": 0.462,
+      "tokens": [
+       {
+        "token": "4471",
+        "kind": "digits",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "seis",
+        "kind": "count",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "S\u00ed.",
+      "heard": [
+       "S\u00ed,"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Espere, lo pens\u00e9 mejor. Cancele ese plan, por favor.",
+      "heard": [
+       "Esper\u00e9, lo pens\u00e9 mejor. Cancel\u00e9 ese plan, por favor."
+      ],
+      "user_events": 1,
+      "wer": 0.222,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-collections-gemini-voice-es-correction-withdraw-after-recorded-20260930T164422",
+    "prompt": 49361,
+    "completion": 5818,
+    "total": 55179,
+    "generations": 9,
+    "fetched_at": "2026-09-30T16:50:35.444144+00:00"
+   }
+  }
+ ]
+}

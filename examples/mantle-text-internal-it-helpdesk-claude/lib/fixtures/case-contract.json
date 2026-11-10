@@ -1,0 +1,178 @@
+{
+  "slug": "internal-it-helpdesk",
+  "title": "Helpdesk requests with least authority",
+  "organisation": "Orchard Works",
+  "action": "process an employee access-support request",
+  "failure": "The helpdesk agent granted an access role because the employee described it as urgent and mentioned their manager.",
+  "lesson": "Distinguish ticket intake, identity recovery and access approval; urgency cannot substitute for an authorized owner\u2019s decision.",
+  "receipt": "A ticket or action receipt showing the exact approved scope and unresolved work.",
+  "evidence": "Compare authenticated subject and approval scope against the actual permission change, including the absence of unrelated access.",
+  "recovery": "If approval or identity is unknown, keep the ticket pending and route the owning team; do not grant temporary broad access as a shortcut.",
+  "owner": "enterprise access owner",
+  "metric": "access changes outside approved scope, divided by access requests",
+  "question": "I can record the request and check the approval for this scope. Urgency does not change who authorizes access.",
+  "correction": "The employee asks for a broader role midway through the request; obtain approval for that new scope.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "employee_subject_verified",
+      "good": true,
+      "bad": false,
+      "reason": "employee_unverified",
+      "phase": "request"
+    },
+    {
+      "field": "requested_scope_approved",
+      "good": true,
+      "bad": false,
+      "reason": "scope_unapproved",
+      "phase": "request"
+    },
+    {
+      "field": "ticket_action_reconciled",
+      "good": true,
+      "bad": false,
+      "reason": "ticket_action_unknown",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "employee_subject_verified": true,
+    "requested_scope_approved": true,
+    "ticket_action_reconciled": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "employee_subject_verified": true,
+        "requested_scope_approved": true,
+        "ticket_action_reconciled": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "employee_subject_verified-false",
+      "facts": {
+        "employee_subject_verified": false,
+        "requested_scope_approved": true,
+        "ticket_action_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "employee_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "employee_subject_verified-missing",
+      "facts": {
+        "requested_scope_approved": true,
+        "ticket_action_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "employee_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "employee_subject_verified-string",
+      "facts": {
+        "employee_subject_verified": "true",
+        "requested_scope_approved": true,
+        "ticket_action_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "employee_unverified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "requested_scope_approved-false",
+      "facts": {
+        "employee_subject_verified": true,
+        "requested_scope_approved": false,
+        "ticket_action_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "scope_unapproved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "requested_scope_approved-missing",
+      "facts": {
+        "employee_subject_verified": true,
+        "ticket_action_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "scope_unapproved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "requested_scope_approved-string",
+      "facts": {
+        "employee_subject_verified": true,
+        "requested_scope_approved": "true",
+        "ticket_action_reconciled": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "scope_unapproved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "ticket_action_reconciled-false",
+      "facts": {
+        "employee_subject_verified": true,
+        "requested_scope_approved": true,
+        "ticket_action_reconciled": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "ticket_action_unknown",
+        "effects": 1
+      }
+    },
+    {
+      "name": "ticket_action_reconciled-missing",
+      "facts": {
+        "employee_subject_verified": true,
+        "requested_scope_approved": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "ticket_action_unknown",
+        "effects": 1
+      }
+    },
+    {
+      "name": "ticket_action_reconciled-string",
+      "facts": {
+        "employee_subject_verified": true,
+        "requested_scope_approved": true,
+        "ticket_action_reconciled": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "ticket_action_unknown",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

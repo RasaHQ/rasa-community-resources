@@ -1,11 +1,19 @@
 # Risk-tiered authentication step-up
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-voice-auth-stepup/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0.dev9 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice agents that can do something worth stealing
 Time:          40–60 minutes
 ```
@@ -25,7 +33,8 @@ action is attempted, not at the top of the conversation.
 The existing auth artifact in this repository is
 `examples/mantle-voice-agent/skills/authenticate`. It is a single factor (a
 four-digit PIN), one retry, then a handoff — and downstream skills consume it as
-`requires: session.project.authenticated`, a boolean on the *caller*. That is
+`precondition: authenticated`, bound in `agent.yml` to
+`session.project.authenticated`: a boolean on the *caller*. That is
 the right shape for a demo and the wrong shape for anything that can move money.
 
 The difference this pattern adds is not "more factors". It is **where the
@@ -82,15 +91,19 @@ function. The guard is written inline in each tool rather than hidden behind a
 decorator on purpose: a decorator would be tidier and would put the check
 somewhere a reviewer skimming the diff of a *new* tool would not see it.
 
-### Why not just use `requires:` in the frontmatter?
+### Why not just gate it in the frontmatter?
 
 Rasa gives you two declarative places to say "you must be authenticated":
 
 ```yaml
-requires: session.project.authenticated          # skill frontmatter
+precondition: authenticated                      # skill frontmatter, bound in agent.yml
 tool_constraints:
   - reissue_card: { requires: session.project.verified }
 ```
+
+(Before Rasa Pro 3.21.0.dev2 the skill-level form was `requires:` in the skill
+frontmatter. The engine now rejects it and points to `precondition:`, which
+parks the skill and runs a resolver skill until the condition holds.)
 
 Both are real and this pattern uses the frontmatter layer too — it is what keeps
 the conversation coherent, so the caller gets asked for a code instead of being

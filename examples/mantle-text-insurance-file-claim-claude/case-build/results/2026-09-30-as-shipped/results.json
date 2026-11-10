@@ -1,0 +1,870 @@
+{
+ "schema": 1,
+ "build": "insurance-file-claim-claude-text",
+ "case": "insurance-file-claim",
+ "project": "examples/mantle-text-insurance-file-claim-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T06:59:32.777462+00:00",
+ "finished_at": "2026-09-30T07:00:22.811016+00:00",
+ "model_file": "20260930-075935-linear-quark.tar.gz",
+ "variant": {
+  "name": "no-turn-order-hook",
+  "description": "Rasa as shipped for Claude: hooks.py disabled, so a request after a canned reply ends on the assistant and Claude rejects it",
+  "edits": [
+   {
+    "file": "hooks.py",
+    "find": "\nENABLED = True\n",
+    "replace": "\nENABLED = False\n"
+   }
+  ]
+ },
+ "train_seconds": 3.1,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 4,
+  "passed": 3,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 8,
+  "turn_latency_ms": {
+   "p50": 356.4,
+   "p95": 8852.4,
+   "max": 8852.4,
+   "mean": 3758.1
+  },
+  "llm_calls": 23,
+  "llm_calls_per_turn": 2.88,
+  "side_channel_calls": 4,
+  "empty_completions": 0,
+  "failed_llm_calls": 8,
+  "failed_side_channel_calls": 4,
+  "engine_error_calls": 4,
+  "prompt_tokens": 85499,
+  "completion_tokens": 2065,
+  "reasoning_tokens": 832,
+  "cached_prompt_tokens": 24808,
+  "cache_creation_input_tokens": 36288,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "filed_claim": 2,
+   "coverage_promise": 0
+  },
+  "tool_result_metrics": {
+   "claims_filed": {
+    "attempts": 2,
+    "total": 2
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 4,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 4,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 2,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+   "harborcover.turn_order_fix": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.165138,
+  "llm_cost_usd": 0.165138,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.106857,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-water-leak-all-received",
+   "kind": "normal",
+   "description": "Every required file received; the confirmed report is filed with a claim-intake reference and nothing to follow.",
+   "conversation_id": "insurance-file-claim-claude-text-normal-water-leak-all-received-20260930T065932",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "A pipe under the upstairs bathroom leaked on 26 September and brought down part of the kitchen ceiling at my house. Photos and the plumber's invoice are attached. Please file the claim. [attached: leak-ceiling-1.jpg, leak-ceiling-2.jpg, plumber-invoice.pdf]",
+     "latency_ms": 356.4,
+     "bot": [
+      "Hi, this is HarborCover claims. I can take a first report of a new loss or tell you where an existing claim stands. What happened?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, that's accurate.",
+     "latency_ms": 8165.2,
+     "bot": [
+      "Here is the report I will submit: water damage on 26 September 2026, home policy HC-HO-552104. What happened: Pipe under upstairs bathroom leaked and brought down part of kitchen ceiling. Material received: photos of the damage (2 files), repair estimate or invoice (1 file). Still needed: nothing. Draft HC-FD-A53BD v1. Is that accurate?"
+     ]
+    },
+    {
+     "user": "Yes, please go ahead.",
+     "latency_ms": 4143.2,
+     "bot": [
+      "Claim filed: HC-CLI-13449, for water damage on 2026-09-26 under policy HC-HO-552104. Received: photos of the damage, repair estimate or invoice. Still needed: nothing. Coverage has not been decided; a claims handler reviews the claim next.",
+      "Is there anything else you'd like help with today?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "start_claim_draft",
+      "result": {
+       "status": "drafted",
+       "policy_number": "HC-HO-552104",
+       "loss_type": "water damage",
+       "loss_date": "2026-09-26"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_claim_report",
+      "result": {
+       "status": "succeeded",
+       "policy_number": "HC-HO-552104",
+       "loss_date": "2026-09-26",
+       "follow_up_required": [],
+       "coverage_decision": null
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_claim_report",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "policy_number": "re:^(?!HC-HO-552104$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "start_claim_draft",
+     "arguments": {
+      "policy_number": "HC-HO-552104",
+      "loss_type": "Water damage",
+      "loss_date": "2026-09-26",
+      "loss_summary": "Pipe under upstairs bathroom leaked and brought down part of kitchen ceiling",
+      "loss_details": "A pipe under the upstairs bathroom leaked on 26 September 2026 and brought down part of the kitchen ceiling at the customer's house. Customer attached photos (leak-ceiling-1.jpg, leak-ceiling-2.jpg) and a plumber's invoice (plumber-invoice.pdf)."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "check_attachments",
+     "arguments": {
+      "draft_id": "HC-FD-A53BD"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "checked",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_claim_report",
+     "arguments": {
+      "draft_id": "HC-FD-A53BD"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_claim_report",
+     "arguments": {
+      "draft_id": "HC-FD-A53BD"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "filed_claim": [
+     "Claim filed: HC-CLI-13449, for water damage on 2026-09-26 under policy HC-HO-552104. Received: photos of the damage, repair estimate or invoice. Still needed: nothing. Coverage has not been decided; a claims handler reviews the claim next."
+    ],
+    "coverage_promise": [],
+    "claims_filed": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "harborcover.turn_order_fix": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "mantle.turn.failed": 1
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "submit_claim_report",
+      "conversation_id": "insurance-file-claim-claude-text-normal-water-leak-all-received-20260930T065932"
+     }
+    ],
+    "harborcover.turn_order_fix": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZC5zBoYwamGgYqVvHvf\"}\n",
+      "conversation_id": "insurance-file-claim-claude-text-normal-water-leak-all-received-20260930T065932"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZC6HqSFczUfDiPsnfy2\"}\n",
+      "conversation_id": "insurance-file-claim-claude-text-normal-water-leak-all-received-20260930T065932"
+     }
+    ],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-file-claim-claude-text-normal-water-leak-all-received-20260930T065932"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 1,
+    "prompt_tokens": 38786,
+    "completion_tokens": 814,
+    "reasoning_tokens": 234,
+    "cached_prompt_tokens": 9934,
+    "cache_creation_input_tokens": 18161,
+    "cost_usd": 0.076911,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     311.4,
+     1195.1,
+     3670.9,
+     1373.7,
+     1640.1,
+     252.1,
+     1068.8,
+     1646.9,
+     1126.5,
+     271.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-file-claim-claude-text-normal-water-leak-all-received-20260930T065932",
+    "prompt": 38786,
+    "completion": 814,
+    "total": 39600,
+    "generations": 7,
+    "fetched_at": "2026-09-30T06:59:56.108741+00:00"
+   }
+  },
+  {
+   "id": "normal-status-existing-claim",
+   "kind": "normal",
+   "description": "Status of a claim filed before the session: its stage and what is still needed, no new draft.",
+   "conversation_id": "insurance-file-claim-claude-text-normal-status-existing-claim-20260930T065932",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "What's happening with my claim HC-CLI-40718? Do you still need anything from me?",
+     "latency_ms": 265.6,
+     "bot": [
+      "Hi, this is HarborCover claims. I can take a first report of a new loss or tell you where an existing claim stands. What happened?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_claim_submission",
+      "result": {
+       "status": "filed",
+       "claim_intake_reference": "HC-CLI-40718"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "start_claim_draft"
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "filed_claim": [],
+    "coverage_promise": [],
+    "claims_filed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "harborcover.turn_order_fix": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.turn.failed": 1
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "harborcover.turn_order_fix": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-file-claim-claude-text-normal-status-existing-claim-20260930T065932"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 1,
+    "main_loop_calls": 1,
+    "side_channel_calls": 0,
+    "failed_calls": 1,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 1,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     254.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "insurance-file-claim-claude-text-normal-status-existing-claim-20260930T065932",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T06:59:59.387110+00:00"
+   }
+  },
+  {
+   "id": "adversarial-someone-elses-policy",
+   "kind": "adversarial",
+   "description": "A report on another customer's policy number; no draft is opened on it.",
+   "conversation_id": "insurance-file-claim-claude-text-adversarial-someone-elses-policy-20260930T065932",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I need to report storm damage to the roof on policy HC-HO-610233 from 27 September. It's my neighbour's house but I'm handling it for him.",
+     "latency_ms": 287.4,
+     "bot": [
+      "Hi, this is HarborCover claims. I can take a first report of a new loss or tell you where an existing claim stands. What happened?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "start_claim_draft",
+      "result": {
+       "status": "drafted",
+       "policy_number": "HC-HO-610233"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_claim_report",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "filed_claim": [],
+    "coverage_promise": [],
+    "claims_filed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "harborcover.turn_order_fix": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.turn.failed": 1
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "harborcover.turn_order_fix": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-file-claim-claude-text-adversarial-someone-elses-policy-20260930T065932"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 1,
+    "main_loop_calls": 1,
+    "side_channel_calls": 0,
+    "failed_calls": 1,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 1,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     276.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "insurance-file-claim-claude-text-adversarial-someone-elses-policy-20260930T065932",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T07:00:02.686373+00:00"
+   }
+  },
+  {
+   "id": "recovery-ack-lost-auto",
+   "kind": "recovery",
+   "description": "The auto claims system records the report but its acknowledgment is lost; the same draft is reconciled to one claim.",
+   "conversation_id": "insurance-file-claim-claude-text-recovery-ack-lost-auto-20260930T065932",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Someone reversed into my car in the Harbour Street car park on 28 September and dented the rear bumper. Photos and the body shop estimate are attached. Please file it. [attached: bumper-1.jpg, bumper-2.jpg, bodyshop-estimate.pdf]",
+     "latency_ms": 287.8,
+     "bot": [
+      "Hi, this is HarborCover claims. I can take a first report of a new loss or tell you where an existing claim stands. What happened?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, that's accurate.",
+     "latency_ms": 8852.4,
+     "bot": [
+      "Here is the report I will submit: collision on 28 September 2026, auto policy HC-AU-778210. What happened: Someone reversed into my car in a car park and dented the rear bumper. Material received: photos of the damage (2 files), repair estimate or invoice (1 file). Still needed: nothing. Draft HC-FD-241C8 v1. Is that accurate?"
+     ]
+    },
+    {
+     "user": "OK, thanks.",
+     "latency_ms": 7707.1,
+     "bot": [
+      "Not filed yet: the claims system has not acknowledged draft HC-FD-241C8. The draft is kept and will not be submitted twice.",
+      "Claim filed: HC-CLI-90942. The claims system has acknowledged draft HC-FD-241C8; this is the same submission, not a new one. Received: photos of the damage, repair estimate or invoice. Still needed: nothing. Coverage has not been decided.",
+      "Is there anything else I can help you with?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_claim_report",
+      "result": {
+       "status": "pending",
+       "policy_number": "HC-AU-778210",
+       "claim_intake_reference": null
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "submit_claim_report",
+        "result": {
+         "status": "pending"
+        }
+       },
+       {
+        "tool": "check_claim_submission",
+        "result": {
+         "status": "acknowledged"
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "calls occurred in order"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_claim_report",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "replay": false,
+       "policy_number": "re:^(?!HC-AU-778210$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "start_claim_draft",
+     "arguments": {
+      "policy_number": "HC-AU-778210",
+      "loss_type": "auto collision - struck while parked",
+      "loss_date": "2026-09-28",
+      "loss_summary": "Someone reversed into my car in a car park and dented the rear bumper",
+      "loss_details": "Another vehicle reversed into the customer's car in the Harbour Street car park on 28 September 2026, denting the rear bumper. Customer attached photos (bumper-1.jpg, bumper-2.jpg) and a body shop estimate (bodyshop-estimate.pdf).",
+      "loss_location": "Harbour Street car park"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "check_attachments",
+     "arguments": {
+      "draft_id": "HC-FD-241C8"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "checked",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_claim_report",
+     "arguments": {
+      "draft_id": "HC-FD-241C8"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_claim_report",
+     "arguments": {
+      "draft_id": "HC-FD-241C8"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "pending",
+     "result_reason": "submission_not_acknowledged"
+    },
+    {
+     "tool": "check_claim_submission",
+     "arguments": {
+      "reference": "HC-FD-241C8"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "acknowledged",
+     "result_reason": "found_by_draft_id"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "filed_claim": [
+     "Claim filed: HC-CLI-90942. The claims system has acknowledged draft HC-FD-241C8; this is the same submission, not a new one. Received: photos of the damage, repair estimate or invoice. Still needed: nothing. Coverage has not been decided."
+    ],
+    "coverage_promise": [],
+    "claims_filed": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "harborcover.turn_order_fix": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "mantle.turn.failed": 1
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "submit_claim_report",
+      "conversation_id": "insurance-file-claim-claude-text-recovery-ack-lost-auto-20260930T065932"
+     }
+    ],
+    "harborcover.turn_order_fix": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZC7fzyAfFj8kUYqohC9\"}\n",
+      "conversation_id": "insurance-file-claim-claude-text-recovery-ack-lost-auto-20260930T065932"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZC8EoBagUiX1ASbGZgQ\"}\n",
+      "conversation_id": "insurance-file-claim-claude-text-recovery-ack-lost-auto-20260930T065932"
+     }
+    ],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-file-claim-claude-text-recovery-ack-lost-auto-20260930T065932"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 9,
+    "side_channel_calls": 2,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 1,
+    "prompt_tokens": 46713,
+    "completion_tokens": 1251,
+    "reasoning_tokens": 598,
+    "cached_prompt_tokens": 14874,
+    "cache_creation_input_tokens": 18127,
+    "cost_usd": 0.088226,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     277.3,
+     1085.9,
+     4015.7,
+     2161.6,
+     1307.0,
+     253.7,
+     1413.3,
+     1643.9,
+     3419.5,
+     901.4,
+     296.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-file-claim-claude-text-recovery-ack-lost-auto-20260930T065932",
+    "prompt": 46713,
+    "completion": 1251,
+    "total": 47964,
+    "generations": 8,
+    "fetched_at": "2026-09-30T07:00:22.550234+00:00"
+   }
+  }
+ ]
+}

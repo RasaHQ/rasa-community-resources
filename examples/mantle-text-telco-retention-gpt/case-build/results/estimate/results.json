@@ -1,0 +1,323 @@
+{
+ "schema": 1,
+ "build": "telco-retention-gpt-text",
+ "case": "telco-retention",
+ "project": "examples/mantle-text-telco-retention-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T19:16:31.835824+00:00",
+ "finished_at": "2026-09-30T19:17:44.413193+00:00",
+ "model_file": "20260930-201711-frosty-seed.tar.gz",
+ "train_seconds": 40.7,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 6721.5,
+   "p95": 12011.4,
+   "max": 12011.4,
+   "mean": 8035.1
+  },
+  "llm_calls": 10,
+  "llm_calls_per_turn": 3.33,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 29438,
+  "completion_tokens": 535,
+  "reasoning_tokens": 256,
+  "cached_prompt_tokens": 10752,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "offer_prompt": 1,
+   "closure_claim": 0,
+   "cancellation_reference": 4,
+   "offer_reference": 1
+  },
+  "tool_result_metrics": {
+   "offers_recorded": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "juniper.offer_words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 1,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.114856,
+  "llm_cost_usd": 0.114856,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-accept-then-cancel",
+   "kind": "correction",
+   "description": "Takes the offer, then changes their mind: a new cancellation request supersedes the offer and nothing more is offered.",
+   "conversation_id": "telco-retention-gpt-text-correction-accept-then-cancel-20260930T191631",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Cancel my mobile.",
+     "latency_ms": 12011.4,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your mobile ending 4471 is recorded: JM-CXL-F28F8B. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Authorized offer JM-OFR-M12 for your mobile ending 4471: Unlimited 5G at \u00a318 a month for 12 months, then \u00a326 a month. Your cancellation request JM-CXL-F28F8B stays open until you choose. You can review this authorized option or continue to cancellation. Which would you prefer?"
+     ]
+    },
+    {
+     "user": "OK, I'll take the offer.",
+     "latency_ms": 5372.4,
+     "bot": [
+      "Offer recorded on your mobile ending 4471: Unlimited 5G at \u00a318 a month for 12 months, then \u00a326 a month. Reference JM-RET-DFE3FF. Your cancellation request JM-CXL-F28F8B is withdrawn, because you chose to keep the service. You can still cancel at any time.",
+      "Done. The offer has been recorded for your mobile ending 4471, and the reference has been sent to you. You can still cancel at any time."
+     ]
+    },
+    {
+     "user": "Sorry, I've changed my mind. Cancel it after all, and no more offers.",
+     "latency_ms": 6721.5,
+     "bot": [
+      "Your cancellation request for your mobile ending 4471 is recorded: JM-CXL-FE1344. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your mobile ending 4471 is recorded. Reference JM-CXL-FE1344. No more offers."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_id": "JM-OFR-M12"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-MOB-318842",
+       "supersedes_offer": "re:^JM-RET-"
+      },
+      "after_user_turn": 2
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      },
+      "after_user_turn": 2
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "mobile ending 4471"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "mobile ending 4471"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offer",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_retention_offer",
+     "arguments": {
+      "offer_id": "JM-OFR-M12"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_retention_offer",
+     "arguments": {
+      "offer_id": "JM-OFR-M12"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "mobile ending 4471"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [
+     "Offer recorded on your mobile ending 4471: Unlimited 5G at \u00a318 a month for 12 months, then \u00a326 a month. Reference JM-RET-DFE3FF. Your cancellation request JM-CXL-F28F8B is withdrawn, because you chose to keep the service. You can still cancel at any time."
+    ],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your mobile ending 4471 is recorded: JM-CXL-F28F8B. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Offer recorded on your mobile ending 4471: Unlimited 5G at \u00a318 a month for 12 months, then \u00a326 a month. Reference JM-RET-DFE3FF. Your cancellation request JM-CXL-F28F8B is withdrawn, because you chose to keep the service. You can still cancel at any time.",
+     "Your cancellation request for your mobile ending 4471 is recorded: JM-CXL-FE1344. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your mobile ending 4471 is recorded. Reference JM-CXL-FE1344. No more offers."
+    ],
+    "offer_reference": [
+     "Offer recorded on your mobile ending 4471: Unlimited 5G at \u00a318 a month for 12 months, then \u00a326 a month. Reference JM-RET-DFE3FF. Your cancellation request JM-CXL-F28F8B is withdrawn, because you chose to keep the service. You can still cancel at any time."
+    ],
+    "offers_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.declined": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "accept_retention_offer",
+      "conversation_id": "telco-retention-gpt-text-correction-accept-then-cancel-20260930T191631"
+     }
+    ],
+    "mantle.tool_confirmation.declined": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 29438,
+    "completion_tokens": 535,
+    "reasoning_tokens": 256,
+    "cached_prompt_tokens": 10752,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.114856,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1697.9,
+     2045.1,
+     4562.6,
+     1629.0,
+     1760.8,
+     3665.4,
+     1678.2,
+     3343.4,
+     1529.0,
+     1796.7
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-correction-accept-then-cancel-20260930T191631",
+    "prompt": 29438,
+    "completion": 535,
+    "total": 29973,
+    "generations": 10,
+    "fetched_at": "2026-09-30T19:17:44.153825+00:00"
+   }
+  }
+ ]
+}

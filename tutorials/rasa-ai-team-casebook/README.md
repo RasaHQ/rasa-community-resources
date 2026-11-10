@@ -1,10 +1,18 @@
 # AI team casebook lab
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-ai-team-casebook/devcontainer.json)
+
+- **You need:** nothing for the first command, which needs no license and no network. Later steps use the free Rasa Developer Edition license and the keys named: `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `python3 casebook.py --case contextual-handoff --prove`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** ten observed fixtures printed; this one needs no license and no network.
+<!-- codespaces:end -->
+
 Author:        Rasa Community
 Assessed on:   2026-09-08
 Assessed by:   Codex Principal (offline checks; runtime scope recorded below)
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0.dev9 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      AI teams rehearsing evidence, authorization and recovery boundaries
 Time:          20–40 minutes per case; optional model integration takes longer
 
@@ -40,8 +48,7 @@ The first result is pending with reason `acknowledgment_lost`. The second looks
 up a succeeded synthetic receipt. The third replays the same `LAB-` reference;
 it does not add another row. The SQLite file persists across all three commands.
 Choose a new identifier only for a deliberately new request, after resolving
-any prior pending outcome. Do not infer “never executed” from `no_local_record`:
-a real remote service can have an effect absent from your local ledger.
+any prior pending outcome. A `no_local_record` lookup describes this lab’s database. Check the remote service’s outcome separately before resubmitting.
 
 For a receipt that remains unverified, copy a scenario's `facts` object into a
 separate JSON file, set one receipt-phase field to false, then pass
@@ -89,8 +96,7 @@ Use a supported identifier, such as `contextual-handoff`. Ask for its state,
 correct the requested case, and test how the agent describes a pending outcome.
 Record the model/configuration version and actual tool trace. These observations
 are sampled model behavior and remain separate from the offline test result.
-Runtime verification status is recorded in `VERIFICATION.md`; the version in the
-metadata is the project's pinned engine target, not a claim of a live service.
+The version in the metadata identifies the pinned engine target; `VERIFICATION.md` records the completed runtime checks.
 
 ## Case and role index
 
@@ -118,7 +124,81 @@ python3 casebook.py --case internal-shift-swap --request-id absence-1 --lookup-i
 
 The first result has `status: recorded`, an `INTAKE-` reference and zero guarded
 actions; lookup returns the same record. A refused swap cannot remove that
-absence. Likewise, a recorded arrival does not grant loading clearance, a
-cancellation request does not close an account, and an outage observation does
-not establish a restoration time. The model has a separate `record_case_intake`
+absence. Track arrival, loading clearance, cancellation requests, account closure, outage observations and restoration times as separate service records. The model has a separate `record_case_intake`
 tool for this confirmed choice; presenting an offer never silently cancels it.
+
+## Check what the appointment booleans leave out
+
+Run `python3 -B appointment_binding_demo.py`. It changes the confirmation question while keeping the three adjudicated facts true. The lab replays its original record. Adding an explicit channel is refused as `unknown_fact`: this generic lab models rule outcomes, while a real booking adapter must bind the actual channel, purpose and slot to the confirmed request. The script also checks that the two explicit appointment payloads have different hashes. All values and database actions are synthetic; the temporary database is removed after the check.
+
+
+## Reconcile separate billing observations
+
+Assessment of this added exercise: Rasa Community (Codex), 2 November 2026;
+Python 3.14.3, nine billing tests and 28 casebook tests passed. The commands
+below require only the standard library; no Rasa runtime was exercised.
+
+Run this read-only exercise with Python 3.11 or later, without installing Rasa:
+
+```bash
+python3 -B billing_reconciliation.py
+python3 -B -m unittest discover -s tests -p test_billing_reconciliation.py -v
+```
+
+The fixture has two revisions each for one payment, invoice and policy, all for
+one synthetic account and policy. Across all 720 delivery orders, the reducer
+selects each source's highest revision and reports settled, paid and active.
+An intentionally defective comparison freezes the first invoice and infers
+policy status from its label. It disagrees in 360 orders. These are exhaustive
+permutations of six invented observations, not sampled production error rates.
+The nine tests also cover missing policy data, duplicates, older revisions,
+contradictory revisions, wrong account/policy and invalid inputs. A settled
+payment does not override a policy service observation that says lapsed.
+
+The reducer checks scope and source-specific state names. Revisions are ordered
+only within one source. Contradictory observations at the same revision put the
+report into investigation, including when that revision is older than the
+current one. Later observations do not clear a conflict automatically.
+
+This is a source-selection model, not a service adapter or coverage decision.
+It trusts its fixture source identities and monotonic revision numbers. It has
+no signature, freshness deadline, payment-reference lookup, persistence or
+cross-service snapshot transaction. The permutation check reads the final report after all six messages arrive.
+Before replying during delivery, a live adapter needs an observation-age limit
+and a consistency contract agreed with its service owners. This module
+never charges a customer, changes coverage or instructs a payment provider.
+
+Calendar manuscript: the held insurance-billing case will use this exercise
+only after independent source and editorial review. No publication approval
+or release date is implied by adding the companion code.
+
+## Old billing revisions can still contradict each other
+
+`billing_history.py` compares two otherwise identical reducers under an explicit
+synthetic contract: a source revision identifies immutable state. A common
+optimization discards obsolete replies before checking their evidence. The
+comparison retains input validation and equal-current-revision detection.
+
+```bash
+python3 -B billing_history.py
+python3 -B -m unittest discover -s tests -p test_billing_history.py -v
+```
+
+The seven invented observations have 5,040 orders. Latest-first filtering misses
+the old policy contradiction in 3,360; retained-history detection notices it in
+all 5,040. Both still select the same latest policy observation. The minimal
+policy sequence is revision 6 active, revision 5 lapsed, revision 5 active.
+Those are exhaustive fixture counts, not service failure rates.
+
+The `RetainedHistory` wrapper stores both validated conflicting observations,
+including their source and revision, rather than only a conflict flag. Duplicate
+delivery does not multiply those diagnostic entries. Storage is in memory and
+ends with the process; a deployed adapter needs its own durable evidence ledger.
+
+The test also exposes an availability choice. The original whole-report contract
+withholds invoice and payment states after a policy contradiction and stays
+blocked after a later revision 7. Separate-source reports retain those two
+unconflicted observations while keeping policy unknown. That is not a joined
+coverage decision or proof of freshness. A real adapter must establish source
+identity, revision immutability, snapshot freshness, retention and recovery.
+Neither teaching reducer supplies those service guarantees or makes a payment.

@@ -1,0 +1,71 @@
+# External integrations for the Willow Shop order-status voice agent.
+#
+# The orchestrator LLM is a model-group reference, set up as in the Gemini
+# pilot build (mantle-text-insurance-policy-status-gemini). Rasa has no
+# dedicated Gemini client: any provider other than openai, azure or
+# self-hosted goes to LiteLLM, which calls the Gemini API as
+# `gemini/<model>`. No reasoning setting is given, and Rasa adds none for
+# Gemini (its default reasoning_effort covers OpenAI-family models only), so
+# the model runs at its own API default.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: gemini
+        model: gemini-3.8-flash
+        api_key: ${GEMINI_API_KEY}
+
+# Mantle reads channels from here, never from credentials.yml.
+# `browser_audio` is the raw WebSocket voice channel a browser (or the case-build
+# harness) streams to at /webhooks/browser_audio/websocket. `inspector` serves
+# `rasa inspect` with the same speech stack.
+channels:
+  browser_audio:
+    server_url: localhost
+    # 16 kHz 16-bit PCM both ways. Deepgram Flux takes linear16 at the stream's
+    # rate, Rime returns PCM at the rate asked for, and the caller fixtures are
+    # recorded at this rate.
+    sample_rate: 16000
+    # The harness names each call, so the tracker, usage and logs join on one id.
+    # Trusted local transports only: any client can pick any conversation id.
+    external_sender_id_header: X-Rasa-Sender-Id
+    silence_timeout: 30
+    interruptions:
+      enabled: false
+    # Deepgram Flux, a Rasa built-in, with the settings of the Northgate
+    # block-card build (mantle-voice-banking-block-card-gpt).
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    # Rime, a Rasa built-in. `voice` becomes Rime's `speaker`, `language` its
+    # `lang`. Mist v3 with the speaker lagoon, which Rime's catalogue lists as
+    # a US English customer-support voice.
+    tts:
+      name: rime
+      language_map:
+        en:
+          voice: lagoon
+          language: en
+      model_id: mistv3
+  inspector:
+    enabled: true
+    interruptions:
+      enabled: false
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+    tts:
+      name: rime
+      language_map:
+        en:
+          voice: lagoon
+          language: en
+      model_id: mistv3

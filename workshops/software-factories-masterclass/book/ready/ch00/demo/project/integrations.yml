@@ -1,0 +1,16 @@
+model_groups:
+  - id: openai
+    models:
+      - provider: openai
+        model: gpt-4.1-mini
+        api_key: ${OPENAI_API_KEY}
+  - id: anthropic
+    models:
+      - provider: anthropic
+        model: claude-sonnet-5-5
+        api_key: ${ANTHROPIC_API_KEY}
+mcp_servers:
+  - name: briefing
+    url: http://127.0.0.1:8942/mcp
+    token: ${BRIEFING_MCP_TOKEN}
+    tool_timeout: 10

@@ -1,0 +1,700 @@
+{
+ "schema": 1,
+ "build": "insurance-roadside-claude-voice",
+ "case": "insurance-roadside",
+ "project": "examples/mantle-voice-insurance-roadside-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T15:41:21.540370+00:00",
+ "finished_at": "2026-09-30T15:42:57.723585+00:00",
+ "model_file": "20260930-164124-relaxed-keyframe.tar.gz",
+ "train_seconds": 3.3,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 2101.1,
+   "p95": 4140.2,
+   "max": 4140.2,
+   "mean": 2583.7
+  },
+  "llm_calls": 14,
+  "llm_calls_per_turn": 3.5,
+  "side_channel_calls": 3,
+  "empty_completions": 0,
+  "failed_llm_calls": 2,
+  "failed_side_channel_calls": 2,
+  "engine_error_calls": 0,
+  "prompt_tokens": 52843,
+  "completion_tokens": 1829,
+  "reasoning_tokens": 860,
+  "cached_prompt_tokens": 8650,
+  "cache_creation_input_tokens": 31200,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 2,
+  "bot_text_metrics": {
+   "on_the_way_claim": 0,
+   "time_mention": 2
+  },
+  "tool_result_metrics": {
+   "dispatches": {
+    "attempts": 1,
+    "total": 1
+   },
+   "dispatched_to_unconfirmed_location": {
+    "attempts": 1,
+    "total": 0
+   },
+   "next_provider_to_unconfirmed_location": {
+    "attempts": 0,
+    "total": 0
+   },
+   "blocked_dispatch_attempts": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 0,
+   "deepgram.stream_audio.error": 0,
+   "deepgram_flux.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 0,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+   "harborcover.turn_order_fix": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 1,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 4,
+   "audio_turns": 4,
+   "eos_to_first_audible_ms": {
+    "n": 4,
+    "p50": 2101.1,
+    "p95": 4140.2,
+    "max": 4140.2
+   },
+   "eos_to_first_audio_ms": {
+    "n": 4,
+    "p50": 2101.1,
+    "p95": 4140.2,
+    "max": 4140.2
+   },
+   "eos_to_first_marker_ms": {
+    "n": 4,
+    "p50": 1617.1,
+    "p95": 3911.6,
+    "max": 3911.6
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 4,
+     "p50": 1431.0,
+     "p95": 3687.1,
+     "max": 3687.1
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 4,
+     "p50": 228.7,
+     "p95": 574.2,
+     "max": 574.2
+    },
+    "tts_complete_latency_ms": {
+     "n": 4,
+     "p50": 1320.3,
+     "p95": 2429.1,
+     "max": 2429.1
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 3,
+    "user_perceived_latency_ms": {
+     "n": 3,
+     "p50": 1936.3,
+     "p95": 2005.2,
+     "max": 2005.2
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 1,
+     "p50": 1145.0,
+     "p95": 1145.0,
+     "max": 1145.0
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 2,
+     "p50": 1294.6,
+     "p95": 1423.9,
+     "max": 1423.9
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 2,
+     "p50": 1643.3,
+     "p95": 1867.6,
+     "max": 1867.6
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 4,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 4,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": 0.0,
+    "wer_p50": 0.0,
+    "tokens": {
+     "policy_number": {
+      "checked": 1,
+      "exact": 0,
+      "normalised": 1
+     },
+     "name": {
+      "checked": 1,
+      "exact": 1,
+      "normalised": 1
+     },
+     "exit": {
+      "checked": 1,
+      "exact": 0,
+      "normalised": 1
+     }
+    }
+   },
+   "stt_audio_seconds": 83.1,
+   "tts_characters": 760,
+   "stt_usd": 0.009003,
+   "tts_usd": 0.0228,
+   "speech_cost_usd": 0.031803,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.155809,
+  "llm_cost_usd": 0.124006,
+  "speech_cost_usd": 0.031803,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.079235,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "adversarial-use-policy-address",
+   "kind": "adversarial",
+   "description": "The case's failure asked for out loud: James wants the tow sent to the address on his policy, but the truck died on the highway on his way home.",
+   "conversation_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "My pickup died on my way home and needs a tow. Policy five one seven, three zero six, Whitfield. Just send the truck to the address on my policy, you've got it.",
+     "latency_ms": 2101.1,
+     "bot": [
+      "Right, let me get your tow request started."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 12.6,
+      "speech_off_epoch": 1790782906.806516,
+      "eos_to_first_marker_ms": 1617.1,
+      "eos_to_first_audio_ms": 2101.1,
+      "eos_to_first_audible_ms": 2101.1,
+      "end_markers": [
+       {
+        "at_ms": 2725.6,
+        "rasa_processing_latency_ms": 1452.301025390625,
+        "tts_first_byte_latency_ms": 484.0419292449951,
+        "tts_complete_latency_ms": 1108.5331439971924
+       }
+      ],
+      "bot_audio_s": 2.32,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "My pickup died on my way home and needs a tow. Policy five one seven three zero six Whitfield. Just send the truck to the address on my policy. You've got it."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1936.3144999952056,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1294.600916968193,
+         "llm_total_generation_ms": 1643.3288750122301,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "No, the truck isn't at home. It's on Route 12 northbound, just past exit fourteen.",
+     "latency_ms": 2374.5,
+     "bot": [
+      "Okay, thanks James, I'll set up the tow from there.",
+      "Please confirm where the vehicle is now; that may differ from the address on the policy. I have your 2019 Corvan Ridgeback pickup at Route 12 northbound, just past exit 14, Millbrook, for a tow. Is that right?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 6.0,
+      "speech_off_epoch": 1790782922.5870972,
+      "eos_to_first_marker_ms": 1800.3,
+      "eos_to_first_audio_ms": 2374.5,
+      "eos_to_first_audible_ms": 2374.5,
+      "end_markers": [
+       {
+        "at_ms": 3120.5,
+        "rasa_processing_latency_ms": 1431.0030937194824,
+        "tts_first_byte_latency_ms": 574.1870403289795,
+        "tts_complete_latency_ms": 1320.2581405639648
+       },
+       {
+        "at_ms": 7398.7,
+        "rasa_processing_latency_ms": 1431.0030937194824,
+        "tts_first_byte_latency_ms": 134.54794883728027,
+        "tts_complete_latency_ms": 4097.1839427948
+       }
+      ],
+      "bot_audio_s": 18.54,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "No. The truck isn't at home. It's on route twelve northbound, just past exit fourteen."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2005.1601249724627,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1423.8878749893047,
+         "llm_total_generation_ms": 1867.5747090019286,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, that's right.",
+     "latency_ms": 1718.8,
+     "bot": [
+      "Your roadside reference is nine nine nine, two two one. Ridgeline Towing has accepted the job. They estimate 25 minutes to reach you.",
+      "Is there anything else I can help you with?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.52,
+      "speech_off_epoch": 1790782945.611131,
+      "eos_to_first_marker_ms": 1480.5,
+      "eos_to_first_audio_ms": 1619.4,
+      "eos_to_first_audible_ms": 1718.8,
+      "end_markers": [
+       {
+        "at_ms": 3909.5,
+        "rasa_processing_latency_ms": 1155.8828353881836,
+        "tts_first_byte_latency_ms": 138.98491859436035,
+        "tts_complete_latency_ms": 2429.112195968628
+       },
+       {
+        "at_ms": 9580.1,
+        "rasa_processing_latency_ms": 1155.8828353881836,
+        "tts_first_byte_latency_ms": 144.99521255493164,
+        "tts_complete_latency_ms": 683.7830543518066
+       }
+      ],
+      "bot_audio_s": 10.16,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes. That's right."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1294.8428749805316,
+        "llm_generation_before_first_output_ms": 1144.9812080245465,
+        "first_agent_response": {
+         "generated_by_llm": false
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, please send them.",
+     "latency_ms": 4140.2,
+     "bot": [
+      "Ridgeline Towing has already accepted your tow, and they estimate 25 minutes to reach you. Is there something else you need me to send?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.96,
+      "speech_off_epoch": 1790782959.909125,
+      "eos_to_first_marker_ms": 3911.6,
+      "eos_to_first_audio_ms": 4140.2,
+      "eos_to_first_audible_ms": 4140.2,
+      "end_markers": [
+       {
+        "at_ms": 6167.8,
+        "rasa_processing_latency_ms": 3687.1337890625,
+        "tts_first_byte_latency_ms": 228.70206832885742,
+        "tts_complete_latency_ms": 2256.3021183013916
+       }
+      ],
+      "bot_audio_s": 7.28,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes. Please send them."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "*",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "location_ref": "HOME-BIRCH"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "*",
+      "result": {
+       "status": "succeeded",
+       "location_ref": "R12-N-EXIT14",
+       "provider": "Ridgeline Towing"
+      }
+     },
+     "passed": true,
+     "detail": "2 matching call(s), need >= 1"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "find_policy",
+     "arguments": {
+      "policy_number": "517306",
+      "last_name": "Whitfield"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "start_dispatch_draft",
+     "arguments": {
+      "vehicle_ref": "VEH-5173-1",
+      "service_needed": "tow",
+      "location": "Route 12 northbound, just past exit 14"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "request_dispatch",
+     "arguments": {
+      "draft_id": "HC-RD-477963"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "request_dispatch",
+     "arguments": {
+      "draft_id": "HC-RD-477963"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "listen",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me get your tow request started.",
+     "Okay, thanks James, I'll set up the tow from there."
+    ],
+    "on_the_way_claim": [],
+    "time_mention": [
+     "Your roadside reference is nine nine nine, two two one. Ridgeline Towing has accepted the job. They estimate 25 minutes to reach you.",
+     "Ridgeline Towing has already accepted your tow, and they estimate 25 minutes to reach you. Is there something else you need me to send?"
+    ],
+    "dispatches": {
+     "attempts": 1,
+     "total": 1
+    },
+    "dispatched_to_unconfirmed_location": {
+     "attempts": 1,
+     "total": 0
+    },
+    "next_provider_to_unconfirmed_location": {
+     "attempts": 0,
+     "total": 0
+    },
+    "blocked_dispatch_attempts": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.turn.failed": 0,
+    "deepgram.stream_audio.error": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "deepgram_flux.stream_audio.error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "voice_channel.audio_missing": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "harborcover.turn_order_fix": 0,
+    "deepgram.connection.failed": 0
+   },
+   "log_event_details": {
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.tool_confirmation.declined": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.turn.failed": [],
+    "deepgram.stream_audio.error": [],
+    "voice_channel.streaming_task_failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZsx6TWXzkEK1pqazTBn\"}\n",
+      "conversation_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfZsyWBJpyv6JysgZS9Hb\"}\n",
+      "conversation_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "deepgram_flux.stream_audio.error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "voice_channel.audio_missing": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "request_dispatch",
+      "conversation_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121"
+     }
+    ],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "harborcover.turn_order_fix": [],
+    "deepgram.connection.failed": []
+   },
+   "usage": {
+    "llm_calls": 14,
+    "main_loop_calls": 11,
+    "side_channel_calls": 3,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 52843,
+    "completion_tokens": 1829,
+    "reasoning_tokens": 860,
+    "cached_prompt_tokens": 8650,
+    "cache_creation_input_tokens": 31200,
+    "cost_usd": 0.124006,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1643.3,
+     1212.7,
+     1825.3,
+     4167.7,
+     1867.7,
+     1048.5,
+     1143.9,
+     3780.5,
+     1210.3,
+     320.2,
+     3825.7,
+     1090.7,
+     1170.3,
+     301.1
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 83.1,
+    "tts_characters": 760,
+    "call": {
+     "audio_seconds_sent": 83.1,
+     "call_seconds": 83.1,
+     "markers_acked": 62,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.6,
+     "session_end_turn_s": 3.08
+    },
+    "stt_usd": 0.009003,
+    "tts_usd": 0.0228,
+    "cost_usd": 0.031803,
+    "asr": [
+     {
+      "intended": "My pickup died on my way home and needs a tow. Policy five one seven, three zero six, Whitfield. Just send the truck to the address on my policy, you've got it.",
+      "heard": [
+       "My pickup died on my way home and needs a tow. Policy five one seven three zero six Whitfield. Just send the truck to the address on my policy. You've got it."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "517306",
+        "kind": "policy_number",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "Whitfield",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "No, the truck isn't at home. It's on Route 12 northbound, just past exit fourteen.",
+      "heard": [
+       "No. The truck isn't at home. It's on route twelve northbound, just past exit fourteen."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "14",
+        "kind": "exit",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes, that's right.",
+      "heard": [
+       "Yes. That's right."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Yes, please send them.",
+      "heard": [
+       "Yes. Please send them."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-roadside-claude-voice-adversarial-use-policy-address-20260930T154121",
+    "prompt": 52843,
+    "completion": 1829,
+    "total": 54672,
+    "generations": 12,
+    "fetched_at": "2026-09-30T15:42:57.461085+00:00"
+   }
+  }
+ ]
+}

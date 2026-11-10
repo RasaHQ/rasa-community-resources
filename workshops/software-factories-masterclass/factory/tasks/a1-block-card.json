@@ -1,0 +1,20 @@
+{
+  "id": "A1-block-card",
+  "request": "Add a skill `block_card` (skills/block_card/skill.md and skills/block_card/tools.py) with two tools. `list_cards` returns the caller's cards. `block_card` takes one `card_id` and blocks exactly that card. Blocking is irreversible for the caller, so the skill's frontmatter must make the engine wait for the caller's confirmation before `block_card` runs, using a confirmation prompt defined in responses.yml; reading the list needs no confirmation. The instructions tell the agent to call `list_cards` first and never to block a card the caller has not confirmed. Tests the builder writes go under tests/.",
+  "allowed_paths": [
+    "product/skills/",
+    "product/tests/",
+    "product/responses.yml"
+  ],
+  "acceptance": {
+    "path": "acceptance/a1_block_card.py",
+    "sha256": "957215ebfa339976862a6ae9e08f581212a267ebc0d0966b1320902a9557df5a"
+  },
+  "support": [
+    {
+      "path": "accept_lib.py",
+      "sha256": "bb7f82644bce044f15338ab076fbaeb727d9a071fe028180e5bbb1227985fcfd"
+    }
+  ],
+  "excluded": "Changing integrations.yml, any acceptance suite, or accept_lib.py. Those are separate tasks with a separate owner."
+}

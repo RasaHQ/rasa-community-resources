@@ -1,0 +1,28 @@
+# Written only by start_move_draft and update_move_draft (never
+# llm_settable), so the move the engine asks the customer to confirm is
+# always the draft the tools hold. One short field per value: Mantle cuts a
+# memory value at 100 characters in the prompt, silently; tests/test_guard.py
+# builds every draft the fixture allows and checks each value.
+# move_draft_tag: the draft's id and version, read in the question; submit checks it.
+# move_order_note: "a new move order" or "a change to move order AG-MOV-...".
+# move_from: the service being left, with its supply.
+# move_to: the resolved new address.
+# move_out_on / move_in_on: the two days, written out ("Saturday 24 October 2026").
+# move_ready: "yes" when both premises and both days are resolved; the engine
+#   offers submit_move_order only then (`requires` in skill.md).
+schema:
+  public:
+    move_draft_tag:
+      type: text
+    move_order_note:
+      type: text
+    move_from:
+      type: text
+    move_to:
+      type: text
+    move_out_on:
+      type: text
+    move_in_on:
+      type: text
+    move_ready:
+      type: text

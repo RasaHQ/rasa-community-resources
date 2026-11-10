@@ -1,0 +1,16 @@
+[project]
+name = "jacaranda-jev-conversation"
+version = "0.1.0"
+description = "A public Mantle tool using a bounded Jev account selector"
+requires-python = ">=3.12,<3.13"
+dependencies = ["rasa-pro==3.21.0.dev5", "jacaranda-jev-worker"]
+
+[tool.rasa-catalog]
+required-secrets = ["OPENAI_API_KEY"]
+
+[tool.uv]
+package = false
+prerelease = "allow"
+
+[tool.uv.sources]
+jacaranda-jev-worker = { path = "../worker", editable = true }

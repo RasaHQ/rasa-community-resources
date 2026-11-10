@@ -1,0 +1,73 @@
+# External integrations for the HarborCover roadside assistance voice agent.
+#
+# The orchestrator LLM is a model-group reference, configured as in the
+# Orchard Works step-up build (examples/mantle-voice-step-up-authentication-claude).
+# Rasa sends Claude Sonnet 5.5 through LiteLLM's Anthropic provider
+# (DefaultLiteLLMClient; Rasa has no dedicated Anthropic client). No reasoning
+# or thinking setting is given: Rasa sets a default reasoning_effort only for
+# OpenAI-family models and skips Claude on anthropic and bedrock
+# (rasa/shared/utils/llm.py, _is_claude_model_on_anthropic_or_bedrock), so the
+# model runs at its own API defaults.
+#
+# Rasa sends Claude no prompt-caching markers. cache_control_injection_points
+# is a LiteLLM key; Rasa passes unknown model keys through to
+# litellm.acompletion, so this puts a cache breakpoint on the system message
+# (as in the HarborCover claim-intake build, mantle-text-insurance-file-claim-claude).
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: anthropic
+        model: claude-sonnet-5-5
+        api_key: ${ANTHROPIC_API_KEY}
+        cache_control_injection_points:
+          - location: message
+            role: system
+
+# Mantle reads channels from here, never from credentials.yml.
+# `browser_audio` is the raw WebSocket voice channel a browser (or the case-build
+# harness) streams to at /webhooks/browser_audio/websocket. `inspector` serves
+# `rasa inspect` with the same speech stack.
+channels:
+  browser_audio:
+    server_url: localhost
+    # 16 kHz 16-bit PCM both ways; Deepgram Flux and Aura both accept it, and
+    # the caller fixtures are recorded at this rate.
+    sample_rate: 16000
+    # The harness names each call, so the tracker, usage and logs join on one id.
+    # Trusted local transports only: any client can pick any conversation id.
+    external_sender_id_header: X-Rasa-Sender-Id
+    silence_timeout: 30
+    interruptions:
+      enabled: false
+    # Deepgram Flux, a Rasa built-in, with the settings of the Northgate
+    # block-card and Orchard Works step-up builds.
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+      eot_threshold: 0.7
+      eot_timeout_ms: 5000
+    # Deepgram Aura-2, a Rasa built-in, with the US English voice of those builds.
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en
+  inspector:
+    enabled: true
+    interruptions:
+      enabled: false
+    asr:
+      name: deepgram
+      language_map:
+        en:
+          model: flux-general-en
+    tts:
+      name: deepgram
+      language_map:
+        en:
+          model: aura-2-andromeda-en

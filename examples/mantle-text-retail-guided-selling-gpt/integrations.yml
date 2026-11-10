@@ -1,0 +1,36 @@
+# External integrations for the Willow Shop guided-selling agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa's OpenAI client sends
+# gpt-5.5-2026-04-23 through LiteLLM. reasoning_effort is set to low rather
+# than Rasa's default for this model (none): in the Northgate block-card
+# build (examples/mantle-voice-banking-block-card-gpt), at none GPT-5.5
+# sometimes wrote its tool calls out as text or announced an action and ended
+# the turn without taking it (4 times in 24 calls), and at low it did neither,
+# for about 0.1 s more at the median. In web chat that text would reach the
+# shopper as a reply. The `reasoning-default` variant in
+# case-build/conversations.json removes this line.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true

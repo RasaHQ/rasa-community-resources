@@ -1,0 +1,48 @@
+{
+  "organisation": "Northgate Bank (fictional)",
+  "note": "Fictional teaching data. Northgate Bank, its branches, teams, customer and every slot are invented for the banking-advisor-appointment case build.",
+  "as_of": "2026-10-05T09:00:00+01:00",
+  "timezone": "Europe/London (BST)",
+  "session_customer_id": "NGB-CUST-4417",
+  "customers": {
+    "NGB-CUST-4417": {"first_name": "Eleanor", "last_name": "Hartwell"}
+  },
+  "purposes": {
+    "mortgage": "mortgage advice",
+    "investments": "savings, ISA, investment and pension advice",
+    "business_banking": "business banking",
+    "everyday_banking": "everyday banking"
+  },
+  "branches": {
+    "kingsmere": {"name": "Kingsmere", "step_free": true},
+    "farrowdale": {"name": "Farrowdale", "step_free": false, "access_note": "three steps at the entrance and no ramp"},
+    "ashcombe": {"name": "Ashcombe", "step_free": true}
+  },
+  "teams": {
+    "kingsmere-branch": {"label": "the Kingsmere branch team", "capabilities": ["everyday_banking"], "branch": "kingsmere"},
+    "farrowdale-branch": {"label": "the Farrowdale branch team", "capabilities": ["everyday_banking"], "branch": "farrowdale"},
+    "ashcombe-branch": {"label": "the Ashcombe branch team", "capabilities": ["everyday_banking"], "branch": "ashcombe"},
+    "farrowdale-mortgage": {"label": "a mortgage advisor at the Farrowdale branch", "capabilities": ["mortgage"], "branch": "farrowdale"},
+    "ashcombe-mortgage": {"label": "a mortgage advisor at the Ashcombe branch", "capabilities": ["mortgage"], "branch": "ashcombe"},
+    "ashcombe-investments": {"label": "an investment specialist at the Ashcombe branch", "capabilities": ["investments"], "branch": "ashcombe"},
+    "mortgage-team": {"label": "the Northgate mortgage team", "capabilities": ["mortgage"], "branch": null},
+    "investment-specialists": {"label": "the Northgate investment specialists", "capabilities": ["investments"], "branch": null},
+    "business-team": {"label": "the Northgate business banking team", "capabilities": ["business_banking"], "branch": null}
+  },
+  "slots": {
+    "SLT-KGM-0610": {"team": "kingsmere-branch", "channel": "branch", "starts_at": "2026-10-06T10:00:00+01:00"},
+    "SLT-KGM-0714": {"team": "kingsmere-branch", "channel": "branch", "starts_at": "2026-10-07T14:30:00+01:00", "hold": "taken"},
+    "SLT-FRD-0611": {"team": "farrowdale-branch", "channel": "branch", "starts_at": "2026-10-06T11:15:00+01:00"},
+    "SLT-ASH-0809": {"team": "ashcombe-branch", "channel": "branch", "starts_at": "2026-10-08T09:15:00+01:00"},
+    "SLT-FRD-M0814": {"team": "farrowdale-mortgage", "channel": "branch", "starts_at": "2026-10-08T14:30:00+01:00"},
+    "SLT-ASH-M0910": {"team": "ashcombe-mortgage", "channel": "branch", "starts_at": "2026-10-09T10:00:00+01:00"},
+    "SLT-MTG-V0709": {"team": "mortgage-team", "channel": "video", "starts_at": "2026-10-07T09:30:00+01:00"},
+    "SLT-MTG-P0814": {"team": "mortgage-team", "channel": "phone", "starts_at": "2026-10-08T14:30:00+01:00"},
+    "SLT-MTG-P0915": {"team": "mortgage-team", "channel": "phone", "starts_at": "2026-10-09T15:00:00+01:00"},
+    "SLT-ASH-I0715": {"team": "ashcombe-investments", "channel": "branch", "starts_at": "2026-10-07T15:00:00+01:00"},
+    "SLT-INV-V0811": {"team": "investment-specialists", "channel": "video", "starts_at": "2026-10-08T11:00:00+01:00"},
+    "SLT-INV-V0913": {"team": "investment-specialists", "channel": "video", "starts_at": "2026-10-09T13:45:00+01:00", "hold": "lapses_once"},
+    "SLT-BUS-P0612": {"team": "business-team", "channel": "phone", "starts_at": "2026-10-06T12:00:00+01:00"},
+    "SLT-BUS-P1209": {"team": "business-team", "channel": "phone", "starts_at": "2026-10-12T09:00:00+01:00"}
+  }
+}

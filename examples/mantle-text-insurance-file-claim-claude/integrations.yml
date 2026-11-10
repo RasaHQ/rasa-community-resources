@@ -1,0 +1,53 @@
+# External integrations for the HarborCover claim-intake agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa sends Claude Sonnet 5.5
+# through LiteLLM's Anthropic provider (DefaultLiteLLMClient; Rasa has no
+# dedicated Anthropic client). No reasoning or thinking setting is given:
+# Rasa sets a default reasoning_effort only for OpenAI-family models and
+# skips Claude on anthropic and bedrock (rasa/shared/utils/llm.py,
+# _is_claude_model_on_anthropic_or_bedrock), so the model runs at its own API
+# defaults.
+#
+# Rasa sends Claude no prompt-caching markers. cache_control_injection_points
+# is a LiteLLM key; Rasa passes unknown model keys through to
+# litellm.acompletion, so this puts a cache breakpoint on the system message
+# (found in the Northgate loan and Willow Shop returns builds).
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: anthropic
+        model: claude-sonnet-5-5
+        api_key: ${ANTHROPIC_API_KEY}
+        cache_control_injection_points:
+          - location: message
+            role: system
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+#
+# Target channel: Microsoft Teams, through an Azure Bot on Rasa's
+# `botframework` channel (/webhooks/botframework/webhook). It is not enabled
+# because the build has no Teams bot registration yet. With one, add:
+#
+#   botframework:
+#     app_id: ${MICROSOFT_APP_ID}
+#     app_password: ${MICROSOFT_APP_PASSWORD}
+#
+# That channel puts a Teams message's file attachments in the user message's
+# metadata under "attachments"; lib/claims.py reads them from there as well as
+# from the "[attached: ...]" markers the web-chat scripts use.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true

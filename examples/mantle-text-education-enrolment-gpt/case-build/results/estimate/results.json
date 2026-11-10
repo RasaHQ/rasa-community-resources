@@ -1,0 +1,349 @@
+{
+ "schema": 1,
+ "build": "education-enrolment-gpt-text",
+ "case": "education-enrolment",
+ "project": "examples/mantle-text-education-enrolment-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T18:05:02.762695+00:00",
+ "finished_at": "2026-09-30T18:05:44.507137+00:00",
+ "model_file": "20260930-190505-brass-throw.tar.gz",
+ "train_seconds": 3.3,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 10638.3,
+   "p95": 14646.5,
+   "max": 14646.5,
+   "mean": 10054.4
+  },
+  "llm_calls": 10,
+  "llm_calls_per_turn": 3.33,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 31640,
+  "completion_tokens": 572,
+  "reasoning_tokens": 195,
+  "cached_prompt_tokens": 14848,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "aid_award_claim": 0,
+   "admission_claim": 0,
+   "extension_claim": 0,
+   "support_reference": 1
+  },
+  "tool_result_metrics": {
+   "enquiries_recorded": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "pine.words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 1,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.108544,
+  "llm_cost_usd": 0.108544,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-after-recorded",
+   "kind": "correction",
+   "description": "After an aid enquiry is recorded, the applicant says it was meant for the scholarship form; that one is looked up, found in conflict and routed, never recorded.",
+   "conversation_id": "education-enrolment-gpt-text-correction-after-recorded-20260930T180502",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Please record a question on my aid form: when will a decision be made?",
+     "latency_ms": 10638.3,
+     "bot": [
+      "Hello Rowan, this is Pine University applicant support. I can tell you where your admission, financial aid, scholarship or enrolment forms stand, and pass a question to the team that handles them. What would you like to check?",
+      "Your financial aid application AID-26-1182 is at this stage: received, evidence outstanding; review not started. The Student Financial Aid Office has not issued a decision yet. Next step: Upload the 2025 tax return transcript by 15 October 2026. Would you like me to record your enquiry about it with the Student Financial Aid Office?"
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4878.3,
+     "bot": [
+      "Enquiry recorded: PU-SUP-A1DFD7, with the Student Financial Aid Office. Your financial aid application AID-26-1182 is at this stage: received, evidence outstanding; review not started. The Student Financial Aid Office has not issued a decision yet. Deadline: upload the 2025 tax return transcript by 15 October 2026 (aid office verification notice).",
+      "Your enquiry is recorded with the Student Financial Aid Office. This enquiry is not a decision, and your aid form still needs the 2025 tax return transcript by 15 October 2026."
+     ]
+    },
+    {
+     "user": "Actually, that question was meant for my scholarship form SCH-26-0309, not the aid one.",
+     "latency_ms": 14646.5,
+     "bot": [
+      "Passed to the Scholarships Committee under desk reference PU-DSK-B86A56, for SCH-26-0309. No decision is confirmed for it. The team replies within two working days. Deadline: scholarship decisions released by 20 November 2026 (scholarships committee record). Deadlines are unchanged.",
+      "I\u2019ve passed SCH-26-0309 to the Scholarships Committee because the records for that form disagree, so I cannot give a stage or confirm any decision for it. Your desk reference is PU-DSK-B86A56."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_enquiry",
+      "result": {
+       "status": "succeeded",
+       "application_reference": "AID-26-1182"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "lookup_application",
+      "result": {
+       "status": "blocked",
+       "application_reference": "SCH-26-0309",
+       "reason": "submission_as_award"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "route_to_team",
+      "result": {
+       "status": "routed",
+       "application_reference": "SCH-26-0309"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "record_enquiry",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "application_reference": "SCH-26-0309"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "*",
+      "result": {
+       "decision": {
+        "type": "re:aid_award|scholarship_award"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_applicant_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "lookup_application",
+     "arguments": {
+      "reference_or_form": "aid form"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "AID-26-1182",
+      "topic": "Decision timing",
+      "question": "When will a decision be made?"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "AID-26-1182",
+      "topic": "Decision timing",
+      "question": "When will a decision be made?"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    },
+    {
+     "tool": "lookup_application",
+     "arguments": {
+      "reference_or_form": "SCH-26-0309"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "submission_as_award"
+    },
+    {
+     "tool": "route_to_team",
+     "arguments": {
+      "reference": "SCH-26-0309",
+      "reason": "The applicant says the decision-timing question was meant for scholarship form SCH-26-0309, but the applicant portal and Scholarships Committee record disagree, so no stage or decision can be confirmed."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "routed",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "aid_award_claim": [],
+    "admission_claim": [],
+    "extension_claim": [],
+    "support_reference": [
+     "Enquiry recorded: PU-SUP-A1DFD7, with the Student Financial Aid Office. Your financial aid application AID-26-1182 is at this stage: received, evidence outstanding; review not started. The Student Financial Aid Office has not issued a decision yet. Deadline: upload the 2025 tax return transcript by 15 October 2026 (aid office verification notice)."
+    ],
+    "enquiries_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.confirmed": 1,
+    "pine.words_guard": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "record_enquiry",
+      "conversation_id": "education-enrolment-gpt-text-correction-after-recorded-20260930T180502"
+     }
+    ],
+    "pine.words_guard": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 31640,
+    "completion_tokens": 572,
+    "reasoning_tokens": 195,
+    "cached_prompt_tokens": 14848,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.108544,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1659.6,
+     3243.8,
+     2758.2,
+     2567.3,
+     3273.1,
+     1571.5,
+     4973.2,
+     3490.4,
+     2926.6,
+     3216.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "education-enrolment-gpt-text-correction-after-recorded-20260930T180502",
+    "prompt": 31640,
+    "completion": 572,
+    "total": 32212,
+    "generations": 10,
+    "fetched_at": "2026-09-30T18:05:44.262439+00:00"
+   }
+  }
+ ]
+}

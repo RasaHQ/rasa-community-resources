@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "checked_at": "2026-10-11T19:05:28.912397+00:00",
+  "versions": {
+    "livekit-agents": "1.8.6",
+    "aiohttp": "3.13.3",
+    "python": "3.12.13"
+  },
+  "primary_wheel_sha256": "9adbed837314efeb39850d1bc3fb345fa480eec0efe32971bffc6f6bff1c197a",
+  "source_sha256": {
+    "tutorials/frameworks-with-rasa/livekit/.gitignore": "c11eebe536a0d75b1b82d262cf37f4d9c6693fb4ab18479b7b7d30bdad84fe6d",
+    "tutorials/frameworks-with-rasa/livekit/Makefile": "17753b0dd12de8d902b12bc49c0dc4300556176fc94d0305a51837b2148f7f74",
+    "tutorials/frameworks-with-rasa/livekit/README.md": "56f764e6eaf257e185fca493ec52dab1f3a1e7ea1dd515fd2256aad54cebeadf",
+    "tutorials/frameworks-with-rasa/livekit/demo_late_text.py": "991877d8bf8374bf9b3a23640b01bcf5367a75ffd7f2a1a5048b5cea51638565",
+    "tutorials/frameworks-with-rasa/livekit/demo_room_scope.py": "f357fab0a1456660ce25443c3d881c5b138ef37a4f8db32b207f1f75f0e9852e",
+    "tutorials/frameworks-with-rasa/livekit/pyproject.toml": "a60db42c8457f9296e50cab6357844cfebdbd62619cb478072689bb2aeb02369",
+    "tutorials/frameworks-with-rasa/livekit/rasa_room/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tutorials/frameworks-with-rasa/livekit/rasa_room/binding.py": "a9e382cff7c7772ec74c637301fd86cbfce71510fbadf72afbb4bc348691521d",
+    "tutorials/frameworks-with-rasa/livekit/rasa_room/client.py": "7b99b57d63461653e19c47c491ae12c07cae9727eef7542cd89bfb8cb46fefe9",
+    "tutorials/frameworks-with-rasa/livekit/rasa_room/compose.py": "403eca73cc3a60073ab8fd1c7d465623975ce9a9cbd0fafad24595d88e882f63",
+    "tutorials/frameworks-with-rasa/livekit/rasa_room/model.py": "1b7873cdd183a9605e56dec5aff1aff99a9841517c2f43e73f8b915efce79788",
+    "tutorials/frameworks-with-rasa/livekit/rasa_room/native_fixture.py": "df062c037117c03e633983ac8ce4d63a014d0a665c72de2c1b93be245cb34dd2",
+    "tutorials/frameworks-with-rasa/livekit/rasa_room/room_fixture.py": "39e7676726ec9b5c11af6db5ace126e125cdcc7fa337ab876ec304396facfa30",
+    "tutorials/frameworks-with-rasa/livekit/rasa_room/text_input.py": "749b71409bc9fa9608aa8fd9854f63da39ad94db31f2612f0c155071403b6639",
+    "tutorials/frameworks-with-rasa/livekit/run_text_demo.py": "39224776394b46c430e98e87fb498247f21da5bd43dffd938d3e55f9789b4219",
+    "tutorials/frameworks-with-rasa/livekit/tests/test_native_room_input.py": "f65c808e57f76e76f3db270749c3c2411c449619e0a02ee06ffef3bfb6802630",
+    "tutorials/frameworks-with-rasa/livekit/tests/test_native_stream.py": "9e4ff8ffd3751fe2d17a02079a3b47045969931320ad147d835c458a9dbad0a8",
+    "tutorials/frameworks-with-rasa/livekit/tests/test_rest_client.py": "a6412d20b369f2c3c1ea7f3ecfdb097a30fd6474dd766d95a10b847f42b3c840",
+    "tutorials/frameworks-with-rasa/livekit/uv.lock": "5968ee1b1919d6a1a852afd92ece077ebe7a5d290c2a61cfc0bb6fd5a8ccceac"
+  },
+  "qualification_logs_sha256": {
+    "cedar-livekit-lock-20261011.log": "e413762d5f025529232743e3564e31cff821895b661e72836222e4e831295e87",
+    "cedar-livekit-selected-start-20261011.log": "ccd280bcc629809acb774c0bbbdb3f20a949a6a31b4e89d35dcca5c3d049923f",
+    "cedar-livekit-native-v1-20261011.log": "656c7dd660f83d0ba7d8e74e01a07d4c8aad8670099983bac2bcf4768b9ccd87",
+    "cedar-livekit-native-final-20261011.log": "c5abf4c73235f66199a295446eee4b3afccd8a684664015146e83568075aa9e5",
+    "cedar-livekit-tool-ending-regression-20261011.log": "ca9722aa5ac54d75d5cf98bf9bcd5c047b3b973d6755ee651a4b0d78cf763985",
+    "cedar-livekit-context-regression-final-20261011.log": "b39cd0c26a55df69db0057bee23adb238448121cdd3acda25acbc5540767b5bf"
+  },
+  "native_controls": {
+    "ran": 21,
+    "passed": 21,
+    "skipped": 0
+  },
+  "observations": {
+    "delayed_native_reader_without_completion_guard": "old text delivered after native disconnect/link",
+    "delayed_native_reader_with_completion_guard": "old text discarded",
+    "reconnect_same_identity_with_completion_guard": "old connection text discarded",
+    "positive_current_connection": "text delivered",
+    "two_native_streams_with_room_participant_sender": "distinct synthetic server-state histories",
+    "omit_room_from_sender": "same native reply shape, previous room history reused",
+    "failed_actual_http_request": "one request; generic nonretryable native APIError"
+  },
+  "preserved_failure": {
+    "log": "cedar-livekit-tool-ending-regression-20261011.log",
+    "assertion": "APIError not raised",
+    "cause": "Filtering context to ChatMessage replayed an earlier question after a native tool result",
+    "fix": "Require final native context item itself to be a plain-text user message; retain original negative assertion"
+  },
+  "existing_rasa_project": {
+    "path": "tutorials/frameworks-with-rasa/pipecat-mantle",
+    "companion_revision": "3490d286084e356cb52dd9b040e0f9d4a6d2890d",
+    "version": "3.21.0.dev5",
+    "verification": "tutorials/frameworks-with-rasa/pipecat-verification.json",
+    "copied_application_or_environment": false
+  },
+  "native_provider_requests": 0,
+  "model_conversations": 0,
+  "limits": [
+    "Scripted native streams and synthetic server-state/participant/reader/session-output boundaries",
+    "Native AgentSession construction retains stand-in speech service objects; combined session is not started in controls",
+    "Actual loopback HTTP; no connected WebRTC service or acoustic acceptance",
+    "Buffered complete-message REST response; no token usage invented",
+    "Native RoomIO close-on-disconnect disabled only for delayed-reader control; production recipe retains default close policy",
+    "Local stream cancellation does not establish remote work rollback"
+  ],
+  "documentation_followups": [
+    {
+      "checked_at": "2026-10-11T19:29:29.502181+00:00",
+      "starting_commit": "cc766d95f9cf72fd53b1b601271758fcad4bbde9",
+      "change": "Replace seat/model assessor wording with the actual named qualification checks. Original execution dates and results remain unchanged.",
+      "files": {
+        "tutorials/frameworks-with-rasa/livekit/README.md": {
+          "before": "531c28e8c7d67043c135a45ee04cee2fb3b82ce346bf8a91dc965951842e8d08",
+          "after": "56f764e6eaf257e185fca493ec52dab1f3a1e7ea1dd515fd2256aad54cebeadf"
+        }
+      },
+      "unchanged_source_sha256_pairs": {
+        "tutorials/frameworks-with-rasa/livekit/.gitignore": {
+          "before": "c11eebe536a0d75b1b82d262cf37f4d9c6693fb4ab18479b7b7d30bdad84fe6d",
+          "after": "c11eebe536a0d75b1b82d262cf37f4d9c6693fb4ab18479b7b7d30bdad84fe6d"
+        },
+        "tutorials/frameworks-with-rasa/livekit/Makefile": {
+          "before": "17753b0dd12de8d902b12bc49c0dc4300556176fc94d0305a51837b2148f7f74",
+          "after": "17753b0dd12de8d902b12bc49c0dc4300556176fc94d0305a51837b2148f7f74"
+        },
+        "tutorials/frameworks-with-rasa/livekit/demo_late_text.py": {
+          "before": "991877d8bf8374bf9b3a23640b01bcf5367a75ffd7f2a1a5048b5cea51638565",
+          "after": "991877d8bf8374bf9b3a23640b01bcf5367a75ffd7f2a1a5048b5cea51638565"
+        },
+        "tutorials/frameworks-with-rasa/livekit/demo_room_scope.py": {
+          "before": "f357fab0a1456660ce25443c3d881c5b138ef37a4f8db32b207f1f75f0e9852e",
+          "after": "f357fab0a1456660ce25443c3d881c5b138ef37a4f8db32b207f1f75f0e9852e"
+        },
+        "tutorials/frameworks-with-rasa/livekit/pyproject.toml": {
+          "before": "a60db42c8457f9296e50cab6357844cfebdbd62619cb478072689bb2aeb02369",
+          "after": "a60db42c8457f9296e50cab6357844cfebdbd62619cb478072689bb2aeb02369"
+        },
+        "tutorials/frameworks-with-rasa/livekit/rasa_room/__init__.py": {
+          "before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "tutorials/frameworks-with-rasa/livekit/rasa_room/binding.py": {
+          "before": "a9e382cff7c7772ec74c637301fd86cbfce71510fbadf72afbb4bc348691521d",
+          "after": "a9e382cff7c7772ec74c637301fd86cbfce71510fbadf72afbb4bc348691521d"
+        },
+        "tutorials/frameworks-with-rasa/livekit/rasa_room/client.py": {
+          "before": "7b99b57d63461653e19c47c491ae12c07cae9727eef7542cd89bfb8cb46fefe9",
+          "after": "7b99b57d63461653e19c47c491ae12c07cae9727eef7542cd89bfb8cb46fefe9"
+        },
+        "tutorials/frameworks-with-rasa/livekit/rasa_room/compose.py": {
+          "before": "403eca73cc3a60073ab8fd1c7d465623975ce9a9cbd0fafad24595d88e882f63",
+          "after": "403eca73cc3a60073ab8fd1c7d465623975ce9a9cbd0fafad24595d88e882f63"
+        },
+        "tutorials/frameworks-with-rasa/livekit/rasa_room/model.py": {
+          "before": "1b7873cdd183a9605e56dec5aff1aff99a9841517c2f43e73f8b915efce79788",
+          "after": "1b7873cdd183a9605e56dec5aff1aff99a9841517c2f43e73f8b915efce79788"
+        },
+        "tutorials/frameworks-with-rasa/livekit/rasa_room/native_fixture.py": {
+          "before": "df062c037117c03e633983ac8ce4d63a014d0a665c72de2c1b93be245cb34dd2",
+          "after": "df062c037117c03e633983ac8ce4d63a014d0a665c72de2c1b93be245cb34dd2"
+        },
+        "tutorials/frameworks-with-rasa/livekit/rasa_room/room_fixture.py": {
+          "before": "39e7676726ec9b5c11af6db5ace126e125cdcc7fa337ab876ec304396facfa30",
+          "after": "39e7676726ec9b5c11af6db5ace126e125cdcc7fa337ab876ec304396facfa30"
+        },
+        "tutorials/frameworks-with-rasa/livekit/rasa_room/text_input.py": {
+          "before": "749b71409bc9fa9608aa8fd9854f63da39ad94db31f2612f0c155071403b6639",
+          "after": "749b71409bc9fa9608aa8fd9854f63da39ad94db31f2612f0c155071403b6639"
+        },
+        "tutorials/frameworks-with-rasa/livekit/run_text_demo.py": {
+          "before": "39224776394b46c430e98e87fb498247f21da5bd43dffd938d3e55f9789b4219",
+          "after": "39224776394b46c430e98e87fb498247f21da5bd43dffd938d3e55f9789b4219"
+        },
+        "tutorials/frameworks-with-rasa/livekit/tests/test_native_room_input.py": {
+          "before": "f65c808e57f76e76f3db270749c3c2411c449619e0a02ee06ffef3bfb6802630",
+          "after": "f65c808e57f76e76f3db270749c3c2411c449619e0a02ee06ffef3bfb6802630"
+        },
+        "tutorials/frameworks-with-rasa/livekit/tests/test_native_stream.py": {
+          "before": "9e4ff8ffd3751fe2d17a02079a3b47045969931320ad147d835c458a9dbad0a8",
+          "after": "9e4ff8ffd3751fe2d17a02079a3b47045969931320ad147d835c458a9dbad0a8"
+        },
+        "tutorials/frameworks-with-rasa/livekit/tests/test_rest_client.py": {
+          "before": "a6412d20b369f2c3c1ea7f3ecfdb097a30fd6474dd766d95a10b847f42b3c840",
+          "after": "a6412d20b369f2c3c1ea7f3ecfdb097a30fd6474dd766d95a10b847f42b3c840"
+        },
+        "tutorials/frameworks-with-rasa/livekit/uv.lock": {
+          "before": "5968ee1b1919d6a1a852afd92ece077ebe7a5d290c2a61cfc0bb6fd5a8ccceac",
+          "after": "5968ee1b1919d6a1a852afd92ece077ebe7a5d290c2a61cfc0bb6fd5a8ccceac"
+        }
+      },
+      "new_native_or_provider_runs": 0
+    }
+  ]
+}

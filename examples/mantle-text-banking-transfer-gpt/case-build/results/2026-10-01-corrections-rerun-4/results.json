@@ -1,0 +1,313 @@
+{
+ "schema": 1,
+ "build": "banking-transfer-gpt-text",
+ "case": "banking-transfer",
+ "project": "examples/mantle-text-banking-transfer-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-10-01T23:09:42.650012+00:00",
+ "finished_at": "2026-10-01T23:12:37.906654+00:00",
+ "model_file": "20261002-001058-zesty-history.tar.gz",
+ "train_seconds": 76.4,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 4573.3,
+   "p95": 16900.8,
+   "max": 16900.8,
+   "mean": 7621.4
+  },
+  "llm_calls": 10,
+  "llm_calls_per_turn": 2.5,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 30470,
+  "completion_tokens": 522,
+  "reasoning_tokens": 128,
+  "cached_prompt_tokens": 8192,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "posted_claim": 0
+  },
+  "tool_result_metrics": {
+   "transfer_effects": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "northgate.posted_claim_guard": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.131146,
+  "llm_cost_usd": 0.131146,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 2.405568,
+  "budget_usd": 2.8
+ },
+ "conversations": [
+  {
+   "id": "correction-source-account",
+   "kind": "correction",
+   "description": "The caller changes the source account at confirmation; nothing leaves the bills account.",
+   "conversation_id": "banking-transfer-gpt-text-correction-source-account-20261001T230942",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Send $100 to Sam Okoro from my bills checking.",
+     "latency_ms": 16900.8,
+     "bot": [
+      "Hello Elena, this is Northgate Bank transfers. I can move money between your accounts or to a saved payee, check a transfer's status, or tell you a balance. What would you like to do?",
+      "Transfer $100.00 from your Bills Checking (account ending 3302) to Sam Okoro, saved payee at Crestline Bank, account ending 17? I will confirm the result from the ledger."
+     ]
+    },
+    {
+     "user": "No, sorry, from my everyday checking, not bills.",
+     "latency_ms": 2307.8,
+     "bot": [
+      "Okay, I have not submitted that transfer."
+     ]
+    },
+    {
+     "user": "Yes, from everyday checking.",
+     "latency_ms": 6703.6,
+     "bot": [
+      "Transfer $100.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17? I will confirm the result from the ledger."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4573.3,
+     "bot": [
+      "Your transfer reference is NB-TRF-0378057A. The ledger status is pending: the money is reserved, and the payee\u2019s bank has not received it yet."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_transfer",
+      "result": {
+       "status": "submitted",
+       "from_account_ref": "NB-ACC-1002"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_transfer",
+      "result": {
+       "status": "submitted",
+       "payee_ref": "NB-PAY-2017",
+       "amount": "$100.00",
+       "from_account_ref": "NB-ACC-1001"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_payee",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_transfer",
+     "arguments": {
+      "from_account": "Bills Checking",
+      "payee_ref": "NB-PAY-2017",
+      "amount": "100"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "draft_id": "NB-DRF-92AE3985"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "draft_id": "NB-DRF-92AE3985"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_transfer",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2017",
+      "amount": "100"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "draft_id": "NB-DRF-1BD99D9C"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_transfer",
+     "arguments": {
+      "draft_id": "NB-DRF-1BD99D9C"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "submitted",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "posted_claim": [],
+    "transfer_effects": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 0,
+    "northgate.posted_claim_guard": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [],
+    "northgate.posted_claim_guard": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 30470,
+    "completion_tokens": 522,
+    "reasoning_tokens": 128,
+    "cached_prompt_tokens": 8192,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.131146,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1489.7,
+     1599.9,
+     2596.2,
+     2688.7,
+     4774.5,
+     2242.4,
+     2731.1,
+     2441.4,
+     1450.4,
+     2587.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-transfer-gpt-text-correction-source-account-20261001T230942",
+    "prompt": 30470,
+    "completion": 522,
+    "total": 30992,
+    "generations": 10,
+    "fetched_at": "2026-10-01T23:12:36.881412+00:00"
+   }
+  }
+ ]
+}

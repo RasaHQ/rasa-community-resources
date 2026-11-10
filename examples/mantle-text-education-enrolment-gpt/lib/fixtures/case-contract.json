@@ -1,0 +1,178 @@
+{
+  "slug": "education-enrolment",
+  "title": "Enrolment support without aid guarantees",
+  "organisation": "Pine University",
+  "action": "record an enrolment or financial-aid enquiry",
+  "failure": "The assistant treated a submitted aid form as an award decision and told the applicant that funding was secured.",
+  "lesson": "Separate application receipt, eligibility review and formal offer; explain missing evidence without promising admission or aid.",
+  "receipt": "An application-stage response or support reference with the responsible decision team identified.",
+  "evidence": "Compare the record\u2019s stage and outstanding evidence with the wording; receipt of a form does not establish an award.",
+  "recovery": "When records conflict, route the case to the admissions or aid team and preserve deadlines from authoritative sources without inventing an extension.",
+  "owner": "student services owner",
+  "metric": "application receipts described as admission or aid awards, divided by application enquiries",
+  "question": "Your form is at this stage; the responsible team has not issued a decision yet. Would you like help with the listed next step?",
+  "correction": "The applicant supplies a different reference; resolve that record before giving any status or deadline.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "applicant_identity_resolved",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_applicant_record",
+      "phase": "request"
+    },
+    {
+      "field": "decision_stage_explicit",
+      "good": true,
+      "bad": false,
+      "reason": "submission_as_award",
+      "phase": "request"
+    },
+    {
+      "field": "followup_reference_recorded",
+      "good": true,
+      "bad": false,
+      "reason": "unrecorded_followup",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "applicant_identity_resolved": true,
+    "decision_stage_explicit": true,
+    "followup_reference_recorded": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "applicant_identity_resolved": true,
+        "decision_stage_explicit": true,
+        "followup_reference_recorded": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "applicant_identity_resolved-false",
+      "facts": {
+        "applicant_identity_resolved": false,
+        "decision_stage_explicit": true,
+        "followup_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_applicant_record",
+        "effects": 0
+      }
+    },
+    {
+      "name": "applicant_identity_resolved-missing",
+      "facts": {
+        "decision_stage_explicit": true,
+        "followup_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_applicant_record",
+        "effects": 0
+      }
+    },
+    {
+      "name": "applicant_identity_resolved-string",
+      "facts": {
+        "applicant_identity_resolved": "true",
+        "decision_stage_explicit": true,
+        "followup_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_applicant_record",
+        "effects": 0
+      }
+    },
+    {
+      "name": "decision_stage_explicit-false",
+      "facts": {
+        "applicant_identity_resolved": true,
+        "decision_stage_explicit": false,
+        "followup_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "submission_as_award",
+        "effects": 0
+      }
+    },
+    {
+      "name": "decision_stage_explicit-missing",
+      "facts": {
+        "applicant_identity_resolved": true,
+        "followup_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "submission_as_award",
+        "effects": 0
+      }
+    },
+    {
+      "name": "decision_stage_explicit-string",
+      "facts": {
+        "applicant_identity_resolved": true,
+        "decision_stage_explicit": "true",
+        "followup_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "submission_as_award",
+        "effects": 0
+      }
+    },
+    {
+      "name": "followup_reference_recorded-false",
+      "facts": {
+        "applicant_identity_resolved": true,
+        "decision_stage_explicit": true,
+        "followup_reference_recorded": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unrecorded_followup",
+        "effects": 1
+      }
+    },
+    {
+      "name": "followup_reference_recorded-missing",
+      "facts": {
+        "applicant_identity_resolved": true,
+        "decision_stage_explicit": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unrecorded_followup",
+        "effects": 1
+      }
+    },
+    {
+      "name": "followup_reference_recorded-string",
+      "facts": {
+        "applicant_identity_resolved": true,
+        "decision_stage_explicit": true,
+        "followup_reference_recorded": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "unrecorded_followup",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

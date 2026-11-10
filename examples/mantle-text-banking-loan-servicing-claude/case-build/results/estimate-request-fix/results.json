@@ -1,0 +1,332 @@
+{
+ "schema": 1,
+ "build": "banking-loan-servicing-claude-text",
+ "case": "banking-loan-servicing",
+ "project": "examples/mantle-text-banking-loan-servicing-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T04:32:13.158442+00:00",
+ "finished_at": "2026-09-30T04:32:38.837897+00:00",
+ "model_file": "20260930-053215-vicious-slur.tar.gz",
+ "train_seconds": 3.4,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 3519.7,
+   "p95": 8847.0,
+   "max": 8847.0,
+   "mean": 4517.4
+  },
+  "llm_calls": 9,
+  "llm_calls_per_turn": 3.0,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 1,
+  "failed_side_channel_calls": 1,
+  "prompt_tokens": 41037,
+  "completion_tokens": 720,
+  "reasoning_tokens": 151,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "closure_promise": 0,
+   "estimate_language": 0
+  },
+  "tool_result_metrics": {
+   "quotes_presented": {
+    "attempts": 2,
+    "total": 1
+   },
+   "instructions_sent": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "northgate.payoff_guard": 0,
+   "northgate.trailing_user_turn_fix": 1,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 1,
+   "mantle.processor.discover_facts.failed": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.089274,
+  "llm_cost_usd": 0.089274,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.15569,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "recovery-refresh-then-instructions",
+   "kind": "recovery",
+   "description": "After a refresh, instructions go out for the new quote, never the expired one.",
+   "conversation_id": "banking-loan-servicing-claude-text-recovery-refresh-then-instructions-20260930T043213",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Payoff on my car loan please.",
+     "latency_ms": 8847.0,
+     "bot": [
+      "Hello Marisol, this is Northgate Bank loan servicing. I can give you a dated payoff quote, send payoff instructions, or tell you a loan balance. What would you like to do?",
+      "The quote I had on file for your auto loan ending 4417 was from yesterday and had expired, so I couldn't use it. I requested a new one. Here it is:",
+      "Quote reference: PQ-4417-20A397\nPayoff amount: $14,252.82\nIncluded charges:\n- Principal balance: $14,212.55\n- Interest accrued Sep 29 through Oct 9, 2026: $25.27\n- Lien release fee: $15.00",
+      "Good through: Oct 9, 2026, 5:00 PM ET",
+      "This quote is valid until the stated time. Would you like the servicing instructions or support with another option?"
+     ]
+    },
+    {
+     "user": "Send me the payoff instructions.",
+     "latency_ms": 1185.6,
+     "bot": [
+      "Send payoff instructions for quote PQ-4417-20A397 ($14,252.82 for your Auto loan ending 4417, good through Oct 9, 2026, 5:00 PM ET) to your secure message inbox? This sends instructions only; it does not take a payment."
+     ]
+    },
+    {
+     "user": "Yes, send them.",
+     "latency_ms": 3519.7,
+     "bot": []
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "present_payoff_quote",
+      "result": {
+       "status": "presented",
+       "loan": "Auto loan ending 4417",
+       "quote_ref": "re:^PQ-4417-(?!0929$)"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_payoff_instructions",
+      "result": {
+       "status": "sent",
+       "quote_ref": "re:^PQ-4417-(?!0929$)"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "send_payoff_instructions",
+      "result": {
+       "status": "sent",
+       "quote_ref": "PQ-4417-0929"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "present_payoff_quote",
+     "arguments": {
+      "loan": "car loan"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "quote_expired"
+    },
+    {
+     "tool": "refresh_payoff_quote",
+     "arguments": {
+      "loan": "car loan"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "issued",
+     "result_reason": null
+    },
+    {
+     "tool": "present_payoff_quote",
+     "arguments": {
+      "loan": "car loan"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "presented",
+     "result_reason": "verified_fixture_receipt"
+    },
+    {
+     "tool": "send_payoff_instructions",
+     "arguments": {
+      "quote_ref": "PQ-4417-20A397"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "send_payoff_instructions",
+     "arguments": {
+      "quote_ref": "PQ-4417-20A397"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "sent",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "listen"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "closure_promise": [],
+    "estimate_language": [],
+    "quotes_presented": {
+     "attempts": 2,
+     "total": 1
+    },
+    "instructions_sent": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "northgate.trailing_user_turn_fix": 1,
+    "northgate.payoff_guard": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 1,
+    "mantle.processor.discover_facts.failed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "northgate.trailing_user_turn_fix": [
+     {
+      "sender_id": "banking-loan-servicing-claude-text-recovery-refresh-then-instructions-20260930T043213",
+      "iteration": 0,
+      "roles_tail": [
+       "user",
+       "assistant"
+      ],
+      "user_messages": 1,
+      "action": "appended_last_user",
+      "conversation_id": "banking-loan-servicing-claude-text-recovery-refresh-then-instructions-20260930T043213"
+     }
+    ],
+    "northgate.payoff_guard": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfYzrREWtQuH37ioEHYAf\"}\n",
+      "conversation_id": "banking-loan-servicing-claude-text-recovery-refresh-then-instructions-20260930T043213"
+     }
+    ],
+    "mantle.processor.discover_facts.failed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 8,
+    "side_channel_calls": 1,
+    "failed_calls": 1,
+    "failed_side_channel_calls": 1,
+    "prompt_tokens": 41037,
+    "completion_tokens": 720,
+    "reasoning_tokens": 151,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.089274,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1370.4,
+     1512.3,
+     1125.4,
+     1130.0,
+     3349.4,
+     277.8,
+     1171.8,
+     1172.4,
+     2326.7
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-loan-servicing-claude-text-recovery-refresh-then-instructions-20260930T043213",
+    "prompt": 41037,
+    "completion": 720,
+    "total": 41757,
+    "generations": 8,
+    "fetched_at": "2026-09-30T04:32:38.608278+00:00"
+   }
+  }
+ ]
+}

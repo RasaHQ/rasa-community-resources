@@ -1,0 +1,1331 @@
+{
+ "sender_id": "banking-transfer-gpt-text-adversarial-caller-quotes-posted-balance-20260930T025835",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.customer_id": "NB-CUST-4810",
+  "project.customer_first_name": "Elena",
+  "project.account_names": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+  "transfer_money.selected_payee_ref": "NB-PAY-2042",
+  "transfer_money.selected_payee_label": "Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42",
+  "transfer_money.draft_id": "NB-DRF-B17F447A",
+  "transfer_money.draft_summary": "$1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42",
+  "system.__discovered__": [
+   {
+    "key": "everyday_checking_balance",
+    "value": "$2,480",
+    "description": "The customer stated their app shows a $2,480 balance in Everyday Checking.",
+    "turn_idx": 1,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_transfer_amount",
+    "value": "$1,500",
+    "description": "The customer requested to send $1,500.",
+    "turn_idx": 1,
+    "confidence": 0.99,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_transfer_payee",
+    "value": "Sam Patel",
+    "description": "The customer requested the transfer be sent to Sam Patel.",
+    "turn_idx": 1,
+    "confidence": 0.99,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   }
+  ],
+  "system.pending_tool_confirmation": {
+   "tool_name": "submit_transfer",
+   "tool_args": {
+    "draft_id": "NB-DRF-B17F447A"
+   },
+   "confirmation_ask": "Transfer $1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42? I will confirm the result from the ledger.\n",
+   "utter_on_user_denial": "utter_transfer_not_submitted",
+   "skill_id": "transfer_money",
+   "frame_id": "CFT9S12M",
+   "execute_step_id": null
+  }
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "Yes, send it.",
+  "message_id": "2f8a48c2798e44a19198120c98b4924b",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790737251.247602,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "CFT9S12M",
+   "skill_id": "transfer_money",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790737238.124886,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790737238.125062,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790737238.125076,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790737238.124915,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790737238.125084,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737238.125089,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"M1HHAY5R\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"9DKM724S\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737238.125188,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790737238.1251998,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "text": "My app shows $2,480 in everyday checking, so send $1,500 to Sam Patel.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "My app shows $2,480 in everyday checking, so send $1,500 to Sam Patel.",
+    "message_id": "126820da8a4f423abd343a3abdbb8132",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "126820da8a4f423abd343a3abdbb8132",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737238.126446,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "9DKM724S",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737238.126461,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "9DKM724S",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737238.126504,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "9DKM724S",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "project.customer_first_name",
+   "value": "Elena",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737238.126512,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "9DKM724S",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "project.customer_first_name",
+   "value": "Elena",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737238.1265512,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "9DKM724S",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "project.account_names",
+   "value": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737238.1265569,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "9DKM724S",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "project.account_names",
+   "value": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737238.1266592,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": [\"Everyday Checking (account ending 3301)\", \"Bills Checking (account ending 3302)\", \"High-Yield Savings (account ending 3303)\"]}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737238.126668,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": [\"Everyday Checking (account ending 3301)\", \"Bills Checking (account ending 3302)\", \"High-Yield Savings (account ending 3303)\"]}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737238.126754,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737238.1271439,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "text": "Hello Elena, this is Northgate Bank transfers. I can move money between your accounts or to a saved payee, check a transfer's status, or tell you a balance. What would you like to do?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790737238.127737,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790737238.127755,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790737238.127764,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737238.1277702,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737238.127926,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790737239.908727,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "flow_id": "transfer_money",
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790737239.908756,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790737238.1251998,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737239.9087648,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"CFT9S12M\", \"skill_id\": \"transfer_money\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737239.909166,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transfer_money"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737239.909178,
+   "metadata": {
+    "tool_call_id": "call_XGOYQ4Kkvn8WUh19f9mSdLhx",
+    "tool_batch_id": "0-call_XGOYQ4Kkvn8WUh19f9mSdLhx",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transfer_money"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737241.902931,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "payee": "Sam Patel"
+     },
+     "position": 27,
+     "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "transfer_money.selected_payee_ref",
+   "value": "NB-PAY-2042",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737241.902959,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "payee": "Sam Patel"
+     },
+     "position": 28,
+     "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "transfer_money.selected_payee_ref",
+   "value": "NB-PAY-2042",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737241.902997,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "payee": "Sam Patel"
+     },
+     "position": 29,
+     "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "transfer_money.selected_payee_label",
+   "value": "Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737241.9030058,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "payee": "Sam Patel"
+     },
+     "position": 30,
+     "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "transfer_money.selected_payee_label",
+   "value": "Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737241.903038,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "payee": "Sam Patel"
+     },
+     "position": 31,
+     "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "transfer_money.draft_id",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737241.9030452,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "payee": "Sam Patel"
+     },
+     "position": 32,
+     "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "transfer_money.draft_id",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737241.903073,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "payee": "Sam Patel"
+     },
+     "position": 33,
+     "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "transfer_money.draft_summary",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737241.9030788,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "payee": "Sam Patel"
+     },
+     "position": 34,
+     "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "transfer_money.draft_summary",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737241.903498,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "select_payee",
+   "arguments": {
+    "payee": "Sam Patel"
+   },
+   "result": "{\"status\": \"selected\", \"payee_ref\": \"NB-PAY-2042\", \"payee_label\": \"Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42\", \"destination_kind\": \"saved_payee\", \"next_step\": \"Call prepare_transfer with this payee_ref, the source account and the amount. Do not describe the payee as confirmed: the caller confirms the whole transfer next.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737241.90351,
+   "metadata": {
+    "tool_call_id": "call_u9CQgurI8T9L75AMMOhCQctN",
+    "tool_batch_id": "1-call_u9CQgurI8T9L75AMMOhCQctN",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "select_payee",
+   "arguments": {
+    "payee": "Sam Patel"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"payee_ref\": \"NB-PAY-2042\", \"payee_label\": \"Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42\", \"destination_kind\": \"saved_payee\", \"next_step\": \"Call prepare_transfer with this payee_ref, the source account and the amount. Do not describe the payee as confirmed: the caller confirms the whole transfer next.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737243.3051462,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 1287.509540998144,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "text": "Which account should the $1,500 come from? I see Everyday Checking, Bills Checking, and High-Yield Savings.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737243.305782,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737247.160447,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {},
+     "position": 39,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "everyday_checking_balance",
+     "value": "$2,480",
+     "description": "The customer stated their app shows a $2,480 balance in Everyday Checking.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737247.160486,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {},
+     "position": 40,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "everyday_checking_balance",
+     "value": "$2,480",
+     "description": "The customer stated their app shows a $2,480 balance in Everyday Checking.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737247.160518,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {},
+     "position": 41,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "everyday_checking_balance",
+     "value": "$2,480",
+     "description": "The customer stated their app shows a $2,480 balance in Everyday Checking.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_transfer_amount",
+     "value": "$1,500",
+     "description": "The customer requested to send $1,500.",
+     "turn_idx": 1,
+     "confidence": 0.99,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737247.160526,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {},
+     "position": 42,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "everyday_checking_balance",
+     "value": "$2,480",
+     "description": "The customer stated their app shows a $2,480 balance in Everyday Checking.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_transfer_amount",
+     "value": "$1,500",
+     "description": "The customer requested to send $1,500.",
+     "turn_idx": 1,
+     "confidence": 0.99,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737247.1605508,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {},
+     "position": 43,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "everyday_checking_balance",
+     "value": "$2,480",
+     "description": "The customer stated their app shows a $2,480 balance in Everyday Checking.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_transfer_amount",
+     "value": "$1,500",
+     "description": "The customer requested to send $1,500.",
+     "turn_idx": 1,
+     "confidence": 0.99,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_transfer_payee",
+     "value": "Sam Patel",
+     "description": "The customer requested the transfer be sent to Sam Patel.",
+     "turn_idx": 1,
+     "confidence": 0.99,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737247.1605592,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {},
+     "position": 44,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "everyday_checking_balance",
+     "value": "$2,480",
+     "description": "The customer stated their app shows a $2,480 balance in Everyday Checking.",
+     "turn_idx": 1,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_transfer_amount",
+     "value": "$1,500",
+     "description": "The customer requested to send $1,500.",
+     "turn_idx": 1,
+     "confidence": 0.99,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_transfer_payee",
+     "value": "Sam Patel",
+     "description": "The customer requested the transfer be sent to Sam Patel.",
+     "turn_idx": 1,
+     "confidence": 0.99,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790737247.2257679,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "text": "Yes, send it.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes, send it.",
+    "message_id": "2f8a48c2798e44a19198120c98b4924b",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "2f8a48c2798e44a19198120c98b4924b",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737249.9325492,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2042",
+      "amount": "1500"
+     },
+     "position": 46,
+     "tool_call_id": "call_tLWb724GBpojTU2Zjnilswda"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "transfer_money.draft_id",
+   "value": "NB-DRF-B17F447A",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737249.932584,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2042",
+      "amount": "1500"
+     },
+     "position": 47,
+     "tool_call_id": "call_tLWb724GBpojTU2Zjnilswda"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "transfer_money.draft_id",
+   "value": "NB-DRF-B17F447A",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737249.9326222,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2042",
+      "amount": "1500"
+     },
+     "position": 48,
+     "tool_call_id": "call_tLWb724GBpojTU2Zjnilswda"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "transfer_money.draft_summary",
+   "value": "$1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737249.932631,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2042",
+      "amount": "1500"
+     },
+     "position": 49,
+     "tool_call_id": "call_tLWb724GBpojTU2Zjnilswda"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "transfer_money.draft_summary",
+   "value": "$1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737249.9334521,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "prepare_transfer",
+   "arguments": {
+    "from_account": "Everyday Checking",
+    "payee_ref": "NB-PAY-2042",
+    "amount": "1500"
+   },
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"NB-DRF-B17F447A\", \"summary\": \"$1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42\", \"amount\": \"$1,500.00\", \"from_account_ref\": \"NB-ACC-1001\", \"payee_ref\": \"NB-PAY-2042\", \"from_account\": \"Everyday Checking (account ending 3301)\", \"destination\": \"Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42\", \"destination_kind\": \"saved_payee\", \"balance_as_read\": {\"available_balance\": \"$1,250.00\", \"posted_balance\": \"$2,480.00\", \"ledger_revision\": 41, \"observed_at\": \"2026-09-30T14:00:00+00:00\"}, \"effects\": 0, \"next_step\": \"Call submit_transfer with this draft_id. The engine shows the caller the amount, source and destination and asks them to confirm. The balance above is a read, not a decision: the ledger decides at submission. Do not tell the caller the transfer will go through.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737249.9334779,
+   "metadata": {
+    "tool_call_id": "call_tLWb724GBpojTU2Zjnilswda",
+    "tool_batch_id": "0-call_tLWb724GBpojTU2Zjnilswda",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "prepare_transfer",
+   "arguments": {
+    "from_account": "Everyday Checking",
+    "payee_ref": "NB-PAY-2042",
+    "amount": "1500"
+   },
+   "source": "local",
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"NB-DRF-B17F447A\", \"summary\": \"$1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42\", \"amount\": \"$1,500.00\", \"from_account_ref\": \"NB-ACC-1001\", \"payee_ref\": \"NB-PAY-2042\", \"from_account\": \"Everyday Checking (account ending 3301)\", \"destination\": \"Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42\", \"destination_kind\": \"saved_payee\", \"balance_as_read\": {\"available_balance\": \"$1,250.00\", \"posted_balance\": \"$2,480.00\", \"ledger_revision\": 41, \"observed_at\": \"2026-09-30T14:00:00+00:00\"}, \"effects\": 0, \"next_step\": \"Call submit_transfer with this draft_id. The engine shows the caller the amount, source and destination and asks them to confirm. The balance above is a read, not a decision: the ledger decides at submission. Do not tell the caller the transfer will go through.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737251.246388,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {},
+     "position": 52,
+     "tool_call_id": "call_b0JNlU1ENmvsHYyM6g8V7wPP"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "submit_transfer",
+    "tool_args": {
+     "draft_id": "NB-DRF-B17F447A"
+    },
+    "confirmation_ask": "Transfer $1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42? I will confirm the result from the ledger.\n",
+    "utter_on_user_denial": "utter_transfer_not_submitted",
+    "skill_id": "transfer_money",
+    "frame_id": "CFT9S12M",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737251.2464151,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "CFT9S12M",
+     "arguments": {},
+     "position": 53,
+     "tool_call_id": "call_b0JNlU1ENmvsHYyM6g8V7wPP"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "submit_transfer",
+    "tool_args": {
+     "draft_id": "NB-DRF-B17F447A"
+    },
+    "confirmation_ask": "Transfer $1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42? I will confirm the result from the ledger.\n",
+    "utter_on_user_denial": "utter_transfer_not_submitted",
+    "skill_id": "transfer_money",
+    "frame_id": "CFT9S12M",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737251.2468219,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-B17F447A"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Transfer $1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42? I will confirm the result from the ledger.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737251.246838,
+   "metadata": {
+    "tool_call_id": "call_b0JNlU1ENmvsHYyM6g8V7wPP",
+    "tool_batch_id": "1-call_b0JNlU1ENmvsHYyM6g8V7wPP",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-B17F447A"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Transfer $1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42? I will confirm the result from the ledger.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737251.2469702,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_transfer",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   },
+   "text": "Transfer $1,500.00 from your Everyday Checking (account ending 3301) to Sam Patel, saved payee at Harbor Federal Credit Union, account ending 42? I will confirm the result from the ledger.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737251.247602,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+   }
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790737238.124886,
+ "current_session_id": "79872818-17fc-489c-b12b-dbcfe81e87e2"
+}

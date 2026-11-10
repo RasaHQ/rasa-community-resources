@@ -35,11 +35,15 @@ The flagship travel agent is `mantle-voice-agent`, without a domain suffix. New 
 
 Three examples name the **voice stack** rather than a domain — `mantle-voice-rime-skills`, `mantle-voice-speechmatics-skills` and `mantle-voice-routed-skills`. They share one banking agent on purpose, so the voice stack is the only thing that differs between them; naming them by domain would have made them look like duplicates of each other and of `mantle-voice-banking-skills`. Read them in that order: one vendor Rasa ships, one it does not, then a chain of both with a local model behind it.
 
+Casebook case builds are named `mantle-<mode>-<case-slug>-<model>`, for example `mantle-text-insurance-policy-status-gemini`: one live agent per casebook case, with the case slug kept whole so the example, the casebook entry and the article about it share one searchable name. Each carries a `case-build/` folder of scripted conversations and recorded live results, run with the shared harness in [`scripts/case_builds/`](../scripts/case_builds/).
+
 Each example is one directory with its own `README.md`, `pyproject.toml`, and (for Mantle voice agents) the usual Skills layout documented in that project’s `AGENTS.md`.
 
 ---
 
 ## Catalog
+
+Looking for a case build? The case-build rows below are in the order the builds were added. [`CATALOG.md`](../CATALOG.md) groups them by industry and by model and voice stack, with each build's main-run result; [`catalog/case-builds.json`](../catalog/case-builds.json) has the same data for scripts.
 
 | Name | Persona | Domain | Path | Assessed on |
 |---|---|---|---|---|
@@ -52,6 +56,37 @@ Each example is one directory with its own `README.md`, `pyproject.toml`, and (f
 | Vela voice banking on Rime | Vela | Retail banking / Rime TTS | [`mantle-voice-rime-skills`](mantle-voice-rime-skills) | 2026-08-26 |
 | Vela voice banking on Speechmatics | Vela | Retail banking / custom ASR | [`mantle-voice-speechmatics-skills`](mantle-voice-speechmatics-skills) | 2026-08-26 |
 | Vela voice banking, routed | Vela | Retail banking / vendor failover | [`mantle-voice-routed-skills`](mantle-voice-routed-skills) | 2026-09-02 |
+| HarborCover policy status on Gemini (text) | HarborCover status assistant | Insurance / casebook case build | [`mantle-text-insurance-policy-status-gemini`](mantle-text-insurance-policy-status-gemini) | 2026-09-29 |
+| Northgate block card on GPT with Deepgram (browser voice) | Northgate card services | Retail banking / casebook case build | [`mantle-voice-banking-block-card-gpt`](mantle-voice-banking-block-card-gpt) | 2026-09-29 |
+| Cedar Clinic refill requests on GPT, speech on the Mac (browser voice) | Cedar Clinic prescription line | Healthcare / casebook case build, self-hosted speech | [`mantle-voice-healthcare-refill-request-gpt-local`](mantle-voice-healthcare-refill-request-gpt-local) | 2026-09-30 |
+| Northgate transfers on GPT (text) | Northgate Bank transfers assistant | Retail banking / casebook case build | [`mantle-text-banking-transfer-gpt`](mantle-text-banking-transfer-gpt) | 2026-09-30 |
+| Northgate risk step-up on GPT (text, web chat) | Northgate payments assistant | Retail banking / casebook case build | [`mantle-text-banking-risk-step-up-gpt`](mantle-text-banking-risk-step-up-gpt) | 2026-09-30 |
+| Northgate transaction search on GPT (text, web chat) | Northgate Bank transactions assistant | Retail banking / casebook case build | [`mantle-text-banking-statement-search-gpt`](mantle-text-banking-statement-search-gpt) | 2026-09-30 |
+| HarborCover quote and bind on GPT (text) | HarborCover quotes assistant | Insurance / casebook case build | [`mantle-text-insurance-quote-bind-gpt`](mantle-text-insurance-quote-bind-gpt) | 2026-09-30 |
+| Juniper Mobile connectivity recovery on GPT (text) | Juniper Mobile connection support | Telecom / casebook case build | [`mantle-text-telco-diagnostics-gpt`](mantle-text-telco-diagnostics-gpt) | 2026-09-30 |
+| Juniper Mobile retention on GPT (text; Telegram target, run in web chat) | Juniper Mobile account assistant | Telecom / casebook case build | [`mantle-text-telco-retention-gpt`](mantle-text-telco-retention-gpt) | 2026-09-30 |
+| Willow Shop guided selling on GPT (text) | Willow Shop accessories assistant | Retail / casebook case build | [`mantle-text-retail-guided-selling-gpt`](mantle-text-retail-guided-selling-gpt) | 2026-09-30 |
+| Horizon Rewards redemption on GPT (text) | Horizon Rewards chat | Travel loyalty / casebook case build | [`mantle-text-travel-redemption-gpt`](mantle-text-travel-redemption-gpt) | 2026-09-30 |
+| Willow Shop order status on Gemini with Deepgram and Rime (browser voice) | Willow Shop order help | Retail / casebook case build | [`mantle-voice-retail-order-status-gemini`](mantle-voice-retail-order-status-gemini) | 2026-09-30 |
+| Northgate loan payoff quotes on Claude (text, web chat) | Northgate loan servicing assistant | Retail banking / casebook case build | [`mantle-text-banking-loan-servicing-claude`](mantle-text-banking-loan-servicing-claude) | 2026-09-30 |
+| Willow Shop returns and exchanges on Claude (text, web chat) | Willow Shop returns and exchanges assistant | Retail / casebook case build | [`mantle-text-retail-return-claude`](mantle-text-retail-return-claude) | 2026-09-30 |
+| Orchard Works step-up authentication on Claude with Deepgram (browser voice) | Orchard Works IT service desk | Internal IT / casebook case build | [`mantle-voice-step-up-authentication-claude`](mantle-voice-step-up-authentication-claude) | 2026-09-30 |
+| Northgate advisor appointments on Claude with Deepgram and Rime (browser voice, en-GB caller) | Northgate Bank appointments | Retail banking / casebook case build | [`mantle-voice-banking-advisor-appointment-claude`](mantle-voice-banking-advisor-appointment-claude) | 2026-09-30 |
+| Orchard Works IT helpdesk access requests on Claude (text, web chat; Slack target) | Orchard Works IT helpdesk | Internal IT / casebook case build | [`mantle-text-internal-it-helpdesk-claude`](mantle-text-internal-it-helpdesk-claude) | 2026-09-30 |
+| HarborCover claim intake on Claude (text, web chat; Microsoft Teams target) | HarborCover claims intake assistant | Insurance / casebook case build | [`mantle-text-insurance-file-claim-claude`](mantle-text-insurance-file-claim-claude) | 2026-09-30 |
+| Cedar Clinic pre-visit intake on Gemini (text, web chat) | Cedar Clinic pre-visit intake chat | Healthcare / casebook case build | [`mantle-text-healthcare-intake-gemini`](mantle-text-healthcare-intake-gemini) | 2026-09-30 |
+| HarborCover roadside assistance on Claude with Deepgram (browser voice) | HarborCover roadside assistance | Insurance / casebook case build | [`mantle-voice-insurance-roadside-claude`](mantle-voice-insurance-roadside-claude) | 2026-09-30 |
+| Northgate collections on Gemini with Deepgram and Rime (browser voice, US Spanish) | Northgate pagos | Retail banking / casebook case build | [`mantle-voice-banking-collections-gemini`](mantle-voice-banking-collections-gemini) | 2026-09-30 |
+| Horizon Travel storm rebooking on GPT (text, web chat) | Horizon Travel rebooking chat | Travel disruption / casebook case build | [`mantle-text-travel-mass-rebooking-gpt`](mantle-text-travel-mass-rebooking-gpt) | 2026-09-30 |
+| Horizon Travel disruption mode on GPT (text, web chat) | Horizon Travel disruption assistant | Travel / casebook case build | [`mantle-text-disruption-mode-gpt`](mantle-text-disruption-mode-gpt) | 2026-09-30 |
+| Amber Grid payment-plan offers on GPT (text, web chat) | Amber Grid billing assistant | Energy billing / casebook case build | [`mantle-text-payment-plan-authority-gpt`](mantle-text-payment-plan-authority-gpt) | 2026-09-30 |
+| Amber Grid home moves on GPT (text, web chat) | Amber Grid home moves assistant | Utilities / casebook case build | [`mantle-text-utilities-service-move-gpt`](mantle-text-utilities-service-move-gpt) | 2026-09-30 |
+| Pine University enrolment and aid enquiries on GPT (text, web chat) | Pine University applicant support | Education / casebook case build | [`mantle-text-education-enrolment-gpt`](mantle-text-education-enrolment-gpt) | 2026-09-30 |
+| Amber Grid budget plans on GPT (text, web chat) | Amber Grid billing chat | Utilities / casebook case build | [`mantle-text-utilities-budget-plan-gpt`](mantle-text-utilities-budget-plan-gpt) | 2026-09-30 |
+| Willow Shop order payments on GPT with Deepgram and Rime (browser voice; card details never taken by voice) | Willow Shop order help | Retail payments / casebook case build | [`mantle-voice-payment-boundary-gpt`](mantle-voice-payment-boundary-gpt) | 2026-09-30 |
+| Cedar Clinic appointment reminders on GPT (text, web chat; Twilio SMS target) | Cedar Clinic appointment messages | Healthcare / casebook case build | [`mantle-text-reminder-deduplication-gpt`](mantle-text-reminder-deduplication-gpt) | 2026-09-30 |
+| Willow Shop subscriptions and memberships on GPT (text, web chat; Telegram target) | Willow Shop member assistant | Retail loyalty / casebook case build | [`mantle-text-retail-loyalty-gpt`](mantle-text-retail-loyalty-gpt) | 2026-09-30 |
+| Horizon Travel journey changes on GPT with Deepgram and Rime (browser voice; a flight changes only with its linked services) | Horizon Travel trip help | Travel / casebook case build | [`mantle-voice-travel-booking-gpt`](mantle-voice-travel-booking-gpt) | 2026-09-30 |
 
 When you add an example, append a row here in the same PR.
 

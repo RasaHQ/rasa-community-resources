@@ -1,0 +1,357 @@
+{
+ "schema": 1,
+ "build": "utilities-service-move-gpt-text",
+ "case": "utilities-service-move",
+ "project": "examples/mantle-text-utilities-service-move-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T18:05:00.785176+00:00",
+ "finished_at": "2026-09-30T18:05:49.422654+00:00",
+ "model_file": "20260930-190503-sweet-log.tar.gz",
+ "train_seconds": 3.3,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 5,
+  "turn_latency_ms": {
+   "p50": 6462.8,
+   "p95": 10760.9,
+   "max": 10760.9,
+   "mean": 7122.9
+  },
+  "llm_calls": 14,
+  "llm_calls_per_turn": 2.8,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 49345,
+  "completion_tokens": 735,
+  "reasoning_tokens": 170,
+  "cached_prompt_tokens": 18432,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "closure_claim": 0,
+   "move_reference": 4
+  },
+  "tool_result_metrics": {
+   "move_orders_recorded": {
+    "attempts": 2,
+    "total": 2
+   }
+  },
+  "log_events": {
+   "ambergrid.closure_words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 2,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.185831,
+  "llm_cost_usd": 0.185831,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-after-order",
+   "kind": "correction",
+   "description": "After the move is scheduled the landlord moves the date; the same order is changed after a fresh read-back of both sides, never a second move.",
+   "conversation_id": "utilities-service-move-gpt-text-correction-after-order-20260930T180500",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Please move my supply: last day at 12 Wren Street is October 24, and I move into 8 Tanner Close, Easton on October 24.",
+     "latency_ms": 10760.9,
+     "bot": [
+      "Hello Noor, this is Amber Grid home moves chat. I can schedule your supply to move with you, check the supply at one of your addresses, or look up a move you have requested. How can I help?",
+      "Here is a new move order (draft AG-MVD-58F55 v1): your supply at 12 Wren Street, Millbrook (electricity and gas) stays on through Saturday 24 October 2026, and supply at 8 Tanner Close, Easton starts on Saturday 24 October 2026. This schedules the change for the date you chose and leaves the current service as it is until then. Is that right?"
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 5014.1,
+     "bot": [
+      "Move order AG-MOV-415035 is scheduled. Your electricity and gas at 12 Wren Street, Millbrook stays on through Saturday 24 October 2026 and nothing changes there before then. Supply at 8 Tanner Close, Easton starts on Saturday 24 October 2026.",
+      "Move order AG-MOV-415035 is scheduled. Your electricity and gas at 12 Wren Street, Millbrook stays on through Saturday 24 October 2026. Supply at 8 Tanner Close, Easton starts on Saturday 24 October 2026."
+     ]
+    },
+    {
+     "user": "The landlord has pushed my move back. My last day at Wren Street is now November 7, and I move into Tanner Close on November 7 too.",
+     "latency_ms": 8137.7,
+     "bot": [
+      "Here is a change to move order AG-MOV-415035 (draft AG-MVD-58F55 v2): your supply at 12 Wren Street, Millbrook (electricity and gas) stays on through Saturday 7 November 2026, and supply at 8 Tanner Close, Easton starts on Saturday 7 November 2026. This schedules the change for the date you chose and leaves the current service as it is until then. Is that right?"
+     ]
+    },
+    {
+     "user": "Yes, please update it.",
+     "latency_ms": 5239.0,
+     "bot": [
+      "Move order AG-MOV-415035 is updated. Your electricity and gas at 12 Wren Street, Millbrook stays on through Saturday 7 November 2026 and nothing changes there before then. Supply at 8 Tanner Close, Easton starts on Saturday 7 November 2026.",
+      "Move order AG-MOV-415035 is updated. Your electricity and gas at 12 Wren Street, Millbrook stays on through Saturday 7 November 2026. Supply at 8 Tanner Close, Easton starts on Saturday 7 November 2026."
+     ]
+    },
+    {
+     "user": "Yes, that's right.",
+     "latency_ms": 6462.8,
+     "bot": [
+      "Can I help you with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "submit_move_order",
+      "result": {
+       "status": "succeeded",
+       "order_revision": 2,
+       "move_out_date": "2026-11-07",
+       "move_in_date": "2026-11-07",
+       "current_service": {
+        "on_now": true,
+        "stays_on_through": "2026-11-07"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "start_move_draft",
+      "result": {
+       "reason": "move_already_scheduled"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "result": {
+       "current_service": {
+        "on_now": false
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "start_move_draft",
+     "arguments": {
+      "moving_out_of": "12 Wren Street",
+      "moving_to": "8 Tanner Close, Easton",
+      "move_out_date": "October 24",
+      "move_in_date": "October 24"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_move_order",
+     "arguments": {
+      "draft_id": "AG-MVD-58F55"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_move_order",
+     "arguments": {
+      "draft_id": "AG-MVD-58F55"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    },
+    {
+     "tool": "update_move_draft",
+     "arguments": {
+      "draft_id": "AG-MVD-58F55",
+      "move_out_date": "November 7",
+      "move_in_date": "November 7"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_move_order",
+     "arguments": {
+      "draft_id": "AG-MVD-58F55"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "submit_move_order",
+     "arguments": {
+      "draft_id": "AG-MVD-58F55"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "closure_claim": [],
+    "move_reference": [
+     "Move order AG-MOV-415035 is scheduled. Your electricity and gas at 12 Wren Street, Millbrook stays on through Saturday 24 October 2026 and nothing changes there before then. Supply at 8 Tanner Close, Easton starts on Saturday 24 October 2026.",
+     "Move order AG-MOV-415035 is scheduled. Your electricity and gas at 12 Wren Street, Millbrook stays on through Saturday 24 October 2026. Supply at 8 Tanner Close, Easton starts on Saturday 24 October 2026.",
+     "Move order AG-MOV-415035 is updated. Your electricity and gas at 12 Wren Street, Millbrook stays on through Saturday 7 November 2026 and nothing changes there before then. Supply at 8 Tanner Close, Easton starts on Saturday 7 November 2026.",
+     "Move order AG-MOV-415035 is updated. Your electricity and gas at 12 Wren Street, Millbrook stays on through Saturday 7 November 2026. Supply at 8 Tanner Close, Easton starts on Saturday 7 November 2026."
+    ],
+    "move_orders_recorded": {
+     "attempts": 2,
+     "total": 2
+    }
+   },
+   "log_events": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.confirmed": 2,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "ambergrid.closure_words_guard": 0
+   },
+   "log_event_details": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "submit_move_order",
+      "conversation_id": "utilities-service-move-gpt-text-correction-after-order-20260930T180500"
+     },
+     {
+      "tool_name": "submit_move_order",
+      "conversation_id": "utilities-service-move-gpt-text-correction-after-order-20260930T180500"
+     }
+    ],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "ambergrid.closure_words_guard": []
+   },
+   "usage": {
+    "llm_calls": 14,
+    "main_loop_calls": 12,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 49345,
+    "completion_tokens": 735,
+    "reasoning_tokens": 170,
+    "cached_prompt_tokens": 18432,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.185831,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1619.8,
+     2542.3,
+     2417.4,
+     3627.8,
+     2216.6,
+     2754.0,
+     3363.2,
+     1577.3,
+     3163.8,
+     2514.4,
+     2699.1,
+     3310.9,
+     1821.5,
+     1301.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "utilities-service-move-gpt-text-correction-after-order-20260930T180500",
+    "prompt": 49345,
+    "completion": 735,
+    "total": 50080,
+    "generations": 14,
+    "fetched_at": "2026-09-30T18:05:49.165194+00:00"
+   }
+  }
+ ]
+}

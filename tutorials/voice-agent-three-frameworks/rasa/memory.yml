@@ -1,0 +1,10 @@
+# concern: refill-guard
+# Project-wide memory (session.project.*). Written by verify_patient only,
+# never by the model (no llm_settable), so the patient id the tools hand to
+# cedar_clinic always came from a successful verification on this call.
+verified_patient_id:
+  type: text
+  description: Patient id the caller verified as on this call; empty until verified.
+patient_first_name:
+  type: text
+  description: Verified patient's first name.

@@ -1,0 +1,13 @@
+# Project-wide memory (session.project.*). Written once by
+# load_member_profile at session start, never by the model. One short field
+# per value: Mantle cuts a memory value at 100 characters in the prompt,
+# silently; tests/test_guard.py checks these.
+member_id:
+  type: text
+  description: Member id of the signed-in Willow Shop member this session is bound to.
+member_first_name:
+  type: text
+  description: Member's first name, for greeting.
+subscription_list:
+  type: text
+  description: The member's own subscriptions, by name, separated by semicolons.

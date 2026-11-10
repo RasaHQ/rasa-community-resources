@@ -1,12 +1,20 @@
 # Atlas on Google Gemini — voice travel agent with local embeddings
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/community-samrudh-gemini-voice-agent/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `GEMINI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`. Training uses your OpenAI key (a small embedding call) to index this resource's reference documents.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 ```text
 Author:        Samrudha Kelkar
 Kind:          example
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0.dev9 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners who want a Mantle voice agent without an OpenAI key
 Time:          30–45 minutes
 ```
@@ -51,6 +59,10 @@ configuration lives here rather than becoming the catalog default: readers
 following the main tutorial should not pay a multi-hundred-megabyte install for
 a provider they are not using.
 
+Linux installs use the locked CPU build of PyTorch for local embeddings. This
+avoids downloading CUDA libraries for this example. macOS and Windows keep
+their existing package source. Training still downloads the embedding model.
+
 ---
 ## What Atlas can do
 
@@ -89,8 +101,9 @@ Required secrets in `.env`:
 **No `OPENAI_API_KEY`.** That is the point of this resource — see
 [What is different here](#what-is-different-here).
 
-`make verify` reads `llm.api_key_env` out of `integrations.yml` and checks the
-key that configuration actually names, so if you swap providers it follows you
+`make verify` follows `llm.model_group` in `integrations.yml` to its model
+group, reads the variable named in `api_key: ${...}`, and checks the key that
+configuration actually names, so if you swap providers it follows you
 rather than checking whichever key happens to be exported.
 
 ---

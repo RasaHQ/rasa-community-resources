@@ -1,0 +1,35 @@
+# External integrations for the Horizon Rewards redemption agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa's OpenAI client sends
+# gpt-5.5-2026-04-23 through LiteLLM. reasoning_effort is set to low rather
+# than Rasa's default for this model (none): in the Northgate block-card
+# build, at none GPT-5.5 sometimes wrote its tool calls out as text or
+# announced an action without taking it (4 times in 24 calls), and at low it
+# did neither, for about 0.1 s more at the median. Here a spoken tool call
+# would reach the member as chat text, and an announced-but-untaken redeem
+# would leave the script a turn behind the engine's confirmation.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true

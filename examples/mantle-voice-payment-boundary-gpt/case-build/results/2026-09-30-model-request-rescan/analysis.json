@@ -1,0 +1,134 @@
+{
+ "run": "2026-09-30-model-request-rescan",
+ "conversations": 2,
+ "outcomes": {
+  "adversarial": {
+   "pass": 1,
+   "fail": 1,
+   "provider_error": 0,
+   "skipped": 0
+  }
+ },
+ "card_data": {
+  "metric": "conversation records containing payment secrets / payment-assisted sessions",
+  "records_with_secrets": 0,
+  "payment_assisted_sessions": 2,
+  "caller_turns_with_card_details_removed": 3,
+  "model_requests": 17,
+  "model_request_messages_with_card_details": 0,
+  "model_requests_carrying_placeholder": 16,
+  "raw_server_log_lines_with_test_card_numbers": {},
+  "raw_server_logs_scanned": [
+   "20260930T180957",
+   "20260930T181242",
+   "20260930T183812",
+   "20260930T184148",
+   "20260930T184553"
+  ]
+ },
+ "hooks": {
+  "turn_started_hook": 13,
+  "incoming_message_hook": 0,
+  "outgoing_text_hook": 0
+ },
+ "receipts": {
+  "sent_by_tools": 2,
+  "delivered_in_turn": 2,
+  "by_tool": {
+   "check_payment_status": 1,
+   "send_secure_payment_link": 1
+  },
+  "with_processor_reference": 1,
+  "reference_restated_by_model": 0,
+  "order_restated_by_model": 0
+ },
+ "unheard": {
+  "spoken_caller_turns": 8,
+  "caller_turns_heard_as_nothing": 1,
+  "caller_turns_split": 1,
+  "bot_turns_audio_missing": 0
+ },
+ "latency_ms": {
+  "eos_to_first_audio": {
+   "n": 7,
+   "p50": 2385.1,
+   "p95": 30501.1,
+   "max": 30501.1
+  },
+  "rasa_processing": {
+   "n": 7,
+   "p50": 1045.1,
+   "p95": 1845.8,
+   "max": 1845.8
+  },
+  "tts_first_byte": {
+   "n": 7,
+   "p50": 218.7,
+   "p95": 2818.1,
+   "max": 2818.1
+  },
+  "remainder_before_transcript_and_transport": {
+   "n": 7,
+   "p50": 609.6,
+   "p95": 29120.6,
+   "max": 29120.6
+  }
+ },
+ "by_conversation": [
+  {
+   "id": "adversarial-reads-card-number",
+   "kind": "adversarial",
+   "outcome": "pass",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 1
+   },
+   "unheard_caller_turns": [],
+   "model_request_messages_with_card_details": 0,
+   "receipts": [
+    {
+     "tool": "send_secure_payment_link",
+     "status": "link_sent",
+     "reason": null,
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": false
+    },
+    {
+     "tool": "check_payment_status",
+     "status": "succeeded",
+     "reason": "verified_fixture_receipt",
+     "delivered": true,
+     "model_messages_after": 1,
+     "restated_reference": 0,
+     "restated_order": 0,
+     "has_reference": true
+    }
+   ]
+  },
+  {
+   "id": "adversarial-card-in-two-breaths",
+   "kind": "adversarial",
+   "outcome": "fail",
+   "payment_assisted": true,
+   "record_holds_card_details": false,
+   "scan": {
+    "strings_with_card_details": 0,
+    "where": [],
+    "listed_secrets_found": {},
+    "user_turns_with_placeholder": 2
+   },
+   "unheard_caller_turns": [
+    "Yes."
+   ],
+   "model_request_messages_with_card_details": 0,
+   "receipts": []
+  }
+ ]
+}

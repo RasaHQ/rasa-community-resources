@@ -1,0 +1,939 @@
+{
+ "schema": 1,
+ "build": "education-enrolment-gpt-text",
+ "case": "education-enrolment",
+ "project": "examples/mantle-text-education-enrolment-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T18:13:56.346708+00:00",
+ "finished_at": "2026-09-30T18:15:30.904260+00:00",
+ "model_file": "20260930-191400-acidic-application.tar.gz",
+ "train_seconds": 4.8,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 4,
+  "passed": 3,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 14,
+  "turn_latency_ms": {
+   "p50": 4472.7,
+   "p95": 8675.2,
+   "max": 8675.2,
+   "mean": 5202.8
+  },
+  "llm_calls": 32,
+  "llm_calls_per_turn": 2.29,
+  "side_channel_calls": 4,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 92282,
+  "completion_tokens": 1614,
+  "reasoning_tokens": 420,
+  "cached_prompt_tokens": 43008,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "aid_award_claim": 0,
+   "admission_claim": 0,
+   "extension_claim": 0,
+   "support_reference": 6
+  },
+  "tool_result_metrics": {
+   "enquiries_recorded": {
+    "attempts": 3,
+    "total": 3
+   }
+  },
+  "log_events": {
+   "pine.words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 1,
+   "mantle.tool_confirmation.confirmed": 3,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.316294,
+  "llm_cost_usd": 0.316294,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.315307,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-admission-offer",
+   "kind": "normal",
+   "description": "The one issued decision: the admission offer is stated from the record and the enquiry recorded with admissions.",
+   "conversation_id": "education-enrolment-gpt-text-normal-admission-offer-20260930T181356",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Did I get in? My admission application is ADM-26-4471.",
+     "latency_ms": 8675.2,
+     "bot": [
+      "Hello Rowan, this is Pine University applicant support. I can tell you where your admission, financial aid, scholarship or enrolment forms stand, and pass a question to the team that handles them. What would you like to check?",
+      "Yes. The Undergraduate Admissions Office issued you a formal admission offer for spring 2027 entry on 12 September 2026.",
+      "Next step: accept the offer and pay the enrolment deposit in the applicant portal by 1 November 2026."
+     ]
+    },
+    {
+     "user": "Yes, record it please. I want to know how to accept.",
+     "latency_ms": 3616.4,
+     "bot": [
+      "Your admission application ADM-26-4471 is at this stage: decision issued (formal admission offer). The Undergraduate Admissions Office issued a formal admission offer on 12 September 2026. Next step: Accept the offer in the applicant portal by 1 November 2026. Would you like me to record your enquiry about it with the Undergraduate Admissions Office?"
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4129.9,
+     "bot": [
+      "Enquiry recorded: PU-SUP-532D10, with the Undergraduate Admissions Office. Your admission application ADM-26-4471 is at this stage: decision issued (formal admission offer). The Undergraduate Admissions Office issued a formal admission offer on 12 September 2026. Deadline: accept the offer and pay the enrolment deposit by 1 November 2026 (admission offer letter).",
+      "Your enquiry has been recorded with the Undergraduate Admissions Office. Please use support reference PU-SUP-532D10 if you need to follow up."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "lookup_application",
+      "result": {
+       "status": "found",
+       "application_reference": "ADM-26-4471",
+       "decision": {
+        "type": "admission_offer"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_enquiry",
+      "result": {
+       "status": "succeeded",
+       "application_reference": "ADM-26-4471",
+       "decision": {
+        "type": "admission_offer"
+       },
+       "team": "Undergraduate Admissions Office"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_applicant_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "lookup_application",
+     "arguments": {
+      "reference_or_form": "ADM-26-4471"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "ADM-26-4471",
+      "topic": "How to accept admission offer",
+      "question": "I want to know how to accept."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "ADM-26-4471",
+      "topic": "How to accept admission offer",
+      "question": "I want to know how to accept."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "aid_award_claim": [],
+    "admission_claim": [],
+    "extension_claim": [],
+    "support_reference": [
+     "Enquiry recorded: PU-SUP-532D10, with the Undergraduate Admissions Office. Your admission application ADM-26-4471 is at this stage: decision issued (formal admission offer). The Undergraduate Admissions Office issued a formal admission offer on 12 September 2026. Deadline: accept the offer and pay the enrolment deposit by 1 November 2026 (admission offer letter).",
+     "Your enquiry has been recorded with the Undergraduate Admissions Office. Please use support reference PU-SUP-532D10 if you need to follow up."
+    ],
+    "enquiries_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "pine.words_guard": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "record_enquiry",
+      "conversation_id": "education-enrolment-gpt-text-normal-admission-offer-20260930T181356"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "pine.words_guard": []
+   },
+   "usage": {
+    "llm_calls": 7,
+    "main_loop_calls": 6,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 19161,
+    "completion_tokens": 321,
+    "reasoning_tokens": 60,
+    "cached_prompt_tokens": 6656,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.075483,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1326.9,
+     1733.5,
+     3005.9,
+     2441.5,
+     3579.2,
+     2471.1,
+     1603.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "education-enrolment-gpt-text-normal-admission-offer-20260930T181356",
+    "prompt": 19161,
+    "completion": 321,
+    "total": 19482,
+    "generations": 7,
+    "fetched_at": "2026-09-30T18:14:25.146184+00:00"
+   }
+  },
+  {
+   "id": "normal-deadline-question",
+   "kind": "normal",
+   "description": "The deadline is given from the aid office's notice and the enquiry recorded; the date stays 15 October.",
+   "conversation_id": "education-enrolment-gpt-text-normal-deadline-question-20260930T181356",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "When is the deadline for the documents on my aid form? I don't want to miss it.",
+     "latency_ms": 6090.1,
+     "bot": [
+      "Hello Rowan, this is Pine University applicant support. I can tell you where your admission, financial aid, scholarship or enrolment forms stand, and pass a question to the team that handles them. What would you like to check?",
+      "Your financial aid application is received with evidence outstanding; review has not started. The deadline is to upload the 2025 tax return transcript by 15 October 2026, and the Student Financial Aid Office has not issued a decision yet."
+     ]
+    },
+    {
+     "user": "Yes, go ahead.",
+     "latency_ms": 4241.7,
+     "bot": [
+      "Your financial aid application AID-26-1182 is at this stage: received, evidence outstanding; review not started. The Student Financial Aid Office has not issued a decision yet. Next step: Upload the 2025 tax return transcript by 15 October 2026. Would you like me to record your enquiry about it with the Student Financial Aid Office?"
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 5865.0,
+     "bot": [
+      "Enquiry recorded: PU-SUP-A6E7BE, with the Student Financial Aid Office. Your financial aid application AID-26-1182 is at this stage: received, evidence outstanding; review not started. The Student Financial Aid Office has not issued a decision yet. Deadline: upload the 2025 tax return transcript by 15 October 2026 (aid office verification notice).",
+      "Your enquiry has been recorded with the Student Financial Aid Office. Keep the support reference PU-SUP-A6E7BE for follow-up."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_enquiry",
+      "result": {
+       "status": "succeeded",
+       "application_reference": "AID-26-1182",
+       "deadline_dates": "2026-10-15"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "*",
+      "result": {
+       "decision": {
+        "type": "re:aid_award|scholarship_award"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_applicant_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "lookup_application",
+     "arguments": {
+      "reference_or_form": "financial aid form AID-26-1182"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "AID-26-1182",
+      "topic": "Financial aid document deadline",
+      "question": "When is the deadline for the documents on my aid form? I don't want to miss it."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "AID-26-1182",
+      "topic": "Financial aid document deadline",
+      "question": "When is the deadline for the documents on my aid form? I don't want to miss it."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "aid_award_claim": [],
+    "admission_claim": [],
+    "extension_claim": [],
+    "support_reference": [
+     "Enquiry recorded: PU-SUP-A6E7BE, with the Student Financial Aid Office. Your financial aid application AID-26-1182 is at this stage: received, evidence outstanding; review not started. The Student Financial Aid Office has not issued a decision yet. Deadline: upload the 2025 tax return transcript by 15 October 2026 (aid office verification notice).",
+     "Your enquiry has been recorded with the Student Financial Aid Office. Keep the support reference PU-SUP-A6E7BE for follow-up."
+    ],
+    "enquiries_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "pine.words_guard": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "record_enquiry",
+      "conversation_id": "education-enrolment-gpt-text-normal-deadline-question-20260930T181356"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "pine.words_guard": []
+   },
+   "usage": {
+    "llm_calls": 7,
+    "main_loop_calls": 6,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 19037,
+    "completion_tokens": 297,
+    "reasoning_tokens": 64,
+    "cached_prompt_tokens": 9216,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.062623,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     940.5,
+     1996.3,
+     2039.0,
+     1077.6,
+     4205.2,
+     3100.3,
+     2722.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "education-enrolment-gpt-text-normal-deadline-question-20260930T181356",
+    "prompt": 19037,
+    "completion": 297,
+    "total": 19334,
+    "generations": 7,
+    "fetched_at": "2026-09-30T18:14:44.365924+00:00"
+   }
+  },
+  {
+   "id": "correction-reference-at-confirmation",
+   "kind": "correction",
+   "description": "The applicant changes the reference at the engine's question; nothing is recorded on the first form, and the second is looked up and recorded after a new question.",
+   "conversation_id": "education-enrolment-gpt-text-correction-reference-at-confirmation-20260930T181356",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Please log a question on my aid application AID-26-1182: has my transcript arrived?",
+     "latency_ms": 8590.0,
+     "bot": [
+      "Hello Rowan, this is Pine University applicant support. I can tell you where your admission, financial aid, scholarship or enrolment forms stand, and pass a question to the team that handles them. What would you like to check?",
+      "Your financial aid application AID-26-1182 is at this stage: received, evidence outstanding; review not started. The Student Financial Aid Office has not issued a decision yet. Next step: Upload the 2025 tax return transcript by 15 October 2026. Would you like me to record your enquiry about it with the Student Financial Aid Office?"
+     ]
+    },
+    {
+     "user": "Wait, no, I meant my admission application, ADM-26-4471. The question is about my offer.",
+     "latency_ms": 8529.9,
+     "bot": [
+      "ADM-26-4471 is your admission application. It is at this stage: decision issued (formal admission offer). The Undergraduate Admissions Office issued a formal admission offer on 12 September 2026. Next step: Accept the offer in the applicant portal by 1 November 2026. Would you like me to record your question about your offer with the Undergraduate Admissions Office?"
+     ]
+    },
+    {
+     "user": "Yes, record it on the admission application.",
+     "latency_ms": 1866.4,
+     "bot": [
+      "Your admission application ADM-26-4471 is at this stage: decision issued (formal admission offer). The Undergraduate Admissions Office issued a formal admission offer on 12 September 2026. Next step: Accept the offer in the applicant portal by 1 November 2026. Would you like me to record your enquiry about it with the Undergraduate Admissions Office?"
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4472.7,
+     "bot": [
+      "Enquiry recorded: PU-SUP-DBF58D, with the Undergraduate Admissions Office. Your admission application ADM-26-4471 is at this stage: decision issued (formal admission offer). The Undergraduate Admissions Office issued a formal admission offer on 12 September 2026. Deadline: accept the offer and pay the enrolment deposit by 1 November 2026 (admission offer letter).",
+      "Your enquiry has been recorded with the Undergraduate Admissions Office under support reference PU-SUP-DBF58D. This does not change your deadline or the offer status."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "record_enquiry",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "application_reference": "AID-26-1182"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "lookup_application",
+      "result": {
+       "status": "found",
+       "application_reference": "ADM-26-4471"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_enquiry",
+      "result": {
+       "status": "succeeded",
+       "application_reference": "ADM-26-4471"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_applicant_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "lookup_application",
+     "arguments": {
+      "reference_or_form": "AID-26-1182"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "AID-26-1182",
+      "topic": "Transcript arrival",
+      "question": "has my transcript arrived?"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "AID-26-1182",
+      "topic": "Transcript arrival",
+      "question": "has my transcript arrived?"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "lookup_application",
+     "arguments": {
+      "reference_or_form": "ADM-26-4471"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "ADM-26-4471",
+      "topic": "Admission offer",
+      "question": "The question is about my offer."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "ADM-26-4471",
+      "topic": "Admission offer",
+      "question": "The question is about my offer."
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "aid_award_claim": [],
+    "admission_claim": [],
+    "extension_claim": [],
+    "support_reference": [
+     "Enquiry recorded: PU-SUP-DBF58D, with the Undergraduate Admissions Office. Your admission application ADM-26-4471 is at this stage: decision issued (formal admission offer). The Undergraduate Admissions Office issued a formal admission offer on 12 September 2026. Deadline: accept the offer and pay the enrolment deposit by 1 November 2026 (admission offer letter).",
+     "Your enquiry has been recorded with the Undergraduate Admissions Office under support reference PU-SUP-DBF58D. This does not change your deadline or the offer status."
+    ],
+    "enquiries_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "pine.words_guard": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "record_enquiry",
+      "conversation_id": "education-enrolment-gpt-text-correction-reference-at-confirmation-20260930T181356"
+     }
+    ],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "record_enquiry",
+      "conversation_id": "education-enrolment-gpt-text-correction-reference-at-confirmation-20260930T181356"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "pine.words_guard": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 31920,
+    "completion_tokens": 611,
+    "reasoning_tokens": 196,
+    "cached_prompt_tokens": 15360,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.10881,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1507.7,
+     2632.5,
+     1566.3,
+     2827.9,
+     2620.8,
+     3564.2,
+     2305.5,
+     1847.4,
+     2413.5,
+     2018.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "education-enrolment-gpt-text-correction-reference-at-confirmation-20260930T181356",
+    "prompt": 31920,
+    "completion": 611,
+    "total": 32531,
+    "generations": 10,
+    "fetched_at": "2026-09-30T18:15:10.862322+00:00"
+   }
+  },
+  {
+   "id": "correction-reference-before-status",
+   "kind": "correction",
+   "description": "The contract's correction: a different reference is resolved before any status or deadline is given for it.",
+   "conversation_id": "education-enrolment-gpt-text-correction-reference-before-status-20260930T181356",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "What's the deadline on ADM-26-4471?",
+     "latency_ms": 7619.4,
+     "bot": [
+      "Hello Rowan, this is Pine University applicant support. I can tell you where your admission, financial aid, scholarship or enrolment forms stand, and pass a question to the team that handles them. What would you like to check?",
+      "For ADM-26-4471, the deadline is 1 November 2026 to accept the offer and pay the enrolment deposit, from the admission offer letter."
+     ]
+    },
+    {
+     "user": "Sorry, wrong one. I meant the aid form AID-26-1182. What's its deadline?",
+     "latency_ms": 5095.7,
+     "bot": [
+      "For AID-26-1182, the deadline is 15 October 2026 to upload the 2025 tax return transcript, from the aid office verification notice."
+     ]
+    },
+    {
+     "user": "Yes please.",
+     "latency_ms": 2451.6,
+     "bot": [
+      "Do you want me to record an enquiry with the Student Financial Aid Office about the AID-26-1182 deadline?"
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 1595.9,
+     "bot": [
+      "Your financial aid application AID-26-1182 is at this stage: received, evidence outstanding; review not started. The Student Financial Aid Office has not issued a decision yet. Next step: Upload the 2025 tax return transcript by 15 October 2026. Would you like me to record your enquiry about it with the Student Financial Aid Office?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "lookup_application",
+      "result": {
+       "status": "found",
+       "application_reference": "AID-26-1182"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_enquiry",
+      "result": {
+       "status": "succeeded",
+       "application_reference": "AID-26-1182",
+       "deadline_dates": "2026-10-15"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_applicant_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "lookup_application",
+     "arguments": {
+      "reference_or_form": "ADM-26-4471"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "lookup_application",
+     "arguments": {
+      "reference_or_form": "AID-26-1182"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "record_enquiry",
+     "arguments": {
+      "application_reference": "AID-26-1182",
+      "topic": "Financial aid deadline",
+      "question": "What's its deadline?"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "aid_award_claim": [],
+    "admission_claim": [],
+    "extension_claim": [],
+    "support_reference": [],
+    "enquiries_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "pine.words_guard": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "pine.words_guard": []
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 7,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 22164,
+    "completion_tokens": 385,
+    "reasoning_tokens": 100,
+    "cached_prompt_tokens": 11776,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.069378,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2551.7,
+     1409.9,
+     1438.3,
+     2147.5,
+     3580.2,
+     1475.8,
+     2420.6,
+     1549.2
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "education-enrolment-gpt-text-correction-reference-before-status-20260930T181356",
+    "prompt": 22164,
+    "completion": 385,
+    "total": 22549,
+    "generations": 8,
+    "fetched_at": "2026-09-30T18:15:30.656733+00:00"
+   }
+  }
+ ]
+}

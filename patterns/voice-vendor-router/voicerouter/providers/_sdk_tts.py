@@ -21,8 +21,8 @@ import asyncio
 from typing import Any, AsyncIterator, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.audio_bytes import RasaAudioBytes
-from rasa.core.channels.voice_stream.tts.tts_engine import TTSEngine, TTSError
+from voicerouter.engine import RasaAudioBytes
+from voicerouter.engine import TTSEngine, TTSError
 
 from voicerouter.audio import to_rasa_audio
 

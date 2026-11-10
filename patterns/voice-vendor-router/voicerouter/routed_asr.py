@@ -25,8 +25,8 @@ from __future__ import annotations
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.asr.asr_event import ASREvent
-from rasa.core.channels.voice_stream.audio_bytes import AudioFormat, RasaAudioBytes
+from voicerouter.engine import ASREvent
+from voicerouter.engine import AudioFormat, RasaAudioBytes
 
 from voicerouter.base import (
     BuiltProvider,
@@ -41,7 +41,15 @@ logger = structlog.get_logger(__name__)
 
 
 class RoutedASR:
-    """Listens through the first healthy provider, and keeps listening."""
+    """Listens through the first healthy provider, and keeps listening.
+
+    Like `RoutedTTS`, not an `ASREngine` subclass. It implements the surface
+    Rasa uses on an ASR engine: the methods it calls, the `config` it reads
+    for the keep-alive interval, the `name()` and `current_language_config`
+    that tracing reads, and the async context-manager protocol the voice
+    channel opens every call with. `voicerouter.contract` derives that surface
+    from the installed Rasa and fails if any of it is missing.
+    """
 
     def __init__(
         self,
@@ -78,7 +86,7 @@ class RoutedASR:
         rasa_language: str,
         additional_languages: Optional[List[str]] = None,
     ) -> "RoutedASR":
-        from rasa.core.channels.voice_stream.voice_channel import asr_engine_from_config
+        from voicerouter.engine import asr_engine_from_config
 
         config = dict(config or {})
         raw_providers = config.pop("providers", None)
@@ -112,6 +120,33 @@ class RoutedASR:
     @property
     def current_language_config(self) -> Any:
         return self._active.engine.current_language_config
+
+    @property
+    def config(self) -> Any:
+        """The active provider's config, with the shortest keep-alive interval.
+
+        Rasa's `asr_keep_alive_task` reads `asr_engine.config.keep_alive_interval`
+        once, when the call starts, and pings at that pace for the whole call.
+        If the router later fails over to a provider that needs pinging more
+        often, the interval read at the start would let that socket idle out.
+        So the interval reported is the shortest any provider asks for; an
+        extra keep-alive to the active provider costs nothing.
+        """
+        active = getattr(self._active.engine, "config", None)
+        intervals = [
+            interval
+            for provider in self._providers
+            for interval in [
+                getattr(getattr(provider.engine, "config", None), "keep_alive_interval", None)
+            ]
+            if isinstance(interval, (int, float)) and interval > 0
+        ]
+        if active is None or not intervals or not hasattr(active, "model_copy"):
+            return active
+        shortest = min(intervals)
+        if getattr(active, "keep_alive_interval", None) == shortest:
+            return active
+        return active.model_copy(update={"keep_alive_interval": shortest})
 
     @property
     def active_provider(self) -> str:
@@ -208,6 +243,21 @@ class RoutedASR:
                 )
         self._connected.clear()
 
+    async def __aenter__(self) -> "RoutedASR":
+        """Connect on `async with`, as Rasa's voice channel enters every engine.
+
+        `run_audio_streaming` opens each call with `async with asr_engine,
+        tts_engine:`. Without this the call dies with TypeError before the
+        caller is heard.
+        """
+        await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> bool:
+        """Close every connected provider; never swallow the call's exception."""
+        await self.close_connection()
+        return False
+
     # ---- listening ----------------------------------------------------------
 
     async def send_audio_chunks(self, chunk: RasaAudioBytes) -> None:
@@ -251,6 +301,10 @@ class RoutedASR:
             except Exception as exc:  # noqa: BLE001
                 verdict = health.record_failure(exc)
                 self._metrics.record_failure(provider.spec.label, verdict.kind.value)
+                try:
+                    await provider.engine.close_connection()
+                except Exception:
+                    pass  # preserve the transport failure, not a secondary close error
                 self._connected.discard(self._active_index)
                 logger.warning(
                     "voicerouter.asr.stream_failed",
@@ -265,12 +319,16 @@ class RoutedASR:
                     "voicerouter.asr.exhausted",
                     note="no ASR provider left; the agent can no longer hear",
                 )
+                if self._policy.raise_on_failure:
+                    raise RuntimeError("ASR stream ended without an available provider")
                 return
 
             try:
                 await self.connect()
             except Exception as exc:  # noqa: BLE001
                 logger.error("voicerouter.asr.reconnect_failed", error=str(exc))
+                if self._policy.raise_on_failure:
+                    raise
                 return
             logger.info(
                 "voicerouter.asr.resumed",

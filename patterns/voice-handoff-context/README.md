@@ -1,10 +1,18 @@
 # Handoff with context transfer
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-voice-handoff-context/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
     Author:        Rod Rivera
     Assessed on:   2026-09-02
     Assessed by:   Rod Rivera
     Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-    Installation: rasa-pro 3.20.0.dev9 (automated check scope in COMPATIBILITY.json)
+    Installation: rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners whose agents hand callers to humans and whose callers then repeat themselves
     Time:          30–45 minutes
 
@@ -212,7 +220,7 @@ than no claim at all.
    `intent.details` was empty on every real handoff and the desk still asked
    "which account is this about?" — while the eval suite reported green, because
    it built its own session dict containing the key. Green tests, false claim;
-   the same shape RULING-007 landed on. The fix was not just adding the key: it
+   the same shape as an earlier review finding. The fix was not just adding the key: it
    was `test_the_agent_path_retires_every_desk_question`, which parses the
    agent's *actual* `_MEMORY_KEYS` and the dispute skill's *actual*
    `memory.set` calls and drives the assertion from those, so the claim is

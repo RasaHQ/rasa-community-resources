@@ -1,0 +1,178 @@
+{
+  "slug": "utilities-service-move",
+  "title": "Service moves without premature closure",
+  "organisation": "Amber Grid",
+  "action": "schedule a move-in or move-out transfer",
+  "failure": "The agent closed the current service immediately when the customer requested a move next month.",
+  "lesson": "Preserve effective dates and the distinction between a future move instruction and current service state.",
+  "receipt": "A dated move-order reference with the current service unchanged until the effective transition.",
+  "evidence": "Compare both premises and effective dates with service-state changes; a scheduled move must not become an immediate closure.",
+  "recovery": "If the destination cannot be resolved, retain the current service and route the move draft for review before sending closure instructions.",
+  "owner": "service lifecycle owner",
+  "metric": "scheduled moves causing premature current-service closure, divided by move requests",
+  "question": "This schedules the change for the date you chose and leaves the current service as it is until then. Is that right?",
+  "correction": "The customer changes the move-out date; update the schedule and reconfirm both sides of the transfer.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "premise_identity_resolved",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_premise",
+      "phase": "request"
+    },
+    {
+      "field": "effective_dates_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "move_date_ambiguous",
+      "phase": "request"
+    },
+    {
+      "field": "move_order_receipt_verified",
+      "good": true,
+      "bad": false,
+      "reason": "move_order_unconfirmed",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "premise_identity_resolved": true,
+    "effective_dates_confirmed": true,
+    "move_order_receipt_verified": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "premise_identity_resolved": true,
+        "effective_dates_confirmed": true,
+        "move_order_receipt_verified": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "premise_identity_resolved-false",
+      "facts": {
+        "premise_identity_resolved": false,
+        "effective_dates_confirmed": true,
+        "move_order_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_premise",
+        "effects": 0
+      }
+    },
+    {
+      "name": "premise_identity_resolved-missing",
+      "facts": {
+        "effective_dates_confirmed": true,
+        "move_order_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_premise",
+        "effects": 0
+      }
+    },
+    {
+      "name": "premise_identity_resolved-string",
+      "facts": {
+        "premise_identity_resolved": "true",
+        "effective_dates_confirmed": true,
+        "move_order_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_premise",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_dates_confirmed-false",
+      "facts": {
+        "premise_identity_resolved": true,
+        "effective_dates_confirmed": false,
+        "move_order_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "move_date_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_dates_confirmed-missing",
+      "facts": {
+        "premise_identity_resolved": true,
+        "move_order_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "move_date_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "effective_dates_confirmed-string",
+      "facts": {
+        "premise_identity_resolved": true,
+        "effective_dates_confirmed": "true",
+        "move_order_receipt_verified": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "move_date_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "move_order_receipt_verified-false",
+      "facts": {
+        "premise_identity_resolved": true,
+        "effective_dates_confirmed": true,
+        "move_order_receipt_verified": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "move_order_unconfirmed",
+        "effects": 1
+      }
+    },
+    {
+      "name": "move_order_receipt_verified-missing",
+      "facts": {
+        "premise_identity_resolved": true,
+        "effective_dates_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "move_order_unconfirmed",
+        "effects": 1
+      }
+    },
+    {
+      "name": "move_order_receipt_verified-string",
+      "facts": {
+        "premise_identity_resolved": true,
+        "effective_dates_confirmed": true,
+        "move_order_receipt_verified": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "move_order_unconfirmed",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

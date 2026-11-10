@@ -1,0 +1,178 @@
+{
+  "slug": "banking-dispute",
+  "title": "Disputes without premature reimbursement",
+  "organisation": "Northgate Bank",
+  "action": "open a transaction dispute case",
+  "failure": "The customer said they did not recognize a charge, and the agent announced a refund before any review occurred.",
+  "lesson": "Separate evidence intake, card containment and reimbursement decisions; a dispute receipt is not a finding of fraud.",
+  "receipt": "A dispute reference and next review step, with no promised reimbursement outcome.",
+  "evidence": "Link the exact transaction and customer statement to the receipt; retain separate references for any card-containment request.",
+  "recovery": "When the case service times out, look up by the original submission key. If no definite state is available, give a pending status and desk route.",
+  "owner": "disputes case owner",
+  "metric": "dispute receipts presented as reimbursement decisions, divided by dispute submissions",
+  "question": "I can record that you do not recognize this charge for review. Would you like to confirm this transaction?",
+  "correction": "The customer recognizes the merchant after clarification; stop the draft dispute before filing it.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "transaction_selected",
+      "good": true,
+      "bad": false,
+      "reason": "transaction_ambiguous",
+      "phase": "request"
+    },
+    {
+      "field": "customer_statement_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "statement_not_confirmed",
+      "phase": "request"
+    },
+    {
+      "field": "case_reference_recorded",
+      "good": true,
+      "bad": false,
+      "reason": "case_not_recorded",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "transaction_selected": true,
+    "customer_statement_confirmed": true,
+    "case_reference_recorded": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "transaction_selected": true,
+        "customer_statement_confirmed": true,
+        "case_reference_recorded": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "transaction_selected-false",
+      "facts": {
+        "transaction_selected": false,
+        "customer_statement_confirmed": true,
+        "case_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "transaction_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "transaction_selected-missing",
+      "facts": {
+        "customer_statement_confirmed": true,
+        "case_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "transaction_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "transaction_selected-string",
+      "facts": {
+        "transaction_selected": "true",
+        "customer_statement_confirmed": true,
+        "case_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "transaction_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "customer_statement_confirmed-false",
+      "facts": {
+        "transaction_selected": true,
+        "customer_statement_confirmed": false,
+        "case_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "statement_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "customer_statement_confirmed-missing",
+      "facts": {
+        "transaction_selected": true,
+        "case_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "statement_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "customer_statement_confirmed-string",
+      "facts": {
+        "transaction_selected": true,
+        "customer_statement_confirmed": "true",
+        "case_reference_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "statement_not_confirmed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "case_reference_recorded-false",
+      "facts": {
+        "transaction_selected": true,
+        "customer_statement_confirmed": true,
+        "case_reference_recorded": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "case_not_recorded",
+        "effects": 1
+      }
+    },
+    {
+      "name": "case_reference_recorded-missing",
+      "facts": {
+        "transaction_selected": true,
+        "customer_statement_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "case_not_recorded",
+        "effects": 1
+      }
+    },
+    {
+      "name": "case_reference_recorded-string",
+      "facts": {
+        "transaction_selected": true,
+        "customer_statement_confirmed": true,
+        "case_reference_recorded": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "case_not_recorded",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

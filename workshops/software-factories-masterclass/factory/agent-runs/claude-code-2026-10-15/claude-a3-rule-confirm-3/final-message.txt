@@ -1,0 +1,10 @@
+I added the rule to `product/agent.yml` as a new top-level `rules:` list, next to `agent:`:
+
+```yaml
+rules:
+  - Say a card is blocked only after block_card has returned.
+```
+
+The file had no `rules:` section before, so I created one. The `agent:` block, including the persona, is unchanged, and I touched no other file.
+
+`python validate.py` passed ("Mantle found nothing to object to"). That check only shows the project loads. I did not check whether the agent follows the rule in a conversation.

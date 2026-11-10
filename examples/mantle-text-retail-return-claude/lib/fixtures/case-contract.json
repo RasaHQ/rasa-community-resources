@@ -1,0 +1,178 @@
+{
+  "slug": "retail-return",
+  "title": "Returns with eligibility and receipt boundaries",
+  "organisation": "Willow Shop",
+  "action": "start a return or exchange request",
+  "failure": "The agent promised a refund as soon as it generated a return label, before the item had been received or reviewed.",
+  "lesson": "Separate return eligibility, shipping authorization, inspection and reimbursement; an exchange also depends on replacement stock.",
+  "receipt": "A return authorization or exchange-request reference with the next unresolved stage.",
+  "evidence": "Trace item identifier, selected resolution and authorization receipt; keep inspection and refund states separate.",
+  "recovery": "If authorization is unknown, reconcile the same request before making another label. Route exceptions without promising a refund.",
+  "owner": "returns service owner",
+  "metric": "return labels described as completed refunds, divided by return requests",
+  "question": "Would you like to request a return or an exchange? The next stage begins after this authorization.",
+  "correction": "The customer chooses an exchange after asking for a return; check replacement availability and reconfirm the changed resolution.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "item_eligibility_verified",
+      "good": true,
+      "bad": false,
+      "reason": "item_ineligible",
+      "phase": "request"
+    },
+    {
+      "field": "return_choice_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "refund_exchange_ambiguous",
+      "phase": "request"
+    },
+    {
+      "field": "return_authorization_received",
+      "good": true,
+      "bad": false,
+      "reason": "return_not_authorized",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "item_eligibility_verified": true,
+    "return_choice_confirmed": true,
+    "return_authorization_received": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "item_eligibility_verified": true,
+        "return_choice_confirmed": true,
+        "return_authorization_received": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "item_eligibility_verified-false",
+      "facts": {
+        "item_eligibility_verified": false,
+        "return_choice_confirmed": true,
+        "return_authorization_received": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "item_ineligible",
+        "effects": 0
+      }
+    },
+    {
+      "name": "item_eligibility_verified-missing",
+      "facts": {
+        "return_choice_confirmed": true,
+        "return_authorization_received": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "item_ineligible",
+        "effects": 0
+      }
+    },
+    {
+      "name": "item_eligibility_verified-string",
+      "facts": {
+        "item_eligibility_verified": "true",
+        "return_choice_confirmed": true,
+        "return_authorization_received": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "item_ineligible",
+        "effects": 0
+      }
+    },
+    {
+      "name": "return_choice_confirmed-false",
+      "facts": {
+        "item_eligibility_verified": true,
+        "return_choice_confirmed": false,
+        "return_authorization_received": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "refund_exchange_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "return_choice_confirmed-missing",
+      "facts": {
+        "item_eligibility_verified": true,
+        "return_authorization_received": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "refund_exchange_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "return_choice_confirmed-string",
+      "facts": {
+        "item_eligibility_verified": true,
+        "return_choice_confirmed": "true",
+        "return_authorization_received": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "refund_exchange_ambiguous",
+        "effects": 0
+      }
+    },
+    {
+      "name": "return_authorization_received-false",
+      "facts": {
+        "item_eligibility_verified": true,
+        "return_choice_confirmed": true,
+        "return_authorization_received": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "return_not_authorized",
+        "effects": 1
+      }
+    },
+    {
+      "name": "return_authorization_received-missing",
+      "facts": {
+        "item_eligibility_verified": true,
+        "return_choice_confirmed": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "return_not_authorized",
+        "effects": 1
+      }
+    },
+    {
+      "name": "return_authorization_received-string",
+      "facts": {
+        "item_eligibility_verified": true,
+        "return_choice_confirmed": true,
+        "return_authorization_received": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "return_not_authorized",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

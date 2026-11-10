@@ -1,0 +1,7 @@
+# Nine recorded Claude Code runs on the Mantle factory
+
+Agent: Claude Code 2.1.299, `claude -p` with `--permission-mode acceptEdits --allowedTools Read Edit Write "Bash(python validate.py)"`, run on October 15, 2026, on macOS, one attempt per task, three rounds (tasks A1, A2, A3). Engine: `rasa-pro 3.21.0.dev5`. The prompt for each: "Read tasks/<ID>.json and carry out the request. Follow CLAUDE.md." Each ran in a folder made by `scratch.py`, was collected by `collect.py` and judged by `factory.py`, started by `run_claude_experiment.sh` in a detached terminal session outside any other Claude Code session. No agent output was edited. The records were assembled after each run: `meta.json`'s `human_interventions: 0` was added by the person running the experiment (nobody intervened), the final message was copied in as `final-message.txt` (`review.json` still names it `agent-claim.txt`), and decisions carry the machine's local paths in their tracebacks.
+
+Per run: `decision.json`, `meta.json` (agent, seconds, agent exit status, human interventions: 0), `final-message.txt` (the agent's own account, a claim), `change.patch` and `review.json`.
+
+Not recorded: cost. The driver scripts that ran them are in `../drivers/`. The model Claude Code used is not recorded in `meta.json`. Read them with `uv run python measure.py report agent-runs/claude-code-2026-10-15`, or both agents together with `uv run python measure.py report agent-runs/codex-2026-10-15 agent-runs/claude-code-2026-10-15`.

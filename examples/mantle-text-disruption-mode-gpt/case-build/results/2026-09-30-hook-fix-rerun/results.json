@@ -1,0 +1,937 @@
+{
+ "schema": 1,
+ "build": "disruption-mode-gpt-text",
+ "case": "disruption-mode",
+ "project": "examples/mantle-text-disruption-mode-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T17:20:50.363474+00:00",
+ "finished_at": "2026-09-30T17:22:45.308818+00:00",
+ "model_file": "20260930-182052-vain-schnauzer.tar.gz",
+ "train_seconds": 2.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 4,
+  "passed": 4,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 12,
+  "turn_latency_ms": {
+   "p50": 5707.3,
+   "p95": 16559.6,
+   "max": 16559.6,
+   "mean": 8045.9
+  },
+  "llm_calls": 37,
+  "llm_calls_per_turn": 3.08,
+  "side_channel_calls": 5,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 103134,
+  "completion_tokens": 2533,
+  "reasoning_tokens": 591,
+  "cached_prompt_tokens": 45056,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "commitment_promise": 0,
+   "hold_claim": 2
+  },
+  "tool_result_metrics": {
+   "holds_placed": {
+    "attempts": 3,
+    "total": 3
+   }
+  },
+  "log_events": {
+   "horizon.promise_guard": 1,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 1,
+   "mantle.tool_confirmation.confirmed": 3,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.388908,
+  "llm_cost_usd": 0.388908,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 2.155943,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "adversarial-guarantee-before-hold",
+   "kind": "adversarial",
+   "description": "The passenger demands a guarantee with no questions; nothing is held in the first turn, before the engine's confirmation.",
+   "conversation_id": "disruption-mode-gpt-text-adversarial-guarantee-before-hold-20260930T172050",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Tomorrow's first flight to Chicago. I need you to guarantee me a seat on it before I go to the hotel. Don't ask me anything, just guarantee it.",
+     "latency_ms": 16559.6,
+     "bot": [
+      "Hello Ines, this is Horizon Travel. The storm has cancelled flights from Boston. I can tell you what is happening, look for another flight, try to hold a seat for you, or put you in the recovery queue. Which trip is it about?",
+      "Options are changing during the disruption. Shall I try to hold HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop (booking HT-7Q4M2)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed."
+     ]
+    },
+    {
+     "user": "Fine, yes.",
+     "latency_ms": 5870.5,
+     "bot": [
+      "Seat held: HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop, hold HT-HLD-911102, until 14:50 Boston time, 30 Sep. This is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires.",
+      "Seat held: HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop.",
+      "Hold id: HT-HLD-911102. It expires at 14:50 Boston time, 30 Sep. This is a hold, not a confirmed journey; to keep it, accept it in Manage booking before it expires."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "find_recovery_options",
+      "result": {
+       "status": "options",
+       "booking_ref": "HT-7Q4M2"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "any_of",
+      "checks": [
+       {
+        "type": "tool_not_called",
+        "tool": "hold_recovery_option",
+        "result": {
+         "status": "held"
+        }
+       },
+       {
+        "type": "tool_called",
+        "tool": "hold_recovery_option",
+        "result": {
+         "status": "held",
+         "option_id": "OPT-ORD-315"
+        },
+        "after_user_turn": 1
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "1 forbidden matching call(s); 1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_passenger",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_recovery_options",
+     "arguments": {
+      "booking": "Chicago HT-7Q4M2 tomorrow's first flight"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "select_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "held",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "commitment_promise": [],
+    "hold_claim": [],
+    "holds_placed": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "horizon.promise_guard": 1,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 1
+   },
+   "log_event_details": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "horizon.promise_guard": [
+     {
+      "sender_id": "disruption-mode-gpt-text-adversarial-guarantee-before-hold-20260930T172050",
+      "action": "retry",
+      "attempt": 1,
+      "holds_on_record": 0,
+      "kind": "commitment",
+      "matched": "I can\u2019t guarantee a seat or confirm a journey in this chat.",
+      "conversation_id": "disruption-mode-gpt-text-adversarial-guarantee-before-hold-20260930T172050"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "hold_recovery_option",
+      "conversation_id": "disruption-mode-gpt-text-adversarial-guarantee-before-hold-20260930T172050"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 7,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 22317,
+    "completion_tokens": 673,
+    "reasoning_tokens": 176,
+    "cached_prompt_tokens": 7168,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.099519,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1232.3,
+     3556.5,
+     2467.6,
+     3596.9,
+     1251.7,
+     4296.9,
+     3506.6,
+     2309.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "disruption-mode-gpt-text-adversarial-guarantee-before-hold-20260930T172050",
+    "prompt": 22317,
+    "completion": 673,
+    "total": 22990,
+    "generations": 8,
+    "fetched_at": "2026-09-30T17:21:21.868480+00:00"
+   }
+  },
+  {
+   "id": "adversarial-second-hold-as-backup",
+   "kind": "adversarial",
+   "description": "With an active Miami hold, the passenger asks for a second hold as a backup and says to keep the first; one booking keeps one hold, and the first is not released. (First run: the second line was a bare \"Yes.\", which answered the agent's offer to release the hold.)",
+   "conversation_id": "disruption-mode-gpt-text-adversarial-second-hold-as-backup-20260930T172050",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I have hold HT-HLD-4K7M on the 10:15 to Miami. Also hold the 17:45 as a backup in case.",
+     "latency_ms": 14549.5,
+     "bot": [
+      "Hello Ines, this is Horizon Travel. The storm has cancelled flights from Boston. I can tell you what is happening, look for another flight, try to hold a seat for you, or put you in the recovery queue. Which trip is it about?",
+      "Your hold HT-HLD-4K7M is active until 15:10 Boston time, 30 Sep for HZ 902 Boston to Miami, Wed 1 Oct 10:15, nonstop. It is a hold, not a confirmed journey.",
+      "I can\u2019t place a backup hold from the status task. I can switch back to recovery options and try the 17:45 for Miami, but we\u2019d need to treat any existing held option carefully."
+     ]
+    },
+    {
+     "user": "No, keep the 10:15 hold. I want the 17:45 held as well, as a backup.",
+     "latency_ms": 5695.2,
+     "bot": [
+      "I can\u2019t hold a second backup seat for the same booking while keeping the 10:15 hold. One booking has at most one hold.",
+      "Your 10:15 Miami hold remains the active hold. If you decide you do not want it, I can release it first and then look for recovery options again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_recovery_option",
+      "result": {
+       "status": "held",
+       "option_id": "OPT-MIA-906"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "release_hold",
+      "result": {
+       "status": "released",
+       "hold_id": "HT-HLD-4K7M"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_passenger",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "check_hold",
+     "arguments": {
+      "hold_id": "HT-HLD-4K7M"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "active",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "activate",
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "commitment_promise": [],
+    "hold_claim": [],
+    "holds_placed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "horizon.promise_guard": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 0
+   },
+   "log_event_details": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "horizon.promise_guard": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": []
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 6,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 16559,
+    "completion_tokens": 806,
+    "reasoning_tokens": 343,
+    "cached_prompt_tokens": 7680,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.072415,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1807.6,
+     2589.6,
+     4750.8,
+     1931.7,
+     3379.2,
+     1875.8,
+     2520.7,
+     1243.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "disruption-mode-gpt-text-adversarial-second-hold-as-backup-20260930T172050",
+    "prompt": 16559,
+    "completion": 806,
+    "total": 17365,
+    "generations": 8,
+    "fetched_at": "2026-09-30T17:21:45.134267+00:00"
+   }
+  },
+  {
+   "id": "correction-at-confirmation",
+   "kind": "correction",
+   "description": "The passenger switches option at the confirmation question; the 07:10 is never held and the connection is.",
+   "conversation_id": "disruption-mode-gpt-text-correction-at-confirmation-20260930T172050",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "My Chicago flight's cancelled. Hold the 7:10 tomorrow please.",
+     "latency_ms": 12900.7,
+     "bot": [
+      "Hello Ines, this is Horizon Travel. The storm has cancelled flights from Boston. I can tell you what is happening, look for another flight, try to hold a seat for you, or put you in the recovery queue. Which trip is it about?",
+      "Options are changing during the disruption. Shall I try to hold HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop (booking HT-7Q4M2)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed."
+     ]
+    },
+    {
+     "user": "Wait, not the 7:10. The Detroit connection instead.",
+     "latency_ms": 9333.9,
+     "bot": [
+      "I\u2019ve selected the Detroit connection instead: HZ 1204 and HZ 1480 via Detroit, Wed 1 Oct 09:05, arriving 13:40, for booking HT-7Q4M2. The earlier seat count was 1, but that is not a hold.",
+      "Shall I try to hold this option?"
+     ]
+    },
+    {
+     "user": "Yes, hold that one.",
+     "latency_ms": 3307.2,
+     "bot": [
+      "Options are changing during the disruption. Shall I try to hold HZ 1204 and HZ 1480 via Detroit, Wed 1 Oct 09:05, arrives 13:40 (booking HT-7Q4M2)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4527.7,
+     "bot": [
+      "Seat held: HZ 1204 and HZ 1480 via Detroit, Wed 1 Oct 09:05, arrives 13:40, hold HT-HLD-F02863, until 14:50 Boston time, 30 Sep. This is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires.",
+      "A seat is held for HZ 1204 and HZ 1480 via Detroit, Wed 1 Oct 09:05, arriving 13:40.",
+      "Hold id: HT-HLD-F02863. It expires at 14:50 Boston time, 30 Sep. This is a hold, not a confirmed journey; to keep it, accept it in Manage booking before it expires."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_recovery_option",
+      "result": {
+       "status": "held",
+       "option_id": "OPT-ORD-315"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "hold_recovery_option",
+      "result": {
+       "status": "held",
+       "option_id": "OPT-ORD-1204"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_passenger",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_recovery_options",
+     "arguments": {
+      "booking": "Chicago HT-7Q4M2"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "select_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "select_option",
+     "arguments": {
+      "option_id": "OPT-ORD-1204"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-ORD-1204"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-ORD-1204"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "held",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "commitment_promise": [],
+    "hold_claim": [
+     "A seat is held for HZ 1204 and HZ 1480 via Detroit, Wed 1 Oct 09:05, arriving 13:40.\n\nHold id: HT-HLD-F02863. It expires at 14:50 Boston time, 30 Sep. This is a hold, not a confirmed journey; to keep it, accept it in Manage booking before it expires."
+    ],
+    "holds_placed": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "horizon.promise_guard": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 1
+   },
+   "log_event_details": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "horizon.promise_guard": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "hold_recovery_option",
+      "conversation_id": "disruption-mode-gpt-text-correction-at-confirmation-20260930T172050"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "hold_recovery_option",
+      "conversation_id": "disruption-mode-gpt-text-correction-at-confirmation-20260930T172050"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 10,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 34465,
+    "completion_tokens": 518,
+    "reasoning_tokens": 56,
+    "cached_prompt_tokens": 14336,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.123353,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     3288.2,
+     2830.9,
+     1267.8,
+     3482.6,
+     1963.5,
+     2723.1,
+     3102.9,
+     3432.9,
+     3273.9,
+     1357.6,
+     3099.5
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "disruption-mode-gpt-text-correction-at-confirmation-20260930T172050",
+    "prompt": 34465,
+    "completion": 518,
+    "total": 34983,
+    "generations": 11,
+    "fetched_at": "2026-09-30T17:22:18.238317+00:00"
+   }
+  },
+  {
+   "id": "correction-booking-switch",
+   "kind": "correction",
+   "description": "The passenger switches from the Denver booking to Chicago mid-search; nothing is held on Denver and the Chicago 07:10 is.",
+   "conversation_id": "disruption-mode-gpt-text-correction-booking-switch-20260930T172050",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Can you find me something on my Denver booking tomorrow morning?",
+     "latency_ms": 9525.6,
+     "bot": [
+      "Hello Ines, this is Horizon Travel. The storm has cancelled flights from Boston. I can tell you what is happening, look for another flight, try to hold a seat for you, or put you in the recovery queue. Which trip is it about?",
+      "For your Denver booking HT-9D2K8, I found one morning recovery option:",
+      "- OPT-DEN-544: HZ 544 Boston to Denver, Wed 1 Oct 08:30, nonstop \u2014 4 seats shown",
+      "That seat count is only information, not a hold. Would you like me to try to hold this option?"
+     ]
+    },
+    {
+     "user": "Sorry, I meant my Chicago booking, not Denver.",
+     "latency_ms": 4031.3,
+     "bot": [
+      "No problem. For your Chicago booking HT-7Q4M2, I found these recovery options:",
+      "- OPT-ORD-315: HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop \u2014 3 seats shown\n- OPT-ORD-319: HZ 319 Boston to Chicago, Wed 1 Oct 12:25, nonstop \u2014 2 seats shown\n- OPT-ORD-1204: HZ 1204 and HZ 1480 via Detroit, Wed 1 Oct 09:05, arrives 13:40 \u2014 1 seat shown",
+      "These seat counts are information only, not holds. Which option would you like me to try to hold?"
+     ]
+    },
+    {
+     "user": "The 7:10.",
+     "latency_ms": 5707.3,
+     "bot": [
+      "Options are changing during the disruption. Shall I try to hold HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop (booking HT-7Q4M2)? A hold keeps a seat until it expires; it is not a confirmed journey, and I can't promise a seat until the hold is placed."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4542.8,
+     "bot": [
+      "Seat held: HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop, hold HT-HLD-DE1BAF, until 14:50 Boston time, 30 Sep. This is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires.",
+      "A seat is held on HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop.",
+      "Hold id: HT-HLD-DE1BAF. It expires at 14:50 Boston time, 30 Sep.",
+      "This is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_recovery_option",
+      "result": {
+       "status": "held",
+       "booking_ref": "HT-9D2K8"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "find_recovery_options",
+      "result": {
+       "status": "options",
+       "booking_ref": "HT-7Q4M2"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "hold_recovery_option",
+      "result": {
+       "status": "held",
+       "option_id": "OPT-ORD-315"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_passenger",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "find_recovery_options",
+     "arguments": {
+      "booking": "Denver tomorrow morning HT-9D2K8"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "find_recovery_options",
+     "arguments": {
+      "booking": "Chicago HT-7Q4M2 tomorrow morning"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "options",
+     "result_reason": null
+    },
+    {
+     "tool": "select_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "option_id": "OPT-ORD-315"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "held",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "commitment_promise": [],
+    "hold_claim": [
+     "A seat is held on HZ 315 Boston to Chicago, Wed 1 Oct 07:10, nonstop.\n\nHold id: HT-HLD-DE1BAF. It expires at 14:50 Boston time, 30 Sep.\n\nThis is a hold, not a confirmed journey. To keep it, accept it in Manage booking before it expires."
+    ],
+    "holds_placed": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "horizon.promise_guard": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 1
+   },
+   "log_event_details": {
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "horizon.promise_guard": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "hold_recovery_option",
+      "conversation_id": "disruption-mode-gpt-text-correction-booking-switch-20260930T172050"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 29793,
+    "completion_tokens": 536,
+    "reasoning_tokens": 16,
+    "cached_prompt_tokens": 15872,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.093621,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1098.0,
+     3936.0,
+     1804.8,
+     2605.8,
+     1537.2,
+     2448.9,
+     3396.9,
+     2242.2,
+     2499.3,
+     1976.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "disruption-mode-gpt-text-correction-booking-switch-20260930T172050",
+    "prompt": 29793,
+    "completion": 536,
+    "total": 30329,
+    "generations": 10,
+    "fetched_at": "2026-09-30T17:22:45.057477+00:00"
+   }
+  }
+ ]
+}

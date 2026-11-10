@@ -1,0 +1,175 @@
+{
+  "fixture_note": "Entirely fictional. Horizon Travel, Horizon Rewards, Atlantic Coast Air, the members, accounts, flights, hotels, holds and redemptions are invented for this project.",
+  "as_of": "2026-09-30T09:00:00+00:00",
+  "programme": "Horizon Rewards",
+  "hold_minutes": 15,
+  "members": {
+    "HT-MEM-2044": {"first_name": "Mara", "last_name": "Lindqvist"},
+    "HT-MEM-3771": {"first_name": "Jonas", "last_name": "Lindqvist"}
+  },
+  "accounts": {
+    "HR-204417": {
+      "member_id": "HT-MEM-2044",
+      "verification": "verified",
+      "points_balance": 86400,
+      "tier": "Silver"
+    },
+    "HR-204418": {
+      "member_id": "HT-MEM-2044",
+      "verification": "pending",
+      "points_balance": 12000,
+      "tier": "Blue",
+      "note": "Opened 2026-09-27 with a new email address; the identity check has not been completed."
+    },
+    "HR-377120": {
+      "member_id": "HT-MEM-3771",
+      "verification": "verified",
+      "points_balance": 141300,
+      "tier": "Gold"
+    }
+  },
+  "options": {
+    "RW-LIS-1014": {
+      "kind": "flight",
+      "label": "one economy award seat on Horizon flight HZ 214, Boston (BOS) to Lisbon (LIS), 12 November 2026",
+      "destination": "Lisbon",
+      "search_terms": ["lisbon", "lis", "portugal"],
+      "travel_date": "2026-11-12",
+      "cabin": "economy",
+      "points": 42000,
+      "inventory": 2,
+      "fulfilment": "ticketed"
+    },
+    "RW-LIS-1015": {
+      "kind": "flight",
+      "label": "one premium economy award seat on Horizon flight HZ 214, Boston (BOS) to Lisbon (LIS), 12 November 2026",
+      "destination": "Lisbon",
+      "search_terms": ["lisbon", "lis", "portugal"],
+      "travel_date": "2026-11-12",
+      "cabin": "premium economy",
+      "points": 64000,
+      "inventory": 1,
+      "fulfilment": "ticketed"
+    },
+    "RW-LIS-1016": {
+      "kind": "flight",
+      "label": "one business award seat on Horizon flight HZ 214, Boston (BOS) to Lisbon (LIS), 12 November 2026",
+      "destination": "Lisbon",
+      "search_terms": ["lisbon", "lis", "portugal"],
+      "travel_date": "2026-11-12",
+      "cabin": "business",
+      "points": 118000,
+      "inventory": 1,
+      "fulfilment": "ticketed"
+    },
+    "RW-LIS-1019": {
+      "kind": "flight",
+      "label": "one economy award seat on Horizon flight HZ 216, Boston (BOS) to Lisbon (LIS), 13 November 2026",
+      "destination": "Lisbon",
+      "search_terms": ["lisbon", "lis", "portugal"],
+      "travel_date": "2026-11-13",
+      "cabin": "economy",
+      "points": 38000,
+      "inventory": 1,
+      "gone_before_hold": true,
+      "gone_detail": "The last award seat was taken by another member after the search and before the hold.",
+      "fulfilment": "ticketed"
+    },
+    "RW-OPO-3302": {
+      "kind": "flight",
+      "label": "one economy award seat on partner Atlantic Coast Air flight AC 509, Lisbon (LIS) to Porto (OPO), 15 November 2026",
+      "destination": "Porto",
+      "search_terms": ["porto", "opo", "portugal", "lisbon to porto"],
+      "travel_date": "2026-11-15",
+      "cabin": "economy",
+      "points": 9500,
+      "inventory": 4,
+      "partner": "Atlantic Coast Air",
+      "fulfilment": "fails_after_debit",
+      "fulfilment_detail": "Atlantic Coast Air rejected the ticketing request after the points were debited: the partner's award seat was no longer on its own inventory."
+    },
+    "RW-HTL-2207": {
+      "kind": "hotel",
+      "label": "two nights at the Horizon Alfama hotel, Lisbon, 12 to 14 November 2026",
+      "destination": "Lisbon",
+      "search_terms": ["lisbon", "lis", "portugal", "hotel", "alfama"],
+      "travel_date": "2026-11-12",
+      "points": 30000,
+      "inventory": 3,
+      "fulfilment": "confirmed"
+    },
+    "RW-MAD-0931": {
+      "kind": "flight",
+      "label": "one economy award seat on Horizon flight HZ 330, Boston (BOS) to Madrid (MAD), 17 October 2026",
+      "destination": "Madrid",
+      "search_terms": ["madrid", "mad", "spain"],
+      "travel_date": "2026-10-17",
+      "cabin": "economy",
+      "points": 35000,
+      "inventory": 3,
+      "fulfilment": "ticketed"
+    }
+  },
+  "holds": {
+    "HT-H-7710": {
+      "rewards_account": "HR-204417",
+      "member_id": "HT-MEM-2044",
+      "option_id": "RW-LIS-1014",
+      "points": 42000,
+      "state": "expired",
+      "held_at": "2026-09-29T20:59:00+00:00",
+      "expires_at": "2026-09-29T21:14:00+00:00"
+    },
+    "HT-H-6604": {
+      "rewards_account": "HR-204417",
+      "member_id": "HT-MEM-2044",
+      "option_id": "RW-MAD-0931",
+      "points": 35000,
+      "state": "redeemed",
+      "held_at": "2026-09-26T18:31:00+00:00",
+      "expires_at": "2026-09-26T18:46:00+00:00",
+      "redemption_reference": "HT-RD-58213"
+    }
+  },
+  "redemptions": {
+    "HT-RD-58213": {
+      "status": "pending",
+      "reason": "points_booking_mismatch",
+      "rewards_account": "HR-204417",
+      "option_id": "RW-MAD-0931",
+      "hold_id": "HT-H-6604",
+      "created_at": "2026-09-26T18:42:10+00:00",
+      "points": {"state": "debited", "amount": 35000, "ledger_entry": "HR-LEDGER-88140"},
+      "booking": {
+        "state": "not_ticketed",
+        "booking_reference": null,
+        "detail": "The inventory hold lapsed before ticketing completed; no seat was issued."
+      },
+      "reversal": {"state": "unresolved", "owner": "Horizon Rewards desk"}
+    },
+    "HT-RD-57002": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "rewards_account": "HR-204417",
+      "option_id": null,
+      "reward": "one night at the Horizon Harbour hotel, Portland, 14 to 15 August 2026",
+      "hold_id": "HT-H-5120",
+      "created_at": "2026-08-02T15:10:44+00:00",
+      "points": {"state": "debited", "amount": 15000, "ledger_entry": "HR-LEDGER-80311"},
+      "booking": {"state": "confirmed", "booking_reference": "HZH-4Q7M2"},
+      "reversal": {"state": "not_needed", "owner": "Horizon Rewards desk"}
+    },
+    "HT-RD-60990": {
+      "status": "succeeded",
+      "reason": "verified_fixture_receipt",
+      "rewards_account": "HR-377120",
+      "option_id": null,
+      "reward": "one economy award seat on Horizon flight HZ 118, Boston (BOS) to Dublin (DUB), 2 December 2026",
+      "hold_id": "HT-H-6931",
+      "created_at": "2026-09-21T11:02:19+00:00",
+      "points": {"state": "debited", "amount": 40000, "ledger_entry": "HR-LEDGER-87402"},
+      "booking": {"state": "ticketed", "booking_reference": "HZ8R2KD"},
+      "reversal": {"state": "not_needed", "owner": "Horizon Rewards desk"}
+    }
+  }
+}

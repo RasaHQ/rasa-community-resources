@@ -1,0 +1,16 @@
+[project]
+name = "jacaranda-langchain-policy-conversation"
+version = "0.1.0"
+description = "A Rasa conversation using the existing native LangChain policy retriever"
+requires-python = ">=3.12,<3.13"
+dependencies = ["rasa-pro==3.21.0.dev5", "jacaranda-policy-langchain-worker"]
+
+[tool.rasa-catalog]
+required-secrets = ["OPENAI_API_KEY"]
+
+[tool.uv]
+prerelease = "allow"
+package = false
+
+[tool.uv.sources]
+jacaranda-policy-langchain-worker = { path = "../langchain", editable = true }

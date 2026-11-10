@@ -1,0 +1,3532 @@
+{
+ "schema": 1,
+ "build": "telco-retention-gpt-text",
+ "case": "telco-retention",
+ "project": "examples/mantle-text-telco-retention-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-10-01T23:42:52.045495+00:00",
+ "finished_at": "2026-10-01T23:51:25.417760+00:00",
+ "model_file": "20261002-004556-grim-cymbal.tar.gz",
+ "repeat": 20,
+ "train_seconds": 185.2,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 20,
+  "passed": 20,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 20,
+  "turn_latency_ms": {
+   "p50": 11561.8,
+   "p95": 14314.9,
+   "max": 17645.8,
+   "mean": 11670.5
+  },
+  "llm_calls": 97,
+  "llm_calls_per_turn": 4.85,
+  "side_channel_calls": 20,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 217296,
+  "completion_tokens": 7085,
+  "reasoning_tokens": 2578,
+  "cached_prompt_tokens": 122880,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "offer_prompt": 0,
+   "closure_claim": 0,
+   "cancellation_reference": 37,
+   "offer_reference": 0
+  },
+  "tool_result_metrics": {
+   "offers_recorded": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "juniper.offer_words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.74607,
+  "llm_cost_usd": 0.74607,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.11972,
+  "budget_usd": 10.11
+ },
+ "conversations": [
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r01",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r01-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 17645.8,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-E34A71. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton has been recorded. Reference: JM-CXL-E34A71.",
+      "The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-E34A71. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton has been recorded. Reference: JM-CXL-E34A71.\n\nThe cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11359,
+    "completion_tokens": 401,
+    "reasoning_tokens": 163,
+    "cached_prompt_tokens": 3072,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.055001,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1949.9,
+     2440.4,
+     3133.8,
+     2796.8,
+     2980.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r01-20261001T234252",
+    "prompt": 11359,
+    "completion": 401,
+    "total": 11760,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:46:51.925976+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r02",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r02-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 11561.8,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-8A8466. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-8A8466.",
+      "It is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-8A8466. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-8A8466.\n\nIt is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11375,
+    "completion_tokens": 378,
+    "reasoning_tokens": 126,
+    "cached_prompt_tokens": 8192,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.031351,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1201.7,
+     1939.5,
+     2611.5,
+     2644.8,
+     3069.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r02-20261001T234252",
+    "prompt": 11375,
+    "completion": 378,
+    "total": 11753,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:47:06.520575+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r03",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r03-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 12351.0,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-577E4B. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-577E4B.",
+      "The cancellations team will confirm the closing date and any final bill within 2 business days. The service works as normal until then."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-577E4B. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-577E4B.\n\nThe cancellations team will confirm the closing date and any final bill within 2 business days. The service works as normal until then."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11371,
+    "completion_tokens": 465,
+    "reasoning_tokens": 207,
+    "cached_prompt_tokens": 3072,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.056981,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1087.3,
+     2329.1,
+     3959.5,
+     1822.3,
+     3046.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r03-20261001T234252",
+    "prompt": 11371,
+    "completion": 465,
+    "total": 11836,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:47:21.902445+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r04",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r04-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 7746.7,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-EDA26B. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "I\u2019ve recorded the cancellation request for your home fibre. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-EDA26B. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 4,
+    "main_loop_calls": 3,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 8022,
+    "completion_tokens": 228,
+    "reasoning_tokens": 39,
+    "cached_prompt_tokens": 5632,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.021606,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1695.7,
+     1983.1,
+     1637.2,
+     2340.5
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r04-20261001T234252",
+    "prompt": 8022,
+    "completion": 228,
+    "total": 8250,
+    "generations": 4,
+    "fetched_at": "2026-10-01T23:47:32.671866+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r05",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r05-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 7848.9,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-38D376. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "I\u2019ve recorded the cancellation request for your home fibre. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-38D376. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 4,
+    "main_loop_calls": 3,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 8022,
+    "completion_tokens": 217,
+    "reasoning_tokens": 26,
+    "cached_prompt_tokens": 5632,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.021276,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1251.1,
+     2252.0,
+     1525.8,
+     2747.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r05-20261001T234252",
+    "prompt": 8022,
+    "completion": 217,
+    "total": 8239,
+    "generations": 4,
+    "fetched_at": "2026-10-01T23:47:43.543135+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r06",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r06-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 12140.3,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-DF90BA. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your home fibre cancellation request is recorded. The reference is JM-CXL-DF90BA.",
+      "The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-DF90BA. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your home fibre cancellation request is recorded. The reference is JM-CXL-DF90BA.\n\nThe cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11352,
+    "completion_tokens": 333,
+    "reasoning_tokens": 132,
+    "cached_prompt_tokens": 7168,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.034494,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2120.6,
+     2385.4,
+     2936.0,
+     2017.6,
+     2586.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r06-20261001T234252",
+    "prompt": 11352,
+    "completion": 333,
+    "total": 11685,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:47:58.713657+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r07",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r07-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 13465.0,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-5134A3. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-5134A3.",
+      "It is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-5134A3. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-5134A3.\n\nIt is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11369,
+    "completion_tokens": 408,
+    "reasoning_tokens": 158,
+    "cached_prompt_tokens": 6144,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.041437,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1672.5,
+     2454.8,
+     2993.7,
+     3445.0,
+     2823.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r07-20261001T234252",
+    "prompt": 11369,
+    "completion": 408,
+    "total": 11777,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:48:15.213887+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r08",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r08-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 11216.1,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7571C3. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7571C3.",
+      "It is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7571C3. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7571C3.\n\nIt is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11369,
+    "completion_tokens": 326,
+    "reasoning_tokens": 116,
+    "cached_prompt_tokens": 6656,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.036673,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1142.3,
+     2572.1,
+     3580.7,
+     1782.9,
+     1966.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r08-20261001T234252",
+    "prompt": 11369,
+    "completion": 326,
+    "total": 11695,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:48:29.472557+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r09",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r09-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 12232.2,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-6DCC1D. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton has been recorded. Reference: JM-CXL-6DCC1D.",
+      "It is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-6DCC1D. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton has been recorded. Reference: JM-CXL-6DCC1D.\n\nIt is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11379,
+    "completion_tokens": 390,
+    "reasoning_tokens": 136,
+    "cached_prompt_tokens": 7168,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.036339,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1356.0,
+     1463.6,
+     3517.7,
+     2352.3,
+     3457.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r09-20261001T234252",
+    "prompt": 11379,
+    "completion": 390,
+    "total": 11769,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:48:44.730971+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r10",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r10-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 12793.3,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-C48B9D. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton has been recorded.",
+      "Reference: JM-CXL-C48B9D",
+      "This is not the closure yet. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-C48B9D. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton has been recorded.\n\nReference: JM-CXL-C48B9D\n\nThis is not the closure yet. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11373,
+    "completion_tokens": 462,
+    "reasoning_tokens": 213,
+    "cached_prompt_tokens": 8192,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.033861,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2716.9,
+     2849.2,
+     2354.3,
+     2025.7,
+     2776.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r10-20261001T234252",
+    "prompt": 11373,
+    "completion": 462,
+    "total": 11835,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:49:00.540303+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r11",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r11-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 10364.0,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-C2026B. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "I\u2019ve recorded the request for your home fibre. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-C2026B. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 4,
+    "main_loop_calls": 3,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 8021,
+    "completion_tokens": 207,
+    "reasoning_tokens": 52,
+    "cached_prompt_tokens": 3072,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.032491,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2047.0,
+     2576.7,
+     3100.6,
+     2576.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r11-20261001T234252",
+    "prompt": 8021,
+    "completion": 207,
+    "total": 8228,
+    "generations": 4,
+    "fetched_at": "2026-10-01T23:49:13.918114+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r12",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r12-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 13614.7,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-3566DD. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-3566DD.",
+      "It is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-3566DD. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-3566DD.\n\nIt is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11368,
+    "completion_tokens": 345,
+    "reasoning_tokens": 132,
+    "cached_prompt_tokens": 5632,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.041846,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1203.7,
+     2292.7,
+     3888.7,
+     3473.7,
+     2612.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r12-20261001T234252",
+    "prompt": 11368,
+    "completion": 345,
+    "total": 11713,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:49:30.543682+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r13",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r13-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 10383.8,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-918287. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "I\u2019ve recorded your cancellation request for home fibre at 3 Tanner Close, Easton.",
+      "Reference: JM-CXL-918287",
+      "The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-918287. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "I\u2019ve recorded your cancellation request for home fibre at 3 Tanner Close, Easton.\n\nReference: JM-CXL-918287\n\nThe cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11348,
+    "completion_tokens": 378,
+    "reasoning_tokens": 143,
+    "cached_prompt_tokens": 8192,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.031216,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1467.6,
+     2613.0,
+     2689.4,
+     1600.3,
+     1912.2
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r13-20261001T234252",
+    "prompt": 11348,
+    "completion": 378,
+    "total": 11726,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:49:43.941420+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r14",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r14-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 12016.2,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7D9B64. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded. The reference is JM-CXL-7D9B64.",
+      "This is not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7D9B64. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded. The reference is JM-CXL-7D9B64.\n\nThis is not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11373,
+    "completion_tokens": 411,
+    "reasoning_tokens": 160,
+    "cached_prompt_tokens": 8192,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.032331,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1413.8,
+     2940.2,
+     2128.3,
+     2753.7,
+     2707.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r14-20261001T234252",
+    "prompt": 11373,
+    "completion": 411,
+    "total": 11784,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:49:58.992436+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r15",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r15-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 12030.6,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-026D5E. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-026D5E.",
+      "It is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-026D5E. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-026D5E.\n\nIt is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11375,
+    "completion_tokens": 303,
+    "reasoning_tokens": 90,
+    "cached_prompt_tokens": 6144,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.038317,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1403.0,
+     3243.8,
+     2714.8,
+     2592.9,
+     1993.5
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r15-20261001T234252",
+    "prompt": 11375,
+    "completion": 303,
+    "total": 11678,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:50:14.054635+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r16",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r16-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 9723.6,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-59E693. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-59E693.",
+      "The cancellations team will confirm the closing date and any final bill within 2 business days. The service stays active until they confirm the details."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-59E693. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-59E693.\n\nThe cancellations team will confirm the closing date and any final bill within 2 business days. The service stays active until they confirm the details."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11363,
+    "completion_tokens": 347,
+    "reasoning_tokens": 107,
+    "cached_prompt_tokens": 6656,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.037273,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1334.8,
+     1858.6,
+     2238.6,
+     1981.9,
+     2229.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r16-20261001T234252",
+    "prompt": 11363,
+    "completion": 347,
+    "total": 11710,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:50:26.787391+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r17",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r17-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 14314.9,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-E61621. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "I\u2019ve recorded the cancellation request for your home fibre at 3 Tanner Close, Easton.",
+      "Reference: JM-CXL-E61621.",
+      "The cancellations team will confirm the closing date and any final bill within 2 business days. Your service works as normal until then."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-E61621. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "I\u2019ve recorded the cancellation request for your home fibre at 3 Tanner Close, Easton.\n\nReference: JM-CXL-E61621.\n\nThe cancellations team will confirm the closing date and any final bill within 2 business days. Your service works as normal until then."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11360,
+    "completion_tokens": 435,
+    "reasoning_tokens": 188,
+    "cached_prompt_tokens": 5632,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.044506,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1598.2,
+     2405.0,
+     3280.2,
+     2389.2,
+     4556.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r17-20261001T234252",
+    "prompt": 11360,
+    "completion": 435,
+    "total": 11795,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:50:44.124560+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r18",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r18-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 10044.4,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-F7362D. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "I\u2019ve recorded your cancellation request for your home fibre at 3 Tanner Close, Easton.",
+      "Your reference is JM-CXL-F7362D. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-F7362D. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "I\u2019ve recorded your cancellation request for your home fibre at 3 Tanner Close, Easton.\n\nYour reference is JM-CXL-F7362D. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11360,
+    "completion_tokens": 299,
+    "reasoning_tokens": 100,
+    "cached_prompt_tokens": 6656,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.035818,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1169.8,
+     2856.1,
+     2435.9,
+     1853.7,
+     1630.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r18-20261001T234252",
+    "prompt": 11360,
+    "completion": 299,
+    "total": 11659,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:50:57.191579+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r19",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r19-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 11112.5,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7A6791. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7A6791.",
+      "It is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7A6791. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-7A6791.\n\nIt is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11369,
+    "completion_tokens": 323,
+    "reasoning_tokens": 118,
+    "cached_prompt_tokens": 6144,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.038887,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1035.5,
+     2805.0,
+     3135.2,
+     2163.9,
+     1887.7
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r19-20261001T234252",
+    "prompt": 11369,
+    "completion": 323,
+    "total": 11692,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:51:11.327042+00:00"
+   }
+  },
+  {
+   "id": "recovery-fibre-withdrawn-on-record-r20",
+   "kind": "recovery",
+   "repeat_of": "recovery-fibre-withdrawn-on-record",
+   "description": "The fibre account's withdrawal never reached campaign dispatch: the campaign is paused, the records go to reconciliation, the cancellation is recorded and nothing is offered.",
+   "conversation_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r20-20261001T234252",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to cancel my home fibre, I'm moving to another provider.",
+     "latency_ms": 10803.5,
+     "bot": [
+      "Hello Rowan, this is Juniper Mobile. I can record a cancellation request, check one of your services, or stop our offer messages. What would you like to do?",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-D867F5. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+      "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-D867F5.",
+      "It is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_cancellation_request",
+      "result": {
+       "status": "recorded",
+       "service_id": "JM-FIB-204419",
+       "campaign_dispatch": {
+        "campaign": "paused for this account"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "get_retention_offer",
+      "result": {
+       "status": "offer"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_retention_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "record_cancellation_request",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": "intake_is_not_action_approval"
+    },
+    {
+     "tool": "get_retention_offer",
+     "arguments": {
+      "service": "home fibre at 3 Tanner Close, Easton"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "contact_withdrawn"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "offer_prompt": [],
+    "closure_claim": [],
+    "cancellation_reference": [
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-D867F5. It is a request, not the closure: the Juniper Mobile cancellations team confirms the closing date and any final bill within 2 business days, and the service works as normal until then.",
+     "Your cancellation request for your home fibre at 3 Tanner Close, Easton is recorded: JM-CXL-D867F5.\n\nIt is a request, not the closure. The cancellations team will confirm the closing date and any final bill within 2 business days."
+    ],
+    "offer_reference": [],
+    "offers_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "juniper.offer_words_guard": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "juniper.offer_words_guard": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 11368,
+    "completion_tokens": 429,
+    "reasoning_tokens": 172,
+    "cached_prompt_tokens": 5632,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.044366,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1201.6,
+     1742.3,
+     2104.2,
+     1812.8,
+     3710.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-retention-gpt-text-recovery-fibre-withdrawn-on-record-r20-20261001T234252",
+    "prompt": 11368,
+    "completion": 429,
+    "total": 11797,
+    "generations": 5,
+    "fetched_at": "2026-10-01T23:51:25.144961+00:00"
+   }
+  }
+ ]
+}

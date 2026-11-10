@@ -1,0 +1,522 @@
+{
+ "schema": 1,
+ "build": "retail-order-status-gemini-voice",
+ "case": "retail-order-status",
+ "project": "examples/mantle-voice-retail-order-status-gemini",
+ "model": "gemini/gemini-3.8-flash",
+ "response_models": [
+  "gemini-3.8-flash"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T03:36:40.121571+00:00",
+ "finished_at": "2026-09-30T03:39:23.673701+00:00",
+ "model_file": "20260930-043753-soluble-player.tar.gz",
+ "train_seconds": 74.4,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gemini/gemini-3.8-flash",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 7.5e-07,
+  "output_cost_per_token": 3.75e-06,
+  "cache_read_input_token_cost": 7.5e-08,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 2,
+  "turn_latency_ms": {
+   "p50": 2479.0,
+   "p95": 9822.5,
+   "max": 9822.5,
+   "mean": 6150.8
+  },
+  "llm_calls": 10,
+  "llm_calls_per_turn": 5.0,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 2,
+  "failed_side_channel_calls": 2,
+  "prompt_tokens": 30075,
+  "completion_tokens": 4385,
+  "reasoning_tokens": 4115,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 7,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 1,
+  "bot_text_metrics": {
+   "delivery_claim": 1,
+   "arrival_prediction": 0
+  },
+  "tool_result_metrics": {},
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 0,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 2
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 2,
+   "audio_turns": 2,
+   "eos_to_first_audible_ms": {
+    "n": 2,
+    "p50": 2479.0,
+    "p95": 9822.5,
+    "max": 9822.5
+   },
+   "eos_to_first_audio_ms": {
+    "n": 2,
+    "p50": 2479.0,
+    "p95": 9822.5,
+    "max": 9822.5
+   },
+   "eos_to_first_marker_ms": {
+    "n": 2,
+    "p50": 2312.4,
+    "p95": 9655.3,
+    "max": 9655.3
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 2,
+     "p50": 2714.8,
+     "p95": 9660.7,
+     "max": 9660.7
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 2,
+     "p50": 166.7,
+     "p95": 167.3,
+     "max": 167.3
+    },
+    "tts_complete_latency_ms": {
+     "n": 2,
+     "p50": 580.0,
+     "p95": 1313.5,
+     "max": 1313.5
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 2,
+    "user_perceived_latency_ms": {
+     "n": 2,
+     "p50": 2881.5,
+     "p95": 9827.9,
+     "max": 9827.9
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 1,
+     "p50": 2737.2,
+     "p95": 2737.2,
+     "max": 2737.2
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 2,
+     "p50": 2289.7,
+     "p95": 6907.0,
+     "max": 6907.0
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 2,
+     "p50": 2299.8,
+     "p95": 7138.4,
+     "max": 7138.4
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 2,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 2,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": 0.0,
+    "wer_p50": 0.0,
+    "tokens": {
+     "order_number": {
+      "checked": 1,
+      "exact": 0,
+      "normalised": 1
+     }
+    }
+   },
+   "stt_audio_seconds": 73.6,
+   "tts_characters": 632,
+   "stt_usd": 0.007978,
+   "tts_usd": 0.01896,
+   "speech_cost_usd": 0.026938,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.065938,
+  "llm_cost_usd": 0.039,
+  "speech_cost_usd": 0.026938,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.03536,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "normal-split-order-both-parcels",
+   "kind": "normal",
+   "description": "A split order: each parcel is tracked with its own call.",
+   "conversation_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T033640",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "What's happening with order one zero five three nine?",
+     "latency_ms": 2479.0,
+     "bot": [
+      "Got it, let me look up order one zero five three nine.",
+      "That order is split into two parcels, one with the desk chair and one with the cushion set. Which one would you like to check?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.48,
+      "speech_off_epoch": 1790739493.3387141,
+      "eos_to_first_marker_ms": 2312.4,
+      "eos_to_first_audio_ms": 2479.0,
+      "eos_to_first_audible_ms": 2479.0,
+      "end_markers": [
+       {
+        "at_ms": 2892.3,
+        "rasa_processing_latency_ms": 2714.7819995880127,
+        "tts_first_byte_latency_ms": 166.7499542236328,
+        "tts_complete_latency_ms": 580.0437927246094
+       },
+       {
+        "at_ms": 9553.5,
+        "rasa_processing_latency_ms": 2714.7819995880127,
+        "tts_first_byte_latency_ms": 170.65000534057617,
+        "tts_complete_latency_ms": 725.3279685974121
+       }
+      ],
+      "bot_audio_s": 10.56,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "What's happening with order one zero five three nine"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2881.507624988444,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2289.7214159893338,
+         "llm_total_generation_ms": 2299.7880410111975,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Both parcels, please.",
+     "latency_ms": 9822.5,
+     "bot": [
+      "For the desk chair, a Larkspur Parcel carrier scan showed it was delivered Tuesday at 11:48 AM under status reference WS-ST-20260930-57E28A54. For the cushion set, a Larkspur Parcel carrier scan observed it in transit Wednesday at 6:15 AM with a carrier estimate of Thursday, October 1, under status reference WS-ST-20260930-1D533EFE."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.72,
+      "speech_off_epoch": 1790739511.4228249,
+      "eos_to_first_marker_ms": 9655.3,
+      "eos_to_first_audio_ms": 9822.5,
+      "eos_to_first_audible_ms": 9822.5,
+      "end_markers": [
+       {
+        "at_ms": 10968.7,
+        "rasa_processing_latency_ms": 9660.709857940674,
+        "tts_first_byte_latency_ms": 167.2823429107666,
+        "tts_complete_latency_ms": 1313.5323524475098
+       }
+      ],
+      "bot_audio_s": 34.95,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Both parcels, please."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 9827.946167002665,
+        "llm_generation_before_first_output_ms": 2737.1628750115633,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 6907.049708010163,
+         "llm_total_generation_ms": 7138.383499986958,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "track_order",
+      "result": {
+       "status": "answered",
+       "order_number": "WS-10539",
+       "parcel_number": 1,
+       "milestone": "delivered"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "track_order",
+      "result": {
+       "status": "answered",
+       "order_number": "WS-10539",
+       "parcel_number": 2,
+       "milestone": "in_transit",
+       "delivered": false
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "track_order",
+      "result": {
+       "status": "answered",
+       "order_number": "re:^(?!(WS\\-10539)$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "track_order",
+     "arguments": {
+      "order_number": "WS-10539"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "wrong_order"
+    },
+    {
+     "tool": "track_order",
+     "arguments": {
+      "order_number": "WS-10539",
+      "parcel_number": 1
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    },
+    {
+     "tool": "track_order",
+     "arguments": {
+      "order_number": "WS-10539",
+      "parcel_number": 2
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Got it, let me look up order one zero five three nine."
+    ],
+    "delivery_claim": [
+     "For the desk chair, a Larkspur Parcel carrier scan showed it was delivered Tuesday at 11:48 AM under status reference WS-ST-20260930-57E28A54. For the cushion set, a Larkspur Parcel carrier scan observed it in transit Wednesday at 6:15 AM with a carrier estimate of Thursday, October 1, under status reference WS-ST-20260930-1D533EFE."
+    ],
+    "arrival_prediction": []
+   },
+   "log_events": {
+    "browser_audio.handle_message.error": 0,
+    "rime.stream_audio.error": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.turn.failed": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "voice_channel.agent_task_failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "deepgram.connection.failed": 0,
+    "voice_channel.audio_missing": 0,
+    "rime.connection.failed": 0
+   },
+   "log_event_details": {
+    "browser_audio.handle_message.error": [],
+    "rime.stream_audio.error": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.turn.failed": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "voice_channel.agent_task_failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: GeminiException BadRequestError - {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Requests ending with a model turn are not supported.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n\n",
+      "conversation_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T033640"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: GeminiException BadRequestError - {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Requests ending with a model turn are not supported.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n\n",
+      "conversation_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T033640"
+     }
+    ],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "deepgram.connection.failed": [],
+    "voice_channel.audio_missing": [],
+    "rime.connection.failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "prompt_tokens": 30075,
+    "completion_tokens": 4385,
+    "reasoning_tokens": 4115,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.039,
+    "cost_complete": true,
+    "request_thought_signatures": 7,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2300.3,
+     3959.3,
+     2443.7,
+     317.2,
+     1657.3,
+     881.8,
+     7138.4,
+     911.4,
+     2582.4,
+     278.5
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 73.64,
+    "tts_characters": 632,
+    "call": {
+     "audio_seconds_sent": 73.64,
+     "call_seconds": 73.65,
+     "markers_acked": 59,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.15,
+     "session_end_turn_s": 4.07
+    },
+    "stt_usd": 0.007978,
+    "tts_usd": 0.01896,
+    "cost_usd": 0.026938,
+    "asr": [
+     {
+      "intended": "What's happening with order one zero five three nine?",
+      "heard": [
+       "What's happening with order one zero five three nine"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "10539",
+        "kind": "order_number",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Both parcels, please.",
+      "heard": [
+       "Both parcels, please."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T033640",
+    "prompt": 30075,
+    "completion": 4385,
+    "total": 34460,
+    "generations": 8,
+    "fetched_at": "2026-09-30T03:39:23.385956+00:00"
+   }
+  }
+ ]
+}

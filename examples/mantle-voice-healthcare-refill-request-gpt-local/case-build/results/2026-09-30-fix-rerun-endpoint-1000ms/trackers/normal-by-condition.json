@@ -1,0 +1,1656 @@
+{
+ "sender_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+ "slots": {
+  "session_started_metadata": {
+   "call_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+   "user_phone": "local",
+   "bot_phone": "local",
+   "user_name": null,
+   "user_host": null,
+   "bot_host": null,
+   "direction": null,
+   "stream_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+   "language": null,
+   "extra": null
+  },
+  "consecutive_silence_timeouts": 0.0,
+  "project.verified_patient_id": "CC-PT-1001",
+  "project.patient_first_name": "Maria",
+  "request_refill.selected_record_id": "CC-RX-2041",
+  "request_refill.selected_medication_label": "lisinopril ten milligram tablets, one tablet once a day",
+  "system.pending_tool_confirmation": null,
+  "system.__discovered__": [
+   {
+    "key": "customer_full_name",
+    "value": "Maria Alvarez",
+    "description": "Caller stated their full name while requesting a prescription refill.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "customer_date_of_birth",
+    "value": "1968-03-14",
+    "description": "Caller provided their date of birth for patient verification.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_refill_type",
+    "value": "blood pressure pills",
+    "description": "Caller said they need a refill for their blood pressure medication.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "medication_name_lisinopril",
+    "value": "lisinopril ten milligram tablets, one tablet once a day",
+    "description": "The user's requested blood pressure medication was identified in the clinic record as lisinopril 10 mg tablets taken once daily.",
+    "turn_idx": 4,
+    "confidence": 0.95,
+    "pii": false,
+    "captured_by_skill": "request_refill",
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "/session_end",
+  "message_id": "b4af2d58d5ff4536bade55ea82ae2e45",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790730404.750703,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "3TESWKJK",
+   "skill_id": "default_completed",
+   "frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "WB95GJ14",
+   "skill_id": "default_completed",
+   "block_id": "main",
+   "step_id": "ask_continue",
+   "frame_type": "regular",
+   "type": "ordered_block"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790730339.932307,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   }
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730339.932383,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": null,
+     "step": null,
+     "frame_id": null,
+     "arguments": {},
+     "position": 1,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "session_started_metadata",
+   "value": {
+    "call_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+    "language": null,
+    "extra": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790730339.932527,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790730339.932539,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790730339.932338,
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790730339.9325461,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790730339.9325519,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"9VY8STHU\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"28C6SZCQ\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"greet\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730339.932647,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790730339.932659,
+   "metadata": {
+    "call_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+    "language": null,
+    "extra": null,
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "/session_start",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "/session_start",
+    "message_id": "43f93d27ef6242db88e18666de208aef",
+    "metadata": {
+     "stream_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+     "user_host": null,
+     "user_phone": "local",
+     "user_name": null,
+     "direction": null,
+     "extra": null,
+     "bot_phone": "local",
+     "call_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+     "bot_host": null,
+     "language": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "43f93d27ef6242db88e18666de208aef",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790730339.934117,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790730339.937831,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790730339.937846,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790730339.937852,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790730339.937857,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790730339.938022,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790730358.829912,
+   "metadata": {
+    "call_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "hi this is maria alvarez born march 14 1968 i need a refill of my blood pressure pills"
+    ],
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "hi this is maria alvarez born march 14 1968 i need a refill of my blood pressure pills",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "hi this is maria alvarez born march 14 1968 i need a refill of my blood pressure pills",
+    "message_id": "21e52f05866d43b6bcefa3b64db2a3b1",
+    "metadata": {
+     "stream_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+     "user_host": null,
+     "user_phone": "local",
+     "merged_transcripts": [
+      "hi this is maria alvarez born march 14 1968 i need a refill of my blood pressure pills"
+     ],
+     "user_name": null,
+     "direction": null,
+     "extra": null,
+     "bot_phone": "local",
+     "call_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+     "bot_host": null,
+     "language": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "21e52f05866d43b6bcefa3b64db2a3b1",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790730360.1931672,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_total_time_ms": 1360.460083000362,
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "Okay, I\u2019ll look up your refill details now.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790730360.868117,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "flow_id": "request_refill",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790730360.868139,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790730358.829912,
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790730360.868147,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"B6PCN3S0\", \"skill_id\": \"request_refill\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790730360.8688471,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790730360.8688772,
+   "metadata": {
+    "tool_call_id": "call_EKAwjELmRjGtfHbwTACfgPHR",
+    "tool_batch_id": "0-call_EKAwjELmRjGtfHbwTACfgPHR",
+    "skill_id": "request_refill",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "request_refill"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730362.2798421,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 21,
+     "tool_call_id": "call_iluRnOUdwArxa5AMX0mzKykI"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "project.verified_patient_id",
+   "value": "CC-PT-1001",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730362.279871,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 22,
+     "tool_call_id": "call_iluRnOUdwArxa5AMX0mzKykI"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "project.verified_patient_id",
+   "value": "CC-PT-1001",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730362.279905,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 23,
+     "tool_call_id": "call_iluRnOUdwArxa5AMX0mzKykI"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "project.patient_first_name",
+   "value": "Maria",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730362.279913,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "verify_patient",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {
+      "full_name": "Maria Alvarez",
+      "date_of_birth": "1968-03-14"
+     },
+     "position": 24,
+     "tool_call_id": "call_iluRnOUdwArxa5AMX0mzKykI"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "project.patient_first_name",
+   "value": "Maria",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790730362.280301,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Maria Alvarez",
+    "date_of_birth": "1968-03-14"
+   },
+   "result": "{\"status\": \"verified\", \"first_name\": \"Maria\", \"next_step\": \"Ask which recorded medication the caller wants a refill request for, if they have not said.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790730362.280313,
+   "metadata": {
+    "tool_call_id": "call_iluRnOUdwArxa5AMX0mzKykI",
+    "tool_batch_id": "1-call_iluRnOUdwArxa5AMX0mzKykI",
+    "skill_id": "request_refill",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "verify_patient",
+   "arguments": {
+    "full_name": "Maria Alvarez",
+    "date_of_birth": "1968-03-14"
+   },
+   "source": "local",
+   "result": "{\"status\": \"verified\", \"first_name\": \"Maria\", \"next_step\": \"Ask which recorded medication the caller wants a refill request for, if they have not said.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730363.525949,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {
+      "medication_name": "blood pressure pills"
+     },
+     "position": 27,
+     "tool_call_id": "call_YniX7bDM1Z7hZFVzTIqcYzOK"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "request_refill.selected_record_id",
+   "value": "CC-RX-2041",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730363.5259762,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {
+      "medication_name": "blood pressure pills"
+     },
+     "position": 28,
+     "tool_call_id": "call_YniX7bDM1Z7hZFVzTIqcYzOK"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "request_refill.selected_record_id",
+   "value": "CC-RX-2041",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730363.526007,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {
+      "medication_name": "blood pressure pills"
+     },
+     "position": 29,
+     "tool_call_id": "call_YniX7bDM1Z7hZFVzTIqcYzOK"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "request_refill.selected_medication_label",
+   "value": "lisinopril ten milligram tablets, one tablet once a day",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730363.526015,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_medication",
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {
+      "medication_name": "blood pressure pills"
+     },
+     "position": 30,
+     "tool_call_id": "call_YniX7bDM1Z7hZFVzTIqcYzOK"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "request_refill.selected_medication_label",
+   "value": "lisinopril ten milligram tablets, one tablet once a day",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790730363.526399,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "select_medication",
+   "arguments": {
+    "medication_name": "blood pressure pills"
+   },
+   "result": "{\"status\": \"selected\", \"record_id\": \"CC-RX-2041\", \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"next_step\": \"Call send_refill_request with this record_id. The engine reads the recorded medication back and asks the caller to confirm before anything is sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790730363.52641,
+   "metadata": {
+    "tool_call_id": "call_YniX7bDM1Z7hZFVzTIqcYzOK",
+    "tool_batch_id": "2-call_YniX7bDM1Z7hZFVzTIqcYzOK",
+    "skill_id": "request_refill",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "select_medication",
+   "arguments": {
+    "medication_name": "blood pressure pills"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"record_id\": \"CC-RX-2041\", \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"next_step\": \"Call send_refill_request with this record_id. The engine reads the recorded medication back and asks the caller to confirm before anything is sent.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730364.729124,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 33,
+     "tool_call_id": "call_mbH2t2p6t4OhEgC7SxCrMa8o"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "send_refill_request",
+    "tool_args": {
+     "record_id": "CC-RX-2041"
+    },
+    "confirmation_ask": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+    "utter_on_user_denial": "utter_refill_request_not_sent",
+    "skill_id": "request_refill",
+    "frame_id": "B6PCN3S0",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730364.729154,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 34,
+     "tool_call_id": "call_mbH2t2p6t4OhEgC7SxCrMa8o"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "send_refill_request",
+    "tool_args": {
+     "record_id": "CC-RX-2041"
+    },
+    "confirmation_ask": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+    "utter_on_user_denial": "utter_refill_request_not_sent",
+    "skill_id": "request_refill",
+    "frame_id": "B6PCN3S0",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790730364.7295492,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790730364.729562,
+   "metadata": {
+    "tool_call_id": "call_mbH2t2p6t4OhEgC7SxCrMa8o",
+    "tool_batch_id": "3-call_mbH2t2p6t4OhEgC7SxCrMa8o",
+    "skill_id": "request_refill",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790730364.729719,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_refill_request",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790730364.737097,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 1549.0191249991767,
+     "first_agent_response": {
+      "llm_total_generation_ms": 1360.460083000362,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730366.7182379,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 39,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "Caller stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730366.718273,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 40,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "Caller stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730366.718303,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 41,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "Caller stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "Caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730366.718312,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 42,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "Caller stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "Caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730366.718336,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 43,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "Caller stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "Caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_type",
+     "value": "blood pressure pills",
+     "description": "Caller said they need a refill for their blood pressure medication.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730366.718344,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 44,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "Caller stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "Caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_type",
+     "value": "blood pressure pills",
+     "description": "Caller said they need a refill for their blood pressure medication.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790730383.689603,
+   "metadata": {
+    "call_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+    "user_phone": "local",
+    "bot_phone": "local",
+    "user_name": null,
+    "user_host": null,
+    "bot_host": null,
+    "direction": null,
+    "stream_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+    "language": null,
+    "extra": null,
+    "merged_transcripts": [
+     "yes that's the one please send it"
+    ],
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "yes that's the one please send it",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "yes that's the one please send it",
+    "message_id": "8378b27ca5a54b5b8b4f015e01a3f1be",
+    "metadata": {
+     "stream_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+     "user_host": null,
+     "user_phone": "local",
+     "merged_transcripts": [
+      "yes that's the one please send it"
+     ],
+     "user_name": null,
+     "direction": null,
+     "extra": null,
+     "bot_phone": "local",
+     "call_id": "healthcare-refill-request-gpt-voice-local-normal-by-condition-20260930T010226",
+     "bot_host": null,
+     "language": null
+    },
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "8378b27ca5a54b5b8b4f015e01a3f1be",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790730386.614342,
+   "metadata": {
+    "mantle_response_source": "filler",
+    "agent_message_type": "filler_message",
+    "llm_total_time_ms": 2920.2632500091568,
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "Right, I\u2019ll send that request for review now.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730387.286777,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 47,
+     "tool_call_id": "call_EuqfdyYxrbHtulbUXQfRJBSj"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790730387.286798,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "request_refill",
+     "step": "autonomous",
+     "frame_id": "B6PCN3S0",
+     "arguments": {},
+     "position": 48,
+     "tool_call_id": "call_EuqfdyYxrbHtulbUXQfRJBSj"
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790730387.286978,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"submission_key\": \"CC-SUB-2F7DF91D\", \"request_reference\": \"RQ-1082\", \"spoken_reference\": \"R Q, one zero eight two\", \"review_status\": \"awaiting prescribing team review\", \"medication\": {\"record_id\": \"CC-RX-2041\", \"name\": \"lisinopril\", \"strength\": \"10 mg\", \"form\": \"tablet\", \"sig\": \"one tablet once a day\"}, \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"approved\": null, \"prescription_changed\": false, \"dose_instruction\": null, \"effects\": 1, \"replay\": false, \"facts\": {\"patient_identity_verified\": true, \"recorded_medication_selected\": true, \"review_request_acknowledged\": true}, \"review_window\": \"The prescribing team reviews refill requests within two business days and calls or texts the patient with the outcome.\", \"next_step\": \"Give the spoken_reference and say the request is awaiting prescribing team review. It is a request, not an approval or a renewal: never say it is approved, renewed, refilled, sent to a pharmacy or ready.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790730387.286989,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "request_refill",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "send_refill_request",
+   "arguments": {
+    "record_id": "CC-RX-2041"
+   },
+   "source": "local",
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"submission_key\": \"CC-SUB-2F7DF91D\", \"request_reference\": \"RQ-1082\", \"spoken_reference\": \"R Q, one zero eight two\", \"review_status\": \"awaiting prescribing team review\", \"medication\": {\"record_id\": \"CC-RX-2041\", \"name\": \"lisinopril\", \"strength\": \"10 mg\", \"form\": \"tablet\", \"sig\": \"one tablet once a day\"}, \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"approved\": null, \"prescription_changed\": false, \"dose_instruction\": null, \"effects\": 1, \"replay\": false, \"facts\": {\"patient_identity_verified\": true, \"recorded_medication_selected\": true, \"review_request_acknowledged\": true}, \"review_window\": \"The prescribing team reviews refill requests within two business days and calls or texts the patient with the outcome.\", \"next_step\": \"Give the spoken_reference and say the request is awaiting prescribing team review. It is a request, not an approval or a renewal: never say it is approved, renewed, refilled, sent to a pharmacy or ready.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790730387.287456,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"submission_key\": \"CC-SUB-2F7DF91D\", \"request_reference\": \"RQ-1082\", \"spoken_reference\": \"R Q, one zero eight two\", \"review_status\": \"awaiting prescribing team review\", \"medication\": {\"record_id\": \"CC-RX-2041\", \"name\": \"lisinopril\", \"strength\": \"10 mg\", \"form\": \"tablet\", \"sig\": \"one tablet once a day\"}, \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"approved\": null, \"prescription_changed\": false, \"dose_instruction\": null, \"effects\": 1, \"replay\": false, \"facts\": {\"patient_identity_verified\": true, \"recorded_medication_selected\": true, \"review_request_acknowledged\": true}, \"review_window\": \"The prescribing team reviews refill requests within two business days and calls or texts the patient with the outcome.\", \"next_step\": \"Give the spoken_reference and say the request is awaiting prescribing team review. It is a request, not an approval or a renewal: never say it is approved, renewed, refilled, sent to a pharmacy or ready.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790730387.287466,
+   "metadata": {
+    "tool_call_id": "call_EuqfdyYxrbHtulbUXQfRJBSj",
+    "tool_batch_id": "0-call_EuqfdyYxrbHtulbUXQfRJBSj",
+    "skill_id": "request_refill",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"submission_key\": \"CC-SUB-2F7DF91D\", \"request_reference\": \"RQ-1082\", \"spoken_reference\": \"R Q, one zero eight two\", \"review_status\": \"awaiting prescribing team review\", \"medication\": {\"record_id\": \"CC-RX-2041\", \"name\": \"lisinopril\", \"strength\": \"10 mg\", \"form\": \"tablet\", \"sig\": \"one tablet once a day\"}, \"medication_label\": \"lisinopril ten milligram tablets, one tablet once a day\", \"approved\": null, \"prescription_changed\": false, \"dose_instruction\": null, \"effects\": 1, \"replay\": false, \"facts\": {\"patient_identity_verified\": true, \"recorded_medication_selected\": true, \"review_request_acknowledged\": true}, \"review_window\": \"The prescribing team reviews refill requests within two business days and calls or texts the patient with the outcome.\", \"next_step\": \"Give the spoken_reference and say the request is awaiting prescribing team review. It is a request, not an approval or a renewal: never say it is approved, renewed, refilled, sent to a pharmacy or ready.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790730388.9896052,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 1699.2901659978088,
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "Your request reference is R Q, one zero eight two. It is awaiting prescribing team review.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790730390.2916439,
+   "metadata": {
+    "latency_breakdown": {
+     "user_perceived_latency_ms": 3121.0111250111368,
+     "first_agent_response": {
+      "llm_total_generation_ms": 2920.2632500091568,
+      "generated_by_llm": true
+     }
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790730398.913187,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "/session_end",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "/session_end",
+    "message_id": "b4af2d58d5ff4536bade55ea82ae2e45",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "browser_audio",
+   "message_id": "b4af2d58d5ff4536bade55ea82ae2e45",
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790730400.740994,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "flow_id": "request_refill",
+   "step_id": "autonomous",
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790730400.7410188,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "skill_id": "request_refill"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790730400.741027,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790730400.7411468,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "flow_id": "default_completed__main"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790730400.741157,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790730398.913187,
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "skill_id": "default_completed"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790730400.741163,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "skill_id": "default_completed",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790730400.741169,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"3TESWKJK\", \"skill_id\": \"default_completed\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"WB95GJ14\", \"skill_id\": \"default_completed\", \"block_id\": \"main\", \"step_id\": \"ask_continue\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790730400.741539,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790730400.7415512,
+   "metadata": {
+    "tool_call_id": "call_6XcYrNkJQTpz3cS4vKTBk6Um",
+    "tool_batch_id": "0-call_6XcYrNkJQTpz3cS4vKTBk6Um",
+    "skill_id": "default_completed",
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "tool_name": "complete_skill",
+   "arguments": {},
+   "source": "local",
+   "result": "complete_skill: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790730401.635403,
+   "metadata": {
+    "rephrase": true,
+    "mantle_response_source": "rephrased",
+    "utter_action": "utter_ask_wants_to_continue",
+    "llm_total_time_ms": 891.0078750050161,
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "text": "Can I help with anything else?",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790730401.6689432,
+   "metadata": {
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790730404.7506719,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "WB95GJ14",
+     "arguments": {},
+     "position": 67,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "Caller stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "Caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_type",
+     "value": "blood pressure pills",
+     "description": "Caller said they need a refill for their blood pressure medication.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "medication_name_lisinopril",
+     "value": "lisinopril ten milligram tablets, one tablet once a day",
+     "description": "The user's requested blood pressure medication was identified in the clinic record as lisinopril 10 mg tablets taken once daily.",
+     "turn_idx": 4,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790730404.750703,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "default_completed",
+     "step": "ask_continue",
+     "frame_id": "WB95GJ14",
+     "arguments": {},
+     "position": 68,
+     "tool_call_id": null
+    },
+    "model_id": "97afe450f68c4bc89bad7c63a246f1c1",
+    "model_name": "20260930-020228-prepared-rottweiler.tar.gz",
+    "assistant_id": "cedar-refill-request-gpt",
+    "session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_full_name",
+     "value": "Maria Alvarez",
+     "description": "Caller stated their full name while requesting a prescription refill.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_date_of_birth",
+     "value": "1968-03-14",
+     "description": "Caller provided their date of birth for patient verification.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_refill_type",
+     "value": "blood pressure pills",
+     "description": "Caller said they need a refill for their blood pressure medication.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "medication_name_lisinopril",
+     "value": "lisinopril ten milligram tablets, one tablet once a day",
+     "description": "The user's requested blood pressure medication was identified in the clinic record as lisinopril 10 mg tablets taken once daily.",
+     "turn_idx": 4,
+     "confidence": 0.95,
+     "pii": false,
+     "captured_by_skill": "request_refill",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  }
+ ],
+ "latest_input_channel": "browser_audio",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790730339.932307,
+ "current_session_id": "0a577f49-ed61-42ce-97df-05fb18091758"
+}

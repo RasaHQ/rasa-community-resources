@@ -1,0 +1,178 @@
+{
+  "slug": "step-up-authentication",
+  "title": "Step-up authentication",
+  "organisation": "Orchard Works",
+  "action": "authorize a sensitive tool request",
+  "failure": "The caller supplied a familiar employee name, and the agent treated familiarity as permission to reset access.",
+  "lesson": "Bind fresh verification to a subject and action; an identity match alone does not confer the stronger authority a sensitive tool needs.",
+  "receipt": "A scoped authorization reference; no password or challenge answer in the conversation log.",
+  "evidence": "Compare the verification subject, challenge receipt and requested action before the wrapper calls its sensitive tool.",
+  "recovery": "On a challenge timeout, invalidate that challenge reference and route to the identity desk. Do not silently fall back to a weaker method.",
+  "owner": "identity platform owner",
+  "metric": "sensitive requests executed without all three bindings, divided by all sensitive requests",
+  "question": "I need to verify this request before changing access. Continue with the verification step?",
+  "correction": "The caller cancels verification; stop the pending action and keep the current access unchanged.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "subject_match",
+      "good": true,
+      "bad": false,
+      "reason": "different_subject",
+      "phase": "request"
+    },
+    {
+      "field": "challenge_consumed",
+      "good": true,
+      "bad": false,
+      "reason": "challenge_not_verified",
+      "phase": "request"
+    },
+    {
+      "field": "action_scope_match",
+      "good": true,
+      "bad": false,
+      "reason": "wrong_action_scope",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "subject_match": true,
+    "challenge_consumed": true,
+    "action_scope_match": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "subject_match": true,
+        "challenge_consumed": true,
+        "action_scope_match": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "subject_match-false",
+      "facts": {
+        "subject_match": false,
+        "challenge_consumed": true,
+        "action_scope_match": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "different_subject",
+        "effects": 0
+      }
+    },
+    {
+      "name": "subject_match-missing",
+      "facts": {
+        "challenge_consumed": true,
+        "action_scope_match": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "different_subject",
+        "effects": 0
+      }
+    },
+    {
+      "name": "subject_match-string",
+      "facts": {
+        "subject_match": "true",
+        "challenge_consumed": true,
+        "action_scope_match": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "different_subject",
+        "effects": 0
+      }
+    },
+    {
+      "name": "challenge_consumed-false",
+      "facts": {
+        "subject_match": true,
+        "challenge_consumed": false,
+        "action_scope_match": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "challenge_not_verified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "challenge_consumed-missing",
+      "facts": {
+        "subject_match": true,
+        "action_scope_match": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "challenge_not_verified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "challenge_consumed-string",
+      "facts": {
+        "subject_match": true,
+        "challenge_consumed": "true",
+        "action_scope_match": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "challenge_not_verified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "action_scope_match-false",
+      "facts": {
+        "subject_match": true,
+        "challenge_consumed": true,
+        "action_scope_match": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_action_scope",
+        "effects": 0
+      }
+    },
+    {
+      "name": "action_scope_match-missing",
+      "facts": {
+        "subject_match": true,
+        "challenge_consumed": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_action_scope",
+        "effects": 0
+      }
+    },
+    {
+      "name": "action_scope_match-string",
+      "facts": {
+        "subject_match": true,
+        "challenge_consumed": true,
+        "action_scope_match": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "wrong_action_scope",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

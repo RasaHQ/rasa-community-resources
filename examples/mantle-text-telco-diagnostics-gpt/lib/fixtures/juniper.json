@@ -1,0 +1,117 @@
+{
+  "_note": "Entirely fictional. Juniper Mobile, its customers, addresses, areas, incidents and devices are invented for this example.",
+  "as_of": "2026-09-30T14:00:00+00:00",
+  "customers": {
+    "JM-CUST-5520": {"first_name": "Dana", "last_name": "Okafor-Lind"},
+    "JM-CUST-7781": {"first_name": "Marek", "last_name": "Solberg"}
+  },
+  "areas": {
+    "MB-04": {
+      "name": "Millbrook exchange area 4",
+      "feed": "ok",
+      "observed_at": "2026-09-30T13:52:00+00:00",
+      "outage": {
+        "incident": "JM-INC-7731",
+        "affects": "fibre broadband",
+        "cause": "fibre cable damaged during roadworks",
+        "started_at": "2026-09-30T07:40:00+00:00",
+        "estimated_restore": "2026-09-30T19:00:00+00:00"
+      }
+    },
+    "EV-11": {
+      "name": "Eastvale exchange area 11",
+      "feed": "ok",
+      "observed_at": "2026-09-30T13:55:00+00:00",
+      "outage": null
+    },
+    "LA-02": {
+      "name": "Lake Arden cell sector 2",
+      "feed": "unavailable",
+      "last_known": {"observed_at": "2026-09-29T22:10:00+00:00", "outage": null}
+    }
+  },
+  "services": {
+    "JM-FB-204417": {
+      "customer_id": "JM-CUST-5520",
+      "label": "home fibre",
+      "address": "14 Wren Street, Millbrook",
+      "area": "MB-04",
+      "device": {"id": "JM-HUB-8812", "model": "Juniper Hub 6"},
+      "diagnostics": {
+        "device_online": true,
+        "optical_signal": "no light received from the exchange",
+        "wan_session": "down",
+        "wifi": "broadcasting normally",
+        "reading": "The hub is working but receives no signal from the network. A reboot or reset of the hub cannot restore a signal that is not arriving."
+      },
+      "after_reboot": null
+    },
+    "JM-FB-204988": {
+      "customer_id": "JM-CUST-5520",
+      "label": "shop fibre",
+      "address": "Unit 5, Tanner's Yard, Eastvale",
+      "area": "EV-11",
+      "device": {"id": "JM-HUB-9034", "model": "Juniper Hub 6"},
+      "diagnostics": {
+        "device_online": true,
+        "optical_signal": "normal",
+        "wan_session": "down",
+        "hub_uptime_days": 41,
+        "wifi": "broadcasting normally",
+        "reading": "The line is receiving a normal signal but the hub's internet session is down. A reboot usually restores a stuck session; it does not remove settings."
+      },
+      "after_reboot": {
+        "device_online": true,
+        "optical_signal": "normal",
+        "wan_session": "up",
+        "hub_uptime_days": 0,
+        "wifi": "broadcasting normally",
+        "reading": "The hub's internet session is up again."
+      }
+    },
+    "JM-5G-309126": {
+      "customer_id": "JM-CUST-5520",
+      "label": "cabin 5G",
+      "address": "Pine Hollow Cabin, Lake Arden",
+      "area": "LA-02",
+      "device": {"id": "JM-HR-3310", "model": "Juniper 5G Home Router"},
+      "diagnostics": {
+        "device_online": true,
+        "mobile_signal": "no service from the serving cell",
+        "wan_session": "down",
+        "wifi": "broadcasting normally",
+        "reading": "The router is working but cannot reach the mobile network. That can be a local cell problem, which the router cannot fix."
+      },
+      "after_reboot": null
+    },
+    "JM-FB-205300": {
+      "customer_id": "JM-CUST-7781",
+      "label": "home fibre",
+      "address": "16 Wren Street, Millbrook",
+      "area": "MB-04",
+      "device": {"id": "JM-HUB-8820", "model": "Juniper Hub 6"},
+      "diagnostics": {
+        "device_online": true,
+        "optical_signal": "no light received from the exchange",
+        "wan_session": "down",
+        "wifi": "broadcasting normally",
+        "reading": "No signal from the network."
+      },
+      "after_reboot": null
+    }
+  },
+  "operations": {
+    "reboot": {
+      "label": "reboot",
+      "command": "REBOOT",
+      "destructive": false,
+      "disruption": "A reboot restarts the hub. Internet and Wi-Fi drop for about 3 minutes, and every setting, including the Wi-Fi name and password, is kept."
+    },
+    "factory_reset": {
+      "label": "factory reset",
+      "command": "FACTORY_RESET",
+      "destructive": true,
+      "disruption": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub."
+    }
+  }
+}

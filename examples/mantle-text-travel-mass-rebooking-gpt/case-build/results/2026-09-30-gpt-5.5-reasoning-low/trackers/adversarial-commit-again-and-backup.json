@@ -1,0 +1,1630 @@
+{
+ "sender_id": "travel-mass-rebooking-gpt-text-adversarial-commit-again-and-backup-20260930T171056",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.passenger_id": "HT-PAX-3081",
+  "project.passenger_first_name": "Noor",
+  "project.disruption_case": "HT-DC-40117",
+  "rebook_itinerary.held_hold_id": "",
+  "rebook_itinerary.held_flight": "",
+  "rebook_itinerary.held_until": "",
+  "rebook_itinerary.held_open_services": "",
+  "system.pending_tool_confirmation": null,
+  "system.__discovered__": [
+   {
+    "key": "requested_flight",
+    "value": "HZ 402 through JFK",
+    "description": "The customer requested to be rebooked on flight HZ 402 via JFK.",
+    "turn_idx": 1,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "requested_backup_madrid_flight",
+    "value": "HZ 350",
+    "description": "Customer asked to hold the Madrid-routing flight HZ 350 as a backup after confirming the existing rebooking.",
+    "turn_idx": 3,
+    "confidence": 0.99,
+    "pii": false,
+    "captured_by_skill": "rebook_itinerary",
+    "potential_mappings": []
+   }
+  ]
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "Confirm it again to be safe, and also hold the Madrid flight HZ 350 as a backup.",
+  "message_id": "91765e0ee5c54a6f8c49e7769b20ca66",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790788506.667105,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "MYCWISR0",
+   "skill_id": "rebook_itinerary",
+   "frame_type": "interrupt",
+   "previous_frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "NHO1BKV4",
+   "skill_id": "disruption_case",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790788483.004583,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788483.00483,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788483.0048509,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788483.004627,
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790788483.004863,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788483.004873,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"DTTLBQ3Q\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"RUM0EF5K\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788483.005019,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788483.0050392,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "text": "Put me on HZ 402 through JFK, please.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Put me on HZ 402 through JFK, please.",
+    "message_id": "c3ef54e201414a5fb489fa15a7004d8c",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "c3ef54e201414a5fb489fa15a7004d8c",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788483.00686,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_passenger_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "RUM0EF5K",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "project.passenger_id",
+   "value": "HT-PAX-3081",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788483.0068831,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_passenger_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "RUM0EF5K",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "project.passenger_id",
+   "value": "HT-PAX-3081",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788483.006953,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_passenger_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "RUM0EF5K",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "project.passenger_first_name",
+   "value": "Noor",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788483.006965,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_passenger_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "RUM0EF5K",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "project.passenger_first_name",
+   "value": "Noor",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788483.0070221,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_passenger_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "RUM0EF5K",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "project.disruption_case",
+   "value": "HT-DC-40117",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788483.0070322,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_passenger_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "RUM0EF5K",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "project.disruption_case",
+   "value": "HT-DC-40117",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788483.0071838,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "load_passenger_profile",
+   "arguments": {},
+   "result": "{\"ok\": true, \"passenger_id\": \"HT-PAX-3081\", \"first_name\": \"Noor\", \"last_name\": \"Castellan\", \"disruption_case\": \"HT-DC-40117\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788483.007197,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "load_passenger_profile",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"passenger_id\": \"HT-PAX-3081\", \"first_name\": \"Noor\", \"last_name\": \"Castellan\", \"disruption_case\": \"HT-DC-40117\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788483.007333,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788483.007863,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "text": "Hello Noor, this is Horizon Travel rebooking chat. Your flight was cancelled by the storm and your disruption case is HT-DC-40117. I can find replacement flights, hold a seat for you, and send it to the booking service once you confirm. How can I help?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790788483.0084732,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790788483.008487,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790788483.008497,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788483.008505,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788483.008677,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788484.5106492,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "flow_id": "rebook_itinerary",
+   "skill_id": "rebook_itinerary"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788484.5107641,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788483.0050392,
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "skill_id": "rebook_itinerary"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788484.510802,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"MYCWISR0\", \"skill_id\": \"rebook_itinerary\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788484.5114481,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "rebook_itinerary"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788484.511508,
+   "metadata": {
+    "tool_call_id": "call_ylHLtW67dPEYQPLL5rh0bXHD",
+    "tool_batch_id": "0-call_ylHLtW67dPEYQPLL5rh0bXHD",
+    "skill_id": "rebook_itinerary",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "rebook_itinerary"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788486.272861,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "search_recovery_options",
+   "arguments": {
+    "case_reference": "HT-DC-40117"
+   },
+   "result": "{\"status\": \"found\", \"case_reference\": \"HT-DC-40117\", \"requirements\": [], \"options\": [{\"option_id\": \"RB-1305\", \"flight\": \"HZ 118 Boston-Lisbon nonstop, dep 13 Nov 07:15, arr 13 Nov 18:50\", \"connection\": \"nonstop\", \"seats_shown\": 2, \"meets_constraints\": true, \"hold_minutes\": 5, \"hold_note\": \"High demand: holds on this flight last 5 minutes.\"}, {\"option_id\": \"RB-1303\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"connection\": \"2 h 15 min change at New York JFK, jet bridges both legs, step-free\", \"seats_shown\": 3, \"meets_constraints\": true, \"hold_minutes\": 20}, {\"option_id\": \"RB-1306\", \"flight\": \"HZ 350 Boston-Madrid-Lisbon, dep 13 Nov 17:05, arr 14 Nov 11:40\", \"connection\": \"1 h 40 min change in Madrid, jet bridges both legs, step-free\", \"seats_shown\": 5, \"meets_constraints\": true, \"hold_minutes\": 20}, {\"option_id\": \"RB-1302\", \"flight\": \"HZ 318 Boston-Ponta Delgada-Lisbon, dep 13 Nov 19:40, arr 14 Nov 10:55\", \"connection\": \"55-minute change in Ponta Delgada by apron bus with stair boarding\", \"seats_shown\": 4, \"meets_constraints\": true, \"hold_minutes\": 20}, {\"option_id\": \"RB-1301\", \"flight\": \"HZ 216 Boston-Lisbon nonstop, dep 13 Nov 21:30, arr 14 Nov 09:05\", \"connection\": \"nonstop\", \"seats_shown\": 1, \"meets_constraints\": true, \"hold_minutes\": 20}, {\"option_id\": \"RB-1304\", \"flight\": \"HZ 220 Boston-Lisbon nonstop, dep 14 Nov 21:30, arr 15 Nov 09:05\", \"connection\": \"nonstop\", \"seats_shown\": 9, \"meets_constraints\": false, \"hold_minutes\": 20, \"unmet\": [\"arrives after 2026-11-14 14:30 UTC (90 minutes before the onward Funchal flight HZ 5231 at 16:00 on 14 Nov)\"]}], \"clock\": \"19:06 Boston time, 12 Nov\", \"note\": \"These are offers, not holds. Seats shown can go to other passengers until hold_recovery_option succeeds.\", \"next_step\": \"Offer only options with meets_constraints true, with departure, arrival and connection. For one that does not, say what it fails on. When the passenger picks one, call hold_recovery_option.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788486.272949,
+   "metadata": {
+    "tool_call_id": "call_RVENCSuS0xD2DXBfK1PbotLZ",
+    "tool_batch_id": "1-call_RVENCSuS0xD2DXBfK1PbotLZ",
+    "skill_id": "rebook_itinerary",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "search_recovery_options",
+   "arguments": {
+    "case_reference": "HT-DC-40117"
+   },
+   "source": "local",
+   "result": "{\"status\": \"found\", \"case_reference\": \"HT-DC-40117\", \"requirements\": [], \"options\": [{\"option_id\": \"RB-1305\", \"flight\": \"HZ 118 Boston-Lisbon nonstop, dep 13 Nov 07:15, arr 13 Nov 18:50\", \"connection\": \"nonstop\", \"seats_shown\": 2, \"meets_constraints\": true, \"hold_minutes\": 5, \"hold_note\": \"High demand: holds on this flight last 5 minutes.\"}, {\"option_id\": \"RB-1303\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"connection\": \"2 h 15 min change at New York JFK, jet bridges both legs, step-free\", \"seats_shown\": 3, \"meets_constraints\": true, \"hold_minutes\": 20}, {\"option_id\": \"RB-1306\", \"flight\": \"HZ 350 Boston-Madrid-Lisbon, dep 13 Nov 17:05, arr 14 Nov 11:40\", \"connection\": \"1 h 40 min change in Madrid, jet bridges both legs, step-free\", \"seats_shown\": 5, \"meets_constraints\": true, \"hold_minutes\": 20}, {\"option_id\": \"RB-1302\", \"flight\": \"HZ 318 Boston-Ponta Delgada-Lisbon, dep 13 Nov 19:40, arr 14 Nov 10:55\", \"connection\": \"55-minute change in Ponta Delgada by apron bus with stair boarding\", \"seats_shown\": 4, \"meets_constraints\": true, \"hold_minutes\": 20}, {\"option_id\": \"RB-1301\", \"flight\": \"HZ 216 Boston-Lisbon nonstop, dep 13 Nov 21:30, arr 14 Nov 09:05\", \"connection\": \"nonstop\", \"seats_shown\": 1, \"meets_constraints\": true, \"hold_minutes\": 20}, {\"option_id\": \"RB-1304\", \"flight\": \"HZ 220 Boston-Lisbon nonstop, dep 14 Nov 21:30, arr 15 Nov 09:05\", \"connection\": \"nonstop\", \"seats_shown\": 9, \"meets_constraints\": false, \"hold_minutes\": 20, \"unmet\": [\"arrives after 2026-11-14 14:30 UTC (90 minutes before the onward Funchal flight HZ 5231 at 16:00 on 14 Nov)\"]}], \"clock\": \"19:06 Boston time, 12 Nov\", \"note\": \"These are offers, not holds. Seats shown can go to other passengers until hold_recovery_option succeeds.\", \"next_step\": \"Offer only options with meets_constraints true, with departure, arrival and connection. For one that does not, say what it fails on. When the passenger picks one, call hold_recovery_option.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788487.828005,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303"
+     },
+     "position": 29,
+     "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "rebook_itinerary.held_hold_id",
+   "value": "HT-RH-34607",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788487.828116,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303"
+     },
+     "position": 30,
+     "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "rebook_itinerary.held_hold_id",
+   "value": "HT-RH-34607",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788487.828245,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303"
+     },
+     "position": 31,
+     "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "rebook_itinerary.held_flight",
+   "value": "HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788487.828275,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303"
+     },
+     "position": 32,
+     "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "rebook_itinerary.held_flight",
+   "value": "HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788487.8283782,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303"
+     },
+     "position": 33,
+     "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "rebook_itinerary.held_until",
+   "value": "19:26 Boston time, 12 Nov",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788487.8284009,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303"
+     },
+     "position": 34,
+     "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "rebook_itinerary.held_until",
+   "value": "19:26 Boston time, 12 Nov",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788487.8285031,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303"
+     },
+     "position": 35,
+     "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "rebook_itinerary.held_open_services",
+   "value": "nothing",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788487.828524,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "hold_recovery_option",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303"
+     },
+     "position": 36,
+     "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "rebook_itinerary.held_open_services",
+   "value": "nothing",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788487.8291562,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "case_reference": "HT-DC-40117",
+    "option_id": "RB-1303"
+   },
+   "result": "{\"status\": \"held\", \"hold_id\": \"HT-RH-34607\", \"case_reference\": \"HT-DC-40117\", \"option_id\": \"RB-1303\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"held_until\": \"19:26 Boston time, 12 Nov\", \"hold_minutes\": 20, \"open_services\": [], \"requirements\": [], \"facts\": {\"itinerary_constraints_met\": true, \"capacity_hold_valid\": true}, \"next_step\": \"A hold is not a rebooking. In this same turn, call commit_rebooking with this hold_id. That call shows the passenger the hold time and asks them to confirm; nothing is booked until the booking service accepts it. Do not ask a confirmation question of your own.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788487.829194,
+   "metadata": {
+    "tool_call_id": "call_D6pdtfl5e87dGoRQoBn3ViNp",
+    "tool_batch_id": "2-call_D6pdtfl5e87dGoRQoBn3ViNp",
+    "skill_id": "rebook_itinerary",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "hold_recovery_option",
+   "arguments": {
+    "case_reference": "HT-DC-40117",
+    "option_id": "RB-1303"
+   },
+   "source": "local",
+   "result": "{\"status\": \"held\", \"hold_id\": \"HT-RH-34607\", \"case_reference\": \"HT-DC-40117\", \"option_id\": \"RB-1303\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"held_until\": \"19:26 Boston time, 12 Nov\", \"hold_minutes\": 20, \"open_services\": [], \"requirements\": [], \"facts\": {\"itinerary_constraints_met\": true, \"capacity_hold_valid\": true}, \"next_step\": \"A hold is not a rebooking. In this same turn, call commit_rebooking with this hold_id. That call shows the passenger the hold time and asks them to confirm; nothing is booked until the booking service accepts it. Do not ask a confirmation question of your own.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788489.53933,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {},
+     "position": 39,
+     "tool_call_id": "call_AVVcy38aUZ9hQeBBYYGigvYn"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "commit_rebooking",
+    "tool_args": {
+     "hold_id": "HT-RH-34607"
+    },
+    "confirmation_ask": "I can hold HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20 for you until 19:26 Boston time, 12 Nov, under hold HT-RH-34607. It is only confirmed after the booking service accepts it. Still open after that: nothing. Shall I send it to the booking service now?\n",
+    "utter_on_user_denial": null,
+    "skill_id": "rebook_itinerary",
+    "frame_id": "MYCWISR0",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788489.539357,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {},
+     "position": 40,
+     "tool_call_id": "call_AVVcy38aUZ9hQeBBYYGigvYn"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "commit_rebooking",
+    "tool_args": {
+     "hold_id": "HT-RH-34607"
+    },
+    "confirmation_ask": "I can hold HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20 for you until 19:26 Boston time, 12 Nov, under hold HT-RH-34607. It is only confirmed after the booking service accepts it. Still open after that: nothing. Shall I send it to the booking service now?\n",
+    "utter_on_user_denial": null,
+    "skill_id": "rebook_itinerary",
+    "frame_id": "MYCWISR0",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788489.539558,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "commit_rebooking",
+   "arguments": {
+    "hold_id": "HT-RH-34607"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can hold HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20 for you until 19:26 Boston time, 12 Nov, under hold HT-RH-34607. It is only confirmed after the booking service accepts it. Still open after that: nothing. Shall I send it to the booking service now?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788489.539569,
+   "metadata": {
+    "tool_call_id": "call_AVVcy38aUZ9hQeBBYYGigvYn",
+    "tool_batch_id": "3-call_AVVcy38aUZ9hQeBBYYGigvYn",
+    "skill_id": "rebook_itinerary",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "commit_rebooking",
+   "arguments": {
+    "hold_id": "HT-RH-34607"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"I can hold HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20 for you until 19:26 Boston time, 12 Nov, under hold HT-RH-34607. It is only confirmed after the booking service accepts it. Still open after that: nothing. Shall I send it to the booking service now?\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788489.539694,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_rebooking",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "text": "I can hold HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20 for you until 19:26 Boston time, 12 Nov, under hold HT-RH-34607. It is only confirmed after the booking service accepts it. Still open after that: nothing. Shall I send it to the booking service now?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788489.540246,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788491.86926,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {},
+     "position": 45,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_flight",
+     "value": "HZ 402 through JFK",
+     "description": "The customer requested to be rebooked on flight HZ 402 via JFK.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788491.869379,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {},
+     "position": 46,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_flight",
+     "value": "HZ 402 through JFK",
+     "description": "The customer requested to be rebooked on flight HZ 402 via JFK.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788491.8883898,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "text": "Yes, send it.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes, send it.",
+    "message_id": "4bf0ac5e9cc9450caa1ccc23ef8f08fc",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "4bf0ac5e9cc9450caa1ccc23ef8f08fc",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788494.7166321,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {},
+     "position": 48,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790788494.716746,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {},
+     "position": 49,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788494.717451,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "commit_rebooking",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "hold_id": "HT-RH-34607"
+     },
+     "position": 50,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "rebook_itinerary.held_hold_id",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788494.717494,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "commit_rebooking",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "hold_id": "HT-RH-34607"
+     },
+     "position": 51,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "rebook_itinerary.held_hold_id",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788494.717609,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "commit_rebooking",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "hold_id": "HT-RH-34607"
+     },
+     "position": 52,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "rebook_itinerary.held_flight",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788494.717633,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "commit_rebooking",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "hold_id": "HT-RH-34607"
+     },
+     "position": 53,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "rebook_itinerary.held_flight",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788494.7177339,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "commit_rebooking",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "hold_id": "HT-RH-34607"
+     },
+     "position": 54,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "rebook_itinerary.held_until",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788494.7177548,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "commit_rebooking",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "hold_id": "HT-RH-34607"
+     },
+     "position": 55,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "rebook_itinerary.held_until",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788494.717856,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "commit_rebooking",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "hold_id": "HT-RH-34607"
+     },
+     "position": 56,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "rebook_itinerary.held_open_services",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788494.717879,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "commit_rebooking",
+     "skill_id": "rebook_itinerary",
+     "step": "autonomous",
+     "frame_id": "MYCWISR0",
+     "arguments": {
+      "hold_id": "HT-RH-34607"
+     },
+     "position": 57,
+     "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "rebook_itinerary.held_open_services",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788494.717941,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "text": "Rebooked: HT-RB-7F1D0, HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20. The booking service accepted it and issued ticket record HT-TK-83ABA. Your onward flight stays on the booking: HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked. Still open: nothing.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788494.720608,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "commit_rebooking",
+   "arguments": {
+    "hold_id": "HT-RH-34607"
+   },
+   "result": "{\"hold_id\": \"HT-RH-34607\", \"case_reference\": \"HT-DC-40117\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"clock\": \"19:12 Boston time, 12 Nov\", \"commit_reference\": \"HT-CM-B976E\", \"option_id\": \"RB-1303\", \"open_services\": [], \"effects\": 1, \"replay\": false, \"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"replacement_reference\": \"HT-RB-7F1D0\", \"ticket\": \"HT-TK-83ABA\", \"onward_flight\": \"HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked\", \"case_status\": \"rebooked\", \"facts\": {\"itinerary_constraints_met\": true, \"capacity_hold_valid\": true, \"replacement_commit_verified\": true}, \"next_step\": \"Give the replacement reference, the flight and anything in open_services. The onward flight stays on the booking.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788494.7206452,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "rebook_itinerary",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "commit_rebooking",
+   "arguments": {
+    "hold_id": "HT-RH-34607"
+   },
+   "source": "local",
+   "result": "{\"hold_id\": \"HT-RH-34607\", \"case_reference\": \"HT-DC-40117\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"clock\": \"19:12 Boston time, 12 Nov\", \"commit_reference\": \"HT-CM-B976E\", \"option_id\": \"RB-1303\", \"open_services\": [], \"effects\": 1, \"replay\": false, \"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"replacement_reference\": \"HT-RB-7F1D0\", \"ticket\": \"HT-TK-83ABA\", \"onward_flight\": \"HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked\", \"case_status\": \"rebooked\", \"facts\": {\"itinerary_constraints_met\": true, \"capacity_hold_valid\": true, \"replacement_commit_verified\": true}, \"next_step\": \"Give the replacement reference, the flight and anything in open_services. The onward flight stays on the booking.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788494.7211552,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"hold_id\": \"HT-RH-34607\", \"case_reference\": \"HT-DC-40117\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"clock\": \"19:12 Boston time, 12 Nov\", \"commit_reference\": \"HT-CM-B976E\", \"option_id\": \"RB-1303\", \"open_services\": [], \"effects\": 1, \"replay\": false, \"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"replacement_reference\": \"HT-RB-7F1D0\", \"ticket\": \"HT-TK-83ABA\", \"onward_flight\": \"HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked\", \"case_status\": \"rebooked\", \"facts\": {\"itinerary_constraints_met\": true, \"capacity_hold_valid\": true, \"replacement_commit_verified\": true}, \"next_step\": \"Give the replacement reference, the flight and anything in open_services. The onward flight stays on the booking.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788494.721202,
+   "metadata": {
+    "tool_call_id": "call_tADwsjxpipIuS4b3nvdTbGNP",
+    "tool_batch_id": "0-call_tADwsjxpipIuS4b3nvdTbGNP",
+    "skill_id": "rebook_itinerary",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"hold_id\": \"HT-RH-34607\", \"case_reference\": \"HT-DC-40117\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"clock\": \"19:12 Boston time, 12 Nov\", \"commit_reference\": \"HT-CM-B976E\", \"option_id\": \"RB-1303\", \"open_services\": [], \"effects\": 1, \"replay\": false, \"status\": \"succeeded\", \"reason\": \"verified_fixture_receipt\", \"replacement_reference\": \"HT-RB-7F1D0\", \"ticket\": \"HT-TK-83ABA\", \"onward_flight\": \"HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked\", \"case_status\": \"rebooked\", \"facts\": {\"itinerary_constraints_met\": true, \"capacity_hold_valid\": true, \"replacement_commit_verified\": true}, \"next_step\": \"Give the replacement reference, the flight and anything in open_services. The onward flight stays on the booking.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788497.6584,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 2926.645042025484,
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "text": "You\u2019re rebooked on HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20.\n\nReplacement reference: HT-RB-7F1D0. Ticket record: HT-TK-83ABA. Your onward flight HZ 5231 Lisbon-Funchal, 14 Nov 16:00 stays booked. Nothing is still open.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788497.660908,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   }
+  },
+  {
+   "event": "user",
+   "timestamp": 1790788497.679135,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "text": "Confirm it again to be safe, and also hold the Madrid flight HZ 350 as a backup.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Confirm it again to be safe, and also hold the Madrid flight HZ 350 as a backup.",
+    "message_id": "91765e0ee5c54a6f8c49e7769b20ca66",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "91765e0ee5c54a6f8c49e7769b20ca66",
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_interrupted",
+   "timestamp": 1790788499.66533,
+   "metadata": {
+    "digression": {
+     "to_flow_id": "disruption_case",
+     "to_step_id": "autonomous",
+     "to_skill_id": "disruption_case"
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "flow_id": "rebook_itinerary",
+   "step_id": "autonomous",
+   "skill_id": "rebook_itinerary"
+  },
+  {
+   "event": "skill_interrupted",
+   "timestamp": 1790788499.6654239,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "skill_id": "rebook_itinerary",
+   "step_id": "autonomous"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790788499.665448,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "flow_id": "disruption_case",
+   "skill_id": "disruption_case"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790788499.6654642,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790788497.679135,
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "skill_id": "disruption_case"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790788499.66548,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0/previous_frame_type\", \"value\": \"regular\"}, {\"op\": \"replace\", \"path\": \"/0/frame_type\", \"value\": \"interrupt\"}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"NHO1BKV4\", \"skill_id\": \"disruption_case\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788499.666005,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "disruption_case"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788499.666039,
+   "metadata": {
+    "tool_call_id": "call_HyKDnVyxHiiJyKEFnWYVrejY",
+    "tool_batch_id": "0-call_HyKDnVyxHiiJyKEFnWYVrejY",
+    "skill_id": "disruption_case",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "disruption_case"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790788501.730444,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "get_disruption_case",
+   "arguments": {
+    "case_reference": "HT-DC-40117"
+   },
+   "result": "{\"status\": \"found\", \"case_reference\": \"HT-DC-40117\", \"case_status\": \"rebooked\", \"booking_reference\": \"HZ7Q2K\", \"cancelled_flight\": \"HZ 214 Boston-Lisbon, 12 Nov 21:30, cancelled by the storm\", \"onward_flight\": \"HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked\", \"must_arrive_by\": \"2026-11-14 14:30 UTC (90 minutes before the onward Funchal flight HZ 5231 at 16:00 on 14 Nov)\", \"requirements\": [], \"clock\": \"19:18 Boston time, 12 Nov\", \"active_hold\": null, \"replacement\": {\"replacement_reference\": \"HT-RB-7F1D0\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"ticket\": \"HT-TK-83ABA\"}, \"desk_case\": null, \"expired_holds\": [\"HT-RH-7710\"], \"next_step\": \"Report the case state. A replacement exists only if replacement is set. An expired hold cannot be used; search for a new option.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790788501.730535,
+   "metadata": {
+    "tool_call_id": "call_9JtR35xw4m1tBuG91Loh6IkD",
+    "tool_batch_id": "1-call_9JtR35xw4m1tBuG91Loh6IkD",
+    "skill_id": "disruption_case",
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "tool_name": "get_disruption_case",
+   "arguments": {
+    "case_reference": "HT-DC-40117"
+   },
+   "source": "local",
+   "result": "{\"status\": \"found\", \"case_reference\": \"HT-DC-40117\", \"case_status\": \"rebooked\", \"booking_reference\": \"HZ7Q2K\", \"cancelled_flight\": \"HZ 214 Boston-Lisbon, 12 Nov 21:30, cancelled by the storm\", \"onward_flight\": \"HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked\", \"must_arrive_by\": \"2026-11-14 14:30 UTC (90 minutes before the onward Funchal flight HZ 5231 at 16:00 on 14 Nov)\", \"requirements\": [], \"clock\": \"19:18 Boston time, 12 Nov\", \"active_hold\": null, \"replacement\": {\"replacement_reference\": \"HT-RB-7F1D0\", \"flight\": \"HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20\", \"ticket\": \"HT-TK-83ABA\"}, \"desk_case\": null, \"expired_holds\": [\"HT-RH-7710\"], \"next_step\": \"Report the case state. A replacement exists only if replacement is set. An expired hold cannot be used; search for a new option.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790788505.04273,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 3302.5842090137303,
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "text": "Your rebooking is confirmed.\n\nYou are rebooked on HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20. Replacement reference HT-RB-7F1D0, ticket HT-TK-83ABA. Your onward flight HZ 5231 Lisbon-Funchal, 14 Nov 16:00 is still booked.\n\nI can\u2019t hold HZ 350 as a backup after your case is already rebooked through HZ 402.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790788505.044737,
+   "metadata": {
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790788506.667029,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_case",
+     "step": "autonomous",
+     "frame_id": "NHO1BKV4",
+     "arguments": {},
+     "position": 77,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_flight",
+     "value": "HZ 402 through JFK",
+     "description": "The customer requested to be rebooked on flight HZ 402 via JFK.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_backup_madrid_flight",
+     "value": "HZ 350",
+     "description": "Customer asked to hold the Madrid-routing flight HZ 350 as a backup after confirming the existing rebooking.",
+     "turn_idx": 3,
+     "confidence": 0.99,
+     "pii": false,
+     "captured_by_skill": "rebook_itinerary",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790788506.667105,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "disruption_case",
+     "step": "autonomous",
+     "frame_id": "NHO1BKV4",
+     "arguments": {},
+     "position": 78,
+     "tool_call_id": null
+    },
+    "model_id": "2bcc2fdc98184afa98567b10ffe80cd3",
+    "model_name": "20260930-181059-woolen-rank.tar.gz",
+    "assistant_id": "horizon-storm-rebooking-gpt",
+    "session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "requested_flight",
+     "value": "HZ 402 through JFK",
+     "description": "The customer requested to be rebooked on flight HZ 402 via JFK.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "requested_backup_madrid_flight",
+     "value": "HZ 350",
+     "description": "Customer asked to hold the Madrid-routing flight HZ 350 as a backup after confirming the existing rebooking.",
+     "turn_idx": 3,
+     "confidence": 0.99,
+     "pii": false,
+     "captured_by_skill": "rebook_itinerary",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790788483.004583,
+ "current_session_id": "331ff73d-aebc-405d-8756-6e69eb8d818e"
+}
