@@ -8,6 +8,7 @@ factories. This package is for everything else.
           voicerouter.providers.elevenlabs.ElevenLabsTTS
           voicerouter.providers.speechmatics.SpeechmaticsTTS
           voicerouter.providers.neuphonic.NeuTTSLocal      (local, no API key)
+          voicerouter.providers.neutts_native.NeuTTSNative (local, Metal, no Python model stack)
           voicerouter.providers.aws.PollyTTS
           voicerouter.providers.google.GoogleTTS
 
@@ -37,6 +38,12 @@ class VendorEntry(NamedTuple):
 
 
 CATALOGUE: tuple[VendorEntry, ...] = (
+    VendorEntry("tts", "voicerouter.providers.rime.RimeTTS",
+                "RIME_API_KEY", False, "shared HTTP PCM transport; explicit model, voice and language"),
+    VendorEntry("asr", "voicerouter.providers.deepgram.DeepgramASR",
+                "DEEPGRAM_API_KEY", False, "shared Nova /v1/listen transport; Flux uses a separate protocol"),
+    VendorEntry("tts", "voicerouter.providers.deepgram.DeepgramTTS",
+                "DEEPGRAM_API_KEY", False, "shared Aura /v1/speak transport; router owns retries"),
     VendorEntry("tts", "voicerouter.providers.openai.OpenAITTS",
                 "OPENAI_API_KEY", True, "24 kHz PCM, no resampling on the common path"),
     VendorEntry("tts", "voicerouter.providers.speechmatics.SpeechmaticsTTS",
@@ -50,6 +57,9 @@ CATALOGUE: tuple[VendorEntry, ...] = (
     VendorEntry("tts", "voicerouter.providers.neuphonic.NeuTTSLocal",
                 "(none — local)", False,
                 "on-device; needs the optional neutts package and a reference voice"),
+    VendorEntry("tts", "voicerouter.providers.neutts_native.NeuTTSNative",
+                "(none — local)", True,
+                "NeuTTS-2E on llama.cpp Metal plus a C++ decoder, built by native/neutts; Apple silicon"),
     VendorEntry("asr", "voicerouter.providers.vosk.VoskASR",
                 "(none — local)", True,
                 "Apache 2.0, ~68MB, natively streaming: emits real partials"),

@@ -1,0 +1,110 @@
+{
+  "organisation": "Amber Grid (fictional energy supplier)",
+  "note": "Fictional fixture data for the utilities-budget-plan case build. Amber Grid, its customers, accounts, balances, usage estimates and budget-plan options are invented; no record here belongs to a real supplier or person.",
+  "as_of": "2026-09-30T09:00:00",
+  "session_customer_id": "AGC-3308",
+  "customers": {
+    "AGC-3308": {"first_name": "Marisol", "last_name": "Quenby"},
+    "AGC-5541": {"first_name": "Dev", "last_name": "Hartigan"}
+  },
+  "accounts": {
+    "AG-6120": {
+      "customer_id": "AGC-3308",
+      "label": "home electricity",
+      "outstanding_balance_usd": "412.56",
+      "balance_due": "2026-10-14",
+      "balance_status": "overdue since 2026-08-28"
+    },
+    "AG-6121": {
+      "customer_id": "AGC-3308",
+      "label": "home gas",
+      "outstanding_balance_usd": "96.60",
+      "balance_due": "2026-10-14",
+      "balance_status": "overdue since 2026-09-02"
+    },
+    "AG-6125": {
+      "customer_id": "AGC-3308",
+      "label": "studio electricity",
+      "outstanding_balance_usd": "58.20",
+      "balance_due": "2026-10-20",
+      "balance_status": "not yet due"
+    },
+    "AG-6388": {
+      "customer_id": "AGC-5541",
+      "label": "home electricity",
+      "outstanding_balance_usd": "233.10",
+      "balance_due": "2026-10-09",
+      "balance_status": "overdue since 2026-09-05"
+    }
+  },
+  "quotes": {
+    "AG-6120": {
+      "current": 1,
+      "record_read_back": "ok",
+      "revisions": {
+        "1": {
+          "basis": {"usage": "5,400 kWh a year", "annual_cost_usd": "1296.00", "source": "12 months of actual meter reads to 15 Sep 2026"},
+          "options": {
+            "BP-6120-A": {"kind": "budget_only", "budget_usd": "108.00", "first_due": "2026-11-01"},
+            "BP-6120-B": {"kind": "budget_with_balance_spread", "budget_usd": "108.00", "spread_usd": "34.38", "spread_payments": 12, "first_due": "2026-11-01"}
+          }
+        }
+      }
+    },
+    "AG-6121": {
+      "current": 1,
+      "record_read_back": "ok",
+      "revise_after_first_selection": {
+        "to": 2,
+        "why": "An actual meter reading taken on 29 Sep 2026 replaced the estimated reads the first quote used."
+      },
+      "revisions": {
+        "1": {
+          "basis": {"usage": "620 therms a year", "annual_cost_usd": "696.00", "source": "estimated reads since 1 Jun 2026"},
+          "options": {
+            "BP-6121-A": {"kind": "budget_only", "budget_usd": "58.00", "first_due": "2026-11-01"},
+            "BP-6121-B": {"kind": "budget_with_balance_spread", "budget_usd": "58.00", "spread_usd": "16.10", "spread_payments": 6, "first_due": "2026-11-01"}
+          }
+        },
+        "2": {
+          "basis": {"usage": "710 therms a year", "annual_cost_usd": "798.00", "source": "actual meter read on 29 Sep 2026"},
+          "options": {
+            "BP-6121-A": {"kind": "budget_only", "budget_usd": "66.50", "first_due": "2026-11-01"},
+            "BP-6121-B": {"kind": "budget_with_balance_spread", "budget_usd": "66.50", "spread_usd": "16.10", "spread_payments": 6, "first_due": "2026-11-01"}
+          }
+        }
+      }
+    },
+    "AG-6125": {
+      "current": 1,
+      "record_read_back": "delayed",
+      "revisions": {
+        "1": {
+          "basis": {"usage": "1,950 kWh a year", "annual_cost_usd": "492.00", "source": "12 months of actual meter reads to 12 Sep 2026"},
+          "options": {
+            "BP-6125-A": {"kind": "budget_only", "budget_usd": "41.00", "first_due": "2026-11-01"}
+          }
+        }
+      }
+    },
+    "AG-6388": {
+      "current": 1,
+      "record_read_back": "ok",
+      "revisions": {
+        "1": {
+          "basis": {"usage": "4,100 kWh a year", "annual_cost_usd": "984.00", "source": "12 months of actual meter reads to 10 Sep 2026"},
+          "options": {
+            "BP-6388-A": {"kind": "budget_only", "budget_usd": "82.00", "first_due": "2026-11-01"}
+          }
+        }
+      }
+    }
+  },
+  "unauthorized_options": {
+    "BP-6120-W": {
+      "account": "AG-6120",
+      "terms": "$108.00 a month with the $412.56 balance written off",
+      "billing_status": "asked for in an earlier chat; the billing service never authorized it"
+    }
+  }
+}

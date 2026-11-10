@@ -24,19 +24,19 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import urlencode
 
 import structlog
-import websockets
-from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine, ASREngineConfig
-from rasa.core.channels.voice_stream.asr.asr_event import (
+import websockets.exceptions
+from voicerouter.engine import SocketASR, ASREngineConfig
+from voicerouter.engine import (
     ASREvent,
     NewTranscript,
     UserIsSpeaking,
 )
-from rasa.core.channels.voice_stream.audio_bytes import (
+from voicerouter.engine import (
     AudioEncoding,
     AudioFormat,
     RasaAudioBytes,
 )
-from websockets.legacy.client import WebSocketClientProtocol
+from websockets.asyncio.client import ClientConnection, connect
 
 logger = structlog.get_logger(__name__)
 
@@ -57,7 +57,7 @@ class AssemblyAIASRConfig(ASREngineConfig):
     format_turns: Optional[bool] = None
 
 
-class AssemblyAIASR(ASREngine[AssemblyAIASRConfig]):
+class AssemblyAIASR(SocketASR[AssemblyAIASRConfig]):
     required_env_vars = (ASSEMBLYAI_API_KEY_ENV_VAR,)
 
     @classmethod
@@ -87,17 +87,24 @@ class AssemblyAIASR(ASREngine[AssemblyAIASRConfig]):
             )
         return f"{self.config.endpoint or DEFAULT_ENDPOINT}?{urlencode(params)}"
 
-    async def open_websocket_connection(self) -> WebSocketClientProtocol:
+    async def open_websocket_connection(self) -> ClientConnection:
+        """Open the socket on websockets' asyncio client, as Rasa's engines do.
+
+        The legacy `websockets.connect(..., extra_headers=...)` raises
+        TypeError on websockets 14 and later; rasa-pro 3.21.0.dev5 resolves
+        15.0.1, so the header goes in `additional_headers`.
+        """
         api_key = os.environ[ASSEMBLYAI_API_KEY_ENV_VAR]
         try:
             # Bare key, not "Bearer <key>" — the v3 endpoint rejects the latter.
-            return await websockets.connect(
-                self._url(), extra_headers={"Authorization": api_key}
+            return await connect(
+                self._url(), additional_headers={"Authorization": api_key}
             )
-        except websockets.exceptions.InvalidStatusCode as e:
+        except websockets.exceptions.InvalidStatus as e:
+            status_code = e.response.status_code
             logger.error(
-                "assemblyai.connection.failed", status_code=e.status_code,
-                error=("check your AssemblyAI API key" if e.status_code == 401
+                "assemblyai.connection.failed", status_code=status_code,
+                error=("check your AssemblyAI API key" if status_code == 401
                        else "connection to AssemblyAI failed"),
             )
             raise
@@ -117,7 +124,7 @@ class AssemblyAIASR(ASREngine[AssemblyAIASRConfig]):
             return None
         if message.get("type") != "Turn":
             if message.get("type") == "Error":
-                logger.error("assemblyai.error", error=message.get("error"))
+                raise RuntimeError("AssemblyAI ASR returned an error event")
             return None
         text = (message.get("transcript") or "").strip()
         if not text:
@@ -139,7 +146,7 @@ class AssemblyAIASR(ASREngine[AssemblyAIASRConfig]):
 
     @staticmethod
     def get_default_config(rasa_language: str) -> AssemblyAIASRConfig:
-        from rasa.core.channels.voice_stream.asr.asr_engine import ASRLanguageMapEntry
+        from voicerouter.engine import ASRLanguageMapEntry
 
         return AssemblyAIASRConfig(
             endpoint=DEFAULT_ENDPOINT, format_turns=True,

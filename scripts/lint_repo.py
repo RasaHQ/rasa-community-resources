@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -54,6 +55,7 @@ from rasa_projects import (
     read_required_secrets,
     read_uv_prerelease_setting,
     read_version_line,
+    _version_sort_key,
 )
 
 # The engine package name to show in messages. Follows the rename in
@@ -456,6 +458,11 @@ def check_resource_metadata(projects: list[Project]) -> list[Finding]:
                         f"metadata block is missing {key!r}",
                     )
                 )
+        if re.search(r"Assessed by:\*{0,2}[^\n]*\(Codex\)|maintainer review pending", text, re.I):
+            findings.append(Finding(
+                "resource-metadata", _rel(readme), None,
+                "name the qualification checks, not a model assessor or pending review",
+            ))
         match = ASSESSED_ON_RE.search(head)
         if match:
             try:
@@ -809,6 +816,23 @@ def check_brand_terms() -> list[Finding]:
 INLINE_LLM_KEYS = ("provider", "model", "api_key_env", "api_key")
 
 
+def _project_requires_rule(project: Project, introduced: str) -> bool:
+    """Apply newer config rules to maintained projects and matching snapshots.
+
+    Missing or unrecognised snapshot pins keep the strict rule. The separate
+    snapshot-pin check reports the missing reproducibility information.
+    """
+    if not project.snapshot:
+        return True
+    try:
+        version = read_pyproject_pin(project)
+    except OSError:
+        return True
+    if not version or not _version_sort_key(version)[0]:
+        return True
+    return _version_sort_key(version) >= _version_sort_key(introduced)
+
+
 def check_llm_model_group(projects: list[Project]) -> list[Finding]:
     """`llm:` names a model group; provider settings live on the group.
 
@@ -820,6 +844,8 @@ def check_llm_model_group(projects: list[Project]) -> list[Finding]:
     """
     findings: list[Finding] = []
     for project in projects:
+        if not _project_requires_rule(project, "3.20.0.dev6"):
+            continue
         path = project.path / "integrations.yml"
         if not path.is_file():
             continue
@@ -865,21 +891,35 @@ def check_llm_model_group(projects: list[Project]) -> list[Finding]:
     return findings
 
 
-# `api_key` is on the engine's SENSITIVE_DATA list (rasa/shared/constants.py),
-# so `read_yaml` (rasa/shared/utils/yaml.py) returns it RAW on purpose — a
-# secret-leak guard. `api_key: ${VAR}` therefore never expands; the provider is
-# handed the literal characters `${VAR}` as its key. `api_key_env: VAR` is the
-# sanctioned channel: `_resolve_api_key_env` (rasa/mantle/llm/client.py) reads
-# the environment and substitutes the real value. Non-sensitive fields such as
-# `model:` DO expand `${VAR}` — the suppression is credential-specific.
+# Model-group credentials, rasa-pro 3.21.0.dev2 onward (checked against the
+# 3.21.0.dev3 wheel). `validate_model_group_credentials` in
+# rasa/shared/providers/model_group_validation.py runs from validate_project,
+# training and client construction, and:
+#   * rejects `api_key_env` outright ("Model group '<id>' uses 'api_key_env',
+#     which is no longer supported. Replace it with 'api_key: ${ENV_VAR_NAME}'.")
+#   * requires every SENSITIVE_DATA value (rasa/shared/constants.py: api_key,
+#     the AWS keys, client_id/client_secret, ...) to match `\${(\w+)}` exactly.
+# The litellm provider client expands that reference from the environment at
+# call time, so `api_key: ${OPENAI_API_KEY}` is the one accepted spelling.
+#
+# Through 3.20 both forms reached the provider as the real key: Mantle resolved
+# `api_key_env: VAR`, and the client expanded `api_key: ${VAR}` at call time.
+# This catalog advised `api_key_env` for 3.20 after a reproduction that stopped
+# at the YAML loader, which defers sensitive values rather than dropping them.
+# Copies of that advice are the likeliest way to reintroduce the removed key,
+# which is why this check keeps rejecting it by name.
+#
 # Anchored at start-of-line (after indent, and after a YAML `- ` item dash) so
-# it matches a real mapping entry, not prose that quotes the broken form inside
-# backticks while teaching against it. Covers `${VAR}`, bare `$VAR`, quoted
-# forms, and `${VAR:-default}` — every spelling is equally unexpanded.
-API_KEY_PLACEHOLDER_RE = re.compile(r"""^\s*(?:-\s+)?api_key\s*:\s*["']?\$""")
+# it matches a real mapping entry, not prose that quotes a form in backticks.
+API_KEY_ENV_RE = re.compile(r"^\s*(?:-\s+)?api_key_env\s*:")
+API_KEY_ENTRY_RE = re.compile(r"^\s*(?:-\s+)?api_key\s*:(.*)$")
+# The value the engine accepts: exactly `${NAME}`, optionally YAML-quoted, with
+# an optional trailing comment. `$VAR`, `${VAR:-default}`, a literal and an
+# empty value all fail validation.
+API_KEY_VALUE_RE = re.compile(r"""^\s*(["']?)\$\{\w+\}\1\s*(?:#.*)?$""")
 
-# Documentation must be able to QUOTE the broken form in order to teach against
-# it. Same rationale as VERSION_IGNORE_MARKER: mark those lines explicitly so
+# Documentation sometimes has to QUOTE a rejected form as a mapping entry.
+# Same rationale as VERSION_IGNORE_MARKER: mark those lines explicitly so
 # the check stays strict everywhere else. The alternative is authors phrasing
 # around the gate, which is how a gate quietly stops working.
 API_KEY_IGNORE_MARKER = "api-key-env-ignore"
@@ -898,27 +938,37 @@ ANY_API_KEY_RE = re.compile(r"^\s*(?:-\s*)?api_key(_env)?\s*:")
 
 
 def check_api_key_env() -> list[Finding]:
-    """Credentials use `api_key_env: NAME`; `api_key: ${VAR}` never expands.
+    """Model-group credentials are `api_key: ${VAR}`; `api_key_env` is gone.
 
-    The whole catalog documented and shipped `api_key: ${OPENAI_API_KEY}` — 67
-    occurrences across 46 files. None of them ever worked. `api_key` is a
-    SENSITIVE_DATA key, so the loader returns it unexpanded by design and every
-    affected project handed its provider the seven literal characters
-    `${VAR}`. Nothing caught it: `make validate` is offline and never builds a
-    client, so the only symptom was a provider auth error at runtime — which
-    reads like a bad key rather than a bad config shape.
+    Since rasa-pro 3.21.0.dev2 the engine rejects `api_key_env` in a model
+    group and accepts a sensitive value only as exactly `${ENV_VAR_NAME}`
+    (rasa/shared/providers/model_group_validation.py). The 3.21.0.dev3 release
+    run failed validate_project 22 times on `api_key_env` alone. This check
+    catches both shapes offline, before an install:
 
-    Also rejects any credential key inside an `asr:`/`tts:` block, where
+    * any `api_key_env:` entry;
+    * any `api_key:` entry whose value is not exactly `${NAME}`.
+
+    It also rejects any credential key inside an `asr:`/`tts:` block, where
     neither spelling works: the voice engines read a fixed environment variable
     and never consult the config.
     """
     findings: list[Finding] = []
+    snapshots = discover_projects("snapshots")
     for path in _tracked_files("*.yml", "*.yaml", "*.md"):
         text = _read(path)
         # Cheap reject: most files mention no credential at all.
         if "api_key" not in text:
             continue
         rel = _rel(path)
+        absolute = path if path.is_absolute() else REPO_ROOT / path
+        snapshot = next(
+            (project for project in snapshots
+             if absolute.is_relative_to(project.path)), None
+        )
+        strict_model_credentials = (
+            snapshot is None or _project_requires_rule(snapshot, "3.21.0.dev2")
+        )
         voice_indent: int | None = None
         for lineno, line in _numbered(text):
             stripped = line.strip()
@@ -937,21 +987,6 @@ def check_api_key_env() -> list[Finding]:
             if stripped.startswith("#"):
                 continue
 
-            if API_KEY_PLACEHOLDER_RE.match(line):
-                findings.append(
-                    Finding(
-                        "api-key-env",
-                        rel,
-                        lineno,
-                        "'api_key' with a ${VAR} placeholder never expands: "
-                        "'api_key' is on the engine's SENSITIVE_DATA list, so "
-                        "read_yaml returns it raw and the provider receives the "
-                        "literal '${VAR}' as its key. Use 'api_key_env: VAR' "
-                        "(the variable NAME, unquoted) instead.",
-                    )
-                )
-                continue
-
             if voice_indent is not None and ANY_API_KEY_RE.match(line):
                 key = stripped.split(":", 1)[0].lstrip("- ")
                 findings.append(
@@ -965,6 +1000,38 @@ def check_api_key_env() -> list[Finding]:
                         f"RIME_API_KEY, ...). ASR configs are extra='forbid' and "
                         f"reject it outright; TTS ignores it with a warning. "
                         f"Remove it and select the vendor with 'name:'.",
+                    )
+                )
+                continue
+
+            # Older frozen engines accept api_key_env. Exempt only that
+            # syntax; literal api_key values remain forbidden in every tier.
+            if strict_model_credentials and API_KEY_ENV_RE.match(line):
+                findings.append(
+                    Finding(
+                        "api-key-env",
+                        rel,
+                        lineno,
+                        "'api_key_env' was removed in rasa-pro 3.21.0.dev2: "
+                        "validate_project rejects it with \"uses 'api_key_env', "
+                        "which is no longer supported\". Write "
+                        "'api_key: ${VAR}' with the same variable name instead.",
+                    )
+                )
+                continue
+
+            entry = API_KEY_ENTRY_RE.match(line)
+            if entry and not API_KEY_VALUE_RE.match(entry.group(1)):
+                findings.append(
+                    Finding(
+                        "api-key-env",
+                        rel,
+                        lineno,
+                        "'api_key' must be exactly '${VAR}' — repository "
+                        "credential hygiene forbids a literal, a bare $VAR, "
+                        "a ${VAR:-default} or an empty value in every tier. "
+                        "Name the environment "
+                        "variable, for example 'api_key: ${OPENAI_API_KEY}'.",
                     )
                 )
     return findings
@@ -983,6 +1050,8 @@ def check_project_memory_writes(projects: list[Project]) -> list[Finding]:
     """
     findings: list[Finding] = []
     for project in projects:
+        if not _project_requires_rule(project, "3.20.0.dev6"):
+            continue
         path = project.path / "memory.yml"
         if not path.is_file():
             continue
@@ -1225,7 +1294,28 @@ def check_heroes_layout() -> list[Finding]:
 
         # Projects belong under `projects/`. A pyproject anywhere else in the
         # wave is invisible to discovery, so it would silently skip every check.
-        for pyproject in sorted(wave.rglob("pyproject.toml")):
+        # Installation creates third-party pyprojects inside virtualenvs.
+        # Prune those trees before walking: their contents are dependencies,
+        # not contributed projects, and may contain many thousands of files.
+        for directory, directories, filenames in os.walk(wave):
+            directory = Path(directory)
+            location = directory.relative_to(wave).parts
+            project_root = (
+                len(location) == 2
+                and location[0] == WAVE_DIR
+                and "pyproject.toml" in filenames
+            )
+            directories[:] = sorted(
+                name for name in directories
+                if not (
+                    project_root
+                    and name in {".venv", "venv"}
+                    and (directory / name / "pyvenv.cfg").is_file()
+                )
+            )
+            if "pyproject.toml" not in filenames:
+                continue
+            pyproject = directory / "pyproject.toml"
             parts = pyproject.relative_to(wave).parts
             if parts[0] != WAVE_DIR or len(parts) != 3:
                 findings.append(
@@ -1263,8 +1353,8 @@ CHECKS = {
     "agent-config-keys": lambda p, s, e: check_agent_config_keys(),
     "brand-terms": lambda p, s, e: check_brand_terms(),
     "llm-model-group": lambda p, s, e: check_llm_model_group(p + s),
-    # Both tiers: a frozen resource whose credentials never resolved is a
-    # broken example regardless of which pin it is frozen at.
+    # Both tiers reject literal credentials and misplaced voice keys;
+    # only the removed api_key_env syntax follows the frozen engine pin.
     "api-key-env": lambda p, s, e: check_api_key_env(),
     "project-memory-writes": lambda p, s, e: check_project_memory_writes(p + s),
     "env-example": lambda p, s, e: check_env_examples(p + s),
@@ -1274,6 +1364,107 @@ CHECKS = {
     "index-rows": lambda p, s, e: check_index_rows(p + s),
     "heroes-layout": lambda p, s, e: check_heroes_layout(),
 }
+
+
+# ------------------------------------------------------------------------------
+# declared invalid fixtures
+# ------------------------------------------------------------------------------
+
+#: Files that are wrong on purpose (a teaching input the engine mishandles
+#: silently). One entry per FILE: {"path", "check", "reason"}. Only that exact
+#: (path, check) is suppressed, never a glob and never another check on the same
+#: file, and the finding is still printed as a declared invalid fixture.
+INVALID_FIXTURES_FILE = _SCRIPTS / "invalid_fixtures.json"
+DECLARATION_CHECK = "invalid-fixtures"
+
+
+def _declaration_error(message: str) -> Finding:
+    return Finding(DECLARATION_CHECK, _rel(INVALID_FIXTURES_FILE), None, message)
+
+
+def load_invalid_fixtures(
+    declarations: Path | None = None, tracked: set[str] | None = None
+) -> tuple[dict[tuple[str, str], str], list[Finding]]:
+    """Read the declarations. Anything malformed becomes an error, never a pass."""
+    source = declarations or INVALID_FIXTURES_FILE
+    if not source.exists():
+        return {}, []
+    try:
+        data = json.loads(source.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return {}, [_declaration_error(f"not valid JSON: {exc}")]
+    if not isinstance(data, list):
+        return {}, [_declaration_error("must be a list of {path, check, reason} objects")]
+    if tracked is None:
+        tracked = {_rel(p) for p in _tracked_files()}
+    entries: dict[tuple[str, str], str] = {}
+    seen_paths: set[str] = set()
+    problems: list[Finding] = []
+    for index, entry in enumerate(data):
+        where = f"entry {index}"
+        if not isinstance(entry, dict) or set(entry) != {"path", "check", "reason"}:
+            problems.append(_declaration_error(f"{where}: needs exactly path, check and reason"))
+            continue
+        path, check, reason = entry["path"], entry["check"], entry["reason"]
+        if not all(isinstance(v, str) for v in (path, check, reason)):
+            problems.append(_declaration_error(f"{where}: path, check and reason must be strings"))
+            continue
+        if not reason.strip():
+            problems.append(_declaration_error(f"{where}: reason must not be empty"))
+        if any(ch in path for ch in "*?[]") or path != Path(path).as_posix() \
+                or path.startswith("/") or ".." in Path(path).parts:
+            problems.append(_declaration_error(
+                f"{where}: path must be a normalized repository-relative file, not a glob: {path!r}"))
+            continue
+        if path not in tracked:
+            problems.append(_declaration_error(f"{where}: {path} is not a tracked file"))
+            continue
+        if check not in CHECKS:
+            problems.append(_declaration_error(f"{where}: unknown check {check!r}"))
+            continue
+        if path in seen_paths:
+            problems.append(_declaration_error(f"{where}: {path} is declared twice; one entry per file"))
+            continue
+        seen_paths.add(path)
+        entries[(path, check)] = reason
+    return entries, problems
+
+
+def apply_declared_fixtures(
+    findings: list[Finding],
+    selected: list[str],
+    declarations: Path | None = None,
+    tracked: set[str] | None = None,
+) -> tuple[list[Finding], list[Finding]]:
+    """Split findings into (still to report, declared invalid fixtures).
+
+    A declaration that no longer produces its finding is stale and is an error,
+    so the list cannot outlive the file it excuses or hide a different problem.
+    """
+    entries, problems = load_invalid_fixtures(declarations, tracked)
+    kept: list[Finding] = []
+    declared: list[Finding] = []
+    produced: set[tuple[str, str]] = set()
+    for finding in findings:
+        key = (finding.path, finding.check)
+        if key in entries and finding.severity == SEVERITY_ERROR:
+            declared.append(finding)
+            produced.add(key)
+        else:
+            kept.append(finding)
+    for (path, check), _reason in entries.items():
+        if check in selected and (path, check) not in produced:
+            problems.append(_declaration_error(
+                f"stale declaration: {path} no longer fails {check}; remove the entry"))
+    return kept + problems, declared
+
+
+def run_checks(selected, projects, snapshots, expected):
+    """Run the named checks; return (findings to report, declared invalid fixtures)."""
+    findings: list[Finding] = []
+    for name in selected:
+        findings.extend(CHECKS[name](projects, snapshots, expected))
+    return apply_declared_fixtures(findings, list(selected))
 
 
 def _c(code: str) -> str:
@@ -1314,9 +1505,7 @@ def main() -> int:
     projects = discover_projects()
     snapshots = discover_projects("snapshots")
 
-    findings: list[Finding] = []
-    for name in selected:
-        findings.extend(CHECKS[name](projects, snapshots, expected))
+    findings, declared = run_checks(selected, projects, snapshots, expected)
 
     errors = [f for f in findings if f.severity == SEVERITY_ERROR]
     warnings = [f for f in findings if f.severity == SEVERITY_WARNING]
@@ -1330,6 +1519,7 @@ def main() -> int:
             "errors": len(errors),
             "warnings": len(warnings),
             "findings": [asdict(f) for f in findings],
+            "declared_invalid_fixtures": [asdict(f) for f in declared],
         }, indent=2))
         return 1 if errors or (args.strict and warnings) else 0
 
@@ -1338,6 +1528,12 @@ def main() -> int:
         print(f"{DIM}Plus {len(snapshots)} frozen snapshot(s), held to their own "
               f"pins (see docs/SNAPSHOTS.md){RESET}")
     print(f"{DIM}Checks: {', '.join(selected)}{RESET}\n")
+
+    for finding in declared:
+        print(f"{DIM}declared invalid fixture: {finding.location()} fails {finding.check} "
+              f"on purpose (scripts/invalid_fixtures.json){RESET}")
+    if declared:
+        print()
 
     if not findings:
         print(f"{GREEN}✓ All {len(selected)} checks passed.{RESET}")

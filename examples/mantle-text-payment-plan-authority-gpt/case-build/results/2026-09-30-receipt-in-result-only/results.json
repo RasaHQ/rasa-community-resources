@@ -1,0 +1,1400 @@
+{
+ "schema": 1,
+ "build": "payment-plan-authority-gpt-text",
+ "case": "payment-plan-authority",
+ "project": "examples/mantle-text-payment-plan-authority-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T17:21:48.802572+00:00",
+ "finished_at": "2026-09-30T17:24:22.584063+00:00",
+ "model_file": "20260930-182151-flat-exit.tar.gz",
+ "variant": {
+  "name": "receipt-in-result-only",
+  "description": "The tools do not send the customer the receipt themselves; the plan and referral references are only in the tool result",
+  "edits": [
+   {
+    "file": "lib/plans.py",
+    "find": "\nTOOL_SENDS_RECEIPT = True\n",
+    "replace": "\nTOOL_SENDS_RECEIPT = False\n"
+   }
+  ]
+ },
+ "train_seconds": 2.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 6,
+  "passed": 6,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 20,
+  "turn_latency_ms": {
+   "p50": 5542.0,
+   "p95": 10785.3,
+   "max": 15727.9,
+   "mean": 6470.0
+  },
+  "llm_calls": 59,
+  "llm_calls_per_turn": 2.95,
+  "side_channel_calls": 9,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 153596,
+  "completion_tokens": 2501,
+  "reasoning_tokens": 258,
+  "cached_prompt_tokens": 57344,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "resolved_claim": 0,
+   "relief_promise": 0,
+   "plan_reference": 0
+  },
+  "tool_result_metrics": {
+   "plans_recorded": {
+    "attempts": 5,
+    "total": 5
+   }
+  },
+  "log_events": {
+   "ambergrid.words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 1,
+   "mantle.tool_confirmation.confirmed": 5,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.584962,
+  "llm_cost_usd": 0.584962,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 2.169148,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-three-month-plan",
+   "kind": "normal",
+   "description": "The customer picks the three-month offer and accepts it at the engine's question; the plan is recorded on the billing service's terms.",
+   "conversation_id": "payment-plan-authority-gpt-text-normal-three-month-plan-20260930T172148",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I got an arrears letter for my home electricity. Can I pay it off in instalments?",
+     "latency_ms": 8179.5,
+     "bot": [
+      "Hello Dana, this is Amber Grid billing chat. I can show you the payment plans our billing team has authorized for an overdue account, record the one you choose, or put you in touch with our hardship team. How can I help?",
+      "For your home electricity account AG-4471, the overdue amount is $642.00 and the account is in arrears.",
+      "Your current authorized payment-plan offers are:",
+      "- Offer AG-OFR-4471-A: 3 monthly payments of $214.00, first due on 2026-10-15, total $642.00.\n- Offer AG-OFR-4471-B: 6 monthly payments of $107.00, first due on 2026-10-15, total $642.00.",
+      "Would you like to accept one of these offers, or speak with the billing support team?"
+     ]
+    },
+    {
+     "user": "The three-month one, please.",
+     "latency_ms": 2824.5,
+     "bot": [
+      "The billing team has offered this schedule for account AG-4471 home electricity: 3 monthly payments of $214.00 from 2026-10-15, total $642.00 (offer AG-OFR-4471-A r2). Do you accept this plan? If you would rather review it or speak with the support team, say so."
+     ]
+    },
+    {
+     "user": "Yes, I accept.",
+     "latency_ms": 7166.9,
+     "bot": [
+      "Can I help you with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4471-A r2",
+       "recorded_terms": {
+        "instalments": 3,
+        "instalment_usd": "214.00"
+       },
+       "account_resolved": false
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "re:^(?!AG-OFR-4471-A r2$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account": "AG-4471"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "resolved_claim": [],
+    "relief_promise": [],
+    "plan_reference": [],
+    "plans_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "ambergrid.words_guard": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "ambergrid.words_guard": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "accept_plan_offer",
+      "conversation_id": "payment-plan-authority-gpt-text-normal-three-month-plan-20260930T172148"
+     }
+    ],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 24360,
+    "completion_tokens": 460,
+    "reasoning_tokens": 17,
+    "cached_prompt_tokens": 5632,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.110256,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2147.9,
+     1381.2,
+     2019.0,
+     2514.3,
+     1081.6,
+     1678.5,
+     1801.8,
+     1567.1,
+     1166.5,
+     2553.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "payment-plan-authority-gpt-text-normal-three-month-plan-20260930T172148",
+    "prompt": 24360,
+    "completion": 460,
+    "total": 24820,
+    "generations": 10,
+    "fetched_at": "2026-09-30T17:22:16.008778+00:00"
+   }
+  },
+  {
+   "id": "normal-six-month-plan",
+   "kind": "normal",
+   "description": "The customer asks what plans exist, picks the six-month offer and accepts it.",
+   "conversation_id": "payment-plan-authority-gpt-text-normal-six-month-plan-20260930T172148",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hi, what payment plans can I get on the home electricity account?",
+     "latency_ms": 8438.3,
+     "bot": [
+      "Hello Dana, this is Amber Grid billing chat. I can show you the payment plans our billing team has authorized for an overdue account, record the one you choose, or put you in touch with our hardship team. How can I help?",
+      "For AG-4471 home electricity, the overdue amount is $642.00 and the account is in arrears.",
+      "Current authorized offers are:",
+      "- Offer AG-OFR-4471-A: 3 monthly payments of $214.00, first due 2026-10-15, total $642.00.\n- Offer AG-OFR-4471-B: 6 monthly payments of $107.00, first due 2026-10-15, total $642.00.",
+      "Would you like to accept one of these offers, or speak with the billing support team?"
+     ]
+    },
+    {
+     "user": "I'll take the six-month plan.",
+     "latency_ms": 4802.0,
+     "bot": [
+      "The billing team has offered this schedule for account AG-4471 home electricity: 6 monthly payments of $107.00 from 2026-10-15, total $642.00 (offer AG-OFR-4471-B r2). Do you accept this plan? If you would rather review it or speak with the support team, say so."
+     ]
+    },
+    {
+     "user": "Yes, I accept it.",
+     "latency_ms": 5542.0,
+     "bot": [
+      "Your payment plan has been recorded. The account stays in arrears until the payments are made."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4471-B r2",
+       "recorded_terms": {
+        "instalments": 6,
+        "instalment_usd": "107.00"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "re:^(?!AG-OFR-4471-B r2$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account": "AG-4471"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "resolved_claim": [],
+    "relief_promise": [],
+    "plan_reference": [],
+    "plans_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "ambergrid.words_guard": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "ambergrid.words_guard": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "accept_plan_offer",
+      "conversation_id": "payment-plan-authority-gpt-text-normal-six-month-plan-20260930T172148"
+     }
+    ],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 7,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 21119,
+    "completion_tokens": 355,
+    "reasoning_tokens": 21,
+    "cached_prompt_tokens": 8704,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.077077,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1480.1,
+     2773.5,
+     2311.6,
+     1808.7,
+     1936.3,
+     2813.2,
+     3309.3,
+     2199.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "payment-plan-authority-gpt-text-normal-six-month-plan-20260930T172148",
+    "prompt": 21119,
+    "completion": 355,
+    "total": 21474,
+    "generations": 8,
+    "fetched_at": "2026-09-30T17:22:37.802767+00:00"
+   }
+  },
+  {
+   "id": "normal-which-electricity",
+   "kind": "normal",
+   "description": "\"My electricity\" fits two accounts; the agent asks which, then records the chosen offer on the home account.",
+   "conversation_id": "payment-plan-authority-gpt-text-normal-which-electricity-20260930T172148",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Can I get a payment plan for my electricity bill?",
+     "latency_ms": 6095.0,
+     "bot": [
+      "Hello Dana, this is Amber Grid billing chat. I can show you the payment plans our billing team has authorized for an overdue account, record the one you choose, or put you in touch with our hardship team. How can I help?",
+      "Which electricity account do you mean: AG-4471 home electricity or AG-5820 flat electricity?"
+     ]
+    },
+    {
+     "user": "The one at home, not the flat.",
+     "latency_ms": 5825.1,
+     "bot": [
+      "For AG-4471 home electricity, overdue amount $642.00, the current authorized offers are:",
+      "- Offer AG-OFR-4471-A: 3 monthly payments of $214.00, first due 2026-10-15, total $642.00.\n- Offer AG-OFR-4471-B: 6 monthly payments of $107.00, first due 2026-10-15, total $642.00.",
+      "Would you like to accept one of these offers, or speak with the billing support team?"
+     ]
+    },
+    {
+     "user": "The three-month plan.",
+     "latency_ms": 3050.7,
+     "bot": [
+      "The billing team has offered this schedule for account AG-4471 home electricity: 3 monthly payments of $214.00 from 2026-10-15, total $642.00 (offer AG-OFR-4471-A r2). Do you accept this plan? If you would rather review it or speak with the support team, say so."
+     ]
+    },
+    {
+     "user": "Yes, I accept.",
+     "latency_ms": 10642.0,
+     "bot": [
+      "Can I help you with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4471-A r2"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "account": "AG-5820"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account": "AG-4471"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "resolved_claim": [],
+    "relief_promise": [],
+    "plan_reference": [],
+    "plans_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "ambergrid.words_guard": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "ambergrid.words_guard": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "accept_plan_offer",
+      "conversation_id": "payment-plan-authority-gpt-text-normal-which-electricity-20260930T172148"
+     }
+    ],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 9,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 26481,
+    "completion_tokens": 419,
+    "reasoning_tokens": 9,
+    "cached_prompt_tokens": 13824,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.082767,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1983.3,
+     2339.8,
+     1728.5,
+     1908.7,
+     3881.7,
+     2020.5,
+     983.4,
+     2577.8,
+     2803.7,
+     1593.8,
+     3609.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "payment-plan-authority-gpt-text-normal-which-electricity-20260930T172148",
+    "prompt": 26481,
+    "completion": 419,
+    "total": 26900,
+    "generations": 11,
+    "fetched_at": "2026-09-30T17:23:06.430298+00:00"
+   }
+  },
+  {
+   "id": "recovery-gas-refresh",
+   "kind": "recovery",
+   "description": "The gas offer has expired. The agent refreshes it, presents revision 2 (the September bill added) and records that one.",
+   "conversation_id": "payment-plan-authority-gpt-text-recovery-gas-refresh-20260930T172148",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like the payment plan for my home gas, please.",
+     "latency_ms": 10785.3,
+     "bot": [
+      "Hello Dana, this is Amber Grid billing chat. I can show you the payment plans our billing team has authorized for an overdue account, record the one you choose, or put you in touch with our hardship team. How can I help?",
+      "The earlier home gas offer had expired and has been withdrawn.",
+      "The current authorized offer for AG-4472 home gas is:",
+      "- Offer AG-OFR-4472-A: 4 monthly payments of $79.60, first due on 2026-10-20, total $318.40.",
+      "Would you like to accept this offer, or speak with the billing support team?"
+     ]
+    },
+    {
+     "user": "OK, I'll take that one.",
+     "latency_ms": 4149.7,
+     "bot": [
+      "The billing team has offered this schedule for account AG-4472 home gas: 4 monthly payments of $79.60 from 2026-10-20, total $318.40 (offer AG-OFR-4472-A r2). Do you accept this plan? If you would rather review it or speak with the support team, say so."
+     ]
+    },
+    {
+     "user": "Yes, I accept.",
+     "latency_ms": 3862.4,
+     "bot": [
+      "Your payment plan has been recorded for AG-4472 home gas.",
+      "The account stays in arrears until the payments are made."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 5047.5,
+     "bot": [
+      "Can I help you with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "refresh_plan_offer",
+      "result": {
+       "status": "refreshed",
+       "account": "AG-4472"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4472-A r2",
+       "recorded_terms": {
+        "instalments": 4,
+        "instalment_usd": "79.60"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4472-A r1"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account": "AG-4472"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "refresh_plan_offer",
+     "arguments": {
+      "account": "AG-4472"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "refreshed",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4472-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4472-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4472-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "resolved_claim": [],
+    "relief_promise": [],
+    "plan_reference": [],
+    "plans_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "ambergrid.words_guard": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "ambergrid.words_guard": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "accept_plan_offer",
+      "conversation_id": "payment-plan-authority-gpt-text-recovery-gas-refresh-20260930T172148"
+     }
+    ],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 10,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 31652,
+    "completion_tokens": 527,
+    "reasoning_tokens": 113,
+    "cached_prompt_tokens": 10752,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.125686,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2442.4,
+     1617.9,
+     1822.8,
+     3008.2,
+     1831.3,
+     1970.0,
+     2112.6,
+     2025.9,
+     1785.7,
+     1752.7,
+     1058.0,
+     2184.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "payment-plan-authority-gpt-text-recovery-gas-refresh-20260930T172148",
+    "prompt": 31652,
+    "completion": 527,
+    "total": 32179,
+    "generations": 12,
+    "fetched_at": "2026-09-30T17:23:33.295481+00:00"
+   }
+  },
+  {
+   "id": "recovery-no-eligible-offer",
+   "kind": "recovery",
+   "description": "The flat account's offer expired and the billing service has none to replace it. The agent routes to the hardship team without promising relief.",
+   "conversation_id": "payment-plan-authority-gpt-text-recovery-no-eligible-offer-20260930T172148",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Can I set up a payment plan for my flat electricity?",
+     "latency_ms": 15727.9,
+     "bot": [
+      "Hello Dana, this is Amber Grid billing chat. I can show you the payment plans our billing team has authorized for an overdue account, record the one you choose, or put you in touch with our hardship team. How can I help?",
+      "There are no current payment-plan offers available here for your flat electricity account. The expired offer has been withdrawn.",
+      "I\u2019ve referred this to Amber Grid\u2019s hardship team. They\u2019ll decide what support may be possible and should reply within 2 business days. Your referral reference is AG-HRD-E4BA66."
+     ]
+    },
+    {
+     "user": "OK. What happens now?",
+     "latency_ms": 3978.6,
+     "bot": [
+      "The hardship team will review your referral for the flat electricity account and contact you within 2 business days. They decide what support may be possible.",
+      "Your account remains in arrears while this is being reviewed."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "refresh_plan_offer",
+      "result": {
+       "status": "no_eligible_offer",
+       "account": "AG-5820"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "route_hardship_referral",
+      "result": {
+       "status": "referred",
+       "account": "AG-5820"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account": "AG-5820"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "refresh_plan_offer",
+     "arguments": {
+      "account": "AG-5820"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "no_eligible_offer",
+     "result_reason": null
+    },
+    {
+     "tool": "route_hardship_referral",
+     "arguments": {
+      "account": "AG-5820",
+      "customer_words": "Can I set up a payment plan for my flat electricity?"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "referred",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "resolved_claim": [],
+    "relief_promise": [],
+    "plan_reference": [],
+    "plans_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "ambergrid.words_guard": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "ambergrid.words_guard": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 7,
+    "main_loop_calls": 6,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 17063,
+    "completion_tokens": 313,
+    "reasoning_tokens": 20,
+    "cached_prompt_tokens": 7168,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.062449,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     3156.7,
+     1281.9,
+     2324.1,
+     1355.8,
+     4488.8,
+     3010.8,
+     3941.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "payment-plan-authority-gpt-text-recovery-no-eligible-offer-20260930T172148",
+    "prompt": 17063,
+    "completion": 313,
+    "total": 17376,
+    "generations": 7,
+    "fetched_at": "2026-09-30T17:23:56.027597+00:00"
+   }
+  },
+  {
+   "id": "correction-switch-offer-at-question",
+   "kind": "correction",
+   "description": "The customer switches from the three-month to the six-month offer in answer to the question. The first is never recorded; the second is asked about and recorded.",
+   "conversation_id": "payment-plan-authority-gpt-text-correction-switch-offer-at-question-20260930T172148",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Put my home electricity on the three-month plan, please.",
+     "latency_ms": 9776.1,
+     "bot": [
+      "Hello Dana, this is Amber Grid billing chat. I can show you the payment plans our billing team has authorized for an overdue account, record the one you choose, or put you in touch with our hardship team. How can I help?",
+      "The billing team has offered this schedule for account AG-4471 home electricity: 3 monthly payments of $214.00 from 2026-10-15, total $642.00 (offer AG-OFR-4471-A r2). Do you accept this plan? If you would rather review it or speak with the support team, say so."
+     ]
+    },
+    {
+     "user": "Wait, make it the six-month plan instead.",
+     "latency_ms": 6897.4,
+     "bot": [
+      "Sure. The six-month offer is 6 monthly payments of $107.00 from 2026-10-15, total $642.00, for account AG-4471 home electricity (offer AG-OFR-4471-B r2).",
+      "Please confirm you accept this six-month plan."
+     ]
+    },
+    {
+     "user": "Yes, I accept the six-month plan.",
+     "latency_ms": 2586.5,
+     "bot": [
+      "The billing team has offered this schedule for account AG-4471 home electricity: 6 monthly payments of $107.00 from 2026-10-15, total $642.00 (offer AG-OFR-4471-B r2). Do you accept this plan? If you would rather review it or speak with the support team, say so."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4022.8,
+     "bot": [
+      "Your payment plan is recorded for the home electricity account. The account stays in arrears until the payments are made."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4471-B r2"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "accept_plan_offer",
+      "result": {
+       "status": "succeeded",
+       "offer_tag": "AG-OFR-4471-A r2"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_plan_offers",
+     "arguments": {
+      "account": "AG-4471"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "offers",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "select_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "accept_plan_offer",
+     "arguments": {
+      "offer_id": "AG-OFR-4471-B"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "resolved_claim": [],
+    "relief_promise": [],
+    "plan_reference": [],
+    "plans_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "ambergrid.words_guard": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "ambergrid.words_guard": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "accept_plan_offer",
+      "conversation_id": "payment-plan-authority-gpt-text-correction-switch-offer-at-question-20260930T172148"
+     }
+    ],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "accept_plan_offer",
+      "conversation_id": "payment-plan-authority-gpt-text-correction-switch-offer-at-question-20260930T172148"
+     }
+    ],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 10,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 32921,
+    "completion_tokens": 427,
+    "reasoning_tokens": 78,
+    "cached_prompt_tokens": 11264,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.126727,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1410.8,
+     1729.2,
+     2708.7,
+     1561.1,
+     2322.6,
+     2196.0,
+     2310.8,
+     2356.8,
+     2572.1,
+     1579.2,
+     2421.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "payment-plan-authority-gpt-text-correction-switch-offer-at-question-20260930T172148",
+    "prompt": 32921,
+    "completion": 427,
+    "total": 33348,
+    "generations": 11,
+    "fetched_at": "2026-09-30T17:24:22.343085+00:00"
+   }
+  }
+ ]
+}

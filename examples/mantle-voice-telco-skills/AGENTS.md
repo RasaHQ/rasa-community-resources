@@ -18,6 +18,7 @@ building a **voice** telecom care assistant with **Deepgram** ASR + TTS.
 - `lib/` — shared Python helpers (SQLite demo telco)
 - `data/source/` — JSON seed data for the demo telco DB
 - `scripts/` — `verify_setup.py` (pre-flight) and `show_demo_data.py`
+- `tests/` — `test_sim_swap.py` (`make test`; no model, network or keys)
 - `tutorial/` — live-session script and paste-ready snippets
 
 ## Build loop

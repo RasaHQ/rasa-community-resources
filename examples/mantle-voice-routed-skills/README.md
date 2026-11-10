@@ -1,11 +1,19 @@
 # Vela — voice banking on a routed vendor stack
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-routed-skills/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, `RIME_API_KEY`, `SPEECHMATICS_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners running a Rasa voice agent that is not allowed to go quiet
 Time:          30–45 minutes
 ```
@@ -159,10 +167,15 @@ recorded and ends the sentence rather than restarting it in a different voice.
 four times. Sharing it needs a store and a failure mode of its own; process
 scope already removes most of the waste. See the pattern README.
 
-**The `offline` stack has no voice out of the box.** NeuTTS cannot be installed
-alongside rasa-pro in one environment — rasa-pro pins numpy `<2.2`, neutts needs
-`>=2.2.6`. It is skipped with that reason until you run it out of a second venv.
-That is a real outcome, and better seen in a drill than in production.
+**The `offline` stack has no voice out of the box.** The Python `neutts`
+package cannot be installed alongside rasa-pro in one environment — rasa-pro pins
+numpy `<2.2`, neutts needs `>=2.2.6` — so `NeuTTSLocal` is skipped with that
+reason until you run it out of a second venv. That is a real outcome, and better
+seen in a drill than in production. The conflict belongs to the package, not to
+NeuTTS: on Apple silicon,
+[`NeuTTSNative`](../../patterns/voice-vendor-router/native/neutts/) runs
+NeuTTS-2E natively in Rasa's own venv, and was run live in
+[`mantle-voice-healthcare-refill-request-gpt-local`](../mantle-voice-healthcare-refill-request-gpt-local/).
 
 ## Running the local last resort
 

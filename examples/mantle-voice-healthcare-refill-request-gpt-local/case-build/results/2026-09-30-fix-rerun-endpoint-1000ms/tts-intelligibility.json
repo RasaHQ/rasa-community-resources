@@ -1,0 +1,533 @@
+{
+ "judge": {
+  "engine": "faster-whisper",
+  "model": "examples/mantle-voice-healthcare-refill-request-gpt-local/.whisper/large-v3-turbo",
+  "beam_size": 5,
+  "vad_filter": true
+ },
+ "files": 38,
+ "wer_mean": 0.0764,
+ "wer_median": 0.087,
+ "turns_wer_zero": 9,
+ "turns_wer_over_0_2": 1,
+ "conversation_wer_mean": 0.0643,
+ "references_spoken": 7,
+ "references_digits_heard": 7,
+ "conversations": [
+  {
+   "conversation": "adversarial-controlled-medicine",
+   "wer": 0.022,
+   "references": []
+  },
+  {
+   "conversation": "adversarial-new-medicine",
+   "wer": 0.037,
+   "references": []
+  },
+  {
+   "conversation": "adversarial-skip-confirmation",
+   "wer": 0.075,
+   "references": [
+    {
+     "reference": "RQ-9366",
+     "digits_heard": true
+    }
+   ]
+  },
+  {
+   "conversation": "correction-different-dose",
+   "wer": 0.065,
+   "references": [
+    {
+     "reference": "QN-4787",
+     "digits_heard": true
+    },
+    {
+     "reference": "RQ-5358",
+     "digits_heard": true
+    }
+   ]
+  },
+  {
+   "conversation": "correction-other-medicine-at-confirmation",
+   "wer": 0.099,
+   "references": []
+  },
+  {
+   "conversation": "normal-by-condition",
+   "wer": 0.108,
+   "references": [
+    {
+     "reference": "RQ-1082",
+     "digits_heard": true
+    }
+   ]
+  },
+  {
+   "conversation": "normal-date-as-digits",
+   "wer": 0.086,
+   "references": [
+    {
+     "reference": "RQ-5212",
+     "digits_heard": true
+    }
+   ]
+  },
+  {
+   "conversation": "normal-lisinopril",
+   "wer": 0.087,
+   "references": [
+    {
+     "reference": "RQ-8662",
+     "digits_heard": true
+    }
+   ]
+  },
+  {
+   "conversation": "normal-with-note",
+   "wer": 0.032,
+   "references": []
+  },
+  {
+   "conversation": "recovery-service-unavailable",
+   "wer": 0.033,
+   "references": []
+  },
+  {
+   "conversation": "short-reply-no",
+   "wer": 0.068,
+   "references": []
+  },
+  {
+   "conversation": "short-reply-yes",
+   "wer": 0.06,
+   "references": [
+    {
+     "reference": "RQ-4992",
+     "digits_heard": true
+    }
+   ]
+  }
+ ],
+ "voiced_seconds_per_100_characters": 7.23,
+ "rows": [
+  {
+   "conversation": "adversarial-controlled-medicine",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.94
+  },
+  {
+   "conversation": "adversarial-controlled-medicine",
+   "turn": 1,
+   "said": "Okay, I\u2019ll start that refill request now. Lorazepam cannot be requested on this line. Please contact the Cedar Clinic prescription desk on five five five, zero one four two, open weekdays from eight in the morning to six in the evening.",
+   "heard": "Okay. I'll start that refill request now. Lorazepam cannot be requested on this line. Please contact the Cedar Clinic Prescription Desk on 555-0142, open weekdays from 8 in the morning to 6 in the evening.",
+   "wer": 0.0,
+   "audio_s": 17.0,
+   "voiced_s": 16.06,
+   "characters": 236,
+   "judge_s": 3.54
+  },
+  {
+   "conversation": "adversarial-controlled-medicine",
+   "turn": 2,
+   "said": "I can\u2019t help with that on this line. I can help with tasks this service supports if you need something else. Can I help with anything else?",
+   "heard": "I can't help with that on this line. I can help with tasks this service supports if you need something else. Can I help with anything else?",
+   "wer": 0.0,
+   "audio_s": 11.84,
+   "voiced_s": 11.11,
+   "characters": 139,
+   "judge_s": 3.11
+  },
+  {
+   "conversation": "adversarial-new-medicine",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.89
+  },
+  {
+   "conversation": "adversarial-new-medicine",
+   "turn": 1,
+   "said": "Right, I need to check what I can help with. I can\u2019t help with that on this line. I can help with the services this assistant supports if you\u2019d like.",
+   "heard": "Write, I need to check what I can help with. I can't help with that on this line. I can help with the services this assistant supports, if you'd like.",
+   "wer": 0.031,
+   "audio_s": 12.55,
+   "voiced_s": 11.2,
+   "characters": 149,
+   "judge_s": 3.19
+  },
+  {
+   "conversation": "adversarial-new-medicine",
+   "turn": 2,
+   "said": "Okay, this line cannot pass that on. I\u2019m not able to help with that here. I can help with the tasks this line supports if you\u2019d like.",
+   "heard": "Okay, this line cannot pass that on. I'm not able to help with that here. I can help with the tasks this line supports if you'd like.",
+   "wer": 0.0,
+   "audio_s": 12.47,
+   "voiced_s": 11.5,
+   "characters": 133,
+   "judge_s": 3.08
+  },
+  {
+   "conversation": "adversarial-skip-confirmation",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.82
+  },
+  {
+   "conversation": "adversarial-skip-confirmation",
+   "turn": 1,
+   "said": "Okay, I\u2019ll verify your details first. I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Okay, I'll verify your details first. I can send a request about this recorded medication or butyrol inhaler two puffs every four to six hours when needed to the prescribing team. Would you like me to do that?",
+   "wer": 0.053,
+   "audio_s": 15.26,
+   "voiced_s": 13.42,
+   "characters": 212,
+   "judge_s": 3.37
+  },
+  {
+   "conversation": "adversarial-skip-confirmation",
+   "turn": 2,
+   "said": "Right, I\u2019ll submit that request now. Your request reference is R Q, nine three six six. It is awaiting prescribing team review.",
+   "heard": "Right, I'll submit that request now. Your request reference is RQ-9366. It is awaiting prescribing team review.",
+   "wer": 0.087,
+   "audio_s": 11.26,
+   "voiced_s": 10.09,
+   "characters": 127,
+   "judge_s": 2.86
+  },
+  {
+   "conversation": "correction-different-dose",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.89
+  },
+  {
+   "conversation": "correction-different-dose",
+   "turn": 1,
+   "said": "Right, I\u2019ll open the refill request process. I\u2019ve sent the dose question to the prescribing team; the reference is Q N, four seven eight seven. The prescription record has not been changed, and a clinician will answer.",
+   "heard": "Right, I'll open the refill request process. I've sent the dose question to the prescribing team. The reference is QN4787. The prescription record has not been changed and a clinician will answer.",
+   "wer": 0.051,
+   "audio_s": 13.82,
+   "voiced_s": 13.31,
+   "characters": 218,
+   "judge_s": 3.3
+  },
+  {
+   "conversation": "correction-different-dose",
+   "turn": 2,
+   "said": "Okay, I\u2019ll request the recorded metformin dose for review. I can send a request about this recorded medication, metformin five hundred milligram tablets, one tablet twice a day with meals, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Okay, I'll request the recorded metformin dose for review. I can send a request about this recorded medication, metformin 500 milligram tablets, one tablet twice a day with meals to the prescribing team. Would you like me to do that?",
+   "wer": 0.0,
+   "audio_s": 20.36,
+   "voiced_s": 19.68,
+   "characters": 244,
+   "judge_s": 3.49
+  },
+  {
+   "conversation": "correction-different-dose",
+   "turn": 3,
+   "said": "Alright, I\u2019ll submit that request now. Your request reference is R Q, five three five eight. It is awaiting prescribing team review.",
+   "heard": "All right, I'll submit that request now. Your request reference is RQ 5358. It is awaiting prescribing team review.",
+   "wer": 0.174,
+   "audio_s": 10.81,
+   "voiced_s": 9.38,
+   "characters": 132,
+   "judge_s": 2.99
+  },
+  {
+   "conversation": "correction-other-medicine-at-confirmation",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.8
+  },
+  {
+   "conversation": "correction-other-medicine-at-confirmation",
+   "turn": 1,
+   "said": "Okay, I\u2019ll bring up the refill process now. I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Okay, I'll bring up the refill process now. I can send a request about this recorded medication, this in April 10 milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?",
+   "wer": 0.077,
+   "audio_s": 18.24,
+   "voiced_s": 16.46,
+   "characters": 209,
+   "judge_s": 3.44
+  },
+  {
+   "conversation": "correction-other-medicine-at-confirmation",
+   "turn": 2,
+   "said": "Right, I\u2019ll cancel that confirmation and check budesonide. Okay, I have not sent a refill request.",
+   "heard": "Right, I'll cancel that confirmation and check who's denied. OK, I have not sent a refill request.",
+   "wer": 0.235,
+   "audio_s": 10.6,
+   "voiced_s": 9.86,
+   "characters": 98,
+   "judge_s": 2.85
+  },
+  {
+   "conversation": "correction-other-medicine-at-confirmation",
+   "turn": 3,
+   "said": "Alright, I\u2019ll look for budesonide on your record. I can send a request about this recorded medication, budesonide inhaler, one puff twice a day, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Alright, I'll look for Buzanide on your record. I can send a request about this recorded medication, Buzanide Inhaler, one puff twice a day, to the prescribing team. Would you like me to do that?",
+   "wer": 0.056,
+   "audio_s": 15.52,
+   "voiced_s": 13.46,
+   "characters": 200,
+   "judge_s": 3.48
+  },
+  {
+   "conversation": "normal-by-condition",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.88
+  },
+  {
+   "conversation": "normal-by-condition",
+   "turn": 1,
+   "said": "Okay, I\u2019ll look up your refill details now. I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Okay, I'll look up your refill details now. I can send a request about this recorded medication, this in April 10 milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?",
+   "wer": 0.077,
+   "audio_s": 18.26,
+   "voiced_s": 16.67,
+   "characters": 209,
+   "judge_s": 3.4
+  },
+  {
+   "conversation": "normal-by-condition",
+   "turn": 2,
+   "said": "Right, I\u2019ll send that request for review now. Your request reference is R Q, one zero eight two. It is awaiting prescribing team review.",
+   "heard": "Right, I'll send that request for review now. Your request reference is RQ1082. It is a waiting prescribing team review.",
+   "wer": 0.16,
+   "audio_s": 12.06,
+   "voiced_s": 11.4,
+   "characters": 136,
+   "judge_s": 3.04
+  },
+  {
+   "conversation": "normal-date-as-digits",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.88
+  },
+  {
+   "conversation": "normal-date-as-digits",
+   "turn": 1,
+   "said": "Okay, I\u2019ll start that refill request. I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Okay, I'll start that refill request. I can send a request about this recorded medication, Orbuterol Inhaler, two puffs every four to six hours when needed to the prescribing team. Would you like me to do that?",
+   "wer": 0.026,
+   "audio_s": 15.68,
+   "voiced_s": 13.38,
+   "characters": 212,
+   "judge_s": 3.5
+  },
+  {
+   "conversation": "normal-date-as-digits",
+   "turn": 2,
+   "said": "Right, I\u2019ll send that for review now. Your request reference is R Q, five two one two. It is awaiting prescribing team review.",
+   "heard": "Right, I'll send that for review now. Your request reference is RQ5212. It is a waiting prescribing team review.",
+   "wer": 0.167,
+   "audio_s": 12.07,
+   "voiced_s": 10.33,
+   "characters": 126,
+   "judge_s": 2.98
+  },
+  {
+   "conversation": "normal-lisinopril",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.82
+  },
+  {
+   "conversation": "normal-lisinopril",
+   "turn": 1,
+   "said": "Okay, I\u2019ll start by checking your details. I can send a request about this recorded medication, lisinopril ten milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Okay, I'll start by checking your details. I can send a request about this recorded medication, this in April 10 milligram tablets, one tablet once a day, to the prescribing team. Would you like me to do that?",
+   "wer": 0.079,
+   "audio_s": 18.52,
+   "voiced_s": 16.55,
+   "characters": 208,
+   "judge_s": 3.33
+  },
+  {
+   "conversation": "normal-lisinopril",
+   "turn": 2,
+   "said": "Right, I\u2019ll send that request now. Your request reference is R Q, eight six six two. It is awaiting prescribing team review.",
+   "heard": "Right, I'll send that request now. Your request reference is RQ 8662. It is awaiting prescribing team review.",
+   "wer": 0.087,
+   "audio_s": 10.42,
+   "voiced_s": 8.42,
+   "characters": 124,
+   "judge_s": 2.88
+  },
+  {
+   "conversation": "normal-with-note",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.93
+  },
+  {
+   "conversation": "normal-with-note",
+   "turn": 1,
+   "said": "Okay, I\u2019ll verify you first. Those details did not match a patient record. Please repeat your full name and date of birth.",
+   "heard": "Okay, I'll verify you first. Those details did not match a patient record. Please repeat your full name and date of birth.",
+   "wer": 0.0,
+   "audio_s": 8.28,
+   "voiced_s": 7.33,
+   "characters": 122,
+   "judge_s": 3.01
+  },
+  {
+   "conversation": "normal-with-note",
+   "turn": 2,
+   "said": "I still need to verify you before I can look up metformin. Please repeat your full name and date of birth.",
+   "heard": "I still need to verify you before I can look up metformin. Please repeat your full name and date of birth.",
+   "wer": 0.0,
+   "audio_s": 8.6,
+   "voiced_s": 8.06,
+   "characters": 106,
+   "judge_s": 2.87
+  },
+  {
+   "conversation": "recovery-service-unavailable",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.73
+  },
+  {
+   "conversation": "recovery-service-unavailable",
+   "turn": 1,
+   "said": "Okay, I\u2019ll start that refill request now. Those details did not match a patient record. Please repeat your full name and date of birth.",
+   "heard": "Okay, I'll start that refill request now. Those details did not match a patient record. Please repeat your full name and date of birth.",
+   "wer": 0.0,
+   "audio_s": 9.5,
+   "voiced_s": 8.03,
+   "characters": 135,
+   "judge_s": 3.08
+  },
+  {
+   "conversation": "recovery-service-unavailable",
+   "turn": 2,
+   "said": "I still need to verify you first. Please say your full name and date of birth again.",
+   "heard": "I still need to verify you first. Please say your full name and date of birth again.",
+   "wer": 0.0,
+   "audio_s": 5.98,
+   "voiced_s": 5.18,
+   "characters": 84,
+   "judge_s": 2.8
+  },
+  {
+   "conversation": "short-reply-no",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.81
+  },
+  {
+   "conversation": "short-reply-no",
+   "turn": 1,
+   "said": "Okay, I\u2019ll bring up the refill request now. I can send a request about this recorded medication, albuterol inhaler, two puffs every four to six hours when needed, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Okay, I'll bring up the refill request now. I can send a request about this recorded medication, Orbuterol Inhaler, two puffs every four to six hours when needed to the prescribing team. Would you like me to do that?",
+   "wer": 0.025,
+   "audio_s": 16.04,
+   "voiced_s": 13.77,
+   "characters": 218,
+   "judge_s": 3.43
+  },
+  {
+   "conversation": "short-reply-no",
+   "turn": 2,
+   "said": "Alright, I won\u2019t send that request. Okay, I have not sent a refill request.",
+   "heard": "All right, I won't send that request. Okay, I have not sent a refill request.",
+   "wer": 0.133,
+   "audio_s": 9.72,
+   "voiced_s": 8.07,
+   "characters": 75,
+   "judge_s": 2.83
+  },
+  {
+   "conversation": "short-reply-yes",
+   "turn": 0,
+   "said": "Cedar Clinic prescription line. To help with a refill, please tell me your full name and date of birth.\n",
+   "heard": "see the clinic prescription line to help with a refill please tell me your full name and date of birth",
+   "wer": 0.105,
+   "audio_s": 7.82,
+   "voiced_s": 7.06,
+   "characters": 104,
+   "judge_s": 2.84
+  },
+  {
+   "conversation": "short-reply-yes",
+   "turn": 1,
+   "said": "Okay, I\u2019ll open the refill request now. I can send a request about this recorded medication, metformin five hundred milligram tablets, one tablet twice a day with meals, to the prescribing team. Would you like me to do that?\n",
+   "heard": "Okay, I'll open the refill request now. I can send a request about this recorded medication, metformin 500 milligram tablets, one tablet twice a day with meals to the prescribing team. Would you like me to do that?",
+   "wer": 0.0,
+   "audio_s": 17.86,
+   "voiced_s": 16.68,
+   "characters": 225,
+   "judge_s": 3.49
+  },
+  {
+   "conversation": "short-reply-yes",
+   "turn": 2,
+   "said": "Right, I\u2019ll submit that request for review. Your request reference is R Q, four nine nine two. It is awaiting prescribing team review.",
+   "heard": "Right, I'll submit that request for review. Your request reference is RQ4992. It is awaiting prescribing teen review.",
+   "wer": 0.125,
+   "audio_s": 11.75,
+   "voiced_s": 10.69,
+   "characters": 134,
+   "judge_s": 3.0
+  }
+ ]
+}

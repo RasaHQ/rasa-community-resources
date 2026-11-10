@@ -1,0 +1,189 @@
+# The fix (opt-in, not the shipped build): a confirmation counts only if the caller began the answer after
+# the read-back finished playing. Apply to a copy of this folder: `patch -p1 < fix.diff`
+# (make fix-copy FW=langgraph). Measured by shared/spec/count_concerns.py langgraph --diff-file fix.diff.
+diff -ruN a/tests/test_voice_loop.py b/tests/test_voice_loop.py
+--- a/tests/test_voice_loop.py
++++ b/tests/test_voice_loop.py
+@@ -42,6 +42,17 @@
+     raise AssertionError("condition not met")
+ 
+ 
++def ack_through(ws, latency_markers):
++    """Play the next messages as a client would: acknowledge every marker up to the nth end marker."""
++    seen = 0
++    while seen < latency_markers:
++        frame = json.loads(ws.receive_text())
++        if "marker" in frame:
++            ws.send_text(json.dumps({"marker": frame["marker"]}))
++            seen += "latency" in frame
++    time.sleep(0.1)
++
++
+ class ServerTests(unittest.TestCase):
+     def setUp(self):
+         refills.reset_services()
+@@ -93,9 +104,14 @@
+                 self.assertEqual(bots[-1], refills.confirmation_question(
+                     "lisinopril ten milligram tablets, one tablet once a day"))
+                 frames = read_until(ws, lambda f: "latency" in f)
++                ws.send_text(json.dumps({"marker": frames[-1]["marker"]}))
+                 latency = frames[-1]["latency"]
+                 self.assertEqual(set(latency), {"rasa_processing_latency_ms", "tts_first_byte_latency_ms",
+                                                 "tts_complete_latency_ms"})
++                for frame in frames:
++                    if "marker" in frame:
++                        ws.send_text(json.dumps({"marker": frame["marker"]}))
++                ack_through(ws, 1)  # the question: the caller hears it before answering
+ 
+                 ws.send_text(json.dumps({"text": "Yes, please send it."}))
+                 events = self.wait_turn_end(client, cid, 3)
+@@ -118,10 +134,45 @@
+                 self.wait_turn_end(client, cid, 1)
+                 ws.send_text(json.dumps({"text": "Maria Alvarez, March 14th, 1968, my albuterol inhaler."}))
+                 self.wait_turn_end(client, cid, 2)
++                ack_through(ws, 3)  # greeting, filler, question
+                 ws.send_text(json.dumps({"text": "No."}))
+                 events = self.wait_turn_end(client, cid, 3)
+                 bots = [e["text"] for e in events if e["event"] == "bot"]
+                 self.assertIn(refills.DECLINED_TEXT, bots)
++
++    def test_an_answer_before_the_question_has_played_is_not_consent(self):
++        # The fix: a yes queued while the question is still playing makes the question be asked
++        # again; the request goes only after a yes that began once it had played.
++        self.model.script = [
++            call("verify_patient", full_name="Maria Alvarez", date_of_birth="1968-03-14"),
++            call("select_medication", medication_name="lisinopril"),
++            call("send_refill_request", record_id="CC-RX-2041"),
++            say("Your request reference is R Q, one two three four. It is awaiting prescribing team review."),
++        ]
++        cid = "test-call-early-yes"
++        question = refills.confirmation_question("lisinopril ten milligram tablets, one tablet once a day")
++        with TestClient(self.app) as client:
++            with client.websocket_connect(WS_PATH, headers={"X-Rasa-Sender-Id": cid}) as ws:
++                ws.receive_text()
++                ack_through(ws, 1)
++                self.wait_turn_end(client, cid, 1)
++                ws.send_text(json.dumps({"text": "I'm Maria Alvarez, born March 14th, 1968. Lisinopril, please."}))
++                self.wait_turn_end(client, cid, 2)
++                ws.send_text(json.dumps({"text": "Yes, please."}))   # nothing acknowledged yet
++                events = self.wait_turn_end(client, cid, 3)
++                bots = [e["text"] for e in events if e["event"] == "bot"]
++                self.assertEqual(bots[-1], question)
++                self.assertFalse(any(b.startswith("Your request reference") for b in bots))
++                ack_through(ws, 3)  # filler, question, question again
++                # Spoken before the question finished playing, by its own account: still not consent.
++                ws.send_text(json.dumps({"text": "Yes.", "speech_started_at": time.time() - 30}))
++                events = self.wait_turn_end(client, cid, 4)
++                self.assertEqual([e["text"] for e in events if e["event"] == "bot"][-1], question)
++                ack_through(ws, 1)
++                ws.send_text(json.dumps({"text": "Yes, please send it.", "speech_started_at": time.time()}))
++                events = self.wait_turn_end(client, cid, 5)
++                bots = [e["text"] for e in events if e["event"] == "bot"]
++                self.assertTrue(bots[-1].startswith("Your request reference is"))
+ 
+     def test_silence_check_in_after_the_timeout_once_playback_is_acknowledged(self):
+         cid = "test-call-3"
+diff -ruN a/voice_loop.py b/voice_loop.py
+--- a/voice_loop.py
++++ b/voice_loop.py
+@@ -129,6 +129,14 @@
+         now = time.time()
+         self.last_caller_activity = now
+         self.last_playback_done = now
++        # concern-begin: refill-guard
++        # The fix: when the caller began each utterance, and when the agent's last turn finished
++        # playing (every marker sent up to its end acknowledged), so a confirmation can be
++        # refused when the answer began before the question had been heard.
++        self.utterance_onset: Optional[float] = None
++        self.turn_markers: set[str] = set()
++        self.turn_played_at: Optional[float] = None
++        # concern-end
+ 
+     # -- lifecycle ---------------------------------------------------------------
+ 
+@@ -194,9 +202,15 @@
+                 text = str(frame["text"] or "").strip()
+                 if text:
+                     self.last_caller_activity = time.time()
+-                    self.turns.put_nowait((text, time.time()))
++                    self.turns.put_nowait((text, time.time(), float(frame.get("speech_started_at") or time.time())))
+             elif "marker" in frame:
+                 self.unacked.discard(str(frame["marker"]))
++                # concern-begin: refill-guard
++                if self.turn_markers:
++                    self.turn_markers.discard(str(frame["marker"]))
++                    if not self.turn_markers:
++                        self.turn_played_at = time.time()
++                # concern-end
+                 if not self.unacked:
+                     self.last_playback_done = time.time()
+ 
+@@ -204,8 +218,13 @@
+         try:
+             async for event in self.asr.events():
+                 self.last_caller_activity = time.time()
++                # concern-begin: refill-guard
++                if not event.final and self.utterance_onset is None:
++                    self.utterance_onset = event.at
++                # concern-end
+                 if event.final:
+-                    self.turns.put_nowait((event.text, event.at))
++                    onset, self.utterance_onset = self.utterance_onset or event.at, None
++                    self.turns.put_nowait((event.text, event.at, onset))
+         except asyncio.CancelledError:
+             raise
+         except Exception as exc:
+@@ -215,7 +234,7 @@
+ 
+     async def _turn_worker(self) -> None:
+         while True:
+-            text, at = await self.turns.get()
++            text, at, onset = await self.turns.get()
+             self.busy = True
+             # Finish sending the previous turn first, so a question is on the wire before its answer is taken.
+             await self.out.join()
+@@ -223,7 +242,7 @@
+             self.conv.add("user", text, ts=at)
+             clock = TurnClock(at)
+             try:
+-                await self._agent_turn(text, clock)
++                await self._agent_turn(text, clock, onset)
+             except Exception as exc:
+                 log.exception("%s: agent turn failed: %s", self.id, exc)
+                 self._speak_whole(ERROR_TEXT, clock)
+@@ -232,7 +251,7 @@
+                 self.busy = False
+                 log.info("%s: turn %d processing %s ms", self.id, self.turn_count, clock.processing_ms)
+ 
+-    async def _agent_turn(self, text: str, clock: TurnClock) -> None:
++    async def _agent_turn(self, text: str, clock: TurnClock, onset: Optional[float] = None) -> None:
+         state = await self.agent.aget_state(self.config)
+         spoke = False
+         messages = [HumanMessage(text)]
+@@ -244,6 +263,15 @@
+         # in interrupt(). This caller turn is the answer: it is the resume value, and only a caller
+         # turn ever resumes it, so the answer always comes from a later turn than the question.
+         if state.interrupts:
++            # The fix: an answer that began before the question finished playing is not consent.
++            # Ask the question again instead of resuming.
++            if self.turn_played_at is None or (onset or clock.started) < self.turn_played_at:
++                log.info("%s: answer began before the question finished playing; asking again", self.id)
++                for item in state.interrupts:
++                    value = getattr(item, "value", None)
++                    if isinstance(value, dict) and value.get("question"):
++                        self._speak_whole(value["question"], clock)
++                return
+             payload = Command(resume={"text": text, "turn": self.turn_count})
+         # concern-end
+         current: Optional[Message] = None
+@@ -356,6 +384,10 @@
+                 elif kind == "bot":
+                     self.conv.add("bot", " ".join(item.parts))
+                 elif kind == "turn_end":
++                    # concern-begin: refill-guard
++                    self.turn_markers = set(self.unacked)
++                    self.turn_played_at = None if self.turn_markers else time.time()
++                    # concern-end
+                     self.conv.add("bot_turn_ended")
+             except asyncio.CancelledError:
+                 raise

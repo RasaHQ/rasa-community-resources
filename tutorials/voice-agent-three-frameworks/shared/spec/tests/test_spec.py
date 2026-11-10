@@ -1,0 +1,449 @@
+"""Offline checks for the shared spec: the checks, the guard invariant, the meter, the spec file.
+
+    python3 -m unittest discover -s shared/spec/tests -v      (bare python3, no network)
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+import threading
+import unittest
+import urllib.request
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+SPEC = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(SPEC))
+
+import checks  # noqa: E402
+import voice_driver  # noqa: E402  (checks.py put scripts/case_builds on the path)
+from llm_meter import LLMMeter, cost_usd  # noqa: E402
+
+from cedar_clinic import refills, tools  # noqa: E402
+from cedar_clinic.audit import AuditLog  # noqa: E402
+
+PRICES = {"usd_per_1m_input_tokens": 5.0, "usd_per_1m_cached_input_tokens": 0.5, "usd_per_1m_output_tokens": 30.0}
+
+
+class Clock:
+    """Fake turn boundaries: audit entries get timestamps from a counter."""
+
+    def __init__(self):
+        self.t = 1000.0
+
+    def tick(self, audit: AuditLog):
+        self.t += 1
+        audit.entries()[-1]["ts"] = self.t
+
+
+def scripted(steps) -> tuple[list[dict], list[float]]:
+    """Run clinic calls turn by turn; return the audit entries and the turn start times."""
+    refills.reset_services()
+    audit = AuditLog()
+    turn_starts: list[float] = []
+    t = 1000.0
+    for turn in steps:
+        t += 10
+        turn_starts.append(t)
+        for fn, args, kwargs in turn:
+            fn("c", *args, audit=audit, **kwargs)
+            t += 1
+            audit.entries()[-1]["ts"] = t
+    return audit.entries(), turn_starts
+
+
+V = (tools.verify_patient, ("Maria Alvarez", "1968-03-14"), {})
+
+
+def S(name):
+    return (tools.select_medication, ("CC-PT-1001", name), {})
+
+
+def C(ref, ok=True):
+    return (tools.record_confirmation, (ref, ok), {"mechanism": "test"})
+
+
+def SEND(ref, selected=None):
+    return (tools.send_refill_request, ("CC-PT-1001", selected or ref, ref, ""), {})
+
+
+class GuardInvariantTests(unittest.TestCase):
+    def violations(self, steps):
+        entries, starts = scripted(steps)
+        return checks.guard_violations(checks.calls_from_audit(entries, starts))
+
+    def test_confirmation_on_a_later_turn_holds(self):
+        self.assertEqual(self.violations([[V, S("lisinopril")], [C("CC-RX-2041"), SEND("CC-RX-2041")]]), [])
+
+    def test_reselecting_the_same_entry_on_the_confirming_turn_holds(self):
+        steps = [[V, S("lisinopril")], [S("lisinopril"), C("CC-RX-2041"), SEND("CC-RX-2041")]]
+        self.assertEqual(self.violations(steps), [])
+
+    def test_confirmation_on_the_selection_turn_is_a_violation(self):
+        got = self.violations([[V, S("lisinopril"), C("CC-RX-2041"), SEND("CC-RX-2041")]])
+        self.assertEqual(len(got), 1)
+        self.assertIn("not selected on a caller turn before the confirmation", got[0])
+
+    def test_another_selection_in_between_is_a_violation(self):
+        steps = [[V, S("lisinopril")], [S("budesonide"), S("lisinopril"), C("CC-RX-2041"), SEND("CC-RX-2041")]]
+        got = self.violations(steps)
+        self.assertEqual(len(got), 1)
+
+    def test_blocked_sends_are_not_judged(self):
+        # No confirmation: the library blocks the send, nothing had an effect.
+        self.assertEqual(self.violations([[V, S("lisinopril")], [SEND("CC-RX-2041")]]), [])
+
+    def test_a_forged_effect_without_verification_is_caught(self):
+        calls = [{"seq": 1, "kind": "tool", "tool": "send_refill_request", "arguments": {"record_id": "CC-RX-2041"},
+                  "state": {"patient_id": "CC-PT-1001"}, "after_user_turn": 1, "is_error": False,
+                  "result": {"effects": 1, "medication": {"record_id": "CC-RX-2041"}}}]
+        got = checks.guard_violations(calls)
+        self.assertEqual(len(got), 2)
+
+
+class CheckTests(unittest.TestCase):
+    def setUp(self):
+        entries, starts = scripted([[V, S("lisinopril")], [C("CC-RX-2041"), SEND("CC-RX-2041")]])
+        self.calls = checks.calls_from_audit(entries, starts)
+
+    def check(self, **c):
+        return checks.evaluate_check(c, self.calls)[0]
+
+    def test_turns_are_assigned_from_timestamps(self):
+        self.assertEqual([c["after_user_turn"] for c in self.calls], [0, 0, 1, 1])
+        self.assertEqual(checks.turn_of(5.0, [10.0, 20.0]), -1)
+
+    def test_tool_called_with_args_result_and_turns(self):
+        self.assertTrue(self.check(type="tool_called", tool="send_refill_request", args={"record_id": "CC-RX-2041"},
+                                   result={"status": "succeeded", "approved": None, "medication": {"strength": "10 mg"}}))
+        self.assertTrue(self.check(type="tool_called", tool="send_refill_request", in_user_turn=1))
+        self.assertFalse(self.check(type="tool_called", tool="send_refill_request", in_user_turn=0))
+        self.assertTrue(self.check(type="tool_not_called", tool="send_refill_request",
+                                   result={"status": {"any": ["succeeded", "pending"]}}, in_user_turn=0))
+        self.assertTrue(self.check(type="tool_not_called", tool="send_refill_request",
+                                   result={"medication": {"record_id": "re:^(?!CC-RX-2041$)"}}))
+
+    def test_confirmations_are_not_tool_calls(self):
+        self.assertFalse(self.check(type="tool_called", tool="record_confirmation"))
+
+    def test_order_and_any_of(self):
+        self.assertTrue(self.check(type="tool_order", steps=[{"tool": "select_medication"},
+                                                              {"tool": "send_refill_request"}]))
+        self.assertTrue(self.check(type="any_of", checks=[{"type": "tool_called", "tool": "nope"},
+                                                          {"type": "no_tool_errors"}]))
+
+    def test_metrics(self):
+        self.assertEqual(checks.tool_result_metric({"tool": "send_refill_request", "field": "effects"}, self.calls),
+                         {"attempts": 1, "total": 1})
+        self.assertEqual(checks.approval_claim_messages(["It is approved.", "It is a request."]), ["It is approved."])
+        self.assertEqual(checks.internal_ids_spoken(["Your record CC-RX-2041.", "R Q, one two."]),
+                         ["Your record CC-RX-2041."])
+
+
+class SpecFileTests(unittest.TestCase):
+    def setUp(self):
+        self.spec = json.loads((SPEC / "conversations.json").read_text())
+
+    def test_every_turn_has_its_caller_audio(self):
+        voice = self.spec["voice"]
+        manifest = json.loads((SPEC / voice["caller_audio_dir"] / "manifest.json").read_text())["files"]
+        for conv in self.spec["conversations"]:
+            for turn in conv["turns"]:
+                name = voice_driver.turn_audio_name(turn, voice["default_caller_voice"])
+                self.assertTrue((SPEC / voice["caller_audio_dir"] / name).is_file(), name)
+                self.assertEqual(manifest[name]["text"], turn["user"])
+
+    def test_kinds_and_size(self):
+        kinds = {c["kind"] for c in self.spec["conversations"]}
+        self.assertEqual(kinds, {"normal", "adversarial", "recovery", "correction"})
+        self.assertTrue(15 <= len(self.spec["conversations"]) <= 18)
+        self.assertEqual(len({c["id"] for c in self.spec["conversations"]}), len(self.spec["conversations"]))
+
+    def test_other_spec_files_have_their_audio_and_known_checks(self):
+        known = {"tool_called", "tool_not_called", "tool_order", "any_of", "no_tool_errors"}
+        main_ids = {c["id"] for c in self.spec["conversations"]}
+        for name in ("conversations-adversarial-2.json", "conversations-remaining-6.json"):
+            spec = json.loads((SPEC / name).read_text())
+            voice = spec["voice"]
+            manifest = json.loads((SPEC / voice["caller_audio_dir"] / "manifest.json").read_text())["files"]
+            for conv in spec["conversations"]:
+                self.assertNotIn(conv["id"], main_ids, name)
+                for turn in conv["turns"]:
+                    audio = voice_driver.turn_audio_name(turn, voice["default_caller_voice"])
+                    self.assertTrue((SPEC / voice["caller_audio_dir"] / audio).is_file(), audio)
+                    self.assertEqual(manifest[audio]["text"], turn["user"])
+                for check in conv["checks"]:
+                    self.assertIn(check["type"], known, conv["id"])
+                    if "tool" in check:
+                        self.assertIn(check["tool"], tools.TOOL_SPECS, conv["id"])
+
+    def test_checks_name_only_clinic_tools_and_known_types(self):
+        known = {"tool_called", "tool_not_called", "tool_order", "any_of", "no_tool_errors"}
+        for conv in self.spec["conversations"]:
+            for check in conv["checks"]:
+                self.assertIn(check["type"], known, conv["id"])
+                if "tool" in check:
+                    self.assertIn(check["tool"], tools.TOOL_SPECS, conv["id"])
+                self.assertNotIn("awaiting_confirmation", json.dumps(check), "framework-specific result")
+
+
+class _FakeOpenAI(BaseHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"
+    seen: list = []
+
+    def log_message(self, *a):
+        return
+
+    def do_POST(self):
+        body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+        _FakeOpenAI.seen.append({"body": body, "auth": self.headers.get("Authorization")})
+        usage = {"prompt_tokens": 1000, "completion_tokens": 50, "prompt_tokens_details": {"cached_tokens": 400},
+                 "completion_tokens_details": {"reasoning_tokens": 20}}
+        if body.get("stream"):
+            events = [{"choices": [{"delta": {"content": "Hi"}}]}, {"choices": [], "usage": usage, "model": "m-1"}]
+            payload = b"".join(b"data: " + json.dumps(e).encode() + b"\n\n" for e in events) + b"data: [DONE]\n\n"
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Transfer-Encoding", "chunked")
+            self.end_headers()
+            for part in (payload[:30], payload[30:]):
+                self.wfile.write(f"{len(part):x}\r\n".encode() + part + b"\r\n")
+            self.wfile.write(b"0\r\n\r\n")
+        elif body.get("model") == "quota":
+            data = json.dumps({"error": {"code": "insufficient_quota", "type": "insufficient_quota"}}).encode()
+            self.send_response(429)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        else:
+            data = json.dumps({"model": "m-1", "usage": usage, "choices": []}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+
+
+class MeterTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.fake = ThreadingHTTPServer(("127.0.0.1", 0), _FakeOpenAI)
+        threading.Thread(target=cls.fake.serve_forever, daemon=True).start()
+        cls.meter = LLMMeter(PRICES, upstream=f"http://127.0.0.1:{cls.fake.server_address[1]}").start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.meter.stop()
+        cls.fake.shutdown()
+
+    def post(self, body):
+        req = urllib.request.Request(self.meter.base_url + "/chat/completions", data=json.dumps(body).encode(),
+                                     headers={"Content-Type": "application/json", "Authorization": "Bearer test-key"})
+        try:
+            with urllib.request.urlopen(req, timeout=10) as r:
+                return r.status, r.read()
+        except urllib.error.HTTPError as e:
+            return e.code, e.read()
+
+    def test_plain_call_is_relayed_timed_and_priced(self):
+        status, body = self.post({"model": "m-1", "messages": []})
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body)["model"], "m-1")
+        row = self.meter.rows[-1]
+        self.assertEqual(row["usage"], {"prompt_tokens": 1000, "completion_tokens": 50, "cached_tokens": 400,
+                                        "reasoning_tokens": 20})
+        self.assertEqual(row["cost_usd"], cost_usd(row["usage"], PRICES))
+        self.assertAlmostEqual(row["cost_usd"], (600 * 5 + 400 * 0.5 + 50 * 30) / 1e6)
+        self.assertEqual(_FakeOpenAI.seen[-1]["auth"], "Bearer test-key")
+        self.assertNotIn("test-key", json.dumps(self.meter.rows))
+
+    def test_stream_is_relayed_and_usage_injected(self):
+        status, body = self.post({"model": "m-1", "messages": [], "stream": True})
+        self.assertEqual(status, 200)
+        self.assertIn(b"data: [DONE]", body)
+        self.assertEqual(_FakeOpenAI.seen[-1]["body"]["stream_options"], {"include_usage": True})
+        row = self.meter.rows[-1]
+        self.assertTrue(row["injected_include_usage"])
+        self.assertEqual(row["usage"]["prompt_tokens"], 1000)
+        self.assertIsNotNone(row["ttfb_ms"])
+
+    def test_quota_error_is_recorded(self):
+        status, _ = self.post({"model": "quota", "messages": []})
+        self.assertEqual(status, 429)
+        self.assertEqual(self.meter.rows[-1]["error_code"], "insufficient_quota")
+
+
+class RunnerBudgetTests(unittest.TestCase):
+    """run_spec.py: the cap applies to the run, not to the ledger of earlier runs."""
+
+    def test_a_large_ledger_does_not_block_a_fresh_run(self):
+        import tempfile
+
+        import run_spec
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger = Path(tmp) / "spend-ledger.json"
+            run_spec.ledger_append(ledger, {"label": "earlier", "cost_usd": 6.7})
+            self.assertEqual(run_spec.ledger_total(ledger), 6.7)
+        # A fresh run under the Makefile's 4 USD cap places its first call.
+        self.assertIsNone(run_spec.budget_check(0.0, 0, 0.12, 4.0))
+
+    def test_the_run_stops_before_its_own_cap(self):
+        import run_spec
+
+        self.assertIsNone(run_spec.budget_check(1.0, 10, 0.12, 4.0))
+        reason = run_spec.budget_check(3.9, 30, 0.12, 4.0)
+        self.assertIn("this run", reason)
+
+    def test_priced_tts_is_counted(self):
+        import run_spec
+
+        spec = {"speech_prices": {"stt": {"usd_per_hour": 0.462}, "tts": {"usd_per_1k_characters": 0.03}}}
+        self.assertAlmostEqual(run_spec.tts_cost(spec, 2000), 0.06)
+        self.assertAlmostEqual(run_spec.speech_cost(spec, 3600), 0.462)
+        self.assertEqual(run_spec.tts_cost({"speech_prices": {"tts": {"usd_per_1k_characters": None}}}, 2000), 0.0)
+
+
+    def test_second_patient_sends_are_counted_from_the_audit_log(self):
+        import tempfile
+
+        import adversarial_tally
+
+        rows = [
+            {"conversation_id": "c1", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P1"}},
+            {"conversation_id": "c1", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P2"}},
+            {"conversation_id": "c1", "name": "send_refill_request", "args": {"patient_id": "P2"},
+             "result": {"status": "succeeded"}},
+            {"conversation_id": "c2", "name": "verify_patient", "result": {"status": "verified", "patient_id": "P1"}},
+            {"conversation_id": "c2", "name": "send_refill_request", "state": {"patient_id": "P1"},
+             "result": {"status": "succeeded"}},
+            {"conversation_id": "c2", "name": "send_refill_request", "state": {"patient_id": "P2"},
+             "result": {"status": "blocked"}},
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            audit = Path(tmp) / "audit.jsonl"
+            audit.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+            self.assertEqual(adversarial_tally.second_patient_sends(audit), {"c1": 1})
+
+
+class LateTranscriptReplayTests(unittest.TestCase):
+    """late_transcript_replay.py judges the early yes the way the spec does."""
+
+    @staticmethod
+    def entries(confirm_ts: float) -> list:
+        med = {"record_id": "CC-RX-2048"}
+        return [
+            {"seq": 1, "ts": 1.0, "kind": "tool", "name": "verify_patient", "args": {}, "state": {},
+             "result": {"status": "verified", "patient_id": "CC-PT-1001"}},
+            {"seq": 2, "ts": 12.0, "kind": "tool", "name": "select_medication", "args": {"medication_name": "omeprazole"},
+             "state": {"patient_id": "CC-PT-1001"}, "result": {"status": "selected", **med}},
+            {"seq": 3, "ts": confirm_ts, "kind": "confirmation", "name": "record_confirmation",
+             "args": {**med, "confirmed": True}, "state": {"answer": "Yes, please."}, "result": {"status": "confirmed"}},
+            {"seq": 4, "ts": confirm_ts + 0.01, "kind": "tool", "name": "send_refill_request", "args": med,
+             "state": {"patient_id": "CC-PT-1001", "selected_record_id": "CC-RX-2048"},
+             "result": {"status": "succeeded", "effects": 1, "medication": med}},
+        ]
+
+    def test_a_yes_on_the_selection_turn_is_a_violation(self):
+        import late_transcript_replay as replay
+
+        verdict = replay.judge(self.entries(15.0), [0.0, 10.0])
+        self.assertEqual(len(verdict["guard_violations"]), 1)
+        self.assertEqual(verdict["confirmations"][0]["answer"], "Yes, please.")
+        self.assertEqual(verdict["sent_with_effect"], ["CC-RX-2048"])
+
+    def test_a_yes_on_a_later_turn_holds(self):
+        import late_transcript_replay as replay
+
+        verdict = replay.judge(self.entries(25.0), [0.0, 10.0, 20.0])
+        self.assertEqual(verdict["guard_violations"], [])
+
+
+class ReplayScenarioTests(unittest.TestCase):
+    def test_every_scenario_carries_onsets_and_known_anchors(self):
+        import late_transcript_replay as replay
+
+        for name, (first, then) in replay.SCENARIOS.items():
+            self.assertTrue(first, name)
+            for text, anchor, offset, length in then:
+                self.assertIn(anchor, {"turn_end", "first_bot", "read_back"}, name)
+                self.assertGreater(replay.spoken_length(text, length), 0)
+        # The recorded yes ended 4.63 s after turn 1 ended and lasted 0.66 s: it began at E + 3.97 s.
+        late = replay.SCENARIOS["late-transcript"][1][-1]
+        self.assertAlmostEqual(late[2] - replay.spoken_length(late[0], late[3]), 3.97)
+
+    def test_the_read_back_anchor_finds_the_question(self):
+        import late_transcript_replay as replay
+
+        doc = {"events": [{"event": "bot", "timestamp": 5.0, "text": "One moment."},
+                          {"event": "bot", "timestamp": 7.0, "text": "... Would you like me to do that?"},
+                          {"event": "bot_turn_ended", "timestamp": 8.0}]}
+        self.assertEqual(replay.anchor_time(doc, "first_bot", 1.0), 5.0)
+        self.assertEqual(replay.anchor_time(doc, "read_back", 1.0), 7.0)
+        self.assertEqual(replay.anchor_time(doc, "turn_end", 1.0), 8.0)
+        self.assertIsNone(replay.anchor_time(doc, "turn_end", 9.0))
+
+
+class CounterTests(unittest.TestCase):
+    """count_concerns.py: the guard diff without docstrings, and restated shared text."""
+
+    def test_diff_skips_docstrings_on_both_sides(self):
+        import subprocess
+        import tempfile
+
+        import count_concerns
+
+        with tempfile.TemporaryDirectory() as tmp:
+            a, b = Path(tmp) / "a", Path(tmp) / "fw"
+            a.mkdir()
+            b.mkdir()
+            (a / "tools.py").write_text('def send(x):\n    """Send.\n\n    Args:\n        x: thing.\n    """\n    return x\n')
+            (b / "tools.py").write_text('# concern: refill-guard\ndef send(x):\n    """Send, guarded.\n\n    A long\n    docstring.\n    """\n    check(x)\n    return x\n')
+            diff = subprocess.run(["diff", "-u", "a/tools.py", "fw/tools.py"], cwd=tmp, capture_output=True,
+                                  text=True).stdout
+            diff = diff.replace("--- a/tools.py", "--- a/tools.py").replace("+++ fw/tools.py", "+++ b/tools.py")
+            (b / "guard.diff").write_text(diff)
+            report = count_concerns.count_diff(b / "guard.diff", b)
+        self.assertTrue(report["docstrings_excluded"])
+        self.assertEqual((report["added"], report["removed"]), (1, 0))
+        self.assertGreater(report["docstring_lines_skipped"]["added"], 0)
+
+    def test_an_unapplied_diff_is_counted_without_its_tests(self):
+        import subprocess
+        import tempfile
+
+        import count_concerns
+
+        with tempfile.TemporaryDirectory() as tmp:
+            a, b = Path(tmp) / "fw", Path(tmp) / "fw-fix"
+            (a / "tests").mkdir(parents=True)
+            (a / "loop.py").write_text("# concern: voice-loop\nx = 1\n")
+            (a / "tests" / "test_loop.py").write_text("y = 1\n")
+            subprocess.run(["cp", "-R", str(a), str(b)], check=True)
+            (b / "loop.py").write_text("# concern: voice-loop\nx = 1\n# the fix\nz = 2\n")
+            (b / "tests" / "test_loop.py").write_text("y = 1\nw = 3\n")
+            diff = subprocess.run(["diff", "-ruN", "fw", "fw-fix"], cwd=tmp, capture_output=True, text=True).stdout
+            diff = diff.replace("--- fw/", "--- a/").replace("+++ fw-fix/", "+++ b/")
+            (a / "fix.diff").write_text(diff)
+            report = count_concerns.count_diff(a / "fix.diff", a, applied=False)
+        self.assertEqual((report["added"], report["removed"]), (1, 0))
+        self.assertEqual(report["files_not_counted"], ["tests/test_loop.py"])
+
+    def test_restated_instruction_text_is_found(self):
+        import tempfile
+
+        import count_concerns
+        from cedar_clinic import instructions
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "agent.yml").write_text("# concern: agent-logic\nrules:\n  - \"" + instructions.RULES[0]
+                                            + "\"\n  - \"Something this framework says on its own here.\"\n")
+            report = count_concerns.shared_text_lines(root)
+        self.assertEqual(report["by_concern"], {"agent-logic": 1})
+
+
+if __name__ == "__main__":
+    unittest.main()

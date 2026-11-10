@@ -1,0 +1,91 @@
+# External integrations for the Northgate dispute-intake voice agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa sends Claude Sonnet 5.5
+# through LiteLLM's Anthropic provider (DefaultLiteLLMClient; Rasa has no
+# dedicated Anthropic client). No reasoning or thinking setting is given:
+# Rasa sets a default reasoning_effort only for OpenAI-family models and
+# deliberately skips Claude on anthropic and bedrock
+# (rasa/shared/utils/llm.py, _is_claude_model_on_anthropic_or_bedrock), so the
+# model runs at its own API defaults (see README).
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: anthropic
+        model: claude-sonnet-5-5
+        api_key: ${ANTHROPIC_API_KEY}
+
+# Mantle reads channels from here, never from credentials.yml.
+# `browser_audio` is the raw WebSocket voice channel a browser (or the case-build
+# harness) streams to at /webhooks/browser_audio/websocket. `inspector` serves
+# `rasa inspect` with the same speech stack.
+channels:
+  browser_audio:
+    server_url: localhost
+    # 16 kHz 16-bit PCM both ways. Speechmatics takes raw pcm_s16le at the
+    # stream's rate, Rime returns PCM at the rate asked for, and the caller
+    # fixtures are recorded at this rate.
+    sample_rate: 16000
+    # The harness names each call, so the tracker, usage and logs join on one id.
+    # Trusted local transports only: any client can pick any conversation id.
+    external_sender_id_header: X-Rasa-Sender-Id
+    silence_timeout: 30
+    interruptions:
+      enabled: false
+    # Speechmatics is not a Rasa built-in. The engine is the companion's
+    # voice-vendor-router adapter, named by its dotted path and installed as a
+    # path dependency (pyproject.toml). It is used directly, not through
+    # voicerouter.RoutedASR.
+    asr:
+      name: voicerouter.providers.speechmatics.SpeechmaticsASR
+      language_map:
+        en:
+          # Speechmatics global English; the adapter sends no locale or
+          # dialect, so an Indian English caller is transcribed as `en`.
+          language: en
+      # enhanced: the higher-accuracy operating point, for names, amounts,
+      # dates and card endings. max_delay: seconds Speechmatics may wait
+      # before finalising a segment.
+      operating_point: enhanced
+      max_delay: 1.0
+      enable_partials: true
+      # Speechmatics finalises speech a word or two at a time, and Rasa takes
+      # every transcript as a whole user turn. Without this key a 10-second
+      # caller turn reached the agent as 19 turns (case-build/results/
+      # estimate-adapter-as-shipped). With it, Speechmatics sends
+      # EndOfUtterance after 0.7 s of silence and the adapter sends the
+      # utterance as one transcript. 0.7 s is below max_delay, as
+      # Speechmatics recommends; it was chosen, not tuned.
+      end_of_utterance_silence_trigger: 0.7
+    # Rime, a Rasa built-in (rasa/core/channels/voice_stream/tts/rime.py).
+    # `voice` becomes Rime's `speaker`, `language` its `lang`. Mist v3 and the
+    # speaker ironwood, which Rime's catalogue lists for mistv3 as an Indian
+    # English customer-support voice. Both `en` and `eng` were accepted live;
+    # a missing `language` becomes `lang=None` and Rime closes the socket.
+    tts:
+      name: rime
+      language_map:
+        en:
+          voice: ironwood
+          language: en
+      model_id: mistv3
+  inspector:
+    enabled: true
+    asr:
+      name: voicerouter.providers.speechmatics.SpeechmaticsASR
+      language_map:
+        en:
+          language: en
+      operating_point: enhanced
+      max_delay: 1.0
+      enable_partials: true
+      end_of_utterance_silence_trigger: 0.7
+    tts:
+      name: rime
+      language_map:
+        en:
+          voice: ironwood
+          language: en
+      model_id: mistv3

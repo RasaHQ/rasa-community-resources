@@ -1,10 +1,18 @@
 # Session-start personalization
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-session-start-personalization/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `uv run rasa train && uv run rasa inspect`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training completes, then the Inspector starts.
+<!-- codespaces:end -->
+
     Author:        Daksh Varshneya
     Assessed on:   2026-09-02
     Assessed by:   Rod Rivera
     Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-    Installation: rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+    Installation: rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners building Mantle agents who want every conversation personalized
     Time:          15–20 minutes
 

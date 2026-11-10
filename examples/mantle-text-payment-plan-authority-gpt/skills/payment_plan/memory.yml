@@ -1,0 +1,17 @@
+# Written only by select_plan_offer, refresh_plan_offer and
+# route_hardship_referral (never llm_settable), so the terms the engine reads
+# back for acceptance are always the billing service's. One short field per
+# value: Mantle cuts a memory value at 100 characters in the prompt, silently;
+# tests/test_guard.py checks every fixture offer.
+# plan_account: the account the selected offer is for, with its label.
+# offer_tag: offer id and revision, read in the question; accept checks it.
+#   The engine offers accept_plan_offer only while it is set (`requires`).
+# offer_terms: the billing service's terms, one line.
+schema:
+  public:
+    plan_account:
+      type: text
+    offer_tag:
+      type: text
+    offer_terms:
+      type: text

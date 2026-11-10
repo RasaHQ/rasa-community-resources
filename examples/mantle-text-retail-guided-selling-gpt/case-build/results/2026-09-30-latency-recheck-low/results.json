@@ -1,0 +1,830 @@
+{
+ "schema": 1,
+ "build": "retail-guided-selling-gpt-text",
+ "case": "retail-guided-selling",
+ "project": "examples/mantle-text-retail-guided-selling-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T03:03:56.587097+00:00",
+ "finished_at": "2026-09-30T03:05:21.372629+00:00",
+ "model_file": "20260930-040408-syrupy-circuit.tar.gz",
+ "train_seconds": 12.2,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 5,
+  "passed": 5,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 5,
+  "turn_latency_ms": {
+   "p50": 10759.7,
+   "p95": 11411.8,
+   "max": 11411.8,
+   "mean": 10460.7
+  },
+  "llm_calls": 25,
+  "llm_calls_per_turn": 5.0,
+  "side_channel_calls": 5,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 50021,
+  "completion_tokens": 1499,
+  "reasoning_tokens": 151,
+  "cached_prompt_tokens": 23040,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "fit_claim": 0
+  },
+  "tool_result_metrics": {},
+  "log_events": {
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.191395,
+  "llm_cost_usd": 0.191395,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 2.301604,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-dock-lumen7",
+   "kind": "normal",
+   "description": "A dock for a named device: record the device, recommend the sourced fit.",
+   "conversation_id": "retail-guided-selling-gpt-text-normal-dock-lumen7-20260930T030356",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I need a charging dock for my Lumen 7.",
+     "latency_ms": 11308.0,
+     "bot": [
+      "Hi, this is the Willow Shop accessories assistant. Tell me which device you have and what you are looking for, and I will suggest something that fits.",
+      "I recommend the Lumen 7 Charging Dock for your Lumen 7. It is $39 and is in stock.",
+      "Fit is supported by the manufacturer spec sheet LUM-SS-DK7-B:\n- USB-C connector matches your Lumen 7\n- L7-STD cradle profile matches your Lumen 7",
+      "One thing is unknown: whether it charges with a case on. If you use a case, I can ask a product specialist to confirm that.",
+      "Recommendation reference: WS-REC-20260930-EF8B0FCC"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L7"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "recommend_product",
+      "args": {
+       "product_id": "WS-DK-L7"
+      },
+      "result": {
+       "status": "recommended",
+       "device_id": "DEV-L7"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "Lumen 7"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "search_catalogue",
+     "arguments": {
+      "category": "charging_dock"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "listed",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-DK-L7"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recommended",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "fit_claim": []
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 10121,
+    "completion_tokens": 307,
+    "reasoning_tokens": 18,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.039079,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1053.8,
+     2203.2,
+     2088.8,
+     3684.2,
+     1866.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-guided-selling-gpt-text-normal-dock-lumen7-20260930T030356",
+    "prompt": 10121,
+    "completion": 307,
+    "total": 10428,
+    "generations": 5,
+    "fetched_at": "2026-09-30T03:04:27.715563+00:00"
+   }
+  },
+  {
+   "id": "normal-case-lumen7-pro",
+   "kind": "normal",
+   "description": "A case for the Pro: only the Pro case's body profile matches.",
+   "conversation_id": "retail-guided-selling-gpt-text-normal-case-lumen7-pro-20260930T030356",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Looking for a case for my Lumen 7 Pro.",
+     "latency_ms": 9622.3,
+     "bot": [
+      "Hi, this is the Willow Shop accessories assistant. Tell me which device you have and what you are looking for, and I will suggest something that fits.",
+      "I recommend the Lumen 7 Pro Slim Case for your Lumen 7 Pro.",
+      "It fits based on the body_profile match: required BP-L7P and catalogue value BP-L7P, from manufacturer spec sheet LUM-SS-CS7P-A. It is $24, and current stock shows 22 available.",
+      "Recommendation reference: WS-REC-20260930-841FA564."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L7P"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "recommend_product",
+      "args": {
+       "product_id": "WS-CS-L7P"
+      },
+      "result": {
+       "status": "recommended"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "recommend_product",
+      "result": {
+       "status": "recommended",
+       "product_id": "WS-CS-L7"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "recommend_product",
+      "result": {
+       "status": "recommended",
+       "product_id": "WS-CS-L7-FOLIO"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "Lumen 7 Pro"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "search_catalogue",
+     "arguments": {
+      "category": "case"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "listed",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-CS-L7P"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recommended",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "fit_claim": []
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 10039,
+    "completion_tokens": 295,
+    "reasoning_tokens": 16,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.038309,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2088.5,
+     1547.8,
+     1426.6,
+     2034.8,
+     2276.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-guided-selling-gpt-text-normal-case-lumen7-pro-20260930T030356",
+    "prompt": 10039,
+    "completion": 295,
+    "total": 10334,
+    "generations": 5,
+    "fetched_at": "2026-09-30T03:04:40.460353+00:00"
+   }
+  },
+  {
+   "id": "normal-cable-lumen6",
+   "kind": "normal",
+   "description": "A cable by connector: the USB-C cable for a USB-C phone.",
+   "conversation_id": "retail-guided-selling-gpt-text-normal-cable-lumen6-20260930T030356",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Which charging cable do I need for a Lumen 6?",
+     "latency_ms": 10759.7,
+     "bot": [
+      "Hi, this is the Willow Shop accessories assistant. Tell me which device you have and what you are looking for, and I will suggest something that fits.",
+      "For your Lumen 6, I recommend the Braided USB-C Cable 2 m for $15.",
+      "It fits because the required connector is USB-C, and the cable\u2019s catalogue connector is USB-C, supported by supplier spec sheet WS-SS-CB-C2. It is in stock, with 40 available as of 2026-09-30 08:55 UTC.",
+      "Recommendation reference: WS-REC-20260930-250A716D"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L6"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "recommend_product",
+      "args": {
+       "product_id": "WS-CB-C2"
+      },
+      "result": {
+       "status": "recommended"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "recommend_product",
+      "result": {
+       "status": "recommended",
+       "product_id": "WS-CB-M1"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "Lumen 6"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "search_catalogue",
+     "arguments": {
+      "category": "cable"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "listed",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-CB-C2"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recommended",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "fit_claim": []
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 9940,
+    "completion_tokens": 303,
+    "reasoning_tokens": 44,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.038054,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1172.3,
+     2562.9,
+     2615.8,
+     1937.4,
+     2284.5
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-guided-selling-gpt-text-normal-cable-lumen6-20260930T030356",
+    "prompt": 9940,
+    "completion": 303,
+    "total": 10243,
+    "generations": 5,
+    "fetched_at": "2026-09-30T03:04:54.369257+00:00"
+   }
+  },
+  {
+   "id": "normal-wireless-lumen7",
+   "kind": "normal",
+   "description": "A wireless charger for a Qi2 phone.",
+   "conversation_id": "retail-guided-selling-gpt-text-normal-wireless-lumen7-20260930T030356",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Do you have a wireless charger that works with the Lumen 7?",
+     "latency_ms": 11411.8,
+     "bot": [
+      "Hi, this is the Willow Shop accessories assistant. Tell me which device you have and what you are looking for, and I will suggest something that fits.",
+      "Yes. I recommend the Willow Qi2 Wireless Pad for your Lumen 7.",
+      "It fits because the required wireless standard is qi2, and the catalogue value is qi2, sourced from supplier spec sheet WS-SS-WP-Q2. It is $35 and currently in stock with 11 available.",
+      "Recommendation reference: WS-REC-20260930-D150F983"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L7"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "recommend_product",
+      "args": {
+       "product_id": "WS-WP-Q2"
+      },
+      "result": {
+       "status": "recommended"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "Lumen 7"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "search_catalogue",
+     "arguments": {
+      "category": "wireless_charger"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "listed",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-WP-Q2"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recommended",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "fit_claim": []
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 9840,
+    "completion_tokens": 273,
+    "reasoning_tokens": 28,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.036654,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1087.2,
+     2436.1,
+     2248.4,
+     3569.8,
+     1618.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-guided-selling-gpt-text-normal-wireless-lumen7-20260930T030356",
+    "prompt": 9840,
+    "completion": 273,
+    "total": 10113,
+    "generations": 5,
+    "fetched_at": "2026-09-30T03:05:08.793825+00:00"
+   }
+  },
+  {
+   "id": "normal-dock-lumen7-lite",
+   "kind": "normal",
+   "description": "A dock for the Lite: the micro-USB dock, never the similarly named Lumen 7 dock.",
+   "conversation_id": "retail-guided-selling-gpt-text-normal-dock-lumen7-lite-20260930T030356",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I need a dock for my Lumen 7 Lite.",
+     "latency_ms": 9201.6,
+     "bot": [
+      "Hi, this is the Willow Shop accessories assistant. Tell me which device you have and what you are looking for, and I will suggest something that fits.",
+      "I recommend the Lumen 7 Lite Micro Dock for your Lumen 7 Lite. It is $29.",
+      "Fit is supported by the micro-USB connector match from manufacturer spec sheet LUM-SS-DK7L-A and the L7-LITE cradle profile match from Willow Shop fit test WS-FIT-0412. It is in stock, with 6 available.",
+      "Recommendation reference: WS-REC-20260930-1D7E5A62."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_requirements",
+      "result": {
+       "status": "recorded",
+       "device_id": "DEV-L7L"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "recommend_product",
+      "args": {
+       "product_id": "WS-DK-L7L"
+      },
+      "result": {
+       "status": "recommended"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "recommend_product",
+      "result": {
+       "status": "recommended",
+       "product_id": "WS-DK-L7"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "record_requirements",
+     "arguments": {
+      "device_model": "Lumen 7 Lite"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recorded",
+     "result_reason": null
+    },
+    {
+     "tool": "search_catalogue",
+     "arguments": {
+      "category": "charging_dock"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "listed",
+     "result_reason": null
+    },
+    {
+     "tool": "recommend_product",
+     "arguments": {
+      "product_id": "WS-DK-L7L"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "recommended",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "fit_claim": []
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 10081,
+    "completion_tokens": 321,
+    "reasoning_tokens": 45,
+    "cached_prompt_tokens": 4608,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.039299,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1003.1,
+     2200.0,
+     1480.9,
+     2266.2,
+     1894.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-guided-selling-gpt-text-normal-dock-lumen7-lite-20260930T030356",
+    "prompt": 10081,
+    "completion": 321,
+    "total": 10402,
+    "generations": 5,
+    "fetched_at": "2026-09-30T03:05:21.019375+00:00"
+   }
+  }
+ ]
+}

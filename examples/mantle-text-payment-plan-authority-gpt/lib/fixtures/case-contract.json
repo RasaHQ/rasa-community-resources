@@ -1,0 +1,178 @@
+{
+  "slug": "payment-plan-authority",
+  "title": "Payment-plan offer authority",
+  "organisation": "Amber Grid",
+  "action": "present a permitted payment-plan option",
+  "failure": "The agent promised a smaller instalment than the billing service allowed and marked the account resolved.",
+  "lesson": "Distinguish presenting an authorized offer from negotiating new terms or recording acceptance; hardship needs a human route.",
+  "receipt": "An accepted offer reference matching the billing service terms, or an unresolved hardship referral.",
+  "evidence": "Compare spoken amount and schedule with the versioned offer; a persuasive conversation cannot change the offer.",
+  "recovery": "Withdraw an expired offer and request a refreshed one. If no eligible offer remains, route to the hardship team without promising relief.",
+  "owner": "billing policy owner",
+  "metric": "recorded plans whose terms differ from the authorized offer, divided by recorded plans",
+  "question": "The billing team has offered this schedule. Would you like to review it or speak with their support team?",
+  "correction": "The customer cannot afford the listed option; stop the offer flow and route the request without inventing a cheaper plan.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "offer_authorized",
+      "good": true,
+      "bad": false,
+      "reason": "unapproved_terms",
+      "phase": "request"
+    },
+    {
+      "field": "offer_revision_current",
+      "good": true,
+      "bad": false,
+      "reason": "expired_offer",
+      "phase": "request"
+    },
+    {
+      "field": "customer_acceptance_recorded",
+      "good": true,
+      "bad": false,
+      "reason": "acceptance_missing",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "offer_authorized": true,
+    "offer_revision_current": true,
+    "customer_acceptance_recorded": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "offer_authorized": true,
+        "offer_revision_current": true,
+        "customer_acceptance_recorded": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "offer_authorized-false",
+      "facts": {
+        "offer_authorized": false,
+        "offer_revision_current": true,
+        "customer_acceptance_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_terms",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_authorized-missing",
+      "facts": {
+        "offer_revision_current": true,
+        "customer_acceptance_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_terms",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_authorized-string",
+      "facts": {
+        "offer_authorized": "true",
+        "offer_revision_current": true,
+        "customer_acceptance_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "unapproved_terms",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_revision_current-false",
+      "facts": {
+        "offer_authorized": true,
+        "offer_revision_current": false,
+        "customer_acceptance_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "expired_offer",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_revision_current-missing",
+      "facts": {
+        "offer_authorized": true,
+        "customer_acceptance_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "expired_offer",
+        "effects": 0
+      }
+    },
+    {
+      "name": "offer_revision_current-string",
+      "facts": {
+        "offer_authorized": true,
+        "offer_revision_current": "true",
+        "customer_acceptance_recorded": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "expired_offer",
+        "effects": 0
+      }
+    },
+    {
+      "name": "customer_acceptance_recorded-false",
+      "facts": {
+        "offer_authorized": true,
+        "offer_revision_current": true,
+        "customer_acceptance_recorded": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "acceptance_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "customer_acceptance_recorded-missing",
+      "facts": {
+        "offer_authorized": true,
+        "offer_revision_current": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "acceptance_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "customer_acceptance_recorded-string",
+      "facts": {
+        "offer_authorized": true,
+        "offer_revision_current": true,
+        "customer_acceptance_recorded": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "acceptance_missing",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

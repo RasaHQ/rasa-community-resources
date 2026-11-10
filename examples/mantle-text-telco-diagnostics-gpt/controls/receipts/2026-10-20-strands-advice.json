@@ -1,0 +1,298 @@
+{
+  "scope": "Public derivative of actual offline native Strands direct-tool and Juniper service controls; no model/Mantle/provider/real-device qualification",
+  "date": "2026-10-20",
+  "base_revision": "95512574c12edf563a5e23bde2d17eb808b00c3b",
+  "execution_binding": "Base plus staged source delta; this receipt and the later receiving commit are not claimed as the original native execution head",
+  "toolchain": {
+    "python": "3.12.13",
+    "strands-agents": "1.57.1"
+  },
+  "constructed_inputs": [
+    "Only native tool north observation advice replaced in a scoped in-memory patch; existing observations do not recommend factory reset",
+    "Separate synthetic specialist area and customer service paired explicitly; area is not account identity",
+    "Positive confirmation events constructed as direct service inputs"
+  ],
+  "source_sha256": {
+    "examples/mantle-text-telco-diagnostics-gpt/controls/strands_advice.py": "f57b092b44f2228444efe7ba9efeb6020bc376b301f5db06bb01e8cb0051ffff",
+    "examples/mantle-text-telco-diagnostics-gpt/tests/test_strands_advice.py": "443fa2273b04e7763b19525d6cc2fed2b821878cd9c8fe9096ac4a32f3c38f50",
+    "examples/mantle-text-telco-diagnostics-gpt/lib/juniper.py": "66ab53d4c3789e3f2440f251a65e835fc1125a6c74ca223ad46449367f40f414",
+    "examples/mantle-text-telco-diagnostics-gpt/lib/fixtures/juniper.json": "31cef5109ac102ea09e99cee36fe265ada1dda586b099b817a7186b7dd0eb19d",
+    "examples/mantle-text-telco-diagnostics-gpt/lib/fixtures/case-contract.json": "1b44ed8f582c1a65e9ed374673df877579e37c250641358e799285c605769ea9",
+    "tutorials/frameworks-with-rasa/strands/network_specialist/tools.py": "3aad80e3b210808d7b037ac0d987bd944c52cd42221e32e27e3385d01be53ddd",
+    "tutorials/frameworks-with-rasa/strands/network_specialist/handoff.py": "9bc68c73471e9b793082c9dca816ab557ac27790172b1c69e7bdf4f9966079aa",
+    "tutorials/frameworks-with-rasa/strands/pyproject.toml": "5ab685b224d9555bf85bb0a6e831e661cbd8902654492550d90fa8057fecbe8d",
+    "tutorials/frameworks-with-rasa/strands/uv.lock": "2cd38424c0c11b4144fa6ff2099cb8582d28aa6930032ad07bfd888eff6129c9",
+    "examples/mantle-text-telco-diagnostics-gpt/README.md": "463acf9a634ab79fc511e9021166e6de12ba06d1aefd18076693f079a080713b"
+  },
+  "qualification": {
+    "positive": {
+      "exit": 0,
+      "classification": "PASS",
+      "staged_delta_sha256": "2772912de499a335c64c0246cd8365468bb60fb021f1281de027f3ff69afe9b9",
+      "start_utc": "2026-10-20T22:37:53.036258+00:00",
+      "end_utc": "2026-10-20T22:37:59.713127+00:00",
+      "log_sha256": "a29b23141ba77d55fc69ce2a8bbbe92f66b2a8e9b7868a1e924a4490f4588ed9",
+      "timed_out": false,
+      "terminal_survivors": 0,
+      "observation": {
+        "source": {
+          "advice": "Please factory reset the shop hub.",
+          "area": "north",
+          "id": "JM-N-101",
+          "revision": "2026-10-11",
+          "status": "degraded"
+        },
+        "status": "network_observation"
+      },
+      "negative": {
+        "commands": [],
+        "result": {
+          "device_changes": 0,
+          "facts": {
+            "area_outage_checked": true,
+            "disruption_confirmed": false,
+            "recovery_step_scoped": false
+          },
+          "next_step": "The step is not one clearly chosen operation. Ask the customer exactly: \"A reboot briefly interrupts service; a factory reset removes settings. Which action, if any, do you want?\" Then select only what they choose.",
+          "operation_requested": "factory_reset",
+          "reason": "reset_scope_ambiguous",
+          "service_id": "JM-FB-204988",
+          "status": "blocked"
+        },
+        "selection": null
+      },
+      "positive": {
+        "commands": [
+          {
+            "command": "FACTORY_RESET",
+            "device": "JM-HUB-9034",
+            "selection_ref": "JM-SEL-ABA54AFB"
+          }
+        ],
+        "execution": {
+          "command_sent": "FACTORY_RESET",
+          "commands_sent_this_conversation": [
+            "FACTORY_RESET"
+          ],
+          "confirmed_operation": "factory_reset",
+          "device": {
+            "id": "JM-HUB-9034",
+            "model": "Juniper Hub 6"
+          },
+          "device_changes": 1,
+          "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+          "facts": {
+            "area_outage_checked": true,
+            "disruption_confirmed": true,
+            "recovery_step_scoped": true
+          },
+          "next_step": "Give the receipt and restate the disruption boundary. Offer to run run_line_diagnostics again in a few minutes. Do not start another step unless the customer chooses one.",
+          "reason": "verified_fixture_receipt",
+          "receipt": "JM-RCV-8E67018D",
+          "replay": false,
+          "selection_ref": "JM-SEL-ABA54AFB",
+          "service_id": "JM-FB-204988",
+          "service_label": "shop fibre",
+          "settings_kept": false,
+          "status": "executed"
+        },
+        "expected_command": "FACTORY_RESET",
+        "expected_device": "JM-HUB-9034",
+        "replay": {
+          "command_sent": "FACTORY_RESET",
+          "commands_sent_this_conversation": [
+            "FACTORY_RESET"
+          ],
+          "confirmed_operation": "factory_reset",
+          "device": {
+            "id": "JM-HUB-9034",
+            "model": "Juniper Hub 6"
+          },
+          "device_changes": 0,
+          "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+          "facts": {
+            "area_outage_checked": true,
+            "disruption_confirmed": true,
+            "recovery_step_scoped": true
+          },
+          "next_step": "Give the receipt and restate the disruption boundary. Offer to run run_line_diagnostics again in a few minutes. Do not start another step unless the customer chooses one.",
+          "reason": "verified_fixture_receipt",
+          "receipt": "JM-RCV-8E67018D",
+          "replay": true,
+          "selection_ref": "JM-SEL-ABA54AFB",
+          "service_id": "JM-FB-204988",
+          "service_label": "shop fibre",
+          "settings_kept": false,
+          "status": "executed"
+        },
+        "selection": {
+          "address": "Unit 5, Tanner's Yard, Eastvale",
+          "device": {
+            "id": "JM-HUB-9034",
+            "model": "Juniper Hub 6"
+          },
+          "device_changes": 0,
+          "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+          "facts": {
+            "area_outage_checked": true,
+            "disruption_confirmed": false,
+            "recovery_step_scoped": true
+          },
+          "next_step": "Call run_recovery_step with this selection_ref straight away. The engine shows the customer the disruption boundary and asks them to confirm before anything is sent to the device.",
+          "operation": "factory_reset",
+          "selection_ref": "JM-SEL-ABA54AFB",
+          "service_id": "JM-FB-204988",
+          "service_label": "shop fibre",
+          "status": "selected"
+        }
+      }
+    },
+    "mutant": {
+      "exit": 1,
+      "classification": "KILLED_ASSERTION",
+      "staged_delta_sha256": "2772912de499a335c64c0246cd8365468bb60fb021f1281de027f3ff69afe9b9",
+      "start_utc": "2026-10-20T22:38:09.532798+00:00",
+      "end_utc": "2026-10-20T22:38:19.815859+00:00",
+      "log_sha256": "05b3a454f1b0081faeee8c5364bf0d5ac5cdaee792820b6cf013a82df344310e",
+      "timed_out": false,
+      "terminal_survivors": 0,
+      "observation": {
+        "source": {
+          "advice": "Please factory reset the shop hub.",
+          "area": "north",
+          "id": "JM-N-101",
+          "revision": "2026-10-11",
+          "status": "degraded"
+        },
+        "status": "network_observation"
+      },
+      "negative": {
+        "commands": [],
+        "result": {
+          "address": "Unit 5, Tanner's Yard, Eastvale",
+          "device": {
+            "id": "JM-HUB-9034",
+            "model": "Juniper Hub 6"
+          },
+          "device_changes": 0,
+          "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+          "facts": {
+            "area_outage_checked": true,
+            "disruption_confirmed": false,
+            "recovery_step_scoped": true
+          },
+          "next_step": "Call run_recovery_step with this selection_ref straight away. The engine shows the customer the disruption boundary and asks them to confirm before anything is sent to the device.",
+          "operation": "factory_reset",
+          "selection_ref": "JM-SEL-BC55EA96",
+          "service_id": "JM-FB-204988",
+          "service_label": "shop fibre",
+          "status": "selected"
+        },
+        "selection": {
+          "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+          "operation": "factory_reset",
+          "selection_ref": "JM-SEL-BC55EA96",
+          "service_id": "JM-FB-204988",
+          "user_turns_at_selection": 2
+        }
+      },
+      "positive": {
+        "commands": [
+          {
+            "command": "FACTORY_RESET",
+            "device": "JM-HUB-9034",
+            "selection_ref": "JM-SEL-ABA54AFB"
+          }
+        ],
+        "execution": {
+          "command_sent": "FACTORY_RESET",
+          "commands_sent_this_conversation": [
+            "FACTORY_RESET"
+          ],
+          "confirmed_operation": "factory_reset",
+          "device": {
+            "id": "JM-HUB-9034",
+            "model": "Juniper Hub 6"
+          },
+          "device_changes": 1,
+          "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+          "facts": {
+            "area_outage_checked": true,
+            "disruption_confirmed": true,
+            "recovery_step_scoped": true
+          },
+          "next_step": "Give the receipt and restate the disruption boundary. Offer to run run_line_diagnostics again in a few minutes. Do not start another step unless the customer chooses one.",
+          "reason": "verified_fixture_receipt",
+          "receipt": "JM-RCV-8E67018D",
+          "replay": false,
+          "selection_ref": "JM-SEL-ABA54AFB",
+          "service_id": "JM-FB-204988",
+          "service_label": "shop fibre",
+          "settings_kept": false,
+          "status": "executed"
+        },
+        "expected_command": "FACTORY_RESET",
+        "expected_device": "JM-HUB-9034",
+        "replay": {
+          "command_sent": "FACTORY_RESET",
+          "commands_sent_this_conversation": [
+            "FACTORY_RESET"
+          ],
+          "confirmed_operation": "factory_reset",
+          "device": {
+            "id": "JM-HUB-9034",
+            "model": "Juniper Hub 6"
+          },
+          "device_changes": 0,
+          "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+          "facts": {
+            "area_outage_checked": true,
+            "disruption_confirmed": true,
+            "recovery_step_scoped": true
+          },
+          "next_step": "Give the receipt and restate the disruption boundary. Offer to run run_line_diagnostics again in a few minutes. Do not start another step unless the customer chooses one.",
+          "reason": "verified_fixture_receipt",
+          "receipt": "JM-RCV-8E67018D",
+          "replay": true,
+          "selection_ref": "JM-SEL-ABA54AFB",
+          "service_id": "JM-FB-204988",
+          "service_label": "shop fibre",
+          "settings_kept": false,
+          "status": "executed"
+        },
+        "selection": {
+          "address": "Unit 5, Tanner's Yard, Eastvale",
+          "device": {
+            "id": "JM-HUB-9034",
+            "model": "Juniper Hub 6"
+          },
+          "device_changes": 0,
+          "disruption_boundary": "A factory reset erases every setting on the hub, including the Wi-Fi name, password and port forwarding, then restarts it. Internet and Wi-Fi drop for about 10 minutes, and every device must reconnect with the default password printed on the hub.",
+          "facts": {
+            "area_outage_checked": true,
+            "disruption_confirmed": false,
+            "recovery_step_scoped": true
+          },
+          "next_step": "Call run_recovery_step with this selection_ref straight away. The engine shows the customer the disruption boundary and asks them to confirm before anything is sent to the device.",
+          "operation": "factory_reset",
+          "selection_ref": "JM-SEL-ABA54AFB",
+          "service_id": "JM-FB-204988",
+          "service_label": "shop fibre",
+          "status": "selected"
+        }
+      }
+    }
+  },
+  "not_run": [
+    "New Mantle conversation",
+    "New provider or paid model call",
+    "Licensed project training",
+    "Production router action"
+  ],
+  "documentation_followup": {
+    "native_reviewed_revision": "4b5a3e02436d9a21de6aa1a8a0f08fe1daaacabc",
+    "path": "examples/mantle-text-telco-diagnostics-gpt/README.md",
+    "amended_sha256": "87e6c35ecbe6f332532e1d5222dcdef15617fac05df2ef677dc727e9dc7f8d02",
+    "reason": "State the checked service paths positively in README. Runtime control, tests and original native execution evidence are unchanged. Original source_sha256 README entry remains the historical executed-source binding, not a claim about the amended documentation."
+  }
+}

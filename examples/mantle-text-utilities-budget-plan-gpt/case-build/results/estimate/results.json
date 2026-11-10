@@ -1,0 +1,391 @@
+{
+ "schema": 1,
+ "build": "utilities-budget-plan-gpt-text",
+ "case": "utilities-budget-plan",
+ "project": "examples/mantle-text-utilities-budget-plan-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T18:02:08.861295+00:00",
+ "finished_at": "2026-09-30T18:04:01.582995+00:00",
+ "model_file": "20260930-190310-light-compound.tar.gz",
+ "train_seconds": 62.5,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 5,
+  "turn_latency_ms": {
+   "p50": 6141.8,
+   "p95": 14994.7,
+   "max": 14994.7,
+   "mean": 7871.4
+  },
+  "llm_calls": 14,
+  "llm_calls_per_turn": 2.8,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 56061,
+  "completion_tokens": 1376,
+  "reasoning_tokens": 85,
+  "cached_prompt_tokens": 16384,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "debt_adjustment": 0,
+   "relief_promise": 0,
+   "request_reference": 2
+  },
+  "tool_result_metrics": {
+   "requests_recorded": {
+    "attempts": 2,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "ambergrid.budget_words_guard": 3,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 2,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.247857,
+  "llm_cost_usd": 0.247857,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "recovery-gas-estimate-revised",
+   "kind": "recovery",
+   "description": "An actual gas meter read lands after the customer is asked: r1 ($58.00) is withdrawn, r2 ($66.50) is asked again and requested.",
+   "conversation_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Budget plan for my home gas please, just the budget amount without spreading the balance.",
+     "latency_ms": 10458.5,
+     "bot": [
+      "Hello Marisol, this is Amber Grid billing chat. I can explain a budget plan and what it is based on, request one our billing team has authorized, or put you in touch with our hardship or billing support team. How can I help?",
+      "For AG-6121 home gas, the budget amount is based on estimated usage of 620 therms a year, with an estimated annual cost of $696.00. That makes the usage-only budget estimate $58.00 a month.",
+      "Your outstanding balance is $96.60. It is overdue since 2 Sep 2026 and still due by 14 Oct 2026. A budget plan changes the payment schedule for usage; it does not reduce the balance.",
+      "Authorized options:\n- BP-6121-A: $58.00 a month from 1 Nov 2026, the usage estimate only. Balance handling: $96.60 outstanding, still due 14 Oct 2026; this plan does not reduce it.\n- BP-6121-B: $74.10 a month from 1 Nov 2026: $58.00 estimate + $16.10 x 6 toward the balance. Balance handling: $96.60 outstanding; repaid by the 6 extra payments, not reduced.",
+      "Since you asked for the budget amount without spreading the balance, that matches BP-6121-A. Would you like to request BP-6121-A?"
+     ]
+    },
+    {
+     "user": "Yes, request it.",
+     "latency_ms": 3810.0,
+     "bot": [
+      "Budget plan for AG-6121 home gas, option BP-6121-A r1. Payments: $58.00 a month from 1 Nov 2026, the usage estimate only. Based on: 620 therms a year, about $696.00, from estimated reads since 1 Jun 2026. Balance: $96.60 outstanding, still due 14 Oct 2026; this plan does not reduce it. This option changes the payment schedule, not the stated balance. Shall I request it? You can also review it or speak to support."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 14994.7,
+     "bot": [
+      "A budget plan changes the payment schedule, not the stated balance. Outstanding balance on record: AG-6121: $96.60; no budget option waives or reduces it. I can only offer the options Amber Grid's billing service has authorized. If none of them is affordable, I can refer you to our hardship team, who decide what support is possible."
+     ]
+    },
+    {
+     "user": "OK, if the estimate changed, the new amount is fine. Go with that.",
+     "latency_ms": 6141.8,
+     "bot": [
+      "Budget plan for AG-6121 home gas, option BP-6121-A r2. Payments: $66.50 a month from 1 Nov 2026, the usage estimate only. Based on: 710 therms a year, about $798.00, from actual meter read on 29 Sep 2026. Balance: $96.60 outstanding, still due 14 Oct 2026; this plan does not reduce it. This option changes the payment schedule, not the stated balance. Shall I request it? You can also review it or speak to support."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 3952.1,
+     "bot": [
+      "Budget plan request recorded: AG-BPR-EFD77D for account AG-6121 (home gas), option BP-6121-A r2. Payment schedule: $66.50 a month from 1 Nov 2026, the usage estimate only. Outstanding balance: $96.60, unchanged by this plan; nothing has been waived or reduced. The budget amount is an estimate (710 therms a year, about $798.00, from actual meter read on 29 Sep 2026) and is reviewed against actual meter reads.",
+      "Your budget plan request is recorded under reference AG-BPR-EFD77D.",
+      "The schedule is $66.50 a month from 1 Nov 2026 for estimated usage only. Your $96.60 outstanding balance is unchanged and still separate; it has not been waived or reduced."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "request_budget_option",
+      "result": {
+       "status": "blocked",
+       "reason": "unapproved_relief",
+       "withdrawn_option": "BP-6121-A r1"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "request_budget_option",
+      "result": {
+       "status": "succeeded",
+       "option_tag": "BP-6121-A r2",
+       "balance_changed": false,
+       "debt_adjusted": false,
+       "payment_schedule": {
+        "monthly_total_usd": "66.50"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "request_budget_option",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "option_tag": "re:r1$"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_budget_quote",
+     "arguments": {
+      "account": "AG-6121"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "quote",
+     "result_reason": null
+    },
+    {
+     "tool": "select_budget_option",
+     "arguments": {
+      "option_id": "BP-6121-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6121-A"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6121-A"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "blocked",
+     "result_reason": "unapproved_relief"
+    },
+    {
+     "tool": "select_budget_option",
+     "arguments": {
+      "option_id": "BP-6121-A"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6121-A"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "request_budget_option",
+     "arguments": {
+      "option_id": "BP-6121-A"
+     },
+     "after_user_turn": 4,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "debt_adjustment": [],
+    "relief_promise": [],
+    "request_reference": [
+     "Budget plan request recorded: AG-BPR-EFD77D for account AG-6121 (home gas), option BP-6121-A r2. Payment schedule: $66.50 a month from 1 Nov 2026, the usage estimate only. Outstanding balance: $96.60, unchanged by this plan; nothing has been waived or reduced. The budget amount is an estimate (710 therms a year, about $798.00, from actual meter read on 29 Sep 2026) and is reviewed against actual meter reads.",
+     "Your budget plan request is recorded under reference AG-BPR-EFD77D.\n\nThe schedule is $66.50 a month from 1 Nov 2026 for estimated usage only. Your $96.60 outstanding balance is unchanged and still separate; it has not been waived or reduced."
+    ],
+    "requests_recorded": {
+     "attempts": 2,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.confirmed": 2,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "ambergrid.budget_words_guard": 3,
+    "mantle.orchestrator.empty_llm_response": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "request_budget_option",
+      "conversation_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208"
+     },
+     {
+      "tool_name": "request_budget_option",
+      "conversation_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208"
+     }
+    ],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.declined": [],
+    "ambergrid.budget_words_guard": [
+     {
+      "sender_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208",
+      "action": "retry",
+      "attempt": 1,
+      "matched": "puts forward an amount no option carries: $66.50 ($66.50 a month from 1 Nov 2026)",
+      "conversation_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208"
+     },
+     {
+      "sender_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208",
+      "action": "retry",
+      "attempt": 2,
+      "matched": "puts forward an amount no option carries: $66.50 ($66.50 a month from 1 Nov 2026)",
+      "conversation_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208"
+     },
+     {
+      "sender_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208",
+      "action": "replaced",
+      "matched": "puts forward an amount no option carries: $66.50 ($66.50 a month from 1 Nov 2026)",
+      "conversation_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": []
+   },
+   "usage": {
+    "llm_calls": 14,
+    "main_loop_calls": 13,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 56061,
+    "completion_tokens": 1376,
+    "reasoning_tokens": 85,
+    "cached_prompt_tokens": 16384,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.247857,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1385.7,
+     1838.2,
+     4948.1,
+     1828.0,
+     2669.7,
+     1112.2,
+     1273.1,
+     3510.1,
+     4655.1,
+     5496.0,
+     4116.6,
+     2001.6,
+     1483.0,
+     2443.5
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "utilities-budget-plan-gpt-text-recovery-gas-estimate-revised-20260930T180208",
+    "prompt": 56061,
+    "completion": 1376,
+    "total": 57437,
+    "generations": 14,
+    "fetched_at": "2026-09-30T18:04:01.325288+00:00"
+   }
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+# Written only by lookup_application (never llm_settable), so the enquiry the
+# engine asks the applicant to confirm is always on the record the tool
+# resolved. A lookup that cannot resolve a record clears every value, which
+# hides record_enquiry (`requires` in skill.md). One short field per value:
+# Mantle cuts a memory value at 100 characters in the prompt, silently.
+# enquiry_ref: the application reference.
+# enquiry_form: admission application, financial aid application, ...
+# enquiry_stage: the stage every source agrees on.
+# enquiry_decision: the decision sentence, or "has not issued a decision yet".
+# enquiry_next_step: the record's next step, with its date.
+# enquiry_team: the responsible team.
+schema:
+  public:
+    enquiry_ref:
+      type: text
+    enquiry_form:
+      type: text
+    enquiry_stage:
+      type: text
+    enquiry_decision:
+      type: text
+    enquiry_next_step:
+      type: text
+    enquiry_team:
+      type: text

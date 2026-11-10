@@ -1,11 +1,19 @@
 # Voice vendor router — failover and vendor swapping for Mantle
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-voice-vendor-router/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`; optional `DEEPGRAM_API_KEY`, `RIME_API_KEY`, `SPEECHMATICS_API_KEY` (the resource runs without them), saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners running voice agents who cannot afford one vendor to be single points of failure
 Time:          30–45 minutes
 ```
@@ -70,12 +78,31 @@ delegates to Rasa's own factories. `voicerouter/providers/` adds the rest.
 | **Vosk** | ASR | `voicerouter.providers.vosk.VoskASR` | **none — local** | **live-verified** |
 | **faster-whisper** | ASR | `voicerouter.providers.whisper.FasterWhisperASR` | **none — local** | **live-verified** |
 | Neuphonic NeuTTS | TTS | `voicerouter.providers.neuphonic.NeuTTSLocal` | **none — local** | model not run — see below |
+| **Neuphonic NeuTTS-2E, native (Metal)** | TTS | `voicerouter.providers.neutts_native.NeuTTSNative` | **none — local** | **live-verified** — see below |
 | **AWS Polly** | TTS | `voicerouter.providers.aws.PollyTTS` | AWS credential chain | shape-verified — no creds |
 | **AWS Transcribe** | ASR | `voicerouter.providers.aws.TranscribeASR` | AWS credential chain | shape-verified — no creds |
 | **Google Cloud TTS** | TTS | `voicerouter.providers.google.GoogleTTS` | Application Default Credentials | shape-verified — no creds |
 | **Google Cloud STT** | ASR | `voicerouter.providers.google.GoogleSTT` | Application Default Credentials | shape-verified — no creds |
 | Azure | ASR + TTS | `azure` *(built-in)* | `AZURE_SPEECH_API_KEY` | not exercised — no key |
 | Cartesia | TTS | `cartesia` *(built-in)* | `CARTESIA_API_KEY` | not exercised — no key |
+
+**Speechmatics ASR on the catalog pin.** Two fixes, both found live by the
+`banking-dispute` case build
+([`examples/mantle-voice-banking-dispute-claude`](../../examples/mantle-voice-banking-dispute-claude))
+on 2026-09-29:
+
+- The first version opened its socket with the legacy
+  `websockets.connect(..., extra_headers=...)`. rasa-pro 3.21.0.dev5 resolves
+  websockets 15.0.1, where that raises `TypeError` on every call, so the agent
+  never heard the caller. It now uses `websockets.asyncio.client.connect` with
+  `additional_headers`, as Rasa's own engines do. The AssemblyAI adapter
+  still has the legacy call (it is config-only, never run).
+- Speechmatics finalises a word or two at a time, and Rasa's voice channel
+  treats every `NewTranscript` as a whole user turn. One 10-second caller
+  turn reached the agent as 19 turns, each with a model call. Set
+  `end_of_utterance_silence_trigger` (seconds, 0 to 2, below `max_delay`) and
+  the adapter holds the segments until Speechmatics sends `EndOfUtterance`,
+  then sends one transcript. Unset, the behaviour is unchanged.
 
 **"Live-verified"** means audio was actually synthesised or transcribed through
 that adapter, in this repository, against the vendor's real API.
@@ -184,6 +211,17 @@ and another thing to be wrong, and the failure mode here is a slightly late turn
 rather than a wrong transcript. Adding another offline transcriber is a
 `transcribe()` method, not a rewrite.
 
+**faster-whisper on Apple silicon runs on the CPU.** CTranslate2 has no Metal
+or Core ML backend (`get_supported_compute_types` lists only `int8`,
+`int8_float32` and `float32`). The adapter takes `cpu_threads`, and
+`hotwords` for terms callers are expected to say; `model_id` may be a local
+folder, so a call never contacts Hugging Face. On an M4 Pro, replaying 48
+synthetic caller turns: `small.en` (int8, 8 threads) took 0.93 s at the median
+per turn and heard 15 of 23 medicine names; with a ten-word `hotwords` list,
+23 of 23, and its slowest turn fell from 4.6 s to 1.6 s. `large-v3-turbo`
+heard 19 of 23 without hotwords at 2.7 s a turn. Full table in the
+[refill-request case build](../../examples/mantle-voice-healthcare-refill-request-gpt-local/case-build/results/whisper-model-choice/results.json).
+
 Both install through one extra, which — unlike NeuTTS — resolves cleanly against
 Rasa's numpy pin:
 
@@ -270,6 +308,34 @@ dependency conflict then never has to be resolved at all, the model stays warm
 across restarts of the agent, and a crash in a research-grade stack cannot take
 the call with it. That is a small HTTP service plus a thin adapter, and it is
 the shape this should take before anyone runs it in production.
+
+### NeuTTS natively, in Rasa's own environment
+
+The numpy conflict is a property of the Python `neutts` package, not of
+NeuTTS. The GGUF backbone runs on llama.cpp and the decoder is an ONNX graph,
+so [`native/neutts/`](native/neutts/) builds both as native programs from
+pinned sources (Neuphonic's llama.cpp fork with Metal, and a small C++ decoder
+on ONNX Runtime) and checks the model files against their digests.
+`voicerouter.providers.neutts_native.NeuTTSNative` drives them from Rasa's own
+venv with no torch and no numpy:
+
+```yaml
+tts:
+  name: voicerouter.providers.neutts_native.NeuTTSNative
+  runtime_dir: patterns/voice-vendor-router/native/neutts/build
+  models_dir: patterns/voice-vendor-router/native/neutts/models
+  language_map: { en: { voice: sophie } }
+```
+
+It starts `llama-server` (loopback only) and the decoder once per Rasa
+process, keeps both loaded, streams speech codes from the server and decodes
+them in chunks while generation runs, so the first audio arrives after about
+30 codes. It spells numerals out before synthesis, because NeuTTS-2E does not
+read digits (a reference written as digits came out as babble in every take).
+Measured on an M4 Pro, warm: first audio 0.18 to 0.28 s, real-time factor
+about 0.18. It was run live in
+[`mantle-voice-healthcare-refill-request-gpt-local`](../../examples/mantle-voice-healthcare-refill-request-gpt-local/),
+which records the per-turn figures. Apple silicon only.
 
 ## Format conversion
 
@@ -610,7 +676,7 @@ Stated plainly, because these are the cases where a router could mislead you.
 | `voicerouter/routed_asr.py` | `RoutedASR` — reconnect-and-resume on stream death |
 | `voicerouter/base.py` | provider specs, policy, and building engines through Rasa's factories |
 | `voicerouter/health.py` | per-provider circuit breaker |
-| `voicerouter/contract.py` | asserts the router still covers what Rasa calls |
+| `voicerouter/contract.py` | asserts the router still covers what Rasa uses on an engine |
 | `voicerouter/providers/` | adapters for OpenAI, ElevenLabs, Speechmatics, AssemblyAI |
 | `voicerouter/audio.py` | streaming format conversion shared by every HTTP adapter |
 | `examples/` | one copy-pasteable config block per vendor |
@@ -625,17 +691,28 @@ Stated plainly, because these are the cases where a router could mislead you.
 The router is deliberately **not** a `TTSEngine` / `ASREngine` subclass. Rasa
 never type-checks engines, and the base classes carry per-connection state that
 would have to be kept in step with whichever child is active. Satisfying the
-surface Rasa actually calls is simpler and less fragile.
+surface Rasa actually uses is simpler and less fragile.
 
-The risk in that trade is a future Rasa release calling something new and the
-router raising `AttributeError` mid-call. So the surface is **derived from the
-installed Rasa** rather than written down:
+The risk in that trade is a Rasa release using something new and the router
+failing mid-call. So the surface is **derived from the installed Rasa** rather
+than written down. It covers four kinds of use, because method calls alone are
+not enough: on rasa-pro 3.21.0.dev5 a check of calls alone passed while every
+routed call died, first on `async with asr_engine, tts_engine:` (no
+`__aenter__`) and then on `asr_engine.config` (no attribute).
+
+| Kind | Found as | 3.21.0.dev5 examples |
+|---|---|---|
+| calls | `tts_engine.synthesize(` | `synthesize`, `start_response`, `send_keep_alive` |
+| reads | `asr_engine.config`, and `engine.<name>` in the voice tracing recorders | `config`, `streaming_input`, `current_language_config` |
+| writes | `tts_engine.stream_state = ...` | `stream_state`, `stop_streaming_output_audio_chunks` |
+| protocols | `async with` entering an engine | the async context manager |
 
 ```bash
 make contract
-#   RoutedTTS: 8/8 of the surface Rasa calls
-#   RoutedASR: 8/8 of the surface Rasa calls
+#   RoutedTTS: 15/15 of the surface Rasa uses on a TTS engine (8 calls, 4 reads, 2 writes, 1 protocol)
+#   RoutedASR: 11/11 of the surface Rasa uses on an ASR engine (8 calls, 2 reads, 0 writes, 1 protocol)
 #   contract holds against the installed rasa-pro
+uv run python -m voicerouter.contract --surface   # each use, with its file and line
 ```
 
 It runs in `make verify`, needs no credentials and no network, and fails at
@@ -704,3 +781,84 @@ graduate into its own repository once those land.
 
 Apache 2.0 — see the repository root [LICENSE](../../LICENSE). Rasa Pro is a
 commercial framework under its own terms.
+
+## Use the same router with other frameworks
+
+The library can now run without Rasa Pro. Provider transport, audio conversion,
+health and routing stay in `voicerouter`; framework code passes mono PCM16 in
+and consumes transcripts or audio out. The runnable Rasa example retains its
+pinned Rasa dependency in the default `rasa` dependency group. Library consumers
+do not install that group. For a standalone installation in this directory:
+
+```bash
+uv sync --prerelease=allow --locked --no-default-groups
+```
+
+A versioned JSON profile selects ASR and TTS independently. The Cedar Clinic
+implementations for Rasa, LangGraph, Strands, LangChain, Agno, CrewAI, Pipecat and
+LiveKit accept the same profile through `CEDAR_VOICE_ROUTER_CONFIG`:
+
+```bash
+# Run from a selected tutorial framework directory. Load authorized credentials
+# into your environment separately; do not put them in the profile.
+export CEDAR_VOICE_ROUTER_CONFIG="$(cd ../shared/speech/profiles && pwd)/speechmatics-fixed.json"
+uv run --locked python server.py --port 5009   # the seven non-Rasa servers
+# For the Rasa directory, use its existing make train and make run targets.
+```
+
+Without that variable the tutorials retain their original Speechmatics clients.
+With it, all eight use the shared router's provider implementations. The profile
+sample rate and language must match the Rasa channel; the seven PCM transports
+also check the sample rate. The example profile fixes one provider per role,
+turns off retries and exploration, uses call-scoped health, and exposes transport
+failures. It sends the original tutorial's Speechmatics configuration and voice.
+It is a separate speech integration condition.
+
+To add a vendor, implement its ASR or TTS transport once under `voicerouter/providers`,
+then select its dotted class path in a profile. Existing shared adapters cover
+Deepgram Nova/Aura, Speechmatics, AssemblyAI, OpenAI TTS, ElevenLabs, AWS, Google, Vosk, Faster Whisper
+and NeuTTS variants. AWS, Google and local models need their documented optional
+SDKs or model assets installed in the selected environment. Provider availability
+and live behaviour require separate qualification with the intended vendor.
+The `deepgram-nova-aura-fixed.json` profile selects the shared `/v1/listen` and
+`/v1/speak` adapters. Flux `/v2/listen` is a separate protocol. Rasa built-in
+names such as `deepgram` and `rime` retain their Rasa factory; select the shared
+Deepgram adapters by dotted class path or `deepgram-shared`.
+The transports follow Deepgram’s [listen messages](https://developers.deepgram.com/reference/speech-to-text/listen-streaming)
+and [Flush/Flushed contract](https://developers.deepgram.com/docs/tts-ws-flush).
+
+The shared interface does not replace a framework's native voice pipeline. These
+tutorials retain their common browser PCM transport and framework conversation
+engines. LiveKit room/audio nodes and Pipecat frame processors need their own
+transport bindings if used outside this tutorial.
+
+Offline checks are available in `tests/test_shared_profile.py`. They compare the
+configured vendor messages, check the shared factories, validate profile identity
+and exercise the PCM/transcript bridge. Native Rasa channel contracts additionally
+run with the pinned `rasa` group installed. They do not establish live vendor
+latency, quality or billing. The bridge records requested characters and submitted
+audio seconds; these are not provider invoices or retry request counts. Time to
+first audio is recorded separately from HTTP headers, which remain unavailable
+through the common interface.
+
+### Standalone Rime transport
+
+Use `voicerouter.providers.rime.RimeTTS` (or `rime-shared`) for Rime HTTP
+streaming in any supported framework. It sends bearer authentication from
+`RIME_API_KEY`, an explicit `model_id`, a voice and provider language from
+`language_map`, and a PCM `sampling_rate`. The default is Coda/Astra at 24 kHz;
+account access and model/voice availability still require a live check. The
+short name `rime` retains its existing Rasa-native factory.
+
+```yaml
+name: voicerouter.providers.rime.RimeTTS
+model_id: coda
+sampling_rate: 24000
+language_map:
+  en: { voice: astra, language: en }
+```
+
+The [Rime HTTP API](https://docs.rime.ai/api-reference/coda/http) documents
+`audio/L16` as little-endian PCM. This adapter uses that documented wire
+format and the same per-utterance converter as the other HTTP transports.
+Credentials belong in the authorized process environment.

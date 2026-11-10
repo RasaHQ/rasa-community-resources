@@ -1,0 +1,59 @@
+# The greeting, and Spanish versions of Mantle's packaged responses. A
+# top-level responses.yml overrides the packaged defaults and the default
+# skills' responses; without these the Spanish caller would hear English
+# canned lines (silence check-in, errors, wrap-up, satisfaction survey).
+responses:
+  utter_greet:
+    - text: >
+        Hola {customer_first_name}, le atiende la línea de pagos de Northgate
+        Bank. ¿En qué le puedo ayudar?
+  utter_hangup_goodbye:
+    - text: "Gracias por llamar. Hasta luego."
+  utter_precondition_unmet:
+    - text: "Lo siento, no pude continuar con esa solicitud."
+  utter_model_request_hook_error:
+    - text: "Lo siento, algo salió mal. Por favor, inténtelo de nuevo."
+  utter_tool_call_hook_error:
+    - text: "Lo siento, algo salió mal. Por favor, inténtelo de nuevo."
+  utter_model_call_error:
+    - text: "Lo siento, algo salió mal. Por favor, inténtelo de nuevo."
+  utter_set_memory_button_skipped:
+    - text: "Esa opción ya no está disponible. Elija una opción disponible, por favor."
+  utter_ask_how_to_help:
+    - text: "¿Hay algo más en que le pueda ayudar hoy?"
+      metadata:
+        rephrase: true
+  utter_ask_wants_to_continue:
+    - text: "¿Hay algo más en que le pueda ayudar?"
+      metadata:
+        rephrase: true
+  utter_ask_wants_to_resume:
+    - text: |
+        Estábamos con {session.default_continue_interrupted.interrupted_task_name}.
+        ¿Quiere continuar donde lo dejamos, o lo dejamos así?
+      metadata:
+        rephrase: true
+  utter_thank_you_for_feedback:
+    - text: "Gracias por su opinión. Que tenga un buen día."
+      metadata:
+        rephrase: true
+  utter_ask_csat_score:
+    - text: "Del 1 al 5, ¿qué tan satisfecho quedó con la ayuda de hoy?"
+      metadata:
+        rephrase: true
+  utter_silence_timeout_check_in:
+    - text: "¿Sigue ahí? Puedo continuar cuando usted quiera."
+      metadata:
+        rephrase: true
+  utter_inform_hangup:
+    - text: "No le escucho, así que voy a terminar la llamada. Hasta luego."
+      metadata:
+        rephrase: true
+  utter_decline_in_domain_out_of_scope:
+    - text: "Con eso no le puedo ayudar aquí. Le puedo ayudar con pagos atrasados y planes de pago."
+      metadata:
+        rephrase: true
+  utter_decline_out_of_domain_out_of_scope:
+    - text: "Eso está fuera de lo que puedo atender en esta línea."
+      metadata:
+        rephrase: true

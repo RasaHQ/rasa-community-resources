@@ -1,0 +1,21 @@
+# Written only by select_plan_offer, record_plan_choice, withdraw_plan_choice
+# and request_hardship_referral (never llm_settable), so the plan the engine
+# reads back for confirmation is always the offer the tools staged. Each value
+# is kept under 100 characters: Mantle cuts longer memory values in the prompt
+# without saying so.
+# plan_offer_id: the staged offer; empty when nothing is staged.
+# plan_tag: the staged offer and how many times a plan was staged on this call.
+# plan_account_label, plan_terms_label, plan_first_due_label: read back in the
+#   confirmation question.
+schema:
+  public:
+    plan_offer_id:
+      type: text
+    plan_tag:
+      type: text
+    plan_account_label:
+      type: text
+    plan_terms_label:
+      type: text
+    plan_first_due_label:
+      type: text

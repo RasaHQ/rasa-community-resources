@@ -1,0 +1,14 @@
+# Written only by search_transactions and continue_search (never
+# llm_settable). One short field per value: Mantle cuts a memory value at 100
+# characters in the prompt, silently (tests/test_guard.py checks every search).
+# last_search_ref: the reference of the latest issued search.
+# last_search_scope: its statuses, range, account and merchant.
+# last_search_complete: "yes" or "no".
+schema:
+  public:
+    last_search_ref:
+      type: text
+    last_search_scope:
+      type: text
+    last_search_complete:
+      type: text

@@ -1,0 +1,705 @@
+{
+ "schema": 1,
+ "build": "retail-order-status-gemini-voice",
+ "case": "retail-order-status",
+ "project": "examples/mantle-voice-retail-order-status-gemini",
+ "model": "gemini/gemini-3.8-flash",
+ "response_models": [],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T04:00:27.566572+00:00",
+ "finished_at": "2026-09-30T04:01:11.746029+00:00",
+ "model_file": "20260930-050031-vibrant-monument.tar.gz",
+ "variant": {
+  "name": "thinking-minimal",
+  "description": "reasoning_effort: minimal on the orchestrator model (LiteLLM maps it to Gemini's lowest thinking level), instead of the model's API default",
+  "edits": [
+   {
+    "file": "integrations.yml",
+    "find": "        api_key: ${GEMINI_API_KEY}\n",
+    "replace": "        api_key: ${GEMINI_API_KEY}\n        reasoning_effort: minimal\n"
+   }
+  ]
+ },
+ "train_seconds": 4.8,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gemini/gemini-3.8-flash",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 7.5e-07,
+  "output_cost_per_token": 3.75e-06,
+  "cache_read_input_token_cost": 7.5e-08,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 0,
+  "failed": 0,
+  "provider_errors": 2,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 74.6,
+   "p95": 498.2,
+   "max": 498.2,
+   "mean": 286.4
+  },
+  "llm_calls": 5,
+  "llm_calls_per_turn": 1.67,
+  "side_channel_calls": 0,
+  "empty_completions": 0,
+  "failed_llm_calls": 5,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "reasoning_tokens": 0,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "delivery_claim": 0,
+   "arrival_prediction": 0
+  },
+  "tool_result_metrics": {},
+  "log_events": {
+   "mantle.turn.failed": 5,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 0,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 3,
+   "audio_turns": 3,
+   "eos_to_first_audible_ms": {
+    "n": 2,
+    "p50": 74.6,
+    "p95": 498.2,
+    "max": 498.2
+   },
+   "eos_to_first_audio_ms": {
+    "n": 2,
+    "p50": 74.6,
+    "p95": 498.2,
+    "max": 498.2
+   },
+   "eos_to_first_marker_ms": {
+    "n": 2,
+    "p50": 74.5,
+    "p95": 276.2,
+    "max": 276.2
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 2,
+     "p50": 200.1,
+     "p95": 296.9,
+     "max": 296.9
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 2,
+     "p50": 0.2,
+     "p95": 222.1,
+     "max": 222.1
+    },
+    "tts_complete_latency_ms": {
+     "n": 2,
+     "p50": 1.8,
+     "p95": 876.5,
+     "max": 876.5
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 3,
+    "user_perceived_latency_ms": {
+     "n": 3,
+     "p50": 231.5,
+     "p95": 518.9,
+     "max": 518.9
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 3,
+     "p50": 207.1,
+     "p95": 246.8,
+     "max": 246.8
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 3,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 3,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": 0.067,
+    "wer_p50": 0.0,
+    "tokens": {
+     "item": {
+      "checked": 1,
+      "exact": 1,
+      "normalised": 1
+     },
+     "order_number": {
+      "checked": 1,
+      "exact": 0,
+      "normalised": 1
+     }
+    }
+   },
+   "stt_audio_seconds": 29.0,
+   "tts_characters": 426,
+   "stt_usd": 0.003144,
+   "tts_usd": 0.01278,
+   "speech_cost_usd": 0.015924,
+   "speech_cost_complete": true
+  },
+  "skipped": [
+   {
+    "id": "normal-label-then-delay-help",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "adversarial-label-means-delivered",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "adversarial-stale-best-guess",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "recovery-stale-to-delivery-help",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "correction-second-parcel",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "correction-drop-stale-switch-parcel",
+    "reason": "provider errors in the previous two conversations"
+   }
+  ],
+  "cost_usd": 0.015924,
+  "llm_cost_usd": 0,
+  "speech_cost_usd": 0.015924,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.969645,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "normal-item-not-number",
+   "kind": "normal",
+   "description": "The customer names the item, not the order; the agent finds the order and tracks it.",
+   "conversation_id": "retail-order-status-gemini-voice-normal-item-not-number-20260930T040027",
+   "passed": false,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "Has my lamp shipped yet?",
+     "latency_ms": 498.2,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.28,
+      "speech_off_epoch": 1790740843.6332228,
+      "eos_to_first_marker_ms": 276.2,
+      "eos_to_first_audio_ms": 498.2,
+      "eos_to_first_audible_ms": 498.2,
+      "end_markers": [
+       {
+        "at_ms": 1152.8,
+        "rasa_processing_latency_ms": 296.94533348083496,
+        "tts_first_byte_latency_ms": 222.0609188079834,
+        "tts_complete_latency_ms": 876.4569759368896
+       }
+      ],
+      "bot_audio_s": 2.89,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Is my lamp shipped yet?"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 518.9076250244398,
+        "llm_generation_before_first_output_ms": 246.82341600419022,
+        "first_agent_response": {
+         "generated_by_llm": false
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "track_order",
+      "result": {
+       "status": "answered",
+       "order_number": "WS-10517",
+       "milestone": "label_created",
+       "delivered": false
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "track_order",
+      "result": {
+       "status": "answered",
+       "order_number": "re:^(?!(WS\\-10517)$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "delivery_claim": [],
+    "arrival_prediction": []
+   },
+   "log_events": {
+    "voice_channel.audio_missing": 0,
+    "rime.connection.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "rime.stream_audio.error": 0,
+    "voice_channel.agent_task_failed": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "deepgram.connection.failed": 0,
+    "mantle.turn.failed": 2,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "output_channel.response_delivery_failed": 0
+   },
+   "log_event_details": {
+    "voice_channel.audio_missing": [],
+    "rime.connection.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "rime.stream_audio.error": [],
+    "voice_channel.agent_task_failed": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "deepgram.connection.failed": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-order-status-gemini-voice-normal-item-not-number-20260930T040027"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-order-status-gemini-voice-normal-item-not-number-20260930T040027"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "output_channel.response_delivery_failed": []
+   },
+   "usage": {
+    "llm_calls": 2,
+    "main_loop_calls": 2,
+    "side_channel_calls": 0,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     245.0,
+     186.8
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 11.78,
+    "tts_characters": 186,
+    "call": {
+     "audio_seconds_sent": 11.78,
+     "call_seconds": 11.78,
+     "markers_acked": 12,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.09,
+     "session_end_turn_s": 0.52
+    },
+    "stt_usd": 0.001276,
+    "tts_usd": 0.00558,
+    "cost_usd": 0.006856,
+    "asr": [
+     {
+      "intended": "Has my lamp shipped yet?",
+      "heard": [
+       "Is my lamp shipped yet?"
+      ],
+      "user_events": 1,
+      "wer": 0.2,
+      "tokens": [
+       {
+        "token": "lamp",
+        "kind": "item",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "retail-order-status-gemini-voice-normal-item-not-number-20260930T040027",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T04:00:50.699999+00:00"
+   }
+  },
+  {
+   "id": "normal-split-order-both-parcels",
+   "kind": "normal",
+   "description": "A split order: each parcel is tracked with its own call.",
+   "conversation_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T040027",
+   "passed": false,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "What's happening with order one zero five three nine?",
+     "latency_ms": null,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.48,
+      "speech_off_epoch": 1790740859.783966,
+      "eos_to_first_marker_ms": null,
+      "eos_to_first_audio_ms": null,
+      "eos_to_first_audible_ms": null,
+      "end_markers": [],
+      "bot_audio_s": 0.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "What's happening with order one zero five three nine"
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 231.49183302302845,
+        "llm_generation_before_first_output_ms": 207.09604199510068,
+        "first_agent_response": {
+         "generated_by_llm": false
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Both parcels, please.",
+     "latency_ms": 74.6,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.72,
+      "speech_off_epoch": 1790740864.948672,
+      "eos_to_first_marker_ms": 74.5,
+      "eos_to_first_audio_ms": 74.6,
+      "eos_to_first_audible_ms": 74.6,
+      "end_markers": [
+       {
+        "at_ms": 76.2,
+        "rasa_processing_latency_ms": 200.0751495361328,
+        "tts_first_byte_latency_ms": 0.17881393432617188,
+        "tts_complete_latency_ms": 1.8010139465332031
+       }
+      ],
+      "bot_audio_s": 2.89,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Both parcels, please."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 200.1667080039624,
+        "llm_generation_before_first_output_ms": 186.28816600539722,
+        "first_agent_response": {
+         "generated_by_llm": false
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "track_order",
+      "result": {
+       "status": "answered",
+       "order_number": "WS-10539",
+       "parcel_number": 1,
+       "milestone": "delivered"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "track_order",
+      "result": {
+       "status": "answered",
+       "order_number": "WS-10539",
+       "parcel_number": 2,
+       "milestone": "in_transit",
+       "delivered": false
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "track_order",
+      "result": {
+       "status": "answered",
+       "order_number": "re:^(?!(WS\\-10539)$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "delivery_claim": [],
+    "arrival_prediction": []
+   },
+   "log_events": {
+    "voice_channel.audio_missing": 0,
+    "rime.connection.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "rime.stream_audio.error": 0,
+    "voice_channel.agent_task_failed": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "deepgram.connection.failed": 0,
+    "mantle.turn.failed": 3,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "output_channel.response_delivery_failed": 0
+   },
+   "log_event_details": {
+    "voice_channel.audio_missing": [],
+    "rime.connection.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "rime.stream_audio.error": [],
+    "voice_channel.agent_task_failed": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "deepgram.connection.failed": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T040027"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T040027"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T040027"
+     }
+    ],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "output_channel.response_delivery_failed": []
+   },
+   "usage": {
+    "llm_calls": 3,
+    "main_loop_calls": 3,
+    "side_channel_calls": 0,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     199.0,
+     182.3,
+     195.8
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 17.24,
+    "tts_characters": 240,
+    "call": {
+     "audio_seconds_sent": 17.24,
+     "call_seconds": 17.24,
+     "markers_acked": 17,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.09,
+     "session_end_turn_s": 0.53
+    },
+    "stt_usd": 0.001868,
+    "tts_usd": 0.0072,
+    "cost_usd": 0.009068,
+    "asr": [
+     {
+      "intended": "What's happening with order one zero five three nine?",
+      "heard": [
+       "What's happening with order one zero five three nine"
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "10539",
+        "kind": "order_number",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Both parcels, please.",
+      "heard": [
+       "Both parcels, please."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "retail-order-status-gemini-voice-normal-split-order-both-parcels-20260930T040027",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T04:01:11.495390+00:00"
+   }
+  }
+ ]
+}

@@ -14,7 +14,7 @@ Suggested tags:
 | `tutorial/step-03` | Flight status constraints | `git checkout tutorial/step-03 -- skills/flight_status` |
 | `tutorial/step-04` | Scoped instructions | `git checkout tutorial/step-04 -- skills/flight_status` |
 | `tutorial/step-05` | Baggage ordered block | `git checkout tutorial/step-05 -- skills/report_baggage` |
-| `tutorial/step-06` | Composition | `git checkout tutorial/step-06 -- skills/authenticate skills/find_booking skills/change_booking` |
+| `tutorial/step-06` | Composition | `git checkout tutorial/step-06 -- agent.yml skills/authenticate skills/find_booking skills/change_booking` |
 | `tutorial/step-07` | Remaining skills | `git checkout tutorial/step-07 -- skills tools lib` |
 
 After any checkout:

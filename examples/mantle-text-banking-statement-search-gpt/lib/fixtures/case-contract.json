@@ -1,0 +1,178 @@
+{
+  "slug": "banking-statement-search",
+  "title": "Transaction search with bounded answers",
+  "organisation": "Northgate Bank",
+  "action": "return a transaction-search result",
+  "failure": "A search for March spending included a pending April item and presented the total as a statement balance.",
+  "lesson": "Preserve date boundaries, transaction status and the difference between a search result and a certified statement.",
+  "receipt": "A search reference with time range, included statuses and whether results are complete.",
+  "evidence": "Compare source transaction timestamps and statuses against the displayed filter and sum; mark pagination explicitly.",
+  "recovery": "If the source returns a partial page, report the partial result and continuation instead of asserting a full-period total.",
+  "owner": "transaction history owner",
+  "metric": "incomplete result sets presented as complete, divided by search responses",
+  "question": "Do you mean posted transactions during March, or also pending items? I will label the result scope.",
+  "correction": "The caller meant the previous year; clear the old range and rerun rather than relabeling cached results.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "date_range_confirmed",
+      "good": true,
+      "bad": false,
+      "reason": "ambiguous_date_range",
+      "phase": "request"
+    },
+    {
+      "field": "posting_status_explicit",
+      "good": true,
+      "bad": false,
+      "reason": "pending_posted_mixed",
+      "phase": "request"
+    },
+    {
+      "field": "result_scope_complete",
+      "good": true,
+      "bad": false,
+      "reason": "truncated_results_unmarked",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "date_range_confirmed": true,
+    "posting_status_explicit": true,
+    "result_scope_complete": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "date_range_confirmed": true,
+        "posting_status_explicit": true,
+        "result_scope_complete": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "date_range_confirmed-false",
+      "facts": {
+        "date_range_confirmed": false,
+        "posting_status_explicit": true,
+        "result_scope_complete": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_date_range",
+        "effects": 0
+      }
+    },
+    {
+      "name": "date_range_confirmed-missing",
+      "facts": {
+        "posting_status_explicit": true,
+        "result_scope_complete": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_date_range",
+        "effects": 0
+      }
+    },
+    {
+      "name": "date_range_confirmed-string",
+      "facts": {
+        "date_range_confirmed": "true",
+        "posting_status_explicit": true,
+        "result_scope_complete": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "ambiguous_date_range",
+        "effects": 0
+      }
+    },
+    {
+      "name": "posting_status_explicit-false",
+      "facts": {
+        "date_range_confirmed": true,
+        "posting_status_explicit": false,
+        "result_scope_complete": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "pending_posted_mixed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "posting_status_explicit-missing",
+      "facts": {
+        "date_range_confirmed": true,
+        "result_scope_complete": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "pending_posted_mixed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "posting_status_explicit-string",
+      "facts": {
+        "date_range_confirmed": true,
+        "posting_status_explicit": "true",
+        "result_scope_complete": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "pending_posted_mixed",
+        "effects": 0
+      }
+    },
+    {
+      "name": "result_scope_complete-false",
+      "facts": {
+        "date_range_confirmed": true,
+        "posting_status_explicit": true,
+        "result_scope_complete": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "truncated_results_unmarked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "result_scope_complete-missing",
+      "facts": {
+        "date_range_confirmed": true,
+        "posting_status_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "truncated_results_unmarked",
+        "effects": 0
+      }
+    },
+    {
+      "name": "result_scope_complete-string",
+      "facts": {
+        "date_range_confirmed": true,
+        "posting_status_explicit": true,
+        "result_scope_complete": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "truncated_results_unmarked",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

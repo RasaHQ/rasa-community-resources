@@ -1,11 +1,19 @@
 # Atlas — Voice Travel Agent with Rasa Skills
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-agent/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`. Training uses your OpenAI key (a small embedding call) to index this resource's reference documents.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice agents with Rasa Skills
 Time:          60–90 minutes
 ```
@@ -158,7 +166,7 @@ ordered collection, confirmation, and verbatim success text.
 | `scripts/verify_setup.py` | Pre-flight diagnostics |
 | `tutorial/snippets/` | Paste-ready chapter checkpoints |
 
-Pin: `rasa-pro==3.20.0rc1`. New empty projects: `rasa init --engine mantle`.
+Pin: `rasa-pro==3.21.0.dev5`. New empty projects: `rasa init --engine mantle`.
 
 This is a **Skills / Mantle** project. Do **not** add CALM v1 files
 (`config.yml`, `domain.yml`, flow YAMLs under `data/`).

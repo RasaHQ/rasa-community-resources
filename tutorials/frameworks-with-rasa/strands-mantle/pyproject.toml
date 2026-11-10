@@ -1,0 +1,16 @@
+[project]
+name = "juniper-strands-conversation"
+version = "0.1.0"
+description = "A Rasa conversation reusing existing native Strands network tools"
+requires-python = ">=3.12,<3.13"
+dependencies = ["rasa-pro==3.21.0.dev5", "juniper-strands-network-tools"]
+
+[tool.rasa-catalog]
+required-secrets = ["OPENAI_API_KEY"]
+
+[tool.uv]
+prerelease = "allow"
+package = false
+
+[tool.uv.sources]
+juniper-strands-network-tools = { path = "../strands", editable = true }

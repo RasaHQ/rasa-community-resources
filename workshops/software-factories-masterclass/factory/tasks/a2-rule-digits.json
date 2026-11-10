@@ -1,0 +1,18 @@
+{
+  "id": "A2-rule-digits",
+  "request": "Add one rule to the agent's rules in agent.yml, exactly: \"Never say more than the last four digits of a card number.\" The persona and everything else in agent.yml stay as they are.",
+  "allowed_paths": [
+    "product/agent.yml"
+  ],
+  "acceptance": {
+    "path": "acceptance/a2_rule_digits.py",
+    "sha256": "aa91862d45465f0a9a9209b147e8b99f84b8b028fd8139eeed796007cad15f20"
+  },
+  "support": [
+    {
+      "path": "accept_lib.py",
+      "sha256": "bb7f82644bce044f15338ab076fbaeb727d9a071fe028180e5bbb1227985fcfd"
+    }
+  ],
+  "excluded": "Changing integrations.yml, any acceptance suite, or accept_lib.py. Those are separate tasks with a separate owner."
+}

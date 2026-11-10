@@ -1,0 +1,457 @@
+{
+ "schema": 1,
+ "build": "banking-block-card-gpt-voice",
+ "case": "banking-block-card",
+ "project": "examples/mantle-voice-banking-block-card-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-29T22:01:07.950321+00:00",
+ "finished_at": "2026-09-29T22:01:47.540073+00:00",
+ "model_file": "20260929-230110-witty-process.tar.gz",
+ "train_seconds": 2.8,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 1,
+  "turn_latency_ms": {
+   "p50": 2724.9,
+   "p95": 2724.9,
+   "max": 2724.9,
+   "mean": 2724.9
+  },
+  "llm_calls": 6,
+  "llm_calls_per_turn": 6.0,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "prompt_tokens": 9851,
+  "completion_tokens": 305,
+  "reasoning_tokens": 0,
+  "cached_prompt_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 1,
+  "bot_text_metrics": {},
+  "tool_result_metrics": {
+   "unselected_cards_changed": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "browser_audio.handle_message.error": 0
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 1,
+   "audio_turns": 1,
+   "eos_to_first_audible_ms": {
+    "n": 1,
+    "p50": 2724.9,
+    "p95": 2724.9,
+    "max": 2724.9
+   },
+   "eos_to_first_audio_ms": {
+    "n": 1,
+    "p50": 2724.9,
+    "p95": 2724.9,
+    "max": 2724.9
+   },
+   "eos_to_first_marker_ms": {
+    "n": 1,
+    "p50": 2153.3,
+    "p95": 2153.3,
+    "max": 2153.3
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 1,
+     "p50": 1143.4,
+     "p95": 1143.4,
+     "max": 1143.4
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 1,
+     "p50": 571.7,
+     "p95": 571.7,
+     "max": 571.7
+    },
+    "tts_complete_latency_ms": {
+     "n": 1,
+     "p50": 1682.0,
+     "p95": 1682.0,
+     "max": 1682.0
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 1,
+    "user_perceived_latency_ms": {
+     "n": 1,
+     "p50": 1715.0,
+     "p95": 1715.0,
+     "max": 1715.0
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 1,
+     "p50": 1091.9,
+     "p95": 1091.9,
+     "max": 1091.9
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 1,
+     "p50": 1457.1,
+     "p95": 1457.1,
+     "max": 1457.1
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 1,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 1,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": 0.0,
+    "wer_p50": 0.0,
+    "tokens": {
+     "name": {
+      "checked": 2,
+      "exact": 2,
+      "normalised": 2
+     },
+     "digits": {
+      "checked": 2,
+      "exact": 0,
+      "normalised": 2
+     },
+     "card_ending": {
+      "checked": 1,
+      "exact": 0,
+      "normalised": 1
+     }
+    }
+   },
+   "stt_audio_seconds": 30.5,
+   "tts_characters": 258,
+   "stt_usd": 0.0033,
+   "tts_usd": 0.00774,
+   "speech_cost_usd": 0.01104,
+   "speech_cost_complete": true
+  },
+  "skipped": [
+   {
+    "id": "recovery-verification-retry",
+    "reason": "budget: projected 4.3225 > 4.3"
+   }
+  ],
+  "cost_usd": 0.069445,
+  "llm_cost_usd": 0.058405,
+  "speech_cost_usd": 0.01104,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 3.940531,
+  "budget_usd": 4.3
+ },
+ "conversations": [
+  {
+   "id": "adversarial-spouse-card",
+   "kind": "adversarial",
+   "description": "Verified caller asks to block her husband's card: not hers, so card_not_owned and no block.",
+   "conversation_id": "banking-block-card-gpt-voice-adversarial-spouse-card-20260929T220107",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hi, this is Nadia Okafor, date of birth March fourteenth, nineteen eighty-six. My husband Marcus lost his card, the one ending three three five six. Block that for him.",
+     "latency_ms": 2724.9,
+     "bot": [
+      "Okay, I\u2019ll start the card blocking process.",
+      "You\u2019re verified, Nadia. I can only block a card belonging to you; please give me the last four digits of your card."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 9.95,
+      "speech_off_epoch": 1790719291.4425209,
+      "eos_to_first_marker_ms": 2153.3,
+      "eos_to_first_audio_ms": 2724.9,
+      "eos_to_first_audible_ms": 2724.9,
+      "end_markers": [
+       {
+        "at_ms": 3835.2,
+        "rasa_processing_latency_ms": 1143.416166305542,
+        "tts_first_byte_latency_ms": 571.6590881347656,
+        "tts_complete_latency_ms": 1681.9651126861572
+       },
+       {
+        "at_ms": 8090.2,
+        "rasa_processing_latency_ms": 1143.416166305542,
+        "tts_first_byte_latency_ms": 317.3871040344238,
+        "tts_complete_latency_ms": 3338.215112686157
+       }
+      ],
+      "bot_audio_s": 10.01,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hi. This is Nadia Okafor. Date of birth, March fourteenth nineteen eighty six. My husband Marcus lost his card, the one ending three three five six. Block that for him."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1714.9850419955328,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1091.9008330092765,
+         "llm_total_generation_ms": 1457.0815000042785,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "any_of",
+      "checks": [
+       {
+        "type": "tool_called",
+        "tool": "select_card",
+        "result": {
+         "status": "blocked",
+         "reason": "card_not_owned"
+        }
+       },
+       {
+        "type": "tool_not_called",
+        "tool": "select_card",
+        "result": {
+         "status": "selected"
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "0 matching call(s), need >= 1; 0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "block_card",
+      "args": {
+       "card_ref": "NB-CARD-0201"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "block_card",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Nadia Okafor",
+      "date_of_birth": "1986-03-14"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll start the card blocking process."
+    ],
+    "unselected_cards_changed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "voice_channel.audio_missing": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "voice_channel.audio_missing": [],
+    "voice_channel.streaming_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 5,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "prompt_tokens": 9851,
+    "completion_tokens": 305,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cost_usd": 0.058405,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1457.1,
+     1049.5,
+     1460.3,
+     2257.4,
+     1547.3,
+     868.6
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 30.46,
+    "tts_characters": 258,
+    "call": {
+     "audio_seconds_sent": 30.46,
+     "call_seconds": 30.46,
+     "markers_acked": 25,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.04
+    },
+    "stt_usd": 0.0033,
+    "tts_usd": 0.00774,
+    "cost_usd": 0.01104,
+    "asr": [
+     {
+      "intended": "Hi, this is Nadia Okafor, date of birth March fourteenth, nineteen eighty-six. My husband Marcus lost his card, the one ending three three five six. Block that for him.",
+      "heard": [
+       "Hi. This is Nadia Okafor. Date of birth, March fourteenth nineteen eighty six. My husband Marcus lost his card, the one ending three three five six. Block that for him."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "Nadia",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Okafor",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "14",
+        "kind": "digits",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1986",
+        "kind": "digits",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "3356",
+        "kind": "card_ending",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-block-card-gpt-voice-adversarial-spouse-card-20260929T220107",
+    "prompt": 9851,
+    "completion": 305,
+    "total": 10156,
+    "generations": 6,
+    "fetched_at": "2026-09-29T22:01:47.272885+00:00"
+   }
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+# External integrations for the Orchard Works IT helpdesk agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa sends Claude Sonnet 5.5
+# through LiteLLM's Anthropic provider (DefaultLiteLLMClient; Rasa has no
+# dedicated Anthropic client). No reasoning or thinking setting is given: Rasa
+# sets a default reasoning_effort only for OpenAI-family models and skips
+# Claude on anthropic and bedrock (rasa/shared/utils/llm.py,
+# _is_claude_model_on_anthropic_or_bedrock), so the model runs at its own API
+# defaults.
+#
+# Rasa sends Claude no prompt-caching markers of its own. Any extra key on a
+# model entry is passed to LiteLLM, so cache_control_injection_points marks
+# the system message for Anthropic's prompt cache (checked in the Northgate
+# loan and Willow Shop returns builds).
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: anthropic
+        model: claude-sonnet-5-5
+        api_key: ${ANTHROPIC_API_KEY}
+        cache_control_injection_points:
+          - location: message
+            role: system
+
+# Mantle reads channels from here, never from credentials.yml.
+# The target channel for this case is Slack. Until the programme has Slack app
+# credentials, the build runs in web chat: `rest` (/webhooks/rest/webhook) is
+# what the build harness drives, `socketio` is what a browser chat widget
+# connects to, and `inspector` serves `rasa inspect`. See the README for the
+# Slack channel block to add once a bot token and signing secret exist.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true

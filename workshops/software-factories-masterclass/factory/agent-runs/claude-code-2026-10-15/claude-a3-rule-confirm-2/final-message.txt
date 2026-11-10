@@ -1,0 +1,5 @@
+I added the rule to `product/agent.yml` as a top-level `rules:` list, next to `agent:`. It contains one entry: `Say a card is blocked only after block_card has returned.`
+
+I left the `agent:` block alone, persona included, and edited no other file.
+
+`python validate.py` passed ("Mantle found nothing to object to"). That check only shows the project loads. I did not test whether the agent actually waits for `block_card` before saying a card is blocked.

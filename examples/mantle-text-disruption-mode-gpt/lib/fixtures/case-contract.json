@@ -1,0 +1,178 @@
+{
+  "slug": "disruption-mode",
+  "title": "Disruption mode without false promises",
+  "organisation": "Horizon Travel",
+  "action": "offer help during a mass cancellation",
+  "failure": "The agent promised seats to two callers while availability updates lagged behind a storm cancellation.",
+  "lesson": "Change the service promise under constrained capacity: information, reservation holds and committed recovery are different states.",
+  "receipt": "A held recovery option with expiry, or an honest queued status rather than a confirmed journey.",
+  "evidence": "Compare the incident revision and capacity hold returned by the service against the customer-facing promise.",
+  "recovery": "Disable commitment promises when holds cannot be verified. Keep incident status available and route existing holds by their identifiers.",
+  "owner": "disruption incident commander",
+  "metric": "unbacked recovery promises, divided by disrupted sessions",
+  "question": "Options are changing during the disruption. I can check a hold, but I cannot promise a seat until it is confirmed.",
+  "correction": "The passenger rejects the held option; release that hold before looking for a replacement.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "incident_revision_current",
+      "good": true,
+      "bad": false,
+      "reason": "stale_incident_state",
+      "phase": "request"
+    },
+    {
+      "field": "capacity_reserved",
+      "good": true,
+      "bad": false,
+      "reason": "capacity_not_reserved",
+      "phase": "request"
+    },
+    {
+      "field": "recovery_channel_available",
+      "good": true,
+      "bad": false,
+      "reason": "no_recovery_channel",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "incident_revision_current": true,
+    "capacity_reserved": true,
+    "recovery_channel_available": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "incident_revision_current": true,
+        "capacity_reserved": true,
+        "recovery_channel_available": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "incident_revision_current-false",
+      "facts": {
+        "incident_revision_current": false,
+        "capacity_reserved": true,
+        "recovery_channel_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_incident_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_revision_current-missing",
+      "facts": {
+        "capacity_reserved": true,
+        "recovery_channel_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_incident_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "incident_revision_current-string",
+      "facts": {
+        "incident_revision_current": "true",
+        "capacity_reserved": true,
+        "recovery_channel_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "stale_incident_state",
+        "effects": 0
+      }
+    },
+    {
+      "name": "capacity_reserved-false",
+      "facts": {
+        "incident_revision_current": true,
+        "capacity_reserved": false,
+        "recovery_channel_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "capacity_not_reserved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "capacity_reserved-missing",
+      "facts": {
+        "incident_revision_current": true,
+        "recovery_channel_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "capacity_not_reserved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "capacity_reserved-string",
+      "facts": {
+        "incident_revision_current": true,
+        "capacity_reserved": "true",
+        "recovery_channel_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "capacity_not_reserved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recovery_channel_available-false",
+      "facts": {
+        "incident_revision_current": true,
+        "capacity_reserved": true,
+        "recovery_channel_available": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_recovery_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recovery_channel_available-missing",
+      "facts": {
+        "incident_revision_current": true,
+        "capacity_reserved": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_recovery_channel",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recovery_channel_available-string",
+      "facts": {
+        "incident_revision_current": true,
+        "capacity_reserved": true,
+        "recovery_channel_available": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_recovery_channel",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

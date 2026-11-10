@@ -1,0 +1,130 @@
+[
+ {
+  "title": "A dark software factory<br><em>built in your own codespace.</em>",
+  "sub": "Rasa Mantle and the OpenAI Agents API. Nothing to install.",
+  "body": "<div class=\"hero\"><div class=\"quote\">A request.<br>A builder.<br>A check it cannot edit.</div><div class=\"hero-line\"></div><div class=\"hero-result\">Build a small helper.<br>Let an agent propose a change.<br>Decide what is released.</div></div>",
+  "notes": "Welcome briefly. Say where the work happens: everyone builds in a GitHub Codespace in the browser, so nothing is installed on a laptop. The helper simulates a router command. It contacts no router and changes nobody's internet connection. Do not demo anything before slide 4.",
+  "kind": "cover",
+  "section": "WELCOME"
+ },
+ {
+  "title": "Three hours, mostly your hands on the keys.",
+  "sub": "Tuesday, November 3, 2026, 3:00 to 6:00 PM New York time.",
+  "body": "<div class=\"schedule\"><div style=\"flex:10\" class=\"soft\">Result<br><b>10</b></div><div style=\"flex:20\" class=\"pink\">Helper<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Reset handling<br><b>20</b></div><div style=\"flex:20\" class=\"pink\">Source check<br><b>20</b></div><div style=\"flex:5\" class=\"mint\">Break<br><b>5</b></div><div style=\"flex:40\" class=\"pink\">Builder<br><b>40</b></div><div style=\"flex:25\" class=\"soft\">Gate<br><b>25</b></div><div style=\"flex:20\" class=\"soft\">Decision<br><b>20</b></div><div style=\"flex:20\" class=\"mint\">Preview<br><b>20</b></div></div><p class=\"caption\">Block lengths in minutes. Break at 4:10 PM. The builder starts at 4:15 PM. Close at 6:00 PM.</p>",
+  "notes": "Use elapsed minutes and the clock: minute 0 is 3:00 PM, minute 30 is 3:30, the break is minutes 70 to 75 (4:10 to 4:15), the builder starts at minute 75, the gate at 115 (4:55), release at 140 (5:20), the Studio 2 preview at 160 (5:40) and the close at 175 (5:55). If time is short, shorten the Studio 2 preview first, then the decision block, and keep the first 30 minutes whole.",
+  "kind": "",
+  "section": "WELCOME"
+ },
+ {
+  "title": "Open your codespace now, at minute 0.",
+  "sub": "You bring two keys and a personal GitHub account. Nothing is set up in advance.",
+  "body": "<table><tr><td>1 · Account</td><td>A personal GitHub account, not one managed by an enterprise</td></tr><tr><td>2 · Keys</td><td>Your free Rasa Developer Edition key and your OpenAI key</td></tr><tr><td>3 · Secrets</td><td><code>RASA_LICENSE</code> and <code>OPENAI_API_KEY</code>, scoped to the repository you open</td></tr><tr><td>4 · Create</td><td>New with options, the <code>software-factories-workshop</code> configuration, at least 4 cores</td></tr></table><p class=\"caption\">Added a secret to a codespace that was already running? Stop it, start it again, run the setup script again, and wait for the line that starts Setup finished. Steps: ATTENDEE-PACK.md.</p>",
+  "notes": "Keep this slide up while people open codespaces and show the finished helper from the next slide on a second screen if you can. Exact steps are in ATTENDEE-PACK.md. The install can run for several minutes after the codespace shows as available: wait for the line that starts Setup finished. NOT READY names the secret to fix: fix it, stop and start the same codespace, run setup.sh again, and wait for the line that starts Setup finished. If it is still NOT READY, stop and send the person to the owner of the secret. Never let anyone paste a key into a chat, a command or a file. Pair anyone who cannot open a codespace with a neighbor and do not troubleshoot billing in the room. Setup time for a first-time attendee has not been measured.",
+  "kind": "",
+  "section": "SETUP"
+ },
+ {
+  "title": "One small agent: a router restart helper.",
+  "sub": "A customer says &ldquo;restart my router&rdquo;. The command is simulated.",
+  "body": "<table><tr><th>You type</th><th>You should see</th></tr><tr><td>Restart my router</td><td>It asks you to confirm</td></tr><tr><td>Yes</td><td>It records one command, <code>REBOOT</code></td></tr><tr><td>Reset it</td><td>It asks whether you mean a restart or a factory reset, and sends nothing</td></tr><tr><td>Factory reset</td><td>It says it cannot do that here and offers a person</td></tr></table>",
+  "notes": "This is the one risk the whole session protects: a restart and a factory reset sound alike, and a factory reset would erase the customer's Wi-Fi name and password. Show the finished helper once, typing the four rows. The wording differs a little between runs; the meaning must match. Say plainly that the command is simulated.",
+  "kind": "",
+  "section": "RESULT"
+ },
+ {
+  "title": "Minutes 10 to 30: build your helper.",
+  "sub": "The steps in short. The exact commands are in the attendee pack.",
+  "body": "<pre><code>mkdir ~/router-helper-agent &amp;&amp; cd ~/router-helper-agent\nrasa init --engine mantle --no-prompt\npython install_helper.py .\nrasa train\nrasa inspect --port 5010</code></pre><p class=\"caption\">A summary, not for copying: the real commands use full paths into the codespace. Copy them from ATTENDEE-PACK.md.</p>",
+  "notes": "The slide shows the shape of the steps; the attendee pack has the exact commands with full paths, so tell people to copy from the pack, not from the slide. The installer moves the starter banking skills out of the active skills and sets a router-only persona. After rasa inspect says the server is up and running, a second terminal runs print-inspector-url.sh to print the Inspector address; if GitHub asks to continue to a private port, choose Continue. In test codespaces the helper first confirmed a restart about 10 minutes after the codespace opened. Testers had help and used an existing account. Nobody has done this unaided yet, so say so if people run slow.",
+  "kind": "",
+  "section": "BUILD"
+ },
+ {
+  "title": "Target at minute 30: all four rows.",
+  "sub": "Compare what you see with the table. The meaning must match.",
+  "body": "<div class=\"contrast\"><div><h2>What to aim for</h2><p>A confirmation, then <code>REBOOT</code>.<br>A question when you say reset.<br>A refusal, with an offer of a person.</p></div><div><h2>Not there by minute 25?</h2><p>Raise your hand.<br>The presenter helps the room catch up at minute 30.</p></div></div>",
+  "notes": "Walk the room and ask each person to read one reply aloud. If someone is stuck at minute 25, pair them with a neighbor and keep going. The measured times are for the presenter, not the slide: in test codespaces the first confirmation came about 10 minutes after opening and all four rows by about 11 minutes, with help and an existing account. A row that does not match: write down the words on screen, not keys, and ask early. Do not retry an unchanged key that was rejected. The measured numbers come from automated-assisted test runs; do not present them as a promise.",
+  "kind": "",
+  "section": "BUILD"
+ },
+ {
+  "title": "Minutes 30 to 50: try to break your helper.",
+  "sub": "Use your own words. Change your mind. Ask for the wrong thing.",
+  "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Change your mind</h2><p>Ask for a restart, then say you do not want it.</p></article><article><span class=\"num\">02</span><h2>Ask in other words</h2><p>Ask for a reset three different ways.</p></article><article><span class=\"num\">03</span><h2>Ask for the dangerous one</h2><p>Ask for a factory reset outright.</p></article></div>",
+  "notes": "Ask three questions on paper: who wrote the confirmation, you or the engine? Where is REBOOT stored? What files does the helper keep? The target at minute 50 is a helper that never records anything the customer did not ask for. After a first message or a restart the engine can still add its normal follow-up question, so the refusal may not be the only text. Treat that as normal, not as a failure.",
+  "kind": "",
+  "section": "BUILD"
+ },
+ {
+  "title": "A check that reads the file, not the reply.",
+  "sub": "The helper must never record <code>FACTORY_RESET</code> for a restart.",
+  "body": "<pre><code>run check_helper.py on tools.py\n  PASS: a restart records REBOOT\nchange \"REBOOT\" to \"FACTORY_RESET\", run it again\n  FAIL\nchange it back to \"REBOOT\", run it again\n  PASS</code></pre><p class=\"caption\">A summary, not for copying: the exact command is in ATTENDEE-PACK.md. A pass reads the configured command. It does not prove the helper ran it in a live conversation.</p>",
+  "notes": "Run it, see PASS, change REBOOT to FACTORY_RESET in tools.py, run it again, see FAIL, then change it back to REBOOT and run it again to see PASS before anyone moves on. The builder part later retrains the helper, so a wrong command left in tools.py would be carried into it. The point: the helper's reply can still sound right while the file is wrong, and a check on the file catches it. Be clear about the limit: it exits 2 when it finds no command, so a missing command is never a pass, but it is a source-file check, not a run-time trace.",
+  "kind": "",
+  "section": "CHECK"
+ },
+ {
+  "title": "Break.",
+  "sub": "Five minutes. Back at 4:15 PM.",
+  "body": "<div class=\"big-question\">Back at 4:15 PM.</div><p class=\"caption\">Leave your codespace open. If your four conversation checks pass, and the source-file check passes again after you restore REBOOT, you have a working helper and a check for it.</p>",
+  "notes": "Anyone who needs to leave now leaves with a working helper (four conversation checks passing) and a source-file check that catches a wrong command and passes again once REBOOT is restored. Check those two things separately. Use the break to help anyone who is behind catch up on the four rows.",
+  "kind": "",
+  "section": "BREAK"
+ },
+ {
+  "title": "The factory begins: a practice builder.",
+  "sub": "It saves a file and a receipt. It starts no paid session.",
+  "body": "<table><tr><td>Task</td><td>Add one read-only operation, &ldquo;check line status&rdquo;</td></tr><tr><td>Practice mode</td><td>Copies a public sample into a new folder. No Agents session, no new code</td></tr><tr><td>It saves</td><td>A file, its absolute path, and its sha256</td></tr><tr><td>Optional</td><td>One billed Agents API build, on your own key</td></tr></table>",
+  "notes": "The default route needs no paid build. The tool server runs with --fixture in its own terminal and copies the public good example into a new folder, labeled Fixture build. Mantle's own conversation still uses each person's OpenAI key. Optional: one billed Agents API build, on the person's own key; their key needs api.agents.read, api.agents.write and api.responses.write. It takes minutes, the cost was not measured, and nobody needs it to finish. If the optional build fails, go back to the practice builder. A billed build ran once through the tool server on earlier code with a real key, 28 seconds from message to reply.",
+  "kind": "",
+  "section": "FACTORY"
+ },
+ {
+  "title": "Put the builder behind your helper.",
+  "sub": "A small tool server hands your request to the builder.",
+  "body": "<table><tr><td>Terminal 1</td><td>The tool server, started with <code>--fixture</code>. Leave it running.</td></tr><tr><td>Terminal 2</td><td>Stop the Inspector, install the skill, train, open the Inspector again.</td></tr></table><p class=\"caption\">Your message goes to the Mantle helper, to the tool server, to the builder. The exact commands are in ATTENDEE-PACK.md.</p>",
+  "notes": "Two terminals; the attendee pack has the exact commands, so tell people to copy from the pack. The installer copies the change_builder skill into the agent and raises Mantle's tool wait from 10 seconds to at least 450, because a live build takes minutes. Stop the Inspector with Ctrl+C in its own terminal, never the tool server's. If it says it cannot tell whether a build started, read the tool server terminal before asking again; missing output is not permission to start another build.",
+  "kind": "",
+  "section": "FACTORY"
+ },
+ {
+  "title": "A request goes in. A saved file comes out.",
+  "sub": "Ask the helper: <code>add a check that tells me the line status</code>.",
+  "body": "<div class=\"contrast\"><div><h2>Expected: one message</h2><p>A <code>Fixture build</code> label and a build id.<br>Says it saved a file, with an absolute path ending in <code>check_line_status.py</code>.<br>Shows a sha256.<br>Ends: nothing was applied to the helper.</p></div><div><h2>Read the other replies</h2><p><code>No build started</code>: another build was running.<br><code>I cannot tell whether a build started</code>: look at the tool server terminal before asking again.</p></div></div>",
+  "notes": "Target at minute 115: a request goes in and a saved file comes out. Nothing is applied: the file sits in the builder's own output folder. The sample function returns fixed teaching values; it does not probe an internet line. If the tool server or its wiring will not work, start it again with --fixture; if it still fails, show a recorded receipt, labeled as recorded, and take good.py to the gate.",
+  "kind": "",
+  "section": "FACTORY"
+ },
+ {
+  "title": "A gate the builder cannot edit.",
+  "sub": "It judges the saved file and never runs it.",
+  "body": "<table><tr><th>File</th><th>Verdict</th></tr><tr><td>Your builder&rsquo;s saved file</td><td>The gate decides</td></tr><tr><td><code>good.py</code></td><td>ACCEPT</td></tr><tr><td><code>bad_opens_network.py</code></td><td>REJECT</td></tr><tr><td><code>bad_sends_reset.py</code></td><td>REJECT</td></tr><tr><td><code>bad_writes_a_file.py</code></td><td>REJECT</td></tr></table><p class=\"caption\">One function, <code>check_line_status()</code>, plain values. Not a general sandbox.</p>",
+  "notes": "First check the saved file against its printed sha256 (the pack has the sha256sum command) and expect OK. Then run gate.py on the saved path, then on the four candidate files, and compare. A hash match identifies bytes and a gate ACCEPT checks the finite contract; neither is an atomic release step. The gate prints ACCEPT or REJECT and the names of the tests that failed. It reads the file once and judges those bytes, so a change cannot write a file or open the network while it is judged. This fits one small read-only operation and is not a general sandbox. If the gate says it could not judge, show a recorded ACCEPT and REJECT, labeled as recorded. On Linux this ran in a test codespace and returned ACCEPT for a freshly built file.",
+  "kind": "",
+  "section": "GATE"
+ },
+ {
+  "title": "You are the last gate.",
+  "sub": "Record approve or refuse, and why. Nothing is installed or applied.",
+  "body": "<div class=\"panels\"><article><span class=\"num\">01</span><h2>Ask</h2><p>Request the change through the helper.</p></article><article><span class=\"num\">02</span><h2>Judge</h2><p>The builder proposes. The gate says ACCEPT or REJECT.</p></article><article><span class=\"num\">03</span><h2>Decide</h2><p>You record approve or refuse, for manual review.</p></article></div>",
+  "notes": "Run the whole line once, end to end, and record the decision. The exercise outcome is a recorded approval or refusal for manual review: nothing is installed or applied to the helper, and a gate ACCEPT is not a deployment. The principle: the check belongs to someone other than the builder, and a person stands at a few defined gates. Passing is bounded evidence, not proof of all future behavior. If the line is not working for someone, they follow the presenter's recorded run and note which parts they could not complete.",
+  "kind": "",
+  "section": "RELEASE"
+ },
+ {
+  "title": "A Studio 2 preview.",
+  "sub": "Shown from the presenter&rsquo;s own machine. You cannot try it yet.",
+  "body": "<div class=\"contrast\"><div><h2>An early preview</h2><p>Nothing in this workshop needs it.<br>You do not need to do anything.</p></div><div><h2>Hear when Studio is released</h2><p>Join the Rasa Community:<br><code>info.rasa.com/community</code></p></div></div>",
+  "notes": "Say it is an early preview that attendees cannot try yet, then show it live from your own machine for a few minutes. Keep your own setup notes outside this repository; do not say how to get the preview, and keep keys, licenses and any command line off the shared screen. Have a recording ready in case the live start fails. End with the call to action: join the Rasa Community at info.rasa.com/community to hear when Studio is released.",
+  "kind": "",
+  "section": "PREVIEW"
+ },
+ {
+  "title": "Describe, build, check, release.",
+  "sub": "The check belongs to someone other than the builder.",
+  "body": "<div class=\"big-question\">&ldquo;What evidence would let us<br>release this change<br>without reading every line?&rdquo;</div><p class=\"caption\">Start with one bounded change. Keep the rejected cases.</p>",
+  "notes": "Show the line once more with the pieces each person built: the helper, the source-file check, the builder, the gate and their own decision. Name the one check each person could not edit. Close on the question and the community link from the previous slide. Last, tell everyone to keep their review note and any failure evidence, press Ctrl+C in the terminals running the Inspector and the tool server, and stop the codespace from GitHub (the storage persists). Stopping it also stops the compute use.",
+  "kind": "closing",
+  "section": "CLOSE"
+ }
+]

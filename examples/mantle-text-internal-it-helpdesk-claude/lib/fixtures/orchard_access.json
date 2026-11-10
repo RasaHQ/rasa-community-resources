@@ -1,0 +1,222 @@
+{
+  "organisation": "Orchard Works (fictional)",
+  "case_slug": "internal-it-helpdesk",
+  "note": "Fictional teaching data. Orchard Works, its employees, internal systems, roles, approvals and tickets are invented; none corresponds to a real company, product or person.",
+  "as_of": "2026-09-30",
+  "session_employee": "OW-E-2291",
+  "email_domain": "orchard.example",
+  "employees": {
+    "OW-E-2291": {
+      "first_name": "Marisol",
+      "last_name": "Quint",
+      "team": "Finance Operations",
+      "manager": "OW-E-1108",
+      "email": "marisol.quint@orchard.example",
+      "identity_verified": true,
+      "access": ["VPN-STANDARD", "MAIL-STANDARD"]
+    },
+    "OW-E-1108": {
+      "first_name": "Dev",
+      "last_name": "Harlow",
+      "team": "Finance Operations",
+      "manager": null,
+      "email": "dev.harlow@orchard.example",
+      "identity_verified": true,
+      "access": ["VPN-STANDARD", "MAIL-STANDARD", "FIN-REPORTS-EDIT"]
+    },
+    "OW-E-3340": {
+      "first_name": "Tomasz",
+      "last_name": "Rell",
+      "team": "Finance Operations",
+      "manager": "OW-E-1108",
+      "email": "tomasz.rell@orchard.example",
+      "identity_verified": false,
+      "access": ["MAIL-STANDARD"]
+    }
+  },
+  "roles": {
+    "FIN-REPORTS-VIEW": {
+      "system": "Orchard Finance Reporting",
+      "level": "viewer",
+      "label": "Finance Reporting viewer",
+      "owner": "Finance Systems owner",
+      "aliases": ["finance reporting", "finance reports", "finance dashboards", "reporting dashboards"],
+      "directory": "ok",
+      "unresolved_work": ["Access review by the Finance Systems owner at the end of the quarter"]
+    },
+    "FIN-REPORTS-EDIT": {
+      "system": "Orchard Finance Reporting",
+      "level": "editor",
+      "label": "Finance Reporting editor",
+      "owner": "Finance Systems owner",
+      "aliases": ["finance reporting", "finance reports", "finance dashboards", "reporting dashboards"],
+      "directory": "ok",
+      "unresolved_work": ["Access review by the Finance Systems owner at the end of the quarter"]
+    },
+    "PAYROLL-ADMIN": {
+      "system": "Orchard Payroll Console",
+      "level": "administrator",
+      "label": "Payroll Console administrator",
+      "owner": "Payroll Systems owner",
+      "aliases": ["payroll", "payroll console", "payroll admin"],
+      "directory": "ok",
+      "unresolved_work": ["Payroll Systems owner countersigns every administrator session"]
+    },
+    "CRM-EXPORT": {
+      "system": "Orchard CRM",
+      "level": "exporter",
+      "label": "CRM exporter",
+      "owner": "Sales Operations owner",
+      "aliases": ["crm", "crm export", "customer records export"],
+      "directory": "ok",
+      "unresolved_work": ["Exports are logged and reviewed monthly by Sales Operations"]
+    },
+    "DESIGN-LIB-CONTRIB": {
+      "system": "Orchard Design Library",
+      "level": "contributor",
+      "label": "Design Library contributor",
+      "owner": "Brand Studio owner",
+      "aliases": ["design library", "brand assets", "design assets"],
+      "directory": "ok",
+      "unresolved_work": ["Uploads are reviewed by Brand Studio before they are published"]
+    },
+    "DW-ANALYST": {
+      "system": "Orchard Data Warehouse",
+      "level": "analyst",
+      "label": "Data Warehouse analyst",
+      "owner": "Data Platform owner",
+      "aliases": ["data warehouse", "warehouse", "analytics warehouse"],
+      "directory": "ack_lost",
+      "unresolved_work": ["Row-level policies sync from the directory within one hour"]
+    },
+    "BUILD-DEPLOY": {
+      "system": "Orchard Build Server",
+      "level": "deployer",
+      "label": "Build Server deployer",
+      "owner": "Engineering Productivity owner",
+      "aliases": ["build server", "deploy", "deployments", "ci"],
+      "directory": "unavailable",
+      "unresolved_work": ["Deploy rights take effect after the build server reloads its groups"]
+    },
+    "PROD-DB-ADMIN": {
+      "system": "Orchard Production Database",
+      "level": "administrator",
+      "label": "Production Database administrator",
+      "owner": "Data Platform owner",
+      "aliases": ["production database", "prod database", "prod db", "database admin"],
+      "directory": "ok",
+      "unresolved_work": ["Every administrator session is recorded and reviewed"]
+    },
+    "DIRECTORY-ADMIN": {
+      "system": "Orchard Directory",
+      "level": "global administrator",
+      "label": "Directory global administrator",
+      "owner": "enterprise access owner",
+      "aliases": ["global admin", "domain admin", "directory admin", "admin rights", "administrator"],
+      "directory": "ok",
+      "unresolved_work": ["Global administrator is issued only for a named change window"]
+    },
+    "EXPENSE-APPROVER": {
+      "system": "Orchard Expenses",
+      "level": "approver",
+      "label": "Expenses approver",
+      "owner": "Finance Controls owner",
+      "aliases": ["expenses", "expense approver", "expense tool"],
+      "directory": "ok",
+      "unresolved_work": ["Approver limits are set by Finance Controls"]
+    },
+    "VPN-STANDARD": {
+      "system": "Orchard VPN",
+      "level": "standard",
+      "label": "VPN standard access",
+      "owner": "Network Services owner",
+      "aliases": ["vpn", "remote access"],
+      "directory": "ok",
+      "unresolved_work": []
+    },
+    "MAIL-STANDARD": {
+      "system": "Orchard Mail",
+      "level": "standard",
+      "label": "Mail standard access",
+      "owner": "Workplace Services owner",
+      "aliases": ["mail", "email", "mailbox"],
+      "directory": "ok",
+      "unresolved_work": []
+    }
+  },
+  "approvals": [
+    {
+      "approval_ref": "OW-APR-51207",
+      "employee": "OW-E-2291",
+      "role": "FIN-REPORTS-VIEW",
+      "status": "approved",
+      "approved_by": "Finance Systems owner",
+      "approved_on": "2026-09-28",
+      "access_expires": "2026-12-31"
+    },
+    {
+      "approval_ref": "OW-APR-51188",
+      "employee": "OW-E-2291",
+      "role": "DESIGN-LIB-CONTRIB",
+      "status": "approved",
+      "approved_by": "Brand Studio owner",
+      "approved_on": "2026-09-25",
+      "access_expires": "2027-03-31"
+    },
+    {
+      "approval_ref": "OW-APR-51233",
+      "employee": "OW-E-2291",
+      "role": "DW-ANALYST",
+      "status": "approved",
+      "approved_by": "Data Platform owner",
+      "approved_on": "2026-09-29",
+      "access_expires": "2027-03-31"
+    },
+    {
+      "approval_ref": "OW-APR-51240",
+      "employee": "OW-E-2291",
+      "role": "BUILD-DEPLOY",
+      "status": "approved",
+      "approved_by": "Engineering Productivity owner",
+      "approved_on": "2026-09-29",
+      "access_expires": "2026-12-31"
+    },
+    {
+      "approval_ref": "OW-APR-50611",
+      "employee": "OW-E-2291",
+      "role": "CRM-EXPORT",
+      "status": "approved",
+      "approved_by": "Sales Operations owner",
+      "approved_on": "2026-08-14",
+      "access_expires": "2026-09-15"
+    },
+    {
+      "approval_ref": "OW-APR-51219",
+      "employee": "OW-E-2291",
+      "role": "PAYROLL-ADMIN",
+      "status": "manager_endorsed",
+      "approved_by": "Dev Harlow (line manager)",
+      "approved_on": "2026-09-30",
+      "access_expires": null
+    },
+    {
+      "approval_ref": "OW-APR-51002",
+      "employee": "OW-E-3340",
+      "role": "PROD-DB-ADMIN",
+      "status": "approved",
+      "approved_by": "Data Platform owner",
+      "approved_on": "2026-09-21",
+      "access_expires": "2026-10-31"
+    }
+  ],
+  "tickets": {
+    "IT-TKT-40117": {
+      "employee": "OW-E-2291",
+      "role": "EXPENSE-APPROVER",
+      "status": "awaiting_approval",
+      "opened_on": "2026-09-26",
+      "approval_request_ref": "OW-APRQ-40117",
+      "waiting_on": "Finance Controls owner"
+    }
+  }
+}

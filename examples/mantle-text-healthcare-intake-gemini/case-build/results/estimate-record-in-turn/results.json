@@ -1,0 +1,320 @@
+{
+ "schema": 1,
+ "build": "healthcare-intake-gemini-text",
+ "case": "healthcare-intake",
+ "project": "examples/mantle-text-healthcare-intake-gemini",
+ "model": "gemini/gemini-3.1-pro-preview",
+ "response_models": [
+  "gemini-3.1-pro-preview"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T15:31:19.465041+00:00",
+ "finished_at": "2026-09-30T15:33:10.456597+00:00",
+ "model_file": "20260930-163121-advanced-can.tar.gz",
+ "train_seconds": 3.1,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gemini/gemini-3.1-pro-preview",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1.2e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": 4e-06,
+  "output_cost_per_token_above_200k_tokens": 1.8e-05,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 2,
+  "turn_latency_ms": {
+   "p50": 46422.9,
+   "p95": 54042.6,
+   "max": 54042.6,
+   "mean": 50232.8
+  },
+  "llm_calls": 9,
+  "llm_calls_per_turn": 4.5,
+  "side_channel_calls": 2,
+  "empty_completions": 2,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 28882,
+  "completion_tokens": 1930,
+  "reasoning_tokens": 1797,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 31,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 1,
+  "bot_text_metrics": {
+   "payment_guarantee": 0
+  },
+  "tool_result_metrics": {
+   "intakes_recorded": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.processor.discover_facts.completed": 2,
+   "mantle.processor.discover_facts.failed": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 1,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.080924,
+  "llm_cost_usd": 0.080924,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.07925,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-on-file-active",
+   "kind": "normal",
+   "description": "Nothing changed; the payer reports active coverage and the intake is recorded with no open question and no payment promise.",
+   "conversation_id": "healthcare-intake-gemini-text-normal-on-file-active-20260930T153119",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "I'd like to do my pre-visit intake. Nothing has changed since I registered.",
+     "latency_ms": 54042.6,
+     "bot": [
+      "Hello Nadia, this is Cedar Clinic's pre-visit intake chat. I can confirm your contact and insurance details for your new patient visit on 6 October 2026 at 09:30. What would you like to do?",
+      "Here is the intake I will record for your new patient visit on 6 October 2026 at 09:30: phone 555-0147; insurance Larchmere Health Plan, member LHP-20417733, holder: patient. Payer response: EL-1 active coverage; an administrative check, not a payment guarantee. Open question: none. Intake CC-IN-6A398 v2. Is that correct?"
+     ]
+    },
+    {
+     "user": "Yes, that's correct. Please record it.",
+     "latency_ms": 46422.9,
+     "bot": [
+      "Intake recorded: CC-INR-90295 for your new patient visit on 6 October 2026 at 09:30. Payer response: EL-1 (active coverage). Open insurance question: none. Your visit stays booked. The eligibility check is administrative, not a promise of payment.",
+      "Is there anything else I can help you with today?",
+      "Do you need assistance with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_eligibility",
+      "result": {
+       "status": "checked",
+       "payer_response": {
+        "code": "EL-1"
+       }
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "record_intake",
+      "result": {
+       "status": "succeeded",
+       "payer_response": {
+        "code": "EL-1"
+       },
+       "payment_guarantee": null,
+       "open_question_owner": null,
+       "phone": "555-0147",
+       "member_id": "LHP-20417733"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "assign_access_followup",
+      "result": {
+       "status": "assigned"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_patient",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "start_intake",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "drafted",
+     "result_reason": null
+    },
+    {
+     "tool": "check_eligibility",
+     "arguments": {
+      "intake_id": "CC-IN-6A398"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "checked",
+     "result_reason": null
+    },
+    {
+     "tool": "record_intake",
+     "arguments": {
+      "intake_id": "CC-IN-6A398"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "record_intake",
+     "arguments": {
+      "intake_id": "CC-IN-6A398"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Is there anything else I can help you with today?"
+    ],
+    "payment_guarantee": [],
+    "intakes_recorded": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.processor.discover_facts.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.processor.discover_facts.completed": 2
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "record_intake",
+      "conversation_id": "healthcare-intake-gemini-text-normal-on-file-active-20260930T153119"
+     }
+    ],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.processor.discover_facts.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.processor.discover_facts.completed": [
+     {
+      "previous_flow_id": null,
+      "new_flow_id": "pre_visit_intake",
+      "captured_by_skill": null,
+      "facts_count": 0,
+      "fact_keys": [],
+      "conversation_id": "healthcare-intake-gemini-text-normal-on-file-active-20260930T153119"
+     },
+     {
+      "previous_flow_id": "pre_visit_intake",
+      "new_flow_id": "default_completed__main",
+      "captured_by_skill": "pre_visit_intake",
+      "facts_count": 0,
+      "fact_keys": [],
+      "conversation_id": "healthcare-intake-gemini-text-normal-on-file-active-20260930T153119"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 7,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 28882,
+    "completion_tokens": 1930,
+    "reasoning_tokens": 1797,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.080924,
+    "cost_complete": true,
+    "request_thought_signatures": 31,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 2,
+    "llm_latency_ms": [
+     37727.1,
+     4178.6,
+     4491.3,
+     5472.5,
+     2058.7,
+     2907.4,
+     4679.9,
+     36084.3,
+     2706.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "healthcare-intake-gemini-text-normal-on-file-active-20260930T153119",
+    "prompt": 28882,
+    "completion": 1930,
+    "total": 30812,
+    "generations": 9,
+    "fetched_at": "2026-09-30T15:33:10.194349+00:00"
+   }
+  }
+ ]
+}

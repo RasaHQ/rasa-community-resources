@@ -1,0 +1,29 @@
+{
+ "what": "Two direct calls to gemini/gemini-3.1-pro-preview shaped like Mantle's fact-discovery request (rasa/mantle/memory/discovery/extractor.py, 3.21.0.dev5): a system task, then a two-message history, with the record_discovered_facts tool schema copied from the pinned wheel. A ends on the assistant's reply, as Mantle sends it after a turn; B adds one user message after it. The history states three facts (a new payer and member id, a ride from a daughter, a preference for texts). LiteLLM 1.101.2, num_retries=0, run 2026-09-30.",
+ "helper": "Not committed (a one-off script kept outside the repository); the request shape is described above.",
+ "results": {
+  "A_ends_on_model_turn": {
+   "ok": true,
+   "finish_reason": "stop",
+   "completion_tokens": 5,
+   "tool_calls": 0,
+   "facts": 0,
+   "text_chars": 17,
+   "cost_usd": 0.000998,
+   "latency_ms": 3658
+  },
+  "B_trailing_user_turn": {
+   "ok": true,
+   "finish_reason": "tool_calls",
+   "completion_tokens": 321,
+   "reasoning_tokens": 123,
+   "tool_calls": 1,
+   "facts": 4,
+   "text_chars": 0,
+   "cost_usd": 0.00481,
+   "latency_ms": 4202
+  }
+ },
+ "requests": 2,
+ "cost_usd": 0.005808
+}

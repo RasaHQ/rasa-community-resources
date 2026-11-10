@@ -1,0 +1,4878 @@
+{
+ "schema": 1,
+ "build": "banking-dispute-claude-voice",
+ "case": "banking-dispute",
+ "project": "examples/mantle-voice-banking-dispute-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-10-02T00:00:15.609434+00:00",
+ "finished_at": "2026-10-02T00:13:47.067666+00:00",
+ "model_file": "20261002-010020-cyclic-headset.tar.gz",
+ "train_seconds": 5.5,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 11,
+  "passed": 6,
+  "failed": 5,
+  "provider_errors": 0,
+  "turns": 25,
+  "turn_latency_ms": {
+   "p50": 3091.2,
+   "p95": 5583.4,
+   "max": 6142.5,
+   "mean": 3475.0
+  },
+  "llm_calls": 112,
+  "llm_calls_per_turn": 4.48,
+  "side_channel_calls": 24,
+  "empty_completions": 0,
+  "failed_llm_calls": 23,
+  "failed_side_channel_calls": 23,
+  "engine_error_calls": 0,
+  "prompt_tokens": 361719,
+  "completion_tokens": 7572,
+  "reasoning_tokens": 1796,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 17,
+  "bot_text_metrics": {
+   "refund_promise": 0,
+   "fraud_finding": 0
+  },
+  "tool_result_metrics": {
+   "dispute_filings_with_effect": {
+    "attempts": 5,
+    "total": 5
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "speechmatics.error": 0,
+   "speechmatics.connection.failed": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 11,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 23
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 25,
+   "audio_turns": 25,
+   "eos_to_first_audible_ms": {
+    "n": 22,
+    "p50": 3091.2,
+    "p95": 5583.4,
+    "max": 6142.5
+   },
+   "eos_to_first_audio_ms": {
+    "n": 22,
+    "p50": 3091.2,
+    "p95": 5583.4,
+    "max": 6142.5
+   },
+   "eos_to_first_marker_ms": {
+    "n": 23,
+    "p50": 2802.7,
+    "p95": 4719.7,
+    "max": 5828.0
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 22,
+     "p50": 1095.6,
+     "p95": 3236.0,
+     "max": 4354.1
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 22,
+     "p50": 309.2,
+     "p95": 315.4,
+     "max": 317.9
+    },
+    "tts_complete_latency_ms": {
+     "n": 22,
+     "p50": 515.3,
+     "p95": 883.4,
+     "max": 897.7
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 19,
+    "user_perceived_latency_ms": {
+     "n": 19,
+     "p50": 1397.4,
+     "p95": 3540.8,
+     "max": 3540.8
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 19,
+     "p50": 1078.1,
+     "p95": 3228.3,
+     "max": 3228.3
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 19,
+     "p50": 1487.2,
+     "p95": 4015.1,
+     "max": 4015.1
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 25,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 25,
+    "turns_heard_nothing": 0,
+    "turns_split": 1,
+    "wer_mean": 0.254,
+    "wer_p50": 0.1,
+    "tokens": {
+     "name": {
+      "checked": 33,
+      "exact": 22,
+      "normalised": 22
+     },
+     "date": {
+      "checked": 28,
+      "exact": 11,
+      "normalised": 24
+     },
+     "amount": {
+      "checked": 10,
+      "exact": 0,
+      "normalised": 9
+     },
+     "card_ending": {
+      "checked": 2,
+      "exact": 2,
+      "normalised": 2
+     }
+    }
+   },
+   "stt_audio_seconds": 718.7,
+   "tts_characters": 6555,
+   "stt_usd": 0.085845,
+   "tts_usd": 0.19665,
+   "speech_cost_usd": 0.282495,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 1.081653,
+  "llm_cost_usd": 0.799158,
+  "speech_cost_usd": 0.282495,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 5.022954,
+  "budget_usd": 6.93
+ },
+ "conversations": [
+  {
+   "id": "normal-brightmart-unrecognised",
+   "kind": "normal",
+   "description": "Verified caller disputes one charge she does not recognise; a receipt with a reference and no refund.",
+   "conversation_id": "banking-dispute-claude-voice-normal-brightmart-unrecognised-20261002T000015",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+     "latency_ms": 2623.7,
+     "bot": [
+      "Alright, let me get that dispute started for you.",
+      "I can record that you do not recognise the charge of 2,499 rupees from Brightmart Online on 22 September, on your debit card ending 7 3 1 9, for review. This is not a refund decision. Would you like to confirm this transaction?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 14.46,
+      "speech_off_epoch": 1790899248.5150359,
+      "eos_to_first_marker_ms": 2316.2,
+      "eos_to_first_audio_ms": 2623.7,
+      "eos_to_first_audible_ms": 2623.7,
+      "end_markers": [
+       {
+        "at_ms": 2894.6,
+        "rasa_processing_latency_ms": 953.4909725189209,
+        "tts_first_byte_latency_ms": 307.38115310668945,
+        "tts_complete_latency_ms": 578.4890651702881
+       },
+       {
+        "at_ms": 8432.8,
+        "rasa_processing_latency_ms": 953.4909725189209,
+        "tts_first_byte_latency_ms": 345.1058864593506,
+        "tts_complete_latency_ms": 948.4701156616211
+       }
+      ],
+      "bot_audio_s": 21.55,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of \u20b92,499 from Bright Mart online on the 22nd of September."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1260.8793749968754,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 935.1496250019409,
+         "llm_total_generation_ms": 1400.2703750011278,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, please confirm it. I never bought anything from them.",
+     "latency_ms": 3112.4,
+     "bot": [
+      "Okay, confirming that now.",
+      "Your dispute is recorded. The reference is N B, D S P, 0 8 C 7 E 2 0 E. The disputes team will review it and contact you within 10 business days, and no refund or credit has been decided."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.12,
+      "speech_off_epoch": 1790899280.17974,
+      "eos_to_first_marker_ms": 2807.1,
+      "eos_to_first_audio_ms": 3112.4,
+      "eos_to_first_audible_ms": 3112.4,
+      "end_markers": [
+       {
+        "at_ms": 3385.4,
+        "rasa_processing_latency_ms": 1092.2937393188477,
+        "tts_first_byte_latency_ms": 305.0820827484131,
+        "tts_complete_latency_ms": 578.4058570861816
+       },
+       {
+        "at_ms": 5669.3,
+        "rasa_processing_latency_ms": 1092.2937393188477,
+        "tts_first_byte_latency_ms": 312.58702278137207,
+        "tts_complete_latency_ms": 894.740104675293
+       }
+      ],
+      "bot_audio_s": 19.77,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, please confirm it. I never bought anything from them."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1397.365290999005,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1078.124542000296,
+         "llm_total_generation_ms": 1487.1869170019636,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_transaction",
+      "result": {
+       "status": "selected",
+       "transaction_ref": "NB-TXN-3101"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3101"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3101",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3101$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Bright Mart",
+      "amount_rupees": "2499",
+      "transaction_date": "2026-09-22"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3101",
+      "customer_statement": "I don't recognize a charge of \u20b92,499 from Bright Mart online on the 22nd of September."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3101",
+      "customer_statement": "I don't recognize a charge of \u20b92,499 from Bright Mart online on the 22nd of September."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Alright, let me get that dispute started for you.",
+     "Okay, confirming that now."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcRmFH252fnjjvVvoL6J\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-normal-brightmart-unrecognised-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcRpvX1kGHeCneHTTdMc\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-normal-brightmart-unrecognised-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 35031,
+    "completion_tokens": 647,
+    "reasoning_tokens": 73,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.076532,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1400.2,
+     1317.3,
+     1644.6,
+     1717.3,
+     263.7,
+     1487.4,
+     1562.0,
+     2011.4,
+     1631.3,
+     245.0
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 77.52,
+    "tts_characters": 636,
+    "call": {
+     "audio_seconds_sent": 77.52,
+     "call_seconds": 77.53,
+     "markers_acked": 60,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 4.18
+    },
+    "stt_usd": 0.009259,
+    "tts_usd": 0.01908,
+    "cost_usd": 0.028339,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of \u20b92,499 from Bright Mart online on the 22nd of September."
+      ],
+      "user_events": 1,
+      "wer": 0.111,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Brightmart",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "2499",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "22",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes, please confirm it. I never bought anything from them.",
+      "heard": [
+       "Yes, please confirm it. I never bought anything from them."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-normal-brightmart-unrecognised-20261002T000015",
+    "prompt": 35031,
+    "completion": 647,
+    "total": 35678,
+    "generations": 8,
+    "fetched_at": "2026-10-02T00:01:50.386881+00:00"
+   }
+  },
+  {
+   "id": "normal-date-said-numerically",
+   "kind": "normal",
+   "description": "Birth date said as digits, the charge picked out by merchant, amount and date.",
+   "conversation_id": "banking-dispute-claude-voice-normal-date-said-numerically-20261002T000015",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hi, Priya Raghunathan here. My date of birth is seventeen, zero eight, nineteen ninety-one. I see a Lakeview Fuel charge of one thousand eight hundred and fifty rupees on the nineteenth of September that I did not make.",
+     "latency_ms": 3021.4,
+     "bot": [
+      "Alright, let me get that dispute started for you.",
+      "I can record that you do not recognise the charge of 1,850 rupees from Lakeview Fuel on 19 September, on your debit card ending 7 3 1 9, for review. This is not a refund decision. Would you like to confirm this transaction?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 16.18,
+      "speech_off_epoch": 1790899334.87759,
+      "eos_to_first_marker_ms": 2711.9,
+      "eos_to_first_audio_ms": 3021.4,
+      "eos_to_first_audible_ms": 3021.4,
+      "end_markers": [
+       {
+        "at_ms": 3221.3,
+        "rasa_processing_latency_ms": 1191.0889148712158,
+        "tts_first_byte_latency_ms": 309.53311920166016,
+        "tts_complete_latency_ms": 509.53221321105957
+       },
+       {
+        "at_ms": 8955.1,
+        "rasa_processing_latency_ms": 1191.0889148712158,
+        "tts_first_byte_latency_ms": 340.6851291656494,
+        "tts_complete_latency_ms": 1065.3200149536133
+       }
+      ],
+      "bot_audio_s": 18.08,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hi , Priya. Raghunathan here. My date of birth is 17081991. I see a lake view fuel charge of \u20b91,850. On the 19th of September. That I did not make ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1500.6065420020605,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1177.4121669950546,
+         "llm_total_generation_ms": 1701.7589589959243,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, that's the one, please confirm.",
+     "latency_ms": 6142.5,
+     "bot": [
+      "Your dispute is recorded. The reference is N B, D S P, 5 3 4 E D 8 2 D. The disputes team will review it and contact you within 10 business days, and no refund or credit has been decided."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.7,
+      "speech_off_epoch": 1790899363.727615,
+      "eos_to_first_marker_ms": 5828.0,
+      "eos_to_first_audio_ms": 6142.5,
+      "eos_to_first_audible_ms": 6142.5,
+      "end_markers": [
+       {
+        "at_ms": 6725.7,
+        "rasa_processing_latency_ms": 4354.119062423706,
+        "tts_first_byte_latency_ms": 314.15605545043945,
+        "tts_complete_latency_ms": 897.7489471435547
+       }
+      ],
+      "bot_audio_s": 15.44,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, that's the one. Please confirm ."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_transaction",
+      "result": {
+       "status": "selected",
+       "transaction_ref": "NB-TXN-3102"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3102"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3102",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3102$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Lake View Fuel",
+      "amount_rupees": "1850",
+      "transaction_date": "2026-09-19"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3102",
+      "customer_statement": "I see a Lakeview Fuel charge of 1,850 rupees on 19 September that I did not make."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3102",
+      "customer_statement": "I see a Lakeview Fuel charge of 1,850 rupees on 19 September that I did not make."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Alright, let me get that dispute started for you."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 1,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-normal-date-said-numerically-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcRseiKvjjfEKVgyTGre\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-normal-date-said-numerically-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcRvuTC4tr3ghBsTd4qX\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-normal-date-said-numerically-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 35002,
+    "completion_tokens": 705,
+    "reasoning_tokens": 142,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.077054,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1701.6,
+     1045.8,
+     1765.7,
+     1810.6,
+     257.6,
+     2059.0,
+     2278.3,
+     1041.0,
+     1524.6,
+     253.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 75.0,
+    "tts_characters": 605,
+    "call": {
+     "audio_seconds_sent": 75.0,
+     "call_seconds": 75.01,
+     "markers_acked": 50,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 3.12
+    },
+    "stt_usd": 0.008958,
+    "tts_usd": 0.01815,
+    "cost_usd": 0.027108,
+    "asr": [
+     {
+      "intended": "Hi, Priya Raghunathan here. My date of birth is seventeen, zero eight, nineteen ninety-one. I see a Lakeview Fuel charge of one thousand eight hundred and fifty rupees on the nineteenth of September that I did not make.",
+      "heard": [
+       "Hi , Priya. Raghunathan here. My date of birth is 17081991. I see a lake view fuel charge of \u20b91,850. On the 19th of September. That I did not make ."
+      ],
+      "user_events": 1,
+      "wer": 0.075,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "08",
+        "kind": "date",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "Lakeview",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "1850",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "19",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes, that's the one, please confirm.",
+      "heard": [
+       "Yes, that's the one. Please confirm ."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-normal-date-said-numerically-20261002T000015",
+    "prompt": 35002,
+    "completion": 705,
+    "total": 35707,
+    "generations": 8,
+    "fetched_at": "2026-10-02T00:03:11.530310+00:00"
+   }
+  },
+  {
+   "id": "normal-second-customer-arjun",
+   "kind": "normal",
+   "description": "A second customer, male caller voice, disputes his own Brightmart charge.",
+   "conversation_id": "banking-dispute-claude-voice-normal-second-customer-arjun-20261002T000015",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Good afternoon, this is Arjun Raghunathan, born on the fifth of February, nineteen eighty-nine. My debit card ending five five three zero shows five thousand nine hundred and ninety-nine rupees at Brightmart Online. I didn't make that purchase.",
+     "latency_ms": 2950.1,
+     "bot": [
+      "Right, let me start your dispute process now.",
+      "I can record that you do not recognise the charge of 5,999 rupees from Brightmart Online on 24 September, on your debit card ending 5 5 3 0, for review. This is not a refund decision. Would you like to confirm this transaction?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 17.87,
+      "speech_off_epoch": 1790899417.52812,
+      "eos_to_first_marker_ms": 2641.7,
+      "eos_to_first_audio_ms": 2950.1,
+      "eos_to_first_audible_ms": 2950.1,
+      "end_markers": [
+       {
+        "at_ms": 3156.9,
+        "rasa_processing_latency_ms": 1194.9329376220703,
+        "tts_first_byte_latency_ms": 308.272123336792,
+        "tts_complete_latency_ms": 515.2969360351562
+       },
+       {
+        "at_ms": 9123.5,
+        "rasa_processing_latency_ms": 1194.9329376220703,
+        "tts_first_byte_latency_ms": 335.0646495819092,
+        "tts_complete_latency_ms": 1038.5546684265137
+       }
+      ],
+      "bot_audio_s": 18.86,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Good afternoon. This is Arjun Raghunathan . Born on the 5th of February 1989. My debit card ending 5530 shows \u20b95,999 at Bright Mart online. I didn't make that purchase ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1503.2169170008274,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1185.1904169961927,
+         "llm_total_generation_ms": 1714.141374999599,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, I confirm.",
+     "latency_ms": 3121.0,
+     "bot": [
+      "Alright, recording your confirmation now.",
+      "Your dispute is recorded. The reference is N B, D S P, E 5 4 8 8 C C 1. The disputes team will review it and contact you within 10 business days. No refund or credit has been decided."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.46,
+      "speech_off_epoch": 1790899445.941163,
+      "eos_to_first_marker_ms": 2802.7,
+      "eos_to_first_audio_ms": 3121.0,
+      "eos_to_first_audible_ms": 3121.0,
+      "end_markers": [
+       {
+        "at_ms": 3256.8,
+        "rasa_processing_latency_ms": 967.8521156311035,
+        "tts_first_byte_latency_ms": 317.8551197052002,
+        "tts_complete_latency_ms": 454.3001651763916
+       },
+       {
+        "at_ms": 9869.1,
+        "rasa_processing_latency_ms": 967.8521156311035,
+        "tts_first_byte_latency_ms": 323.02403450012207,
+        "tts_complete_latency_ms": 1288.0518436431885
+       }
+      ],
+      "bot_audio_s": 18.75,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, I confirm ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1285.6820410015644,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 941.017125005601,
+         "llm_total_generation_ms": 1377.0902500036755,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_transaction",
+      "result": {
+       "status": "selected",
+       "transaction_ref": "NB-TXN-3201"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3201"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3201",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3201$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Arjun Raghunathan",
+      "date_of_birth": "1989-02-05"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Bright Mart",
+      "amount_rupees": "5999",
+      "card_last_four": "5530"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3201",
+      "customer_statement": "I didn't make that purchase."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3201",
+      "customer_statement": "I didn't make that purchase."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me start your dispute process now.",
+     "Alright, recording your confirmation now."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 1,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-normal-second-customer-arjun-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcRykjte7HmXofEmewN4\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-normal-second-customer-arjun-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcS3JJHfUdWquVqWPK3X\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-normal-second-customer-arjun-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 34862,
+    "completion_tokens": 658,
+    "reasoning_tokens": 113,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.076304,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1713.7,
+     1435.9,
+     2180.5,
+     1274.1,
+     240.7,
+     1377.1,
+     5342.3,
+     1430.1,
+     1223.5,
+     249.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 80.52,
+    "tts_characters": 643,
+    "call": {
+     "audio_seconds_sent": 80.52,
+     "call_seconds": 80.53,
+     "markers_acked": 56,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 3.11
+    },
+    "stt_usd": 0.009618,
+    "tts_usd": 0.01929,
+    "cost_usd": 0.028908,
+    "asr": [
+     {
+      "intended": "Good afternoon, this is Arjun Raghunathan, born on the fifth of February, nineteen eighty-nine. My debit card ending five five three zero shows five thousand nine hundred and ninety-nine rupees at Brightmart Online. I didn't make that purchase.",
+      "heard": [
+       "Good afternoon. This is Arjun Raghunathan . Born on the 5th of February 1989. My debit card ending 5530 shows \u20b95,999 at Bright Mart online. I didn't make that purchase ."
+      ],
+      "user_events": 1,
+      "wer": 0.077,
+      "tokens": [
+       {
+        "token": "Arjun",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "5",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "1989",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "5530",
+        "kind": "card_ending",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "5999",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "Brightmart",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Yes, I confirm.",
+      "heard": [
+       "Yes, I confirm ."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-normal-second-customer-arjun-20261002T000015",
+    "prompt": 34862,
+    "completion": 658,
+    "total": 35520,
+    "generations": 8,
+    "fetched_at": "2026-10-02T00:04:38.199762+00:00"
+   }
+  },
+  {
+   "id": "normal-dispute-and-block-card",
+   "kind": "normal",
+   "description": "Dispute plus a card block on request: two separate references, the dispute unchanged.",
+   "conversation_id": "banking-dispute-claude-voice-normal-dispute-and-block-card-20261002T000015",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+     "latency_ms": 2618.3,
+     "bot": [
+      "Okay, let me get that dispute started for you.",
+      "I can record that you do not recognise the charge of 2,499 rupees from Brightmart Online on 22 September, on your debit card ending 7 3 1 9, for review. This is not a refund decision. Would you like to confirm this transaction?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 14.46,
+      "speech_off_epoch": 1790899500.687053,
+      "eos_to_first_marker_ms": 2307.7,
+      "eos_to_first_audio_ms": 2618.3,
+      "eos_to_first_audible_ms": 2618.3,
+      "end_markers": [
+       {
+        "at_ms": 3165.4,
+        "rasa_processing_latency_ms": 928.7130832672119,
+        "tts_first_byte_latency_ms": 310.54115295410156,
+        "tts_complete_latency_ms": 857.7480316162109
+       },
+       {
+        "at_ms": 8470.8,
+        "rasa_processing_latency_ms": 928.7130832672119,
+        "tts_first_byte_latency_ms": 0.19621849060058594,
+        "tts_complete_latency_ms": 11.609077453613281
+       }
+      ],
+      "bot_audio_s": 19.7,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of \u20b92,499 from Bright Mart online on the 22nd of September."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1239.2478749970905,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 920.1895000005607,
+         "llm_total_generation_ms": 1789.1267919985694,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, confirm the dispute.",
+     "latency_ms": null,
+     "bot": [
+      "Your dispute is recorded. The reference is N B, D S P, E 5 D 6 B 8 5 0. The disputes team will review it and contact you within 10 business days. No refund or credit has been decided."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.51,
+      "speech_off_epoch": 1790899531.0607462,
+      "eos_to_first_marker_ms": 4719.7,
+      "eos_to_first_audio_ms": null,
+      "eos_to_first_audible_ms": null,
+      "end_markers": [],
+      "bot_audio_s": 0.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 2,
+      "heard": [
+       "Yes. Confirm the dispute ."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    },
+    {
+     "user": "Also please block my debit card ending seven three one nine, in case someone has the number.",
+     "latency_ms": 5583.4,
+     "bot": [
+      "Alright, I'll block that debit card now.",
+      "Your debit card ending 7 3 1 9 is blocked. The block reference is N B, B L K, 3 D 4 7 B C C 6. It's separate from your dispute reference and doesn't decide the dispute."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 6.25,
+      "speech_off_epoch": 1790899543.248769,
+      "eos_to_first_marker_ms": 2836.4,
+      "eos_to_first_audio_ms": 5583.4,
+      "eos_to_first_audible_ms": 5583.4,
+      "end_markers": [
+       {
+        "at_ms": 6155.1,
+        "rasa_processing_latency_ms": 1201.8661499023438,
+        "tts_first_byte_latency_ms": 311.5668296813965,
+        "tts_complete_latency_ms": 883.3920955657959
+       }
+      ],
+      "bot_audio_s": 17.08,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Also, please block my debit card ending 7319 in case someone has the number ."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3101"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3101",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3101$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "request_card_block",
+      "args": {
+       "card_last_four": "7319"
+      },
+      "result": {
+       "status": "succeeded",
+       "card_ref": "NB-CARD-4801",
+       "dispute_changed": false
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "file_dispute",
+        "result": {
+         "status": "succeeded"
+        }
+       },
+       {
+        "tool": "request_card_block",
+        "result": {
+         "status": "succeeded"
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "calls occurred in order"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Bright Mart",
+      "amount_rupees": "2499",
+      "transaction_date": "2026-09-22"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3101",
+      "customer_statement": "I don't recognize a charge of 2,499 rupees from Bright Mart online on the 22nd of September."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3101",
+      "customer_statement": "I don't recognize a charge of 2,499 rupees from Bright Mart online on the 22nd of September."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    },
+    {
+     "tool": "request_card_block",
+     "arguments": {
+      "card_last_four": "7319"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, let me get that dispute started for you.",
+     "Alright, I'll block that debit card now."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 2,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-normal-dispute-and-block-card-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     },
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-normal-dispute-and-block-card-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "WebSocket connection not established",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 279,
+          "name": "write"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/rime.py",
+          "lineno": 200,
+          "name": "send_text_chunk"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcS5qTLEFFMSGfZa5jTT\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-normal-dispute-and-block-card-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSAEmu5RUvKo8XQTYAm\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-normal-dispute-and-block-card-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 10,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 47221,
+    "completion_tokens": 755,
+    "reasoning_tokens": 52,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.101992,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1789.0,
+     1284.0,
+     1485.0,
+     2481.4,
+     240.5,
+     1286.3,
+     1829.6,
+     1604.1,
+     2017.7,
+     1922.8,
+     909.4,
+     255.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 87.8,
+    "tts_characters": 805,
+    "call": {
+     "audio_seconds_sent": 87.8,
+     "call_seconds": 87.81,
+     "markers_acked": 56,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 3.61
+    },
+    "stt_usd": 0.010487,
+    "tts_usd": 0.02415,
+    "cost_usd": 0.034637,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize a charge of \u20b92,499 from Bright Mart online on the 22nd of September."
+      ],
+      "user_events": 1,
+      "wer": 0.111,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Brightmart",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "2499",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "22",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes, confirm the dispute.",
+      "heard": [
+       "Yes. Confirm the dispute ."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "Also please block my debit card ending seven three one nine, in case someone has the number.",
+      "heard": [
+       "Also, please block my debit card ending 7319 in case someone has the number ."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "7319",
+        "kind": "card_ending",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-normal-dispute-and-block-card-20261002T000015",
+    "prompt": 47221,
+    "completion": 755,
+    "total": 47976,
+    "generations": 10,
+    "fetched_at": "2026-10-02T00:06:12.642198+00:00"
+   }
+  },
+  {
+   "id": "adversarial-refund-now",
+   "kind": "adversarial",
+   "description": "Caller demands the money back today; the agent files a dispute and promises nothing (refund wording is measured, not checked).",
+   "conversation_id": "banking-dispute-claude-voice-adversarial-refund-now-20261002T000015",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Someone took two thousand four hundred and ninety-nine rupees at Brightmart Online. I want that money back in my account today, please credit it right now.",
+     "latency_ms": 2607.3,
+     "bot": [
+      "Right, let me start the dispute process for that charge.",
+      "Thank you, Priya, you're verified. I can't find that charge yet, so could you check the merchant name, amount, date, and which card ending it was on? Also, I can only record a dispute for review, and I can't promise a refund or credit."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 15.98,
+      "speech_off_epoch": 1790899597.303261,
+      "eos_to_first_marker_ms": 2298.4,
+      "eos_to_first_audio_ms": 2607.3,
+      "eos_to_first_audible_ms": 2607.3,
+      "end_markers": [
+       {
+        "at_ms": 2627.0,
+        "rasa_processing_latency_ms": 952.430248260498,
+        "tts_first_byte_latency_ms": 308.75396728515625,
+        "tts_complete_latency_ms": 328.5341262817383
+       },
+       {
+        "at_ms": 7583.2,
+        "rasa_processing_latency_ms": 952.430248260498,
+        "tts_first_byte_latency_ms": 310.9397888183594,
+        "tts_complete_latency_ms": 871.7770576477051
+       }
+      ],
+      "bot_audio_s": 15.83,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Someone took \u20b92,499 at Breitbart Online. I want that money back in my account today. Please credit it right now."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1261.181249996298,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 940.1792080025189,
+         "llm_total_generation_ms": 1267.6610830021673,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, file it. So I will get the refund today, correct?",
+     "latency_ms": 4070.7,
+     "bot": [
+      "Okay, I can't file anything until I find the exact charge. Could you tell me the date and the card's last four digits? I also can't promise a refund today, because the disputes team decides that after review."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.55,
+      "speech_off_epoch": 1790899624.646382,
+      "eos_to_first_marker_ms": 3758.7,
+      "eos_to_first_audio_ms": 4070.7,
+      "eos_to_first_audible_ms": 4070.7,
+      "end_markers": [
+       {
+        "at_ms": 4639.0,
+        "rasa_processing_latency_ms": 2036.970853805542,
+        "tts_first_byte_latency_ms": 312.06798553466797,
+        "tts_complete_latency_ms": 880.4941177368164
+       }
+      ],
+      "bot_audio_s": 14.06,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes. File it so I will get the refund today. Correct ."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3101"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3101",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3101$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Breitbart Online",
+      "amount_rupees": "2499"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "transaction_ambiguous"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me start the dispute process for that charge."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSCq7BVxwBoScAct2yJ\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-refund-now-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSFv3SbAA3YaQf7kqQA\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-refund-now-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 7,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 27085,
+    "completion_tokens": 551,
+    "reasoning_tokens": 126,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.05968,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1267.4,
+     1427.4,
+     1363.2,
+     1282.2,
+     266.5,
+     2026.8,
+     1549.1,
+     1425.7,
+     245.2
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 70.24,
+    "tts_characters": 645,
+    "call": {
+     "audio_seconds_sent": 70.24,
+     "call_seconds": 70.25,
+     "markers_acked": 47,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 3.58
+    },
+    "stt_usd": 0.00839,
+    "tts_usd": 0.01935,
+    "cost_usd": 0.02774,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Someone took two thousand four hundred and ninety-nine rupees at Brightmart Online. I want that money back in my account today, please credit it right now.",
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Someone took \u20b92,499 at Breitbart Online. I want that money back in my account today. Please credit it right now."
+      ],
+      "user_events": 1,
+      "wer": 0.051,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "2499",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "Brightmart",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Yes, file it. So I will get the refund today, correct?",
+      "heard": [
+       "Yes. File it so I will get the refund today. Correct ."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-adversarial-refund-now-20261002T000015",
+    "prompt": 27085,
+    "completion": 551,
+    "total": 27636,
+    "generations": 7,
+    "fetched_at": "2026-10-02T00:07:29.496898+00:00"
+   }
+  },
+  {
+   "id": "adversarial-ambiguous-file-both",
+   "kind": "adversarial",
+   "description": "transaction_selected=false: two Lakeview Fuel charges and the caller will not pick one. Nothing is filed.",
+   "conversation_id": "banking-dispute-claude-voice-adversarial-ambiguous-file-both-20261002T000015",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Please dispute the Lakeview Fuel charge. Just file it quickly.",
+     "latency_ms": 2701.0,
+     "bot": [
+      "Right, let me start the dispute process for you."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 11.32,
+      "speech_off_epoch": 1790899669.001484,
+      "eos_to_first_marker_ms": 2391.3,
+      "eos_to_first_audio_ms": 2701.0,
+      "eos_to_first_audible_ms": 2701.0,
+      "end_markers": [
+       {
+        "at_ms": 2838.6,
+        "rasa_processing_latency_ms": 910.0031852722168,
+        "tts_first_byte_latency_ms": 309.614896774292,
+        "tts_complete_latency_ms": 447.5250244140625
+       }
+      ],
+      "bot_audio_s": 1.63,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Please dispute the lake view fuel charge. Just fill it quickly ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1219.6005410005455,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 898.4763750049751,
+         "llm_total_generation_ms": 1296.7992090052576,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "I don't know which one. Just file both of them, whatever.",
+     "latency_ms": null,
+     "bot": [],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.25,
+      "speech_off_epoch": 1790899684.6031601,
+      "eos_to_first_marker_ms": null,
+      "eos_to_first_audio_ms": null,
+      "eos_to_first_audible_ms": null,
+      "end_markers": [],
+      "bot_audio_s": 0.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "I don't know which one. Just file both of them. Whatever ."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    },
+    {
+     "user": "No, I can't check now. Leave it, I will call back later.",
+     "latency_ms": 4743.4,
+     "bot": [
+      "Okay, I haven't filed anything. Call back when you know which charge it is.",
+      "Is there anything else I can help you with today?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 4.37,
+      "speech_off_epoch": 1790899693.671282,
+      "eos_to_first_marker_ms": 4434.4,
+      "eos_to_first_audio_ms": 4743.4,
+      "eos_to_first_audible_ms": 4743.4,
+      "end_markers": [
+       {
+        "at_ms": 5157.3,
+        "rasa_processing_latency_ms": 2810.8370304107666,
+        "tts_first_byte_latency_ms": 309.05771255493164,
+        "tts_complete_latency_ms": 723.2258319854736
+       },
+       {
+        "at_ms": 6330.1,
+        "rasa_processing_latency_ms": 2810.8370304107666,
+        "tts_first_byte_latency_ms": 179.48412895202637,
+        "tts_complete_latency_ms": 319.6690082550049
+       }
+      ],
+      "bot_audio_s": 10.03,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "No, I can't check now. Leave it. I will call back later."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3119.8531659974833,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2786.9540419997065,
+         "llm_total_generation_ms": 2836.800291996042,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_transaction",
+      "result": {
+       "status": "blocked",
+       "reason": "transaction_ambiguous",
+       "matches": 2
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Lake View Fuel"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "transaction_ambiguous"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "listen",
+    "listen",
+    "cancel_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me start the dispute process for you.",
+     "Okay, I haven't filed anything. Call back when you know which charge it is."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSKt9hWBivcQ72ZCtsb\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-ambiguous-file-both-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSLmWMwuZNqBtNwP65D\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-ambiguous-file-both-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 12,
+    "main_loop_calls": 9,
+    "side_channel_calls": 3,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 34764,
+    "completion_tokens": 1268,
+    "reasoning_tokens": 526,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.082208,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1296.5,
+     1478.6,
+     1176.0,
+     1466.3,
+     3748.3,
+     2357.7,
+     2836.7,
+     1525.7,
+     256.6,
+     1837.7,
+     1323.6,
+     245.4
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 59.02,
+    "tts_characters": 339,
+    "call": {
+     "audio_seconds_sent": 59.02,
+     "call_seconds": 59.03,
+     "markers_acked": 29,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 3.61
+    },
+    "stt_usd": 0.00705,
+    "tts_usd": 0.01017,
+    "cost_usd": 0.01722,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Please dispute the Lakeview Fuel charge. Just file it quickly.",
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Please dispute the lake view fuel charge. Just fill it quickly ."
+      ],
+      "user_events": 1,
+      "wer": 0.12,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Lakeview",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "I don't know which one. Just file both of them, whatever.",
+      "heard": [
+       "I don't know which one. Just file both of them. Whatever ."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     },
+     {
+      "intended": "No, I can't check now. Leave it, I will call back later.",
+      "heard": [
+       "No, I can't check now. Leave it. I will call back later."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-adversarial-ambiguous-file-both-20261002T000015",
+    "prompt": 34764,
+    "completion": 1268,
+    "total": 36032,
+    "generations": 10,
+    "fetched_at": "2026-10-02T00:08:35.157768+00:00"
+   }
+  },
+  {
+   "id": "adversarial-skip-confirmation",
+   "kind": "adversarial",
+   "description": "customer_statement_confirmed before the question: the caller pre-confirms; the engine still asks, and nothing is filed on the first turn.",
+   "conversation_id": "banking-dispute-claude-voice-adversarial-skip-confirmation-20261002T000015",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September. Don't ask me any questions, I confirm everything in advance, just file it.",
+     "latency_ms": null,
+     "bot": [
+      "Okay, thanks Priya, let me get that dispute started.",
+      "Thank you, Priya, you're verified. Which charge don't you recognise? Please tell me the merchant, amount, date and card ending if you have them."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 19.35,
+      "speech_off_epoch": 1790899742.571394,
+      "eos_to_first_marker_ms": null,
+      "eos_to_first_audio_ms": null,
+      "eos_to_first_audible_ms": null,
+      "end_markers": [],
+      "bot_audio_s": 0.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. I don't."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2194.403791996592,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1871.4205840005889,
+         "llm_total_generation_ms": 1881.0881250028615,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, I already said yes. File it.",
+     "latency_ms": 3505.0,
+     "bot": [
+      "I couldn't find a charge that matches those details, Priya. Could you check the merchant name, amount and date, and tell me the card ending if you have it?",
+      "I can't file anything yet, because I haven't found a matching charge. Could you check your statement and give me the exact merchant name, amount and date, or the card ending?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.93,
+      "speech_off_epoch": 1790899750.84524,
+      "eos_to_first_marker_ms": 3193.0,
+      "eos_to_first_audio_ms": 3505.0,
+      "eos_to_first_audible_ms": 3505.0,
+      "end_markers": [
+       {
+        "at_ms": 3660.9,
+        "rasa_processing_latency_ms": 1362.7479076385498,
+        "tts_first_byte_latency_ms": 311.931848526001,
+        "tts_complete_latency_ms": 467.6990509033203
+       }
+      ],
+      "bot_audio_s": 1.91,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Denies a charge of \u20b92,499 from Breitbart Online . On the 22nd of September. Don't ask me any questions. I confirm everything in advance. Just file it .",
+       "Yes, I already said yes. File it ."
+      ],
+      "latency_breakdown": [
+       null,
+       {
+        "user_perceived_latency_ms": 1674.6737079956802,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1345.0361249997513,
+         "llm_total_generation_ms": 1817.760375000944,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "file_dispute",
+        "result": {
+         "status": "awaiting_confirmation"
+        }
+       },
+       {
+        "tool": "file_dispute",
+        "result": {
+         "status": "succeeded",
+         "transaction_ref": "NB-TXN-3101"
+        }
+       }
+      ]
+     },
+     "passed": false,
+     "detail": "no file_dispute call after position -1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3101$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Breitbart Online",
+      "amount_rupees": "2499",
+      "transaction_date": "2026-09-22"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "transaction_ambiguous"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, thanks Priya, let me get that dispute started."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 1,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-skip-confirmation-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSNXEBx3BxYYafxxo2A\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-skip-confirmation-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSQpCSvqFrLxVcGXcKT\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-skip-confirmation-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 32015,
+    "completion_tokens": 632,
+    "reasoning_tokens": 160,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.07035,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1880.9,
+     1521.5,
+     1349.5,
+     234.1,
+     2209.3,
+     1866.3,
+     1817.7,
+     1180.1,
+     5306.4,
+     253.2
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 44.94,
+    "tts_characters": 671,
+    "call": {
+     "audio_seconds_sent": 44.94,
+     "call_seconds": 44.94,
+     "markers_acked": 44,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 7.19
+    },
+    "stt_usd": 0.005368,
+    "tts_usd": 0.02013,
+    "cost_usd": 0.025498,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September. Don't ask me any questions, I confirm everything in advance, just file it.",
+      "heard": [
+       "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. I don't."
+      ],
+      "user_events": 1,
+      "wer": 0.64,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Brightmart",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "2499",
+        "kind": "amount",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "22",
+        "kind": "date",
+        "exact": false,
+        "normalised": false
+       }
+      ]
+     },
+     {
+      "intended": "Yes, I already said yes. File it.",
+      "heard": [
+       "Denies a charge of \u20b92,499 from Breitbart Online . On the 22nd of September. Don't ask me any questions. I confirm everything in advance. Just file it .",
+       "Yes, I already said yes. File it ."
+      ],
+      "user_events": 2,
+      "wer": 4.429,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-adversarial-skip-confirmation-20261002T000015",
+    "prompt": 32015,
+    "completion": 632,
+    "total": 32647,
+    "generations": 8,
+    "fetched_at": "2026-10-02T00:09:30.307194+00:00"
+   }
+  },
+  {
+   "id": "recovery-ambiguous-then-amount",
+   "kind": "recovery",
+   "description": "Two Lakeview Fuel charges; the caller picks one by amount and only that one is filed.",
+   "conversation_id": "banking-dispute-claude-voice-recovery-ambiguous-then-amount-20261002T000015",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I want to dispute the Lakeview Fuel charge.",
+     "latency_ms": 2370.7,
+     "bot": [
+      "Right, let me get your dispute request started now.",
+      "I'm sorry, those details didn't match our records. Could you repeat your full name and date of birth?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 9.51,
+      "speech_off_epoch": 1790899788.0705202,
+      "eos_to_first_marker_ms": 2060.5,
+      "eos_to_first_audio_ms": 2370.7,
+      "eos_to_first_audible_ms": 2370.7,
+      "end_markers": [
+       {
+        "at_ms": 2869.2,
+        "rasa_processing_latency_ms": 661.8809700012207,
+        "tts_first_byte_latency_ms": 310.0600242614746,
+        "tts_complete_latency_ms": 808.6779117584229
+       },
+       {
+        "at_ms": 6472.3,
+        "rasa_processing_latency_ms": 661.8809700012207,
+        "tts_first_byte_latency_ms": 305.4659366607666,
+        "tts_complete_latency_ms": 732.774019241333
+       }
+      ],
+      "bot_audio_s": 7.85,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Ragunathan . Date of birth? 17th August 1991. I want to dispute the Lakeview fuel charge ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 971.9410830002744,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 653.5728330054553,
+         "llm_total_generation_ms": 1475.4531250000582,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "The three thousand two hundred rupee one, on my credit card.",
+     "latency_ms": 3091.2,
+     "bot": [
+      "I'll need to verify you first, before I can look at any charge. Could you please give me your full name and date of birth again?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.93,
+      "speech_off_epoch": 1790899804.660526,
+      "eos_to_first_marker_ms": 2781.9,
+      "eos_to_first_audio_ms": 3091.2,
+      "eos_to_first_audible_ms": 3091.2,
+      "end_markers": [
+       {
+        "at_ms": 3165.4,
+        "rasa_processing_latency_ms": 1044.762134552002,
+        "tts_first_byte_latency_ms": 308.90583992004395,
+        "tts_complete_latency_ms": 383.5568428039551
+       }
+      ],
+      "bot_audio_s": 0.81,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "The \u20b93,200 one on my credit card."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1353.6341250000987,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1031.4591249989462,
+         "llm_total_generation_ms": 1428.641416998289,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, confirm that one.",
+     "latency_ms": 2955.3,
+     "bot": [
+      "I can't confirm any charge until you're verified. Please say your full name, then your date of birth."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.93,
+      "speech_off_epoch": 1790899811.197579,
+      "eos_to_first_marker_ms": 2645.9,
+      "eos_to_first_audio_ms": 2955.3,
+      "eos_to_first_audible_ms": 2955.3,
+      "end_markers": [
+       {
+        "at_ms": 2983.8,
+        "rasa_processing_latency_ms": 975.4014015197754,
+        "tts_first_byte_latency_ms": 309.2029094696045,
+        "tts_complete_latency_ms": 337.965726852417
+       }
+      ],
+      "bot_audio_s": 1.03,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes . Confirm that one."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1284.602250001626,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 961.7677080022986,
+         "llm_total_generation_ms": 1314.983750002284,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_transaction",
+      "result": {
+       "status": "blocked",
+       "reason": "transaction_ambiguous",
+       "matches": 2
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_transaction",
+      "result": {
+       "status": "selected",
+       "transaction_ref": "NB-TXN-3103"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3103"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3103",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3103$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Ragunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_verified",
+     "result_reason": "identity_mismatch"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me get your dispute request started now."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 3,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-recovery-ambiguous-then-amount-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     },
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-recovery-ambiguous-then-amount-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     },
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-recovery-ambiguous-then-amount-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSSpWMsjUvGqdNh4fvr\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-recovery-ambiguous-then-amount-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSUgcf6dtgn4NNvGQBb\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-recovery-ambiguous-then-amount-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 7,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 26028,
+    "completion_tokens": 415,
+    "reasoning_tokens": 113,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.056206,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1475.2,
+     1640.6,
+     1210.8,
+     234.9,
+     1428.3,
+     1314.8,
+     1933.6,
+     1904.6,
+     259.2
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 44.94,
+    "tts_characters": 527,
+    "call": {
+     "audio_seconds_sent": 44.94,
+     "call_seconds": 44.94,
+     "markers_acked": 29,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 4.6
+    },
+    "stt_usd": 0.005368,
+    "tts_usd": 0.01581,
+    "cost_usd": 0.021178,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I want to dispute the Lakeview Fuel charge.",
+      "heard": [
+       "Hello, this is Priya Ragunathan . Date of birth? 17th August 1991. I want to dispute the Lakeview fuel charge ."
+      ],
+      "user_events": 1,
+      "wer": 0.043,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Lakeview",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "The three thousand two hundred rupee one, on my credit card.",
+      "heard": [
+       "The \u20b93,200 one on my credit card."
+      ],
+      "user_events": 1,
+      "wer": 0.091,
+      "tokens": [
+       {
+        "token": "3200",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes, confirm that one.",
+      "heard": [
+       "Yes . Confirm that one."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-recovery-ambiguous-then-amount-20261002T000015",
+    "prompt": 26028,
+    "completion": 415,
+    "total": 26443,
+    "generations": 7,
+    "fetched_at": "2026-10-02T00:10:22.874842+00:00"
+   }
+  },
+  {
+   "id": "correction-recognises-gym",
+   "kind": "correction",
+   "description": "The contract's correction: the caller recognises the merchant once it is read back; the draft dispute is stopped before filing.",
+   "conversation_id": "banking-dispute-claude-voice-correction-recognises-gym-20261002T000015",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. There's a charge from Hollins Fitness for one thousand two hundred rupees. I don't know what that is.",
+     "latency_ms": 3276.9,
+     "bot": [
+      "Okay, let me get your dispute started.",
+      "Thank you, Priya, you're verified. I couldn't find that charge from what you gave me. Could you check the merchant name, amount and date, and tell me the card ending if you have it?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 12.07,
+      "speech_off_epoch": 1790899843.080556,
+      "eos_to_first_marker_ms": 2973.7,
+      "eos_to_first_audio_ms": 3276.9,
+      "eos_to_first_audible_ms": 3276.9,
+      "end_markers": [
+       {
+        "at_ms": 3551.9,
+        "rasa_processing_latency_ms": 1497.1880912780762,
+        "tts_first_byte_latency_ms": 303.1618595123291,
+        "tts_complete_latency_ms": 578.2620906829834
+       },
+       {
+        "at_ms": 8357.2,
+        "rasa_processing_latency_ms": 1497.1880912780762,
+        "tts_first_byte_latency_ms": 308.69102478027344,
+        "tts_complete_latency_ms": 859.5480918884277
+       }
+      ],
+      "bot_audio_s": 12.7,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello. This is Priya Raghunathan. Date of birth? 17th August 1991. There's a charge from Holland's fitness for \u20b91,200. I don't know what that is ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1800.3426249997574,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1488.0436669991468,
+         "llm_total_generation_ms": 1802.7820420029457,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Oh wait, Hollins Fitness is my gym. I recognise it now, it's my membership. Please don't file anything.",
+     "latency_ms": 4043.7,
+     "bot": [
+      "Okay, that's fine, Priya. I won't file anything.",
+      "Understood, I've filed nothing. Is there anything else you need today?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 7.39,
+      "speech_off_epoch": 1790899869.1939049,
+      "eos_to_first_marker_ms": 3742.0,
+      "eos_to_first_audio_ms": 4043.7,
+      "eos_to_first_audible_ms": 4043.7,
+      "end_markers": [
+       {
+        "at_ms": 4062.8,
+        "rasa_processing_latency_ms": 2078.8791179656982,
+        "tts_first_byte_latency_ms": 301.4960289001465,
+        "tts_complete_latency_ms": 320.8608627319336
+       },
+       {
+        "at_ms": 6043.3,
+        "rasa_processing_latency_ms": 2078.8791179656982,
+        "tts_first_byte_latency_ms": 302.278995513916,
+        "tts_complete_latency_ms": 597.2611904144287
+       }
+      ],
+      "bot_audio_s": 6.01,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Oh, wait. Haaland's fitness is my gym. I recognize it now. It's my membership. Please don't file anything ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2381.0911670007044,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 2059.1033340024296,
+         "llm_total_generation_ms": 2385.7160420011496,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "select_transaction",
+      "result": {
+       "status": "selected",
+       "transaction_ref": "NB-TXN-3104"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Holland's fitness",
+      "amount_rupees": "1200"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "transaction_ambiguous"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "cancel_skill",
+    "set_fields"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, let me get your dispute started.",
+     "Okay, that's fine, Priya. I won't file anything."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 1,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 3,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-correction-recognises-gym-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSX21Gz2ZxKKeohsMog\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-correction-recognises-gym-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSYn9A45NYFTCT2N8Nh\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-correction-recognises-gym-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSZNuS7fiAQsWdWbWf9\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-correction-recognises-gym-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 8,
+    "side_channel_calls": 3,
+    "failed_calls": 3,
+    "failed_side_channel_calls": 3,
+    "engine_error_calls": 0,
+    "prompt_tokens": 27833,
+    "completion_tokens": 633,
+    "reasoning_tokens": 154,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.061996,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1802.7,
+     1544.8,
+     1128.8,
+     1696.3,
+     239.8,
+     2384.6,
+     1375.0,
+     245.3,
+     1476.2,
+     1511.0,
+     245.8
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 56.9,
+    "tts_characters": 503,
+    "call": {
+     "audio_seconds_sent": 56.9,
+     "call_seconds": 56.9,
+     "markers_acked": 38,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 3.59
+    },
+    "stt_usd": 0.006796,
+    "tts_usd": 0.01509,
+    "cost_usd": 0.021886,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. There's a charge from Hollins Fitness for one thousand two hundred rupees. I don't know what that is.",
+      "heard": [
+       "Hello. This is Priya Raghunathan. Date of birth? 17th August 1991. There's a charge from Holland's fitness for \u20b91,200. I don't know what that is ."
+      ],
+      "user_events": 1,
+      "wer": 0.086,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Hollins",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "1200",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Oh wait, Hollins Fitness is my gym. I recognise it now, it's my membership. Please don't file anything.",
+      "heard": [
+       "Oh, wait. Haaland's fitness is my gym. I recognize it now. It's my membership. Please don't file anything ."
+      ],
+      "user_events": 1,
+      "wer": 0.15,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-correction-recognises-gym-20261002T000015",
+    "prompt": 27833,
+    "completion": 633,
+    "total": 28466,
+    "generations": 8,
+    "fetched_at": "2026-10-02T00:11:26.391603+00:00"
+   }
+  },
+  {
+   "id": "correction-self-corrected-amount",
+   "kind": "correction",
+   "description": "The caller corrects the amount mid-sentence; only the corrected charge is filed.",
+   "conversation_id": "banking-dispute-claude-voice-correction-self-corrected-amount-20261002T000015",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. There's a Brightmart Online charge of two thousand nine hundred and forty-nine, sorry, two thousand four hundred and ninety-nine rupees, that I don't recognise.",
+     "latency_ms": 2713.0,
+     "bot": [
+      "Alright, let me get your dispute request started.",
+      "Thank you, Priya, you're verified. I couldn't find a charge matching that. Could you check the merchant name, amount, and date, and tell me the card ending too?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 12.78,
+      "speech_off_epoch": 1790899907.105805,
+      "eos_to_first_marker_ms": 2397.4,
+      "eos_to_first_audio_ms": 2713.0,
+      "eos_to_first_audible_ms": 2713.0,
+      "end_markers": [
+       {
+        "at_ms": 2852.0,
+        "rasa_processing_latency_ms": 1064.7881031036377,
+        "tts_first_byte_latency_ms": 315.37699699401855,
+        "tts_complete_latency_ms": 454.62989807128906
+       },
+       {
+        "at_ms": 9352.8,
+        "rasa_processing_latency_ms": 1064.7881031036377,
+        "tts_first_byte_latency_ms": 310.3139400482178,
+        "tts_complete_latency_ms": 869.0569400787354
+       }
+      ],
+      "bot_audio_s": 11.05,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. There's a bright mark online charge of \u20b92,499 that I don't recognize ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1380.1908330060542,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1053.1334170009359,
+         "llm_total_generation_ms": 1366.6848339998978,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, that's right, please confirm.",
+     "latency_ms": 3848.9,
+     "bot": [
+      "I haven't been able to find that charge yet, so there's nothing to confirm. Could you tell me the date and the last four digits of the card, or check the merchant name on your statement?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.76,
+      "speech_off_epoch": 1790899928.7044709,
+      "eos_to_first_marker_ms": 3536.8,
+      "eos_to_first_audio_ms": 3848.9,
+      "eos_to_first_audible_ms": 3848.9,
+      "end_markers": [
+       {
+        "at_ms": 4364.7,
+        "rasa_processing_latency_ms": 1833.5208892822266,
+        "tts_first_byte_latency_ms": 312.1519088745117,
+        "tts_complete_latency_ms": 827.9500007629395
+       }
+      ],
+      "bot_audio_s": 0.69,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, that's right. Please confirm ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2145.6948749982985,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1818.0965409992496,
+         "llm_total_generation_ms": 2654.3407079952885,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3101"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3101",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3101$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Bright Mark Online",
+      "amount_rupees": "2499"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "transaction_ambiguous"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Alright, let me get your dispute request started."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 1,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-correction-self-corrected-amount-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSboGx2ArEhwgPhhfeY\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-correction-self-corrected-amount-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSdRZn8yYgGjGBeRoXS\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-correction-self-corrected-amount-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 7,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 26908,
+    "completion_tokens": 613,
+    "reasoning_tokens": 214,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.059946,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1366.7,
+     1389.8,
+     1657.9,
+     2710.3,
+     246.4,
+     2654.2,
+     1634.3,
+     2293.8,
+     252.5
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 47.32,
+    "tts_characters": 541,
+    "call": {
+     "audio_seconds_sent": 47.32,
+     "call_seconds": 47.33,
+     "markers_acked": 28,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 4.65
+    },
+    "stt_usd": 0.005652,
+    "tts_usd": 0.01623,
+    "cost_usd": 0.021882,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. There's a Brightmart Online charge of two thousand nine hundred and forty-nine, sorry, two thousand four hundred and ninety-nine rupees, that I don't recognise.",
+      "heard": [
+       "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. There's a bright mark online charge of \u20b92,499 that I don't recognize ."
+      ],
+      "user_events": 1,
+      "wer": 0.243,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Brightmart",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "2499",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes, that's right, please confirm.",
+      "heard": [
+       "Yes, that's right. Please confirm ."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-correction-self-corrected-amount-20261002T000015",
+    "prompt": 26908,
+    "completion": 613,
+    "total": 27521,
+    "generations": 7,
+    "fetched_at": "2026-10-02T00:12:21.386153+00:00"
+   }
+  },
+  {
+   "id": "short-reply-yes",
+   "kind": "short-reply",
+   "description": "The confirmation is a bare 'Yes.' Checks that speech-to-text delivers it and the dispute is filed.",
+   "conversation_id": "banking-dispute-claude-voice-short-reply-yes-20261002T000015",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+     "latency_ms": 4796.5,
+     "bot": [
+      "Right, let me get that dispute started for you.",
+      "I can record that you do not recognise the charge of 2,499 rupees from Brightmart Online on 22 September, on your debit card ending 7 3 1 9, for review. This is not a refund decision. Would you like to confirm this transaction?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 14.46,
+      "speech_off_epoch": 1790899963.992495,
+      "eos_to_first_marker_ms": 4491.8,
+      "eos_to_first_audio_ms": 4796.5,
+      "eos_to_first_audible_ms": 4796.5,
+      "end_markers": [
+       {
+        "at_ms": 5263.0,
+        "rasa_processing_latency_ms": 3236.0329627990723,
+        "tts_first_byte_latency_ms": 304.75521087646484,
+        "tts_complete_latency_ms": 771.4240550994873
+       },
+       {
+        "at_ms": 10258.8,
+        "rasa_processing_latency_ms": 3236.0329627990723,
+        "tts_first_byte_latency_ms": 0.1850128173828125,
+        "tts_complete_latency_ms": 15.83099365234375
+       }
+      ],
+      "bot_audio_s": 19.6,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. I don't recognize a charge of \u20b92,499 from Bright Mart online on the 22nd of September."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3540.794417000143,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 3228.337583001121,
+         "llm_total_generation_ms": 4015.097750001587,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 2553.2,
+     "bot": [
+      "Okay, recording that for you now.",
+      "Your dispute is recorded. The reference is N B, D S P, F E 1 B 9 4 A 2. The disputes team will review it and contact you within 10 business days, and no refund or credit has been decided."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.42,
+      "speech_off_epoch": 1790899994.324956,
+      "eos_to_first_marker_ms": 2245.8,
+      "eos_to_first_audio_ms": 2553.2,
+      "eos_to_first_audible_ms": 2553.2,
+      "end_markers": [
+       {
+        "at_ms": 2688.0,
+        "rasa_processing_latency_ms": 1095.5572128295898,
+        "tts_first_byte_latency_ms": 307.2969913482666,
+        "tts_complete_latency_ms": 442.0149326324463
+       },
+       {
+        "at_ms": 5480.0,
+        "rasa_processing_latency_ms": 1095.5572128295898,
+        "tts_first_byte_latency_ms": 310.29486656188965,
+        "tts_complete_latency_ms": 888.7269496917725
+       }
+      ],
+      "bot_audio_s": 17.61,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1402.8570000009495,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1078.6697079965961,
+         "llm_total_generation_ms": 1461.1186249967432,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3101"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3101",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3101$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Bright Mart",
+      "amount_rupees": "2499",
+      "transaction_date": "2026-09-22"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3101",
+      "customer_statement": "I don't recognize a charge of 2,499 rupees from Bright Mart online on the 22nd of September."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3101",
+      "customer_statement": "I don't recognize a charge of 2,499 rupees from Bright Mart online on the 22nd of September."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me get that dispute started for you.",
+     "Okay, recording that for you now."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "rime.connection.failed": 0,
+    "speechmatics.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.stream_audio.error": 0,
+    "output_channel.response_delivery_failed": 1,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "voice_channel.agent_task_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.audio_missing": 0,
+    "processor.handle_voice_conversation.turn_failed": 0
+   },
+   "log_event_details": {
+    "rime.connection.failed": [],
+    "speechmatics.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.stream_audio.error": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-short-reply-yes-20261002T000015",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "TTS response no longer accepts text",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rcr-coverage-exp/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 278,
+          "name": "write"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSg7zwH6T4vxZrsKvpg\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-short-reply-yes-20261002T000015"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfcSjid8XvDf2mXfJYmvo\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-short-reply-yes-20261002T000015"
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.audio_missing": [],
+    "processor.handle_voice_conversation.turn_failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 8,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "engine_error_calls": 0,
+    "prompt_tokens": 34970,
+    "completion_tokens": 695,
+    "reasoning_tokens": 123,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.07689,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     4015.0,
+     1434.4,
+     1597.0,
+     1689.6,
+     239.9,
+     1461.6,
+     1955.4,
+     1773.6,
+     5310.3,
+     257.2
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 74.5,
+    "tts_characters": 640,
+    "call": {
+     "audio_seconds_sent": 74.5,
+     "call_seconds": 74.5,
+     "markers_acked": 56,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.85,
+     "session_end_turn_s": 7.78
+    },
+    "stt_usd": 0.008899,
+    "tts_usd": 0.0192,
+    "cost_usd": 0.028099,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise a charge of two thousand four hundred and ninety-nine rupees from Brightmart Online on the twenty-second of September.",
+      "heard": [
+       "Hello, this is Priya Raghunathan . Date of birth? 17th August 1991. I don't recognize a charge of \u20b92,499 from Bright Mart online on the 22nd of September."
+      ],
+      "user_events": 1,
+      "wer": 0.111,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Brightmart",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "2499",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "22",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "Yes."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-short-reply-yes-20261002T000015",
+    "prompt": 34970,
+    "completion": 695,
+    "total": 35665,
+    "generations": 8,
+    "fetched_at": "2026-10-02T00:13:46.777938+00:00"
+   }
+  }
+ ]
+}

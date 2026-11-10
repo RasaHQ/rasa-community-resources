@@ -4,7 +4,7 @@
 Author:        Rod Rivera, from a live session by Daksh Varshneya
 Assessed on:   2026-08-26
 Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.20.0rc1, Python 3.11+, uv
+Verified with: rasa-pro 3.21.0.dev5, Python 3.11+, uv
 Audience:      Anyone who has run `rasa init --engine mantle` once
 Time:          30–40 minutes
 ```
@@ -294,14 +294,14 @@ not in the template, it is not in the reply.
 
 ## If you are coming from 3.19
 
-This pattern is pinned to `3.20.0.dev6`, where the engine package is
+This pattern is pinned to `3.21.0.dev5`, where the engine package is
 `rasa.mantle`. On `3.19.x` it was `rasa.calm_v2`, and the old path is now gone
 rather than aliased — so an agent written against 3.19 needs both a pin bump and
 an import rename:
 
 ```bash
 # 1. the pin
-rasa-pro==3.20.0.dev9  →  rasa-pro==3.20.0.dev9   # rasa-version-ignore: upgrade path
+rasa-pro==3.19.0  →  rasa-pro==3.21.0.dev5   # rasa-version-ignore: upgrade path
 
 # 2. the imports, in every tools.py
 from rasa.calm_v2.tools.decorator import ToolContext, tool

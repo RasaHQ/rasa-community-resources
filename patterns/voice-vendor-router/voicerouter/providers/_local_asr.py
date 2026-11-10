@@ -28,13 +28,13 @@ import time
 from typing import Any, AsyncIterator, List, Optional
 
 import structlog
-from rasa.core.channels.voice_stream.asr.asr_engine import ASREngine, ASREngineConfig
-from rasa.core.channels.voice_stream.asr.asr_event import (
+from voicerouter.engine import ASREngine, ASREngineConfig
+from voicerouter.engine import (
     ASREvent,
     NewTranscript,
     UserIsSpeaking,
 )
-from rasa.core.channels.voice_stream.audio_bytes import (
+from voicerouter.engine import (
     AudioEncoding,
     AudioFormat,
     RasaAudioBytes,
@@ -212,10 +212,12 @@ class LocalBufferedASR(ASREngine[LocalASRConfig]):
             await self._events.put(exc)
             return
         text = (text or "").strip()
-        logger.debug(
+        # Info, not debug: the transcription time is the local model's share
+        # of the caller's wait, and the case-build harness reads it.
+        logger.info(
             f"{self.name()}.transcribed",
             seconds=round((len(pcm) / 2) / self.target_sample_rate, 2),
-            took=round(time.monotonic() - started, 2),
+            took=round(time.monotonic() - started, 3),
             chars=len(text),
         )
         if text:

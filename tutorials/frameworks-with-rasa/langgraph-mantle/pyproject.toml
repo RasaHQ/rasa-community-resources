@@ -1,0 +1,16 @@
+[project]
+name = "mantle-langgraph-statement-handoff"
+version = "0.1.0"
+description = "A Rasa conversation resumes an existing LangGraph statement lookup"
+requires-python = ">=3.12,<3.13"
+dependencies = ["rasa-pro==3.21.0.dev5", "statement-handoff"]
+
+[tool.rasa-catalog]
+required-secrets = ["OPENAI_API_KEY"]
+
+[tool.uv]
+prerelease = "allow"
+package = false
+
+[tool.uv.sources]
+statement-handoff = { path = "../statement-handoff", editable = true }

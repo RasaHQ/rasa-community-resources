@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "cedar-deepgram-nova-aura-fixed",
+  "revision": "2026-10-05",
+  "language": "en",
+  "sample_rate": 24000,
+  "asr": {
+    "policy": {
+      "health_scope": "call",
+      "skip_unconfigured": false,
+      "same_provider_retries": 0,
+      "raise_on_failure": true
+    },
+    "providers": [
+      {
+        "name": "voicerouter.providers.deepgram.DeepgramASR",
+        "language_map": {
+          "en": {
+            "language": "en",
+            "model": "nova-3"
+          }
+        },
+        "endpoint": "wss://api.deepgram.com/v1/listen",
+        "endpointing": 400,
+        "utterance_end_ms": 1000,
+        "smart_format": true
+      }
+    ]
+  },
+  "tts": {
+    "policy": {
+      "health_scope": "call",
+      "skip_unconfigured": false,
+      "same_provider_retries": 0,
+      "selection": "order",
+      "explore_rate": 0,
+      "raise_on_failure": true
+    },
+    "providers": [
+      {
+        "name": "voicerouter.providers.deepgram.DeepgramTTS",
+        "endpoint": "wss://api.deepgram.com/v1/speak",
+        "language_map": {
+          "en": {
+            "model": "aura-2-thalia-en"
+          }
+        }
+      }
+    ]
+  }
+}

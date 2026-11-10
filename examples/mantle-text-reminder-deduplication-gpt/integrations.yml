@@ -1,0 +1,54 @@
+# External integrations for the Cedar Clinic appointment-messages agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa's OpenAI client sends
+# gpt-5.5-2026-04-23 through LiteLLM.
+#
+# reasoning_effort is set to low rather than Rasa's default for this model,
+# which is none (rasa/shared/utils/llm.py, _apply_default_reasoning_effort).
+# In the Northgate block-card build (examples/mantle-voice-banking-block-card-gpt),
+# at none GPT-5.5 twice wrote a tool call out as text that Mantle sent to the
+# caller, and twice announced an action and ended the turn without taking it;
+# at low, on the same nine calls, it did neither, for about 130 ms more to the
+# first token. This case's failure is a reminder the patient was told about
+# that does not match the booking: an agent that says "I've sent you a new
+# reminder" without calling send_appointment_reminder, or prints the call as
+# its reply, fails the case, so the build starts at low. The
+# `reasoning-default` variant in case-build/conversations.json removes this line.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+#
+# Target channel: Twilio SMS, through Rasa's `twilio` channel
+# (/webhooks/twilio/webhook). It is not enabled because the programme has no
+# Twilio account yet. With one, add:
+#
+#   twilio:
+#     account_sid: ${TWILIO_ACCOUNT_SID}
+#     auth_token: ${TWILIO_AUTH_TOKEN}
+#     twilio_number: ${TWILIO_NUMBER}
+#
+# On that channel the conversation's sender id is the patient's phone number
+# (the form's `From`), and Rasa splits every bot message on blank lines into
+# separate SMS messages. Neither has been run here.
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true

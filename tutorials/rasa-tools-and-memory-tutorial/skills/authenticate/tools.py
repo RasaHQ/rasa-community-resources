@@ -22,6 +22,12 @@ async def verify_passphrase(passphrase: str, context: ToolContext = None) -> Too
     Args:
         passphrase: The secret word the caller gives to prove identity.
     """
+    if context is not None and context.memory.get("project.authenticated") is True:
+        return ToolResult(llm_response={
+            "ok": True, "already_authenticated": True,
+            "customer_id": context.memory.get("project.customer_id"),
+        })
+
     customer = customer_by_passphrase(passphrase)
 
     if customer is None:
@@ -34,8 +40,8 @@ async def verify_passphrase(passphrase: str, context: ToolContext = None) -> Too
 
     # Writing to project memory is what lets later skills skip this work.
     if context is not None:
-        # Bare names on write: the slice resolves them against this skill, then
-        # the project. A qualified "project.x" is valid on get(), not on set().
+        # Bare names resolve against this skill, then the project. The pinned
+        # runtime also accepts qualified project names; later overwrites fail.
         context.memory.set("customer_id", customer["customer_id"])
         context.memory.set("authenticated", True)
         context.memory.set("verification_method", "passphrase")

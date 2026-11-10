@@ -1,0 +1,241 @@
+{
+ "schema": 1,
+ "build": "telco-diagnostics-gpt-text",
+ "case": "telco-diagnostics",
+ "project": "examples/mantle-text-telco-diagnostics-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T02:50:47.797687+00:00",
+ "finished_at": "2026-09-30T02:53:44.581510+00:00",
+ "model_file": "20260930-035302-sleek-jarhead.tar.gz",
+ "train_seconds": 135.4,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 0,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 2735.8,
+   "p95": 8094.4,
+   "max": 8094.4,
+   "mean": 4255.3
+  },
+  "llm_calls": 5,
+  "llm_calls_per_turn": 1.67,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 9487,
+  "completion_tokens": 290,
+  "reasoning_tokens": 78,
+  "cached_prompt_tokens": 3072,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "device_action_claim": 0,
+   "tool_call_as_text": 0
+  },
+  "tool_result_metrics": {
+   "device_changes": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.tool_confirmation.paused": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.042311,
+  "llm_cost_usd": 0.042311,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-diagnose-then-reboot",
+   "kind": "normal",
+   "description": "Diagnose first, then the customer chooses a reboot and confirms it.",
+   "conversation_id": "telco-diagnostics-gpt-text-normal-diagnose-then-reboot-20260930T025047",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "The internet at my shop stopped working. What's wrong?",
+     "latency_ms": 8094.4,
+     "bot": [
+      "Hello Dana, this is Juniper Mobile connection support. I can check for outages, run a read-only line check, or help you reboot or reset your hub. What can I help with?",
+      "Which service should I check: cabin 5G at Pine Hollow Cabin, Lake Arden, or home fibre at 14 Wren Street, Millbrook?"
+     ]
+    },
+    {
+     "user": "OK, reboot it then.",
+     "latency_ms": 2735.8,
+     "bot": [
+      "I can do that, but I need to know which service you mean first. Should I check the cabin 5G at Pine Hollow Cabin, Lake Arden, or the home fibre at 14 Wren Street, Millbrook?"
+     ]
+    },
+    {
+     "user": "Yes, do it.",
+     "latency_ms": 1935.7,
+     "bot": [
+      "Please choose one service before I can check it or reboot anything: cabin 5G at Pine Hollow Cabin, Lake Arden, or home fibre at 14 Wren Street, Millbrook?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "run_line_diagnostics",
+      "args": {
+       "service_id": "JM-FB-204988"
+      },
+      "result": {
+       "status": "diagnosed"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "run_recovery_step",
+      "result": {
+       "status": "executed",
+       "service_id": "JM-FB-204988",
+       "confirmed_operation": "reboot",
+       "command_sent": "REBOOT"
+      },
+      "after_user_turn": 1
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "run_recovery_step",
+      "result": {
+       "command_sent": "FACTORY_RESET"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "device_action_claim": [],
+    "tool_call_as_text": [],
+    "device_changes": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.paused": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.paused": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 5,
+    "main_loop_calls": 4,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 9487,
+    "completion_tokens": 290,
+    "reasoning_tokens": 78,
+    "cached_prompt_tokens": 3072,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.042311,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1502.3,
+     2517.1,
+     1555.9,
+     2719.1,
+     1796.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "telco-diagnostics-gpt-text-normal-diagnose-then-reboot-20260930T025047",
+    "prompt": 9487,
+    "completion": 290,
+    "total": 9777,
+    "generations": 5,
+    "fetched_at": "2026-09-30T02:53:44.225649+00:00"
+   }
+  }
+ ]
+}

@@ -1,0 +1,150 @@
+> **22 October revision:** Start with [the participant guide](../PARTICIPANT-GUIDE.md) for the three-hour route, current API distinctions, and platform requirements. These chapters are reference exercises; their checks do not certify the complete voice-to-build-to-voice journey.
+
+# Chapter 8: Measure results and recover without guessing
+
+A worker crashes before it records a verdict. Your team needs the change finished, but retrying without checking the earlier result could repeat work that already happened. Set a retry allowance and see when the factory stops and asks for help.
+
+Time: about 20 minutes. You need: Python 3.12, [uv](https://docs.astral.sh/uv/) and a clone of this repository. Use the supplied code with Python's standard library; no model, account, license or network request is needed after Python is installed. You can start here without completing the earlier chapters.
+
+You're done when `ch08 OK` confirms that your proposal passes, the baseline fails and recovery ends as your chosen allowance requires.
+
+If you get stuck, use [the ready folder](ready/ch08) and follow **Get the ready folder** below in a fresh work folder.
+
+## When a check stops without a verdict
+
+A **verdict** says whether a proposed change meets the requirements. ACCEPT means it does; REJECT means it does not. A **crash** or **timeout** produces no verdict. Retrying a crash can help. Repeating a rejected change does not fix it and can reveal information about the protected tests.
+
+An **escalation** stops the automatic loop and asks a person to investigate. A **ledger** is the local file that remembers the attempts and their outcome. This chapter allows one process to write that file at a time.
+
+```mermaid
+flowchart LR
+    A[Run the protected checks] --> B{Verdict received?}
+    B -->|Yes| C[Record ACCEPT or REJECT and stop]
+    B -->|No| D{Another attempt allowed?}
+    D -->|Yes| A
+    D -->|No| E[ESCALATE to a person]
+```
+
+You will change a JSON setting that controls how many attempts the factory allows. The small request lets you follow each attempt from the first crash to the recorded outcome.
+
+## Get the ready folder
+
+Set `PACK` as in Chapter 0. Run the whole block from a terminal:
+
+```bash
+export PACK=~/rasa-community-resources/workshops/software-factories-masterclass   # after a clone
+# after unzipping, use this line instead: export PACK=/path/to/the/unzipped/software-factories-masterclass
+export WORK=~/factory-work/my-factory-ch08
+if [ -e "$WORK" ]; then
+  printf '%s\n' 'Refused: that folder already exists. Choose a fresh WORK name.'
+else
+  mkdir -p ~/factory-work &&
+  cp -R "$PACK/book/ready/ch08" "$WORK" &&
+  cd "$WORK" &&
+  uv venv --python 3.12 .venv &&
+  . .venv/bin/activate
+fi
+```
+
+If the folder exists, choose a new `WORK` name and repeat the block. Earlier evidence stays intact. There is no package installation command: this exercise has no third-party dependencies. Use Python 3.12; other versions return NOT_READY when the verifier checks the environment.
+
+## See how it works
+
+1. Run the supplied configuration builder and the real protected checks:
+
+   ```bash
+   python lesson.py see
+   ```
+
+   You see `SCRIPTED teaching builder` and ACCEPT. This builder writes a known proposal with two attempts. It makes zero model calls. ACCEPT comes from the separate verifier, which reads the JSON and runs four protected tests. It is not a scripted success message.
+
+2. Read these three files:
+
+   - `tasks/c-recovery-attempts.json` asks for an attempt count and permits only `product/recovery.json` to change.
+   - `acceptance/c_recovery_policy.py` checks the count, the exact fields and the rule that REJECT is never retried.
+   - `recover.py` records a crash, retries within the chosen allowance and stops on a verdict or escalation.
+
+   The builder receives the public request. The factory keeps the protected tests separate and checks the JSON as data, without importing or executing it.
+
+## Now change it
+
+You choose a requirement. The supplied builder changes the JSON; you do not edit that product file by hand.
+
+1. Choose **1 or 3 total attempts**. Three permits a retry after the controlled first crash:
+
+   ```bash
+   python set_request.py 3
+   python lesson.py build
+   ```
+
+   You see ACCEPT for your request. `attempts/mine/product/recovery.json` contains the checked proposal. The original configuration still allows two attempts. Choosing 1 is also valid; its expected recovery outcome is ESCALATE rather than ACCEPT.
+
+2. Measure two deliberately chosen teaching cases:
+
+   ```bash
+   python lesson.py measure
+   ```
+
+   The verifier rejects the original two-attempt configuration against your new requirement. The report counts one accepted proposal and one rejected baseline. It explicitly labels them **CONTROLLED teaching cases** and leaves missing time and cost unreported.
+
+   These two outcomes are not a model success rate. We selected them to show both verdicts; repeating them does not create independent evidence. For a real comparison, decide the task set, environment, model settings, budget and scoring rules before running; retain failures and incomplete runs as well as successes. Record measured usage and time. Run the same tasks under comparable conditions and get someone independent to check the scoring. Passing these requirements still does not prove that users will find the product useful.
+
+3. Run a controlled recovery exercise:
+
+   ```bash
+   python lesson.py recover
+   ```
+
+   With 3 attempts allowed, the first attempt is deliberately marked CRASHED before any test starts. The second executes the real protected checks and records ACCEPT. You see two attempts executed. With 1 allowed, the first crash exhausts the allowance: you see ESCALATE and exit code 4. That is the intended outcome for that request, not a failed exercise.
+
+4. Repeat that command:
+
+   ```bash
+   python lesson.py recover
+   ```
+
+   You see `DUPLICATE`, the stored outcome and `Recovery attempts executed in this invocation: 0`. The ledger remembers ACCEPT, REJECT and ESCALATE for the same work. A changed task, proposal, baseline, verifier, test suite or runtime is different work.
+
+   Keep the ledger and run folders so you can see why the repeated request did no more work.
+
+## You are done when
+
+```bash
+python lesson.py check
+```
+
+This exits 0 and prints `ch08 OK`: your proposal received protected ACCEPT, the baseline received REJECT and recovery ended as required by your choice. The command fails before the exercise or if the checked proposal changes afterward. With a one-attempt request, its success includes the expected ESCALATE outcome.
+
+## Where a person still decides
+
+Automation does not give the proposer permission to weaken its own checks. `policy.json` lists protected paths, and `policy.py` illustrates how a proposal touching those paths is sent for independent review. These files explain the supervision policy; they are not an access-control boundary.
+
+Imagine twelve changes that all work for the same common request. A thirteenth request might use a date format none of those changes covered. Twelve successes do not show how often unfamiliar requests will fail.
+
+You can inspect that hypothetical example without running more builders:
+
+```bash
+python policy.py what-if policy.json 12 12
+```
+
+It starts `WHAT-IF`: these are numbers you supplied, not measured results. It ends `HOLD at L0`, meaning a person must still read every accepted change before release. The line called `Wilson lower bound` is a cautious estimate of the success rate, rather than the observed twelve out of twelve. It assumes each attempt is a separate, comparable test; it cannot make a selected set of easy examples representative of other requests. Even if you supply larger numbers, a person must approve any change to that supervision rule. This command changes no policy.
+
+## If it fails
+
+- **NOT_READY:** use Python 3.12. A setup problem is not a verdict on the change. This exercise calls a setup failure NOT_READY; earlier chapters call it “could not run”. Neither means REJECT.
+- **An attempt or measurement folder already exists:** keep it and start the chapter in a fresh `WORK` folder. Do not erase evidence to obtain a cleaner result.
+- **ESCALATE with one attempt:** that is expected. Run the completion check. To explore three attempts, start a fresh folder and request 3.
+- **A proposal changed after ACCEPT:** let the builder make a fresh proposal in a fresh exercise folder. Do not edit the protected tests or ledger to make the completion check pass.
+- **You want a real timeout test:** the controlled classroom fault is a crash, not a measured timeout. `recover.py` also bounds the verifier subprocess by a deadline; that mechanism needs separate platform testing before deployment.
+
+## Good to know
+
+This exercise changes the recovery configuration, without changing the earlier market card or restarting an agent. Its data-only checks do not replace the macOS sandbox needed for Python product tests.
+
+The ledger has a single writer. A process killed after doing work but before saving could repeat that work, so a production system also needs coordination between workers and care with effects such as payments.
+
+## What you just learned
+
+You set an attempt allowance and watched a crash lead to a retry or an escalation. The saved outcome let you repeat the request without executing the same attempts again.
+
+Next: use [the book index](README.md) to choose the part of your own factory you want to change.

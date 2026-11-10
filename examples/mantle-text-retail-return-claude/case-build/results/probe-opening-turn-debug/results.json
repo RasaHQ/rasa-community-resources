@@ -1,0 +1,224 @@
+{
+ "schema": 1,
+ "build": "retail-return-claude-text",
+ "case": "retail-return",
+ "project": "examples/mantle-text-retail-return-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [],
+ "channel": "rest",
+ "started_at": "2026-09-30T04:35:49.229671+00:00",
+ "finished_at": "2026-09-30T04:36:00.899587+00:00",
+ "model_file": "20260930-053551-radiant-canal.tar.gz",
+ "train_seconds": 3.2,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 0,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 1,
+  "turn_latency_ms": {
+   "p50": 682.7,
+   "p95": 682.7,
+   "max": 682.7,
+   "mean": 682.7
+  },
+  "llm_calls": 1,
+  "llm_calls_per_turn": 1.0,
+  "side_channel_calls": 0,
+  "empty_completions": 0,
+  "failed_llm_calls": 1,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 1,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "reasoning_tokens": 0,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "refund_claim": 0
+  },
+  "tool_result_metrics": {
+   "labels_issued": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 1,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0,
+  "llm_cost_usd": 0,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.132318,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "adversarial-final-sale",
+   "kind": "adversarial",
+   "description": "item_eligibility_verified false: a final-sale item.",
+   "conversation_id": "retail-return-claude-text-adversarial-final-sale-20260930T043549",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "The clearance rain jacket from WS-20688 doesn't fit. I want my money back.",
+     "latency_ms": 682.7,
+     "bot": [
+      "Hi, this is Willow Shop returns and exchanges. Which item would you like to return or exchange?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "find_order_item",
+      "result": {
+       "status": "found",
+       "item_ref": "WS-20688-1",
+       "eligible": false,
+       "ineligible_because": "final_sale"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_return_request",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "refund_claim": [],
+    "labels_issued": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.turn.failed": 1,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "retail-return-claude-text-adversarial-final-sale-20260930T043549"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": []
+   },
+   "usage": {
+    "llm_calls": 1,
+    "main_loop_calls": 1,
+    "side_channel_calls": 0,
+    "failed_calls": 1,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 1,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     623.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "retail-return-claude-text-adversarial-final-sale-20260930T043549",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T04:36:00.637516+00:00"
+   }
+  }
+ ]
+}

@@ -1,0 +1,140 @@
+{
+  "organisation": "Horizon Travel (fictional travel company)",
+  "note": "Invented fixture. Horizon Travel, its flights, the storm, every passenger, case, hold and reference here are fictional. Airport codes are used only as places.",
+  "as_of": "2026-11-12T19:00:00-05:00",
+  "clock_label_zone": "Boston time",
+  "minutes_per_passenger_message": 6,
+  "default_hold_minutes": 20,
+  "session_passenger_id": "HT-PAX-3081",
+  "passengers": {
+    "HT-PAX-3081": {"first_name": "Noor", "last_name": "Castellan", "disruption_case": "HT-DC-40117"},
+    "HT-PAX-5530": {"first_name": "Teodor", "last_name": "Brandt", "disruption_case": "HT-DC-40290"}
+  },
+  "cases": {
+    "HT-DC-40117": {
+      "passenger_id": "HT-PAX-3081",
+      "booking_reference": "HZ7Q2K",
+      "cancelled_flight": "HZ 214 Boston-Lisbon, 12 Nov 21:30, cancelled by the storm",
+      "onward_flight": "HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked",
+      "constraints": {
+        "origin": "BOS",
+        "destination": "LIS",
+        "arrive_by": "2026-11-14T14:30:00+00:00",
+        "arrive_by_reason": "90 minutes before the onward Funchal flight HZ 5231 at 16:00 on 14 Nov",
+        "party_size": 1,
+        "cabin": "economy"
+      },
+      "requirements": [],
+      "status": "open"
+    },
+    "HT-DC-40290": {
+      "passenger_id": "HT-PAX-5530",
+      "booking_reference": "HZ9M4T",
+      "cancelled_flight": "HZ 214 Boston-Lisbon, 12 Nov 21:30, cancelled by the storm",
+      "onward_flight": null,
+      "constraints": {
+        "origin": "BOS",
+        "destination": "LIS",
+        "arrive_by": "2026-11-15T23:59:00+00:00",
+        "arrive_by_reason": "passenger's stated latest arrival",
+        "party_size": 1,
+        "cabin": "economy"
+      },
+      "requirements": [],
+      "status": "open"
+    }
+  },
+  "options": {
+    "RB-1301": {
+      "flight": "HZ 216",
+      "label": "HZ 216 Boston-Lisbon nonstop, dep 13 Nov 21:30, arr 14 Nov 09:05",
+      "origin": "BOS",
+      "destination": "LIS",
+      "departs": "2026-11-13T21:30:00-05:00",
+      "arrives": "2026-11-14T09:05:00+00:00",
+      "connection": null,
+      "seats": 1,
+      "gone_before_hold": true,
+      "gone_detail": "Another passenger's hold took the last seat after your search.",
+      "commit_outcome": "committed",
+      "services": ["seat assignment"]
+    },
+    "RB-1302": {
+      "flight": "HZ 318",
+      "label": "HZ 318 Boston-Ponta Delgada-Lisbon, dep 13 Nov 19:40, arr 14 Nov 10:55",
+      "origin": "BOS",
+      "destination": "LIS",
+      "departs": "2026-11-13T19:40:00-05:00",
+      "arrives": "2026-11-14T10:55:00+00:00",
+      "connection": {"airport": "PDL", "minutes": 55, "step_free": false,
+                     "note": "55-minute change in Ponta Delgada by apron bus with stair boarding"},
+      "seats": 4,
+      "commit_outcome": "committed",
+      "services": ["seat assignment on the Lisbon leg"]
+    },
+    "RB-1303": {
+      "flight": "HZ 402",
+      "label": "HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20",
+      "origin": "BOS",
+      "destination": "LIS",
+      "departs": "2026-11-13T14:10:00-05:00",
+      "arrives": "2026-11-14T07:20:00+00:00",
+      "connection": {"airport": "JFK", "minutes": 135, "step_free": true,
+                     "note": "2 h 15 min change at New York JFK, jet bridges both legs, step-free"},
+      "seats": 3,
+      "commit_outcome": "committed",
+      "services": []
+    },
+    "RB-1304": {
+      "flight": "HZ 220",
+      "label": "HZ 220 Boston-Lisbon nonstop, dep 14 Nov 21:30, arr 15 Nov 09:05",
+      "origin": "BOS",
+      "destination": "LIS",
+      "departs": "2026-11-14T21:30:00-05:00",
+      "arrives": "2026-11-15T09:05:00+00:00",
+      "connection": null,
+      "seats": 9,
+      "commit_outcome": "committed",
+      "services": []
+    },
+    "RB-1305": {
+      "flight": "HZ 118",
+      "label": "HZ 118 Boston-Lisbon nonstop, dep 13 Nov 07:15, arr 13 Nov 18:50",
+      "origin": "BOS",
+      "destination": "LIS",
+      "departs": "2026-11-13T07:15:00-05:00",
+      "arrives": "2026-11-13T18:50:00+00:00",
+      "connection": null,
+      "seats": 2,
+      "hold_minutes": 5,
+      "hold_note": "High demand: holds on this flight last 5 minutes.",
+      "commit_outcome": "committed",
+      "services": ["seat assignment"]
+    },
+    "RB-1306": {
+      "flight": "HZ 350",
+      "label": "HZ 350 Boston-Madrid-Lisbon, dep 13 Nov 17:05, arr 14 Nov 11:40",
+      "origin": "BOS",
+      "destination": "LIS",
+      "departs": "2026-11-13T17:05:00-05:00",
+      "arrives": "2026-11-14T11:40:00+00:00",
+      "connection": {"airport": "MAD", "minutes": 100, "step_free": true,
+                     "note": "1 h 40 min change in Madrid, jet bridges both legs, step-free"},
+      "seats": 5,
+      "commit_outcome": "queued",
+      "queued_detail": "The booking service took the request but the ticket reissue is queued behind the storm backlog.",
+      "services": ["seat assignment"]
+    }
+  },
+  "holds": {
+    "HT-RH-7710": {
+      "case_reference": "HT-DC-40117",
+      "passenger_id": "HT-PAX-3081",
+      "option_id": "RB-1303",
+      "state": "active",
+      "held_at": "2026-11-12T11:20:00-05:00",
+      "expires_at": "2026-11-12T11:40:00-05:00",
+      "made_in": "the Horizon Travel app, this morning"
+    }
+  }
+}

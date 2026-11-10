@@ -1,0 +1,56 @@
+# External integrations for the Juniper Mobile retention agent.
+#
+# The orchestrator LLM is a model-group reference. Rasa's OpenAI client sends
+# gpt-5.5-2026-04-23 through LiteLLM.
+#
+# reasoning_effort is set to low rather than Rasa's default for this model,
+# which is none (rasa/shared/utils/llm.py, _apply_default_reasoning_effort).
+# In the Northgate block-card build (examples/mantle-voice-banking-block-card-gpt),
+# at none GPT-5.5 twice wrote a tool call out as text that Mantle sent to the
+# caller, and twice announced an action and ended the turn without taking it;
+# at low, on the same nine calls, it did neither, for about 130 ms more to the
+# first token. This agent's job depends on calling a tool before it speaks:
+# record_cancellation_request when the customer asks to leave, and
+# withdraw_contact when they say stop. An agent that says "your request is
+# recorded" without calling the tool, or prints the call as its reply, leaves
+# the customer with no cancellation on file, so the build starts at low. The
+# `reasoning-default` variant in case-build/conversations.json removes this line.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+
+# Mantle reads channels from here, never from credentials.yml.
+# `rest` is the web-chat HTTP endpoint (/webhooks/rest/webhook) the build
+# harness drives; `socketio` is what a browser chat widget connects to;
+# `inspector` serves `rasa inspect`.
+#
+# Target channel: Telegram, through Rasa's `telegram` channel
+# (/webhooks/telegram/webhook). It is not enabled because the build has no
+# Telegram bot token yet. With one from BotFather, add:
+#
+#   telegram:
+#     access_token: ${TELEGRAM_ACCESS_TOKEN}
+#     verify: ${TELEGRAM_BOT_USERNAME}
+#     webhook_url: https://<public host>/webhooks/telegram/webhook
+#
+# Telegram users stop a bot by typing /stop. lib/conversation.py keeps every
+# "/" message except /session_start as the customer's words, so /stop counts
+# as a refusal (tested offline and in one web-chat conversation, not on
+# Telegram).
+channels:
+  rest:
+    enabled: true
+  socketio:
+    enabled: true
+    user_message_evt: user_uttered
+    bot_message_evt: bot_uttered
+    session_persistence: true
+  inspector:
+    enabled: true

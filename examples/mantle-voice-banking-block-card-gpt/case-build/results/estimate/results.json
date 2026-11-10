@@ -1,0 +1,637 @@
+{
+ "schema": 1,
+ "build": "banking-block-card-gpt-voice",
+ "case": "banking-block-card",
+ "project": "examples/mantle-voice-banking-block-card-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-29T21:21:43.721244+00:00",
+ "finished_at": "2026-09-29T21:22:52.951586+00:00",
+ "model_file": "20260929-222146-coplanar-davit.tar.gz",
+ "train_seconds": 3.3,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 0,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 2339.3,
+   "p95": 2553.4,
+   "max": 2553.4,
+   "mean": 2158.9
+  },
+  "llm_calls": 10,
+  "llm_calls_per_turn": 3.33,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "prompt_tokens": 22547,
+  "completion_tokens": 393,
+  "reasoning_tokens": 0,
+  "cached_prompt_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 3,
+  "bot_text_metrics": {},
+  "tool_result_metrics": {
+   "unselected_cards_changed": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "browser_audio.handle_message.error": 0
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 3,
+   "audio_turns": 3,
+   "eos_to_first_audible_ms": {
+    "n": 3,
+    "p50": 2339.3,
+    "p95": 2553.4,
+    "max": 2553.4
+   },
+   "eos_to_first_audio_ms": {
+    "n": 3,
+    "p50": 2339.3,
+    "p95": 2553.4,
+    "max": 2553.4
+   },
+   "eos_to_first_marker_ms": {
+    "n": 3,
+    "p50": 1866.3,
+    "p95": 2023.8,
+    "max": 2023.8
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 3,
+     "p50": 682.4,
+     "p95": 916.6,
+     "max": 916.6
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 3,
+     "p50": 474.5,
+     "p95": 529.6,
+     "max": 529.6
+    },
+    "tts_complete_latency_ms": {
+     "n": 3,
+     "p50": 1396.6,
+     "p95": 1723.2,
+     "max": 1723.2
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 3,
+    "user_perceived_latency_ms": {
+     "n": 3,
+     "p50": 1155.5,
+     "p95": 1446.2,
+     "max": 1446.2
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 3,
+     "p50": 674.7,
+     "p95": 899.8,
+     "max": 899.8
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 3,
+     "p50": 948.2,
+     "p95": 1239.5,
+     "max": 1239.5
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 3,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 2,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": 0.0,
+    "wer_p50": 0.0,
+    "tokens": {
+     "name": {
+      "checked": 2,
+      "exact": 2,
+      "normalised": 2
+     },
+     "digits": {
+      "checked": 2,
+      "exact": 0,
+      "normalised": 2
+     },
+     "card_ending": {
+      "checked": 2,
+      "exact": 0,
+      "normalised": 2
+     }
+    }
+   },
+   "stt_audio_seconds": 58.2,
+   "tts_characters": 545,
+   "stt_usd": 0.006301,
+   "tts_usd": 0.01635,
+   "speech_cost_usd": 0.022651,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.147176,
+  "llm_cost_usd": 0.124525,
+  "speech_cost_usd": 0.022651,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.04968,
+  "budget_usd": 5.0
+ },
+ "conversations": [
+  {
+   "id": "correction-other-card-at-confirmation",
+   "kind": "correction",
+   "description": "At the confirmation question the caller names a different card; selection is repeated before any block.",
+   "conversation_id": "banking-block-card-gpt-voice-correction-other-card-at-confirmation-20260929T212143",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hi, this is Nadia Okafor, date of birth March fourteenth, nineteen eighty-six. Block my debit card ending four four one seven.",
+     "latency_ms": 2553.4,
+     "bot": [
+      "Okay, I\u2019ll start securing that card now.",
+      "Do you mean the debit card ending 4 4 1 7 on your everyday current account? Blocking that card will not replace it or change your other cards.\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 7.42,
+      "speech_off_epoch": 1790716926.964598,
+      "eos_to_first_marker_ms": 2023.8,
+      "eos_to_first_audio_ms": 2553.4,
+      "eos_to_first_audible_ms": 2553.4,
+      "end_markers": [
+       {
+        "at_ms": 3746.9,
+        "rasa_processing_latency_ms": 916.5711402893066,
+        "tts_first_byte_latency_ms": 529.6361446380615,
+        "tts_complete_latency_ms": 1723.1509685516357
+       },
+       {
+        "at_ms": 9663.7,
+        "rasa_processing_latency_ms": 916.5711402893066,
+        "tts_first_byte_latency_ms": 194.75507736206055,
+        "tts_complete_latency_ms": 4054.795980453491
+       }
+      ],
+      "bot_audio_s": 11.18,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hi. This is Nadia Okafor. Date of birth, March fourteenth nineteen eighty six. Block my debit card ending four four one seven."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1446.1945829971228,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 899.8214999737684,
+         "llm_total_generation_ms": 1239.4875409954693,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "No, sorry, I meant my credit card, the one ending eight zero two three.",
+     "latency_ms": 2339.3,
+     "bot": [
+      "Ah, I\u2019ll switch to that card instead.",
+      "Okay, I have not blocked that card."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 3.9,
+      "speech_off_epoch": 1790716945.631073,
+      "eos_to_first_marker_ms": 1866.3,
+      "eos_to_first_audio_ms": 2339.3,
+      "eos_to_first_audible_ms": 2339.3,
+      "end_markers": [
+       {
+        "at_ms": 3262.9,
+        "rasa_processing_latency_ms": 682.4429035186768,
+        "tts_first_byte_latency_ms": 473.0851650238037,
+        "tts_complete_latency_ms": 1396.6240882873535
+       },
+       {
+        "at_ms": 4604.6,
+        "rasa_processing_latency_ms": 682.4429035186768,
+        "tts_first_byte_latency_ms": 198.1823444366455,
+        "tts_complete_latency_ms": 1340.691328048706
+       }
+      ],
+      "bot_audio_s": 6.64,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "No. Sorry. I meant my credit card. The one ending eight zero two three."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1155.518125015078,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 674.7156250057742,
+         "llm_total_generation_ms": 948.2382090063766,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, that's right.",
+     "latency_ms": 1584.1,
+     "bot": [
+      "Right, I\u2019ll find that credit card now.",
+      "Do you mean the credit card ending 8 0 2 3 on your Northgate Rewards credit account? Blocking that card will not replace it or change your other cards.\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.67,
+      "speech_off_epoch": 1790716955.851968,
+      "eos_to_first_marker_ms": 1109.6,
+      "eos_to_first_audio_ms": 1584.1,
+      "eos_to_first_audible_ms": 1584.1,
+      "end_markers": [
+       {
+        "at_ms": 2468.0,
+        "rasa_processing_latency_ms": 645.7188129425049,
+        "tts_first_byte_latency_ms": 474.49421882629395,
+        "tts_complete_latency_ms": 1358.4671020507812
+       },
+       {
+        "at_ms": 6512.2,
+        "rasa_processing_latency_ms": 645.7188129425049,
+        "tts_first_byte_latency_ms": 201.6010284423828,
+        "tts_complete_latency_ms": 4043.5311794281006
+       }
+      ],
+      "bot_audio_s": 12.16,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes. That's right."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1120.1960000034887,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 637.3552909935825,
+         "llm_total_generation_ms": 923.1542909983546,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "block_card",
+      "args": {
+       "card_ref": "NB-CARD-0102"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "card_ref": "NB-CARD-0102",
+       "unselected_cards_changed": 0,
+       "replacement_ordered": false
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "block_card",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "card_ref": "re:^(?!NB-CARD-0102$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "select_card",
+        "result": {
+         "card_ref": "NB-CARD-0101"
+        }
+       },
+       {
+        "tool": "select_card",
+        "result": {
+         "card_ref": "NB-CARD-0102"
+        }
+       },
+       {
+        "tool": "block_card",
+        "result": {
+         "status": "succeeded"
+        }
+       }
+      ]
+     },
+     "passed": false,
+     "detail": "no block_card call after position 6"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Nadia Okafor",
+      "date_of_birth": "1986-03-14"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_card",
+     "arguments": {
+      "card_last_four": "4417",
+      "card_kind": "debit"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "block_card",
+     "arguments": {
+      "card_ref": "NB-CARD-0101"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "block_card",
+     "arguments": {
+      "card_ref": "NB-CARD-0101"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "select_card",
+     "arguments": {
+      "card_last_four": "8023",
+      "card_kind": "credit"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "block_card",
+     "arguments": {
+      "card_ref": "NB-CARD-0102"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll start securing that card now.",
+     "Ah, I\u2019ll switch to that card instead.",
+     "Right, I\u2019ll find that credit card now."
+    ],
+    "unselected_cards_changed": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.turn.failed": 0,
+    "voice_channel.audio_missing": 0,
+    "browser_audio.handle_message.error": 0,
+    "voice_channel.streaming_task_failed": 0
+   },
+   "log_event_details": {
+    "mantle.turn.failed": [],
+    "voice_channel.audio_missing": [],
+    "browser_audio.handle_message.error": [],
+    "voice_channel.streaming_task_failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "prompt_tokens": 22547,
+    "completion_tokens": 393,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cost_usd": 0.124525,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1239.4,
+     947.6,
+     1050.3,
+     1209.9,
+     2266.4,
+     948.2,
+     923.1,
+     947.4,
+     1156.7,
+     723.1
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 58.16,
+    "tts_characters": 545,
+    "call": {
+     "audio_seconds_sent": 58.16,
+     "call_seconds": 58.17,
+     "markers_acked": 55,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.32
+    },
+    "stt_usd": 0.006301,
+    "tts_usd": 0.01635,
+    "cost_usd": 0.022651,
+    "asr": [
+     {
+      "intended": "Hi, this is Nadia Okafor, date of birth March fourteenth, nineteen eighty-six. Block my debit card ending four four one seven.",
+      "heard": [
+       "Hi. This is Nadia Okafor. Date of birth, March fourteenth nineteen eighty six. Block my debit card ending four four one seven."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "Nadia",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Okafor",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "14",
+        "kind": "digits",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1986",
+        "kind": "digits",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "4417",
+        "kind": "card_ending",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "No, sorry, I meant my credit card, the one ending eight zero two three.",
+      "heard": [
+       "No. Sorry. I meant my credit card. The one ending eight zero two three."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": [
+       {
+        "token": "8023",
+        "kind": "card_ending",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-block-card-gpt-voice-correction-other-card-at-confirmation-20260929T212143",
+    "prompt": 22547,
+    "completion": 393,
+    "total": 22940,
+    "generations": 10,
+    "fetched_at": "2026-09-29T21:22:52.708640+00:00"
+   }
+  }
+ ]
+}

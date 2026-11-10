@@ -1,0 +1,20 @@
+# Written only by the roadside tools (never llm_settable), so the place the
+# engine asks the caller to confirm is always the draft the tools hold. One
+# short field per value: Mantle cuts a memory value at 100 characters in the
+# prompt, silently.
+# policy_number: the policy find_policy matched from the caller's digits and surname.
+# pending_draft_ref: the draft's id and version; request_dispatch checks it.
+# pending_vehicle_label / pending_location_label / pending_service_label:
+#   read back in the confirmation question.
+schema:
+  public:
+    policy_number:
+      type: text
+    pending_draft_ref:
+      type: text
+    pending_vehicle_label:
+      type: text
+    pending_location_label:
+      type: text
+    pending_service_label:
+      type: text

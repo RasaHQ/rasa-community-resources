@@ -1,11 +1,19 @@
 # Ora — a Rasa Mantle agent on HubSpot CRM
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-hubspot-crm-tutorial/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make run`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the server starts on port 5005.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners wiring an agent to a system of record
 Time:          45–60 minutes, plus 20–30 for the MCP chapter
 ```
@@ -192,7 +200,7 @@ This tutorial used to end with a promise:
 > REST. When MCP lands, the same three skills can keep their instructions and
 > swap `tools/crm.py` for imported remote tools.
 
-MCP has landed, and the promise held. `rasa-pro 3.20.0rc1` connects to
+MCP has landed, and the promise held. `rasa-pro 3.21.0.dev5` connects to
 `mcp_servers:` and resolves `import_tools: mcp/<server>:<tool>` at model load.
 The three skills now run against a remote MCP server **with their instructions
 unchanged**.

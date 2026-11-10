@@ -1,0 +1,13 @@
+[project]
+name = "mantle-deepagents-voice-disputes"
+version = "0.1.0"
+description = "Synthetic bank charge research with Mantle voice and a read-only Deep Agents tool"
+requires-python = ">=3.12,<3.13"
+dependencies = ["rasa-pro==3.21.0.dev5", "bank-charge-research"]
+[tool.rasa-catalog]
+required-secrets = ["OPENAI_API_KEY", "DEEPGRAM_API_KEY", "RIME_API_KEY"]
+[tool.uv]
+prerelease = "allow"
+package = false
+[tool.uv.sources]
+bank-charge-research = { path = "../shared", editable = true }

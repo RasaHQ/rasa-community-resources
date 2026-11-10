@@ -1,0 +1,111 @@
+{
+ "organisation": "Horizon Travel (fictional)",
+ "partners": "Horizon Transfers, Horizon Park and Fly, and Sierra Walks (fictional partners)",
+ "note": "Entirely fictional fixture data for a teaching project. Horizon Travel, its flights, partners, travellers, bookings, references, phone numbers and addresses are invented. Airport codes and city names are used only as places.",
+ "as_of": "2026-10-23T18:00:00",
+ "as_of_label": "October 23, evening",
+ "session_traveller_id": "HT-PAX-7204",
+ "travel_desk": "the Horizon Travel desk",
+ "travellers": {
+  "HT-PAX-7204": {
+   "first_name": "Ines",
+   "last_name": "Calloway",
+   "mobile": "+1 303 555 0164",
+   "email": "ines.calloway@example.com"
+  },
+  "HT-PAX-6618": {
+   "first_name": "Marcus",
+   "last_name": "Oyelaran",
+   "mobile": "+1 617 555 0139",
+   "email": "marcus.oyelaran@example.com"
+  }
+ },
+ "cities": {
+  "DEN": "Denver",
+  "BOS": "Boston",
+  "LIS": "Lisbon",
+  "DUB": "Dublin",
+  "MAD": "Madrid"
+ },
+ "bookings": {
+  "HZ4R8N": {
+   "traveller_id": "HT-PAX-7204",
+   "trip": "Denver to Lisbon, round trip",
+   "segments": {
+    "S1": {"flight": "HZ 431", "from": "DEN", "to": "BOS", "direction": "outbound", "departs": "2026-10-16T07:10", "arrives": "2026-10-16T12:55", "status": "flown"},
+    "S2": {"flight": "HZ 214", "from": "BOS", "to": "LIS", "direction": "outbound", "departs": "2026-10-16T21:30", "arrives": "2026-10-17T09:05", "status": "flown", "connects_from": "S1", "min_connection_minutes": 90},
+    "S3": {"flight": "HZ 215", "from": "LIS", "to": "BOS", "direction": "return", "departs": "2026-10-24T11:15", "arrives": "2026-10-24T13:40", "status": "open"},
+    "S4": {"flight": "HZ 438", "from": "BOS", "to": "DEN", "direction": "return", "departs": "2026-10-24T16:05", "arrives": "2026-10-24T18:50", "status": "open", "connects_from": "S3", "min_connection_minutes": 90}
+   },
+   "services": {
+    "TR-1": {"kind": "timed", "label": "hotel pickup to Lisbon airport", "short": "Lisbon hotel pickup", "provider": "Horizon Transfers", "segment": "S3", "event": "departs", "offset_minutes": -165, "time": "2026-10-24T08:30", "auto_retime": true, "status_feed": "ok"},
+    "BG-1": {"kind": "bag", "label": "checked bag, tagged through to Denver", "short": "checked bag", "segments": ["S3", "S4"], "routing": ["HZ 215 2026-10-24", "HZ 438 2026-10-24"], "auto_retime": true, "status_feed": "ok"},
+    "PK-1": {"kind": "cover", "label": "Denver airport parking", "short": "Denver parking", "provider": "Horizon Park and Fly", "segment": "S4", "event": "arrives", "time": "2026-10-24T23:59", "time_meaning": "exit by", "auto_retime": false, "status_feed": "ok"}
+   },
+   "options": {
+    "S3": [
+     {"id": "HZ4R8N-S3-A", "flight": "HZ 219", "departs": "2026-10-24T15:30", "arrives": "2026-10-24T17:55"},
+     {"id": "HZ4R8N-S3-B", "flight": "HZ 215", "departs": "2026-10-25T11:15", "arrives": "2026-10-25T13:40"}
+    ],
+    "S4": [
+     {"id": "HZ4R8N-S4-A", "flight": "HZ 442", "departs": "2026-10-24T20:10", "arrives": "2026-10-24T22:55"},
+     {"id": "HZ4R8N-S4-B", "flight": "HZ 438", "departs": "2026-10-25T16:05", "arrives": "2026-10-25T18:50"}
+    ]
+   }
+  },
+  "HZ6P2L": {
+   "traveller_id": "HT-PAX-7204",
+   "trip": "Boston to Dublin, round trip",
+   "segments": {
+    "S1": {"flight": "HZ 120", "from": "BOS", "to": "DUB", "direction": "outbound", "departs": "2026-11-06T19:40", "arrives": "2026-11-07T07:05", "status": "open"},
+    "S2": {"flight": "HZ 123", "from": "DUB", "to": "BOS", "direction": "return", "departs": "2026-11-13T12:30", "arrives": "2026-11-13T14:45", "status": "open"}
+   },
+   "services": {
+    "CO-1": {"kind": "timed", "label": "coach from Dublin Airport to Galway", "short": "Galway coach", "provider": "Horizon Transfers", "segment": "S1", "event": "arrives", "offset_minutes": 115, "time": "2026-11-07T09:00", "auto_retime": true, "status_feed": "ok"},
+    "CO-2": {"kind": "timed", "label": "coach from Galway to Dublin Airport", "short": "coach to Dublin Airport", "provider": "Horizon Transfers", "segment": "S2", "event": "departs", "offset_minutes": -300, "time": "2026-11-13T07:30", "auto_retime": true, "status_feed": "ok"}
+   },
+   "options": {
+    "S1": [
+     {"id": "HZ6P2L-S1-A", "flight": "HZ 120", "departs": "2026-11-07T19:40", "arrives": "2026-11-08T07:05"}
+    ],
+    "S2": [
+     {"id": "HZ6P2L-S2-A", "flight": "HZ 123", "departs": "2026-11-14T12:30", "arrives": "2026-11-14T14:45"}
+    ]
+   }
+  },
+  "HZ3M9V": {
+   "traveller_id": "HT-PAX-7204",
+   "trip": "Boston to Madrid, one way",
+   "segments": {
+    "S1": {"flight": "HZ 118", "from": "BOS", "to": "MAD", "direction": "outbound", "departs": "2026-10-30T18:50", "arrives": "2026-10-31T07:55", "status": "open"}
+   },
+   "services": {
+    "TO-1": {"kind": "timed", "label": "walking-tour pickup at your Madrid hotel", "short": "Madrid tour pickup", "provider": "Sierra Walks", "segment": "S1", "event": "arrives", "offset_minutes": 245, "time": "2026-10-31T12:00", "auto_retime": true, "status_feed": "unavailable"}
+   },
+   "options": {
+    "S1": [
+     {"id": "HZ3M9V-S1-A", "flight": "HZ 118", "departs": "2026-10-31T18:50", "arrives": "2026-11-01T07:55"}
+    ]
+   }
+  },
+  "HZ8D1X": {
+   "traveller_id": "HT-PAX-6618",
+   "trip": "Boston to Lisbon, one way",
+   "segments": {
+    "S1": {"flight": "HZ 214", "from": "BOS", "to": "LIS", "direction": "outbound", "departs": "2026-10-27T21:30", "arrives": "2026-10-28T09:05", "status": "open"}
+   },
+   "services": {},
+   "options": {
+    "S1": [
+     {"id": "HZ8D1X-S1-A", "flight": "HZ 214", "departs": "2026-10-28T21:30", "arrives": "2026-10-29T09:05"}
+    ]
+   }
+  }
+ },
+ "flight_status": {
+  "HZ 215 2026-10-24": {"state": "delayed", "departs": "2026-10-24T11:55", "arrives": "2026-10-24T14:20", "note": "estimated 40 minutes late"},
+  "HZ 438 2026-10-24": {"state": "on_time", "departs": "2026-10-24T16:05", "arrives": "2026-10-24T18:50"},
+  "HZ 219 2026-10-24": {"state": "on_time", "departs": "2026-10-24T15:30", "arrives": "2026-10-24T17:55"},
+  "HZ 442 2026-10-24": {"state": "on_time", "departs": "2026-10-24T20:10", "arrives": "2026-10-24T22:55"}
+ }
+}

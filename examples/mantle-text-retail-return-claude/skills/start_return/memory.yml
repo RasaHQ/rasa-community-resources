@@ -1,0 +1,21 @@
+# Written only by find_order_item and choose_resolution (never llm_settable),
+# so the request the engine asks the customer to confirm is always the item
+# the tool resolved and the choice the tool recorded. One short field per value:
+# Mantle cuts a memory value at 100 characters in the prompt, silently.
+# selected_item_ref: item resolved on the signed-in customer's own order.
+# selected_item_label: its name, variant and order number, read in the question.
+# selected_resolution: return or exchange, as the customer chose.
+# selected_resolution_label: the choice as read in the question.
+# selected_replacement_ref: for an exchange, the replacement SKU.
+schema:
+  public:
+    selected_item_ref:
+      type: text
+    selected_item_label:
+      type: text
+    selected_resolution:
+      type: text
+    selected_resolution_label:
+      type: text
+    selected_replacement_ref:
+      type: text

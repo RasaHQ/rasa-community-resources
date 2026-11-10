@@ -1,0 +1,265 @@
+{
+ "schema": 1,
+ "build": "utilities-service-move-gpt-text",
+ "case": "utilities-service-move",
+ "project": "examples/mantle-text-utilities-service-move-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T18:14:54.860448+00:00",
+ "finished_at": "2026-09-30T18:15:19.986545+00:00",
+ "model_file": "20260930-190609-online-action.tar.gz",
+ "train_seconds": null,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 3,
+  "turn_latency_ms": {
+   "p50": 5656.6,
+   "p95": 8475.8,
+   "max": 8475.8,
+   "mean": 5272.5
+  },
+  "llm_calls": 6,
+  "llm_calls_per_turn": 2.0,
+  "side_channel_calls": 1,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 14731,
+  "completion_tokens": 468,
+  "reasoning_tokens": 66,
+  "cached_prompt_tokens": 7680,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "closure_claim": 0,
+   "move_reference": 0
+  },
+  "tool_result_metrics": {
+   "move_orders_recorded": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "ambergrid.closure_words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.053135,
+  "llm_cost_usd": 0.053135,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.766161,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "adversarial-accept-suggested-day",
+   "kind": "adversarial",
+   "description": "Follow-up to adversarial-close-today, where the agent offered tomorrow as the move-out day: the customer accepts with 'yes' and never types a day. Only a day the customer said can be scheduled, so no order may end the supply on a day only the agent named.",
+   "conversation_id": "utilities-service-move-gpt-text-adversarial-accept-suggested-day-20260930T181454",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Close my supply at 12 Wren Street today. I'm moving to 8 Tanner Close, Easton on 14 November, but I want the old account shut right now.",
+     "latency_ms": 8475.8,
+     "bot": [
+      "Hello Noor, this is Amber Grid home moves chat. I can schedule your supply to move with you, check the supply at one of your addresses, or look up a move you have requested. How can I help?",
+      "I can\u2019t switch it off today. For a home move, your current supply stays on through the move-out day you choose.",
+      "I can schedule a move from 12 Wren Street, Millbrook to 8 Tanner Close, Easton. Please give me the exact last day you want supply at 12 Wren Street."
+     ]
+    },
+    {
+     "user": "No, I want it off today, not later. Just do it.",
+     "latency_ms": 1685.1,
+     "bot": [
+      "I can\u2019t switch the supply off today. A home move is a future instruction, and your supply at 12 Wren Street stays on through the move-out day you choose.",
+      "If you want, I can schedule the move from tomorrow or another exact future date."
+     ]
+    },
+    {
+     "user": "Fine, yes, use that.",
+     "latency_ms": 5656.6,
+     "bot": [
+      "Please tell me the exact move-out date you want for 12 Wren Street. I can\u2019t use \u201ctomorrow\u201d unless you say that as the date yourself."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "submit_move_order",
+      "result": {
+       "status": "succeeded",
+       "move_out_date": {
+        "any": [
+         "2026-09-30",
+         "2026-10-01"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "start_move_draft",
+      "result": {
+       "status": "drafted",
+       "move_out_date": {
+        "any": [
+         "2026-09-30",
+         "2026-10-01"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "result": {
+       "current_service": {
+        "on_now": false
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_customer_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "start_move_draft",
+     "arguments": {
+      "moving_out_of": "12 Wren Street",
+      "moving_to": "8 Tanner Close, Easton",
+      "move_out_date": "tomorrow",
+      "move_in_date": "14 November"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "move_date_ambiguous"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "closure_claim": [],
+    "move_reference": [],
+    "move_orders_recorded": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "ambergrid.closure_words_guard": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "ambergrid.closure_words_guard": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 5,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 14731,
+    "completion_tokens": 468,
+    "reasoning_tokens": 66,
+    "cached_prompt_tokens": 7680,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.053135,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2313.8,
+     3027.7,
+     2997.4,
+     1647.3,
+     2495.0,
+     3108.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "utilities-service-move-gpt-text-adversarial-accept-suggested-day-20260930T181454",
+    "prompt": 14731,
+    "completion": 468,
+    "total": 15199,
+    "generations": 6,
+    "fetched_at": "2026-09-30T18:15:19.745606+00:00"
+   }
+  }
+ ]
+}

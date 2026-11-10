@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -eu
+export TRAVEL_FACTORY_ROOT="$(cd "$(dirname "$0")" && pwd)"
+cd "$TRAVEL_FACTORY_ROOT"
+export PATH="$HOME/.local/node_modules/.bin:$PATH"
+op="${1:-help}"; if [ "$#" -gt 0 ]; then shift; fi
+case "$op" in
+ doctor)
+  for key in RASA_LICENSE OPENAI_API_KEY DEEPGRAM_API_KEY; do
+   if [ -n "${!key:-}" ]; then echo "$key present"; else echo "$key missing"; fi
+  done
+  for bin in "$HOME/.venv-mantle/bin/rasa" "$HOME/.venv-builder/bin/python"; do
+    if [ -x "$bin" ]; then echo "$bin ready"; else echo "$bin missing"; fi
+  done
+  command -v codex || echo "Codex missing; see setup recovery";;
+ data) python3 travel_data.py "$@";;
+ starter) python3 factory/build.py starter builds/starter;;
+ propose) if [ "${1:-}" = hosted ]; then "$HOME/.venv-builder/bin/python" factory/build.py propose "$@"; else python3 factory/build.py propose "$@"; fi;;
+ approve) python3 factory/build.py approve "$@";;
+ case) TRAVEL_REHEARSAL=two-dates python3 travel_data.py "$@";;
+ rehearse) export TRAVEL_REHEARSAL=two-dates; exec bash "$TRAVEL_FACTORY_ROOT/desk" inspect "${1:?choose your approved four-tool project}";;
+ inspect) cd "${1:?choose builds/starter, studio, or your approved build}"; "$HOME/.venv-mantle/bin/rasa" train && exec "$HOME/.venv-mantle/bin/rasa" inspect --port 5010;;
+ url) bash ../../.devcontainer/travel-factory/print-inspector-url.sh;;
+ login) : "${OPENAI_API_KEY:?add your Codespaces secret}"; printenv OPENAI_API_KEY | codex login --with-api-key;;
+ test) python3 -m unittest discover -s tests -v;;
+ *) echo 'Use bash desk doctor, data, case, rehearse, starter, inspect, url, login, propose, approve or test.'; exit 2;;
+esac

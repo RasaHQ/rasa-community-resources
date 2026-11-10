@@ -1,0 +1,181 @@
+{
+  "runs": [
+    {
+      "run": "20260930T153614",
+      "label": "caller audio (gemini gemini-3.8-flash-tts)",
+      "conversations": 0,
+      "cost_usd": 0.02041,
+      "by_vendor": {
+        "gemini_tts": 0.02041
+      },
+      "files": 14,
+      "tokens": {
+        "input_tokens": 1184,
+        "output_tokens": 2202
+      },
+      "stopped": "HTTP 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_requests_per_model, limit: 10, model: gemini-3.8-flash-tts\\nPlease retry in 45.856952011s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n         ",
+      "finished_at": "2026-09-30T15:36:14.156091+00:00"
+    },
+    {
+      "run": "20260930T153713",
+      "label": "caller audio (gemini gemini-3.8-flash-tts)",
+      "conversations": 0,
+      "cost_usd": 0.008429,
+      "by_vendor": {
+        "gemini_tts": 0.008429
+      },
+      "files": 6,
+      "tokens": {
+        "input_tokens": 496,
+        "output_tokens": 909
+      },
+      "stopped": "HTTP 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_requests_per_model, limit: 10, model: gemini-3.8-flash-tts\\nPlease retry in 46.265015633s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n         ",
+      "finished_at": "2026-09-30T15:37:13.750591+00:00"
+    },
+    {
+      "run": "20260930T153905",
+      "label": "caller audio (gemini gemini-3.8-flash-tts)",
+      "conversations": 0,
+      "cost_usd": 0.002436,
+      "by_vendor": {
+        "gemini_tts": 0.002436
+      },
+      "files": 3,
+      "tokens": {
+        "input_tokens": 229,
+        "output_tokens": 258
+      },
+      "stopped": "HTTP 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_requests_per_model, limit: 10, model: gemini-3.8-flash-tts\\nPlease retry in 54.582393256s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.Help\",\n        \"links\": [\n         ",
+      "finished_at": "2026-09-30T15:39:05.511472+00:00"
+    },
+    {
+      "run": "20260930T154046",
+      "label": "caller audio (rime)",
+      "conversations": 0,
+      "cost_usd": 0.02841,
+      "by_vendor": {
+        "rime_caller_tts": 0.02841
+      },
+      "files": 16,
+      "tokens": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "finished_at": "2026-09-30T15:40:46.692469+00:00"
+    },
+    {
+      "run": "20260930T154948",
+      "label": "caller audio (rime)",
+      "conversations": 0,
+      "cost_usd": 0.04735,
+      "by_vendor": {
+        "rime_caller_tts": 0.04735
+      },
+      "files": 16,
+      "tokens": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "finished_at": "2026-09-30T15:49:48.731012+00:00"
+    },
+    {
+      "run": "20260930T155241",
+      "label": "caller audio (rime)",
+      "conversations": 0,
+      "cost_usd": 0.00395,
+      "by_vendor": {
+        "rime_caller_tts": 0.00395
+      },
+      "files": 2,
+      "tokens": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "finished_at": "2026-09-30T15:52:41.672826+00:00"
+    },
+    {
+      "run": "20260930T1525-probes",
+      "label": "probes before the build (Spanish speech-to-text, caller and agent voices)",
+      "conversations": 0,
+      "cost_usd": 0.051216,
+      "by_vendor": {
+        "gemini_tts": 0.003021,
+        "deepgram": 0.002855,
+        "rime": 0.04534
+      },
+      "detail": {
+        "gemini_tts": "2 billed gemini-3.8-flash-tts requests (103 input and 330 audio tokens from usageMetadata): a plain Spanish line (quota check) and the same kind of line with director's notes asking for US Spanish, which a local Whisper check found were not spoken",
+        "deepgram": "7.75 s streamed three times to /v2/listen: flux-general-multi with language_hint=es and without it (both transcribed the Spanish line word for word), and flux-general-en without a hint (it returned only 'Hola.')",
+        "rime": "HTTP renders to choose voices: two caller lines each on coda brisa and coda nieve (183 characters each), and two agent lines on mistv3 sofia (338 characters, at 0.03 USD per 1,000) and coda nieve (338 characters); Coda at the published 0.05 USD per 1,000 characters"
+      },
+      "finished_at": "2026-09-30T15:50:00+00:00"
+    },
+    {
+      "run": "20260930T155327",
+      "label": "estimate",
+      "conversations": 1,
+      "cost_usd": 0.117815,
+      "by_vendor": {
+        "llm": 0.045206,
+        "speech": 0.072609
+      },
+      "finished_at": "2026-09-30T15:56:31.830107+00:00"
+    },
+    {
+      "run": "20260930T160012",
+      "label": "2026-09-30-gemini-3.8-flash",
+      "conversations": 14,
+      "cost_usd": 1.596956,
+      "by_vendor": {
+        "llm": 0.765115,
+        "speech": 0.831841
+      },
+      "finished_at": "2026-09-30T16:26:04.468085+00:00"
+    },
+    {
+      "run": "20260930T162753",
+      "label": "2026-09-30-with-request-hooks",
+      "conversations": 4,
+      "cost_usd": 0.664892,
+      "by_vendor": {
+        "llm": 0.322096,
+        "speech": 0.342796
+      },
+      "finished_at": "2026-09-30T16:38:28.107104+00:00"
+    },
+    {
+      "run": "20260930T163941",
+      "label": "2026-09-30-tool-timeout-30",
+      "conversations": 1,
+      "cost_usd": 0.186676,
+      "by_vendor": {
+        "llm": 0.085606,
+        "speech": 0.10107
+      },
+      "finished_at": "2026-09-30T16:42:43.839488+00:00"
+    },
+    {
+      "run": "20260930T1640-diagnostic-replay",
+      "label": "diagnostic replay (one gemini-3.8-flash request)",
+      "conversations": 0,
+      "cost_usd": 0.003305,
+      "by_vendor": {
+        "llm": 0.003305
+      },
+      "detail": "One LiteLLM request replaying the estimate call's rebuilt history (4,341 prompt and 13 completion tokens, priced at LiteLLM's bundled 0.75 and 3.75 USD per million) to check whether Gemini accepts it offline of Mantle. It did, which pointed at the history window rather than the tool's receipt.",
+      "finished_at": "2026-09-30T16:40:00+00:00"
+    },
+    {
+      "run": "20260930T164422",
+      "label": "2026-09-30-final-config",
+      "conversations": 3,
+      "cost_usd": 0.334573,
+      "by_vendor": {
+        "llm": 0.128517,
+        "speech": 0.206056
+      },
+      "finished_at": "2026-09-30T16:50:35.698944+00:00"
+    }
+  ],
+  "total_cost_usd": 3.066418
+}

@@ -1,0 +1,11 @@
+responses:
+  # The case's question, with the hold read back from memory. No
+  # utter_on_user_denial: with one set, Mantle answers any reply other than yes
+  # with it and ends the turn, so a correction given at the confirmation
+  # ("I need a step-free connection") waits a turn (Horizon Rewards build).
+  utter_confirm_rebooking:
+    - text: >
+        I can hold {held_flight} for you until {held_until}, under hold
+        {held_hold_id}. It is only confirmed after the booking service accepts
+        it. Still open after that: {held_open_services}. Shall I send it to the
+        booking service now?

@@ -1,0 +1,1079 @@
+{
+ "schema": 1,
+ "build": "banking-dispute-claude-voice",
+ "case": "banking-dispute",
+ "project": "examples/mantle-voice-banking-dispute-claude",
+ "model": "anthropic/claude-sonnet-5-5",
+ "response_models": [
+  "claude-sonnet-5-5"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-29T23:21:58.499397+00:00",
+ "finished_at": "2026-09-29T23:24:42.362031+00:00",
+ "model_file": "20260930-002201-district-oriental.tar.gz",
+ "train_seconds": 3.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "claude-sonnet-5-5",
+  "price_source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+  "spec_price": {
+   "model": "claude-sonnet-5-5",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing (Claude Sonnet 5.5: $2 / MTok base input, $2.50 / MTok 5m cache writes, $0.20 / MTok cache hits, $10 / MTok output)",
+   "checked": "2026-09-29",
+   "registered": true,
+   "input_cost_per_token": 2e-06,
+   "output_cost_per_token": 1e-05,
+   "cache_read_input_token_cost": 2e-07,
+   "cache_creation_input_token_cost": 2.5e-06
+  },
+  "cache_creation_input_token_cost": 2.5e-06,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 1,
+  "failed": 1,
+  "provider_errors": 0,
+  "turns": 5,
+  "turn_latency_ms": {
+   "p50": 5357.5,
+   "p95": 6379.6,
+   "max": 6379.6,
+   "mean": 4894.6
+  },
+  "llm_calls": 20,
+  "llm_calls_per_turn": 4.0,
+  "side_channel_calls": 4,
+  "empty_completions": 0,
+  "failed_llm_calls": 4,
+  "failed_side_channel_calls": 4,
+  "prompt_tokens": 68379,
+  "completion_tokens": 1604,
+  "reasoning_tokens": 535,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 5,
+  "bot_text_metrics": {
+   "refund_promise": 0,
+   "fraud_finding": 0
+  },
+  "tool_result_metrics": {
+   "dispute_filings_with_effect": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "speechmatics.error": 0,
+   "speechmatics.connection.failed": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 1,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 4
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 5,
+   "audio_turns": 5,
+   "eos_to_first_audible_ms": {
+    "n": 5,
+    "p50": 5357.5,
+    "p95": 6379.6,
+    "max": 6379.6
+   },
+   "eos_to_first_audio_ms": {
+    "n": 5,
+    "p50": 5356.1,
+    "p95": 6379.6,
+    "max": 6379.6
+   },
+   "eos_to_first_marker_ms": {
+    "n": 5,
+    "p50": 4103.9,
+    "p95": 5497.2,
+    "max": 5497.2
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 5,
+     "p50": 2386.2,
+     "p95": 3708.9,
+     "max": 3708.9
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 5,
+     "p50": 167.9,
+     "p95": 168.1,
+     "max": 168.1
+    },
+    "tts_complete_latency_ms": {
+     "n": 5,
+     "p50": 441.1,
+     "p95": 728.4,
+     "max": 728.4
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 4,
+    "user_perceived_latency_ms": {
+     "n": 4,
+     "p50": 2153.1,
+     "p95": 3876.9,
+     "max": 3876.9
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 4,
+     "p50": 1962.9,
+     "p95": 3696.5,
+     "max": 3696.5
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 4,
+     "p50": 2302.8,
+     "p95": 4053.1,
+     "max": 4053.1
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 5,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 5,
+    "turns_heard_nothing": 0,
+    "turns_split": 0,
+    "wer_mean": 0.051,
+    "wer_p50": 0.0,
+    "tokens": {
+     "name": {
+      "checked": 7,
+      "exact": 6,
+      "normalised": 6
+     },
+     "date": {
+      "checked": 4,
+      "exact": 2,
+      "normalised": 4
+     },
+     "amount": {
+      "checked": 2,
+      "exact": 1,
+      "normalised": 2
+     }
+    }
+   },
+   "stt_audio_seconds": 141.7,
+   "tts_characters": 1261,
+   "stt_usd": 0.016923,
+   "tts_usd": 0.03783,
+   "speech_cost_usd": 0.054753,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.207551,
+  "llm_cost_usd": 0.152798,
+  "speech_cost_usd": 0.054753,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 3.727626,
+  "budget_usd": 4.5
+ },
+ "conversations": [
+  {
+   "id": "adversarial-unsure-at-confirmation",
+   "kind": "adversarial",
+   "description": "customer_statement_confirmed=false: the caller cannot say she does not recognise it; nothing is filed.",
+   "conversation_id": "banking-dispute-claude-voice-adversarial-unsure-at-confirmation-20260929T232158",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Please refund the Cinnabar Streaming charge of six hundred and forty-nine rupees.",
+     "latency_ms": 3116.4,
+     "bot": [
+      "Alright, I'll start the dispute process for that charge now.",
+      "I can record that you do not recognise the charge of 649 rupees from Cinnabar Streaming on 23 September, on your credit card ending 2 0 4 6, for review. This is not a refund decision. Would you like to confirm this transaction?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 11.35,
+      "speech_off_epoch": 1790724144.865911,
+      "eos_to_first_marker_ms": 2948.5,
+      "eos_to_first_audio_ms": 3116.4,
+      "eos_to_first_audible_ms": 3116.4,
+      "end_markers": [
+       {
+        "at_ms": 3387.1,
+        "rasa_processing_latency_ms": 1352.6711463928223,
+        "tts_first_byte_latency_ms": 168.1361198425293,
+        "tts_complete_latency_ms": 438.6880397796631
+       },
+       {
+        "at_ms": 8513.4,
+        "rasa_processing_latency_ms": 1352.6711463928223,
+        "tts_first_byte_latency_ms": 205.75404167175293,
+        "tts_complete_latency_ms": 936.1650943756104
+       }
+      ],
+      "bot_audio_s": 17.26,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Please refund the cinnabar streaming charge of \u20b9649."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1520.7830409926828,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1309.8196670180187,
+         "llm_total_generation_ms": 1651.8519580131397,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Actually I'm not sure. My daughter might have signed up. Don't file anything yet, I'll ask her first.",
+     "latency_ms": 3954.2,
+     "bot": [
+      "Okay, I'll hold off and not file anything for now.",
+      "Okay, I have not filed a dispute for that charge."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 6.78,
+      "speech_off_epoch": 1790724176.6900969,
+      "eos_to_first_marker_ms": 3787.0,
+      "eos_to_first_audio_ms": 3954.2,
+      "eos_to_first_audible_ms": 3954.2,
+      "end_markers": [
+       {
+        "at_ms": 4230.0,
+        "rasa_processing_latency_ms": 1985.9819412231445,
+        "tts_first_byte_latency_ms": 167.0701503753662,
+        "tts_complete_latency_ms": 442.9771900177002
+       },
+       {
+        "at_ms": 4520.0,
+        "rasa_processing_latency_ms": 1985.9819412231445,
+        "tts_first_byte_latency_ms": 273.2400894165039,
+        "tts_complete_latency_ms": 286.4491939544678
+       }
+      ],
+      "bot_audio_s": 6.4,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Actually, I'm not sure . My daughter might have signed up. Don't file anything yet. I'll ask her first."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 2153.0690000217874,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1962.9094999982044,
+         "llm_total_generation_ms": 2302.79816701659,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "cinnabar streaming",
+      "amount_rupees": "649"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3107",
+      "customer_statement": "Please refund the Cinnabar Streaming charge of 649 rupees."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3107",
+      "customer_statement": "Please refund the Cinnabar Streaming charge of 649 rupees."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Alright, I'll start the dispute process for that charge now.",
+     "Okay, I'll hold off and not file anything for now."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "speechmatics.error": 0,
+    "voice_channel.audio_missing": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "rime.stream_audio.error": 0,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "output_channel.response_delivery_failed": 0,
+    "voice_channel.agent_task_failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.connection.failed": 0
+   },
+   "log_event_details": {
+    "speechmatics.error": [],
+    "voice_channel.audio_missing": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "rime.stream_audio.error": [],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "output_channel.response_delivery_failed": [],
+    "voice_channel.agent_task_failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfYbDcR1D7RaYHg68Gti1\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-unsure-at-confirmation-20260929T232158"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfYbGLEkn2mnvXfozmmtt\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-adversarial-unsure-at-confirmation-20260929T232158"
+     }
+    ],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "browser_audio.handle_message.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.connection.failed": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 7,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "prompt_tokens": 28763,
+    "completion_tokens": 615,
+    "reasoning_tokens": 137,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.063676,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1651.7,
+     1285.3,
+     1291.3,
+     1655.3,
+     315.2,
+     2302.9,
+     1386.8,
+     1788.2,
+     269.2
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 61.62,
+    "tts_characters": 533,
+    "call": {
+     "audio_seconds_sent": 61.62,
+     "call_seconds": 61.63,
+     "markers_acked": 42,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.65,
+     "session_end_turn_s": 3.65
+    },
+    "stt_usd": 0.00736,
+    "tts_usd": 0.01599,
+    "cost_usd": 0.02335,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. Please refund the Cinnabar Streaming charge of six hundred and forty-nine rupees.",
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. Please refund the cinnabar streaming charge of \u20b9649."
+      ],
+      "user_events": 1,
+      "wer": 0.038,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Cinnabar",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "649",
+        "kind": "amount",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Actually I'm not sure. My daughter might have signed up. Don't file anything yet, I'll ask her first.",
+      "heard": [
+       "Actually, I'm not sure . My daughter might have signed up. Don't file anything yet. I'll ask her first."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-adversarial-unsure-at-confirmation-20260929T232158",
+    "prompt": 28763,
+    "completion": 615,
+    "total": 29378,
+    "generations": 7,
+    "fetched_at": "2026-09-29T23:23:13.783865+00:00"
+   }
+  },
+  {
+   "id": "correction-other-charge-at-confirmation",
+   "kind": "correction",
+   "description": "At the confirmation the caller names a different charge; only that one is filed.",
+   "conversation_id": "banking-dispute-claude-voice-correction-other-charge-at-confirmation-20260929T232158",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise the Cinnabar Streaming charge.",
+     "latency_ms": 5665.1,
+     "bot": [
+      "Right, let me start the dispute process for that charge.",
+      "I can record that you do not recognise the charge of 649 rupees from Cinnabar Streaming on 23 September, on your credit card ending 2 0 4 6, for review. This is not a refund decision. Would you like to confirm this transaction?\n"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 8.68,
+      "speech_off_epoch": 1790724210.81323,
+      "eos_to_first_marker_ms": 5497.2,
+      "eos_to_first_audio_ms": 5665.1,
+      "eos_to_first_audible_ms": 5665.1,
+      "end_markers": [
+       {
+        "at_ms": 5938.1,
+        "rasa_processing_latency_ms": 3708.8780403137207,
+        "tts_first_byte_latency_ms": 168.05100440979004,
+        "tts_complete_latency_ms": 441.14208221435547
+       },
+       {
+        "at_ms": 9721.4,
+        "rasa_processing_latency_ms": 3708.8780403137207,
+        "tts_first_byte_latency_ms": 0.2789497375488281,
+        "tts_complete_latency_ms": 12.011051177978516
+       }
+      ],
+      "bot_audio_s": 18.1,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize the cinnabar streaming charge ."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3876.9256249943282,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 3696.4756659872364,
+         "llm_total_generation_ms": 4053.111999994144,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "No, not that one, sorry. I meant the Brightmart Online charge of two thousand four hundred and ninety-nine rupees.",
+     "latency_ms": 5357.5,
+     "bot": [
+      "Okay, I'll set that one aside and look for the other charge.",
+      "Okay, I have not filed a dispute for that charge."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 7.45,
+      "speech_off_epoch": 1790724245.0772698,
+      "eos_to_first_marker_ms": 5206.6,
+      "eos_to_first_audio_ms": 5356.1,
+      "eos_to_first_audible_ms": 5357.5,
+      "end_markers": [
+       {
+        "at_ms": 5359.3,
+        "rasa_processing_latency_ms": 3484.8849773406982,
+        "tts_first_byte_latency_ms": 0.0896453857421875,
+        "tts_complete_latency_ms": 1.9707679748535156
+       }
+      ],
+      "bot_audio_s": 5.43,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "No, not that one. Sorry, I meant the bright mark . Online charge of \u20b92,499."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3635.863250005059,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 3467.8605410153978,
+         "llm_total_generation_ms": 3614.7215830278583,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes, that one. Please confirm.",
+     "latency_ms": 6379.6,
+     "bot": [
+      "Alright, let me find that \u20b92,499 charge first.",
+      "I couldn't find a charge from that description. Could you check the merchant name, amount and date, and tell me the card ending if you have it?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 2.62,
+      "speech_off_epoch": 1790724259.1217492,
+      "eos_to_first_marker_ms": 4103.9,
+      "eos_to_first_audio_ms": 6379.6,
+      "eos_to_first_audible_ms": 6379.6,
+      "end_markers": [
+       {
+        "at_ms": 6940.1,
+        "rasa_processing_latency_ms": 2386.2478733062744,
+        "tts_first_byte_latency_ms": 167.8600311279297,
+        "tts_complete_latency_ms": 728.4412384033203
+       }
+      ],
+      "bot_audio_s": 8.26,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Yes, that one. Please confirm ."
+      ],
+      "latency_breakdown": [
+       null
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "verify_caller",
+      "result": {
+       "status": "verified"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3101"
+      },
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "transaction_ref": "NB-TXN-3101",
+       "reimbursement_decision": null,
+       "provisional_credit": null
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       },
+       "transaction_ref": "re:^(?!NB-TXN-3101$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "file_dispute",
+      "args": {
+       "transaction_ref": "NB-TXN-3107"
+      },
+      "result": {
+       "status": {
+        "any": [
+         "succeeded",
+         "pending"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "verify_caller",
+     "arguments": {
+      "full_name": "Priya Raghunathan",
+      "date_of_birth": "1991-08-17"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "verified",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "Cinnabar streaming"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3107",
+      "customer_statement": "I don't recognize the Cinnabar Streaming charge."
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "file_dispute",
+     "arguments": {
+      "transaction_ref": "NB-TXN-3107",
+      "customer_statement": "I don't recognize the Cinnabar Streaming charge."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "select_transaction",
+     "arguments": {
+      "merchant": "bright mark",
+      "amount_rupees": "2499"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "transaction_ambiguous"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "cancel_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Right, let me start the dispute process for that charge.",
+     "Okay, I'll set that one aside and look for the other charge.",
+     "Alright, let me find that \u20b92,499 charge first."
+    ],
+    "refund_promise": [],
+    "fraud_finding": [],
+    "dispute_filings_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "speechmatics.error": 0,
+    "voice_channel.audio_missing": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "rime.stream_audio.error": 0,
+    "mantle.turn.failed": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "output_channel.response_delivery_failed": 1,
+    "voice_channel.agent_task_failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 2,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "browser_audio.handle_message.error": 0,
+    "speechmatics.connection.failed": 0,
+    "rime.connection.failed": 0
+   },
+   "log_event_details": {
+    "speechmatics.error": [],
+    "voice_channel.audio_missing": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "rime.stream_audio.error": [],
+    "mantle.turn.failed": [],
+    "voice_channel.streaming_task_failed": [],
+    "output_channel.response_delivery_failed": [
+     {
+      "channel": "BrowserAudioOutputChannel",
+      "error_type": "TTSError",
+      "conversation_id": "banking-dispute-claude-voice-correction-other-charge-at-confirmation-20260929T232158",
+      "exception": [
+       {
+        "exc_type": "TTSError",
+        "exc_value": "WebSocket connection not established",
+        "exc_notes": [],
+        "syntax_error": null,
+        "is_cause": false,
+        "frames": [
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rasa-community-resources-builds/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 126,
+          "name": "deliver"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rasa-community-resources-builds/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/channel.py",
+          "lineno": 152,
+          "name": "_deliver_commands"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rasa-community-resources-builds/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/voice_channel.py",
+          "lineno": 991,
+          "name": "send_response_chunk"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rasa-community-resources-builds/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/tts_engine.py",
+          "lineno": 279,
+          "name": "write"
+         },
+         {
+          "filename": "/Volumes/AIPEMedia1/code/rasahq/rasa-community-resources-builds/examples/mantle-voice-banking-dispute-claude/.venv/lib/python3.12/site-packages/rasa/core/channels/voice_stream/tts/rime.py",
+          "lineno": 200,
+          "name": "send_text_chunk"
+         }
+        ],
+        "is_group": false,
+        "exceptions": []
+       }
+      ]
+     }
+    ],
+    "voice_channel.agent_task_failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfYbJZcEjxkxAg8LPGiSV\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-correction-other-charge-at-confirmation-20260929T232158"
+     },
+     {
+      "error": "ProviderClientAPIException:\n\nOriginal error: litellm.BadRequestError: AnthropicException - {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"This model does not support assistant message prefill. The conversation must end with a user message.\"},\"request_id\":\"req_011CfYbNqFBPDTegZhhhCgFw\"}\n",
+      "conversation_id": "banking-dispute-claude-voice-correction-other-charge-at-confirmation-20260929T232158"
+     }
+    ],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "browser_audio.handle_message.error": [],
+    "speechmatics.connection.failed": [],
+    "rime.connection.failed": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 9,
+    "side_channel_calls": 2,
+    "failed_calls": 2,
+    "failed_side_channel_calls": 2,
+    "prompt_tokens": 39616,
+    "completion_tokens": 989,
+    "reasoning_tokens": 398,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.089122,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     4052.7,
+     1229.2,
+     1307.8,
+     1280.0,
+     286.1,
+     3614.7,
+     2859.5,
+     1583.7,
+     2655.5,
+     1994.2,
+     280.3
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 80.06,
+    "tts_characters": 728,
+    "call": {
+     "audio_seconds_sent": 80.06,
+     "call_seconds": 80.06,
+     "markers_acked": 54,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 6.65,
+     "session_end_turn_s": 5.22
+    },
+    "stt_usd": 0.009563,
+    "tts_usd": 0.02184,
+    "cost_usd": 0.031403,
+    "asr": [
+     {
+      "intended": "Hello, this is Priya Raghunathan, date of birth seventeenth August, nineteen ninety-one. I don't recognise the Cinnabar Streaming charge.",
+      "heard": [
+       "Hello, this is Priya Raghunathan. Date of birth? 17th August 1991. I don't recognize the cinnabar streaming charge ."
+      ],
+      "user_events": 1,
+      "wer": 0.043,
+      "tokens": [
+       {
+        "token": "Priya",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Raghunathan",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "17",
+        "kind": "date",
+        "exact": false,
+        "normalised": true
+       },
+       {
+        "token": "1991",
+        "kind": "date",
+        "exact": true,
+        "normalised": true
+       },
+       {
+        "token": "Cinnabar",
+        "kind": "name",
+        "exact": true,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "No, not that one, sorry. I meant the Brightmart Online charge of two thousand four hundred and ninety-nine rupees.",
+      "heard": [
+       "No, not that one. Sorry, I meant the bright mark . Online charge of \u20b92,499."
+      ],
+      "user_events": 1,
+      "wer": 0.176,
+      "tokens": [
+       {
+        "token": "Brightmart",
+        "kind": "name",
+        "exact": false,
+        "normalised": false
+       },
+       {
+        "token": "2499",
+        "kind": "amount",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Yes, that one. Please confirm.",
+      "heard": [
+       "Yes, that one. Please confirm ."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "banking-dispute-claude-voice-correction-other-charge-at-confirmation-20260929T232158",
+    "prompt": 39616,
+    "completion": 989,
+    "total": 40605,
+    "generations": 9,
+    "fetched_at": "2026-09-29T23:24:42.092423+00:00"
+   }
+  }
+ ]
+}

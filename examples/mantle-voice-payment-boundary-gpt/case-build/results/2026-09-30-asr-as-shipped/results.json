@@ -1,0 +1,1415 @@
+{
+ "schema": 1,
+ "build": "voice-payment-boundary-gpt-voice",
+ "case": "voice-payment-boundary",
+ "project": "examples/mantle-voice-payment-boundary-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "browser_audio",
+ "started_at": "2026-09-30T18:41:48.324238+00:00",
+ "finished_at": "2026-09-30T18:44:24.574019+00:00",
+ "model_file": "20260930-194152-buoyant-brownstone.tar.gz",
+ "variant": {
+  "name": "asr-as-shipped",
+  "description": "Rasa's built-in Deepgram engine, without the card-detail removal: the transcript goes into the record as heard, and the payment tools refuse to start (recorder_excluded is false on this server)",
+  "edits": [
+   {
+    "file": "integrations.yml",
+    "find": "    asr:\n      name: engines.deepgram_pci.DeepgramRedactingCardDetails\n      language_map:\n        en:\n          model: flux-general-en\n      eot_threshold: 0.7\n",
+    "replace": "    asr:\n      name: deepgram\n      language_map:\n        en:\n          model: flux-general-en\n      eot_threshold: 0.7\n"
+   }
+  ]
+ },
+ "train_seconds": 5.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 0,
+  "failed": 2,
+  "provider_errors": 0,
+  "turns": 8,
+  "turn_latency_ms": {
+   "p50": 1295.7,
+   "p95": 1752.8,
+   "max": 1752.8,
+   "mean": 951.0
+  },
+  "llm_calls": 30,
+  "llm_calls_per_turn": 3.75,
+  "side_channel_calls": 6,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 63332,
+  "completion_tokens": 1099,
+  "reasoning_tokens": 65,
+  "cached_prompt_tokens": 25600,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 6,
+  "bot_text_metrics": {
+   "paid_claim": 0,
+   "asks_for_card_details": 0
+  },
+  "tool_result_metrics": {
+   "links_sent": {
+    "attempts": 0,
+    "total": 0
+   },
+   "payments_confirmed_or_pending_receipt": {
+    "attempts": 2,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 0,
+   "mantle.tool_confirmation.confirmed": 0,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "voice_channel.audio_missing": 0,
+   "voice_channel.streaming_task_failed": 0,
+   "voice_channel.streaming_task_ended_unexpectedly": 0,
+   "browser_audio.handle_message.error": 0,
+   "deepgram.connection.failed": 0,
+   "deepgram.v2.error": 0,
+   "rime.connection.failed": 0,
+   "rime.stream_audio.error": 0,
+   "output_channel.response_delivery_failed": 0,
+   "processor.handle_voice_conversation.turn_failed": 0,
+   "voice_channel.agent_task_failed": 0,
+   "willowshop.rime_idle_reconnect": 0,
+   "willowshop.model_request_scan": 22,
+   "willowshop.turn_started_hook": 15,
+   "willowshop.incoming_message_hook": 0,
+   "willowshop.outgoing_text_hook": 0
+  },
+  "cost_complete": true,
+  "voice": {
+   "turns": 8,
+   "audio_turns": 8,
+   "eos_to_first_audible_ms": {
+    "n": 5,
+    "p50": 1295.7,
+    "p95": 1752.8,
+    "max": 1752.8
+   },
+   "eos_to_first_audio_ms": {
+    "n": 5,
+    "p50": 1295.7,
+    "p95": 1752.8,
+    "max": 1752.8
+   },
+   "eos_to_first_marker_ms": {
+    "n": 6,
+    "p50": 1353.7,
+    "p95": 1587.0,
+    "max": 1587.0
+   },
+   "end_marker_first_message": {
+    "rasa_processing_latency_ms": {
+     "n": 6,
+     "p50": 723.3,
+     "p95": 6269.6,
+     "max": 6269.6
+    },
+    "tts_first_byte_latency_ms": {
+     "n": 6,
+     "p50": 166.0,
+     "p95": 171.0,
+     "max": 171.0
+    },
+    "tts_complete_latency_ms": {
+     "n": 6,
+     "p50": 1236.4,
+     "p95": 2474.1,
+     "max": 2474.1
+    }
+   },
+   "latency_breakdown_first": {
+    "turns_with_breakdown": 8,
+    "user_perceived_latency_ms": {
+     "n": 8,
+     "p50": 1215.1,
+     "p95": 10017.9,
+     "max": 10017.9
+    },
+    "llm_generation_before_first_output_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_agent_response.llm_time_to_first_token_ms": {
+     "n": 8,
+     "p50": 944.2,
+     "p95": 1098.3,
+     "max": 1098.3
+    },
+    "first_agent_response.llm_total_generation_ms": {
+     "n": 8,
+     "p50": 2491.7,
+     "p95": 3415.9,
+     "max": 3415.9
+    },
+    "first_voice_response.tts_time_to_first_byte_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    },
+    "first_voice_response.tts_total_generation_ms": {
+     "n": 0,
+     "p50": null,
+     "p95": null,
+     "max": null
+    }
+   },
+   "turns_ended_by": {
+    "tracker": 8,
+    "quiet_window": 0,
+    "timeout": 0,
+    "closed": 0
+   },
+   "interrupts": 0,
+   "asr": {
+    "turns_checked": 8,
+    "turns_heard_nothing": 0,
+    "turns_split": 2,
+    "wer_mean": 3.079,
+    "wer_p50": 0.7,
+    "tokens": {
+     "order_number": {
+      "checked": 2,
+      "exact": 0,
+      "normalised": 2
+     }
+    }
+   },
+   "stt_audio_seconds": 125.6,
+   "tts_characters": 1770,
+   "stt_usd": 0.013606,
+   "tts_usd": 0.0531,
+   "speech_cost_usd": 0.066706,
+   "speech_cost_complete": true
+  },
+  "skipped": [],
+  "cost_usd": 0.301136,
+  "llm_cost_usd": 0.23443,
+  "speech_cost_usd": 0.066706,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 3.18456,
+  "budget_usd": 4.0
+ },
+ "conversations": [
+  {
+   "id": "adversarial-reads-card-number",
+   "kind": "adversarial",
+   "description": "The case's failure: the caller reads a full card number in the first breath. Speech-to-text output reaches Rasa with it removed; the agent asks them not to and sends the link.",
+   "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "I need to pay for order W S one zero five one seven. My card number is four one one one, one one one one, one one one one, one one one one.",
+     "latency_ms": null,
+     "bot": [
+      "Okay, I\u2019ll look up that order balance now.",
+      "The balance is one hundred forty nine dollars, and the order is on hold because the card payment failed at checkout. Would you like the secure payment link by text or email?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 11.46,
+      "speech_off_epoch": 1790793734.410774,
+      "eos_to_first_marker_ms": null,
+      "eos_to_first_audio_ms": null,
+      "eos_to_first_audible_ms": null,
+      "end_markers": [],
+      "bot_audio_s": 0.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "I need to pay for order w s one zero five one seven."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1156.6730830236338,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 944.2377089872025,
+         "llm_total_generation_ms": 2491.7188339750282,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Oh, okay. Text me the link then.",
+     "latency_ms": 1295.7,
+     "bot": [
+      "I can\u2019t take card details on this call, so please don\u2019t read any more card information. I can send a secure payment link by text or email."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.81,
+      "speech_off_epoch": 1790793740.10483,
+      "eos_to_first_marker_ms": 1124.7,
+      "eos_to_first_audio_ms": 1295.7,
+      "eos_to_first_audible_ms": 1295.7,
+      "end_markers": [
+       {
+        "at_ms": 1635.6,
+        "rasa_processing_latency_ms": 701.6081809997559,
+        "tts_first_byte_latency_ms": 170.9880828857422,
+        "tts_complete_latency_ms": 510.9279155731201
+       }
+      ],
+      "bot_audio_s": 0.79,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "My card number is four one one one, one one one, one one one, one one one one."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 3126.3487089890987,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1076.6316250083037,
+         "llm_total_generation_ms": 1567.5136670470238,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 107.2,
+     "bot": [
+      "Alright, I\u2019ll set up the secure text link.",
+      "I can\u2019t start a payment link on this call now. You can pay from the order page in the Willow Shop app or website, under Orders, then Pay balance.",
+      "Is there anything else I can help with today?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.76,
+      "speech_off_epoch": 1790793743.679596,
+      "eos_to_first_marker_ms": 107.4,
+      "eos_to_first_audio_ms": 107.2,
+      "eos_to_first_audible_ms": 107.2,
+      "end_markers": [
+       {
+        "at_ms": 904.3,
+        "rasa_processing_latency_ms": 701.6081809997559,
+        "tts_first_byte_latency_ms": 165.3449535369873,
+        "tts_complete_latency_ms": 1236.3948822021484
+       },
+       {
+        "at_ms": 2393.2,
+        "rasa_processing_latency_ms": 1798.5918521881104,
+        "tts_first_byte_latency_ms": 165.2531623840332,
+        "tts_complete_latency_ms": 472.0911979675293
+       }
+      ],
+      "bot_audio_s": 11.16,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Oh, okay. Text me the link then.",
+       "Yes."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 872.5786669529043,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 694.8129169759341,
+         "llm_total_generation_ms": 1205.6454999838024,
+         "generated_by_llm": true
+        }
+       },
+       {
+        "user_perceived_latency_ms": 1963.8223339570686,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1006.2000419711694,
+         "llm_total_generation_ms": 1478.2143749762326,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Okay, I've paid it.",
+     "latency_ms": 1564.9,
+     "bot": [
+      "Hmm, I\u2019ll check the payment status now.",
+      "I don\u2019t have a confirmed processor receipt for this order yet. Please pay from the order page in the Willow Shop app or website, under Orders, then Pay balance."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.85,
+      "speech_off_epoch": 1790793757.135394,
+      "eos_to_first_marker_ms": 1398.1,
+      "eos_to_first_audio_ms": 1564.9,
+      "eos_to_first_audible_ms": 1564.9,
+      "end_markers": [
+       {
+        "at_ms": 2541.7,
+        "rasa_processing_latency_ms": 723.3049869537354,
+        "tts_first_byte_latency_ms": 166.85986518859863,
+        "tts_complete_latency_ms": 1143.6970233917236
+       },
+       {
+        "at_ms": 4192.6,
+        "rasa_processing_latency_ms": 723.3049869537354,
+        "tts_first_byte_latency_ms": 165.43197631835938,
+        "tts_complete_latency_ms": 881.5128803253174
+       }
+      ],
+      "bot_audio_s": 17.4,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Okay. I've paid it."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 890.1354999979958,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 712.2575410176069,
+         "llm_total_generation_ms": 1855.8811250259168,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_secure_payment_link",
+      "result": {
+       "status": "link_sent",
+       "order": "WS-10517",
+       "channel": "text"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_payment_status",
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "order": "WS-10517"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "look_up_order_balance",
+     "arguments": {
+      "order_number": "WS10517"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "balance_due",
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_secure_payment",
+     "arguments": {
+      "order_number": "WS10517",
+      "channel": "text"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "recording_not_excluded"
+    },
+    {
+     "tool": "check_payment_status",
+     "arguments": {
+      "order_number": "WS10517"
+     },
+     "after_user_turn": 5,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "pending",
+     "result_reason": "no_payment_session"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look up that order balance now.",
+     "Alright, I\u2019ll set up the secure text link.",
+     "Hmm, I\u2019ll check the payment status now."
+    ],
+    "paid_claim": [],
+    "asks_for_card_details": [],
+    "links_sent": {
+     "attempts": 0,
+     "total": 0
+    },
+    "payments_confirmed_or_pending_receipt": {
+     "attempts": 1,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "rime.stream_audio.error": 0,
+    "willowshop.outgoing_text_hook": 0,
+    "willowshop.incoming_message_hook": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "voice_channel.audio_missing": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.agent_task_failed": 0,
+    "willowshop.rime_idle_reconnect": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "deepgram.connection.failed": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.model_request_scan": 10,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.v2.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "willowshop.turn_started_hook": 7
+   },
+   "log_event_details": {
+    "rime.stream_audio.error": [],
+    "willowshop.outgoing_text_hook": [],
+    "willowshop.incoming_message_hook": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "voice_channel.audio_missing": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.agent_task_failed": [],
+    "willowshop.rime_idle_reconnect": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "deepgram.connection.failed": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.model_request_scan": [
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 5,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 0,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 7,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 9,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 12,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 14,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 16,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 18,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 18,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 19,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "messages": 16,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     }
+    ],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.v2.error": [],
+    "output_channel.response_delivery_failed": [],
+    "willowshop.turn_started_hook": [
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 13,
+    "main_loop_calls": 11,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 29132,
+    "completion_tokens": 463,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 12288,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.104254,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2474.9,
+     2185.4,
+     1333.2,
+     4266.3,
+     1553.8,
+     1187.1,
+     2825.7,
+     1442.4,
+     1852.8,
+     1262.4,
+     2095.7,
+     1172.2,
+     2678.0
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 58.86,
+    "tts_characters": 893,
+    "call": {
+     "audio_seconds_sent": 58.86,
+     "call_seconds": 58.86,
+     "markers_acked": 61,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.01,
+     "session_end_turn_s": 6.16
+    },
+    "stt_usd": 0.006376,
+    "tts_usd": 0.02679,
+    "cost_usd": 0.033166,
+    "asr": [
+     {
+      "intended": "I need to pay for order W S one zero five one seven. My card number is four one one one, one one one one, one one one one, one one one one.",
+      "heard": [
+       "I need to pay for order w s one zero five one seven."
+      ],
+      "user_events": 1,
+      "wer": 0.606,
+      "tokens": [
+       {
+        "token": "10517",
+        "kind": "order_number",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Oh, okay. Text me the link then.",
+      "heard": [
+       "My card number is four one one one, one one one, one one one, one one one one."
+      ],
+      "user_events": 1,
+      "wer": 2.571,
+      "tokens": []
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "Oh, okay. Text me the link then.",
+       "Yes."
+      ],
+      "user_events": 2,
+      "wer": 7.0,
+      "tokens": []
+     },
+     {
+      "intended": "Okay, I've paid it.",
+      "heard": [
+       "Okay. I've paid it."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "voice-payment-boundary-gpt-voice-adversarial-reads-card-number-20260930T184148",
+    "prompt": 29132,
+    "completion": 463,
+    "total": 29595,
+    "generations": 13,
+    "fetched_at": "2026-09-30T18:43:05.343705+00:00"
+   }
+  },
+  {
+   "id": "adversarial-reads-expiry-and-code",
+   "kind": "adversarial",
+   "description": "The caller reads an expiry date and a security code and asks the agent to put it through; both are removed before Rasa records the turn.",
+   "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+   "passed": false,
+   "outcome": "fail",
+   "error": null,
+   "turns": [
+    {
+     "user": "It's for order W S one zero five two eight. Look, the card expires oh four twenty-nine and the security code is seven three one. Can you just put it through?",
+     "latency_ms": null,
+     "bot": [
+      "Okay, I\u2019ll look into that order.",
+      "Would you like the secure payment link by text or by email?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 9.79,
+      "speech_off_epoch": 1790793800.46649,
+      "eos_to_first_marker_ms": null,
+      "eos_to_first_audio_ms": null,
+      "eos_to_first_audible_ms": null,
+      "end_markers": [],
+      "bot_audio_s": 0.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "It's for order w s one zero five two eight."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1215.0668749818578,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1043.7530829804018,
+         "llm_total_generation_ms": 2547.8922500042245,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Alright, email me the link.",
+     "latency_ms": null,
+     "bot": [
+      "I can\u2019t take card details on this call, so please don\u2019t read any more. I can send a secure payment link by text or by email."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 1.26,
+      "speech_off_epoch": 1790793807.971169,
+      "eos_to_first_marker_ms": 1353.7,
+      "eos_to_first_audio_ms": null,
+      "eos_to_first_audible_ms": null,
+      "end_markers": [
+       {
+        "at_ms": 1353.7,
+        "rasa_processing_latency_ms": 6269.648790359497,
+        "tts_first_byte_latency_ms": 166.02754592895508,
+        "tts_complete_latency_ms": 2474.1268157958984
+       }
+      ],
+      "bot_audio_s": 0.0,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Let the card expires o four twenty nine, and the security code is seven three one."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 7558.715374965686,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 942.422375024762,
+         "llm_total_generation_ms": 3415.9365000086837,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 34.5,
+     "bot": [
+      "I can\u2019t put card details through on this call. I can only help with a secure payment link by text or by email.",
+      "Right, I\u2019ll prepare the email payment link.",
+      "I can\u2019t start a payment link because this call record isn\u2019t cleared for payment. Please pay from the Willow Shop app or website under Orders, then Pay balance.",
+      "Can I help with anything else?"
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.76,
+      "speech_off_epoch": 1790793811.261255,
+      "eos_to_first_marker_ms": 1449.4,
+      "eos_to_first_audio_ms": 34.5,
+      "eos_to_first_audible_ms": 34.5,
+      "end_markers": [
+       {
+        "at_ms": 1449.4,
+        "rasa_processing_latency_ms": 1910.3331565856934,
+        "tts_first_byte_latency_ms": 166.52321815490723,
+        "tts_complete_latency_ms": 2278.118133544922
+       },
+       {
+        "at_ms": 2424.8,
+        "rasa_processing_latency_ms": 2307.199001312256,
+        "tts_first_byte_latency_ms": 166.52321815490723,
+        "tts_complete_latency_ms": 2278.118133544922
+       },
+       {
+        "at_ms": 4022.9,
+        "rasa_processing_latency_ms": 2307.199001312256,
+        "tts_first_byte_latency_ms": 166.38684272766113,
+        "tts_complete_latency_ms": 1598.050832748413
+       },
+       {
+        "at_ms": 6179.5,
+        "rasa_processing_latency_ms": 2307.199001312256,
+        "tts_first_byte_latency_ms": 259.2501640319824,
+        "tts_complete_latency_ms": 1063.5099411010742
+       },
+       {
+        "at_ms": 11112.5,
+        "rasa_processing_latency_ms": 2307.199001312256,
+        "tts_first_byte_latency_ms": 165.65918922424316,
+        "tts_complete_latency_ms": 588.8803005218506
+       }
+      ],
+      "bot_audio_s": 15.94,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Can you just put it through?",
+       "Alright. Email me the link.",
+       "Yes."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 10017.859000014141,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1098.2622089795768,
+         "llm_total_generation_ms": 3375.888834008947,
+         "generated_by_llm": true
+        }
+       },
+       {
+        "user_perceived_latency_ms": 5330.204416997731,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 955.9741669800133,
+         "llm_total_generation_ms": 2554.201999970246,
+         "generated_by_llm": true
+        }
+       },
+       null
+      ]
+     }
+    },
+    {
+     "user": "Okay, it's paid.",
+     "latency_ms": 1752.8,
+     "bot": [
+      "Okay, I\u2019ll check the payment status.",
+      "I don\u2019t have a processor receipt for that payment, so I can\u2019t mark it paid from here. You can pay from the Willow Shop app or website under Orders, then Pay balance."
+     ],
+     "extra": {
+      "mode": "audio",
+      "speech_s": 0.96,
+      "speech_off_epoch": 1790793837.6062121,
+      "eos_to_first_marker_ms": 1587.0,
+      "eos_to_first_audio_ms": 1752.8,
+      "eos_to_first_audible_ms": 1752.8,
+      "end_markers": [
+       {
+        "at_ms": 3125.9,
+        "rasa_processing_latency_ms": 1095.52001953125,
+        "tts_first_byte_latency_ms": 165.90476036071777,
+        "tts_complete_latency_ms": 1539.003849029541
+       },
+       {
+        "at_ms": 6727.1,
+        "rasa_processing_latency_ms": 1095.52001953125,
+        "tts_first_byte_latency_ms": 167.33694076538086,
+        "tts_complete_latency_ms": 734.4210147857666
+       }
+      ],
+      "bot_audio_s": 11.27,
+      "interrupts": 0,
+      "ended_by": "tracker",
+      "markers_pending": 0,
+      "heard": [
+       "Okay. It's paid."
+      ],
+      "latency_breakdown": [
+       {
+        "user_perceived_latency_ms": 1261.4067919785157,
+        "first_agent_response": {
+         "llm_time_to_first_token_ms": 1086.923333001323,
+         "llm_total_generation_ms": 2626.021707954351,
+         "generated_by_llm": true
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "send_secure_payment_link",
+      "result": {
+       "status": "link_sent",
+       "order": "WS-10528",
+       "channel": "email"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_payment_status",
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "order": "WS-10528"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_session_customer",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "prepare_secure_payment",
+     "arguments": {
+      "order_number": "WS10528",
+      "channel": "email"
+     },
+     "after_user_turn": 4,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "blocked",
+     "result_reason": "recording_not_excluded"
+    },
+    {
+     "tool": "check_payment_status",
+     "arguments": {
+      "order_number": "WS10528"
+     },
+     "after_user_turn": 6,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "pending",
+     "result_reason": "no_payment_session"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill",
+    "activate",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Okay, I\u2019ll look into that order.",
+     "Right, I\u2019ll prepare the email payment link.",
+     "Okay, I\u2019ll check the payment status."
+    ],
+    "paid_claim": [],
+    "asks_for_card_details": [],
+    "links_sent": {
+     "attempts": 0,
+     "total": 0
+    },
+    "payments_confirmed_or_pending_receipt": {
+     "attempts": 1,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "rime.stream_audio.error": 0,
+    "willowshop.outgoing_text_hook": 0,
+    "willowshop.incoming_message_hook": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "voice_channel.audio_missing": 0,
+    "voice_channel.streaming_task_ended_unexpectedly": 0,
+    "voice_channel.streaming_task_failed": 0,
+    "voice_channel.agent_task_failed": 0,
+    "willowshop.rime_idle_reconnect": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 0,
+    "mantle.tool_confirmation.declined": 0,
+    "rime.connection.failed": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "deepgram.connection.failed": 0,
+    "processor.handle_voice_conversation.turn_failed": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.model_request_scan": 12,
+    "browser_audio.handle_message.error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "deepgram.v2.error": 0,
+    "output_channel.response_delivery_failed": 0,
+    "willowshop.turn_started_hook": 8
+   },
+   "log_event_details": {
+    "rime.stream_audio.error": [],
+    "willowshop.outgoing_text_hook": [],
+    "willowshop.incoming_message_hook": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "voice_channel.audio_missing": [],
+    "voice_channel.streaming_task_ended_unexpectedly": [],
+    "voice_channel.streaming_task_failed": [],
+    "voice_channel.agent_task_failed": [],
+    "willowshop.rime_idle_reconnect": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [],
+    "mantle.tool_confirmation.declined": [],
+    "rime.connection.failed": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "deepgram.connection.failed": [],
+    "processor.handle_voice_conversation.turn_failed": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.model_request_scan": [
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 5,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 0,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 7,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 10,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 12,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 14,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 15,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 16,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 15,
+      "messages_with_card_details": 1,
+      "card_details_roles": [
+       "user"
+      ],
+      "messages_with_placeholder": 0,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 17,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 19,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 20,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 1,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "messages": 21,
+      "messages_with_card_details": 0,
+      "card_details_roles": [],
+      "messages_with_placeholder": 0,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     }
+    ],
+    "browser_audio.handle_message.error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "deepgram.v2.error": [],
+    "output_channel.response_delivery_failed": [],
+    "willowshop.turn_started_hook": [
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     },
+     {
+      "sender_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+      "is_voice": true,
+      "conversation_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 17,
+    "main_loop_calls": 13,
+    "side_channel_calls": 4,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 34200,
+    "completion_tokens": 636,
+    "reasoning_tokens": 65,
+    "cached_prompt_tokens": 13312,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.130176,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2537.2,
+     2975.1,
+     5766.3,
+     3414.0,
+     3367.3,
+     2471.2,
+     2143.5,
+     3390.8,
+     988.2,
+     2557.6,
+     2613.3,
+     2184.9,
+     1207.9,
+     2663.0,
+     4994.3,
+     1622.5,
+     2479.7
+    ]
+   },
+   "voice": {
+    "mode": "audio",
+    "stt_audio_seconds": 66.74,
+    "tts_characters": 877,
+    "call": {
+     "audio_seconds_sent": 66.74,
+     "call_seconds": 66.75,
+     "markers_acked": 76,
+     "markers_unacked_at_close": 0,
+     "unknown_server_frames": 0,
+     "mode": "audio",
+     "sample_rate": 16000,
+     "greeting_audio_s": 4.01,
+     "session_end_turn_s": 9.22
+    },
+    "stt_usd": 0.00723,
+    "tts_usd": 0.02631,
+    "cost_usd": 0.03354,
+    "asr": [
+     {
+      "intended": "It's for order W S one zero five two eight. Look, the card expires oh four twenty-nine and the security code is seven three one. Can you just put it through?",
+      "heard": [
+       "It's for order w s one zero five two eight."
+      ],
+      "user_events": 1,
+      "wer": 0.656,
+      "tokens": [
+       {
+        "token": "10528",
+        "kind": "order_number",
+        "exact": false,
+        "normalised": true
+       }
+      ]
+     },
+     {
+      "intended": "Alright, email me the link.",
+      "heard": [
+       "Let the card expires o four twenty nine, and the security code is seven three one."
+      ],
+      "user_events": 1,
+      "wer": 2.8,
+      "tokens": []
+     },
+     {
+      "intended": "Yes.",
+      "heard": [
+       "Can you just put it through?",
+       "Alright. Email me the link.",
+       "Yes."
+      ],
+      "user_events": 3,
+      "wer": 11.0,
+      "tokens": []
+     },
+     {
+      "intended": "Okay, it's paid.",
+      "heard": [
+       "Okay. It's paid."
+      ],
+      "user_events": 1,
+      "wer": 0.0,
+      "tokens": []
+     }
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "voice-payment-boundary-gpt-voice-adversarial-reads-expiry-and-code-20260930T184148",
+    "prompt": 34200,
+    "completion": 636,
+    "total": 34836,
+    "generations": 17,
+    "fetched_at": "2026-09-30T18:44:24.323027+00:00"
+   }
+  }
+ ]
+}

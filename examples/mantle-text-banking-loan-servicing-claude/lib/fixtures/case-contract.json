@@ -1,0 +1,178 @@
+{
+  "slug": "banking-loan-servicing",
+  "title": "Loan servicing with dated quotes",
+  "organisation": "Northgate Bank",
+  "action": "present an authoritative payoff quote",
+  "failure": "The agent reused yesterday\u2019s balance as today\u2019s final payoff amount and promised the loan would close.",
+  "lesson": "Treat payoff values as dated service quotes, distinguish viewing from payment execution, and route hardship without improvising advice.",
+  "receipt": "A dated payoff-quote reference with scope, expiry and next servicing step.",
+  "evidence": "Check the quote date and charge scope from the servicing system, rather than recomputing a payoff from an account balance.",
+  "recovery": "Refresh an expired quote. If the source is unavailable, offer a servicing callback and do not estimate a replacement figure.",
+  "owner": "loan servicing owner",
+  "metric": "expired quotes presented as current payoff amounts, divided by quote responses",
+  "question": "This quote is valid until the stated time. Would you like the servicing instructions or support with another option?",
+  "correction": "The customer reports hardship; stop the payoff flow and offer the servicing support route.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "quote_valid_today",
+      "good": true,
+      "bad": false,
+      "reason": "quote_expired",
+      "phase": "request"
+    },
+    {
+      "field": "included_charges_explicit",
+      "good": true,
+      "bad": false,
+      "reason": "quote_scope_missing",
+      "phase": "request"
+    },
+    {
+      "field": "servicing_route_available",
+      "good": true,
+      "bad": false,
+      "reason": "no_servicing_route",
+      "phase": "request"
+    }
+  ],
+  "facts": {
+    "quote_valid_today": true,
+    "included_charges_explicit": true,
+    "servicing_route_available": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "quote_valid_today": true,
+        "included_charges_explicit": true,
+        "servicing_route_available": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "quote_valid_today-false",
+      "facts": {
+        "quote_valid_today": false,
+        "included_charges_explicit": true,
+        "servicing_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "quote_expired",
+        "effects": 0
+      }
+    },
+    {
+      "name": "quote_valid_today-missing",
+      "facts": {
+        "included_charges_explicit": true,
+        "servicing_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "quote_expired",
+        "effects": 0
+      }
+    },
+    {
+      "name": "quote_valid_today-string",
+      "facts": {
+        "quote_valid_today": "true",
+        "included_charges_explicit": true,
+        "servicing_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "quote_expired",
+        "effects": 0
+      }
+    },
+    {
+      "name": "included_charges_explicit-false",
+      "facts": {
+        "quote_valid_today": true,
+        "included_charges_explicit": false,
+        "servicing_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "quote_scope_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "included_charges_explicit-missing",
+      "facts": {
+        "quote_valid_today": true,
+        "servicing_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "quote_scope_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "included_charges_explicit-string",
+      "facts": {
+        "quote_valid_today": true,
+        "included_charges_explicit": "true",
+        "servicing_route_available": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "quote_scope_missing",
+        "effects": 0
+      }
+    },
+    {
+      "name": "servicing_route_available-false",
+      "facts": {
+        "quote_valid_today": true,
+        "included_charges_explicit": true,
+        "servicing_route_available": false
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_servicing_route",
+        "effects": 0
+      }
+    },
+    {
+      "name": "servicing_route_available-missing",
+      "facts": {
+        "quote_valid_today": true,
+        "included_charges_explicit": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_servicing_route",
+        "effects": 0
+      }
+    },
+    {
+      "name": "servicing_route_available-string",
+      "facts": {
+        "quote_valid_today": true,
+        "included_charges_explicit": true,
+        "servicing_route_available": "true"
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "no_servicing_route",
+        "effects": 0
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}

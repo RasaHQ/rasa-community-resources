@@ -1,0 +1,1520 @@
+{
+ "sender_id": "banking-transfer-gpt-text-normal-balance-then-transfer-20260930T025835",
+ "slots": {
+  "consecutive_silence_timeouts": 0.0,
+  "project.customer_id": "NB-CUST-4810",
+  "project.customer_first_name": "Elena",
+  "project.account_names": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+  "system.__discovered__": [
+   {
+    "key": "customer_asks_available_balance_everyday_checking",
+    "value": "Customer asked for available balance in Everyday Checking",
+    "description": "The customer wants to know the available balance for their Everyday Checking account.",
+    "turn_idx": 1,
+    "confidence": 1.0,
+    "pii": false,
+    "captured_by_skill": null,
+    "potential_mappings": []
+   },
+   {
+    "key": "customer_requested_transfer_to_sam_okoro",
+    "value": "Send $200 from Everyday Checking to Sam Okoro",
+    "description": "Customer asked to transfer $200 from their Everyday Checking balance to saved payee Sam Okoro.",
+    "turn_idx": 2,
+    "confidence": 1.0,
+    "pii": true,
+    "captured_by_skill": "account_balance",
+    "potential_mappings": []
+   }
+  ],
+  "transfer_money.selected_payee_ref": "NB-PAY-2017",
+  "transfer_money.selected_payee_label": "Sam Okoro, saved payee at Crestline Bank, account ending 17",
+  "transfer_money.draft_id": "NB-DRF-EF763587",
+  "transfer_money.draft_summary": "$200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17",
+  "system.pending_tool_confirmation": null
+ },
+ "latest_message": {
+  "intent": {
+   "name": null,
+   "confidence": 0.0
+  },
+  "entities": [],
+  "text": "Yes.",
+  "message_id": "55bd090dabc24bfdb012288e10d2cd3f",
+  "metadata": {},
+  "commands": []
+ },
+ "latest_event_time": 1790737219.008205,
+ "followup_action": null,
+ "paused": false,
+ "inactive": false,
+ "terminated": false,
+ "stack": [
+  {
+   "frame_id": "VU4YHZYR",
+   "skill_id": "account_balance",
+   "frame_type": "interrupt",
+   "previous_frame_type": "regular",
+   "type": "skill"
+  },
+  {
+   "frame_id": "8TN6VE56",
+   "skill_id": "transfer_money",
+   "frame_type": "regular",
+   "type": "skill"
+  }
+ ],
+ "events": [
+  {
+   "event": "session_started",
+   "timestamp": 1790737197.664226,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790737197.664421,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "flow_id": "default_session_start__main",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790737197.664435,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790737197.664263,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_entered",
+   "timestamp": 1790737197.6644428,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737197.664449,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"ONODT8S6\", \"skill_id\": \"default_session_start\", \"frame_type\": \"regular\", \"type\": \"skill\"}}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"YDUEIGQQ\", \"skill_id\": \"default_session_start\", \"block_id\": \"main\", \"step_id\": \"load_profile\", \"frame_type\": \"regular\", \"type\": \"ordered_block\"}}]"
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737197.664556,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "consecutive_silence_timeouts",
+   "value": 0.0,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790737197.6645691,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "text": "What's my available balance in everyday checking?",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "What's my available balance in everyday checking?",
+    "message_id": "f87671b675664e4ba29c58990e4baddc",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "f87671b675664e4ba29c58990e4baddc",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737197.6657531,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "YDUEIGQQ",
+     "arguments": {},
+     "position": 7,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737197.665768,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "YDUEIGQQ",
+     "arguments": {},
+     "position": 8,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "project.customer_id",
+   "value": "NB-CUST-4810",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737197.665805,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "YDUEIGQQ",
+     "arguments": {},
+     "position": 9,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "project.customer_first_name",
+   "value": "Elena",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737197.665812,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "YDUEIGQQ",
+     "arguments": {},
+     "position": 10,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "project.customer_first_name",
+   "value": "Elena",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737197.665845,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "YDUEIGQQ",
+     "arguments": {},
+     "position": 11,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "project.account_names",
+   "value": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737197.6658509,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "load_caller_profile",
+     "skill_id": "default_session_start",
+     "step": "load_profile",
+     "frame_id": "YDUEIGQQ",
+     "arguments": {},
+     "position": 12,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "project.account_names",
+   "value": "Everyday Checking (account ending 3301); Bills Checking (account ending 3302); High-Yield Savings (account ending 3303)",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737197.665946,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": [\"Everyday Checking (account ending 3301)\", \"Bills Checking (account ending 3302)\", \"High-Yield Savings (account ending 3303)\"]}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737197.665954,
+   "metadata": {
+    "source": "execute_step",
+    "skill_id": "default_session_start",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "load_caller_profile",
+   "arguments": {},
+   "source": "local",
+   "result": "{\"ok\": true, \"first_name\": \"Elena\", \"accounts\": [\"Everyday Checking (account ending 3301)\", \"Bills Checking (account ending 3302)\", \"High-Yield Savings (account ending 3303)\"]}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737197.666038,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "update": "[{\"op\": \"replace\", \"path\": \"/1/step_id\", \"value\": \"greet\"}]"
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737197.6665359,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_greet",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "text": "Hello Elena, this is Northgate Bank transfers. I can move money between your accounts or to a saved payee, check a transfer's status, or tell you a balance. What would you like to do?\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_completed",
+   "timestamp": 1790737197.666982,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "flow_id": "default_session_start__main",
+   "step_id": "greet",
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "ordered_block_completed",
+   "timestamp": 1790737197.666999,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "skill_id": "default_session_start",
+   "block_id": "main",
+   "step_id": "greet"
+  },
+  {
+   "event": "skill_completed",
+   "timestamp": 1790737197.667008,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "skill_id": "default_session_start"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737197.667014,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "update": "[{\"op\": \"remove\", \"path\": \"/0\"}, {\"op\": \"remove\", \"path\": \"/0\"}]"
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737197.667153,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   }
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790737198.868305,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "flow_id": "account_balance",
+   "skill_id": "account_balance"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790737198.868334,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790737197.6645691,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "skill_id": "account_balance"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737198.868343,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0\", \"value\": {\"frame_id\": \"VU4YHZYR\", \"skill_id\": \"account_balance\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737198.869822,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "account_balance"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737198.869874,
+   "metadata": {
+    "tool_call_id": "call_KqmYQByiYm85OtozAYmttmX9",
+    "tool_batch_id": "0-call_KqmYQByiYm85OtozAYmttmX9",
+    "skill_id": "account_balance",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "account_balance"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737201.043765,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "get_balance",
+   "arguments": {
+    "account": "Everyday Checking"
+   },
+   "result": "{\"status\": \"read\", \"account_ref\": \"NB-ACC-1001\", \"account\": \"Everyday Checking (account ending 3301)\", \"posted_balance\": \"$2,480.00\", \"available_balance\": \"$1,250.00\", \"holds_total\": \"$1,230.00\", \"ledger_revision\": 41, \"observed_at\": \"2026-09-30T14:00:00+00:00\", \"note\": \"A balance read at this ledger revision. It is not a reservation and it can change before a transfer is submitted: the ledger decides at submission.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737201.043801,
+   "metadata": {
+    "tool_call_id": "call_6485XwVzYLpcGqIMHer8YbFs",
+    "tool_batch_id": "1-call_6485XwVzYLpcGqIMHer8YbFs",
+    "skill_id": "account_balance",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "get_balance",
+   "arguments": {
+    "account": "Everyday Checking"
+   },
+   "source": "local",
+   "result": "{\"status\": \"read\", \"account_ref\": \"NB-ACC-1001\", \"account\": \"Everyday Checking (account ending 3301)\", \"posted_balance\": \"$2,480.00\", \"available_balance\": \"$1,250.00\", \"holds_total\": \"$1,230.00\", \"ledger_revision\": 41, \"observed_at\": \"2026-09-30T14:00:00+00:00\", \"note\": \"A balance read at this ledger revision. It is not a reservation and it can change before a transfer is submitted: the ledger decides at submission.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737202.686086,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 1633.935083023971,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "text": "Your available balance in Everyday Checking ending 3301 is $1,250.00.\n\nYour posted balance is $2,480.00; the difference is $1,230.00 in holds. This was read at 2026-09-30 14:00 UTC. It\u2019s your balance now, not a promise that a later transfer will be funded.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737202.68765,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737205.0763578,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "account_balance",
+     "step": "autonomous",
+     "frame_id": "VU4YHZYR",
+     "arguments": {},
+     "position": 31,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_asks_available_balance_everyday_checking",
+     "value": "Customer asked for available balance in Everyday Checking",
+     "description": "The customer wants to know the available balance for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737205.0764182,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "account_balance",
+     "step": "autonomous",
+     "frame_id": "VU4YHZYR",
+     "arguments": {},
+     "position": 32,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_asks_available_balance_everyday_checking",
+     "value": "Customer asked for available balance in Everyday Checking",
+     "description": "The customer wants to know the available balance for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790737205.08716,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "text": "Okay. Send $200 of that to Sam Okoro.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Okay. Send $200 of that to Sam Okoro.",
+    "message_id": "04b4171c6d12448b8eaeb1fb5d48bfba",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "04b4171c6d12448b8eaeb1fb5d48bfba",
+   "anonymized_at": null
+  },
+  {
+   "event": "flow_interrupted",
+   "timestamp": 1790737206.434697,
+   "metadata": {
+    "digression": {
+     "to_flow_id": "transfer_money",
+     "to_step_id": "autonomous",
+     "to_skill_id": "transfer_money"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "flow_id": "account_balance",
+   "step_id": "autonomous",
+   "skill_id": "account_balance"
+  },
+  {
+   "event": "skill_interrupted",
+   "timestamp": 1790737206.43473,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "skill_id": "account_balance",
+   "step_id": "autonomous"
+  },
+  {
+   "event": "flow_started",
+   "timestamp": 1790737206.434742,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "flow_id": "transfer_money",
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "skill_activated",
+   "timestamp": 1790737206.434749,
+   "metadata": {
+    "triggering_user_message_timestamp": 1790737205.08716,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "skill_id": "transfer_money"
+  },
+  {
+   "event": "stack",
+   "timestamp": 1790737206.434755,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "update": "[{\"op\": \"add\", \"path\": \"/0/previous_frame_type\", \"value\": \"regular\"}, {\"op\": \"replace\", \"path\": \"/0/frame_type\", \"value\": \"interrupt\"}, {\"op\": \"add\", \"path\": \"/1\", \"value\": {\"frame_id\": \"8TN6VE56\", \"skill_id\": \"transfer_money\", \"frame_type\": \"regular\", \"type\": \"skill\"}}]"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737206.435358,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transfer_money"
+   },
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737206.435393,
+   "metadata": {
+    "tool_call_id": "call_CwcQGExYGFmJFaohXPl8XBnB",
+    "tool_batch_id": "0-call_CwcQGExYGFmJFaohXPl8XBnB",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "activate",
+   "arguments": {
+    "target_id": "transfer_money"
+   },
+   "source": "local",
+   "result": "activate: done",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737208.17404,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "position": 41,
+     "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "transfer_money.selected_payee_ref",
+   "value": "NB-PAY-2017",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737208.1740952,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "position": 42,
+     "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "transfer_money.selected_payee_ref",
+   "value": "NB-PAY-2017",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737208.1742148,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "position": 43,
+     "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "transfer_money.selected_payee_label",
+   "value": "Sam Okoro, saved payee at Crestline Bank, account ending 17",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737208.17423,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "position": 44,
+     "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "transfer_money.selected_payee_label",
+   "value": "Sam Okoro, saved payee at Crestline Bank, account ending 17",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737208.174318,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "position": 45,
+     "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "transfer_money.draft_id",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737208.174332,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "position": 46,
+     "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "transfer_money.draft_id",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737208.174415,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "position": 47,
+     "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "transfer_money.draft_summary",
+   "value": "",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737208.174429,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "select_payee",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "payee": "Sam Okoro"
+     },
+     "position": 48,
+     "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "transfer_money.draft_summary",
+   "value": "",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737208.175317,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "select_payee",
+   "arguments": {
+    "payee": "Sam Okoro"
+   },
+   "result": "{\"status\": \"selected\", \"payee_ref\": \"NB-PAY-2017\", \"payee_label\": \"Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"destination_kind\": \"saved_payee\", \"next_step\": \"Call prepare_transfer with this payee_ref, the source account and the amount. Do not describe the payee as confirmed: the caller confirms the whole transfer next.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737208.175339,
+   "metadata": {
+    "tool_call_id": "call_uySzUswU92fO9B2Eb6uSc1L6",
+    "tool_batch_id": "1-call_uySzUswU92fO9B2Eb6uSc1L6",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "select_payee",
+   "arguments": {
+    "payee": "Sam Okoro"
+   },
+   "source": "local",
+   "result": "{\"status\": \"selected\", \"payee_ref\": \"NB-PAY-2017\", \"payee_label\": \"Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"destination_kind\": \"saved_payee\", \"next_step\": \"Call prepare_transfer with this payee_ref, the source account and the amount. Do not describe the payee as confirmed: the caller confirms the whole transfer next.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737209.70563,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2017",
+      "amount": "$200"
+     },
+     "position": 51,
+     "tool_call_id": "call_sBlOJBuQNvnSWqJ4vsuEWlEE"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "transfer_money.draft_id",
+   "value": "NB-DRF-EF763587",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737209.705685,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2017",
+      "amount": "$200"
+     },
+     "position": 52,
+     "tool_call_id": "call_sBlOJBuQNvnSWqJ4vsuEWlEE"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "transfer_money.draft_id",
+   "value": "NB-DRF-EF763587",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737209.705837,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2017",
+      "amount": "$200"
+     },
+     "position": 53,
+     "tool_call_id": "call_sBlOJBuQNvnSWqJ4vsuEWlEE"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "transfer_money.draft_summary",
+   "value": "$200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17",
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737209.705871,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": "prepare_transfer",
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {
+      "from_account": "Everyday Checking",
+      "payee_ref": "NB-PAY-2017",
+      "amount": "$200"
+     },
+     "position": 54,
+     "tool_call_id": "call_sBlOJBuQNvnSWqJ4vsuEWlEE"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "transfer_money.draft_summary",
+   "value": "$200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17",
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737209.7070131,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "prepare_transfer",
+   "arguments": {
+    "from_account": "Everyday Checking",
+    "payee_ref": "NB-PAY-2017",
+    "amount": "$200"
+   },
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"NB-DRF-EF763587\", \"summary\": \"$200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"amount\": \"$200.00\", \"from_account_ref\": \"NB-ACC-1001\", \"payee_ref\": \"NB-PAY-2017\", \"from_account\": \"Everyday Checking (account ending 3301)\", \"destination\": \"Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"destination_kind\": \"saved_payee\", \"balance_as_read\": {\"available_balance\": \"$1,250.00\", \"posted_balance\": \"$2,480.00\", \"ledger_revision\": 41, \"observed_at\": \"2026-09-30T14:00:00+00:00\"}, \"effects\": 0, \"next_step\": \"Call submit_transfer with this draft_id. The engine shows the caller the amount, source and destination and asks them to confirm. The balance above is a read, not a decision: the ledger decides at submission. Do not tell the caller the transfer will go through.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737209.707048,
+   "metadata": {
+    "tool_call_id": "call_sBlOJBuQNvnSWqJ4vsuEWlEE",
+    "tool_batch_id": "2-call_sBlOJBuQNvnSWqJ4vsuEWlEE",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "prepare_transfer",
+   "arguments": {
+    "from_account": "Everyday Checking",
+    "payee_ref": "NB-PAY-2017",
+    "amount": "$200"
+   },
+   "source": "local",
+   "result": "{\"status\": \"drafted\", \"draft_id\": \"NB-DRF-EF763587\", \"summary\": \"$200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"amount\": \"$200.00\", \"from_account_ref\": \"NB-ACC-1001\", \"payee_ref\": \"NB-PAY-2017\", \"from_account\": \"Everyday Checking (account ending 3301)\", \"destination\": \"Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"destination_kind\": \"saved_payee\", \"balance_as_read\": {\"available_balance\": \"$1,250.00\", \"posted_balance\": \"$2,480.00\", \"ledger_revision\": 41, \"observed_at\": \"2026-09-30T14:00:00+00:00\"}, \"effects\": 0, \"next_step\": \"Call submit_transfer with this draft_id. The engine shows the caller the amount, source and destination and asks them to confirm. The balance above is a read, not a decision: the ledger decides at submission. Do not tell the caller the transfer will go through.\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737211.215311,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {},
+     "position": 57,
+     "tool_call_id": "call_GVH8U2L4v4Tddwg2yrTHIjeg"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "submit_transfer",
+    "tool_args": {
+     "draft_id": "NB-DRF-EF763587"
+    },
+    "confirmation_ask": "Transfer $200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17? I will confirm the result from the ledger.\n",
+    "utter_on_user_denial": "utter_transfer_not_submitted",
+    "skill_id": "transfer_money",
+    "frame_id": "8TN6VE56",
+    "execute_step_id": null
+   },
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737211.215339,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {},
+     "position": 58,
+     "tool_call_id": "call_GVH8U2L4v4Tddwg2yrTHIjeg"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "system.pending_tool_confirmation",
+   "value": {
+    "tool_name": "submit_transfer",
+    "tool_args": {
+     "draft_id": "NB-DRF-EF763587"
+    },
+    "confirmation_ask": "Transfer $200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17? I will confirm the result from the ledger.\n",
+    "utter_on_user_denial": "utter_transfer_not_submitted",
+    "skill_id": "transfer_money",
+    "frame_id": "8TN6VE56",
+    "execute_step_id": null
+   },
+   "anonymized_at": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737211.21597,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-EF763587"
+   },
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Transfer $200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17? I will confirm the result from the ledger.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737211.21601,
+   "metadata": {
+    "tool_call_id": "call_GVH8U2L4v4Tddwg2yrTHIjeg",
+    "tool_batch_id": "3-call_GVH8U2L4v4Tddwg2yrTHIjeg",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-EF763587"
+   },
+   "source": "local",
+   "result": "{\"status\": \"awaiting_confirmation\", \"message\": \"Transfer $200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17? I will confirm the result from the ledger.\\n\"}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737211.217568,
+   "metadata": {
+    "mantle_response_source": "verbatim",
+    "utter_action": "utter_confirm_transfer",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "text": "Transfer $200.00 from your Everyday Checking (account ending 3301) to Sam Okoro, saved payee at Crestline Bank, account ending 17? I will confirm the result from the ledger.\n",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737211.218501,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   }
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737215.29725,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {},
+     "position": 63,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_asks_available_balance_everyday_checking",
+     "value": "Customer asked for available balance in Everyday Checking",
+     "description": "The customer wants to know the available balance for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_requested_transfer_to_sam_okoro",
+     "value": "Send $200 from Everyday Checking to Sam Okoro",
+     "description": "Customer asked to transfer $200 from their Everyday Checking balance to saved payee Sam Okoro.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "account_balance",
+     "potential_mappings": []
+    }
+   ],
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_set",
+   "timestamp": 1790737215.297285,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {},
+     "position": 64,
+     "tool_call_id": null
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "system.__discovered__",
+   "value": [
+    {
+     "key": "customer_asks_available_balance_everyday_checking",
+     "value": "Customer asked for available balance in Everyday Checking",
+     "description": "The customer wants to know the available balance for their Everyday Checking account.",
+     "turn_idx": 1,
+     "confidence": 1.0,
+     "pii": false,
+     "captured_by_skill": null,
+     "potential_mappings": []
+    },
+    {
+     "key": "customer_requested_transfer_to_sam_okoro",
+     "value": "Send $200 from Everyday Checking to Sam Okoro",
+     "description": "Customer asked to transfer $200 from their Everyday Checking balance to saved payee Sam Okoro.",
+     "turn_idx": 2,
+     "confidence": 1.0,
+     "pii": true,
+     "captured_by_skill": "account_balance",
+     "potential_mappings": []
+    }
+   ],
+   "anonymized_at": null
+  },
+  {
+   "event": "user",
+   "timestamp": 1790737215.450282,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "text": "Yes.",
+   "parse_data": {
+    "intent": {
+     "name": null,
+     "confidence": 0.0
+    },
+    "entities": [],
+    "text": "Yes.",
+    "message_id": "55bd090dabc24bfdb012288e10d2cd3f",
+    "metadata": {},
+    "commands": []
+   },
+   "input_channel": "rest",
+   "message_id": "55bd090dabc24bfdb012288e10d2cd3f",
+   "anonymized_at": null
+  },
+  {
+   "event": "slot",
+   "timestamp": 1790737217.143865,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {},
+     "position": 66,
+     "tool_call_id": "call_yHUx4JGKVVyEkSJ0DTH7vLz9"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "name": "system.pending_tool_confirmation",
+   "value": null,
+   "filled_by": null,
+   "anonymized_at": null
+  },
+  {
+   "event": "memory_cleared",
+   "timestamp": 1790737217.1439009,
+   "metadata": {
+    "mantle_write_provenance": {
+     "tool": null,
+     "skill_id": "transfer_money",
+     "step": "autonomous",
+     "frame_id": "8TN6VE56",
+     "arguments": {},
+     "position": 67,
+     "tool_call_id": "call_yHUx4JGKVVyEkSJ0DTH7vLz9"
+    },
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "key": "system.pending_tool_confirmation"
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737217.1442912,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-EF763587"
+   },
+   "result": "{\"status\": \"submitted\", \"reference\": \"NB-TRF-A00D4BC0\", \"attempt_id\": \"NB-DRF-EF763587\", \"ledger_status\": \"pending\", \"posted\": false, \"posted_at\": null, \"amount\": \"$200.00\", \"from_account_ref\": \"NB-ACC-1001\", \"payee_ref\": \"NB-PAY-2017\", \"from_account\": \"Everyday Checking (account ending 3301)\", \"destination\": \"Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"balance_revision\": 41, \"receipt_note\": \"A submission receipt is not a posting. Say a transfer is posted, complete or received only when ledger_status is posted.\", \"next_step\": \"Give the reference and say the transfer is pending: the money is reserved and the payee's bank has not received it yet. Do not say it is posted, complete, sent or received.\", \"facts\": {\"ledger_revision_current\": true, \"payee_identity_confirmed\": true, \"funds_reserved\": true}, \"effects\": 1, \"replay\": false}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737217.1443079,
+   "metadata": {
+    "source": "tool_confirmation",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "submit_transfer",
+   "arguments": {
+    "draft_id": "NB-DRF-EF763587"
+   },
+   "source": "local",
+   "result": "{\"status\": \"submitted\", \"reference\": \"NB-TRF-A00D4BC0\", \"attempt_id\": \"NB-DRF-EF763587\", \"ledger_status\": \"pending\", \"posted\": false, \"posted_at\": null, \"amount\": \"$200.00\", \"from_account_ref\": \"NB-ACC-1001\", \"payee_ref\": \"NB-PAY-2017\", \"from_account\": \"Everyday Checking (account ending 3301)\", \"destination\": \"Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"balance_revision\": 41, \"receipt_note\": \"A submission receipt is not a posting. Say a transfer is posted, complete or received only when ledger_status is posted.\", \"next_step\": \"Give the reference and say the transfer is pending: the money is reserved and the payee's bank has not received it yet. Do not say it is posted, complete, sent or received.\", \"facts\": {\"ledger_revision_current\": true, \"payee_identity_confirmed\": true, \"funds_reserved\": true}, \"effects\": 1, \"replay\": false}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "mcp_tool_executed",
+   "timestamp": 1790737217.145298,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "result": "{\"status\": \"submitted\", \"reference\": \"NB-TRF-A00D4BC0\", \"attempt_id\": \"NB-DRF-EF763587\", \"ledger_status\": \"pending\", \"posted\": false, \"posted_at\": null, \"amount\": \"$200.00\", \"from_account_ref\": \"NB-ACC-1001\", \"payee_ref\": \"NB-PAY-2017\", \"from_account\": \"Everyday Checking (account ending 3301)\", \"destination\": \"Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"balance_revision\": 41, \"receipt_note\": \"A submission receipt is not a posting. Say a transfer is posted, complete or received only when ledger_status is posted.\", \"next_step\": \"Give the reference and say the transfer is pending: the money is reserved and the payee's bank has not received it yet. Do not say it is posted, complete, sent or received.\", \"facts\": {\"ledger_revision_current\": true, \"payee_identity_confirmed\": true, \"funds_reserved\": true}, \"effects\": 1, \"replay\": false}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "tool_executed",
+   "timestamp": 1790737217.145341,
+   "metadata": {
+    "tool_call_id": "call_yHUx4JGKVVyEkSJ0DTH7vLz9",
+    "tool_batch_id": "0-call_yHUx4JGKVVyEkSJ0DTH7vLz9",
+    "skill_id": "transfer_money",
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "tool_name": "resolve_tool_confirmation",
+   "arguments": {
+    "confirmed": true
+   },
+   "source": "local",
+   "result": "{\"status\": \"submitted\", \"reference\": \"NB-TRF-A00D4BC0\", \"attempt_id\": \"NB-DRF-EF763587\", \"ledger_status\": \"pending\", \"posted\": false, \"posted_at\": null, \"amount\": \"$200.00\", \"from_account_ref\": \"NB-ACC-1001\", \"payee_ref\": \"NB-PAY-2017\", \"from_account\": \"Everyday Checking (account ending 3301)\", \"destination\": \"Sam Okoro, saved payee at Crestline Bank, account ending 17\", \"balance_revision\": 41, \"receipt_note\": \"A submission receipt is not a posting. Say a transfer is posted, complete or received only when ledger_status is posted.\", \"next_step\": \"Give the reference and say the transfer is pending: the money is reserved and the payee's bank has not received it yet. Do not say it is posted, complete, sent or received.\", \"facts\": {\"ledger_revision_current\": true, \"payee_identity_confirmed\": true, \"funds_reserved\": true}, \"effects\": 1, \"replay\": false}",
+   "is_error": false,
+   "error_message": null
+  },
+  {
+   "event": "bot",
+   "timestamp": 1790737219.00671,
+   "metadata": {
+    "mantle_response_source": "llm",
+    "llm_total_time_ms": 1779.8272090149112,
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   },
+   "text": "Your transfer reference is NB-TRF-A00D4BC0.\n\nLedger status: pending. The $200.00 is reserved from your Everyday Checking ending 3301, but Sam Okoro\u2019s bank has not received it yet.",
+   "data": {},
+   "anonymized_at": null
+  },
+  {
+   "event": "bot_turn_ended",
+   "timestamp": 1790737219.008205,
+   "metadata": {
+    "model_id": "607609175e2a422fb09809121f828000",
+    "model_name": "20260930-035645-leather-convolution.tar.gz",
+    "assistant_id": "northgate-transfer-gpt",
+    "session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+   }
+  }
+ ],
+ "latest_input_channel": "rest",
+ "active_loop": {},
+ "latest_action": {},
+ "latest_action_name": null,
+ "user_id": null,
+ "conversation_started_timestamp": 1790737197.664226,
+ "current_session_id": "2a360fc5-21bd-422f-a3a3-18bef2c916ed"
+}

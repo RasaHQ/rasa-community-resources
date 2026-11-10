@@ -1,0 +1,492 @@
+{
+ "schema": 1,
+ "build": "insurance-quote-bind-gpt-text",
+ "case": "insurance-quote-bind",
+ "project": "examples/mantle-text-insurance-quote-bind-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T03:05:32.905648+00:00",
+ "finished_at": "2026-09-30T03:06:10.081809+00:00",
+ "model_file": "20260930-040549-shabby-sea.tar.gz",
+ "train_seconds": 17.7,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 2,
+  "passed": 0,
+  "failed": 0,
+  "provider_errors": 2,
+  "turns": 9,
+  "turn_latency_ms": {
+   "p50": 591.6,
+   "p95": 2447.1,
+   "max": 2447.1,
+   "mean": 915.4
+  },
+  "llm_calls": 10,
+  "llm_calls_per_turn": 1.11,
+  "side_channel_calls": 0,
+  "empty_completions": 0,
+  "failed_llm_calls": 9,
+  "failed_side_channel_calls": 0,
+  "prompt_tokens": 1613,
+  "completion_tokens": 41,
+  "reasoning_tokens": 20,
+  "cached_prompt_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "active_cover_claim": 0,
+   "policy_reference": 0
+  },
+  "tool_result_metrics": {
+   "bind_requests_with_effect": {
+    "attempts": 0,
+    "total": 0
+   }
+  },
+  "log_events": {
+   "harborcover.bind_guard": 0,
+   "mantle.turn.failed": 9,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0
+  },
+  "cost_complete": true,
+  "skipped": [
+   {
+    "id": "correction-dog-after-offer",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "correction-start-date-at-bind",
+    "reason": "provider errors in the previous two conversations"
+   },
+   {
+    "id": "correction-after-bind",
+    "reason": "provider errors in the previous two conversations"
+   }
+  ],
+  "cost_usd": 0.009295,
+  "llm_cost_usd": 0.009295,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.738724,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "normal-renters-buy",
+   "kind": "normal",
+   "description": "Estimate to offer to two confirmations to a bound policy with a receipt.",
+   "conversation_id": "insurance-quote-bind-gpt-text-normal-renters-buy-20260930T030532",
+   "passed": false,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hi, I got a renters quote on your site, 18 to 26 dollars a month. I'd like to buy it.",
+     "latency_ms": 1559.9,
+     "bot": [
+      "Hello Mateo, this is HarborCover quotes. I can turn a saved quote into an underwritten offer and, once you confirm, ask our binding service to bind it. Which quote would you like to continue?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, let's review the answers.",
+     "latency_ms": 702.3,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, those are all correct.",
+     "latency_ms": 591.6,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, bind it.",
+     "latency_ms": 537.4,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, go ahead and bind it.",
+     "latency_ms": 2447.1,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "request_underwritten_offer",
+      "args": {
+       "quote_id": "HC-Q-RN-6120"
+      },
+      "result": {
+       "status": "offered",
+       "offer_id": "HC-OFR-6120-1"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "confirm_material_answers",
+      "args": {
+       "quote_id": "HC-Q-RN-6120"
+      },
+      "result": {
+       "status": "confirmed",
+       "offer_id": "HC-OFR-6120-1"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "bind_offer",
+      "args": {
+       "offer_id": "HC-OFR-6120-1"
+      },
+      "result": {
+       "status": "succeeded",
+       "bound": true,
+       "policy_number": "re:^HC-POL-RN-",
+       "offer_id": "HC-OFR-6120-1"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "any_of",
+      "checks": [
+       {
+        "type": "tool_not_called",
+        "tool": "bind_offer",
+        "result": {
+         "status": "succeeded"
+        }
+       },
+       {
+        "type": "tool_order",
+        "steps": [
+         {
+          "tool": "confirm_material_answers",
+          "result": {
+           "status": "confirmed"
+          }
+         },
+         {
+          "tool": "bind_offer",
+          "result": {
+           "status": "succeeded"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s); no confirm_material_answers call after position -1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "active_cover_claim": [],
+    "policy_reference": [],
+    "bind_requests_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "harborcover.bind_guard": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 5
+   },
+   "log_event_details": {
+    "harborcover.bind_guard": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-renters-buy-20260930T030532"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-renters-buy-20260930T030532"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-renters-buy-20260930T030532"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-renters-buy-20260930T030532"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-renters-buy-20260930T030532"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 6,
+    "main_loop_calls": 6,
+    "side_channel_calls": 0,
+    "failed_calls": 5,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 1613,
+    "completion_tokens": 41,
+    "reasoning_tokens": 20,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.009295,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1141.9,
+     671.8,
+     455.2,
+     494.6,
+     1571.0,
+     698.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-quote-bind-gpt-text-normal-renters-buy-20260930T030532",
+    "prompt": 1613,
+    "completion": 41,
+    "total": 1654,
+    "generations": 1,
+    "fetched_at": "2026-09-30T03:06:04.098725+00:00"
+   }
+  },
+  {
+   "id": "normal-decline-at-bind",
+   "kind": "normal",
+   "description": "The customer confirms the answers, then says no to the bind question: nothing is bound.",
+   "conversation_id": "insurance-quote-bind-gpt-text-normal-decline-at-bind-20260930T030532",
+   "passed": false,
+   "outcome": "provider_error",
+   "error": null,
+   "turns": [
+    {
+     "user": "Hi, I got a renters quote on your site, 18 to 26 dollars a month. I'd like to buy it.",
+     "latency_ms": 675.2,
+     "bot": [
+      "Hello Mateo, this is HarborCover quotes. I can turn a saved quote into an underwritten offer and, once you confirm, ask our binding service to bind it. Which quote would you like to continue?",
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, let's review the answers.",
+     "latency_ms": 554.5,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "Yes, those are all correct.",
+     "latency_ms": 582.5,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    },
+    {
+     "user": "No, don't bind it yet. I want to think about it.",
+     "latency_ms": 588.4,
+     "bot": [
+      "I'm sorry, but something went wrong. Please try again."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "request_underwritten_offer",
+      "args": {
+       "quote_id": "HC-Q-RN-6120"
+      },
+      "result": {
+       "status": "offered",
+       "offer_id": "HC-OFR-6120-1"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "confirm_material_answers",
+      "args": {
+       "quote_id": "HC-Q-RN-6120"
+      },
+      "result": {
+       "status": "confirmed"
+      }
+     },
+     "passed": false,
+     "detail": "0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "bind_offer",
+      "result": {
+       "status": "succeeded"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [],
+   "metrics": {
+    "filler_messages": [],
+    "active_cover_claim": [],
+    "policy_reference": [],
+    "bind_requests_with_effect": {
+     "attempts": 0,
+     "total": 0
+    }
+   },
+   "log_events": {
+    "harborcover.bind_guard": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.turn.failed": 4
+   },
+   "log_event_details": {
+    "harborcover.bind_guard": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.turn.failed": [
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-decline-at-bind-20260930T030532"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-decline-at-bind-20260930T030532"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-decline-at-bind-20260930T030532"
+     },
+     {
+      "error": "LLM call failed.",
+      "conversation_id": "insurance-quote-bind-gpt-text-normal-decline-at-bind-20260930T030532"
+     }
+    ]
+   },
+   "usage": {
+    "llm_calls": 4,
+    "main_loop_calls": 4,
+    "side_channel_calls": 0,
+    "failed_calls": 4,
+    "failed_side_channel_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     559.3,
+     489.7,
+     531.7,
+     560.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "not_found",
+    "session_id": "insurance-quote-bind-gpt-text-normal-decline-at-bind-20260930T030532",
+    "prompt": 0,
+    "completion": 0,
+    "total": 0,
+    "generations": 0,
+    "fetched_at": "2026-09-30T03:06:09.660669+00:00"
+   }
+  }
+ ]
+}

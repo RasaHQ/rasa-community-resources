@@ -1,0 +1,120 @@
+# External integrations for the Cedar Clinic refill-request voice agent.
+#
+# Speech runs on this Mac: faster-whisper hears the caller on the CPU and
+# NeuTTS-2E speaks on the GPU through Metal. The model call is the only thing
+# that leaves the machine.
+#
+# The orchestrator LLM is a model-group reference. Rasa's OpenAI client sends
+# gpt-5.5-2026-04-23 through LiteLLM. reasoning_effort is set to low rather
+# than Rasa's default for this model (none): in the Northgate block-card
+# build, at none GPT-5.5 sometimes spoke its tool calls aloud or announced an
+# action without taking it (4 times in 24 calls), and at low it did neither,
+# for about 0.1 s more at the median. The `reasoning-default` variant in
+# case-build/conversations.json removes this line.
+llm:
+  model_group: orchestrator
+
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.5-2026-04-23
+        api_key: ${OPENAI_API_KEY}
+        reasoning_effort: low
+
+# Mantle reads channels from here, never from credentials.yml.
+# `browser_audio` is the raw WebSocket voice channel a browser (or the case-build
+# harness) streams to at /webhooks/browser_audio/websocket. `inspector` serves
+# `rasa inspect` with the same speech stack.
+channels:
+  browser_audio:
+    server_url: localhost
+    # 24 kHz 16-bit PCM both ways: NeuCodec, the NeuTTS decoder, produces
+    # 24 kHz audio, so the agent's speech reaches the caller unresampled. The
+    # speech-to-text engine resamples the caller to Whisper's 16 kHz itself,
+    # and the caller fixtures are recorded at 24 kHz.
+    sample_rate: 24000
+    # The harness names each call, so the tracker, usage and logs join on one id.
+    # Trusted local transports only: any client can pick any conversation id.
+    external_sender_id_header: X-Rasa-Sender-Id
+    silence_timeout: 30
+    interruptions:
+      enabled: false
+    # faster-whisper through the companion's voice-vendor-router adapter,
+    # named by its dotted path and used directly, not through RoutedASR
+    # (which breaks calls on this Rasa release). model_id is a local folder
+    # (make whisper-model), so starting the agent never contacts Hugging Face.
+    # CTranslate2 has no Metal or Core ML backend, so Whisper runs on the CPU:
+    # int8, 8 threads (the M4 Pro's performance cores), greedy decoding.
+    # small.en was chosen from seven configurations replayed over the caller
+    # fixtures (case-build/results/whisper-model-choice/): tiny.en and base.en
+    # heard 8 and 7 of 23 medicine names, large-v3-turbo took 2.7 s a turn.
+    # hotwords is the clinic's list of medicine names, known before any call;
+    # with it small.en heard 23 of 23 (15 without) and its slowest turn fell
+    # from 4.6 s to 1.6 s.
+    # endpoint_silence_ms: the adapter ends a caller turn after this much
+    # quiet, judged by energy against 3x an adaptive noise floor. At its
+    # default of 700 ms, 17 of 53 caller turns in the first live run reached
+    # the agent as two or three turns (a sentence break plus soft word endings
+    # added up to 700 ms), and replaying the 48 caller fixtures through the
+    # adapter split the same 17. At 1000 ms the replay split none; the cost is
+    # 0.3 s more wait on every turn. The `endpoint-700ms` variant restores it.
+    asr:
+      name: voicerouter.providers.whisper.FasterWhisperASR
+      language_map:
+        en:
+          language: en
+      model_id: .whisper/small.en
+      device: cpu
+      compute_type: int8
+      cpu_threads: 8
+      beam_size: 1
+      force_language: en
+      endpoint_silence_ms: 1000
+      hotwords: Cedar Clinic lisinopril atorvastatin albuterol budesonide lorazepam simvastatin metformin sertraline amoxicillin
+    # NeuTTS-2E, native: llama.cpp (Metal) generates speech codes and a C++
+    # ONNX Runtime program decodes them. Built by
+    # patterns/voice-vendor-router/native/neutts/build.sh, models placed and
+    # digest-checked by prepare_models.py. `voice` is the speaker: sophie,
+    # one of NeuTTS-2E's four fixed English speakers. A fixed seed makes the
+    # same sentence sound the same on every call.
+    tts:
+      name: voicerouter.providers.neutts_native.NeuTTSNative
+      runtime_dir: ../../patterns/voice-vendor-router/native/neutts/build
+      models_dir: ../../patterns/voice-vendor-router/native/neutts/models
+      language_map:
+        en:
+          voice: sophie
+      seed: 20260930
+  inspector:
+    enabled: true
+    # The inspector turns interruptions on unless told otherwise, and with
+    # them on Rasa loads a barge-in "backchannel" model at startup
+    # (MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33, through
+    # huggingface_hub), which asks huggingface.co for the files on every start,
+    # cached or not. Off here, as on browser_audio, so starting the agent
+    # contacts nobody. With interruptions on, set HF_HUB_OFFLINE=1 after the
+    # first download instead.
+    interruptions:
+      enabled: false
+    asr:
+      name: voicerouter.providers.whisper.FasterWhisperASR
+      language_map:
+        en:
+          language: en
+      model_id: .whisper/small.en
+      device: cpu
+      compute_type: int8
+      cpu_threads: 8
+      beam_size: 1
+      force_language: en
+      endpoint_silence_ms: 1000
+      hotwords: Cedar Clinic lisinopril atorvastatin albuterol budesonide lorazepam simvastatin metformin sertraline amoxicillin
+    tts:
+      name: voicerouter.providers.neutts_native.NeuTTSNative
+      runtime_dir: ../../patterns/voice-vendor-router/native/neutts/build
+      models_dir: ../../patterns/voice-vendor-router/native/neutts/models
+      language_map:
+        en:
+          voice: sophie
+      seed: 20260930

@@ -1,0 +1,2046 @@
+{
+ "schema": 1,
+ "build": "retail-loyalty-gpt-text",
+ "case": "retail-loyalty",
+ "project": "examples/mantle-text-retail-loyalty-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T19:48:49.652242+00:00",
+ "finished_at": "2026-09-30T19:52:59.430884+00:00",
+ "model_file": "20260930-204855-patient-gin.tar.gz",
+ "train_seconds": 7.4,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 8,
+  "passed": 8,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 31,
+  "turn_latency_ms": {
+   "p50": 7638.0,
+   "p95": 11794.6,
+   "max": 13311.0,
+   "mean": 6885.3
+  },
+  "llm_calls": 85,
+  "llm_calls_per_turn": 2.74,
+  "side_channel_calls": 12,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 241357,
+  "completion_tokens": 4041,
+  "reasoning_tokens": 1120,
+  "cached_prompt_tokens": 76800,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "change_reference": 8
+  },
+  "tool_result_metrics": {
+   "commands_sent": {
+    "attempts": 9,
+    "total": 8
+   }
+  },
+  "log_events": {
+   "willowshop.words_guard": 0,
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 3,
+   "mantle.tool_confirmation.confirmed": 9,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.982415,
+  "llm_cost_usd": 0.982415,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 1.122728,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "adversarial-resend-after-timeout",
+   "kind": "adversarial",
+   "description": "Pet Pantry's first command times out though the service applied it. The member pushes to resend and cancel now; no second command runs.",
+   "conversation_id": "retail-loyalty-gpt-text-adversarial-resend-after-timeout-20260930T194849",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Stop my pet food autoship from renewing.",
+     "latency_ms": 9094.8,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "Please confirm this change to your Pet Pantry autoship (WS-SUB-3303): stop the renewal, not an immediate cancellation. It takes effect 2026-10-03 00:00 UTC. What changes for you: no delivery or charge from 2026-10-03; 5% autoship saving ends 2026-10-02. (Change WS-SUB-3303 stop_renewal r3.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 9325.2,
+     "bot": [
+      "Subscription change recorded: WS-CHG-5D17C6 for your Pet Pantry autoship (WS-SUB-3303). Renewal stopped, effective 2026-10-03 00:00 UTC. After this change: the 5% autoship saving until 2026-10-02; no further deliveries or charges. No refund.",
+      "The earlier request went through, and nothing was sent twice. Your Pet Pantry autoship renewal is stopped."
+     ]
+    },
+    {
+     "user": "Did something go wrong? Just send the cancellation again, and cancel it right now this time.",
+     "latency_ms": 8783.8,
+     "bot": [
+      "Passed to the Willow Shop subscription support team: WS-SUP-D9159D, for your Pet Pantry autoship. They reply within 2 business days. Nothing on the subscription has changed in this step.",
+      "Nothing went wrong with the earlier request: the status check confirmed it went through, and it was not sent twice.",
+      "I can\u2019t send another change for the same subscription in this chat after it was already changed here. I\u2019ve passed your request to the Willow Shop subscription support team. Your support reference is WS-SUP-D9159D, and they reply within 2 business days. No additional subscription change was made in this step."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "pending",
+       "reason": "change_not_recorded",
+       "subscription": "WS-SUB-3303"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_change_status",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3303",
+       "change_type": "stop_renewal"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_type": "cancel_now"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Pet Pantry autoship",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3303",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3303",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "pending",
+     "result_reason": "change_not_recorded"
+    },
+    {
+     "tool": "check_change_status",
+     "arguments": {
+      "subscription": "WS-SUB-3303"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "succeeded",
+     "result_reason": null
+    },
+    {
+     "tool": "route_subscription_support",
+     "arguments": {
+      "subscription": "WS-SUB-3303",
+      "note": "Member asks to send the cancellation again and cancel Pet Pantry autoship right now after the renewal was already stopped in this chat. A second change to a subscription already changed here is not handled by chat."
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "routed",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-5D17C6 for your Pet Pantry autoship (WS-SUB-3303). Renewal stopped, effective 2026-10-03 00:00 UTC. After this change: the 5% autoship saving until 2026-10-02; no further deliveries or charges. No refund."
+    ],
+    "commands_sent": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-adversarial-resend-after-timeout-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 9,
+    "main_loop_calls": 8,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 25848,
+    "completion_tokens": 523,
+    "reasoning_tokens": 141,
+    "cached_prompt_tokens": 8704,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.105762,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1327.4,
+     3056.5,
+     1837.3,
+     2738.7,
+     3982.1,
+     3100.8,
+     2197.5,
+     5121.6,
+     3632.1
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-adversarial-resend-after-timeout-20260930T194849",
+    "prompt": 25848,
+    "completion": 523,
+    "total": 26371,
+    "generations": 9,
+    "fetched_at": "2026-09-30T19:49:31.782144+00:00"
+   }
+  },
+  {
+   "id": "recovery-unknown-result",
+   "kind": "recovery",
+   "description": "Pet Pantry pause: the service's answer is lost. The agent reads it back by request key and revision instead of resending.",
+   "conversation_id": "retail-loyalty-gpt-text-recovery-unknown-result-20260930T194849",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Please pause my Pet Pantry autoship for a month.",
+     "latency_ms": 8592.3,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "Please confirm this change to your Pet Pantry autoship (WS-SUB-3303): pause it, not a cancellation. It takes effect 2026-10-03 00:00 UTC. What changes for you: no delivery or charge on 2026-10-03; next delivery 2026-11-03; saving kept. (Change WS-SUB-3303 pause r3.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes, pause it.",
+     "latency_ms": 6756.8,
+     "bot": [
+      "Subscription change recorded: WS-CHG-86C499 for your Pet Pantry autoship (WS-SUB-3303). Paused, effective 2026-10-03 00:00 UTC. After this change: the 5% autoship saving throughout; deliveries resume on 2026-11-03. No refund.",
+      "Your Pet Pantry autoship pause is confirmed. Nothing was sent twice. You\u2019ll keep the 5% autoship saving, deliveries resume on 2026-11-03, and there\u2019s no refund or points forfeited."
+     ]
+    },
+    {
+     "user": "Did it go through?",
+     "latency_ms": 1852.9,
+     "bot": [
+      "Yes. The Pet Pantry autoship pause went through. It takes effect 2026-10-03 00:00 UTC, with no delivery or charge on 2026-10-03, and deliveries resume on 2026-11-03."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "pending",
+       "subscription": "WS-SUB-3303",
+       "change_type": "pause",
+       "effects": 1
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "check_change_status",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3303",
+       "change_type": "pause"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Pet Pantry autoship",
+      "change_type": "pause"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3303",
+      "change_type": "pause"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3303",
+      "change_type": "pause"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "pending",
+     "result_reason": "change_not_recorded"
+    },
+    {
+     "tool": "check_change_status",
+     "arguments": {
+      "subscription": "WS-SUB-3303"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-86C499 for your Pet Pantry autoship (WS-SUB-3303). Paused, effective 2026-10-03 00:00 UTC. After this change: the 5% autoship saving throughout; deliveries resume on 2026-11-03. No refund."
+    ],
+    "commands_sent": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-recovery-unknown-result-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 8,
+    "main_loop_calls": 7,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 21658,
+    "completion_tokens": 289,
+    "reasoning_tokens": 0,
+    "cached_prompt_tokens": 9728,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.073184,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1610.9,
+     1322.8,
+     2708.2,
+     2899.2,
+     1591.7,
+     2545.0,
+     2588.2,
+     1835.0
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-recovery-unknown-result-20260930T194849",
+    "prompt": 21658,
+    "completion": 289,
+    "total": 21947,
+    "generations": 8,
+    "fetched_at": "2026-09-30T19:49:51.997885+00:00"
+   }
+  },
+  {
+   "id": "recovery-stale-revision",
+   "kind": "recovery",
+   "description": "Style Box is charged early while the chat is open. The first apply is blocked (benefit_loss_hidden); the new effect ships the paid October box, so the member switches to cancel now for the refund.",
+   "conversation_id": "retail-loyalty-gpt-text-recovery-stale-revision-20260930T194849",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Stop my Style Box renewing, I don't want the October box.",
+     "latency_ms": 10085.6,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "Please confirm this change to your Style Box (WS-SUB-3304): stop the renewal, not an immediate cancellation. It takes effect 2026-10-01 00:00 UTC. What changes for you: no charge on 2026-10-01; no October box; nothing refunded. (Change WS-SUB-3304 stop_renewal r4.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 8013.3,
+     "bot": [
+      "The October Style Box was charged early while this chat was open, so the effect has changed.",
+      "Stopping the renewal now takes effect 2027-01-01 00:00 UTC. The October box ships 2026-10-05, there is no charge on 2027-01-01, and there is no refund. Do you still want to stop the renewal?"
+     ]
+    },
+    {
+     "user": "Oh. Then I'd rather cancel it now and get the $60 back, if that stops the October box.",
+     "latency_ms": 6151.1,
+     "bot": [
+      "Please confirm this change to your Style Box (WS-SUB-3304): cancel now, so access ends today. It takes effect 2026-09-30 09:00 UTC. What changes for you: ends today 2026-09-30; October box cancelled; $60.00 refunded. (Change WS-SUB-3304 cancel_now r5.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes, cancel it now.",
+     "latency_ms": 3681.9,
+     "bot": [
+      "Subscription change recorded: WS-CHG-D1E144 for your Style Box (WS-SUB-3304). Cancelled now, effective 2026-09-30 09:00 UTC. After this change: nothing from today; the October box is cancelled and $60.00 refunded. Refund: $60.00.",
+      "Done. Your Style Box is cancelled now, and the October box is cancelled with a $60.00 refund."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 5136.6,
+     "bot": [
+      "Can I help you with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "blocked",
+       "reason": "benefit_loss_hidden",
+       "subscription": "WS-SUB-3304"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3304",
+       "change_type": "cancel_now",
+       "change_tag": "WS-SUB-3304 cancel_now r5"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_tag": "re:r4$"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_type": "re:^(?!cancel_now$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "subscription": "re:^(?!WS-SUB-3304$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "blocked",
+     "result_reason": "benefit_loss_hidden"
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Style Box",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-D1E144 for your Style Box (WS-SUB-3304). Cancelled now, effective 2026-09-30 09:00 UTC. After this change: nothing from today; the October box is cancelled and $60.00 refunded. Refund: $60.00."
+    ],
+    "commands_sent": {
+     "attempts": 2,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.confirmed": 2,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-recovery-stale-revision-20260930T194849"
+     },
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-recovery-stale-revision-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 14,
+    "main_loop_calls": 12,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 43954,
+    "completion_tokens": 699,
+    "reasoning_tokens": 270,
+    "cached_prompt_tokens": 13824,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.178532,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2196.2,
+     3181.5,
+     1339.2,
+     3315.9,
+     3469.7,
+     2163.1,
+     2329.9,
+     4956.1,
+     1170.0,
+     1815.2,
+     1831.1,
+     2049.5,
+     1817.1,
+     1233.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-recovery-stale-revision-20260930T194849",
+    "prompt": 43954,
+    "completion": 699,
+    "total": 44653,
+    "generations": 14,
+    "fetched_at": "2026-09-30T19:50:28.102211+00:00"
+   }
+  },
+  {
+   "id": "recovery-wrong-number",
+   "kind": "recovery",
+   "description": "The member gives a subscription number that is not theirs; told their own, they name Coffee Club and stop its renewal.",
+   "conversation_id": "retail-loyalty-gpt-text-recovery-wrong-number-20260930T194849",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Please stop renewal on my subscription WS-SUB-3399.",
+     "latency_ms": 7638.0,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "I don\u2019t see a subscription with that number on your Willow Shop login.",
+      "Your subscriptions are:\n- Willow Plus membership (WS-SUB-3301)\n- Coffee Club (WS-SUB-3302)\n- Pet Pantry autoship (WS-SUB-3303)\n- Style Box (WS-SUB-3304)",
+      "Which one would you like me to stop from renewing?"
+     ]
+    },
+    {
+     "user": "Sorry, I meant my Coffee Club.",
+     "latency_ms": 3898.7,
+     "bot": [
+      "Please confirm this change to your Coffee Club (WS-SUB-3302): stop the renewal, not an immediate cancellation. It takes effect 2026-10-08 00:00 UTC. What changes for you: no charge on 2026-10-08; no more boxes; 15% coffee discount kept to 2026-10-07. (Change WS-SUB-3302 stop_renewal r12.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes, stop the renewal.",
+     "latency_ms": 4993.2,
+     "bot": [
+      "Subscription change recorded: WS-CHG-4CCFA8 for your Coffee Club (WS-SUB-3302). Renewal stopped, effective 2026-10-08 00:00 UTC. After this change: the 15% coffee-gear discount until 2026-10-07; no further boxes or charges. No refund.",
+      "Done \u2014 your Coffee Club renewal has been stopped."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 10252.4,
+     "bot": [
+      "Can I help you with anything else?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3302",
+       "change_type": "stop_renewal"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_type": "re:^(?!stop_renewal$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "subscription": "re:^(?!WS-SUB-3302$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3399",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "not_found",
+     "result_reason": "no_such_subscription"
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Coffee Club",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3302",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3302",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-4CCFA8 for your Coffee Club (WS-SUB-3302). Renewal stopped, effective 2026-10-08 00:00 UTC. After this change: the 15% coffee-gear discount until 2026-10-07; no further boxes or charges. No refund."
+    ],
+    "commands_sent": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-recovery-wrong-number-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 11,
+    "main_loop_calls": 9,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 27558,
+    "completion_tokens": 513,
+    "reasoning_tokens": 173,
+    "cached_prompt_tokens": 10752,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.104796,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1754.8,
+     2403.5,
+     1921.4,
+     1525.7,
+     2132.2,
+     1740.2,
+     2114.2,
+     2856.8,
+     6262.5,
+     1369.7,
+     2596.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-recovery-wrong-number-20260930T194849",
+    "prompt": 27558,
+    "completion": 513,
+    "total": 28071,
+    "generations": 11,
+    "fetched_at": "2026-09-30T19:50:57.895597+00:00"
+   }
+  },
+  {
+   "id": "correction-pause-instead-at-question",
+   "kind": "correction",
+   "description": "The contract's correction: asked to confirm stopping Coffee Club's renewal, the member chooses to pause. The pause is explained and confirmed; stop_renewal never runs.",
+   "conversation_id": "retail-loyalty-gpt-text-correction-pause-instead-at-question-20260930T194849",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Stop my Coffee Club from renewing, please.",
+     "latency_ms": 10545.7,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "Please confirm this change to your Coffee Club (WS-SUB-3302): stop the renewal, not an immediate cancellation. It takes effect 2026-10-08 00:00 UTC. What changes for you: no charge on 2026-10-08; no more boxes; 15% coffee discount kept to 2026-10-07. (Change WS-SUB-3302 stop_renewal r12.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Actually, could I pause it instead? I might want it again in December.",
+     "latency_ms": 9553.6,
+     "bot": [
+      "Pausing Coffee Club takes effect 2026-10-08 00:00 UTC. You\u2019ll have no box or charge on 2026-10-08 and 2026-11-08; it resumes 2026-12-08, and you keep the 15% coffee-gear discount throughout.",
+      "Shall I make this pause instead?"
+     ]
+    },
+    {
+     "user": "Yes, pause it.",
+     "latency_ms": 3388.3,
+     "bot": [
+      "Please confirm this change to your Coffee Club (WS-SUB-3302): pause it, not a cancellation. It takes effect 2026-10-08 00:00 UTC. What changes for you: no box or charge 2026-10-08 and 2026-11-08; resumes 2026-12-08; discount kept. (Change WS-SUB-3302 pause r12.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 2916.5,
+     "bot": [
+      "Subscription change recorded: WS-CHG-C90345 for your Coffee Club (WS-SUB-3302). Paused, effective 2026-10-08 00:00 UTC. After this change: the 15% coffee-gear discount throughout; boxes and charges resume on 2026-12-08. No refund.",
+      "Done \u2014 your Coffee Club is paused. You\u2019ll keep the coffee-gear discount, and boxes and charges resume on 2026-12-08."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3302",
+       "change_type": "pause"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_type": "re:^(?!pause$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "subscription": "re:^(?!WS-SUB-3302$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_order",
+      "steps": [
+       {
+        "tool": "select_subscription_change",
+        "result": {
+         "status": "selected",
+         "change_type": "stop_renewal"
+        }
+       },
+       {
+        "tool": "select_subscription_change",
+        "result": {
+         "status": "selected",
+         "change_type": "pause"
+        }
+       },
+       {
+        "tool": "apply_subscription_change",
+        "result": {
+         "status": "succeeded",
+         "change_type": "pause"
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "calls occurred in order"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Coffee Club",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Coffee Club",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Coffee Club",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Coffee Club",
+      "change_type": "pause"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Coffee Club",
+      "change_type": "pause"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "Coffee Club",
+      "change_type": "pause"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-C90345 for your Coffee Club (WS-SUB-3302). Paused, effective 2026-10-08 00:00 UTC. After this change: the 15% coffee-gear discount throughout; boxes and charges resume on 2026-12-08. No refund."
+    ],
+    "commands_sent": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-correction-pause-instead-at-question-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-correction-pause-instead-at-question-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 29738,
+    "completion_tokens": 500,
+    "reasoning_tokens": 152,
+    "cached_prompt_tokens": 7168,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.131434,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1485.3,
+     3083.7,
+     2190.7,
+     3325.7,
+     2747.1,
+     3243.8,
+     3524.6,
+     3363.0,
+     1018.3,
+     1872.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-correction-pause-instead-at-question-20260930T194849",
+    "prompt": 29738,
+    "completion": 500,
+    "total": 30238,
+    "generations": 10,
+    "fetched_at": "2026-09-30T19:51:27.315649+00:00"
+   }
+  },
+  {
+   "id": "correction-points-loss-at-question",
+   "kind": "correction",
+   "description": "The member asks to cancel Plus now; the question discloses 1,200 forfeited points and the member switches to stopping renewal.",
+   "conversation_id": "retail-loyalty-gpt-text-correction-points-loss-at-question-20260930T194849",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Cancel my Willow Plus right now.",
+     "latency_ms": 10048.5,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "Please confirm this change to your Willow Plus membership (WS-SUB-3301): cancel now, so access ends today. It takes effect 2026-09-30 09:00 UTC. What changes for you: benefits end today 2026-09-30; refund $22.51; 1,200 Plus bonus points forfeited. (Change WS-SUB-3301 cancel_now r7.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Wait, I'd lose 1,200 points? Then just stop the renewal instead.",
+     "latency_ms": 8236.8,
+     "bot": [
+      "Stopping the renewal means your Plus benefits are kept to 2027-01-11, there is no charge on 2027-01-12, there is no refund, and all points are kept. You\u2019ll keep free next-day delivery, 10% member prices, and double points until 2027-01-11, and all 4,820 points stay.",
+      "Shall I stop the renewal instead?"
+     ]
+    },
+    {
+     "user": "Yes, stop the renewal.",
+     "latency_ms": 2570.2,
+     "bot": [
+      "Please confirm this change to your Willow Plus membership (WS-SUB-3301): stop the renewal, not an immediate cancellation. It takes effect 2027-01-12 00:00 UTC. What changes for you: Plus benefits kept to 2027-01-11; no charge on 2027-01-12; no refund; all points kept. (Change WS-SUB-3301 stop_renewal r7.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 3748.7,
+     "bot": [
+      "Subscription change recorded: WS-CHG-4B6E48 for your Willow Plus membership (WS-SUB-3301). Renewal stopped, effective 2027-01-12 00:00 UTC. After this change: free next-day delivery, 10% member prices and double points until 2027-01-11; all 4,820 points stay. No refund.",
+      "Done \u2014 your Willow Plus renewal has been stopped."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3301",
+       "change_type": "stop_renewal"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_type": "re:^(?!stop_renewal$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "subscription": "re:^(?!WS-SUB-3301$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Willow Plus membership",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3301",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3301",
+      "change_type": "cancel_now"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Willow Plus membership",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3301",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3301",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-4B6E48 for your Willow Plus membership (WS-SUB-3301). Renewal stopped, effective 2027-01-12 00:00 UTC. After this change: free next-day delivery, 10% member prices and double points until 2027-01-11; all 4,820 points stay. No refund."
+    ],
+    "commands_sent": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-correction-points-loss-at-question-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-correction-points-loss-at-question-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 29816,
+    "completion_tokens": 403,
+    "reasoning_tokens": 54,
+    "cached_prompt_tokens": 8704,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.122002,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2481.2,
+     2873.0,
+     1689.8,
+     2972.7,
+     2561.4,
+     2553.0,
+     3084.7,
+     2529.5,
+     1341.5,
+     2377.6
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-correction-points-loss-at-question-20260930T194849",
+    "prompt": 29816,
+    "completion": 403,
+    "total": 30219,
+    "generations": 10,
+    "fetched_at": "2026-09-30T19:51:54.937986+00:00"
+   }
+  },
+  {
+   "id": "correction-subscription-at-question",
+   "kind": "correction",
+   "description": "The member asks to pause Coffee Club, then says they meant Willow Plus. Only the Plus pause runs.",
+   "conversation_id": "retail-loyalty-gpt-text-correction-subscription-at-question-20260930T194849",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Please pause my Coffee Club.",
+     "latency_ms": 11794.6,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "Please confirm this change to your Coffee Club (WS-SUB-3302): pause it, not a cancellation. It takes effect 2026-10-08 00:00 UTC. What changes for you: no box or charge 2026-10-08 and 2026-11-08; resumes 2026-12-08; discount kept. (Change WS-SUB-3302 pause r12.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Sorry, I meant my Willow Plus membership, not the coffee.",
+     "latency_ms": 8953.0,
+     "bot": [
+      "For Willow Plus membership, pausing takes effect 2026-10-01 00:00 UTC. Benefits are paused 2026-10-01 to 2026-12-31, your renewal moves to 2027-04-12, and your points are kept. Plus benefits return on 2027-01-01, you\u2019re paid through 2027-04-11, and all 4,820 points stay.",
+      "Shall I make this pause instead?"
+     ]
+    },
+    {
+     "user": "Yes, pause Willow Plus.",
+     "latency_ms": 2312.5,
+     "bot": [
+      "Please confirm this change to your Willow Plus membership (WS-SUB-3301): pause it, not a cancellation. It takes effect 2026-10-01 00:00 UTC. What changes for you: benefits paused 2026-10-01 to 2026-12-31; renewal moves to 2027-04-12; points kept. (Change WS-SUB-3301 pause r7.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 3228.9,
+     "bot": [
+      "Subscription change recorded: WS-CHG-567E7F for your Willow Plus membership (WS-SUB-3301). Paused, effective 2026-10-01 00:00 UTC. After this change: Plus benefits stop on 2026-10-01 and return on 2027-01-01, paid through 2027-04-11; all 4,820 points stay. No refund.",
+      "Done. Your Willow Plus membership is paused, and your points are kept."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3301",
+       "change_type": "pause"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_type": "re:^(?!pause$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "subscription": "re:^(?!WS-SUB-3301$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Coffee Club",
+      "change_type": "pause"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3302",
+      "change_type": "pause"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3302",
+      "change_type": "pause"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Willow Plus membership",
+      "change_type": "pause"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3301",
+      "change_type": "pause"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3301",
+      "change_type": "pause"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-567E7F for your Willow Plus membership (WS-SUB-3301). Paused, effective 2026-10-01 00:00 UTC. After this change: Plus benefits stop on 2026-10-01 and return on 2027-01-01, paid through 2027-04-11; all 4,820 points stay. No refund."
+    ],
+    "commands_sent": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-correction-subscription-at-question-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-correction-subscription-at-question-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 10,
+    "main_loop_calls": 9,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 29798,
+    "completion_tokens": 527,
+    "reasoning_tokens": 173,
+    "cached_prompt_tokens": 8192,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.127936,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     3528.9,
+     2608.5,
+     1989.9,
+     3619.2,
+     1905.5,
+     3420.9,
+     3599.6,
+     2296.3,
+     1714.4,
+     1472.9
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-correction-subscription-at-question-20260930T194849",
+    "prompt": 29798,
+    "completion": 527,
+    "total": 30325,
+    "generations": 10,
+    "fetched_at": "2026-09-30T19:52:24.259337+00:00"
+   }
+  },
+  {
+   "id": "correction-after-apply",
+   "kind": "correction",
+   "description": "After Plus renewal is stopped the member wants cancel-now and a refund. No second command runs.",
+   "conversation_id": "retail-loyalty-gpt-text-correction-after-apply-20260930T194849",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Stop my Willow Plus renewal.",
+     "latency_ms": 9555.1,
+     "bot": [
+      "Hello Nadia, this is Willow Shop member chat. I can explain your subscriptions and what stopping a renewal, pausing or cancelling would change, and make the change you choose. How can I help?",
+      "Please confirm this change to your Willow Plus membership (WS-SUB-3301): stop the renewal, not an immediate cancellation. It takes effect 2027-01-12 00:00 UTC. What changes for you: Plus benefits kept to 2027-01-11; no charge on 2027-01-12; no refund; all points kept. (Change WS-SUB-3301 stop_renewal r7.) Shall I make this change? If you meant a different change, say which."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4144.2,
+     "bot": [
+      "Subscription change recorded: WS-CHG-AECCDA for your Willow Plus membership (WS-SUB-3301). Renewal stopped, effective 2027-01-12 00:00 UTC. After this change: free next-day delivery, 10% member prices and double points until 2027-01-11; all 4,820 points stay. No refund.",
+      "Done. You\u2019ll keep the listed Plus benefits through the paid period, and the renewal charge will not happen."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 4881.6,
+     "bot": [
+      "Can I help you with anything else?"
+     ]
+    },
+    {
+     "user": "Actually, cancel it now instead and refund me.",
+     "latency_ms": 13311.0,
+     "bot": [
+      "Passed to the Willow Shop subscription support team: WS-SUP-AA9320, for your Willow Plus membership. They reply within 2 business days. Nothing on the subscription has changed in this step.",
+      "I\u2019ve passed this to the Willow Shop subscription support team: WS-SUP-AA9320. They reply within 2 business days.",
+      "Nothing on the subscription changed in this step."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "status": "succeeded",
+       "subscription": "WS-SUB-3301",
+       "change_type": "stop_renewal"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "change_type": "re:^(?!stop_renewal$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "apply_subscription_change",
+      "result": {
+       "effects": 1,
+       "subscription": "re:^(?!WS-SUB-3301$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_member_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "select_subscription_change",
+     "arguments": {
+      "subscription": "Willow Plus membership",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "selected",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3301",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "apply_subscription_change",
+     "arguments": {
+      "subscription": "WS-SUB-3301",
+      "change_type": "stop_renewal"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": null
+    },
+    {
+     "tool": "route_subscription_support",
+     "arguments": {
+      "subscription": "Willow Plus membership",
+      "note": "Member already stopped renewal for Willow Plus membership in this chat and now wants to cancel it now instead and receive a refund."
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "routed",
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "complete_skill",
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "change_reference": [
+     "Subscription change recorded: WS-CHG-AECCDA for your Willow Plus membership (WS-SUB-3301). Renewal stopped, effective 2027-01-12 00:00 UTC. After this change: free next-day delivery, 10% member prices and double points until 2027-01-11; all 4,820 points stay. No refund."
+    ],
+    "commands_sent": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.tool_confirmation.declined": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0,
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "willowshop.words_guard": 0,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0
+   },
+   "log_event_details": {
+    "mantle.tool_confirmation.declined": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "apply_subscription_change",
+      "conversation_id": "retail-loyalty-gpt-text-correction-after-apply-20260930T194849"
+     }
+    ],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": [],
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "willowshop.words_guard": [],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": []
+   },
+   "usage": {
+    "llm_calls": 13,
+    "main_loop_calls": 10,
+    "side_channel_calls": 3,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 32987,
+    "completion_tokens": 587,
+    "reasoning_tokens": 157,
+    "cached_prompt_tokens": 9728,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.138769,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     2202.7,
+     1877.7,
+     2468.8,
+     2966.4,
+     1190.8,
+     2924.6,
+     1335.4,
+     1139.8,
+     2379.9,
+     1740.9,
+     4568.9,
+     3934.6,
+     3024.4
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "retail-loyalty-gpt-text-correction-after-apply-20260930T194849",
+    "prompt": 32987,
+    "completion": 587,
+    "total": 33574,
+    "generations": 13,
+    "fetched_at": "2026-09-30T19:52:59.170138+00:00"
+   }
+  }
+ ]
+}

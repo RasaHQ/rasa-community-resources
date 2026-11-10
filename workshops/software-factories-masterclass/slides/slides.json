@@ -1,0 +1,186 @@
+[
+  {
+    "section": "00–01 MIN  /  WELCOME",
+    "title": "Build a voice agent that builds travel agents",
+    "sub": "Three-hour masterclass · Rasa Mantle, Codex and the hosted OpenAI Agents API",
+    "body": "<div class=\"panels\"><article><label>FIRST CALL</label><h2>Speak as a traveler</h2><p>Ask a travel desk for a forecast and a currency conversion. Hear the reply and trace the numbers to their tools.</p></article><article><label>FINAL CALL</label><h2>Speak as a developer</h2><p>Commission a new travel desk. Review what the factory produced, run it and call it as a traveler.</p></article></div>",
+    "notes": "Say: “You will make two different calls today. On the first, you want travel advice. On the second, you want new software.” Ask participants to open the workshop README in a second tab so they can launch their Codespace while you introduce the problem.",
+    "kind": ""
+  },
+  {
+    "title": "Which forecast belongs to my flight?",
+    "sub": "“I fly Oslo to Bergen tonight. What should I pack, and what is $200 worth there?”",
+    "body": "<div class=\"panels\"><article><label>1</label><h2>Ask first</h2><p>Where will you land? At what local hour?</p></article><article><label>2</label><h2>Evidence</h2><p>A route, an arrival time, a forecast hour and a dated exchange rate.</p></article></div>",
+    "notes": "Ask: “If I tell you the temperature in Bergen right now, have I told you what to pack for landing?” Wait for “What time do I land?” Draw attention to the dependency: the flight lookup supplies the hour for the forecast. Then introduce the travel team that must maintain this behavior.",
+    "kind": "",
+    "section": "01–02 MIN  /  THE TRAVELER"
+  },
+  {
+    "section": "02–04 MIN  /  THE ENGINEERING PROBLEM",
+    "title": "Tomorrow the travel team asks for a change",
+    "sub": "“When two records match my flight number, ask which date I mean before giving me the weather.”",
+    "body": "<div class=\"panels\"><article><label>TODAY</label><h2>One desk works</h2><p>It can answer a straightforward question about one flight. A demo of that trip tells us little about the ambiguous case.</p></article><article><label>TOMORROW</label><h2>A second desk must work too</h2><p>How do we turn that request into a new Mantle skill and check that it asks before calling the weather tool?</p></article></div>",
+    "notes": "Ask learners to name one observation that would convince them the change worked. Expected: a clarification on the ambiguous request, then a forecast for the selected record; the ordinary request still works. Say: “We have moved from answering a traveler to changing the software that answers them.”",
+    "kind": ""
+  },
+  {
+    "section": "04–06 MIN  /  THE FACTORY",
+    "title": "How a request becomes a second agent",
+    "sub": "A software factory is a repeatable way to turn a request into checked software. Our factory produces a runnable Rasa Mantle project.",
+    "body": "<table><tr><td>1 · Describe</td><td>A developer gives a brief. The builder proposes a specification and skill instructions.</td></tr><tr><td>2 · Review and build</td><td>Inspect the candidate, verify its saved bytes and approve it. The compiler combines the skill with the selected travel tools.</td></tr><tr><td>3 · Try the product</td><td>Train the new desk, call it and inspect its behavior on the original trip and the changed request.</td></tr></table>",
+    "notes": "Make the boundary concrete: the builder writes agent.json; the workshop compiler creates agent.yml, integrations.yml and the skill directory. Matching a hash identifies the reviewed bytes. Only testing the generated desk tells us how it handles the traveler. The factory itself is a Mantle agent when we operate it by voice.",
+    "kind": ""
+  },
+  {
+    "section": "06–07 MIN  /  THE TOOLS",
+    "title": "What runs where?",
+    "sub": "GitHub Codespaces gives everyone the same browser workspace.",
+    "body": "<table><tr><td>Rasa Mantle + Deepgram</td><td>Mantle runs both conversations and calls their tools. Deepgram turns speech into text and the reply back into audio.</td></tr><tr><td>Codex</td><td>At the workbench, you use Codex to author a travel agent and refine its skill.</td></tr><tr><td>Hosted OpenAI Agents API</td><td>The factory calls a hosted build session and downloads its candidate for review.</td></tr><tr><td>Travel data</td><td>Avinor supplies flight boards, Open-Meteo supplies forecasts and Frankfurter supplies exchange rates.</td></tr></table>",
+    "notes": "Point out that Codex and the hosted API are two build routes. The traveler’s weather question calls a provider; it does not start a build. No travel-data account is needed for the workshop route.",
+    "kind": ""
+  },
+  {
+    "section": "07–08 MIN  /  YOUR THREE HOURS",
+    "title": "The route through the masterclass",
+    "sub": "The first checkpoint is a two-turn voice call by minute 30.",
+    "body": "<table><tr><td>00–30 · Use the desk</td><td>Get live data. Ask two questions aloud and inspect their tool results.</td></tr><tr><td>30–75 · Build with Codex</td><td>Create the four-tool desk and refine how it handles ambiguity.</td></tr><tr><td>75–85 · Break</td><td>Save the run ID and your project directory.</td></tr><tr><td>85–135 · Operate the factory</td><td>Speak a build brief, review the candidate and start the new agent.</td></tr><tr><td>135–180 · Test and take home</td><td>Check the trip, exercise missing data and choose an independent extension.</td></tr></table>",
+    "notes": "Show participants where they can pause: after the first voice call or after their first generated project. Transition: “Let’s get one real number into your hands before we open up the factory.”",
+    "kind": ""
+  },
+  {
+    "title": "Open the travel Codespace",
+    "sub": "Workshop README · Follow A–D, choose Rasa Travel Agent Factory and a four-core machine.",
+    "body": "<div class=\"panels\"><article><label>1</label><h2>GitHub → Settings → Codespaces</h2><p>RASA_LICENSE · OPENAI_API_KEY · DEEPGRAM_API_KEY for voice.</p></article><article><label>2</label><h2>Check</h2><p>Grant the workshop repo access. Open Terminal → New Terminal. Run bash desk doctor.</p></article></div>",
+    "notes": "Open the README launch link on the review branch for rehearsal. Do not project a secret. While dependencies install, learners can run the two Python data tools. Walk through profile picture → Settings → Codespaces → New secret. Show names only. The same Deepgram key powers both voices.",
+    "kind": "",
+    "section": "08–12 MIN  /  SET UP"
+  },
+  {
+    "title": "How much is $200 in pounds?",
+    "sub": "Copy the command from the README. Look at the direction of the currency pair.",
+    "body": "<div class=\"code-split\"><pre>bash desk data fx USD GBP 200\n\nExample · 2 Nov 2026\n200 × 0.74628 = 149.26 GBP</pre><div><h2>Read the receipt</h2><p>Find converted and reference_date. Ask whether that rate is a guarantee from a card issuer.</p></div></div>",
+    "notes": "Let someone read their own number with its date. Use the deterministic test as a labeled example if the provider is unavailable. Ask learners to predict the result for $100 before rerunning the tool. Compare rate dates and rounding.",
+    "kind": "",
+    "section": "12–17 MIN  /  FIRST LIVE RESULT"
+  },
+  {
+    "title": "Ask for the right weather hour",
+    "sub": "A forecast is indexed by airport and time. LHR is London Heathrow.",
+    "body": "<div class=\"code-split\"><pre>bash desk data weather LHR\n\nCurrent forecast hour at the destination airport.</pre><div><h2>At landing</h2><p>Pass an arrival timestamp with its offset. Report the forecast for that hour.</p></div></div>",
+    "notes": "Ask what extra information is required before making the second call. If the flight status has no arrival time, ask the traveler.",
+    "kind": "",
+    "section": "17–23 MIN  /  FIRST LIVE RESULT"
+  },
+  {
+    "title": "Call your first Mantle travel agent",
+    "sub": "Run the starter in Terminal 1. Leave that terminal running.",
+    "body": "<div class=\"code-split\"><pre>bash desk starter\n\nbash desk inspect builds/starter</pre><div><h2>Terminal 2 → bash desk url</h2><p>Start voice conversation, allow the microphone and ask about Heathrow weather. Listen, then ask for USD to GBP in the same call.</p></div></div>",
+    "notes": "Wait for the server-ready message. Ask a learner which field supplied the exchange rate. If training is blocked, record the direct provider result and leave chat pending.",
+    "kind": "",
+    "section": "23–30 MIN  /  FIRST MANTLE AGENT"
+  },
+  {
+    "title": "Where would you change this answer?",
+    "sub": "Open the starter project. Follow one question all the way to its source.",
+    "body": "<table><tr><td>Routing → skill.md</td><td>When should Mantle select the travel skill? What needs clarification?</td></tr><tr><td>Execution → tools.py</td><td>Which provider does the tool call? Which data and timestamps enter ToolResult?</td></tr></table>",
+    "notes": "Have learners locate destination_weather and convert_currency. Ask why a two-tool starter cannot know whether a flight is delayed.",
+    "kind": "",
+    "section": "30–40 MIN  /  READ THE PRODUCT"
+  },
+  {
+    "title": "Write the brief for the full agent",
+    "sub": "One flight number matches two dates. Should the skill pick the first or ask which one the traveler means?",
+    "body": "<div class=\"panels\"><article><label>1</label><h2>Input</h2><p>Four capabilities: flight status, departures tonight, destination weather and FX.</p></article><article><label>2</label><h2>Output</h2><p>Codex authors agent.json. Read its routing description, instructions and selected tools.</p></article></div>",
+    "notes": "Use the exact commands in chapter 2. Ask learners to find the sentence that ties the arrival to the forecast. If access is delayed, use the labeled sample.",
+    "kind": "",
+    "section": "40–55 MIN  /  BUILD WITH CODEX"
+  },
+  {
+    "title": "Turn the candidate into a Mantle project",
+    "sub": "Read the candidate before approving it. Use the run ID from your own receipt.",
+    "body": "<div class=\"code-split\"><pre>bash desk approve runs/YOUR_RUN_ID\n\n                   builds/codex-desk</pre><div><h2>What gets built</h2><p>agent.yml + integrations.yml + a travel skill + registered Python tools.</p></div></div>",
+    "notes": "The displayed command wraps for projection; copy the single-line command in the workbook. The gate binds the bytes to the receipt. Review the authored behavior yourself. Once the full desk runs, use the chapter’s Codex editing exercise on a copy of the actual Mantle skill. Compare the two versions using an ambiguous destination.",
+    "kind": "",
+    "section": "55–65 MIN  /  BUILD WITH CODEX"
+  },
+  {
+    "title": "What does “tonight” mean at Oslo?",
+    "sub": "Ask your full agent for OSL → BGO tonight. Compare its answer with the direct flight tool.",
+    "body": "<table><tr><td>Local window</td><td>Remaining departures from 18:00 to midnight in Europe/Oslo.</td></tr><tr><td>Coverage</td><td>Matching records on the retrieved page. A schedule gives no seat inventory.</td></tr></table>",
+    "notes": "Ask what happens at 23:30 UTC when Oslo is already on the next date. Keep unavailable, zero matches and sold out distinct.",
+    "kind": "",
+    "section": "65–75 MIN  /  FLIGHT BOARD"
+  },
+  {
+    "title": "Save your place",
+    "sub": "Save your run ID and the name of the approved project.",
+    "body": "<div class=\"panels\"><article><label>1</label><h2>Pause</h2><p>Stop the traveler Inspector before starting Studio on the same port.</p></article><article><label>2</label><h2>Resume</h2><p>You can train an existing output again without generating another proposal.</p></article></div>",
+    "notes": "Give the full ten minutes. Someone running at home can stop the same Codespace here.",
+    "kind": "",
+    "section": "75–85 MIN  /  BREAK"
+  },
+  {
+    "title": "Two Mantle agents have different customers",
+    "sub": "The traveler asks for information. The developer asks for a new traveler agent.",
+    "body": "<div class=\"panels\"><article><label>1</label><h2>Developer → Studio</h2><p>Mantle confirms one billed build, then calls the hosted builder.</p></article><article><label>2</label><h2>Traveler → generated desk</h2><p>The reviewed agent calls public providers when answering a trip question.</p></article></div>",
+    "notes": "Ask which agent needs the aviation provider and which starts a hosted session. Make participants identify the two different Inspector conversations.",
+    "kind": "",
+    "section": "85–98 MIN  /  FACTORY ARCHITECTURE"
+  },
+  {
+    "title": "How do the bytes leave the hosted workspace?",
+    "sub": "A session says “ready” and returns only notes.txt. What can you actually build?",
+    "body": "<table><tr><td>Create → finish</td><td>sessions.create starts the hosted environment. The final result supplies a session ID.</td></tr><tr><td>List → download</td><td>Find /workspace/outputs/agent.json. Retrieve its content and hash the saved bytes.</td></tr></table>",
+    "notes": "Ask if a “done” message with only notes.txt is enough. It is not. The workshop uses the hosted Agents API; a local Runner is not involved.",
+    "kind": "",
+    "section": "98–110 MIN  /  HOSTED AGENTS API"
+  },
+  {
+    "title": "Commission a Bergen-to-Oslo desk",
+    "sub": "Call Studio in Inspector. Speak a four-tool travel-agent brief and listen for its confirmation.",
+    "body": "<div class=\"panels\"><article><label>1</label><h2>First try: decline</h2><p>Inspect the confirmation. Declining should leave the build unstarted.</p></article><article><label>2</label><h2>Second try: approve once</h2><p>If using a funded project, confirm one build. Keep the session ID and candidate receipt.</p></article></div>",
+    "notes": "If the result is uncertain, keep the run and inspect it before any retry. Use the sample route if the class is working without hosted access.",
+    "kind": "",
+    "section": "110–125 MIN  /  OPERATE THE FACTORY"
+  },
+  {
+    "title": "Run the agent Studio commissioned",
+    "sub": "Review the hosted candidate, approve to a new folder, then stop Studio.",
+    "body": "<div class=\"code-split\"><pre>Build\n\nbash desk approve runs/YOUR_RUN_ID builds/studio-desk</pre><div><h2>Run</h2><p>bash desk inspect builds/studio-desk</p></div></div>",
+    "notes": "Ask a traveler question, not a build request. Require the product tool event; successful generation alone cannot establish that the agent answers the trip. End the Studio call and start a new voice call to the generated product. Require two spoken turns, audible replies and tool events.",
+    "kind": "",
+    "section": "125–135 MIN  /  RUN THE PRODUCT"
+  },
+  {
+    "title": "Produce a briefing someone can act on",
+    "sub": "Ask for tonight’s Oslo departures to Bergen, weather at landing and $200 in Norwegian kroner.",
+    "body": "<div class=\"panels\"><article><label>1</label><h2>Choose the flight</h2><p>Resolve date and route. Prefer estimated arrival; say when only the schedule is available.</p></article><article><label>2</label><h2>Complete the briefing</h2><p>Match the forecast hour to arrival. Quote the FX reference date. Mark unavailable data.</p></article></div>",
+    "notes": "Open one tool event with the room. If there are several matches ask for clarification. If Avinor is unavailable, continue with FX and an explicitly timed weather request.",
+    "kind": "",
+    "section": "135–150 MIN  /  TRIP CHALLENGE"
+  },
+  {
+    "title": "One flight number. Two possible forecasts.",
+    "sub": "Classroom fixture · ZZ201 from Oslo to Bergen. The traveler asks what to pack.",
+    "body": "<table><tr><th>Date</th><th>Scheduled arrival</th><th>Estimated arrival</th></tr><tr><td>3 November</td><td>19:20</td><td>20:10</td></tr><tr><td>4 November</td><td>19:20</td><td>Unavailable</td></tr></table><p>All times are local to Bergen. What must the desk ask before fetching the forecast?</p>",
+    "notes": "Give the room 30 seconds to choose the first response. Run bash desk case status ZZ201. Ask for the weather hour on each date. Never use this invented flight as live travel data.",
+    "kind": "",
+    "section": "150–157 MIN  /  PREDICT"
+  },
+  {
+    "title": "Call the generated desk with the same two records",
+    "sub": "Stop the live Inspector. Start the approved four-tool project in rehearsal mode.",
+    "body": "<div class=\"code-split\"><pre>bash desk rehearse builds/studio-desk</pre><div><h2>Say “November third.”</h2><p>Inspect the weather call. An answer of 8 °C points to the scheduled hour. The updated arrival points to 4 °C.</p></div></div>",
+    "notes": "Start a fresh call for November fourth; expect the scheduled hour and 7 °C. Ask learners to show the order of status, clarification and weather. Restore live providers with bash desk inspect builds/studio-desk.",
+    "kind": "",
+    "section": "157–165 MIN  /  REHEARSE"
+  },
+  {
+    "title": "What will you ask the factory to build next?",
+    "sub": "Keep the run, hash, mode, first tool event and one failure case.",
+    "body": "<div class=\"panels\"><article><label>1</label><h2>Change the experience</h2><p>Commission a Spanish-speaking travel desk. Compare the generated skill and the tool calls.</p></article><article><label>2</label><h2>Extend the tools</h2><p>Ask Codex to add HND and a Tokyo-local-time test. Regenerate into a fresh directory.</p></article></div>",
+    "notes": "Have one learner explain how Codex authors the spec and where the hosted service returns its artifact. Save notes, stop the Codespace and show chapter 4 for resuming.",
+    "kind": "",
+    "section": "165–180 MIN  /  TAKE IT HOME"
+  }
+]

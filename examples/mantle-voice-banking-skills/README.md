@@ -1,11 +1,19 @@
 # Rasa Mantle Voice Banking Skills
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-banking-skills/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`. Training uses your OpenAI key (a small embedding call) to index this resource's reference documents.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rod Rivera
 Assessed on:   2026-09-02
 Assessed by:   Rod Rivera
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: historical assessment; current checks in COMPATIBILITY.json
-Installation:  rasa-pro 3.20.0rc1 (automated check scope in COMPATIBILITY.json)
+Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice banking agents with Rasa Skills
 Time:          75–90 minutes
 ```
@@ -115,9 +123,9 @@ Run `make` with no arguments for the full grouped help screen.
 | `make clean` | Remove models / caches / local db |
 | `make clean-all` | Also remove `.venv` (full reset) |
 
-## Notes for Rasa 3.20.0rc1
+## Notes for Rasa 3.21.0.dev5
 
-- Package: `rasa-pro==3.20.0rc1` (pre-release; `uv` prereleases enabled)
+- Package: `rasa-pro==3.21.0.dev5` (pre-release; `uv` prereleases enabled)
 - Scaffold a fresh Mantle project with `rasa init --engine mantle`
   (there is no `--template voice`)
 - LLM is `gpt-5.2`; do not set `temperature` (GPT-5 reasoning models only

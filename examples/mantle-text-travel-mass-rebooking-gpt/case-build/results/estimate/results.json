@@ -1,0 +1,467 @@
+{
+ "schema": 1,
+ "build": "travel-mass-rebooking-gpt-text",
+ "case": "travel-mass-rebooking",
+ "project": "examples/mantle-text-travel-mass-rebooking-gpt",
+ "model": "openai/gpt-5.5-2026-04-23",
+ "response_models": [
+  "gpt-5.5-2026-04-23"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-30T17:09:16.931052+00:00",
+ "finished_at": "2026-09-30T17:10:18.351293+00:00",
+ "model_file": "20260930-180919-ivory-mason.tar.gz",
+ "train_seconds": 3.2,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gpt-5.5-2026-04-23",
+  "price_source": "litellm bundled map",
+  "cache_creation_input_token_cost": null,
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 3e-05,
+  "cache_read_input_token_cost": 5e-07,
+  "input_cost_per_token_above_200k_tokens": null,
+  "output_cost_per_token_above_200k_tokens": null,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "provider_errors": 0,
+  "turns": 5,
+  "turn_latency_ms": {
+   "p50": 10104.5,
+   "p95": 12178.3,
+   "max": 12178.3,
+   "mean": 10075.3
+  },
+  "llm_calls": 16,
+  "llm_calls_per_turn": 3.2,
+  "side_channel_calls": 2,
+  "empty_completions": 0,
+  "failed_llm_calls": 0,
+  "failed_side_channel_calls": 0,
+  "engine_error_calls": 0,
+  "prompt_tokens": 72589,
+  "completion_tokens": 954,
+  "reasoning_tokens": 90,
+  "cached_prompt_tokens": 20992,
+  "cache_creation_input_tokens": 0,
+  "request_thought_signatures": 0,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 0,
+  "bot_text_metrics": {
+   "confirmed_claim": 0
+  },
+  "tool_result_metrics": {
+   "commits_with_effect": {
+    "attempts": 1,
+    "total": 1
+   }
+  },
+  "log_events": {
+   "mantle.turn.failed": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+   "mantle.tool_confirmation.declined": 1,
+   "mantle.tool_confirmation.confirmed": 1,
+   "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+   "mantle.tool_confirmation.recall_rejected": 0,
+   "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+  },
+  "cost_complete": true,
+  "skipped": [],
+  "cost_usd": 0.297101,
+  "llm_cost_usd": 0.297101,
+  "speech_cost_usd": 0,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.0,
+  "budget_usd": 3.5
+ },
+ "conversations": [
+  {
+   "id": "correction-accessible-at-confirmation",
+   "kind": "correction",
+   "description": "The case's correction: at the confirmation the passenger needs an accessible connection the offer lacks; the stair connection's hold is released and the search is rerun with the requirement.",
+   "conversation_id": "travel-mass-rebooking-gpt-text-correction-accessible-at-confirmation-20260930T170916",
+   "passed": true,
+   "outcome": "pass",
+   "error": null,
+   "turns": [
+    {
+     "user": "Rebook me on HZ 318 through Ponta Delgada.",
+     "latency_ms": 11604.9,
+     "bot": [
+      "Hello Noor, this is Horizon Travel rebooking chat. Your flight was cancelled by the storm and your disruption case is HT-DC-40117. I can find replacement flights, hold a seat for you, and send it to the booking service once you confirm. How can I help?",
+      "I can hold HZ 318 Boston-Ponta Delgada-Lisbon, dep 13 Nov 19:40, arr 14 Nov 10:55 for you until 19:26 Boston time, 12 Nov, under hold HT-RH-9C0D5. It is only confirmed after the booking service accepts it. Still open after that: seat assignment on the Lisbon leg. Shall I send it to the booking service now?"
+     ]
+    },
+    {
+     "user": "Wait, I use a wheelchair and that change in Ponta Delgada is stairs and a bus. I need an accessible connection.",
+     "latency_ms": 10104.5,
+     "bot": [
+      "You\u2019re right \u2014 I cancelled sending the Ponta Delgada hold and released it. Nothing was booked.",
+      "Accessible options that meet your case constraints are:\n- HZ 118 Boston-Lisbon nonstop, dep 13 Nov 07:15, arr 13 Nov 18:50. Hold would be 5 minutes.\n- HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20. 2 h 15 min change at New York JFK, jet bridges both legs, step-free.\n- HZ 350 Boston-Madrid-Lisbon, dep 13 Nov 17:05, arr 14 Nov 11:40. 1 h 40 min change in Madrid, jet bridges both legs, step-free.\n- HZ 216 Boston-Lisbon nonstop, dep 13 Nov 21:30, arr 14 Nov 09:05.",
+      "HZ 318 through Ponta Delgada is not accessible because the connection uses an apron bus with stair boarding. Which option should I hold?"
+     ]
+    },
+    {
+     "user": "HZ 402 through JFK then.",
+     "latency_ms": 7315.7,
+     "bot": [
+      "I can hold HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20 for you until 19:38 Boston time, 12 Nov, under hold HT-RH-587D2. It is only confirmed after the booking service accepts it. Still open after that: wheelchair assistance at JFK. Shall I send it to the booking service now?"
+     ]
+    },
+    {
+     "user": "Yes, send it.",
+     "latency_ms": 12178.3,
+     "bot": [
+      "Rebooked: HT-RB-82F6C, HZ 402 Boston-New York JFK-Lisbon, dep 13 Nov 14:10, arr 14 Nov 07:20. The booking service accepted it and issued ticket record HT-TK-FD42F. Your onward flight stays on the booking: HZ 5231 Lisbon-Funchal, 14 Nov 16:00, still booked. Still open: wheelchair assistance at JFK.",
+      "You\u2019re rebooked.",
+      "Replacement reference: HT-RB-82F6C. Ticket record: HT-TK-FD42F.",
+      "Your new flight is HZ 402 Boston-New York JFK-Lisbon, departing 13 Nov 14:10 and arriving 14 Nov 07:20. Your onward flight HZ 5231 Lisbon-Funchal on 14 Nov at 16:00 is still booked.",
+      "Still open: wheelchair assistance at JFK."
+     ]
+    },
+    {
+     "user": "Yes.",
+     "latency_ms": 9173.1,
+     "bot": [
+      "You\u2019re already rebooked on HZ 402 Boston-New York JFK-Lisbon under replacement reference HT-RB-82F6C. Your ticket record is HT-TK-FD42F, and your onward Lisbon-Funchal flight is still booked. Wheelchair assistance at JFK is still open."
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "hold_recovery_option",
+      "args": {
+       "option_id": "RB-1302"
+      },
+      "result": {
+       "status": "held",
+       "option_id": "RB-1302",
+       "case_reference": "HT-DC-40117"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "any_of",
+      "checks": [
+       {
+        "type": "tool_called",
+        "tool": "release_hold",
+        "result": {
+         "status": "released"
+        },
+        "after_user_turn": 1
+       },
+       {
+        "type": "tool_called",
+        "tool": "commit_rebooking",
+        "result": {
+         "status": "blocked",
+         "reason": "unusable_itinerary",
+         "hold_released": true
+        }
+       }
+      ]
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1; 0 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "search_recovery_options",
+      "result": {
+       "requirements": "re:accessible_connection"
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "commit_rebooking",
+      "result": {
+       "status": "succeeded",
+       "reason": "verified_fixture_receipt",
+       "option_id": "RB-1303",
+       "replacement_reference": "re:^HT-RB-[0-9A-F]{5}$",
+       "effects": 1,
+       "open_services": "re:wheelchair assistance at JFK"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "commit_rebooking",
+      "result": {
+       "status": "succeeded",
+       "option_id": "RB-1302"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "commit_rebooking",
+      "result": {
+       "status": "succeeded",
+       "option_id": {
+        "any": [
+         "RB-1301",
+         "RB-1304"
+        ]
+       }
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "hold_recovery_option",
+      "result": {
+       "status": "held",
+       "case_reference": "re:^(?!HT-DC-40117$)"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    },
+    {
+     "check": {
+      "type": "tool_not_called",
+      "tool": "commit_rebooking",
+      "result": {
+       "status": "succeeded",
+       "hold_id": "HT-RH-7710"
+      }
+     },
+     "passed": true,
+     "detail": "0 forbidden matching call(s)"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_passenger_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "search_recovery_options",
+     "arguments": {
+      "case_reference": "HT-DC-40117"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1302"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "held",
+     "result_reason": null
+    },
+    {
+     "tool": "commit_rebooking",
+     "arguments": {
+      "hold_id": "HT-RH-9C0D5"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "commit_rebooking",
+     "arguments": {
+      "hold_id": "HT-RH-9C0D5"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "declined",
+     "result_reason": null
+    },
+    {
+     "tool": "release_hold",
+     "arguments": {
+      "hold_id": "HT-RH-9C0D5"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "released",
+     "result_reason": null
+    },
+    {
+     "tool": "search_recovery_options",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "accessible_connection": true
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "found",
+     "result_reason": null
+    },
+    {
+     "tool": "hold_recovery_option",
+     "arguments": {
+      "case_reference": "HT-DC-40117",
+      "option_id": "RB-1303",
+      "accessible_connection": true
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "held",
+     "result_reason": null
+    },
+    {
+     "tool": "commit_rebooking",
+     "arguments": {
+      "hold_id": "HT-RH-587D2"
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "awaiting_confirmation",
+     "result_reason": null
+    },
+    {
+     "tool": "commit_rebooking",
+     "arguments": {
+      "hold_id": "HT-RH-587D2"
+     },
+     "after_user_turn": 3,
+     "is_error": false,
+     "source": "tool_confirmation",
+     "result_status": "succeeded",
+     "result_reason": "verified_fixture_receipt"
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "resolve_tool_confirmation",
+    "resolve_tool_confirmation",
+    "activate"
+   ],
+   "metrics": {
+    "filler_messages": [],
+    "confirmed_claim": [],
+    "commits_with_effect": {
+     "attempts": 1,
+     "total": 1
+    }
+   },
+   "log_events": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": 0,
+    "mantle.tool_confirmation.declined": 1,
+    "mantle.tool_confirmation.recall_rejected": 0,
+    "mantle.turn.failed": 0,
+    "mantle.tool_confirmation.confirmed": 1,
+    "mantle.orchestrator.empty_llm_response": 0,
+    "mantle.tool_confirmation.recall_after_resolve_rejected": 0,
+    "mantle.skill_executor.dispatch.gated_tool.blocked": 0
+   },
+   "log_event_details": {
+    "mantle.memory.discovery.extractor.discover_facts.llm_error": [],
+    "mantle.tool_confirmation.declined": [
+     {
+      "tool_name": "commit_rebooking",
+      "conversation_id": "travel-mass-rebooking-gpt-text-correction-accessible-at-confirmation-20260930T170916"
+     }
+    ],
+    "mantle.tool_confirmation.recall_rejected": [],
+    "mantle.turn.failed": [],
+    "mantle.tool_confirmation.confirmed": [
+     {
+      "tool_name": "commit_rebooking",
+      "conversation_id": "travel-mass-rebooking-gpt-text-correction-accessible-at-confirmation-20260930T170916"
+     }
+    ],
+    "mantle.orchestrator.empty_llm_response": [],
+    "mantle.tool_confirmation.recall_after_resolve_rejected": [],
+    "mantle.skill_executor.dispatch.gated_tool.blocked": []
+   },
+   "usage": {
+    "llm_calls": 16,
+    "main_loop_calls": 14,
+    "side_channel_calls": 2,
+    "failed_calls": 0,
+    "failed_side_channel_calls": 0,
+    "engine_error_calls": 0,
+    "prompt_tokens": 72589,
+    "completion_tokens": 954,
+    "reasoning_tokens": 90,
+    "cached_prompt_tokens": 20992,
+    "cache_creation_input_tokens": 0,
+    "cost_usd": 0.297101,
+    "cost_complete": true,
+    "request_thought_signatures": 0,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 0,
+    "llm_latency_ms": [
+     1584.5,
+     1844.2,
+     2564.8,
+     3630.1,
+     1671.2,
+     3052.7,
+     1815.0,
+     1350.4,
+     3852.1,
+     3631.1,
+     3642.5,
+     9824.5,
+     2316.5,
+     3565.8,
+     1960.3,
+     3619.8
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "travel-mass-rebooking-gpt-text-correction-accessible-at-confirmation-20260930T170916",
+    "prompt": 72589,
+    "completion": 954,
+    "total": 73543,
+    "generations": 16,
+    "fetched_at": "2026-09-30T17:10:18.101483+00:00"
+   }
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+{
+  "organisation": "Pine University (fictional university)",
+  "note": "Invented fixture. Every person, application, team, reference and date here is fictional.",
+  "as_of": "2026-09-30T10:00:00+00:00",
+  "session_applicant_id": "PU-APL-30417",
+  "applicants": {
+    "PU-APL-30417": {"first_name": "Rowan", "last_name": "Ashby"},
+    "PU-APL-30988": {"first_name": "Tamsin", "last_name": "Coyle"},
+    "PU-APL-29102": {"first_name": "Rowan", "last_name": "Ashby", "merge_pending_with": "PU-APL-30417"}
+  },
+  "teams": {
+    "admissions": {"name": "Undergraduate Admissions Office", "queue": "ok"},
+    "financial_aid": {"name": "Student Financial Aid Office", "queue": "ok"},
+    "scholarships": {"name": "Scholarships Committee", "queue": "ok"},
+    "registrar": {"name": "Registrar's Office", "queue": "ack_lost"}
+  },
+  "stages": {
+    "received": "received, not reviewed yet",
+    "evidence_outstanding": "received, evidence outstanding; review not started",
+    "under_review": "eligibility review in progress",
+    "offer_issued": "decision issued (formal admission offer)"
+  },
+  "kinds": {
+    "admission": {"label": "admission application", "words": ["admission", "admissions", "admit", "admitted", "offer"]},
+    "financial_aid": {"label": "financial aid application", "words": ["aid", "financial", "funding", "grant", "bursary"]},
+    "scholarship": {"label": "scholarship form", "words": ["scholarship", "merit award"]},
+    "enrolment": {"label": "enrolment form", "words": ["enrolment", "enrollment", "enrol", "enroll", "registration", "register"]}
+  },
+  "records": {
+    "ADM-26-4471": {
+      "applicant_id": "PU-APL-30417",
+      "kind": "admission",
+      "team": "admissions",
+      "sources": {"admissions system": "offer_issued"},
+      "decision": {"type": "admission_offer", "issued_on": "2026-09-12", "detail": "formal admission offer for spring 2027 entry"},
+      "outstanding": [],
+      "deadlines": [{"what": "accept the offer and pay the enrolment deposit", "date": "2026-11-01", "source": "admission offer letter"}],
+      "next_step": "Accept the offer in the applicant portal by 1 November 2026."
+    },
+    "AID-26-1182": {
+      "applicant_id": "PU-APL-30417",
+      "kind": "financial_aid",
+      "team": "financial_aid",
+      "sources": {"financial aid system": "evidence_outstanding"},
+      "decision": null,
+      "outstanding": ["2025 tax return transcript"],
+      "deadlines": [{"what": "upload the 2025 tax return transcript", "date": "2026-10-15", "source": "aid office verification notice"}],
+      "next_step": "Upload the 2025 tax return transcript by 15 October 2026."
+    },
+    "SCH-26-0309": {
+      "applicant_id": "PU-APL-30417",
+      "kind": "scholarship",
+      "team": "scholarships",
+      "sources": {"applicant portal": "awarded", "scholarships committee record": "under_review"},
+      "decision": null,
+      "outstanding": [],
+      "deadlines": [{"what": "scholarship decisions released", "date": "2026-11-20", "source": "scholarships committee record"}],
+      "next_step": "The Scholarships Committee confirms the record."
+    },
+    "ENR-26-0612": {
+      "applicant_id": "PU-APL-30417",
+      "kind": "enrolment",
+      "team": "registrar",
+      "sources": {"registrar system": "received"},
+      "decision": null,
+      "outstanding": [],
+      "deadlines": [{"what": "pay the enrolment deposit", "date": "2026-11-01", "source": "registrar enrolment notice"}],
+      "next_step": "Pay the enrolment deposit by 1 November 2026; review follows."
+    },
+    "AID-25-0931": {
+      "applicant_id": "PU-APL-29102",
+      "kind": "financial_aid",
+      "team": "financial_aid",
+      "sources": {"financial aid system": "under_review"},
+      "decision": null,
+      "outstanding": [],
+      "deadlines": [],
+      "next_step": "The Student Financial Aid Office confirms the applicant record."
+    },
+    "AID-26-1190": {
+      "applicant_id": "PU-APL-30988",
+      "kind": "financial_aid",
+      "team": "financial_aid",
+      "sources": {"financial aid system": "under_review"},
+      "decision": null,
+      "outstanding": [],
+      "deadlines": [{"what": "aid decision expected", "date": "2026-10-30", "source": "aid office record"}],
+      "next_step": "Wait for the aid decision."
+    }
+  },
+  "existing_enquiries": {
+    "PU-SUP-40A1C2": {
+      "applicant_id": "PU-APL-30417",
+      "application_reference": "AID-26-1182",
+      "team": "financial_aid",
+      "topic": "missing_evidence",
+      "recorded_on": "2026-09-25",
+      "state": "open, awaiting a reply from the team"
+    },
+    "PU-SUP-51B7E0": {
+      "applicant_id": "PU-APL-30988",
+      "application_reference": "AID-26-1190",
+      "team": "financial_aid",
+      "topic": "decision_timing",
+      "recorded_on": "2026-09-24",
+      "state": "open, awaiting a reply from the team"
+    }
+  }
+}

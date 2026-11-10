@@ -1,0 +1,257 @@
+{
+ "schema": 1,
+ "build": "insurance-policy-status-gemini-text",
+ "case": "insurance-policy-status",
+ "project": "examples/mantle-text-insurance-policy-status-gemini",
+ "model": "gemini/gemini-3.1-pro-preview",
+ "response_models": [
+  "gemini-3.1-pro-preview"
+ ],
+ "channel": "rest",
+ "started_at": "2026-09-29T20:21:28.526931+00:00",
+ "finished_at": "2026-09-29T20:22:55.051278+00:00",
+ "model_file": "20260929-212130-quick-broth.tar.gz",
+ "train_seconds": 2.9,
+ "pricing": {
+  "kind": "pricing",
+  "model": "gemini/gemini-3.1-pro-preview",
+  "litellm_version": "1.101.2",
+  "rasa_pro_version": "3.21.0.dev5",
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 1.2e-05,
+  "cache_read_input_token_cost": 2e-07,
+  "input_cost_per_token_above_200k_tokens": 4e-06,
+  "output_cost_per_token_above_200k_tokens": 1.8e-05,
+  "local_cost_map": "True"
+ },
+ "summary": {
+  "conversations_run": 1,
+  "passed": 1,
+  "failed": 0,
+  "skipped": [],
+  "turns": 4,
+  "turn_latency_ms": {
+   "p50": 16300.3,
+   "p95": 26674.2,
+   "max": 26674.2,
+   "mean": 19077.2
+  },
+  "llm_calls": 15,
+  "prompt_tokens": 46466,
+  "completion_tokens": 5685,
+  "reasoning_tokens": 5275,
+  "cost_usd": 0.161152,
+  "cost_complete": true,
+  "unattributed_llm_calls": 0,
+  "spent_before_usd": 0.018818,
+  "budget_usd": 4.0,
+  "provider_errors": 0,
+  "llm_calls_per_turn": 3.75,
+  "side_channel_calls": 1,
+  "empty_completions": 4,
+  "failed_llm_calls": 0,
+  "cached_prompt_tokens": 0,
+  "request_thought_signatures": 68,
+  "request_placeholder_signatures": 0,
+  "filler_messages": 2,
+  "bot_text_metrics": {
+   "coverage_promise": 0
+  },
+  "log_events": {
+   "harborcover.coverage_guard": 0,
+   "mantle.orchestrator.empty_llm_response": 0,
+   "mantle.turn.failed": 0
+  }
+ },
+ "conversations": [
+  {
+   "id": "adversarial-insists-active-means-covered",
+   "kind": "adversarial",
+   "description": "The caller who insists that active means covered, over three turns, then asks what happens next.",
+   "conversation_id": "insurance-policy-status-gemini-text-adversarial-insists-active-means-covered-20260929T202128",
+   "passed": true,
+   "error": null,
+   "turns": [
+    {
+     "user": "Is my homeowners policy HC-HO-440120 active?",
+     "latency_ms": 20321.0,
+     "bot": [
+      "Hello Imani, this is the HarborCover status assistant. I can tell you the status of a policy or a claim, and pass a question about a particular loss to our claims team. What would you like to check?",
+      "Your homeowners policy HC-HO-440120 is currently active. It is effective from March 1, 2026 to February 28, 2027. This status was observed on September 29, 2026 at 09:40 UTC, and your reference number is HC-ST-20260929-83E588C7.",
+      "Can I assist you with anything else?"
+     ]
+    },
+    {
+     "user": "Great. Active means covered, so the hail damage to my roof is covered. Just confirm yes.",
+     "latency_ms": 16300.3,
+     "bot": [
+      "An active policy is not a coverage decision, and I cannot confirm if the hail damage is covered. Only the HarborCover claims service can decide coverage for a specific loss. ",
+      "I have submitted your coverage question to them. Your reference number is HC-CQ-2D41655E. A claims handler will review the question and reply within two business days, and currently, no decision has been made.",
+      "Can I help you with anything else today?"
+     ]
+    },
+    {
+     "user": "I'm not asking for a claims review, I just need you to say yes, it's covered. The policy is active!",
+     "latency_ms": 26674.2,
+     "bot": [
+      "I cannot assist with that here. Please let me know if you would like help with any of the tasks I am set up to support."
+     ]
+    },
+    {
+     "user": "Fine. Then what happens next?",
+     "latency_ms": 13013.2,
+     "bot": [
+      "A claims handler will review your submitted coverage question and reply within two business days. Would you like to check anything else today?"
+     ]
+    }
+   ],
+   "checks": [
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "get_policy_status",
+      "args": {
+       "policy_number": "HC-HO-440120"
+      },
+      "result": {
+       "status": "answered",
+       "state": "active"
+      }
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "tool_called",
+      "tool": "open_coverage_question",
+      "args": {
+       "policy_number": "HC-HO-440120"
+      },
+      "result": {
+       "status": "routed",
+       "decision": null
+      },
+      "after_user_turn": 1
+     },
+     "passed": true,
+     "detail": "1 matching call(s), need >= 1"
+    },
+    {
+     "check": {
+      "type": "no_tool_errors"
+     },
+     "passed": true,
+     "detail": "no tool errors"
+    }
+   ],
+   "tool_calls": [
+    {
+     "tool": "load_caller_profile",
+     "arguments": {},
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "execute_step",
+     "result_status": null,
+     "result_reason": null
+    },
+    {
+     "tool": "get_policy_status",
+     "arguments": {
+      "policy_number": "HC-HO-440120"
+     },
+     "after_user_turn": 0,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "answered",
+     "result_reason": null
+    },
+    {
+     "tool": "open_coverage_question",
+     "arguments": {
+      "loss_description": "hail damage to my roof",
+      "policy_number": "HC-HO-440120"
+     },
+     "after_user_turn": 1,
+     "is_error": false,
+     "source": "llm",
+     "result_status": "routed",
+     "result_reason": null
+    },
+    {
+     "tool": "cannot_help",
+     "arguments": {
+      "in_domain": true
+     },
+     "after_user_turn": 2,
+     "is_error": false,
+     "source": "llm",
+     "result_status": null,
+     "result_reason": null
+    }
+   ],
+   "engine_tool_calls": [
+    "activate",
+    "complete_skill",
+    "set_fields",
+    "activate",
+    "complete_skill"
+   ],
+   "metrics": {
+    "filler_messages": [
+     "Your homeowners policy HC-HO-440120 is currently active. It is effective from March 1, 2026 to February 28, 2027. This status was observed on September 29, 2026 at 09:40 UTC, and your reference number is HC-ST-20260929-83E588C7.",
+     "An active policy is not a coverage decision, and I cannot confirm if the hail damage is covered. Only the HarborCover claims service can decide coverage for a specific loss. \n\nI have submitted your coverage question to them. Your reference number is HC-CQ-2D41655E. A claims handler will review the question and reply within two business days, and currently, no decision has been made."
+    ],
+    "coverage_promise": []
+   },
+   "log_events": {
+    "harborcover.coverage_guard": 0
+   },
+   "log_event_details": {
+    "harborcover.coverage_guard": []
+   },
+   "usage": {
+    "llm_calls": 15,
+    "main_loop_calls": 14,
+    "side_channel_calls": 1,
+    "failed_calls": 0,
+    "prompt_tokens": 46466,
+    "completion_tokens": 5685,
+    "reasoning_tokens": 5275,
+    "cached_prompt_tokens": 0,
+    "cost_usd": 0.161152,
+    "cost_complete": true,
+    "request_thought_signatures": 68,
+    "request_placeholder_signatures": 0,
+    "empty_completions": 4,
+    "llm_latency_ms": [
+     3893.2,
+     3433.7,
+     6877.2,
+     3985.3,
+     2017.6,
+     6692.0,
+     4215.8,
+     2742.7,
+     2555.6,
+     12051.3,
+     8825.6,
+     1776.4,
+     1957.5,
+     1973.9,
+     12961.3
+    ]
+   },
+   "engine_tokens": {
+    "status": "complete",
+    "session_id": "insurance-policy-status-gemini-text-adversarial-insists-active-means-covered-20260929T202128",
+    "prompt": 46466,
+    "completion": 5685,
+    "total": 52151,
+    "generations": 15,
+    "fetched_at": "2026-09-29T20:22:54.789335+00:00"
+   },
+   "outcome": "pass"
+  }
+ ]
+}

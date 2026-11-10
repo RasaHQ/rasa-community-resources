@@ -56,15 +56,19 @@ RETIRED_TERMS = {"ma" + "estro": "Mantle"}
 SESSION_REF_RE = re.compile(r"(?<![\w.])session\.([\w-]+)\.([\w-]+)")
 MEMORY_TOKEN_RE = re.compile(r"@memory(?:\.[\w-]+)*")
 ENV_VAR_RE = re.compile(r"\$\{([A-Z][A-Z0-9_]*)\}")
-# Credentials name their variable rather than interpolating it: `api_key`
-# is a SENSITIVE_DATA key the engine's loader returns raw, so `${VAR}` there
-# never expands. .env.example discovery has to look for both spellings or it
-# goes blind to every credential the project actually reads.
-API_KEY_ENV_RE = re.compile(r"^\s*(?:-\s+)?api_key_env\s*:\s*([A-Z][A-Z0-9_]*)", re.M)
+# Model-group credentials since rasa-pro 3.21.0.dev2 (checked on 3.21.0.dev3):
+# rasa/shared/providers/model_group_validation.py rejects `api_key_env` and
+# accepts a sensitive value only as exactly `${ENV_VAR_NAME}`. ENV_VAR_RE above
+# therefore finds every credential a project reads. API_KEY_ENV_RE still feeds
+# .env.example discovery so a project carrying the removed key gets both
+# findings (rejected key, and whether its variable is documented).
+API_KEY_ENV_RE = re.compile(r"^\s*(?:-\s+)?api_key_env\s*:\s*([A-Z][A-Z0-9_]*)?", re.M)
 
-# `api_key: ${VAR}` hands the provider the literal characters. Anchored so
-# prose quoting the broken form to teach against it is not flagged.
-API_KEY_PLACEHOLDER_RE = re.compile(r"""^\s*(?:-\s+)?api_key\s*:\s*["\']?\$""", re.M)
+# An `api_key:` mapping entry, anchored so prose quoting a form in backticks
+# is not flagged. The value must be exactly `${NAME}`, optionally quoted, with
+# an optional trailing comment.
+API_KEY_ENTRY_RE = re.compile(r"^\s*(?:-\s+)?api_key\s*:(.*)$")
+API_KEY_VALUE_RE = re.compile(r"""^\s*(["']?)\$\{\w+\}\1\s*(?:#.*)?$""")
 PRERELEASE_RE = re.compile(r"(a|b|rc|\.dev)\d*$")
 
 TEXT_GLOBS = ("*.md", "*.toml", "*.yml", "*.yaml", "*.py", "*.example", "Makefile")
@@ -416,7 +420,8 @@ def check_env_example() -> list[Finding]:
         for match in ENV_VAR_RE.finditer(text):
             used.setdefault(match.group(1), _rel(path))
         for match in API_KEY_ENV_RE.finditer(text):
-            used.setdefault(match.group(1), _rel(path))
+            if match.group(1):
+                used.setdefault(match.group(1), _rel(path))
     pyproject = ROOT / "pyproject.toml"
     if pyproject.is_file():
         block = re.search(
@@ -436,27 +441,37 @@ def check_env_example() -> list[Finding]:
 
 
 def check_api_key_env() -> list[Finding]:
-    """Credentials use `api_key_env: NAME`; `api_key: ${VAR}` never expands.
+    """Model-group credentials are `api_key: ${VAR}`; `api_key_env` is gone.
 
-    `api_key` is on the engine's SENSITIVE_DATA list, so `read_yaml` returns it
-    raw by design — a secret-leak guard. The provider is then handed the literal
-    characters `${VAR}` as its key. There is no rescue path: the resolver only
-    substitutes when `api_key_env` is present. The symptom is a provider auth
-    error, which reads like a bad key rather than a bad config shape, so this is
-    exactly the kind of break an offline gate has to catch.
+    Since rasa-pro 3.21.0.dev2, `validate_model_group_credentials`
+    (rasa/shared/providers/model_group_validation.py) rejects `api_key_env`
+    with "Model group '<id>' uses 'api_key_env', which is no longer supported.
+    Replace it with 'api_key: ${ENV_VAR_NAME}'." and requires every sensitive
+    value to be exactly `${ENV_VAR_NAME}`, which the provider client expands
+    from the environment. Through 3.20 the reverse held, so older examples and
+    notes still show `api_key_env`; this check catches a copied one before
+    `rasa validate` does.
     """
     findings: list[Finding] = []
     for path in _files("*.yml", "**/*.yml", "*.yaml", "**/*.yaml"):
         for lineno, line in _numbered(_read(path)):
             if line.lstrip().startswith("#"):
                 continue
-            if API_KEY_PLACEHOLDER_RE.match(line):
+            if API_KEY_ENV_RE.match(line):
                 findings.append(Finding(
                     "api-key-env", _rel(path), lineno,
-                    "'api_key' with a ${VAR} placeholder never expands: 'api_key' "
-                    "is on the engine's SENSITIVE_DATA list, so the loader returns "
-                    "it raw and the provider receives the literal '${VAR}' as its "
-                    "key. Use 'api_key_env: VAR' — the variable NAME, unquoted.",
+                    "'api_key_env' was removed in rasa-pro 3.21.0.dev2 and "
+                    "validate rejects it. Write 'api_key: ${VAR}' with the same "
+                    "variable name.",
+                ))
+                continue
+            entry = API_KEY_ENTRY_RE.match(line)
+            if entry and not API_KEY_VALUE_RE.match(entry.group(1)):
+                findings.append(Finding(
+                    "api-key-env", _rel(path), lineno,
+                    "'api_key' must be exactly '${VAR}'; the engine rejects a "
+                    "literal, a bare $VAR, a ${VAR:-default} or an empty value. "
+                    "Example: 'api_key: ${OPENAI_API_KEY}'.",
                 ))
     return findings
 

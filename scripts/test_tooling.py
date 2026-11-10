@@ -19,8 +19,11 @@ Usage:
 
 from __future__ import annotations
 
+import base64
 import contextlib
 import io
+import json
+import os
 import re
 import subprocess
 import sys
@@ -174,7 +177,7 @@ class TestStaleDocVersionsIgnoreMarker(unittest.TestCase):
     Without the exemption, the only way an upgrade illustration could pass
     the stale-version scan was to rewrite its FROM side to the current pin,
     which produces degenerate `X → X` prose that teaches nothing — the same
-    defect shape RULING-004/F-A caught in a tutorial's landed bytes.
+    defect shape a review caught in a tutorial's landed bytes.
     """
 
     def _project_with_readme(self, text: str) -> "rasa_projects.Project":
@@ -399,12 +402,10 @@ class TestLintChecksAgainstRepo(unittest.TestCase):
         projects = discover_projects()
         snapshots = discover_projects("snapshots")
         self.assertTrue(projects, "no projects discovered")
-        errors = [
-            f
-            for name, fn in lint_repo.CHECKS.items()
-            for f in fn(projects, snapshots, expected)
-            if f.severity == lint_repo.SEVERITY_ERROR
-        ]
+        findings, _declared = lint_repo.run_checks(
+            list(lint_repo.CHECKS), projects, snapshots, expected
+        )
+        errors = [f for f in findings if f.severity == lint_repo.SEVERITY_ERROR]
         self.assertEqual(errors, [], "\n".join(f"{f.location()}: {f.message}" for f in errors))
 
 
@@ -578,12 +579,14 @@ class TestWorkflowPins(unittest.TestCase):
 
 
 class TestApiKeyEnv(unittest.TestCase):
-    """`api_key: ${VAR}` never expanded; the gate has to be able to say so.
+    """Model-group credentials: `api_key: ${VAR}` only; `api_key_env` rejected.
 
-    The catalog shipped 67 of these across 46 files and every check stayed
-    green, because `make validate` is offline and never builds a provider
-    client. These tests exist so the check is known to FAIL on the broken form,
-    not merely known to pass on the fixed one.
+    rasa-pro 3.21.0.dev2 removed `api_key_env` and requires every sensitive
+    value to be exactly `${ENV_VAR_NAME}` (rasa/shared/providers/
+    model_group_validation.py). The 3.21.0.dev3 release run failed
+    validate_project 22 times on the removed key while `make validate` stayed
+    green. These tests exist so the check is known to FAIL on each rejected
+    form, not merely known to pass on the accepted one.
     """
 
     def _findings(self, body: str, name: str = "integrations.yml"):
@@ -592,50 +595,73 @@ class TestApiKeyEnv(unittest.TestCase):
         ), mock.patch.object(lint_repo, "_read", return_value=body):
             return lint_repo.check_api_key_env()
 
-    def test_braced_placeholder_is_rejected(self):
-        found = self._findings("        api_key: ${OPENAI_API_KEY}\n")
+    def test_api_key_env_is_rejected(self):
+        found = self._findings("        api_key_env: OPENAI_API_KEY\n")
         self.assertEqual(len(found), 1)
-        self.assertIn("never expands", found[0].message)
+        self.assertIn("removed in rasa-pro 3.21.0.dev2", found[0].message)
+        self.assertIn("api_key: ${VAR}", found[0].message)
 
-    def test_every_placeholder_spelling_is_rejected(self):
-        for value in (
-            "${OPENAI_API_KEY}",
-            "$OPENAI_API_KEY",
-            '"$OPENAI_API_KEY"',
-            "'${OPENAI_API_KEY}'",
-            "${OPENAI_API_KEY:-none}",
-        ):
+    def test_api_key_env_as_list_item_is_rejected(self):
+        self.assertEqual(
+            len(self._findings("      - api_key_env: OPENAI_API_KEY\n")), 1
+        )
+
+    def test_braced_placeholder_is_accepted(self):
+        for value in ("${OPENAI_API_KEY}", '"${OPENAI_API_KEY}"', "'${GEMINI_API_KEY}'"):
             self.assertEqual(
-                len(self._findings(f"        api_key: {value}\n")), 1, value
+                self._findings(f"        api_key: {value}\n"), [], value
             )
 
-    def test_api_key_env_is_accepted(self):
-        self.assertEqual(self._findings("        api_key_env: OPENAI_API_KEY\n"), [])
+    def test_placeholder_with_trailing_comment_is_accepted(self):
+        self.assertEqual(
+            self._findings("        api_key: ${OPENAI_API_KEY}  # from .env\n"), []
+        )
+
+    def test_every_other_value_is_rejected(self):
+        # The engine's pattern is fullmatch `\${(\w+)}`; anything else fails.
+        for value in (
+            "$OPENAI_API_KEY",
+            '"$OPENAI_API_KEY"',
+            "${OPENAI_API_KEY:-none}",
+            "OPENAI_API_KEY",
+            "sk-not-a-real-key",
+            "",
+        ):
+            found = self._findings(f"        api_key: {value}\n")
+            self.assertEqual(len(found), 1, repr(value))
+            self.assertIn("must be exactly '${VAR}'", found[0].message)
 
     def test_non_sensitive_placeholder_is_left_alone(self):
-        # `model:` is not on SENSITIVE_DATA, so ${VAR} there really does expand.
         self.assertEqual(self._findings("        model: ${OPENAI_MODEL}\n"), [])
 
     def test_commented_out_line_is_left_alone(self):
-        self.assertEqual(self._findings("      # api_key: ${OPENAI_API_KEY}\n"), [])
+        self.assertEqual(self._findings("      # api_key_env: OPENAI_API_KEY\n"), [])
 
-    def test_prose_quoting_the_broken_form_is_left_alone(self):
-        # Documentation must be able to name the defect in order to teach
-        # against it; only a real mapping entry is a finding.
-        body = "Never write `api_key: ${VAR}` — it does not expand.\n"
+    def test_prose_quoting_the_removed_form_is_left_alone(self):
+        # Documentation must be able to name the removed key in order to
+        # explain the migration; only a real mapping entry is a finding.
+        body = "Replace `api_key_env: OPENAI_API_KEY` with `api_key: ${OPENAI_API_KEY}`.\n"
+        self.assertEqual(self._findings(body, "MIGRATING.md"), [])
+
+    def test_ignore_marker_is_honoured(self):
+        body = "        api_key_env: OPENAI_API_KEY  # api-key-env-ignore\n"
         self.assertEqual(self._findings(body, "MIGRATING.md"), [])
 
     def test_credential_inside_voice_block_is_rejected(self):
         # ASR configs are extra="forbid" and TTS warns-and-ignores; either way
         # the engine reads DEEPGRAM_API_KEY from the environment, not config.
-        for key in ("api_key_env: DEEPGRAM_API_KEY", "api_key: DEEPGRAM_API_KEY"):
+        for key in (
+            "api_key_env: DEEPGRAM_API_KEY",
+            "api_key: DEEPGRAM_API_KEY",
+            "api_key: ${DEEPGRAM_API_KEY}",
+        ):
             body = f"asr:\n  deepgram:\n    {key}\n"
             found = self._findings(body)
             self.assertEqual(len(found), 1, key)
             self.assertIn("not read by the engine", found[0].message)
 
     def test_voice_block_ends_at_dedent(self):
-        # A model-group `api_key_env` after a tts: block is correct, not a
+        # A model-group `api_key` after a tts: block is correct, not a
         # voice-block finding — the block must not swallow the rest of the file.
         body = (
             "channels:\n"
@@ -644,12 +670,70 @@ class TestApiKeyEnv(unittest.TestCase):
             "      name: deepgram\n"
             "model_groups:\n"
             "  - models:\n"
-            "      - api_key_env: OPENAI_API_KEY\n"
+            "      - api_key: ${OPENAI_API_KEY}\n"
         )
         self.assertEqual(self._findings(body), [])
 
     def test_catalog_is_clean(self):
         self.assertEqual([f.location() for f in lint_repo.check_api_key_env()], [])
+
+
+class TestStarterPackApiKeyEnv(unittest.TestCase):
+    """starter-pack/scripts/lint_mantle.py enforces the same credential rule.
+
+    The starter pack ships this lint into other people's projects as a
+    pre-commit hook, so it has to agree with the catalog gate and the engine.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+
+        path = _SCRIPTS.parent / "starter-pack" / "scripts" / "lint_mantle.py"
+        spec = importlib.util.spec_from_file_location("lint_mantle", path)
+        cls.lint = importlib.util.module_from_spec(spec)
+        # dataclasses resolves the defining module through sys.modules.
+        sys.modules[spec.name] = cls.lint
+        spec.loader.exec_module(cls.lint)
+
+    def _findings(self, body: str):
+        with mock.patch.object(
+            self.lint, "_files", return_value=[Path("integrations.yml")]
+        ), mock.patch.object(self.lint, "_read", return_value=body):
+            return self.lint.check_api_key_env()
+
+    def test_api_key_env_is_rejected(self):
+        found = self._findings("        api_key_env: OPENAI_API_KEY\n")
+        self.assertEqual(len(found), 1)
+        self.assertIn("removed in rasa-pro 3.21.0.dev2", found[0].message)
+
+    def test_braced_placeholder_is_accepted(self):
+        self.assertEqual(self._findings("        api_key: ${OPENAI_API_KEY}\n"), [])
+
+    def test_other_values_are_rejected(self):
+        for value in ("$OPENAI_API_KEY", "${OPENAI_API_KEY:-x}", "OPENAI_API_KEY", ""):
+            self.assertEqual(
+                len(self._findings(f"        api_key: {value}\n")), 1, repr(value)
+            )
+
+    def test_commented_line_is_left_alone(self):
+        self.assertEqual(self._findings("  # api_key_env: OPENAI_API_KEY\n"), [])
+
+    def test_env_example_discovers_the_placeholder_name(self):
+        # .env.example discovery must see the variable named inside ${...}.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".env.example").write_text("RASA_LICENSE=\n")
+            (root / "integrations.yml").write_text(
+                "model_groups:\n  - id: o\n    models:\n"
+                "      - api_key: ${GEMINI_API_KEY}\n"
+            )
+            with mock.patch.object(self.lint, "ROOT", root), mock.patch.object(
+                self.lint, "_files", return_value=[root / "integrations.yml"]
+            ):
+                found = self.lint.check_env_example()
+        self.assertEqual(len(found), 1)
+        self.assertIn("GEMINI_API_KEY", found[0].message)
 
 
 class TestCliExitCodes(unittest.TestCase):
@@ -681,6 +765,24 @@ class TestCliExitCodes(unittest.TestCase):
             capture_output=True, text=True,
         ).returncode
         self.assertEqual(rc, 2)
+
+
+class TestPublicAssessmentWording(unittest.TestCase):
+    def test_assessor_and_pending_review_are_rejected(self):
+        for assessor in ("Cedar (Codex)", "Codex local validation; maintainer review pending"):
+            text = ("Author: Rod\nAssessed on: 2026-10-11\n"
+                    f"**Assessed by:** {assessor}\nVerified with: pinned native controls\n")
+            with mock.patch("pathlib.Path.is_file", return_value=True), \
+                 mock.patch.object(lint_repo, "_read", return_value=text):
+                findings = lint_repo.check_resource_metadata([rasa_projects.Project(Path("examples/demo"))])
+            self.assertTrue(any("qualification checks" in f.message for f in findings), assessor)
+
+    def test_named_native_checks_are_accepted(self):
+        text = ("Author: Rod\nAssessed on: 2026-10-11\n"
+                "Assessed by: Native tool controls and licensed training\nVerified with: pinned runtime\n")
+        with mock.patch("pathlib.Path.is_file", return_value=True), \
+             mock.patch.object(lint_repo, "_read", return_value=text):
+            self.assertEqual(lint_repo.check_resource_metadata([rasa_projects.Project(Path("examples/demo"))]), [])
 
 
 class TestAssessedOnDate(unittest.TestCase):
@@ -805,9 +907,117 @@ class TestAgentConfigKeys(unittest.TestCase):
         self.assertEqual(self._findings(body), [])
 
     def test_the_real_catalog_is_clean(self):
-        self.assertEqual(
-            [f.location() for f in lint_repo.check_agent_config_keys()], []
+        # Only the declared teaching fixtures may fail; see TestDeclaredInvalidFixtures.
+        kept, _declared = lint_repo.apply_declared_fixtures(
+            lint_repo.check_agent_config_keys(), ["agent-config-keys"]
         )
+        self.assertEqual([f.location() for f in kept], [])
+
+
+class TestDeclaredInvalidFixtures(unittest.TestCase):
+    """A file that is wrong on purpose is declared, one file and one check at a time."""
+
+    FIXTURE = "workshops/software-factories-masterclass/factory/candidates/rule-digits-nested/product/agent.yml"
+    NESTED = "agent:\n  id: demo\n  rules:\n    - Be polite.\n"
+
+    def _finding(self, path, check="agent-config-keys"):
+        return lint_repo.Finding(check, path, 5, "nested")
+
+    def _declare(self, entries):
+        handle = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        self.addCleanup(os.unlink, handle.name)
+        json.dump(entries, handle)
+        handle.close()
+        return Path(handle.name)
+
+    def _entry(self, path="a/agent.yml", check="agent-config-keys", reason="teaching input"):
+        return {"path": path, "check": check, "reason": reason}
+
+    def _apply(self, findings, entries, selected=("agent-config-keys",), tracked=("a/agent.yml", "b/agent.yml")):
+        return lint_repo.apply_declared_fixtures(
+            findings, list(selected), self._declare(entries), set(tracked)
+        )
+
+    def test_the_listed_fixture_still_fails_its_direct_check(self):
+        with mock.patch.object(lint_repo, "_tracked_files", return_value=[lint_repo.REPO_ROOT / self.FIXTURE]):
+            raw = lint_repo.check_agent_config_keys()
+        self.assertEqual([(f.path, f.check) for f in raw], [(self.FIXTURE, "agent-config-keys")])
+        entries, problems = lint_repo.load_invalid_fixtures(tracked={self.FIXTURE})
+        self.assertEqual(problems, [])
+        self.assertIn((self.FIXTURE, "agent-config-keys"), entries)
+
+    def test_the_real_declarations_are_valid_and_current(self):
+        findings = lint_repo.check_agent_config_keys()
+        kept, declared = lint_repo.apply_declared_fixtures(findings, ["agent-config-keys"])
+        self.assertEqual(kept, [])
+        self.assertEqual([f.path for f in declared], [self.FIXTURE])
+
+    def test_the_fixture_bytes_are_the_nested_case(self):
+        text = (lint_repo.REPO_ROOT / self.FIXTURE).read_text(encoding="utf-8")
+        self.assertIn("agent:\n", text)
+        self.assertRegex(text, r"(?m)^  rules:\n")
+
+    def test_an_identical_unlisted_file_still_fails(self):
+        kept, declared = self._apply(
+            [self._finding("a/agent.yml"), self._finding("b/agent.yml")], [self._entry()]
+        )
+        self.assertEqual([f.path for f in kept], ["b/agent.yml"])
+        self.assertEqual([f.path for f in declared], ["a/agent.yml"])
+
+    def test_a_different_check_on_the_listed_file_stays_an_error(self):
+        kept, declared = self._apply(
+            [self._finding("a/agent.yml"), self._finding("a/agent.yml", "secret-hygiene")],
+            [self._entry()],
+        )
+        self.assertEqual([f.check for f in kept], ["secret-hygiene"])
+        self.assertEqual(len(declared), 1)
+
+    def test_a_stale_declaration_fails(self):
+        kept, _ = self._apply([], [self._entry()])
+        self.assertEqual([f.check for f in kept], [lint_repo.DECLARATION_CHECK])
+        self.assertIn("stale", kept[0].message)
+
+    def test_a_stale_declaration_is_not_judged_when_its_check_was_not_run(self):
+        kept, _ = self._apply([], [self._entry()], selected=("secret-hygiene",))
+        self.assertEqual(kept, [])
+
+    def test_a_missing_file_fails(self):
+        kept, _ = self._apply([self._finding("a/agent.yml")], [self._entry()], tracked=())
+        self.assertTrue(any("not a tracked file" in f.message for f in kept))
+
+    def test_a_glob_fails(self):
+        kept, _ = self._apply([], [self._entry(path="a/*.yml")])
+        self.assertTrue(any("glob" in f.message for f in kept))
+
+    def test_a_path_that_is_not_normalised_fails(self):
+        kept, _ = self._apply([], [self._entry(path="a/../a/agent.yml")])
+        self.assertTrue(any("normalized" in f.message for f in kept))
+
+    def test_a_duplicate_fails(self):
+        kept, _ = self._apply(
+            [self._finding("a/agent.yml")],
+            [self._entry(), self._entry(check="secret-hygiene")],
+            selected=("agent-config-keys", "secret-hygiene"),
+        )
+        self.assertTrue(any("declared twice" in f.message for f in kept))
+
+    def test_an_unknown_check_fails(self):
+        kept, _ = self._apply([], [self._entry(check="no-such-check")])
+        self.assertTrue(any("unknown check" in f.message for f in kept))
+
+    def test_an_empty_reason_fails(self):
+        kept, _ = self._apply([self._finding("a/agent.yml")], [self._entry(reason="  ")])
+        self.assertTrue(any("reason" in f.message for f in kept))
+
+    def test_extra_or_missing_keys_fail(self):
+        kept, _ = self._apply([], [{"path": "a/agent.yml", "check": "agent-config-keys"}])
+        self.assertTrue(any("exactly path, check and reason" in f.message for f in kept))
+
+    def test_a_declaration_never_hides_a_warning(self):
+        warning = lint_repo.Finding("agent-config-keys", "a/agent.yml", 1, "w", lint_repo.SEVERITY_WARNING)
+        kept, declared = self._apply([warning], [self._entry()])
+        self.assertIn(warning, kept)
+        self.assertEqual(declared, [])
 
 
 class TestAgentSpecContract(unittest.TestCase):
@@ -982,6 +1192,28 @@ class TestTierDiscovery(unittest.TestCase):
         with self.assertRaises(ValueError):
             rasa_projects.discover_projects("everything")
 
+    def test_a_tutorial_may_hold_its_rasa_project_one_level_down(self):
+        # tutorials/voice-agent-three-frameworks/ keeps the Rasa version in
+        # rasa/ beside non-Rasa builds of the same agent, and has no
+        # pyproject.toml of its own.
+        with FakeRepo() as repo:
+            repo.project("tutorials/multi/rasa")
+            repo.project("tutorials/single")
+            repo.project("tutorials/single/tutorial/snippets")
+            repo.project("examples/agent/nested")
+            found = sorted(p.rel for p in rasa_projects.discover_projects())
+        self.assertEqual(found, ["tutorials/multi/rasa", "tutorials/single"])
+
+
+class TestDefaultRasaGroup(unittest.TestCase):
+    def test_runnable_library_is_discovered_without_making_rasa_a_library_dependency(self):
+        with FakeRepo() as repo:
+            project=repo.project("patterns/router")
+            (project/"pyproject.toml").write_text('[project]\nname="router"\nversion="0.1.0"\ndependencies=[]\n[dependency-groups]\nrasa=["rasa-pro==3.19.0.dev7"]\n[tool.uv]\ndefault-groups=["rasa"]\n')
+            self.assertIn("patterns/router",[p.rel for p in rasa_projects.discover_projects()])
+            (project/"pyproject.toml").write_text('[project]\nname="router"\nversion="0.1.0"\ndependencies=[]\n[dependency-groups]\nrasa=["rasa-pro==3.19.0.dev7"]\n[tool.uv]\ndefault-groups=[]\n')
+            self.assertNotIn("patterns/router",[p.rel for p in rasa_projects.discover_projects()])
+
 
 class TestVersionConsistencyTiers(unittest.TestCase):
     """The shared pin governs everything maintained, and stops at `heroes/`."""
@@ -1137,6 +1369,58 @@ class TestHeroesLayout(unittest.TestCase):
             found = lint_repo.check_heroes_layout()
         self.assertEqual(len(found), 1)
         self.assertIn("wave-NN-<theme>", found[0].message)
+
+    def test_installed_dependencies_do_not_become_wave_projects(self):
+        for environment in (".venv", "venv"):
+            with self.subTest(environment=environment), FakeRepo() as repo:
+                self._wave(repo, "wave-01-voice")
+                project = "heroes/wave-01-voice/projects/handle-agent"
+                repo.project(project)
+                environment_root = repo.root / project / environment
+                environment_root.mkdir()
+                (environment_root / "pyvenv.cfg").write_text("home = /python\n")
+                # These are the two installed paths reported by compatibility
+                # after the native project check has populated its environment.
+                for dependency in ("", "pandas/"):
+                    path = repo.root / project / environment / (
+                        f"lib/python3.12/site-packages/{dependency}pyproject.toml"
+                    )
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("[project]\nname = 'dependency'\n")
+                self.assertEqual(lint_repo.check_heroes_layout(), [])
+
+    def test_authored_environment_names_are_not_hidden(self):
+        for environment in (".venv", "venv"):
+            for parent in ("", "projects/handle-agent/"):
+                with self.subTest(environment=environment, parent=parent), FakeRepo() as repo:
+                    self._wave(repo, "wave-01-voice")
+                    repo.project("heroes/wave-01-voice/projects/handle-agent")
+                    misplaced = f"heroes/wave-01-voice/{parent}{environment}"
+                    repo.project(misplaced)
+                    found = lint_repo.check_heroes_layout()
+                self.assertEqual(len(found), 1)
+                self.assertEqual(found[0].path, f"{misplaced}/pyproject.toml")
+
+    def test_environment_marker_outside_a_project_does_not_hide_a_project(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            misplaced = "heroes/wave-01-voice/venv"
+            repo.project(misplaced)
+            (repo.root / misplaced / "pyvenv.cfg").write_text("home = /python\n")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].path, f"{misplaced}/pyproject.toml")
+
+    def test_nested_authored_project_is_still_reported(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            project = "heroes/wave-01-voice/projects/handle-agent"
+            repo.project(project)
+            repo.project(f"{project}/nested-agent")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertIn("nested-agent/pyproject.toml", found[0].path)
+        self.assertIn("skipped by every check", found[0].message)
 
     def test_missing_charter_is_reported(self):
         with FakeRepo() as repo:
@@ -1416,6 +1700,858 @@ class TestStaleDocVersionsHonoursIgnoreMarker(unittest.TestCase):
             lint_repo.VERSION_IGNORE_MARKER, rasa_projects.VERSION_IGNORE_MARKER
         )
 
+
+
+class TestCaseBuildHarness(unittest.TestCase):
+    """Offline checks for scripts/case_builds/harness.py (no server, no model)."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(_SCRIPTS / "case_builds"))
+        import harness
+
+        cls.h = harness
+
+    TRACKER = {
+        "events": [
+            {"event": "user", "text": "is my policy active?"},
+            {"event": "tool_executed", "tool_name": "activate", "arguments": {"target_id": "x"}, "result": "done"},
+            {"event": "tool_executed", "tool_name": "get_policy_status",
+             "arguments": {"policy_number": "hc-ho-1"},
+             "result": '{"status": "answered", "facts": {"subject": true}}', "is_error": False},
+            {"event": "bot", "text": "It is active.", "metadata": {"mantle_response_source": "filler"}},
+            {"event": "user", "text": "so it's covered?"},
+            {"event": "tool_executed", "tool_name": "open_question",
+             "arguments": {"policy_number": "HC-HO-1", "loss": "burst pipe"},
+             "result": '{"status": "routed", "decision": null}', "is_error": False},
+            {"event": "bot", "text": "Only the claims team can say whether it is covered. You're covered!",
+             "metadata": {"mantle_response_source": "llm"}},
+        ]
+    }
+
+    def check(self, check):
+        return self.h.evaluate_check(check, self.TRACKER)[0]
+
+    def test_tool_called_matches_args_case_insensitively_and_result_subset(self):
+        self.assertTrue(self.check({"type": "tool_called", "tool": "get_policy_status",
+                                    "args": {"policy_number": "HC-HO-1"},
+                                    "result": {"status": "answered", "facts": {"subject": True}}}))
+        self.assertFalse(self.check({"type": "tool_called", "tool": "get_policy_status",
+                                     "result": {"status": "blocked"}}))
+
+    def test_after_user_turn_and_order(self):
+        self.assertTrue(self.check({"type": "tool_called", "tool": "open_question", "after_user_turn": 1}))
+        self.assertFalse(self.check({"type": "tool_called", "tool": "get_policy_status", "after_user_turn": 1}))
+        self.assertTrue(self.check({"type": "tool_order", "steps": [{"tool": "get_policy_status"}, {"tool": "open_question"}]}))
+        self.assertFalse(self.check({"type": "tool_order", "steps": [{"tool": "open_question"}, {"tool": "get_policy_status"}]}))
+
+    def test_regex_null_any_of_and_not_called(self):
+        self.assertTrue(self.check({"type": "tool_called", "tool": "open_question",
+                                    "args": {"loss": "re:pipe|flood"}, "result": {"decision": None}}))
+        self.assertTrue(self.check({"type": "tool_not_called", "result": {"status": "blocked"}}))
+        self.assertFalse(self.check({"type": "tool_not_called", "tool": "open_question"}))
+        self.assertTrue(self.check({"type": "any_of", "checks": [
+            {"type": "tool_called", "tool": "missing"}, {"type": "no_tool_errors"}]}))
+
+    def test_engine_tools_are_separated_and_turns_counted(self):
+        calls = self.h.tool_events(self.TRACKER)
+        self.assertEqual([c["after_user_turn"] for c in calls], [0, 0, 1])
+        self.assertIn("activate", self.h.ENGINE_TOOLS)
+        self.assertNotIn("get_policy_status", self.h.ENGINE_TOOLS)
+
+    def test_text_metric_skips_hedged_sentences(self):
+        metric = {"pattern": r"\b(?:it is|you're) covered\b", "unless_before": r"\bwhether\b"}
+        text = self.TRACKER["events"][-1]["text"]
+        self.assertEqual(self.h.text_metric_hits(metric, text), ["You're covered"])
+        self.assertEqual(self.h.text_metric_hits(metric["pattern"], text), ["it is covered", "You're covered"])
+
+    def test_percentile_is_nearest_rank(self):
+        self.assertEqual(self.h.percentile([1, 2, 3, 4], 50), 2)
+        self.assertEqual(self.h.percentile(list(range(1, 21)), 95), 19)
+        self.assertIsNone(self.h.percentile([], 50))
+
+    def test_usage_attribution_and_unpriced_calls(self):
+        rows = [
+            {"kind": "pricing"},
+            {"kind": "llm_call", "ok": True, "sender_id": "a", "sender_source": "turn_context",
+             "prompt_tokens": 10, "completion_tokens": 5, "reasoning_tokens": 4, "response_cost_usd": 0.5,
+             "latency_ms": 100},
+            {"kind": "llm_call", "ok": True, "sender_id": "a", "sender_source": "structlog_context",
+             "prompt_tokens": 3, "completion_tokens": 0, "response_cost_usd": 0.25},
+            {"kind": "llm_call", "ok": True, "sender_id": "b", "prompt_tokens": 1, "completion_tokens": 1,
+             "response_cost_usd": None},
+        ]
+        a = self.h.usage_for(rows, "a")
+        self.assertEqual((a["llm_calls"], a["side_channel_calls"], a["empty_completions"]), (2, 1, 1))
+        self.assertEqual(a["cost_usd"], 0.75)
+        self.assertIsNone(self.h.usage_for(rows, "b")["cost_usd"])
+
+    def test_log_events_are_joined_on_conversation_id(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log = Path(tmp) / "server.log"
+            log.write_text(
+                'x WARNING m - {"event": "guard", "sender_id": "a", "level": "warning"}\n'
+                'x WARNING m - {"event": "guard", "conversation_id": "b"}\n'
+                "not json\n"
+            )
+            counts = self.h.log_events_for(log, "a", ["guard"])
+            self.assertEqual(len(counts["guard"]), 1)
+
+    def test_provider_errors_are_not_agent_failures(self):
+        ok = [{"passed": True}]
+        self.assertEqual(self.h.classify(None, ok, {"failed_calls": 0}), "pass")
+        self.assertEqual(self.h.classify(None, [{"passed": False}], {"failed_calls": 0}), "fail")
+        self.assertEqual(self.h.classify(None, [{"passed": False}], {"failed_calls": 3}), "provider_error")
+
+    def test_variant_edits_files_for_the_run_and_restores_them(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            (project / "integrations.yml").write_text("model: x\n")
+            spec = {"variants": {"low": {"edits": [
+                {"file": "integrations.yml", "find": "model: x\n", "replace": "model: x\neffort: low\n"}]}}}
+            variant = self.h.ProjectVariant(project, spec, "low")
+            info = variant.__enter__()
+            self.assertEqual(info["name"], "low")
+            self.assertIn("effort: low", (project / "integrations.yml").read_text())
+            variant.__exit__()
+            self.assertEqual((project / "integrations.yml").read_text(), "model: x\n")
+            bad = {"variants": {"low": {"edits": [{"file": "integrations.yml", "find": "nope", "replace": ""}]}}}
+            with self.assertRaises(ValueError):
+                self.h.ProjectVariant(project, bad, "low").__enter__()
+            self.assertIsNone(self.h.ProjectVariant(project, spec, None).__enter__())
+
+    def test_repeat_gives_each_run_its_own_id(self):
+        convs = [{"id": "a", "turns": []}, {"id": "b", "turns": []}]
+        self.assertIs(self.h.expand_repeats(convs, 1), convs)
+        out = self.h.expand_repeats(convs, 2)
+        self.assertEqual([c["id"] for c in out], ["a-r01", "a-r02", "b-r01", "b-r02"])
+        self.assertEqual({c["repeat_of"] for c in out}, {"a", "b"})
+        self.assertNotIn("repeat_of", convs[0])
+
+    def test_ledger_total_accumulates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.h.ledger_append(project, {"run": "1", "cost_usd": 0.1})
+            self.h.ledger_append(project, {"run": "2", "cost_usd": 0.2})
+            self.assertAlmostEqual(self.h.ledger_total(project), 0.3)
+
+
+
+class FakeBrowserAudioServer:
+    """A stand-in for Rasa's browser_audio channel, built on its wire protocol.
+
+    Handshake first, then JSON text frames. A caller turn ends after 200 ms of
+    silence following speech, or on a `{"text"}` frame. The bot then answers
+    with a start marker, audio, and an end marker carrying `latency`, and the
+    fake tracker gains user, bot and bot_turn_ended events. Acknowledged
+    markers are recorded.
+    """
+
+    RATE = 16000
+
+    def __init__(self, reply_delay_s: float = 0.1, heard: str = "card ending four four one seven") -> None:
+        import socket as _socket
+        import threading as _threading
+
+        self.reply_delay_s = reply_delay_s
+        self.heard = heard
+        self.events: list[dict] = []
+        self.sent_markers: list[str] = []
+        self.acked: list[str] = []
+        self.sender_id = None
+        self.frames_in = 0
+        self.lock = _threading.Lock()
+        self.listener = _socket.socket()
+        self.listener.bind(("127.0.0.1", 0))
+        self.listener.listen(1)
+        self.port = self.listener.getsockname()[1]
+        self.thread = _threading.Thread(target=self._serve, daemon=True)
+        self.thread.start()
+
+    def tracker(self, sender_id):
+        with self.lock:
+            return {"sender_id": sender_id, "events": [dict(e) for e in self.events]}
+
+    def _send(self, obj):
+        from voice_driver import OP_TEXT, encode_frame
+
+        self.conn.sendall(encode_frame(OP_TEXT, json.dumps(obj).encode(), mask=False))
+
+    def _marker(self, latency=None):
+        import uuid
+
+        marker = uuid.uuid4().hex
+        self.sent_markers.append(marker)
+        self._send({"marker": marker, **({"latency": latency} if latency else {})})
+
+    def _speak(self, seconds):
+        import base64 as b64
+        import struct as st
+
+        self._marker()
+        n = int(self.RATE * seconds)
+        tone = st.pack("<%dh" % n, *([1200, -1200] * (n // 2)))
+        for i in range(0, len(tone), 4096):
+            self._send({"audio": b64.b64encode(tone[i:i + 4096]).decode()})
+        self._marker({"rasa_processing_latency_ms": 90.0, "tts_first_byte_latency_ms": 40.0,
+                      "tts_complete_latency_ms": 60.0})
+
+    def _reply(self, heard):
+        import time as _time
+
+        with self.lock:
+            self.events.append({"event": "user", "text": heard})
+        _time.sleep(self.reply_delay_s)
+        self._speak(0.3)
+        with self.lock:
+            self.events.append({"event": "bot", "text": "Do you mean the card ending 4 4 1 7?"})
+            self.events.append({"event": "bot_turn_ended", "metadata": {"latency_breakdown": {
+                "user_perceived_latency_ms": 150.0,
+                "first_agent_response": {"llm_time_to_first_token_ms": 80.0}}}})
+
+    def _serve(self):
+        import base64 as b64
+        from voice_driver import OP_CLOSE, OP_TEXT, accept_key, read_frame
+
+        self.conn, _ = self.listener.accept()
+        request = b""
+        while b"\r\n\r\n" not in request:
+            request += self.conn.recv(4096)
+        headers = dict(
+            line.split(": ", 1) for line in request.decode().split("\r\n")[1:] if ": " in line
+        )
+        self.sender_id = headers.get("X-Rasa-Sender-Id")
+        self.conn.sendall(
+            ("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+             f"Sec-WebSocket-Accept: {accept_key(headers['Sec-WebSocket-Key'])}\r\n\r\n").encode()
+        )
+        self._send({"type": "handshake", "sample_rate": self.RATE})
+        self._speak(0.2)  # greeting
+        speaking, silent = False, 0
+        try:
+            while True:
+                _, opcode, payload = read_frame(self.conn)
+                if opcode == OP_CLOSE:
+                    break
+                if opcode != OP_TEXT:
+                    continue
+                msg = json.loads(payload)
+                if "marker" in msg:
+                    self.acked.append(msg["marker"])
+                elif "text" in msg:
+                    self._reply(msg["text"])
+                elif "audio" in msg:
+                    self.frames_in += 1
+                    if any(b64.b64decode(msg["audio"])):
+                        speaking, silent = True, 0
+                    elif speaking:
+                        silent += 1
+                        if silent >= 10:
+                            speaking = False
+                            self._reply(self.heard)
+        except Exception:
+            pass
+        finally:
+            self.conn.close()
+            self.listener.close()
+
+
+class TestBrowserAudioDriver(unittest.TestCase):
+    """The voice driver against a fake browser_audio server. No Rasa, no vendor."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(_SCRIPTS / "case_builds"))
+        import voice_driver
+        import harness
+
+        cls.v = voice_driver
+        cls.h = harness
+
+    def call(self, server, **kwargs):
+        call = self.v.BrowserAudioCall(
+            f"ws://127.0.0.1:{server.port}/webhooks/browser_audio/websocket", "conv-1",
+            fetch_tracker=kwargs.pop("fetch_tracker", server.tracker), quiet_window_s=0.4, settle_s=0.2,
+            turn_timeout_s=10, **kwargs,
+        )
+        call.open(greeting_timeout_s=5)
+        return call
+
+    @staticmethod
+    def utterance(rate=16000):
+        import struct as st
+
+        silence = b"\x00\x00" * int(rate * 0.3)
+        n = int(rate * 0.5)
+        return silence + st.pack("<%dh" % n, *([3000, -3000] * (n // 2))) + silence
+
+    def test_framing_round_trips_all_length_encodings(self):
+        import socket as _socket
+
+        a, b = _socket.socketpair()
+        try:
+            for size in (0, 125, 126, 70000):
+                payload = bytes(range(256)) * (size // 256) + bytes(size % 256)
+                import threading as _threading
+
+                frame = self.v.encode_frame(self.v.OP_TEXT, payload, mask=True)
+                sender = _threading.Thread(target=a.sendall, args=(frame,))
+                sender.start()
+                fin, opcode, got = self.v.read_frame(b)
+                sender.join()
+                self.assertEqual((fin, opcode, got), (True, self.v.OP_TEXT, payload))
+        finally:
+            a.close()
+            b.close()
+
+    def test_text_dry_run_measures_latency_and_reads_the_tracker(self):
+        server = FakeBrowserAudioServer(reply_delay_s=0.15)
+        call = self.call(server)
+        result = call.say(text="block the card ending four four one seven", think_s=0)
+        stats = call.close()
+        self.assertEqual(server.sender_id, "conv-1")
+        self.assertEqual(result["voice"]["ended_by"], "tracker")
+        self.assertEqual(result["voice"]["heard"], ["block the card ending four four one seven"])
+        self.assertGreaterEqual(result["latency_ms"], 140)
+        self.assertLess(result["latency_ms"], 2000)
+        self.assertEqual(result["voice"]["end_markers"][0]["rasa_processing_latency_ms"], 90.0)
+        self.assertEqual(result["voice"]["latency_breakdown"][0]["user_perceived_latency_ms"], 150.0)
+        self.assertEqual(result["bot_messages"][0]["text"], "Do you mean the card ending 4 4 1 7?")
+        self.assertGreater(stats["audio_seconds_sent"], 0)  # silence streams even in dry-run
+
+    def test_spoken_turn_times_end_of_speech_and_acks_every_marker(self):
+        server = FakeBrowserAudioServer(reply_delay_s=0.1)
+        call = self.call(server)
+        result = call.say(pcm=self.utterance(), think_s=0)
+        import time as _time
+
+        _time.sleep(0.3)
+        call.close()
+        voice = result["voice"]
+        self.assertEqual(voice["mode"], "audio")
+        self.assertAlmostEqual(voice["speech_s"], 0.5, delta=0.02)
+        # Server endpointing (10 silent 20 ms frames) plus its reply delay.
+        self.assertGreaterEqual(result["latency_ms"], 250)
+        self.assertLess(result["latency_ms"], 2500)
+        self.assertEqual(voice["heard"], ["card ending four four one seven"])
+        self.assertEqual(sorted(server.acked), sorted(server.sent_markers))
+        self.assertEqual(voice["markers_pending"], 0)
+
+    def test_tracker_completion_waits_for_expected_reply_audio(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "bot", "text": "old greeting"},
+                              {"event": "user", "text": "hello"},
+                              {"event": "bot", "text": "new reply"},
+                              {"event": "bot_turn_ended"}]}
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=lambda _: tracker,
+                                     settle_s=0.1, turn_timeout_s=1)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        clock = [10.0]
+        def receive_audio(_):
+            clock[0] += 0.05
+            turn.first_audio = clock[0]
+        with mock.patch.object(self.v.time, "monotonic", side_effect=lambda: clock[0]), \
+             mock.patch.object(self.v.time, "sleep", side_effect=receive_audio) as wait:
+            ended, _ = call._wait_bot_turn(turn, 0, 0)
+        self.assertEqual(ended, "tracker")
+        self.assertIsNotNone(turn.first_audio)
+        wait.assert_called_once()
+
+    def test_tracker_text_without_received_audio_times_out(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "user"}, {"event": "bot", "text": "reply"},
+                              {"event": "bot_turn_ended"}]}
+        fetch = mock.Mock(return_value=tracker)
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=fetch,
+                                     settle_s=0.1, turn_timeout_s=0.2)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        clock = [10.0]
+        def advance(seconds):
+            clock[0] += seconds
+        with mock.patch.object(self.v.time, "monotonic", side_effect=lambda: clock[0]), \
+             mock.patch.object(self.v.time, "sleep", side_effect=advance):
+            ended, _ = call._wait_bot_turn(turn, 0, 0)
+        self.assertEqual(ended, "timeout")
+        self.assertIsNone(turn.first_audio)
+        self.assertEqual(fetch.call_count, 2)  # initial poll and final timeout read
+
+    def test_silent_tracker_turn_does_not_wait_for_old_greeting_audio(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "bot", "text": "old greeting"},
+                              {"event": "user"}, {"event": "bot_turn_ended"}]}
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=lambda _: tracker,
+                                     settle_s=0.1, turn_timeout_s=1)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        with mock.patch.object(self.v.time, "monotonic", return_value=10), \
+             mock.patch.object(self.v.time, "sleep", side_effect=AssertionError("silent turn must finish")):
+            ended, _ = call._wait_bot_turn(turn, 0, 0, 1)
+        self.assertEqual(ended, "tracker")
+
+    def test_quiet_window_ends_the_turn_without_a_tracker(self):
+        server = FakeBrowserAudioServer()
+        call = self.call(server, fetch_tracker=None)
+        result = call.say(text="yes", think_s=0)
+        call.close()
+        self.assertEqual(result["voice"]["ended_by"], "quiet_window")
+        self.assertIsNotNone(result["latency_ms"])
+
+    def test_marker_on_an_empty_queue_waits_like_a_browser(self):
+        sent = []
+        speaker = self.v.Speaker(16000, sent.append)
+        speaker.add_marker("late")
+        import threading as _threading
+        import time as _time
+
+        _threading.Thread(target=speaker.run, daemon=True).start()
+        _time.sleep(0.1)
+        self.assertEqual(sent, [])
+        speaker.enqueue(b"\x01\x00" * 160)
+        _time.sleep(0.1)
+        self.assertEqual(sent, ['{"marker": "late"}'])
+        speaker.stop.set()
+
+    def test_digit_and_name_checks(self):
+        tokens = [{"token": "4417"}, {"token": "1986"}, {"token": "14"}, {"token": "Okafor", "kind": "name"}]
+        spoken = self.v.check_tokens("Nadia Okafor, March fourteenth, nineteen eighty-six, ending four four one seven",
+                                     tokens)
+        self.assertEqual([t["normalised"] for t in spoken], [True, True, True, True])
+        self.assertEqual([t["exact"] for t in spoken], [False, False, False, True])
+        wrong = self.v.check_tokens("Nadia Okafur, ending 4 4 1 8", tokens)
+        self.assertEqual([t["normalised"] for t in wrong], [False, False, False, False])
+        self.assertEqual(self.v.number_runs("fifty five oh two"), [["55", "0", "2"]])
+
+    def test_word_error_rate_ignores_number_spelling(self):
+        self.assertEqual(self.v.word_error_rate("born nineteen eighty-six", "born 1986"), 0.0)
+        self.assertAlmostEqual(self.v.word_error_rate("ending four four one seven", "ending 4 4 1 8"), 0.2)
+
+    def test_speech_cost_and_voice_report(self):
+        pricing = {"stt": {"usd_per_minute": 0.0065}, "tts": {"usd_per_1k_characters": 0.03}}
+        cost = self.h.speech_cost(pricing, 120, 2000)
+        self.assertEqual((cost["stt_usd"], cost["tts_usd"], cost["cost_usd"]), (0.013, 0.06, 0.073))
+        self.assertIsNone(self.h.speech_cost({"stt": {"usd_per_minute": 0.0065}}, 60, 10)["cost_usd"])
+        conv = {"turns": [{"user": "ending four four one seven", "asr_tokens": [{"token": "4417"}]}]}
+        turns = [{"user": "ending four four one seven", "extra": {"mode": "audio", "heard": ["ending 4417"], "eos_to_first_audible_ms": 800.0,
+                            "end_markers": [{"rasa_processing_latency_ms": 500.0}],
+                            "latency_breakdown": [{"user_perceived_latency_ms": 700.0}], "ended_by": "tracker"}}]
+        tracker = {"events": [{"event": "bot", "text": "x" * 100}]}
+        report = self.h.voice_report({"speech_pricing": pricing}, conv, turns, tracker,
+                                     {"audio_seconds_sent": 60, "mode": "audio"})
+        self.assertEqual(report["tts_characters"], 100)
+        self.assertEqual(report["asr"][0]["tokens"][0]["normalised"], True)
+        self.assertEqual(report["asr"][0]["wer"], 0.0)
+        agg = self.h.aggregate_voice([{"voice": report, "turns": turns}])
+        self.assertEqual(agg["eos_to_first_audible_ms"]["p50"], 800.0)
+        self.assertEqual(agg["asr"]["tokens"]["digits"], {"checked": 1, "exact": 1, "normalised": 1})
+        self.assertEqual(agg["latency_breakdown_first"]["user_perceived_latency_ms"]["p50"], 700.0)
+        changed = self.h.voice_report({}, conv, [dict(turns[0], user="an older script line")], tracker, {})
+        self.assertEqual(changed["asr"], [])
+
+    def test_repeated_latency_markers_collapse(self):
+        a = {"rasa_processing_latency_ms": 900.0, "tts_first_byte_latency_ms": 500.0, "tts_complete_latency_ms": 1700.0}
+        b = dict(a, tts_first_byte_latency_ms=200.0)
+        got = self.v.dedupe_latency_markers([dict(a, at_ms=1), dict(a, at_ms=2), dict(b, at_ms=3)])
+        self.assertEqual([m["at_ms"] for m in got], [1, 3])
+
+    def test_spoken_amounts_compose_into_one_number(self):
+        self.assertEqual(self.v.spoken_numbers_to_digits("two thousand four hundred and ninety-nine rupees"), ["2499"])
+        self.assertEqual(self.v.spoken_numbers_to_digits("five hundred and sixty on the nineteenth"), ["560", "19"])
+        # No magnitude word: digit strings and years stay as they were.
+        self.assertEqual(self.v.spoken_numbers_to_digits("seven three one nine"), ["7319"])
+        self.assertEqual(self.v.spoken_numbers_to_digits("seventeenth August nineteen ninety-one"), ["17", "1991"])
+        got = self.v.check_tokens("I was charged Rs 2,499 at Brightmart", [{"token": "2499", "kind": "amount"}])
+        self.assertEqual((got[0]["exact"], got[0]["normalised"]), (False, True))
+        self.assertEqual(self.v.word_error_rate("two thousand four hundred and ninety-nine rupees", "2499 rupees"), 0.0)
+
+    def test_card_endings_are_normalised_like_digits(self):
+        got = self.v.check_tokens("ending four four one seven", [{"token": "4417", "kind": "card_ending"}])
+        self.assertEqual((got[0]["exact"], got[0]["normalised"]), (False, True))
+
+class TestCaseBuildPricing(unittest.TestCase):
+    """Spec-published model prices and token-priced caller audio (offline)."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(_SCRIPTS / "case_builds"))
+        import harness
+        import render_caller_audio
+        import usage_launcher
+
+        cls.h, cls.r, cls.u = harness, render_caller_audio, usage_launcher
+
+    PRICE = {"model": "claude-x", "litellm_provider": "anthropic", "input_cost_per_token": 2e-06,
+             "output_cost_per_token": 1e-05, "cache_read_input_token_cost": 2e-07,
+             "cache_creation_input_token_cost": 2.5e-06, "source": "vendor page", "checked": "2026-09-29"}
+
+    class FakeLiteLLM:
+        def __init__(self, known=()):
+            self.model_cost = {k: {} for k in known}
+            self.registered = []
+
+        def register_model(self, rows):
+            self.registered.append(rows)
+            self.model_cost.update(rows)
+
+    def _register(self, fake, price):
+        with mock.patch.dict(os.environ, {"CASE_BUILD_MODEL_PRICE": json.dumps(price)}):
+            return self.u.register_spec_price(fake)
+
+    def test_spec_price_registers_only_when_litellm_has_no_row(self):
+        fake = self.FakeLiteLLM()
+        got = self._register(fake, self.PRICE)
+        self.assertTrue(got["registered"])
+        self.assertEqual(fake.registered[0]["claude-x"]["cache_creation_input_token_cost"], 2.5e-06)
+        self.assertEqual(fake.registered[0]["claude-x"]["mode"], "chat")
+        known = self.FakeLiteLLM(known=("anthropic/claude-x",))
+        self.assertFalse(self._register(known, self.PRICE)["registered"])
+        self.assertEqual(known.registered, [])
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("CASE_BUILD_MODEL_PRICE", None)
+            self.assertEqual(self.u.register_spec_price(self.FakeLiteLLM()), {})
+
+    def test_spec_price_without_a_required_field_is_refused(self):
+        with self.assertRaises(ValueError):
+            self.u.price_row({k: v for k, v in self.PRICE.items() if k != "output_cost_per_token"})
+
+    def test_summary_names_the_price_source(self):
+        spec_priced = {"litellm_version": "1.0", "spec_price": {"registered": True, "source": "vendor page",
+                                                                "checked": "2026-09-29"}}
+        self.assertIn("vendor page", self.h.price_source_note(spec_priced))
+        self.assertIn("bundled map", self.h.price_source_note({"litellm_version": "1.0"}))
+
+    def test_usage_sums_cache_writes(self):
+        rows = [{"kind": "llm_call", "ok": True, "sender_id": "c", "sender_source": "turn_context",
+                 "prompt_tokens": 100, "completion_tokens": 5, "cached_prompt_tokens": 40,
+                 "cache_creation_input_tokens": 60, "response_cost_usd": 0.001}]
+        got = self.h.usage_for(rows, "c")
+        self.assertEqual((got["cached_prompt_tokens"], got["cache_creation_input_tokens"]), (40, 60))
+
+    def test_a_failed_side_channel_call_is_not_a_provider_error(self):
+        rows = [
+            {"kind": "llm_call", "ok": True, "sender_id": "c", "sender_source": "turn_context", "response_cost_usd": 0.01},
+            {"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "structlog_context", "response_cost_usd": 0},
+        ]
+        usage = self.h.usage_for(rows, "c")
+        self.assertEqual((usage["failed_calls"], usage["failed_side_channel_calls"]), (1, 1))
+        passed = [{"passed": True}]
+        self.assertEqual(self.h.classify(None, passed, usage), "pass")
+        rows.append({"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "turn_context"})
+        self.assertEqual(self.h.classify(None, passed, self.h.usage_for(rows, "c")), "provider_error")
+
+    def test_an_engine_error_in_the_turn_is_judged_by_the_checks(self):
+        prefill = ('litellm.BadRequestError: AnthropicException - {"message":"This model does not support '
+                   'assistant message prefill. The conversation must end with a user message."}')
+        rows = [
+            {"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "turn_context", "error": prefill},
+            {"kind": "llm_call", "ok": True, "sender_id": "c", "sender_source": "turn_context", "response_cost_usd": 0.01},
+        ]
+        # Without the spec key, any failed in-turn call is a provider error (unchanged).
+        self.assertEqual(self.h.classify(None, [{"passed": True}], self.h.usage_for(rows, "c")), "provider_error")
+        usage = self.h.usage_for(rows, "c", ["does not support assistant message prefill"])
+        self.assertEqual(usage["engine_error_calls"], 1)
+        self.assertEqual(self.h.classify(None, [{"passed": True}], usage), "pass")
+        self.assertEqual(self.h.classify(None, [{"passed": False}], usage), "fail")
+        rows.append({"kind": "llm_call", "ok": False, "sender_id": "c", "sender_source": "turn_context",
+                     "error": "RateLimitError: 429"})
+        usage = self.h.usage_for(rows, "c", ["does not support assistant message prefill"])
+        self.assertEqual(self.h.classify(None, [{"passed": True}], usage), "provider_error")
+
+    def test_speech_sse_stream_yields_pcm_and_usage(self):
+        lines = [
+            b"data: " + json.dumps({"type": "speech.audio.delta", "audio": base64.b64encode(b"ab").decode()}).encode(),
+            b"",
+            b"data: " + json.dumps({"type": "speech.audio.delta", "audio": base64.b64encode(b"cd").decode()}).encode(),
+            b"data: " + json.dumps({"type": "speech.audio.done",
+                                    "usage": {"input_tokens": 25, "output_tokens": 73}}).encode(),
+            b"data: [DONE]",
+        ]
+        pcm, usage = self.r.parse_speech_sse(lines)
+        self.assertEqual(pcm, b"abcd")
+        self.assertEqual(usage["output_tokens"], 73)
+
+    def test_token_priced_caller_audio_costs(self):
+        caller = {"usd_per_1m_input_tokens": 0.6, "usd_per_1m_audio_output_tokens": 12.0}
+        self.assertTrue(self.r.token_priced(caller))
+        self.assertAlmostEqual(self.r.token_cost({"input_tokens": 25, "output_tokens": 73}, caller), 0.000891)
+        est = self.r.estimate_cost([{"text": "x" * 100}], dict(caller, instructions="y" * 50))
+        self.assertAlmostEqual(est, (150 / 3) * 0.6 / 1e6 + 400 * 12.0 / 1e6)
+        self.assertFalse(self.r.token_priced({"usd_per_1m_characters": 15.0}))
+        self.assertAlmostEqual(self.r.estimate_cost([{"text": "x" * 1000}], {"usd_per_1m_characters": 15.0}), 0.015)
+
+
+class TestCaseBuildCatalog(unittest.TestCase):
+    """catalog/case-builds.json and CATALOG.md stay complete and current.
+
+    Operators could not find the case builds among forty examples. The index
+    only helps while it lists every build and says what the build says, so a
+    new build directory, or an edit to a build's README or results, fails
+    here until `make catalog` is run.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import catalog_case_builds
+        cls.cat = catalog_case_builds
+        cls.committed = json.loads((_SCRIPTS.parent / "catalog" / "case-builds.json").read_text(encoding="utf-8"))
+
+    def test_every_case_build_directory_is_catalogued(self):
+        on_disk = {
+            f"examples/{p.name}" for p in (_SCRIPTS.parent / "examples").iterdir()
+            if p.is_dir() and self.cat.BUILD_RE.match(p.name)
+        }
+        listed = {b["path"] for b in self.committed["builds"]}
+        self.assertEqual(sorted(on_disk - listed), [], "case builds missing from catalog/case-builds.json")
+        self.assertEqual(sorted(listed - on_disk), [], "catalog lists builds that no longer exist")
+        self.assertEqual(self.committed["count"], len(listed))
+
+    def test_committed_catalog_is_fresh(self):
+        self.assertEqual(self.cat.stale(_SCRIPTS.parent), [],
+                         "run `make catalog` (python3 scripts/catalog_case_builds.py) and commit the result")
+
+    def test_main_run_is_read_from_either_readme_layout(self):
+        bold = "**Main run at default settings** (`2026-09-29-gpt-5.5-default/`, 24 calls,\n48 turns):"
+        table = "| Run | Calls |\n|---|---|\n| `2026-09-30-gpt-5.5-reasoning-low` (main) | 23 |"
+        self.assertEqual(self.cat.main_run_dir(bold), "2026-09-29-gpt-5.5-default")
+        self.assertEqual(self.cat.main_run_dir(table), "2026-09-30-gpt-5.5-reasoning-low")
+        self.assertIsNone(self.cat.main_run_dir("No runs were recorded."))
+
+    def test_completion_runs_combine_at_each_conversation_latest_outcome(self):
+        import json
+        import tempfile
+        from pathlib import Path
+
+        readme = ("**Main run** (`first/`, stopped).\n\n"
+                  "**Completion run** (`second/`, the rest).\n")
+        self.assertEqual(self.cat.main_run_dir(readme), "first")
+        self.assertEqual(self.cat.completion_run_dirs(readme), ["second"])
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            runs = {
+                "first": [("a", "pass"), ("b", "provider_error"), ("c", "fail")],
+                "second": [("b", "pass"), ("c", "pass")],
+            }
+            for run, convs in runs.items():
+                folder = project / "case-build" / "results" / run
+                folder.mkdir(parents=True)
+                (folder / "results.json").write_text(json.dumps(
+                    {"conversations": [{"id": i, "outcome": o} for i, o in convs]}))
+            result = self.cat.combined_result(project, ["first", "second"], ["a", "b", "c", "d"])
+        self.assertEqual((result["passed"], result["total"], result["failed"],
+                          result["providerErrors"], result["notRun"]), (3, 3, 0, 0, 1))
+
+    def test_findings_are_bold_leads_and_absent_section_is_empty(self):
+        readme = (
+            "## What we found\n\n"
+            "1. **Rasa drops some one-word replies.** A 0.33 s reply...\n"
+            "2. **GPT-5.5 chained hold and redeem 10 times in\n   12,** so the member saw one question.\n"
+            "3. **Fact discovery worked**: 23 calls.\n"
+            "4. **A fourth finding.** Not listed.\n\n## Layout\n"
+        )
+        self.assertEqual(self.cat.readme_findings(readme), [
+            "Rasa drops some one-word replies.",
+            "GPT-5.5 chained hold and redeem 10 times in 12.",
+            "Fact discovery worked.",
+        ])
+        self.assertEqual(self.cat.readme_findings("## What the live runs recorded\n\n1. **x**\n"), [])
+
+    def test_only_an_approved_and_due_article_gets_a_url(self):
+        site = {"source": {"checkedAt": "2026-09-30T12:00:00Z"}, "cases": {
+            "draft-case": {"articles": [{"id": "draft-case", "draft": True, "publishAt": "2026-09-01T09:00:00.000Z"}]},
+            "future-case": {"articles": [{"id": "future-case", "draft": False, "publishAt": "2026-10-01T09:00:00.000Z"}]},
+            "role-case": {"articles": [{"id": "role-case--conversation-designer", "draft": False,
+                                        "publishAt": "2026-09-18T09:00:00.000Z"}]},
+        }}
+        self.assertIsNone(self.cat.casebook_url("draft-case", site))
+        self.assertIsNone(self.cat.casebook_url("future-case", site))
+        self.assertIsNone(self.cat.casebook_url("unknown-case", site))
+        self.assertEqual(self.cat.casebook_url("role-case", site),
+                         "https://rasa.community/library/casebook/role-case--conversation-designer/")
+
+    def test_mini_yaml_reads_the_integrations_shape(self):
+        data = self.cat.mini_yaml(
+            "llm:\n  model_group: orchestrator  # comment\nmodel_groups:\n  - id: orchestrator\n"
+            "    models:\n      - provider: openai\n        model: gpt-5.5\n"
+            "agent:\n  persona: |\n    Two lines\n    of text.\n  language: es\n"
+        )
+        self.assertEqual(data["model_groups"][0]["models"][0]["model"], "gpt-5.5")
+        self.assertEqual(data["agent"]["language"], "es")
+        with self.assertRaises(ValueError):
+            self.cat.mini_yaml("a: {b: 1}\n")
+
+    def test_unknown_fields_are_null_not_guessed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            build = root / "examples" / "mantle-text-demo-case-gpt"
+            (build / "case-build").mkdir(parents=True)
+            (build / "README.md").write_text("# Demo\n\nNothing recorded yet.\n", encoding="utf-8")
+            entry = self.cat.build_entry(root, build, None, {})
+        self.assertEqual(entry["mode"], "text")
+        for field in ("slug", "organisation", "industry", "summary", "model", "channel",
+                      "result", "spendUsd", "recordedAt", "casebookUrl", "language"):
+            self.assertIsNone(entry[field], field)
+        self.assertEqual(entry["findings"], [])
+
+
+class CompatibilityWorkerInputs(unittest.TestCase):
+    def test_catalog_declares_the_separate_native_crew(self):
+        from compatibility import test_workers
+        root = _SCRIPTS.parent
+        project = root / 'tutorials/frameworks-with-rasa/crewai-mantle'
+        self.assertEqual(test_workers(project), [project.parent / 'crewai'])
+        self.assertEqual(test_workers(root / 'tutorials/rasa-tools-and-memory-tutorial'), [])
+
+    def test_workers_require_both_rebuild_inputs(self):
+        from compatibility import test_workers
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project, worker = root / 'mantle', root / 'worker'
+            project.mkdir(); worker.mkdir()
+            (project / 'pyproject.toml').write_text('[tool.rasa-catalog]\ntest-workers = ["../worker"]\n')
+            (worker / 'pyproject.toml').write_text('[project]\nname="worker"\n')
+            with self.assertRaisesRegex(ValueError, 'locked rebuild inputs'):
+                test_workers(project, root)
+            (worker / 'uv.lock').write_text('version=1\n')
+            self.assertEqual(test_workers(project, root), [worker.resolve()])
+
+    def test_worker_metadata_cannot_select_an_unrelated_environment(self):
+        from compatibility import test_workers
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project = root / 'mantle'
+            project.mkdir()
+            for declaration in ('"../worker"', '["."]', '["../../outside"]', '["/tmp/other-seat"]'):
+                with self.subTest(declaration=declaration):
+                    (project / 'pyproject.toml').write_text('[tool.rasa-catalog]\ntest-workers = '+declaration+'\n')
+                    with self.assertRaises(ValueError):
+                        test_workers(project, root)
+
+
+class CompatibilityFailureEvidence(unittest.TestCase):
+    def test_keep_going_runs_later_checks_but_still_fails(self):
+        from compatibility import CheckRunner
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()):
+            root = Path(temp)
+            runner = CheckRunner(root / 'logs', [], keep_going=True)
+            self.assertFalse(runner.run('first', [sys.executable, '-c', 'raise SystemExit(1)']))
+            self.assertTrue(runner.run('second', [sys.executable, '-c', "from pathlib import Path; Path('later-ran').write_text('actual process')"], root))
+            self.assertTrue((root / 'later-ran').is_file())
+            with self.assertRaisesRegex(RuntimeError, 'first'):
+                runner.finish()
+
+    def test_default_stops_and_redacts_failure_output(self):
+        from compatibility import CheckRunner
+        secret = 'PLACEHOLDER_NOT_A_CREDENTIAL'
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()) as shown:
+            runner = CheckRunner(Path(temp), [secret])
+            with self.assertRaises(RuntimeError):
+                runner.run('first', [sys.executable, '-c', f"print({secret!r}); raise SystemExit(1)"])
+            self.assertNotIn(secret, shown.getvalue())
+            self.assertEqual((Path(temp) / 'first.log').read_text(), '[REDACTED]\n')
+
+    def test_success_finishes_without_failures(self):
+        from compatibility import CheckRunner
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()):
+            runner = CheckRunner(Path(temp), [])
+            self.assertTrue(runner.run('clean', [sys.executable, '-c', "print('actual pass')"]))
+            runner.finish()
+            self.assertEqual(runner.failures, [])
+
+
+class TestFrozenConfigVersionRules(unittest.TestCase):
+    """A cohort snapshot keeps its engine grammar without escaping hygiene."""
+
+    def project(self, version, *, snapshot=True):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        if version is not None:
+            (root / "pyproject.toml").write_text(
+                f'[project]\ndependencies = ["rasa-pro=={version}"]\n'
+            )
+        (root / "integrations.yml").write_text(
+            "llm:\n  provider: openai\n  model: example\n"
+            "  api_key_env: OPENAI_API_KEY\n"
+        )
+        (root / "memory.yml").write_text("example:\n  llm_settable: true\n")
+        return rasa_projects.Project(root, snapshot=snapshot)
+
+    def credentials(self, project, body=None):
+        path = project.path / "integrations.yml"
+        if body is not None:
+            path.write_text(body)
+        with mock.patch.object(lint_repo, "discover_projects", return_value=[project]), \
+                mock.patch.object(lint_repo, "_tracked_files", return_value=[path]):
+            return lint_repo.check_api_key_env()
+
+    def test_older_snapshot_keeps_its_inline_model_and_memory_grammar(self):
+        project = self.project("3.19.0.dev5")
+        self.assertEqual(lint_repo.check_llm_model_group([project]), [])
+        self.assertEqual(lint_repo.check_project_memory_writes([project]), [])
+        self.assertEqual(self.credentials(project), [])
+
+    def test_model_group_and_memory_rules_start_at_dev_six(self):
+        for version, rejected in [("3.20.0.dev5", False), ("3.20.0.dev6", True),
+                                  ("3.20.0", True), ("3.20.3", True)]:
+            with self.subTest(version=version):
+                project = self.project(version)
+                self.assertEqual(bool(lint_repo.check_llm_model_group([project])), rejected)
+                self.assertEqual(bool(lint_repo.check_project_memory_writes([project])), rejected)
+
+    def test_credential_removal_has_its_own_later_boundary(self):
+        for version, rejected in [("3.20.0.dev6", False), ("3.20.3", False),
+                                  ("3.21.0.dev1", False), ("3.21.0.dev2", True),
+                                  ("3.21.0", True)]:
+            with self.subTest(version=version):
+                self.assertEqual(bool(self.credentials(self.project(version))), rejected)
+
+    def test_voice_credential_rule_is_still_enforced_on_old_snapshots(self):
+        project = self.project("3.19.0.dev5")
+        findings = self.credentials(project, "asr:\n  name: deepgram\n  api_key_env: DEEPGRAM_API_KEY\n")
+        self.assertEqual(len(findings), 1)
+        self.assertIn("not read by the engine", findings[0].message)
+
+    def test_missing_pin_does_not_exempt_a_snapshot(self):
+        project = self.project(None)
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
+    def test_old_snapshot_still_rejects_literal_model_credentials(self):
+        project = self.project("3.19.0.dev5")
+        for value in ("fictional-gemini-key", "fictional-azure-key", "fictional-groq-key"):
+            with self.subTest(value=value):
+                findings = self.credentials(project, f"model_groups:\n  - api_key: {value}\n")
+                self.assertEqual(len(findings), 1)
+                self.assertIn("must be exactly '${VAR}'", findings[0].message)
+        self.assertEqual(self.credentials(project, "api_key: ${OPENAI_API_KEY}\n"), [])
+
+    def test_unpinned_dependency_does_not_exempt_a_snapshot(self):
+        project = self.project("3.19.0.dev5")
+        (project.path / "pyproject.toml").write_text(
+            '[project]\ndependencies = ["rasa-pro>=3.19"]\n'
+        )
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
+    def test_unparseable_pin_does_not_exempt_a_snapshot(self):
+        project = self.project("not-a-version")
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
+    def test_maintained_project_cannot_opt_out_by_naming_an_old_pin(self):
+        project = self.project("3.19.0.dev5", snapshot=False)
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        with mock.patch.object(lint_repo, "discover_projects", return_value=[]), \
+                mock.patch.object(lint_repo, "_tracked_files", return_value=[project.path / "integrations.yml"]):
+            self.assertTrue(lint_repo.check_api_key_env())
 
 
 if __name__ == "__main__":

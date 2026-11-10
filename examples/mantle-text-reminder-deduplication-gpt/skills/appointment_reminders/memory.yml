@@ -1,0 +1,22 @@
+# Written only by the reminder tools (never llm_settable), so what the model
+# reads about the latest reminder is what the ledger holds. One short field
+# per value: Mantle cuts a memory value at 100 characters in the prompt,
+# silently; tests/test_guard.py builds every value the fixture allows.
+# reminder_ref: the latest reminder's reference (one per booking version).
+# reminder_for: the appointment id and what it is.
+# reminder_time: the booking version the reminder is for, and its time.
+# reminder_delivery: new, queued, delivered, unknown, failed or suppressed.
+# reminder_attendance: not confirmed, confirmed or change requested; never
+#   set by delivery.
+schema:
+  public:
+    reminder_ref:
+      type: text
+    reminder_for:
+      type: text
+    reminder_time:
+      type: text
+    reminder_delivery:
+      type: text
+    reminder_attendance:
+      type: text

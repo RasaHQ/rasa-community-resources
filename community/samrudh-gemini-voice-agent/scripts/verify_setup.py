@@ -264,8 +264,17 @@ _LLM_PROVIDERS = {
 }
 
 
+# A model-group credential is `api_key: ${NAME}`; rasa-pro 3.21.0.dev2 removed
+# `api_key_env` (rasa/shared/providers/model_group_validation.py).
+_API_KEY_REF_RE = re.compile(r"""^\s*(?:-\s+)?api_key\s*:\s*["']?\$\{(\w+)\}""")
+
+
 def configured_llm_key() -> str:
-    """The `llm.api_key_env` this project declares, defaulting to OpenAI."""
+    """The key named by the orchestrator model group, defaulting to OpenAI.
+
+    Follows `llm.model_group` to its `model_groups` entry and reads the
+    variable name out of the first model's `api_key: ${NAME}`.
+    """
     integrations = PROJECT_ROOT / "integrations.yml"
     if not integrations.is_file():
         return "OPENAI_API_KEY"
@@ -273,21 +282,28 @@ def configured_llm_key() -> str:
         import yaml
     except ImportError:
         # Pre-install run: the checker is meant to work before `uv sync`, so a
-        # missing yaml is expected rather than an error. Fall back to a scan.
+        # missing yaml is expected rather than an error. Fall back to a scan,
+        # taking the first credential that names a known LLM provider key.
         for line in integrations.read_text().splitlines():
-            stripped = line.strip()
-            if stripped.startswith("#"):
+            if line.strip().startswith("#"):
                 continue
-            if "api_key_env:" in stripped:
-                return stripped.split("api_key_env:", 1)[1].strip()
+            match = _API_KEY_REF_RE.match(line)
+            if match and match.group(1) in _LLM_PROVIDERS:
+                return match.group(1)
         return "OPENAI_API_KEY"
     try:
         data = yaml.safe_load(integrations.read_text()) or {}
     except yaml.YAMLError:
         return "OPENAI_API_KEY"
-    llm = data.get("llm") or {}
-    var = llm.get("api_key_env", "OPENAI_API_KEY")
-    return var if var in _LLM_PROVIDERS else "OPENAI_API_KEY"
+    group_id = (data.get("llm") or {}).get("model_group")
+    for group in data.get("model_groups") or []:
+        if not isinstance(group, dict) or group.get("id") != group_id:
+            continue
+        for model in group.get("models") or []:
+            ref = re.fullmatch(r"\$\{(\w+)\}", str((model or {}).get("api_key", "")))
+            if ref and ref.group(1) in _LLM_PROVIDERS:
+                return ref.group(1)
+    return "OPENAI_API_KEY"
 
 
 def check_secrets(report: Report) -> None:

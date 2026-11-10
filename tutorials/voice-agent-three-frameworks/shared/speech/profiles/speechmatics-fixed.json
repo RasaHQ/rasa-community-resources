@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "id": "cedar-speechmatics-fixed",
+  "revision": "2026-10-05",
+  "language": "en",
+  "sample_rate": 24000,
+  "asr": {
+    "policy": {
+      "health_scope": "call",
+      "skip_unconfigured": false,
+      "same_provider_retries": 0,
+      "raise_on_failure": true
+    },
+    "providers": [
+      {
+        "name": "voicerouter.providers.speechmatics.SpeechmaticsASR",
+        "endpoint": "wss://eu.rt.speechmatics.com/v2",
+        "operating_point": "enhanced",
+        "max_delay": 1.0,
+        "enable_partials": true,
+        "end_of_utterance_silence_trigger": 0.7,
+        "language_map": {
+          "en": {
+            "language": "en"
+          }
+        },
+        "additional_vocab": [
+          "Cedar Clinic",
+          "lisinopril",
+          "atorvastatin",
+          "albuterol",
+          "budesonide",
+          "lorazepam",
+          "simvastatin",
+          "metformin",
+          "sertraline",
+          "amoxicillin"
+        ]
+      }
+    ]
+  },
+  "tts": {
+    "policy": {
+      "health_scope": "call",
+      "skip_unconfigured": false,
+      "same_provider_retries": 0,
+      "selection": "order",
+      "explore_rate": 0,
+      "raise_on_failure": true
+    },
+    "providers": [
+      {
+        "name": "voicerouter.providers.speechmatics.SpeechmaticsTTS",
+        "endpoint": "https://preview.tts.speechmatics.com/generate",
+        "output_format": "wav_16000",
+        "language_map": {
+          "en": {
+            "voice": "megan"
+          }
+        }
+      }
+    ]
+  }
+}

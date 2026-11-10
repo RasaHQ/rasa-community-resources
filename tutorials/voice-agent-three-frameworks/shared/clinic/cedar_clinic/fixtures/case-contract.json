@@ -1,0 +1,178 @@
+{
+  "slug": "healthcare-refill-request",
+  "title": "Refill requests without prescribing",
+  "organisation": "Cedar Clinic",
+  "action": "send a prescription-refill request for review",
+  "failure": "The agent said a medication was renewed when it had only collected a request for the prescribing team.",
+  "lesson": "Preserve the boundary between requesting and prescribing; use medication identifiers from records without changing dose or eligibility.",
+  "receipt": "A prescribing-team request reference and review status, never an approval or dosage instruction.",
+  "evidence": "Match the selected record entry to the request receipt; check that every customer-facing verb describes a request rather than a renewal.",
+  "recovery": "If the request service is unavailable, give the clinic\u2019s contact route and an honest pending state. Do not advise a substitute or altered dose.",
+  "owner": "prescribing workflow owner",
+  "metric": "requests described as approved prescriptions, divided by refill-request sessions",
+  "question": "I can send a request about this recorded medication to the prescribing team. Would you like me to do that?",
+  "correction": "The patient asks for a different dose; route the clinical question without editing the prescription record.",
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "field": "patient_identity_verified",
+      "good": true,
+      "bad": false,
+      "reason": "patient_not_verified",
+      "phase": "request"
+    },
+    {
+      "field": "recorded_medication_selected",
+      "good": true,
+      "bad": false,
+      "reason": "medication_not_resolved",
+      "phase": "request"
+    },
+    {
+      "field": "review_request_acknowledged",
+      "good": true,
+      "bad": false,
+      "reason": "review_request_not_received",
+      "phase": "receipt"
+    }
+  ],
+  "facts": {
+    "patient_identity_verified": true,
+    "recorded_medication_selected": true,
+    "review_request_acknowledged": true
+  },
+  "variants": [
+    {
+      "name": "accepted",
+      "facts": {
+        "patient_identity_verified": true,
+        "recorded_medication_selected": true,
+        "review_request_acknowledged": true
+      },
+      "expected": {
+        "status": "succeeded",
+        "reason": "verified_fixture_receipt",
+        "effects": 1
+      }
+    },
+    {
+      "name": "patient_identity_verified-false",
+      "facts": {
+        "patient_identity_verified": false,
+        "recorded_medication_selected": true,
+        "review_request_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "patient_not_verified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "patient_identity_verified-missing",
+      "facts": {
+        "recorded_medication_selected": true,
+        "review_request_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "patient_not_verified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "patient_identity_verified-string",
+      "facts": {
+        "patient_identity_verified": "true",
+        "recorded_medication_selected": true,
+        "review_request_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "patient_not_verified",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recorded_medication_selected-false",
+      "facts": {
+        "patient_identity_verified": true,
+        "recorded_medication_selected": false,
+        "review_request_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "medication_not_resolved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recorded_medication_selected-missing",
+      "facts": {
+        "patient_identity_verified": true,
+        "review_request_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "medication_not_resolved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "recorded_medication_selected-string",
+      "facts": {
+        "patient_identity_verified": true,
+        "recorded_medication_selected": "true",
+        "review_request_acknowledged": true
+      },
+      "expected": {
+        "status": "blocked",
+        "reason": "medication_not_resolved",
+        "effects": 0
+      }
+    },
+    {
+      "name": "review_request_acknowledged-false",
+      "facts": {
+        "patient_identity_verified": true,
+        "recorded_medication_selected": true,
+        "review_request_acknowledged": false
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "review_request_not_received",
+        "effects": 1
+      }
+    },
+    {
+      "name": "review_request_acknowledged-missing",
+      "facts": {
+        "patient_identity_verified": true,
+        "recorded_medication_selected": true
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "review_request_not_received",
+        "effects": 1
+      }
+    },
+    {
+      "name": "review_request_acknowledged-string",
+      "facts": {
+        "patient_identity_verified": true,
+        "recorded_medication_selected": true,
+        "review_request_acknowledged": "true"
+      },
+      "expected": {
+        "status": "pending",
+        "reason": "review_request_not_received",
+        "effects": 1
+      }
+    }
+  ],
+  "provenance": {
+    "kind": "authored-synthetic-fixture",
+    "revision": "2026-09-08.1",
+    "policy": "Fictional teaching contract, not an institutional or legal policy."
+  }
+}
