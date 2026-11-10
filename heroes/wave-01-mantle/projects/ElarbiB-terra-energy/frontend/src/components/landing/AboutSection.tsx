@@ -3,7 +3,7 @@ import { useI18n } from '../../i18n/LanguageContext';
 import { TKey } from '../../i18n/dictionaries';
 
 const ABOUT_CARDS: { base: string; image: string }[] = [
-  { base: 'about.card1', image: '/icon-nasa.jpg' },
+  { base: 'about.card1', image: '/icon-solar-data.svg' },
   { base: 'about.card2', image: '/icon-ia.jpg' },
   { base: 'about.card3', image: '/icon-viz.jpg' },
   { base: 'about.card4', image: '/icon-earth.jpg' },
