@@ -1,0 +1,45 @@
+{
+  "name": "Rasa resource: patterns/voice-vendor-router",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/sshd:1.1.0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/patterns/voice-vendor-router",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5005
+  ],
+  "portsAttributes": {
+    "5005": {
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Required. Full Rasa Developer Edition license"
+    },
+    "OPENAI_API_KEY": {
+      "description": "Required. OpenAI project key used for this resource's model calls"
+    },
+    "DEEPGRAM_API_KEY": {
+      "description": "Optional. Deepgram key for speech recognition and spoken replies"
+    },
+    "RIME_API_KEY": {
+      "description": "Optional. Rime key for spoken replies"
+    },
+    "SPEECHMATICS_API_KEY": {
+      "description": "Optional. Speechmatics key for speech recognition"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" patterns/voice-vendor-router",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" patterns/voice-vendor-router"
+}

@@ -153,6 +153,17 @@ class NativeBindings(unittest.IsolatedAsyncioTestCase):
         result = await self.invoke(self.module.sql_db_query, "SELECT 1 AS one")
         self.assertEqual(result["rows"], [[1]])
 
+    async def test_actual_invoker_preserves_result_contract_refusals(self):
+        for query, reason in [
+            ("SELECT hex(zeroblob(65536)) AS value LIMIT 1", "sqlite_value_too_large"),
+            ("SELECT zeroblob(8) AS value LIMIT 1", "unsupported_result_value"),
+            ("SELECT 1e999 AS value", "unsupported_result_value"),
+        ]:
+            with self.subTest(query=query):
+                result = await self.invoke(self.module.sql_db_query, query)
+                self.assertEqual((result["status"], result["reason"]), ("error", reason))
+                self.assertNotIn("rows", result)
+
     async def test_actual_invoker_preserves_write_refusal(self):
         result = await self.invoke(self.module.sql_db_query, "DELETE FROM Example")
         self.assertEqual(result["status"], "error")

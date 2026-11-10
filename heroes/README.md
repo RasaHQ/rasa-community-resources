@@ -3,6 +3,8 @@
 Projects built by participants of the **Rasa Heroes** programme, organised by
 the cohort — the *wave* — that built them.
 
+**Running a hero project:** each hero project is run from its own repository, not from a Codespace here; open the repository its wave README links.
+
 This folder is **accepting waves**. The open cohort is
 [**wave-01-mantle**](wave-01-mantle/README.md) — the first cohort on the Mantle
 engine — and it is accepting projects now.
