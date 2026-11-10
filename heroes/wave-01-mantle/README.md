@@ -41,12 +41,14 @@ pull request that adds their project.
 
 | Participant | GitHub | Project |
 |---|---|---|
+| Chandra Sekhar | [@chandratechblog](https://github.com/chandratechblog) | [HR Assistant](projects/chandratechblog-hrassistant/) |
 | Samaksh Mehra | [@samakshmehra](https://github.com/samakshmehra) | `samakshmehra-civico` |
 
 ## Projects
 
 | Project | What it does | Author | Verified with | Assessed on |
 |---|---|---|---|---|
+| [HR Bot](projects/chandratechblog-hrassistant/) | HR policy guidance, attendance and leave lookups, and support-ticket workflows, with optional voice support | Chandra Sekhar | rasa-pro 3.20.0.dev6 | 2026-09-19 |
 | [`samakshmehra-civico`](projects/samakshmehra-civico/) | Voice-first civic complaint intake with deterministic routing, duplicate handling, status lookup, and overdue escalation | Samaksh Mehra | rasa-pro 3.20.0.dev6 | 2026-10-13 |
 
 Every project directory under `projects/` must appear in this table — the build
