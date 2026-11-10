@@ -1,0 +1,19 @@
+I added the `block_card` skill, and `python validate.py` reports "Mantle found nothing to object to." I wrote a test file, but I couldn't run it.
+
+**Files changed** (all under the task's `allowed_paths`):
+- `product/skills/block_card/skill.md`:
+  - The `tool_constraints` frontmatter sets `block_card` to `requires_confirmation` with `enabled: true` and `utter_for_confirmation: confirm_block_card`. `list_cards` has no constraint, so it runs without confirmation.
+  - The instructions tell the agent to call `list_cards` first and never block a card the caller hasn't confirmed. They also say to pass only the named `card_id` to `block_card`.
+- `product/skills/block_card/tools.py`:
+  - `list_cards()` returns the caller's cards.
+  - `block_card(card_id)` blocks only the card with that id. For an unknown id it blocks nothing and returns `ok: False`.
+  - Both use `@tool` and return `ToolResult`. The cards come from a hard-coded two-card demo list in the file, because the project has no card service to call.
+- `product/responses.yml` (new): a `confirm_block_card` response asking whether to block the card, noting it can't be undone.
+- `product/tests/test_block_card.py` (new): checks that `list_cards` returns cards, that `block_card` blocks only the named card, and that an unknown id blocks nothing. It also checks that only `block_card` is gated and that its confirmation response exists in `responses.yml`.
+
+**What I checked:**
+- **Validation:** `validate.py` passes. It accepts the confirmation prompt name only if it exists in `responses.yml`.
+- **Tests:** The shell refused `pytest`, so the new tests have never run. Treat them as unverified.
+- **Runtime:** I haven't run the agent, so I haven't seen the confirmation pause happen at runtime. I based the frontmatter shape on Mantle's own source and validator.
+
+I read Mantle's installed source (`tools/decorator.py`, `skills/conditions.py`, and the top of `skills/validation.py`) to find the `@tool` import and the confirmation syntax. That source is outside the project directory. I didn't touch `integrations.yml`, `agent.yml`, or any acceptance files.

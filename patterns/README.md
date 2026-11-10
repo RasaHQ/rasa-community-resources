@@ -6,6 +6,7 @@ This folder is **accepting contributions**.
 
 | Pattern | Problem it solves |
 |---|---|
+| [`mcp-confirmation-gate`](mcp-confirmation-gate/) | Check whether a requested tool waits for confirmation after reading an MCP result, using repeatable local responses. [Guided exercise](mcp-confirmation-gate/tutorial/TUTORIAL.md). |
 | [`session-start-personalization`](session-start-personalization/) | The default greeting is anonymous. Load what you know about the customer before the first word, then spend it later in the conversation. [Guided walkthrough](session-start-personalization/tutorial/TUTORIAL.md). |
 | [`voice-vendor-router`](voice-vendor-router/) | One vendor's outage should not mute or deafen a live call. Give ASR and TTS a chain of providers instead of one, and fail over on what the error meant — keeping the caller's voice unless credits, credentials or reachability actually went. Adds Speechmatics, faster-whisper, Vosk, NeuTTS, OpenAI, ElevenLabs, AssemblyAI, AWS and Google engines to Rasa's built-in Deepgram, Rime, Azure and Cartesia; two case builds in [`CATALOG.md`](../CATALOG.md) load its adapters directly. |
 | [`voice-auth-stepup`](voice-auth-stepup/) | One verification at the top of the call cannot tell a balance check apart from a card reissue. Make auth strength a function of the action being attempted, resolved at the point of attempt, with an eval suite that proves a high-risk action cannot complete on weaker auth. [Guided walkthrough](voice-auth-stepup/tutorial/TUTORIAL.md). |
@@ -47,6 +48,7 @@ Examples: `human-handoff-ticket`, `tool-constraints-progressive`, `eval-conversa
 
 | Name | Problem | Path | Assessed on |
 |---|---|---|---|
+| mcp-confirmation-gate | Test pending, cancelled and confirmed tool requests with an MCP service and scripted model responses | [`mcp-confirmation-gate`](mcp-confirmation-gate) | 2026-10-15 |
 | voice-vendor-router | Swap and fail over between ASR/TTS vendors so one provider outage cannot mute or deafen a live call | [`voice-vendor-router`](voice-vendor-router) | 2026-09-02 |
 | voice-auth-stepup | Risk-tiered authentication step-up: low/medium/high driven by the action attempted, not by the caller | [`voice-auth-stepup`](voice-auth-stepup) | 2026-09-02 |
 | voice-handoff-context | Hand a caller to a human as a state transfer: a structured context package with a derived summary, an allowlist governing what crosses, and a fixture agent desk that reconstructs the caller | [`voice-handoff-context`](voice-handoff-context) | 2026-09-02 |

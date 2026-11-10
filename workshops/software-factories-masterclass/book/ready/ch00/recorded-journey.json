@@ -1,0 +1,490 @@
+{
+  "schema": "recorded-classroom-cards-v1",
+  "recorded_at": "2026-10-22T06:59:52.301628+00:00",
+  "source_mode": "Observed keyless public sources, recorded through the canonical briefing Jobs/PublicSourcesRunner",
+  "place": {
+    "code": "EWR",
+    "name": "New York",
+    "timezone": "America/New_York"
+  },
+  "cards": [
+    {
+      "widget_id": "arrival-timeline",
+      "component": "arrival_timeline",
+      "revision": 1,
+      "request_id": "recorded-journey-20261022",
+      "replaced": false,
+      "data_ref": {
+        "id": "recorded-arrival_timeline",
+        "source": "Computed from ADSB.lol position estimate, stated transfer and meeting, destination stated by traveller KEWR",
+        "fetched_at": "2026-10-22T06:59:49.532479+00:00",
+        "as_of": "2026-10-22T06:59:49.977000+00:00",
+        "replay": false,
+        "delayed": null,
+        "assumptions": [
+          {
+            "label": "transfer_minutes",
+            "value": 90.0,
+            "kind": "assumption"
+          },
+          {
+            "label": "estimated_arrival_from_live_position",
+            "value": "position + speed + distance, stated transfer and meeting",
+            "kind": "assumption"
+          },
+          {
+            "label": "destination_stated_by_traveller",
+            "value": "KEWR",
+            "kind": "assumption"
+          },
+          {
+            "label": "airport_city_planning_allowance",
+            "value": "Bundled planning assumption; changeable, not live traffic or a guaranteed airport exit time.",
+            "kind": "assumption"
+          }
+        ],
+        "payload": {
+          "steps": [
+            {
+              "label": "Computed landing",
+              "time": "2026-10-22T07:12:58.271854+00:00"
+            },
+            {
+              "label": "Arrival after assumed transfer",
+              "time": "2026-10-22T08:42:58.271854+00:00"
+            }
+          ],
+          "transfer_minutes": {
+            "value": 90,
+            "kind": "assumption"
+          },
+          "meeting_time": "2026-10-23T22:00:00+00:00",
+          "margin_minutes": 2237
+        },
+        "error": null
+      }
+    },
+    {
+      "widget_id": "flight-status",
+      "component": "flight_status",
+      "revision": 1,
+      "request_id": "recorded-journey-20261022",
+      "replaced": false,
+      "data_ref": {
+        "id": "recorded-flight_status",
+        "source": "ADSB.lol contributors, ODbL 1.0, Virtual Radar Server standing-data, CC0",
+        "fetched_at": "2026-10-22T06:59:50.475395+00:00",
+        "as_of": "2026-10-22T06:59:49.977000+00:00",
+        "replay": false,
+        "delayed": null,
+        "assumptions": [
+          {
+            "label": "estimated_arrival_from_live_position",
+            "value": "position + speed + great-circle distance; not an airline time; destination stated by traveller KEWR",
+            "kind": "assumption"
+          },
+          {
+            "label": "destination_stated_by_traveller",
+            "value": "KEWR",
+            "kind": "assumption"
+          }
+        ],
+        "payload": {
+          "flight_number": "UAL1162",
+          "route": {
+            "from": "not provided",
+            "to": "KEWR"
+          },
+          "scheduled_departure": null,
+          "estimated_departure": null,
+          "scheduled_arrival": null,
+          "estimated_arrival": "2026-10-22T07:12:58.271854+00:00",
+          "terminal": null,
+          "reported_status": "Route not provided by the source. Live position: 10600 ft, 286.6 kt, position 0.024 s old; destination stated by traveller KEWR",
+          "source_timestamp": "2026-10-22T06:59:49.977000+00:00"
+        },
+        "error": null
+      }
+    },
+    {
+      "widget_id": "market-watchlist",
+      "component": "market_watchlist",
+      "revision": 1,
+      "request_id": "recorded-journey-20261022",
+      "replaced": false,
+      "data_ref": {
+        "id": "recorded-market_watchlist",
+        "source": "ECB statistics, freely available, daily EUR reference rates, changes computed",
+        "fetched_at": "2026-10-22T06:59:52.210316+00:00",
+        "as_of": null,
+        "replay": false,
+        "delayed": false,
+        "assumptions": [
+          {
+            "label": "change_computed_from_two_reference_days",
+            "value": "two ECB reference days",
+            "kind": "assumption"
+          }
+        ],
+        "payload": {
+          "symbols": [
+            {
+              "symbol": "EURGBP",
+              "price": 0.83825,
+              "change": -0.00203,
+              "change_pct": -0.241586
+            },
+            {
+              "symbol": "EURUSD",
+              "price": 1.1234,
+              "change": 0.0019,
+              "change_pct": 0.169416
+            }
+          ],
+          "market_status": "Currencies only; market hours not provided",
+          "quote_time": null,
+          "quote_date": "2026-10-21",
+          "rate_basis": "daily_reference",
+          "delayed": false,
+          "series": {
+            "EURGBP": [
+              {
+                "time": "2026-10-20",
+                "value": 0.84028
+              },
+              {
+                "time": "2026-10-21",
+                "value": 0.83825
+              }
+            ],
+            "EURUSD": [
+              {
+                "time": "2026-10-20",
+                "value": 1.1215
+              },
+              {
+                "time": "2026-10-21",
+                "value": 1.1234
+              }
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "widget_id": "weather-hourly",
+      "component": "weather_hourly",
+      "revision": 1,
+      "request_id": "recorded-journey-20261022",
+      "replaced": false,
+      "data_ref": {
+        "id": "recorded-weather_hourly",
+        "source": "MET Norway (api.met.no), CC BY 4.0, hourly subset normalised",
+        "fetched_at": "2026-10-22T06:59:51.618903+00:00",
+        "as_of": "2026-10-22T05:23:03Z",
+        "replay": false,
+        "delayed": null,
+        "assumptions": [],
+        "payload": {
+          "location": "KEWR",
+          "timezone": "UTC",
+          "valid_from": "2026-10-22T06:00:00Z",
+          "valid_to": "2026-10-24T05:00:00Z",
+          "hourly": [
+            {
+              "time": "2026-10-22T06:00:00Z",
+              "temp_c": 9.5,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T07:00:00Z",
+              "temp_c": 9.2,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T08:00:00Z",
+              "temp_c": 8.9,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T09:00:00Z",
+              "temp_c": 8.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T10:00:00Z",
+              "temp_c": 8.4,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T11:00:00Z",
+              "temp_c": 8.2,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T12:00:00Z",
+              "temp_c": 8.4,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T13:00:00Z",
+              "temp_c": 9.8,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T14:00:00Z",
+              "temp_c": 11.8,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T15:00:00Z",
+              "temp_c": 13.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T16:00:00Z",
+              "temp_c": 15.2,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T17:00:00Z",
+              "temp_c": 16.5,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T18:00:00Z",
+              "temp_c": 17.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T19:00:00Z",
+              "temp_c": 18.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T20:00:00Z",
+              "temp_c": 18.8,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T21:00:00Z",
+              "temp_c": 18.0,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T22:00:00Z",
+              "temp_c": 15.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-22T23:00:00Z",
+              "temp_c": 14.4,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T00:00:00Z",
+              "temp_c": 13.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T01:00:00Z",
+              "temp_c": 13.8,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T02:00:00Z",
+              "temp_c": 13.4,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T03:00:00Z",
+              "temp_c": 12.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T04:00:00Z",
+              "temp_c": 11.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T05:00:00Z",
+              "temp_c": 11.1,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T06:00:00Z",
+              "temp_c": 10.3,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T07:00:00Z",
+              "temp_c": 9.5,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T08:00:00Z",
+              "temp_c": 8.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T09:00:00Z",
+              "temp_c": 7.9,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T10:00:00Z",
+              "temp_c": 7.4,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T11:00:00Z",
+              "temp_c": 7.0,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T12:00:00Z",
+              "temp_c": 6.9,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T13:00:00Z",
+              "temp_c": 7.8,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T14:00:00Z",
+              "temp_c": 9.0,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T15:00:00Z",
+              "temp_c": 10.5,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T16:00:00Z",
+              "temp_c": 11.7,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T17:00:00Z",
+              "temp_c": 12.7,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T18:00:00Z",
+              "temp_c": 13.3,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T19:00:00Z",
+              "temp_c": 13.7,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T20:00:00Z",
+              "temp_c": 13.7,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T21:00:00Z",
+              "temp_c": 13.3,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T22:00:00Z",
+              "temp_c": 11.7,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-23T23:00:00Z",
+              "temp_c": 10.8,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-24T00:00:00Z",
+              "temp_c": 10.0,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-24T01:00:00Z",
+              "temp_c": 9.2,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-24T02:00:00Z",
+              "temp_c": 8.6,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-24T03:00:00Z",
+              "temp_c": 8.0,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-24T04:00:00Z",
+              "temp_c": 7.4,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            },
+            {
+              "time": "2026-10-24T05:00:00Z",
+              "temp_c": 6.9,
+              "precip_mm": 0.0,
+              "precip_prob": null
+            }
+          ],
+          "arrival_hour": "2026-10-22T07:00:00Z"
+        },
+        "error": null
+      }
+    }
+  ]
+}

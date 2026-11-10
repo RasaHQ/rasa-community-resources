@@ -1,0 +1,18 @@
+{
+  "id": "A3-rule-confirm",
+  "request": "Add one rule to the agent's rules in agent.yml, exactly: \"Say a card is blocked only after block_card has returned.\" The persona and everything else in agent.yml stay as they are.",
+  "allowed_paths": [
+    "product/agent.yml"
+  ],
+  "acceptance": {
+    "path": "acceptance/a3_rule_confirm.py",
+    "sha256": "18ae4f654df81c241700bd53516c936e2dd166d24e5416750c3f44cde6eab1c3"
+  },
+  "support": [
+    {
+      "path": "accept_lib.py",
+      "sha256": "bb7f82644bce044f15338ab076fbaeb727d9a071fe028180e5bbb1227985fcfd"
+    }
+  ],
+  "excluded": "Changing integrations.yml, any acceptance suite, or accept_lib.py. Those are separate tasks with a separate owner."
+}

@@ -1,5 +1,13 @@
 # Sterling — Tool Scope and Memory Scope in Rasa Mantle
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-tools-and-memory-tutorial/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make run`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the server starts on port 5005.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rod Rivera
 Assessed on:   2026-09-02
@@ -91,8 +99,8 @@ Fail any test and the tool should stay local.
 
 The import is explicit on purpose. A year later, when you lift
 `skills/check_balance/` into a different agent, its `import_tools:` line tells
-you exactly what else has to come with it. Nothing has to be discovered by
-reading the code.
+which shared tools it needs. Its Python imports also depend on `lib.engine`
+and `lib.directory`; retain those libraries and their dependencies.
 
 ## The three memory scopes
 
@@ -107,7 +115,8 @@ skills/transfer_money/memory.yml    PUBLIC    amount, payee_name,
 ```
 
 **Project memory** is for facts about the session and the end user. Every skill
-can read and write it. This is the layer that stops the caller re-authenticating.
+can read it, but the pinned runtime refuses another write after a project
+slot has a non-`None` value. This lets later skills reuse a signed-in identity.
 
 **Public skill memory** is this skill's working state, readable by other skills.
 
@@ -120,18 +129,28 @@ Project memory persists for the whole session, which is what makes the caller's
 verification stick: `authenticate` writes `authenticated` once, and every later
 skill reads it instead of asking again.
 
-A word of warning about `immutable: true`, because the name invites a wrong
-guess. It does not mean write-once-then-frozen. It means the field can never be
-written at runtime at all — it is for constants seeded by `initial_value`. Put
-it on `customer_id` and authentication itself fails, with
-`Memory field 'customer_id' is immutable and cannot be overwritten`.
+In `3.21.0.dev5`, the project field declaration has no `immutable` member.
+The memory manager instead rejects a write to an already-set project slot.
+Leave `authenticated` unset initially so the verification tool can perform its
+first write; seeding it with `false` would block that update. A shared identity
+does not replace the action-specific checks in the transfer tool.
+
+To check the actual verification tool with the pinned native memory manager:
+
+```bash
+uv run --locked python -m unittest discover -s tests -p 'test_native_memory.py' -v
+```
+
+These controls use a small tracker adapter and fictional fixture data. They
+check first writes, already-set values and qualified names; they do not run a
+trained chat, contact a provider or verify a real customer's identity.
 
 ## Why this makes a skill portable
 
 A skill folder is self-contained when three things are explicit: the tools it
 owns, the tools it imports, and the memory it touches. All three are declared,
-so moving `skills/transfer_money/` into another agent is a copy plus whatever
-`import_tools:` names. That was the design goal behind splitting tools and
+but moving `skills/transfer_money/` also requires its Python dependencies
+(`lib.engine` and `lib.directory`), not just the names in `import_tools:`. That was the design goal behind splitting tools and
 memory this way in the first place.
 
 ## Project layout
@@ -193,3 +212,10 @@ SKILL memory (public = other skills may read; private = never)
   authenticate:    public verification_method   private passphrase_attempts
   transfer_money:  public amount, payee_name    private transfer_reason
 ```
+
+The `train`, `chat` and `run` targets read this project's `.env` through
+`scripts/run_rasa.py`. The runner sets the SDK’s primary `RASA_LICENSE` variable and disables
+automatic dotenv loading after reading the selected file. It replaces inherited
+provider credentials with the
+selected file's values. It does not print credentials. An empty local key
+does not fall back to a key from another shell session or project.

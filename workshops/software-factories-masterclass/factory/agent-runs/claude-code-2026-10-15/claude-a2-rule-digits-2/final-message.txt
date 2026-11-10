@@ -1,0 +1,5 @@
+I added a top-level `rules:` list to `product/agent.yml`, next to `agent:`. It holds one rule, exactly: "Never say more than the last four digits of a card number."
+
+The file had no `rules:` key before, so I created it. The `agent:` block, including the persona, is unchanged, and I touched no other file.
+
+`python validate.py` passed ("Mantle found nothing to object to"), so the project loads. That check can't tell me how the agent behaves with the rule. I didn't run the agent, so I haven't seen it hold back card digits in a reply.
