@@ -1,5 +1,7 @@
 # References and demo-data provenance
 
+All demonstration records in this project are fictional.
+
 ## HR policy text
 
 The general HR guidance in [`hr_policies.md`](./hr_policies.md) and
