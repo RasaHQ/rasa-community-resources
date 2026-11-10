@@ -1,5 +1,13 @@
 # HarborCover claim intake on Claude Sonnet 5.5: the tool sends the claim reference itself
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-insurance-file-claim-claude/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `ANTHROPIC_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rasa Community
 Assessed on:   2026-09-30
@@ -306,6 +314,65 @@ The harness that runs the conversations is shared by every case build:
   finds the read-back in the tracker.
 - Mantle imports `lib/` from a temporary snapshot that is removed after
   loading, so fixtures are read at import.
+
+## Keep crew advice separate from attachment state
+
+The public CrewAI checklist for a vehicle claim says “Incident details” and
+“Repair estimate”. This case's claim service also requires the state of damage
+photos to be known. Advice can be correct about its public source while omitting
+information the submission guard needs.
+
+The [offline control](controls/crewai_checklist.py) runs the existing native
+CrewAI worker with scripted responses, then calls this example's actual claims
+service. It constructs the confirmation events to isolate the service guard;
+it does not run a new Mantle or model conversation. The original agent assessment
+above remains historical. The control copies the fixture and changes only its
+photo state; it does not change the production guard, skills or tools.
+
+From the repository root, install only the CrewAI environment through the managed
+workspace route:
+
+```sh
+python3 scripts/workspace.py start tutorials/frameworks-with-rasa/crewai --owner harborcover-claims-control
+CREW_CONTROL_PYTHON="$(pwd)/tutorials/frameworks-with-rasa/crewai/.venv/bin/python"
+"$CREW_CONTROL_PYTHON" examples/mantle-text-insurance-file-claim-claude/controls/crewai_checklist.py --crew-python "$CREW_CONTROL_PYTHON"
+```
+
+No provider key or Rasa licence is needed for this control. The command exits 0
+when the native worker returns checked advice and all three service checks pass:
+
+| Photo state | Submission result | Stored submissions |
+| --- | --- | --- |
+| Still processing | Blocked: attachment state unknown | 0 |
+| Received | Pending acknowledgement, then acknowledged by lookup | 1 |
+| Not provided | Pending acknowledgement, then acknowledged with photo follow-up | 1 |
+
+The auto-policy fixture deliberately loses the first acknowledgement. The control
+looks up the same draft; it never submits twice. A missing photo remains allowed
+intake with explicit follow-up. It is not a coverage decision.
+
+To prove the check detects the wrong authority, run the same contract against a
+scoped mutation that checks only the attachment named by the crew:
+
+```sh
+"$CREW_CONTROL_PYTHON" examples/mantle-text-insurance-file-claim-claude/controls/crewai_checklist.py --crew-python "$CREW_CONTROL_PYTHON" --mutant
+```
+
+This must exit 1 with `Processing damage photo must block submission`. The mutant
+stores a submission despite the processing photo, so the unchanged assertion
+fails. A missing worker exits 2 with `NOT_RUN`; an execution error or timeout does
+not count as a detected mutation. The four unit tests use explicitly constructed
+protocol records and make no native CrewAI claim on their own.
+
+[Recorded control](controls/receipts/2026-10-20-crewai-checklist.json): assessed
+20 October 2026 by rasa-community-maintainer, Python 3.12.13 and CrewAI 1.15.27.
+It preserves the native positive and assertion-failing mutation results, exact
+source hashes and the absence of a live-engine qualification. Retire the selected
+environment after its jobs finish:
+
+```sh
+python3 scripts/workspace.py retire tutorials/frameworks-with-rasa/crewai --owner harborcover-claims-control --inactive
+```
 
 ## Licence
 

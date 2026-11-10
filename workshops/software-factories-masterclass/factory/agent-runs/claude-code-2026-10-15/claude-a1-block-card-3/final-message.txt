@@ -1,0 +1,14 @@
+I added the `block_card` skill with `list_cards` and `block_card`, and `python validate.py` reports "Mantle found nothing to object to." I wrote a test file but could not run it. The pytest command needed approval and wasn't run.
+
+**Files created or changed**
+- `product/skills/block_card/skill.md`: its frontmatter has a `tool_constraints` entry for `block_card` only, with `requires_confirmation` enabled. It uses `utter_for_confirmation: confirm_block_card` and `utter_on_user_denial: block_card_declined`. `list_cards` has no constraint, so it needs no confirmation. The instructions tell the agent to call `list_cards` first and never to block a card the caller hasn't confirmed. They also say to block one card per call, only the one the caller named.
+- `product/skills/block_card/tools.py`: two `@tool` async functions. `list_cards` returns the caller's cards. `block_card(card_id)` blocks only the card with that id and returns `ok: false` if the id is unknown. The cards are hard-coded sample data, because the project has no integration for card data.
+- `product/responses.yml`: new file with `confirm_block_card` (the confirmation prompt) and `block_card_declined` (the reply if the caller says no).
+- `product/tests/test_block_card_tools.py`: checks that blocking one card leaves the other active, and that an unknown id changes nothing.
+
+**What I checked**
+- `python validate.py` passes with the final files.
+- I ran two experiments to confirm the frontmatter is really read, since the validator would also accept a misspelled key. With a made-up response name, the validator reported that no such response exists, so the confirmation settings are being picked up. With a made-up key name, it reported nothing, so I don't rely on it alone.
+- I did not run the agent, so I haven't seen the engine pause for confirmation at runtime. I only know the project loads and the settings are parsed.
+
+I didn't touch `integrations.yml`, `agent.yml`, any acceptance suite or `accept_lib.py`. To find the `@tool` import path and the `tool_constraints` format, I read Mantle's installed source under `.venv/lib/python3.12/site-packages/rasa/mantle/`, which is outside the task's `allowed_paths`.

@@ -1,5 +1,13 @@
 # Give an existing CrewAI research crew a Rasa conversation
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-frameworks-with-rasa-crewai-mantle/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make run`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the server starts on port 5019.
+<!-- codespaces:end -->
+
 Mantle collects a public synthetic HarborCover claim type and explains a checked
 checklist. CrewAI keeps its source researcher, checklist writer, registered tool
 and configured model. The application checks both structured tasks and recorded

@@ -546,18 +546,23 @@ def update_dispatch_draft(service: RoadsideService, draft_id: str, location: Opt
         if len(places) != 1:
             return {**_location_problem(service, places, location), "draft_id": draft.draft_id,
                     "draft_unchanged": True}, None
-        draft.place_ref, draft.location_source = places[0], source
-        draft.caller_words = " ".join(str(location).split())[:100]
     if service_needed:
         wanted = normalise_service(service_needed)
         if wanted is None:
             return {"status": "unsupported_service", "supported_services": list(SERVICES),
                     "draft_id": draft.draft_id, "next_step": "Ask which service they need."}, None
-        draft.service = wanted
     if vehicle_ref:
         if service.vehicle(draft.policy_number, str(vehicle_ref).strip().upper()) is None:
             return {"status": "unknown_vehicle", "draft_id": draft.draft_id,
                     "next_step": "Use a vehicle_ref from find_policy."}, None
+    # Validate every requested field before changing the saved draft. A later
+    # refusal must not leave an earlier field changed under its old version.
+    if location:
+        draft.place_ref, draft.location_source = places[0], source
+        draft.caller_words = " ".join(str(location).split())[:100]
+    if service_needed:
+        draft.service = wanted
+    if vehicle_ref:
         draft.vehicle_ref = str(vehicle_ref).strip().upper()
     draft.version += 1
     extra = _preferred(service, draft, preferred_provider)

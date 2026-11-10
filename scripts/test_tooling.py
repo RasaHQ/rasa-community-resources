@@ -177,7 +177,7 @@ class TestStaleDocVersionsIgnoreMarker(unittest.TestCase):
     Without the exemption, the only way an upgrade illustration could pass
     the stale-version scan was to rewrite its FROM side to the current pin,
     which produces degenerate `X → X` prose that teaches nothing — the same
-    defect shape RULING-004/F-A caught in a tutorial's landed bytes.
+    defect shape a review caught in a tutorial's landed bytes.
     """
 
     def _project_with_readme(self, text: str) -> "rasa_projects.Project":
@@ -402,12 +402,10 @@ class TestLintChecksAgainstRepo(unittest.TestCase):
         projects = discover_projects()
         snapshots = discover_projects("snapshots")
         self.assertTrue(projects, "no projects discovered")
-        errors = [
-            f
-            for name, fn in lint_repo.CHECKS.items()
-            for f in fn(projects, snapshots, expected)
-            if f.severity == lint_repo.SEVERITY_ERROR
-        ]
+        findings, _declared = lint_repo.run_checks(
+            list(lint_repo.CHECKS), projects, snapshots, expected
+        )
+        errors = [f for f in findings if f.severity == lint_repo.SEVERITY_ERROR]
         self.assertEqual(errors, [], "\n".join(f"{f.location()}: {f.message}" for f in errors))
 
 
@@ -771,7 +769,7 @@ class TestCliExitCodes(unittest.TestCase):
 
 class TestPublicAssessmentWording(unittest.TestCase):
     def test_assessor_and_pending_review_are_rejected(self):
-        for assessor in ("Cedar (Codex)", "Codex local validation; Architect review pending"):
+        for assessor in ("Cedar (Codex)", "Codex local validation; maintainer review pending"):
             text = ("Author: Rod\nAssessed on: 2026-10-11\n"
                     f"**Assessed by:** {assessor}\nVerified with: pinned native controls\n")
             with mock.patch("pathlib.Path.is_file", return_value=True), \
@@ -909,9 +907,117 @@ class TestAgentConfigKeys(unittest.TestCase):
         self.assertEqual(self._findings(body), [])
 
     def test_the_real_catalog_is_clean(self):
-        self.assertEqual(
-            [f.location() for f in lint_repo.check_agent_config_keys()], []
+        # Only the declared teaching fixtures may fail; see TestDeclaredInvalidFixtures.
+        kept, _declared = lint_repo.apply_declared_fixtures(
+            lint_repo.check_agent_config_keys(), ["agent-config-keys"]
         )
+        self.assertEqual([f.location() for f in kept], [])
+
+
+class TestDeclaredInvalidFixtures(unittest.TestCase):
+    """A file that is wrong on purpose is declared, one file and one check at a time."""
+
+    FIXTURE = "workshops/software-factories-masterclass/factory/candidates/rule-digits-nested/product/agent.yml"
+    NESTED = "agent:\n  id: demo\n  rules:\n    - Be polite.\n"
+
+    def _finding(self, path, check="agent-config-keys"):
+        return lint_repo.Finding(check, path, 5, "nested")
+
+    def _declare(self, entries):
+        handle = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        self.addCleanup(os.unlink, handle.name)
+        json.dump(entries, handle)
+        handle.close()
+        return Path(handle.name)
+
+    def _entry(self, path="a/agent.yml", check="agent-config-keys", reason="teaching input"):
+        return {"path": path, "check": check, "reason": reason}
+
+    def _apply(self, findings, entries, selected=("agent-config-keys",), tracked=("a/agent.yml", "b/agent.yml")):
+        return lint_repo.apply_declared_fixtures(
+            findings, list(selected), self._declare(entries), set(tracked)
+        )
+
+    def test_the_listed_fixture_still_fails_its_direct_check(self):
+        with mock.patch.object(lint_repo, "_tracked_files", return_value=[lint_repo.REPO_ROOT / self.FIXTURE]):
+            raw = lint_repo.check_agent_config_keys()
+        self.assertEqual([(f.path, f.check) for f in raw], [(self.FIXTURE, "agent-config-keys")])
+        entries, problems = lint_repo.load_invalid_fixtures(tracked={self.FIXTURE})
+        self.assertEqual(problems, [])
+        self.assertIn((self.FIXTURE, "agent-config-keys"), entries)
+
+    def test_the_real_declarations_are_valid_and_current(self):
+        findings = lint_repo.check_agent_config_keys()
+        kept, declared = lint_repo.apply_declared_fixtures(findings, ["agent-config-keys"])
+        self.assertEqual(kept, [])
+        self.assertEqual([f.path for f in declared], [self.FIXTURE])
+
+    def test_the_fixture_bytes_are_the_nested_case(self):
+        text = (lint_repo.REPO_ROOT / self.FIXTURE).read_text(encoding="utf-8")
+        self.assertIn("agent:\n", text)
+        self.assertRegex(text, r"(?m)^  rules:\n")
+
+    def test_an_identical_unlisted_file_still_fails(self):
+        kept, declared = self._apply(
+            [self._finding("a/agent.yml"), self._finding("b/agent.yml")], [self._entry()]
+        )
+        self.assertEqual([f.path for f in kept], ["b/agent.yml"])
+        self.assertEqual([f.path for f in declared], ["a/agent.yml"])
+
+    def test_a_different_check_on_the_listed_file_stays_an_error(self):
+        kept, declared = self._apply(
+            [self._finding("a/agent.yml"), self._finding("a/agent.yml", "secret-hygiene")],
+            [self._entry()],
+        )
+        self.assertEqual([f.check for f in kept], ["secret-hygiene"])
+        self.assertEqual(len(declared), 1)
+
+    def test_a_stale_declaration_fails(self):
+        kept, _ = self._apply([], [self._entry()])
+        self.assertEqual([f.check for f in kept], [lint_repo.DECLARATION_CHECK])
+        self.assertIn("stale", kept[0].message)
+
+    def test_a_stale_declaration_is_not_judged_when_its_check_was_not_run(self):
+        kept, _ = self._apply([], [self._entry()], selected=("secret-hygiene",))
+        self.assertEqual(kept, [])
+
+    def test_a_missing_file_fails(self):
+        kept, _ = self._apply([self._finding("a/agent.yml")], [self._entry()], tracked=())
+        self.assertTrue(any("not a tracked file" in f.message for f in kept))
+
+    def test_a_glob_fails(self):
+        kept, _ = self._apply([], [self._entry(path="a/*.yml")])
+        self.assertTrue(any("glob" in f.message for f in kept))
+
+    def test_a_path_that_is_not_normalised_fails(self):
+        kept, _ = self._apply([], [self._entry(path="a/../a/agent.yml")])
+        self.assertTrue(any("normalized" in f.message for f in kept))
+
+    def test_a_duplicate_fails(self):
+        kept, _ = self._apply(
+            [self._finding("a/agent.yml")],
+            [self._entry(), self._entry(check="secret-hygiene")],
+            selected=("agent-config-keys", "secret-hygiene"),
+        )
+        self.assertTrue(any("declared twice" in f.message for f in kept))
+
+    def test_an_unknown_check_fails(self):
+        kept, _ = self._apply([], [self._entry(check="no-such-check")])
+        self.assertTrue(any("unknown check" in f.message for f in kept))
+
+    def test_an_empty_reason_fails(self):
+        kept, _ = self._apply([self._finding("a/agent.yml")], [self._entry(reason="  ")])
+        self.assertTrue(any("reason" in f.message for f in kept))
+
+    def test_extra_or_missing_keys_fail(self):
+        kept, _ = self._apply([], [{"path": "a/agent.yml", "check": "agent-config-keys"}])
+        self.assertTrue(any("exactly path, check and reason" in f.message for f in kept))
+
+    def test_a_declaration_never_hides_a_warning(self):
+        warning = lint_repo.Finding("agent-config-keys", "a/agent.yml", 1, "w", lint_repo.SEVERITY_WARNING)
+        kept, declared = self._apply([warning], [self._entry()])
+        self.assertIn(warning, kept)
+        self.assertEqual(declared, [])
 
 
 class TestAgentSpecContract(unittest.TestCase):
@@ -1263,6 +1369,58 @@ class TestHeroesLayout(unittest.TestCase):
             found = lint_repo.check_heroes_layout()
         self.assertEqual(len(found), 1)
         self.assertIn("wave-NN-<theme>", found[0].message)
+
+    def test_installed_dependencies_do_not_become_wave_projects(self):
+        for environment in (".venv", "venv"):
+            with self.subTest(environment=environment), FakeRepo() as repo:
+                self._wave(repo, "wave-01-voice")
+                project = "heroes/wave-01-voice/projects/handle-agent"
+                repo.project(project)
+                environment_root = repo.root / project / environment
+                environment_root.mkdir()
+                (environment_root / "pyvenv.cfg").write_text("home = /python\n")
+                # These are the two installed paths reported by compatibility
+                # after the native project check has populated its environment.
+                for dependency in ("", "pandas/"):
+                    path = repo.root / project / environment / (
+                        f"lib/python3.12/site-packages/{dependency}pyproject.toml"
+                    )
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("[project]\nname = 'dependency'\n")
+                self.assertEqual(lint_repo.check_heroes_layout(), [])
+
+    def test_authored_environment_names_are_not_hidden(self):
+        for environment in (".venv", "venv"):
+            for parent in ("", "projects/handle-agent/"):
+                with self.subTest(environment=environment, parent=parent), FakeRepo() as repo:
+                    self._wave(repo, "wave-01-voice")
+                    repo.project("heroes/wave-01-voice/projects/handle-agent")
+                    misplaced = f"heroes/wave-01-voice/{parent}{environment}"
+                    repo.project(misplaced)
+                    found = lint_repo.check_heroes_layout()
+                self.assertEqual(len(found), 1)
+                self.assertEqual(found[0].path, f"{misplaced}/pyproject.toml")
+
+    def test_environment_marker_outside_a_project_does_not_hide_a_project(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            misplaced = "heroes/wave-01-voice/venv"
+            repo.project(misplaced)
+            (repo.root / misplaced / "pyvenv.cfg").write_text("home = /python\n")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].path, f"{misplaced}/pyproject.toml")
+
+    def test_nested_authored_project_is_still_reported(self):
+        with FakeRepo() as repo:
+            self._wave(repo, "wave-01-voice")
+            project = "heroes/wave-01-voice/projects/handle-agent"
+            repo.project(project)
+            repo.project(f"{project}/nested-agent")
+            found = lint_repo.check_heroes_layout()
+        self.assertEqual(len(found), 1)
+        self.assertIn("nested-agent/pyproject.toml", found[0].path)
+        self.assertIn("skipped by every check", found[0].message)
 
     def test_missing_charter_is_reported(self):
         with FakeRepo() as repo:
@@ -1879,6 +2037,62 @@ class TestBrowserAudioDriver(unittest.TestCase):
         self.assertEqual(sorted(server.acked), sorted(server.sent_markers))
         self.assertEqual(voice["markers_pending"], 0)
 
+    def test_tracker_completion_waits_for_expected_reply_audio(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "bot", "text": "old greeting"},
+                              {"event": "user", "text": "hello"},
+                              {"event": "bot", "text": "new reply"},
+                              {"event": "bot_turn_ended"}]}
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=lambda _: tracker,
+                                     settle_s=0.1, turn_timeout_s=1)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        clock = [10.0]
+        def receive_audio(_):
+            clock[0] += 0.05
+            turn.first_audio = clock[0]
+        with mock.patch.object(self.v.time, "monotonic", side_effect=lambda: clock[0]), \
+             mock.patch.object(self.v.time, "sleep", side_effect=receive_audio) as wait:
+            ended, _ = call._wait_bot_turn(turn, 0, 0)
+        self.assertEqual(ended, "tracker")
+        self.assertIsNotNone(turn.first_audio)
+        wait.assert_called_once()
+
+    def test_tracker_text_without_received_audio_times_out(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "user"}, {"event": "bot", "text": "reply"},
+                              {"event": "bot_turn_ended"}]}
+        fetch = mock.Mock(return_value=tracker)
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=fetch,
+                                     settle_s=0.1, turn_timeout_s=0.2)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        clock = [10.0]
+        def advance(seconds):
+            clock[0] += seconds
+        with mock.patch.object(self.v.time, "monotonic", side_effect=lambda: clock[0]), \
+             mock.patch.object(self.v.time, "sleep", side_effect=advance):
+            ended, _ = call._wait_bot_turn(turn, 0, 0)
+        self.assertEqual(ended, "timeout")
+        self.assertIsNone(turn.first_audio)
+        self.assertEqual(fetch.call_count, 2)  # initial poll and final timeout read
+
+    def test_silent_tracker_turn_does_not_wait_for_old_greeting_audio(self):
+        from types import SimpleNamespace
+
+        tracker = {"events": [{"event": "bot", "text": "old greeting"},
+                              {"event": "user"}, {"event": "bot_turn_ended"}]}
+        call = self.v.BrowserAudioCall("ws://unused", "synthetic", fetch_tracker=lambda _: tracker,
+                                     settle_s=0.1, turn_timeout_s=1)
+        call.speaker = SimpleNamespace(drained=True)
+        turn = self.v.TurnTimes(speech_off=1, last_server_frame=1)
+        with mock.patch.object(self.v.time, "monotonic", return_value=10), \
+             mock.patch.object(self.v.time, "sleep", side_effect=AssertionError("silent turn must finish")):
+            ended, _ = call._wait_bot_turn(turn, 0, 0, 1)
+        self.assertEqual(ended, "tracker")
+
     def test_quiet_window_ends_the_turn_without_a_tracker(self):
         server = FakeBrowserAudioServer()
         call = self.call(server, fetch_tracker=None)
@@ -2181,6 +2395,163 @@ class TestCaseBuildCatalog(unittest.TestCase):
                       "result", "spendUsd", "recordedAt", "casebookUrl", "language"):
             self.assertIsNone(entry[field], field)
         self.assertEqual(entry["findings"], [])
+
+
+class CompatibilityWorkerInputs(unittest.TestCase):
+    def test_catalog_declares_the_separate_native_crew(self):
+        from compatibility import test_workers
+        root = _SCRIPTS.parent
+        project = root / 'tutorials/frameworks-with-rasa/crewai-mantle'
+        self.assertEqual(test_workers(project), [project.parent / 'crewai'])
+        self.assertEqual(test_workers(root / 'tutorials/rasa-tools-and-memory-tutorial'), [])
+
+    def test_workers_require_both_rebuild_inputs(self):
+        from compatibility import test_workers
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project, worker = root / 'mantle', root / 'worker'
+            project.mkdir(); worker.mkdir()
+            (project / 'pyproject.toml').write_text('[tool.rasa-catalog]\ntest-workers = ["../worker"]\n')
+            (worker / 'pyproject.toml').write_text('[project]\nname="worker"\n')
+            with self.assertRaisesRegex(ValueError, 'locked rebuild inputs'):
+                test_workers(project, root)
+            (worker / 'uv.lock').write_text('version=1\n')
+            self.assertEqual(test_workers(project, root), [worker.resolve()])
+
+    def test_worker_metadata_cannot_select_an_unrelated_environment(self):
+        from compatibility import test_workers
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project = root / 'mantle'
+            project.mkdir()
+            for declaration in ('"../worker"', '["."]', '["../../outside"]', '["/tmp/other-seat"]'):
+                with self.subTest(declaration=declaration):
+                    (project / 'pyproject.toml').write_text('[tool.rasa-catalog]\ntest-workers = '+declaration+'\n')
+                    with self.assertRaises(ValueError):
+                        test_workers(project, root)
+
+
+class CompatibilityFailureEvidence(unittest.TestCase):
+    def test_keep_going_runs_later_checks_but_still_fails(self):
+        from compatibility import CheckRunner
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()):
+            root = Path(temp)
+            runner = CheckRunner(root / 'logs', [], keep_going=True)
+            self.assertFalse(runner.run('first', [sys.executable, '-c', 'raise SystemExit(1)']))
+            self.assertTrue(runner.run('second', [sys.executable, '-c', "from pathlib import Path; Path('later-ran').write_text('actual process')"], root))
+            self.assertTrue((root / 'later-ran').is_file())
+            with self.assertRaisesRegex(RuntimeError, 'first'):
+                runner.finish()
+
+    def test_default_stops_and_redacts_failure_output(self):
+        from compatibility import CheckRunner
+        secret = 'PLACEHOLDER_NOT_A_CREDENTIAL'
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()) as shown:
+            runner = CheckRunner(Path(temp), [secret])
+            with self.assertRaises(RuntimeError):
+                runner.run('first', [sys.executable, '-c', f"print({secret!r}); raise SystemExit(1)"])
+            self.assertNotIn(secret, shown.getvalue())
+            self.assertEqual((Path(temp) / 'first.log').read_text(), '[REDACTED]\n')
+
+    def test_success_finishes_without_failures(self):
+        from compatibility import CheckRunner
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(io.StringIO()):
+            runner = CheckRunner(Path(temp), [])
+            self.assertTrue(runner.run('clean', [sys.executable, '-c', "print('actual pass')"]))
+            runner.finish()
+            self.assertEqual(runner.failures, [])
+
+
+class TestFrozenConfigVersionRules(unittest.TestCase):
+    """A cohort snapshot keeps its engine grammar without escaping hygiene."""
+
+    def project(self, version, *, snapshot=True):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        if version is not None:
+            (root / "pyproject.toml").write_text(
+                f'[project]\ndependencies = ["rasa-pro=={version}"]\n'
+            )
+        (root / "integrations.yml").write_text(
+            "llm:\n  provider: openai\n  model: example\n"
+            "  api_key_env: OPENAI_API_KEY\n"
+        )
+        (root / "memory.yml").write_text("example:\n  llm_settable: true\n")
+        return rasa_projects.Project(root, snapshot=snapshot)
+
+    def credentials(self, project, body=None):
+        path = project.path / "integrations.yml"
+        if body is not None:
+            path.write_text(body)
+        with mock.patch.object(lint_repo, "discover_projects", return_value=[project]), \
+                mock.patch.object(lint_repo, "_tracked_files", return_value=[path]):
+            return lint_repo.check_api_key_env()
+
+    def test_older_snapshot_keeps_its_inline_model_and_memory_grammar(self):
+        project = self.project("3.19.0.dev5")
+        self.assertEqual(lint_repo.check_llm_model_group([project]), [])
+        self.assertEqual(lint_repo.check_project_memory_writes([project]), [])
+        self.assertEqual(self.credentials(project), [])
+
+    def test_model_group_and_memory_rules_start_at_dev_six(self):
+        for version, rejected in [("3.20.0.dev5", False), ("3.20.0.dev6", True),
+                                  ("3.20.0", True), ("3.20.3", True)]:
+            with self.subTest(version=version):
+                project = self.project(version)
+                self.assertEqual(bool(lint_repo.check_llm_model_group([project])), rejected)
+                self.assertEqual(bool(lint_repo.check_project_memory_writes([project])), rejected)
+
+    def test_credential_removal_has_its_own_later_boundary(self):
+        for version, rejected in [("3.20.0.dev6", False), ("3.20.3", False),
+                                  ("3.21.0.dev1", False), ("3.21.0.dev2", True),
+                                  ("3.21.0", True)]:
+            with self.subTest(version=version):
+                self.assertEqual(bool(self.credentials(self.project(version))), rejected)
+
+    def test_voice_credential_rule_is_still_enforced_on_old_snapshots(self):
+        project = self.project("3.19.0.dev5")
+        findings = self.credentials(project, "asr:\n  name: deepgram\n  api_key_env: DEEPGRAM_API_KEY\n")
+        self.assertEqual(len(findings), 1)
+        self.assertIn("not read by the engine", findings[0].message)
+
+    def test_missing_pin_does_not_exempt_a_snapshot(self):
+        project = self.project(None)
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
+    def test_old_snapshot_still_rejects_literal_model_credentials(self):
+        project = self.project("3.19.0.dev5")
+        for value in ("fictional-gemini-key", "fictional-azure-key", "fictional-groq-key"):
+            with self.subTest(value=value):
+                findings = self.credentials(project, f"model_groups:\n  - api_key: {value}\n")
+                self.assertEqual(len(findings), 1)
+                self.assertIn("must be exactly '${VAR}'", findings[0].message)
+        self.assertEqual(self.credentials(project, "api_key: ${OPENAI_API_KEY}\n"), [])
+
+    def test_unpinned_dependency_does_not_exempt_a_snapshot(self):
+        project = self.project("3.19.0.dev5")
+        (project.path / "pyproject.toml").write_text(
+            '[project]\ndependencies = ["rasa-pro>=3.19"]\n'
+        )
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
+    def test_unparseable_pin_does_not_exempt_a_snapshot(self):
+        project = self.project("not-a-version")
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        self.assertTrue(self.credentials(project))
+
+    def test_maintained_project_cannot_opt_out_by_naming_an_old_pin(self):
+        project = self.project("3.19.0.dev5", snapshot=False)
+        self.assertTrue(lint_repo.check_llm_model_group([project]))
+        self.assertTrue(lint_repo.check_project_memory_writes([project]))
+        with mock.patch.object(lint_repo, "discover_projects", return_value=[]), \
+                mock.patch.object(lint_repo, "_tracked_files", return_value=[project.path / "integrations.yml"]):
+            self.assertTrue(lint_repo.check_api_key_env())
 
 
 if __name__ == "__main__":

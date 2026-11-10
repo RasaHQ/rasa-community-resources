@@ -1,0 +1,36 @@
+{
+  "name": "Rasa resource: examples/mantle-text-reminder-deduplication-gpt",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/sshd:1.1.0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/examples/mantle-text-reminder-deduplication-gpt",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5005
+  ],
+  "portsAttributes": {
+    "5005": {
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Required. Full Rasa Developer Edition license"
+    },
+    "OPENAI_API_KEY": {
+      "description": "Required. OpenAI project key used for this resource's model calls"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" examples/mantle-text-reminder-deduplication-gpt",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" examples/mantle-text-reminder-deduplication-gpt"
+}

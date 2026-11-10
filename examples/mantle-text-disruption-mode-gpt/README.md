@@ -1,5 +1,13 @@
 # Horizon Travel disruption mode on GPT-5.5: a seat is promised only as a hold
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-disruption-mode-gpt/devcontainer.json)
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 ```text
 Author:        Rasa Community
 Assessed on:   2026-09-30
@@ -296,6 +304,7 @@ for this build: **2.54 USD** in total (estimate 0.16, main run 2.00, rerun
 | `lib/fixtures/` | Fictional data and the vendored case contract |
 | `hooks.py` | Output guard for unbacked promises |
 | `tests/test_guard.py` | Offline tests |
+| `tests/test_release_gate_characterisation.py` | Which recovery tools the shipped skill puts behind the confirmation (the hold, not the release), with controls, and what the retained run shows. Describes what ships today; not a policy. Run: `python -m unittest discover -s tests -p "test_release_gate*" -v` (the compile tests need the project venv) |
 | `case-build/conversations.json` | The 21 scripted conversations, their tracker checks, and the `reasoning-default` and `receipt-in-result-only` variants (neither run). `engine_errors` is present and empty: no in-turn rejection on GPT-5.5 came from the engine |
 | `case-build/case_metric.py` | The case metric, receipt delivery and denied holds, from stored trackers |
 | `case-build/results/` | Recorded runs (estimate, main run, rerun), trackers and the spend ledger |

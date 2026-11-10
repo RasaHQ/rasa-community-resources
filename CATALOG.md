@@ -164,6 +164,7 @@ Industries follow the rasa.community casebook.
 
 ## Patterns and reusable parts
 
+- [`patterns/mcp-confirmation-gate`](patterns/mcp-confirmation-gate/): Test pending, cancelled and confirmed tool requests with an MCP service and scripted model responses.
 - [`patterns/voice-vendor-router`](patterns/voice-vendor-router/): **the voice vendor router.** Swap and fail over between ASR/TTS vendors so one provider outage cannot mute or deafen a live call. Its README lists 17 ASR and TTS engines; live-verified: Deepgram, Rime, OpenAI, Speechmatics, Vosk, faster-whisper, Neuphonic NeuTTS-2E. Case builds that load its adapters directly: [`mantle-voice-banking-dispute-claude`](examples/mantle-voice-banking-dispute-claude/), [`mantle-voice-healthcare-refill-request-gpt-local`](examples/mantle-voice-healthcare-refill-request-gpt-local/).
 - [`patterns/voice-auth-stepup`](patterns/voice-auth-stepup/): Risk-tiered authentication step-up: low/medium/high driven by the action attempted, not by the caller.
 - [`patterns/voice-handoff-context`](patterns/voice-handoff-context/): Hand a caller to a human as a state transfer: a structured context package with a derived summary, an allowlist governing what crosses, and a fixture agent desk that reconstructs the caller.
@@ -177,6 +178,7 @@ Industries follow the rasa.community casebook.
 
 Tutorials ([catalog](tutorials/README.md)):
 
+- [`tutorials/agent-tool-inventory`](tutorials/agent-tool-inventory/): List a Rasa agent’s tools and check for changes
 - [`tutorials/deepagents-to-mantle`](tutorials/deepagents-to-mantle/): Move a Deep Agents database chat to Mantle
 - [`tutorials/deepagents-voice-disputes`](tutorials/deepagents-voice-disputes/): Investigate a card charge with Mantle voice and Deep Agents
 - [`tutorials/frameworks-with-rasa`](tutorials/frameworks-with-rasa/): Frameworks with Rasa
@@ -188,10 +190,13 @@ Tutorials ([catalog](tutorials/README.md)):
 - [`tutorials/rasa-langgraph-comparison-tutorial`](tutorials/rasa-langgraph-comparison-tutorial/): LangGraph's customer-support bot, rebuilt in Rasa Mantle
 - [`tutorials/rasa-tools-and-memory-tutorial`](tutorials/rasa-tools-and-memory-tutorial/): Sterling — Tool Scope and Memory Scope in Rasa Mantle
 - [`tutorials/rasa-voice-agent-tutorial`](tutorials/rasa-voice-agent-tutorial/): Atlas — Voice Travel Agent with Rasa Skills
+- [`tutorials/refusal-handoff`](tutorials/refusal-handoff/): Check the exit after a tool refuses a request
 - [`tutorials/voice-agent-three-frameworks`](tutorials/voice-agent-three-frameworks/): Cedar Clinic voice-agent tutorials
 
 Finished example agents that are not case builds ([catalog](examples/README.md)):
 
+- [`examples/mantle-factory-agent`](examples/mantle-factory-agent/): Mantle factory agent
+- [`examples/mantle-flight-briefing-openai-agents`](examples/mantle-flight-briefing-openai-agents/): Brief me before I fly — work in progress
 - [`examples/mantle-voice-agent`](examples/mantle-voice-agent/): Atlas — Voice Travel Agent with Rasa Skills
 - [`examples/mantle-voice-appointment-skills`](examples/mantle-voice-appointment-skills/): Schedora — Voice Appointment Booking with Rasa Mantle
 - [`examples/mantle-voice-banking-skills`](examples/mantle-voice-banking-skills/): Rasa Mantle Voice Banking Skills
