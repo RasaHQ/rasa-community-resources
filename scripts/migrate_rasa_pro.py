@@ -29,6 +29,8 @@ _SCRIPTS = Path(__file__).resolve().parent
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
+from migrate_mantle_config import migrate as migrate_mantle_config  # noqa: E402
+
 from rasa_projects import (  # noqa: E402
     ASSESSED_ON_RE,
     ECHO_PIN_RE,
@@ -265,7 +267,9 @@ def _run_uv_lock(project_path: Path, new_version: str, *, upgrade: bool = False)
     proc = subprocess.run(cmd, cwd=project_path, capture_output=True, text=True)
     if proc.returncode != 0:
         detail = (proc.stderr or proc.stdout or "").strip().splitlines()
-        tail = " | ".join(detail[-3:]) if detail else f"exit {proc.returncode}"
+        # The conflicting requirement is usually above uv's final hint. Keep
+        # enough of the solver explanation to identify the dependency to fix.
+        tail = " | ".join(detail[-40:]) if detail else f"exit {proc.returncode}"
         raise RuntimeError(f"uv lock failed: {tail}")
 
 
@@ -304,6 +308,9 @@ def migrate_project(
         updated, prerelease_note = _apply_prerelease_setting(updated, new_version)
         result["prerelease"] = prerelease_note
         result["pin_changed"] = pin_changed
+
+        if tuple(map(int, new_version.split('.')[:2])) >= (3, 22):
+            result["config"] = migrate_mantle_config(project.path, dry_run=dry_run)
 
         if (pin_changed or prerelease_note) and not dry_run:
             project.pyproject.write_text(updated, encoding="utf-8")
@@ -584,6 +591,8 @@ def main() -> int:
             continue
 
         notes = []
+        if result.get("config"):
+            notes.append(f"model selector: {', '.join(result['config'])}")
         if result["docs"]:
             notes.append(f"docs: {', '.join(result['docs'])}")
         if result["prerelease"]:
@@ -595,7 +604,7 @@ def main() -> int:
             notes.append("lock skipped")
         detail = f"  ({'; '.join(notes)})" if notes else ""
 
-        touched = bool(result["pin_changed"] or result["docs"] or result["prerelease"])
+        touched = bool(result["pin_changed"] or result["docs"] or result["prerelease"] or result.get("config"))
         if touched or before != new_version:
             changed += 1
             print(f"{GREEN}[OK]{RESET}   {result['path']}: {before} → {new_version}{detail}")
