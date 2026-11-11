@@ -146,45 +146,45 @@ def create_app(profile, host_token, *, domain_fixture=True, fault="none"):
             result = {"state": "refused", "reason": str(exc)}
         return public_result(tool, profile, result)
 
-    @server.tool()
-    def banking_accounts(ctx: Context) -> dict:
+    @server.tool(structured_output=True)
+    def banking_accounts(ctx: Context) -> dict[str, object]:
         """Read permitted fictional account aliases; no caller identity argument."""
         return invoke(ctx, "banking_accounts", registry.bank.accounts)
 
-    @server.tool()
-    def banking_balance(account: str, ctx: Context, balance_type: str = "available") -> dict:
+    @server.tool(structured_output=True)
+    def banking_balance(account: str, ctx: Context, balance_type: str = "available") -> dict[str, object]:
         """Read one permitted fictional balance, without write confirmation."""
         return invoke(ctx, "banking_balance", registry.bank.balance, account, balance_type)
 
-    @server.tool()
-    def banking_history(account: str, ctx: Context, page: int = 1) -> dict:
+    @server.tool(structured_output=True)
+    def banking_history(account: str, ctx: Context, page: int = 1) -> dict[str, object]:
         """Read one page of our fictional shared banking history."""
         return invoke(ctx, "banking_history", registry.bank.history, account, page)
 
-    @server.tool()
-    def banking_loan_payment(account: str, ctx: Context) -> dict:
+    @server.tool(structured_output=True)
+    def banking_loan_payment(account: str, ctx: Context) -> dict[str, object]:
         """Read the supplied fictional next payment, never vendor data."""
         return invoke(ctx, "banking_loan_payment", registry.bank.loan_payment, account)
 
-    @server.tool()
-    def banking_payoff(account: str, date: str, ctx: Context) -> dict:
+    @server.tool(structured_output=True)
+    def banking_payoff(account: str, date: str, ctx: Context) -> dict[str, object]:
         """Read a supplied fictional quote date; other dates are unsupported."""
         return invoke(ctx, "banking_payoff", registry.bank.payoff, account, date)
 
-    @server.tool()
+    @server.tool(structured_output=True)
     def banking_review_transfer(source: str, destination: str, amount: str,
-                                currency: str, ctx: Context) -> dict:
+                                currency: str, ctx: Context) -> dict[str, object]:
         """Prepare exact fictional details. This never confirms or submits."""
         return invoke(ctx, "banking_review_transfer", registry.bank.review_transfer,
                       source, destination, amount, currency)
 
-    @server.tool()
-    def banking_submit_transfer(review: str, ctx: Context) -> dict:
+    @server.tool(structured_output=True)
+    def banking_submit_transfer(review: str, ctx: Context) -> dict[str, object]:
         """Submit only a review confirmed separately by the trusted host."""
         return invoke(ctx, "banking_submit_transfer", registry.bank.submit, review)
 
-    @server.tool()
-    def banking_transfer_status(review: str, ctx: Context) -> dict:
+    @server.tool(structured_output=True)
+    def banking_transfer_status(review: str, ctx: Context) -> dict[str, object]:
         """Read the original retained outcome; never repeat a submission."""
         return invoke(ctx, "banking_transfer_status", registry.bank.status, review)
 
