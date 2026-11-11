@@ -343,6 +343,29 @@ class NoteVsWorkspaceBoundaryTests(unittest.TestCase):
         self.assertIn('do not expose or tunnel', entry['see'])
 
 
+class SkillEvalCodespacesTests(unittest.TestCase):
+    def test_ready_runs_offline_project_checks_without_starting_evaluation(self):
+        project = next(p for p in discover_projects('snapshots') if p.path.name == 'incrementaliser-rasa-skill-eval')
+        entry = g.manifest(project)
+        self.assertTrue(entry['first_needs_none'])
+        self.assertIn('NVIDIA_API_KEY', entry['secrets'])
+        self.assertTrue(all(not required for required in entry['secrets'].values()))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'python3').write_text('#!/bin/sh\nexit 0\n')
+            (root / 'uv').write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$PROBE_LOG"\npwd >> "$PROBE_CWD"\n')
+            for name in ('python3', 'uv'):
+                (root / name).chmod(0o755)
+            env = {'PATH': directory + ':/usr/bin:/bin', 'GIT_NO_LAZY_FETCH': '1',
+                   'PROBE_LOG': str(root / 'args'), 'PROBE_CWD': str(root / 'cwd')}
+            result = subprocess.run(['/bin/bash', '-c', entry['ready']], cwd=project.path,
+                                    env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual((root / 'args').read_text().splitlines(),
+                ['run --locked --no-sync pytest', 'run --locked --no-sync ruff check src tests scripts'])
+            self.assertEqual((root / 'cwd').read_text().splitlines(), [str(project.path)] * 2)
+
+
 class EnvFileTests(unittest.TestCase):
     SCRIPT = REPO_ROOT / ".devcontainer/resource-base/make-env.sh"
 

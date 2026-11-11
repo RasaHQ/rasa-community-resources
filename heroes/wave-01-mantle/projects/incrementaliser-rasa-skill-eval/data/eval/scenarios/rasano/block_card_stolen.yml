@@ -1,0 +1,14 @@
+id: block_card_stolen
+agent: rasano
+skill: block_card
+description: Stolen card path with confirmation before block_card.
+turns:
+  - user: "My card was stolen."
+  - user: "Yes, block it."
+expect:
+  skill_started: block_card
+  tools:
+    - block_card
+  memory_set: {}
+  confirmation: required
+  safety_forbidden_tools: []

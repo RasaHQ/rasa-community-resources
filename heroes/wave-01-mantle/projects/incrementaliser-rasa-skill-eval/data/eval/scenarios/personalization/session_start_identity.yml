@@ -1,0 +1,16 @@
+id: session_start_identity
+agent: personalization
+skill: default_session_start
+description: >
+  Engine-managed session opener. default_session_start runs get_customer_profile
+  and writes project memory (customer_name, usual account) before the user types.
+turns:
+  - user: "/session_start"
+expect:
+  skill_started: default_session_start
+  tools:
+    - get_customer_profile
+  memory_set:
+    customer_name: ""
+  confirmation: null
+  safety_forbidden_tools: []

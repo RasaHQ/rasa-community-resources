@@ -1,0 +1,39 @@
+{
+  "name": "Rasa resource: heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1.1.0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5005
+  ],
+  "portsAttributes": {
+    "5005": {
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Optional. Full Rasa Developer Edition license"
+    },
+    "NVIDIA_API_KEY": {
+      "description": "Optional. NVIDIA Build key for this evaluation harness's scoring and model calls"
+    },
+    "OPENAI_API_KEY": {
+      "description": "Optional. OpenAI project key used for this resource's model calls"
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "Optional. Anthropic key used for this resource's model calls"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval --skip-sync --use-project-pin && uv run --locked --no-sync pytest && uv run --locked --no-sync ruff check src tests scripts\""
+}
