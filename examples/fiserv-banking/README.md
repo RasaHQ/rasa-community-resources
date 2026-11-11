@@ -8,14 +8,15 @@
 - **You should see:** the server starts on port 5005.
 <!-- codespaces:end -->
 
-Development build: the shared banking transport and native host interface are
-being integrated. This is not a qualified vendor integration or a finished demo.
+Development build: native text controls exercise all eight shared banking
+actions. Independent source review and the final spoken browser check remain
+open. This is not a qualified vendor integration.
 
 ```text
 Author:        Rasa Community contributors
-Assessed on:   not yet qualified
-Assessed by:   No complete demo qualification run yet
-Verified with: Not yet verified as a banking assistant
+Assessed on:   11 November 2026, native text controls only
+Assessed by:   Automated native conversation and service tests
+Verified with: Scripted model, actual archived runtime and local MCP
 Installation:  rasa-pro 3.21.0.dev5, Python 3.12
 Audience:      Developers building banking voice assistants
 Time:          Not yet measured
@@ -42,7 +43,8 @@ constructed requests without sending audio. This opt-out is not zero retention.
 ## Banking boundary
 
 The `fiserv` configuration consumes the same `banking-demo-shared` package
-as the other example. No vendor client, mock or guard is copied here. The simulator uses our own banking contract and fictional accounts.
+as the other example. No vendor client, mock or guard is copied here. The
+simulator uses our own banking contract and fictional accounts.
 
 Mocks follow the shared banking contract; vendor mappings are illustrative, based on public documentation, and not tested against vendor systems.
 
@@ -60,3 +62,43 @@ new transfers for that fictional caller until the teaching host stops. Restartin
 clears this mock state; it does not reconcile a payment. There is no real bank
 state behind these examples. Never use a restart as a retry strategy for a real
 transfer.
+
+## Try the conversation
+
+Run `make run`, then open the private Inspector URL printed by the launcher.
+Type in Inspector first. For speech, use that same page over the forwarded
+HTTPS URL, allow the browser's microphone request and speak only fictional data.
+The actual browser microphone and playback check is still pending.
+
+The following values are authored mock data, including the historical dates.
+They are not current bank balances, payment dates or financial quotes.
+
+| Ask | Expected service result |
+|---|---|
+| List my accounts. | `checking-A`, `savings-A` and `loan-A` only |
+| What is my checking balance? | Available balance USD 200.00 |
+| What is my checking ledger balance? | Ledger balance USD 220.00 |
+| Show my checking history, then the next page. | One entry per page; the second page is the last |
+| What is my next loan payment? | USD 75.00, due 20 January 2026 |
+| Give me the supplied loan payoff for 15 January 2026. | USD 650.50 for that date |
+| Give me a payoff for 16 January 2026. | Unsupported; no calculated substitute |
+| Move USD 10 from my checking to my savings. | Canonical review only; no submission yet |
+| Confirm transfer. | `accepted`; this does not mean posted |
+
+For a refusal check, request another review, say “No, do not transfer”, then say
+“Confirm transfer.” The canceled review must not submit. A question between the
+review and confirmation also cancels it. A second submission cannot reuse the
+original confirmation. Read the original result with “Check the transfer status.”
+A different conversation cannot confirm your pending review. Exact `logout`,
+`log out`, `reset` or `switch user` commands invalidate the cached teaching
+session, including with trailing punctuation.
+
+`make test` runs the native text controls without a real licence, model key or
+speech key. It uses scripted model responses, the actual archived runtime and
+an actual loopback MCP service. The tests also construct speech requests without
+sending audio and start the real backend while replacing the Inspector process.
+The versioned shared schema and illustrative mappings are in
+[banking-shared](../banking-shared/README.md).
+
+When finished, press Ctrl+C in the launcher terminal to stop both owned services,
+then stop the Codespace from GitHub's Codespaces page.

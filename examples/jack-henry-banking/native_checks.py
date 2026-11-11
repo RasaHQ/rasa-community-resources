@@ -88,9 +88,14 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
         os.environ['BANKING_HOST_URL'] = self.origin
         os.environ['BANKING_HOST_CAPABILITY'] = secrets.token_urlsafe(32)
         profile = json.loads((self.PROJECT / 'demo.json').read_text())['profile']
+        self.profile = profile
+        self.transfer_outcome = 'accepted' if profile == 'fiserv' else 'queued'
         self.log = tempfile.TemporaryFile()
-        self.server = subprocess.Popen([sys.executable, '-m', 'banking_demo.server',
-            '--profile', profile, '--port', str(port), '--domain-fixture'],
+        command = [sys.executable, '-m', 'banking_demo.server',
+            '--profile', profile, '--port', str(port), '--domain-fixture']
+        if self._testMethodName == 'test_unknown_outcome_blocks_retries_even_after_logout':
+            command += ['--fault', 'transfer-response-lost']
+        self.server = subprocess.Popen(command,
             stdout=self.log, stderr=self.log)
         for _ in range(200):
             if self.server.poll() is not None:
@@ -154,11 +159,12 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_scoped_read_and_other_account_nondisclosure(self):
         rows = await self.turn('List my accounts.', ('banking_accounts', {}))
-        self.assertEqual(rows[-1][1]['accounts'], ['checking-A', 'savings-A'])
+        self.assertEqual(rows[-1][1]['accounts'], ['checking-A', 'loan-A', 'savings-A'])
         rows = await self.turn('Read my balance.', ('banking_balance', {'account': 'checking-A'}))
-        self.assertEqual(rows[-1][1]['amount'], '100.00')
+        self.assertEqual(rows[-1][1]['amount'], '200.00' if self.profile == 'fiserv' else '100.00')
         rows = await self.turn('Read another account.', ('banking_balance', {'account': 'checking-B'}))
-        self.assertEqual(rows[-1][1], {'state': 'refused', 'reason': 'account_unavailable'})
+        self.assertEqual(rows[-1][1], {'state': 'refused', 'reason': 'account_unavailable',
+                                     'fixture': 'shared-banking-contract'})
 
     async def test_next_explicit_raw_confirmation_queues_once(self):
         rows = await self.review()
@@ -166,11 +172,11 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('review', rows[-1][1])
         self.assertTrue(any('USD 10.00' in row.get('text', '') for row in self.output.messages))
         rows = await self.turn('Confirm transfer.', ('banking_submit_transfer', {}))
-        self.assertEqual(rows[-1][1]['state'], 'queued')
+        self.assertEqual(rows[-1][1]['state'], self.transfer_outcome)
         rows = await self.turn('Confirm transfer.', ('banking_submit_transfer', {}))
         self.assertEqual(rows[-1][1]['state'], 'refused')
         rows = await self.turn('Check the original result.', ('banking_transfer_status', {}))
-        self.assertEqual(rows[-1][1]['state'], 'queued')
+        self.assertEqual(rows[-1][1]['state'], self.transfer_outcome)
 
     async def test_model_self_confirmation_in_review_turn_refuses(self):
         rows = await self.turn('Review a transfer.',
@@ -198,10 +204,12 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(rows[-1][1]['state'], 'refused')
 
     async def test_logout_without_model_tool_invalidates_the_cached_host_session(self):
-        await self.turn('List my accounts.', ('banking_accounts', {}))
-        await self.turn('logout')
-        rows = await self.turn('Read my balance.', ('banking_balance', {'account': 'checking-A'}))
-        self.assertEqual(rows[-1][1]['state'], 'unavailable')
+        for command in ('logout', 'Log   out.', 'logout!', 'reset?'):
+            with self.subTest(command=command):
+                await self.turn('List my accounts.', ('banking_accounts', {}))
+                await self.turn(command)
+                rows = await self.turn('Read my balance.', ('banking_balance', {'account': 'checking-A'}))
+                self.assertEqual(rows[-1][1]['state'], 'unavailable')
 
     async def test_other_conversation_cannot_confirm_a_pending_review(self):
         await self.review()
@@ -211,11 +219,57 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(rows[-1][1]['state'], 'refused')
         self.sender = original
         rows = await self.turn('Confirm transfer.', ('banking_submit_transfer', {}))
-        self.assertEqual(rows[-1][1]['state'], 'queued')
+        self.assertEqual(rows[-1][1]['state'], self.transfer_outcome)
 
-    async def test_unsupported_history_is_not_invented(self):
-        rows = await self.turn('Read my history.', ('banking_history', {'account': 'checking-A'}))
+    async def test_supplied_ledger_history_pages_payment_and_dated_payoff(self):
+        rows = await self.turn('Read the ledger balance.',
+            ('banking_balance', {'account': 'checking-A', 'balance_type': 'ledger'}))
+        self.assertEqual(rows[-1][1]['amount'], '220.00' if self.profile == 'fiserv' else '110.00')
+        self.assertEqual(rows[-1][1]['balance_type'], 'ledger')
+        rows = await self.turn('Read history.', ('banking_history', {'account': 'checking-A'}))
+        self.assertEqual(rows[-1][1]['entries'][0]['amount'], '-5.00')
+        self.assertEqual(rows[-1][1]['page'], 1)
+        self.assertTrue(rows[-1][1]['more'])
+        rows = await self.turn('Read the next page.', ('banking_history', {'account': 'checking-A', 'page': 2}))
+        self.assertEqual(rows[-1][1]['entries'][0]['amount'], '20.00')
+        self.assertFalse(rows[-1][1]['more'])
+        rows = await self.turn('Read my next payment.', ('banking_loan_payment', {'account': 'loan-A'}))
+        self.assertEqual(rows[-1][1]['due_date'], '2026-01-20')
+        self.assertEqual(rows[-1][1]['amount'], '75.00')
+        rows = await self.turn('Read the supplied payoff quote.',
+            ('banking_payoff', {'account': 'loan-A', 'date': '2026-01-15'}))
+        self.assertEqual(rows[-1][1]['as_of'], '2026-01-15')
+        self.assertEqual(rows[-1][1]['amount'], '650.50' if self.profile == 'fiserv' else '500.25')
+        rows = await self.turn('Read a different date.',
+            ('banking_payoff', {'account': 'loan-A', 'date': '2026-01-16'}))
         self.assertEqual(rows[-1][1]['state'], 'unsupported')
+
+    async def test_loan_transfer_and_insufficient_funds_refuse(self):
+        rows = await self.turn('Transfer from the loan.',
+            ('banking_review_transfer', {'source': 'loan-A', 'destination': 'checking-A',
+                                         'amount': '10.00', 'currency': 'USD'}))
+        self.assertEqual(rows[-1][1]['state'], 'refused')
+        rows = await self.turn('Review an overdrawn transfer.',
+            ('banking_review_transfer', {'source': 'checking-A', 'destination': 'savings-A',
+                                         'amount': '9999.00', 'currency': 'USD'}))
+        self.assertEqual(rows[-1][1]['state'], 'pending')
+        rows = await self.turn('confirm transfer', ('banking_submit_transfer', {}))
+        self.assertEqual(rows[-1][1]['state'], 'refused')
+
+    async def test_unknown_outcome_blocks_retries_even_after_logout(self):
+        await self.review()
+        rows = await self.turn('confirm transfer', ('banking_submit_transfer', {}))
+        self.assertEqual(rows[-1][1]['state'], 'unknown')
+        rows = await self.turn('Check the original outcome.', ('banking_transfer_status', {}))
+        self.assertEqual(rows[-1][1]['state'], 'unknown')
+        rows = await self.turn('confirm transfer', ('banking_submit_transfer', {}))
+        self.assertEqual(rows[-1][1]['state'], 'refused')
+        rows = await self.review()
+        self.assertEqual(rows[-1][1]['state'], 'refused')
+        await self.turn('logout!')
+        await self.turn('List accounts.', ('banking_accounts', {}))
+        rows = await self.review()
+        self.assertEqual(rows[-1][1]['state'], 'refused')
 
 
 class VoiceRequestTests(unittest.IsolatedAsyncioTestCase):

@@ -32,6 +32,11 @@ def _is_confirmation(text):
     return re.fullmatch(r'confirm\s+transfer[.!]?', text.strip().casefold()) is not None
 
 
+def _is_reset(text):
+    normalized = ' '.join(text.strip().casefold().rstrip('.!?').split())
+    return normalized in {'reset', 'logout', 'log out', 'switch user'}
+
+
 def _users(context):
     return [event.as_dict() for event in context.events
             if event.as_dict().get('event') == 'user']
@@ -51,7 +56,8 @@ def _payload(result):
 def _safe(data):
     # Never forward generic transport errors, capabilities or host handles.
     allowed = {'state', 'reason', 'fixture', 'accounts', 'amount', 'currency',
-               'source', 'destination'}
+               'source', 'destination', 'balance_type', 'entries', 'page', 'more',
+               'due_date', 'as_of'}
     return {key: value for key, value in data.items() if key in allowed}
 
 
@@ -76,10 +82,9 @@ async def _host(context, *, create=True):
     text = native.turn.text.strip().lower()
     # A model may choose no tool on logout. Observe every raw user turn since
     # the last host operation before allowing any later protected operation.
-    resets = {'reset', 'logout', 'log out', 'switch user'}
     unseen = users[conversation.observed_turn:]
     conversation.observed_turn = len(users)
-    if any(str(event.get('text', '')).strip().lower() in resets for event in unseen):
+    if any(_is_reset(str(event.get('text', ''))) for event in unseen):
         try:
             await asyncio.to_thread(conversation.client.reset, conversation.session)
         finally:
@@ -109,13 +114,14 @@ async def banking_accounts(context: ToolContext = None) -> ToolResult:
 
 
 @tool(description='Read the supplied balance for a permitted fictional account.')
-async def banking_balance(account: str, context: ToolContext = None) -> ToolResult:
-    return await _read(context, 'banking_balance', {'account': account})
+async def banking_balance(account: str, balance_type: str = 'available',
+                          context: ToolContext = None) -> ToolResult:
+    return await _read(context, 'banking_balance', {'account': account, 'balance_type': balance_type})
 
 
 @tool(description='Read supported history, or report that history is unsupported.')
-async def banking_history(account: str, context: ToolContext = None) -> ToolResult:
-    return await _read(context, 'banking_history', {'account': account})
+async def banking_history(account: str, page: int = 1, context: ToolContext = None) -> ToolResult:
+    return await _read(context, 'banking_history', {'account': account, 'page': page})
 
 
 @tool(description='Read a supplied next payment, never calculate it from principal.')

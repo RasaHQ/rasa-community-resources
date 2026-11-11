@@ -4,7 +4,9 @@ description: Read permitted fictional account information or review a transfer.
 ---
 
 Use @tool.banking_accounts to list permitted aliases.
-Use @tool.banking_balance for a service-supplied balance.
+Use @tool.banking_balance for a service-supplied available or ledger balance.
+Pass balance_type=ledger only when the caller asks for the ledger value.
+Use page=2 on @tool.banking_history only to request its next supplied page.
 Use @tool.banking_history, @tool.banking_loan_payment and @tool.banking_payoff
 only for the corresponding request. State unsupported results without guessing.
 Use @tool.banking_review_transfer to produce a canonical own-account review.
