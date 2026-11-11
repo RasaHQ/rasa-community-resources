@@ -16,6 +16,7 @@ from rasa.mantle.tools.result import ToolResult
 
 @dataclass
 class _Conversation:
+    origin: str = field(repr=False)
     client: object = field(repr=False)
     session: object = field(repr=False)
     pending: dict | None = field(default=None, repr=False)
@@ -24,7 +25,18 @@ class _Conversation:
     last_review: str | None = field(default=None, repr=False)
 
 
+@dataclass
+class _OutcomeHold:
+    client: object = field(repr=False)
+    session: object = field(repr=False)
+    review: str = field(repr=False)
+
+
 _conversations = {}
+# All conversations on this private teaching host share the fixed demo-A
+# principal. A new routing ID or session cannot erase an uncertain dispatch.
+# This is process-lifetime state, not a durable payment journal.
+_outcome_holds = {}
 _CONFIRM = 'confirm transfer'
 
 
@@ -77,7 +89,7 @@ async def _host(context, *, create=True):
         from .client import HostClient
         client = HostClient(origin, capability)
         session = await asyncio.to_thread(client.open_session, 'demo-A')
-        conversation = _Conversation(client, session, observed_turn=max(0, len(users) - 1))
+        conversation = _Conversation(origin, client, session, observed_turn=max(0, len(users) - 1))
         _conversations[key] = conversation
     text = native.turn.text.strip().lower()
     # A model may choose no tool on logout. Observe every raw user turn since
@@ -139,19 +151,34 @@ async def banking_review_transfer(source: str, destination: str, amount: str,
                                   currency: str, context: ToolContext = None) -> ToolResult:
     try:
         host = await _host(context)
+        if host.origin in _outcome_holds:
+            return ToolResult(llm_response={'state': 'refused', 'reason': 'outcome_unresolved'})
         if host.pending:
             await asyncio.to_thread(host.client.cancel, host.session, host.pending['review'])
             host.pending = None
         result = _payload(await host.client.call(host.session, 'banking_review_transfer',
             {'source': source, 'destination': destination, 'amount': amount, 'currency': currency}))
         if result.get('state') == 'pending' and isinstance(result.get('review'), str):
+            host.last_review = result['review']
+            # A draft is not confirmable until its canonical output has actually
+            # been delivered. Preserve the private handle for status/cancellation.
+            try:
+                await context.send(f"Review: transfer {result['currency']} {result['amount']} from "
+                                   f"{result['source']} to {result['destination']}. "
+                                   "To submit exactly this transfer, say confirm transfer next. "
+                                   "Anything else cancels this review.")
+                if context.is_cancelled:
+                    raise asyncio.CancelledError()
+            except (Exception, asyncio.CancelledError):
+                host.pending = None
+                try:
+                    await asyncio.shield(asyncio.to_thread(host.client.cancel, host.session,
+                                                           result['review']))
+                except (Exception, asyncio.CancelledError):
+                    pass  # No local permission exists even if draft cancellation is uncertain.
+                raise
             host.pending = result
             host.pending_turn = len(_users(context))
-            host.last_review = result['review']
-            await context.send(f"Review: transfer {result['currency']} {result['amount']} from "
-                               f"{result['source']} to {result['destination']}. "
-                               "To submit exactly this transfer, say confirm transfer next. "
-                               "Anything else cancels this review.")
         return ToolResult(llm_response=_safe(result))
     except Exception:
         return ToolResult(llm_response={'state': 'refused', 'reason': 'review_unavailable'})
@@ -163,6 +190,9 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
     try:
         host = await _host(context, create=False)
         native = current_turn_context()
+        if host.origin in _outcome_holds:
+            host.pending = None
+            return ToolResult(llm_response={'state': 'refused', 'reason': 'outcome_unresolved'})
         if (not host.pending or context.is_cancelled
                 or len(_users(context)) != host.pending_turn + 1
                 or not _is_confirmation(native.turn.text)):
@@ -175,9 +205,27 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
         if context.is_cancelled:
             await asyncio.to_thread(host.client.cancel, host.session, review['review'])
             return ToolResult(llm_response={'state': 'refused', 'reason': 'interrupted'})
+        # Another conversation could have become uncertain while confirm
+        # awaited its host round trip. Check again before dispatch, then install
+        # our hold synchronously before the first network await.
+        if host.origin in _outcome_holds:
+            return ToolResult(llm_response={'state': 'refused', 'reason': 'outcome_unresolved'})
+        held = _OutcomeHold(host.client, host.session, review['review'])
+        _outcome_holds[host.origin] = held
         dispatched = True
-        result = _payload(await host.client.call(host.session, 'banking_submit_transfer',
-                                                 {'review': review['review']}))
+        reply = await host.client.call(host.session, 'banking_submit_transfer',
+                                       {'review': review['review']})
+        if reply.isError:
+            raise ValueError('uncertain_submit_reply')
+        result = _payload(reply)
+        from .contract import validate
+        validate('banking_submit_transfer', 'output', result)
+        if result.get('state') not in {'queued', 'accepted', 'posted', 'refused', 'canceled'}:
+            raise ValueError('unresolved_submit_outcome')
+        # Only this original call's validated known response releases its hold.
+        # A later status read or a reset is not a reconciliation capability.
+        if _outcome_holds.get(host.origin) is held:
+            del _outcome_holds[host.origin]
         return ToolResult(llm_response=_safe(result))
     except Exception:
         # A post-dispatch network failure must never invite an automatic retry.
@@ -189,9 +237,12 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
 async def banking_transfer_status(context: ToolContext = None) -> ToolResult:
     try:
         host = await _host(context, create=False)
-        if not host.last_review:
+        held = _outcome_holds.get(host.origin)
+        identifier = held.review if held else host.last_review
+        if not identifier:
             raise ValueError('review_unavailable')
-        return ToolResult(llm_response=_safe(_payload(await host.client.call(
-            host.session, 'banking_transfer_status', {'review': host.last_review}))))
+        client, session = (held.client, held.session) if held else (host.client, host.session)
+        return ToolResult(llm_response=_safe(_payload(await client.call(
+            session, 'banking_transfer_status', {'review': identifier}))))
     except Exception:
         return ToolResult(llm_response={'state': 'unavailable', 'reason': 'status_unavailable'})

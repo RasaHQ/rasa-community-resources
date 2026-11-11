@@ -102,3 +102,11 @@ The versioned shared schema and illustrative mappings are in
 
 When finished, press Ctrl+C in the launcher terminal to stop both owned services,
 then stop the Codespace from GitHub's Codespaces page.
+
+The native host also fences an operation if its submission reply is lost or
+malformed, even when the backend retained an accepted result. A new conversation
+or logout cannot remove that fence. Reading the original status does not clear
+it: this teaching build has no reconciliation command. The original reference
+stays private, and fresh transfer reviews remain blocked for the process lifetime.
+Confirmation is armed only after the canonical review reaches the output channel.
+Failed or canceled delivery leaves no permission to submit.

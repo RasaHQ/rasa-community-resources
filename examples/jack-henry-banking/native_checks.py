@@ -135,6 +135,10 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
                         self.assertNotIn(host.session.credential, combined)
                         if host.last_review:
                             self.assertNotIn(host.last_review, combined)
+                held = rasa_adapter._outcome_holds.get(self.origin)
+                if held:
+                    self.assertNotIn(held.session.credential, combined)
+                    self.assertNotIn(held.review, combined)
         finally:
             if hasattr(self, 'agent'):
                 await self.agent.close()
@@ -142,6 +146,11 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
                 os.chdir(self.previous)
             self.server.terminate()
             self.server.wait(timeout=10)
+            from banking_demo import rasa_adapter
+            # The owned mock process is now gone; isolate the next test process.
+            rasa_adapter._outcome_holds.pop(self.origin, None)
+            for key in [key for key in rasa_adapter._conversations if key[0] == self.origin]:
+                rasa_adapter._conversations.pop(key, None)
             self.log.close()
             self.env.stop()
             self.temp.cleanup()
@@ -270,6 +279,77 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
         await self.turn('List accounts.', ('banking_accounts', {}))
         rows = await self.review()
         self.assertEqual(rows[-1][1]['state'], 'refused')
+
+
+    async def _lost_submit_reply(self, mode):
+        from types import SimpleNamespace
+        from banking_demo.client import HostClient
+        actual = HostClient.call
+        dispatched = []
+        async def lose_reply(client, session, tool, arguments):
+            result = await actual(client, session, tool, arguments)
+            if tool == 'banking_submit_transfer':
+                dispatched.append(result)
+                if mode == 'timeout':
+                    raise TimeoutError('fictional reply loss after server effect')
+                return SimpleNamespace(isError=False, structuredContent={'state': 'queued'}, content=[])
+            return result
+        with patch.object(HostClient, 'call', lose_reply):
+            await self.review()
+            rows = await self.turn('confirm transfer', ('banking_submit_transfer', {}))
+            self.assertEqual(rows[-1][1]['state'], 'unknown')
+            rows = await self.turn('Check original status.', ('banking_transfer_status', {}))
+            self.assertEqual(rows[-1][1]['state'], self.transfer_outcome)
+            rows = await self.review()
+            self.assertEqual(rows[-1][1]['state'], 'refused')
+            await self.turn('logout!')
+            await self.turn('List accounts.', ('banking_accounts', {}))
+            rows = await self.review()
+            self.assertEqual(rows[-1][1]['state'], 'refused')
+            self.sender = uuid4().hex
+            rows = await self.review()
+            self.assertEqual(rows[-1][1]['state'], 'refused')
+            self.assertEqual(len(dispatched), 1)
+
+    async def test_host_timeout_after_retained_success_fences_new_review(self):
+        await self._lost_submit_reply('timeout')
+
+    async def test_host_malformed_reply_after_retained_success_fences_new_review(self):
+        await self._lost_submit_reply('malformed')
+
+    async def _undelivered_review(self, error):
+        from banking_demo.client import HostClient
+        actual = HostClient.call
+        submitted = []
+        async def count_calls(client, session, tool, arguments):
+            if tool == 'banking_submit_transfer':
+                submitted.append(arguments)
+            return await actual(client, session, tool, arguments)
+        class FailingOutput(CollectingOutputChannel):
+            failed = False
+            async def send_text_message(channel, recipient_id, text, **kwargs):
+                if text.startswith('Review: transfer'):
+                    channel.failed = True
+                    raise error
+                await super().send_text_message(recipient_id, text, **kwargs)
+        failing = FailingOutput()
+        self.output = failing
+        with patch.object(HostClient, 'call', count_calls):
+            try:
+                await self.review()
+            except asyncio.CancelledError:
+                pass  # Preserve native cancellation; permission must still be gone.
+            self.assertTrue(failing.failed, 'The actual canonical output channel must be exercised')
+            self.output = CollectingOutputChannel()
+            rows = await self.turn('confirm transfer', ('banking_submit_transfer', {}))
+            self.assertEqual(rows[-1][1]['state'], 'refused')
+            self.assertEqual(submitted, [], 'An undelivered review must never dispatch')
+
+    async def test_failed_canonical_review_delivery_never_arms_confirmation(self):
+        await self._undelivered_review(OSError('fictional output failure'))
+
+    async def test_canceled_canonical_review_delivery_never_arms_confirmation(self):
+        await self._undelivered_review(asyncio.CancelledError())
 
 
 class VoiceRequestTests(unittest.IsolatedAsyncioTestCase):

@@ -11,6 +11,9 @@ class CountingAdapter:
     def __init__(self):
         self.submissions = 0
 
+    def allows_transfer(self, source, destination):
+        return source == 'checking-A' and destination == 'savings-A'
+
     def submit(self, operation, transfer):
         self.submissions += 1
         return 'queued'
@@ -24,6 +27,7 @@ class MissingHostBoundary(unittest.TestCase):
                               frozenset({'checking-A', 'savings-A'}), 1000)
         bank.open_session(host)
         review = bank.review_transfer(host, 'checking-A', 'savings-A', '10.00', 'USD')
+        self.assertEqual(review['state'], 'pending')
         bank.confirm(host, review['review'],
                      {key: review[key] for key in ('source', 'destination', 'amount', 'currency')})
         # A real host registered/confirmed this fixture. Missing transport proof
