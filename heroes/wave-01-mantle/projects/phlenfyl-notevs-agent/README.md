@@ -62,7 +62,9 @@ extension. Set `NOTEVS_CALL_URL=http://localhost:37492/call` and set
 `NOTEVS_FOLDER_PATH` to the absolute path of the intended workspace **on that
 extension host**. Use the exact path, including spaces. Confirm the folder
 with the person running the extension; endpoint reachability alone does not
-identify the right workspace.
+identify the right workspace. For standalone use, uncomment and fill the path
+entry in `.env.example` after copying it to `.env`. The template keeps binding
+entries commented so they do not overwrite a per-window injected workspace.
 
 Every note read and write requires an absolute, existing directory in
 `NOTEVS_FOLDER_PATH` before HTTP I/O. Missing, blank, relative, nonexistent,

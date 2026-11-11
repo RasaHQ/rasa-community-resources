@@ -6,6 +6,9 @@ suite does not establish SDK decorator, extension, notes or provider behaviour.
 import ast
 import asyncio
 import inspect
+import os
+import shutil
+import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 from tempfile import TemporaryDirectory
@@ -108,6 +111,19 @@ class WorkspaceScopeTests(unittest.TestCase):
         self.ns['NOTEVS_FOLDER_PATH'] = str(alias)
         self.call('notevs_search_notes', {'query': 'fixture'})
         self.assertEqual(self.requests[0][1]['args']['folderPath'], str(self.folder))
+
+    def test_env_template_does_not_override_an_injected_workspace_binding(self):
+        shell = shutil.which('bash')
+        if shell is None:
+            self.skipTest('Bash is needed by start.sh and this template-load control')
+        template = SOURCE.parents[1] / '.env.example'
+        env = dict(os.environ, NOTEVS_FOLDER_PATH=str(self.folder),
+                   NOTEVS_CALL_URL='http://127.0.0.1:37492/call')
+        result = subprocess.run([shell, '-c',
+            'source "$1"; printf "%s\\n%s\\n" "$NOTEVS_FOLDER_PATH" "$NOTEVS_CALL_URL"',
+            'template-test', str(template)], env=env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines(), [str(self.folder), 'http://127.0.0.1:37492/call'])
 
 
 if __name__ == '__main__':
