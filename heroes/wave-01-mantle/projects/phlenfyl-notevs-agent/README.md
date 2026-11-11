@@ -64,10 +64,13 @@ extension host**. Use the exact path, including spaces. Confirm the folder
 with the person running the extension; endpoint reachability alone does not
 identify the right workspace.
 
-Every note read and write refuses missing or blank `NOTEVS_FOLDER_PATH` before
-HTTP I/O. The configured path is sent as `folderPath` on every request, rather
-than allowing the extension to select whichever VS Code window owns its port.
-This prevents an implicit workspace fallback; it is not user authentication.
+Every note read and write requires an absolute, existing directory in
+`NOTEVS_FOLDER_PATH` before HTTP I/O. Missing, blank, relative, nonexistent,
+non-directory or unresolvable paths are refused. The canonical path is sent as
+`folderPath` on every request and cannot be replaced by caller arguments.
+Run both processes on the same desktop: this is a local directory check, not
+a remote binding check or user authentication. The extension itself still
+falls back to its window workspace if it receives an invalid path.
 
 A remote Codespace can exercise standalone chat and the mocked transport
 controls below. Its `localhost` and `/workspaces` paths do not refer to your

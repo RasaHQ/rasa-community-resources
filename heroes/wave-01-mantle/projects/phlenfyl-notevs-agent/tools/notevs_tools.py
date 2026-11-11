@@ -31,6 +31,7 @@ through anything; it's static for that window's whole session.]
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 import httpx
 
@@ -48,10 +49,23 @@ async def _call(tool_name: str, args: dict, context: ToolContext | None = None) 
             "error": "workspace_scope_required",
             "hint": "Set NOTEVS_FOLDER_PATH to the intended workspace on the extension host before accessing notes.",
         })
-    # The configured extension-host workspace is authoritative, including when
-    # an internal caller supplies a different folderPath. Never use the
-    # extension server's implicit first-window fallback.
-    args = {**args, "folderPath": NOTEVS_FOLDER_PATH}
+    try:
+        directory = Path(NOTEVS_FOLDER_PATH)
+        if not directory.is_absolute():
+            raise ValueError("Workspace path must be absolute")
+        directory = directory.resolve(strict=True)
+        if not directory.is_dir():
+            raise ValueError("Workspace path must be a directory")
+    except (OSError, RuntimeError, ValueError):
+        return ToolResult(llm_response={
+            "ok": False,
+            "error": "workspace_scope_invalid",
+            "hint": "Use an absolute existing workspace directory on the same desktop as the extension.",
+        })
+    folder_path = str(directory)
+    # The canonical, existing same-host directory is authoritative. The
+    # extension falls back to another window if given a nonexistent path.
+    args = {**args, "folderPath": folder_path}
     # Also mirror it into real declared project memory (see memory.yml) so
     # it's visible in `rasa inspect` and usable by scoped instructions
     # elsewhere, on top of the args-injection above (which is what actually
@@ -59,7 +73,7 @@ async def _call(tool_name: str, args: dict, context: ToolContext | None = None) 
     # dependency, so a bad/undeclared write must never break the real call).
     if context is not None and NOTEVS_FOLDER_PATH:
         try:
-            context.memory.set("folder_path", NOTEVS_FOLDER_PATH)
+            context.memory.set("folder_path", folder_path)
         except Exception:
             pass
     try:
