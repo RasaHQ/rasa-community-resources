@@ -16,9 +16,13 @@ class DomainFixture:
         self.outcome = "queued"
         self.balance_result = {"amount": "123.45", "currency": "USD"}
 
-    def balance(self, account):
+    def balance(self, account, balance_type="available"):
         self.reads.append(account)
         return self.balance_result
+
+    @staticmethod
+    def allows_transfer(source, destination):
+        return source.startswith(("checking-", "savings-")) and destination.startswith(("checking-", "savings-"))
 
     def submit(self, operation, transfer):
         self.calls.append((operation, transfer))

@@ -1,13 +1,24 @@
 # Shared banking domain
 
-One dependency package for the two banking examples. This first slice implements
-server-owned session/review state and adapter boundaries. Its optional loopback
-MCP transport uses separate host and per-session capabilities. It is **not native
-Rasa authentication, a qualified confirmation flow or a vendor-contract mock**. No vendor code,
-credentials or machine schemas are bundled here.
+One dependency package for the two banking examples. Its conformance target is
+our own shared banking contract `1.0.0`, declared in
+[`banking_demo/contracts/banking-v1.json`](banking_demo/contracts/banking-v1.json).
+The optional loopback MCP transport uses separate host and per-session
+capabilities. It is not bank-customer authentication or vendor certification.
+No vendor schema, derived vendor schema, credentials or real customer data is
+bundled here.
 
-`banking_demo.BankingService` exposes `accounts`, `balance`, `review_transfer`,
-`submit` and `status`. Only the future trusted host adapter may register a
+Mocks follow the shared banking contract; vendor mappings are illustrative, based on public documentation, and not tested against vendor systems.
+
+[`profiles/MAPPINGS.md`](banking_demo/profiles/MAPPINGS.md) identifies the public
+operation descriptions followed by the two configurations and the unknown vendor
+equivalents. Every result identifies the shared contract version, illustrative
+profile and mock boundary. A real-vendor adapter is unavailable; no bank endpoint
+is configurable and no sandbox account is required.
+
+`banking_demo.BankingService` exposes `accounts`, `balance`, `history`,
+`loan_payment`, `payoff`, `review_transfer`, `submit` and `status`.
+Only the trusted host adapter may register a
 `SessionContext` or invoke `confirm`, `cancel` and `reset`. These host methods must
 never be registered as model-callable tools. Constructing the Python context is
 not authentication; the native channel-to-MCP binding still needs qualification.
@@ -39,10 +50,22 @@ owned server process afterward.
 
 `python -m banking_demo.server --profile jack-henry --port 8940` binds only
 `127.0.0.1`; it requires an ephemeral `BANKING_HOST_CAPABILITY` supplied privately
-by the launcher, never a committed value or browser/model input. Without the
-explicit `--domain-fixture` flag, vendor operations return `unsupported`.
-The two profile names do not assert vendor wire compatibility. History, loan
-schedule and payoff remain explicitly unsupported in this first slice.
+by the launcher, never a committed value or browser/model input. Both profile
+names select our shared-contract mock, not a real-vendor binding. The older
+`--domain-fixture` flag remains a compatibility alias; no live-vendor mode is
+enabled by omitting it. Private test construction with `domain_fixture=False`
+still exercises an explicitly unavailable vendor path.
+
+The fictional caller owns `checking-A`, `savings-A` and `loan-A` (or the `B`
+counterparts). Balance defaults to `available`; `balance_type="ledger"` is also
+supported. History defaults to page 1; page 2 gives the remaining fictional
+entry. The next payment is supplied for `2026-01-20`. A payoff quote is supplied
+only for `2026-01-15`; other dates return `unsupported`, never a calculated quote.
+Loan-to-deposit transfers refuse. Deposit transfers above the supplied available
+amount refuse; otherwise the Jack Henry illustration returns `queued` and the
+Fiserv illustration `accepted`. Neither state claims posting or changes the
+displayed balance. `--fault transfer-response-lost` explicitly simulates an
+unknown dispatched outcome for refusal tests, without a provider request.
 
 The host creates `HostClient(loopback_origin, host_capability)`, then calls
 `open_session("demo-A")` (or `demo-B`). This issues an opaque per-conversation
@@ -54,6 +77,12 @@ that this follows the real user's deterministic confirmation**, not a model's
 boolean or invented conversation ID. The transport test uses a scripted host;
 native flow/channel provenance is still unqualified. These identities are
 explicit teaching simulators, never authentication of a bank customer.
+
+The raw MCP boundary enforces our JSON input schemas before SDK coercion or
+extra-field removal, including refusal of model-supplied `confirmed` or identity
+fields. Tool discovery advertises those same versioned schemas. Results are
+validated against our output schemas, with redacted unavailability for malformed
+adapter values. Host proof and control endpoints are not tools.
 
 Dependency-locked learner environments and browser/native-flow/MCP integration
 belong to the consuming examples. These unit controls do not replace the required

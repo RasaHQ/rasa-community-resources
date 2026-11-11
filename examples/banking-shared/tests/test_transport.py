@@ -109,7 +109,8 @@ class Transport(unittest.TestCase):
         self.assertNotIn(a.credential, repr(a))
         self.assertEqual(self.call(a, "banking_balance", {"account": "checking-A"})["state"], "supplied")
         denied = self.call(b, "banking_balance", {"account": "checking-A"})
-        self.assertEqual(denied, {"state": "refused", "reason": "account_unavailable"})
+        self.assertEqual(denied["state"], "refused")
+        self.assertEqual(denied["reason"], "account_unavailable")
 
     def test_mcp_cannot_confirm_but_host_can_bind_exact_review(self):
         session = self.host.open_session()
@@ -157,7 +158,7 @@ class Transport(unittest.TestCase):
         from starlette.testclient import TestClient
         from banking_demo.server import create_app
 
-        with TestClient(create_app("fiserv", self.capability),
+        with TestClient(create_app("fiserv", self.capability, domain_fixture=False),
                         base_url="http://127.0.0.1:8940") as client:
             opened = client.post("/host/open", json={"caller": "demo-A"},
                                  headers={"Authorization": "Bearer " + self.capability})
@@ -182,9 +183,18 @@ class Transport(unittest.TestCase):
             value = result.get("structuredContent")
             if value is None:
                 value = json.loads(result["content"][0]["text"])
-            self.assertEqual(value, {
-                "state": "unsupported", "reason": "vendor_contract_unqualified",
+            self.assertEqual(value["state"], "unsupported")
+            self.assertEqual(value["reason"], "vendor_contract_unqualified")
+
+    def test_raw_extra_confirmation_flag_cannot_bypass_the_guard(self):
+        session = self.host.open_session()
+        review = self.review(session)
+        with self.assertRaisesRegex(ValueError, "mcp_call_unavailable_or_refused"):
+            self.call(session, "banking_submit_transfer", {
+                "review": review["review"], "confirmed": True,
             })
+        result = self.call(session, "banking_submit_transfer", {"review": review["review"]})
+        self.assertEqual(result["reason"], "confirmation_required")
 
 
 if __name__ == "__main__":

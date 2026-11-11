@@ -6,11 +6,14 @@ calls and contains no vendor wire schema.
 """
 
 from dataclasses import dataclass, field
+from datetime import date as calendar_date
 from decimal import Decimal, InvalidOperation
 import re
 from threading import RLock
 from time import monotonic
 from uuid import uuid4
+
+from .mock import Unsupported
 
 
 class Refused(ValueError):
@@ -107,11 +110,15 @@ class BankingService:
             self._context(context)
             return {"accounts": sorted(context.accounts)}
 
-    def balance(self, context, account):
+    def balance(self, context, account, balance_type="available"):
         with self._lock:
             self._account(context, account)
+            if balance_type not in {"available", "ledger"}:
+                raise Refused("unsupported_balance_type")
             try:
-                result = self.adapter.balance(account)
+                result = self.adapter.balance(account, balance_type)
+            except Unsupported:
+                return {"state": "unsupported"}
             except Exception:
                 return {"state": "unavailable"}
             # Only the typed domain fields cross the adapter boundary.
@@ -122,13 +129,52 @@ class BankingService:
                     or re.fullmatch(r"-?[0-9]+(?:\.[0-9]{1,2})?", amount) is None
                     or result["currency"] != "USD"):
                 return {"state": "unavailable"}
-            return {"state": "supplied", "amount": amount, "currency": "USD"}
+            return {"state": "supplied", "amount": amount, "currency": "USD",
+                    "balance_type": balance_type}
+
+    def _read(self, context, account, method, arguments, fields):
+        with self._lock:
+            self._account(context, account)
+            operation = getattr(self.adapter, method, None)
+            if operation is None:
+                return {"state": "unsupported"}
+            try:
+                result = operation(account, *arguments)
+            except Unsupported:
+                return {"state": "unsupported"}
+            except Exception:
+                return {"state": "unavailable"}
+            if not isinstance(result, dict) or set(result) != set(fields):
+                return {"state": "unavailable"}
+            return {"state": "supplied", **result}
+
+    def history(self, context, account, page=1):
+        if type(page) is not int or not 1 <= page <= 100:
+            raise Refused("invalid_page")
+        return self._read(context, account, "history", (page,), ("entries", "page", "more"))
+
+    def loan_payment(self, context, account):
+        return self._read(context, account, "loan_payment", (), ("due_date", "amount", "currency"))
+
+    def payoff(self, context, account, date):
+        try:
+            if not isinstance(date, str) or calendar_date.fromisoformat(date).isoformat() != date:
+                raise ValueError()
+        except ValueError:
+            raise Refused("invalid_date") from None
+        return self._read(context, account, "payoff", (date,), ("as_of", "amount", "currency"))
 
     def review_transfer(self, context, source, destination, amount, currency):
         with self._lock:
             self._account(context, source)
             self._account(context, destination)
             if source == destination or currency != "USD":
+                raise Refused("unsupported_transfer")
+            try:
+                allowed = self.adapter.allows_transfer(source, destination)
+            except Exception:
+                allowed = False
+            if allowed is not True:
                 raise Refused("unsupported_transfer")
             # A new review identifier or login must not turn an unresolved
             # dispatch into a fresh attempt. Reconciliation is a separate,
@@ -210,6 +256,8 @@ class BankingService:
         with self._lock:
             review = self._review(context, identifier)
             if review.outcome is None:
+                if review.expires <= self.clock() and review.state != "canceled":
+                    return {"state": "expired"}
                 return {"state": review.state}
             # No vendor inquiry is invented; no status call repeats submit.
             return dict(review.outcome)
