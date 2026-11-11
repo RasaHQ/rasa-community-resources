@@ -196,18 +196,27 @@ def manifest(project) -> dict:
     targets = make_targets(project.path)
     first_target = "inspect" if "inspect" in targets else "run" if "run" in targets else None
     primary, forward = ports(project.path)
+    snapshot = getattr(project, 'snapshot', False)
+    if snapshot and first_target == 'inspect':
+        # The API's run port need not be the Inspector's port. Use the selected
+        # first command's recipe; an unqualified inspect uses the default 5005.
+        makefile = (project.path / 'Makefile').read_text()
+        inspector_ports = re.findall(r'(?:--port|\s-p)\s+(\d{4,5})\b', recipe(makefile, 'inspect'))
+        primary = int(inspector_ports[0]) if inspector_ports else 5005
+        forward = sorted({*forward, primary})
     train = "make train && " if "train" in targets and first_target else ""
     if project.rel in FIRST:
         first, see = FIRST[project.rel]
     elif first_target == "inspect":
-        helper = '.devcontainer/resource-base/print-inspector-url.sh' + ("" if primary == 5005 else f" {primary}")
+        helper = '.devcontainer/resource-base/print-inspector-url.sh'
+        port_arg = "" if primary == 5005 else f" {primary}"
         first = train + "make inspect"
         see = (
             "training finishes, then the Inspector starts. In a second terminal, "
-            f'`bash "$(git rev-parse --show-toplevel)/{helper}"` prints its address.'
+            f'`bash "$(git rev-parse --show-toplevel)/{helper}"{port_arg}` prints its address.'
             if train
             else "the Inspector starts. In a second terminal, "
-            f'`bash "$(git rev-parse --show-toplevel)/{helper}"` prints its address.'
+            f'`bash "$(git rev-parse --show-toplevel)/{helper}"{port_arg}` prints its address.'
         )
     elif first_target == "run":
         first = train + "make run"
@@ -217,7 +226,6 @@ def manifest(project) -> dict:
     first_needs_none = project.rel in FIRST_NEEDS_NONE
     if first_needs_none:
         secrets = {name: False for name in secrets}
-    snapshot = getattr(project, 'snapshot', False)
     provider_note = ""
     before_first = ""
     remote_env = {}

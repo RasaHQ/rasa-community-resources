@@ -1,6 +1,7 @@
 """The per-resource Codespaces configurations are generated, complete and consistent."""
 import json
 import os
+import re
 from pathlib import Path
 import stat
 import subprocess
@@ -83,6 +84,14 @@ class GeneratedFilesTests(unittest.TestCase):
         coffee = snapshots['samrudh-coffee-shop']
         self.assertIn('LANGFUSE_PUBLIC_KEY', coffee['secrets'])
         self.assertIn('LANGFUSE_SECRET_KEY', coffee['secrets'])
+
+    def test_civico_inspector_uses_its_default_port_not_the_separate_api_port(self):
+        project = next(p for p in discover_projects('snapshots') if p.path.name == 'samakshmehra-civico')
+        entry = g.manifest(project)
+        self.assertEqual(entry['first'], 'make train && make inspect')
+        self.assertIn(5005, entry['ports'])
+        self.assertIn(5007, entry['ports'])
+        self.assertNotIn('print-inspector-url.sh" 5007', entry['see'])
 
     def test_manual_resources_are_covered(self):
         for item in g.MANUAL:
@@ -203,6 +212,27 @@ class PortTests(unittest.TestCase):
             entry = g.manifest(project)
             if "train" in g.make_targets(project.path) and entry["first"] and project.rel not in g.FIRST:
                 self.assertTrue(entry["first"].startswith("make train && make "), project.rel)
+
+
+class InspectorCommandTests(unittest.TestCase):
+    def test_nondefault_port_is_an_argument_not_part_of_the_script_name(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'pyproject.toml').write_text('[project]\nname = "port-fixture"\n')
+            (root / 'Makefile').write_text('inspect:\n\tuv run rasa inspect --port 5037\n')
+            entry = g.manifest(SimpleNamespace(path=root, pyproject=root / 'pyproject.toml', rel='examples/port-fixture'))
+            command = re.search(r'`(bash [^`]+)`', entry['see']).group(1)
+            probe = root / 'bash'
+            log = root / 'arguments.txt'
+            probe.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$PROBE_LOG"\n')
+            probe.chmod(0o755)
+            env = {'PATH': directory + ':/usr/bin:/bin', 'PROBE_LOG': str(log), 'GIT_NO_LAZY_FETCH': '1'}
+            result = subprocess.run(['/bin/bash', '-c', command], cwd=REPO_ROOT,
+                                    env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(log.read_text().splitlines(),
+                             [str(REPO_ROOT / '.devcontainer/resource-base/print-inspector-url.sh'), '5037'])
 
 
 class EnvFileTests(unittest.TestCase):
