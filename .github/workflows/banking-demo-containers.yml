@@ -33,7 +33,10 @@ jobs:
           configFile: .devcontainer/patterns-mcp-confirmation-gate/devcontainer.json
           push: never
           inheritEnv: false
-          runCmd: >-
-            env -u RASA_LICENSE -u RASA_PRO_LICENSE -u OPENAI_API_KEY
-            -u ANTHROPIC_API_KEY -u DEEPGRAM_API_KEY -u GEMINI_API_KEY
+          runCmd: |
+            set -eu
+            unset RASA_LICENSE RASA_PRO_LICENSE OPENAI_API_KEY ANTHROPIC_API_KEY DEEPGRAM_API_KEY GEMINI_API_KEY
             make test
+            cd "$(git rev-parse --show-toplevel)/examples/banking-shared"
+            python -m unittest discover -s tests -v
+            python "$(git rev-parse --show-toplevel)/scripts/test_banking_host_boundary.py"

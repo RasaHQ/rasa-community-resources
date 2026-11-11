@@ -815,9 +815,19 @@ def render_markdown(catalog: dict, root: Path = REPO_ROOT) -> str:
     w("Finished example agents that are not case builds ([catalog](examples/README.md)):")
     w("")
     case_paths = {b["path"] for b in builds}
+    shared = []
     for path in sorted(p for p in (root / "examples").iterdir()
                        if (p / "README.md").is_file() and f"examples/{p.name}" not in case_paths):
+        if (path / "pyproject.toml").is_file() and not (path / "agent.yml").is_file():
+            shared.append(path)
+            continue
         w(f"- [`examples/{path.name}`](examples/{path.name}/): {_h1(path)}")
+    if shared:
+        w("")
+        w("Shared packages (dependencies, not separate assistants):")
+        w("")
+        for path in shared:
+            w(f"- [`examples/{path.name}`](examples/{path.name}/): {_h1(path)}")
     w("")
     return "\n".join(out)
 

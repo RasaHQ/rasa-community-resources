@@ -2313,6 +2313,23 @@ class TestCaseBuildCatalog(unittest.TestCase):
         self.assertEqual(self.cat.stale(_SCRIPTS.parent), [],
                          "run `make catalog` (python3 scripts/catalog_case_builds.py) and commit the result")
 
+    def test_shared_dependencies_are_not_listed_as_finished_assistants(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "tutorials").mkdir()
+            helper = root / "examples" / "shared-bank"
+            helper.mkdir(parents=True)
+            (helper / "README.md").write_text("# Shared banking dependency\n")
+            (helper / "pyproject.toml").write_text('[project]\nname = "shared-bank"\n')
+            legacy = root / "examples" / "existing-example"
+            legacy.mkdir()
+            (legacy / "README.md").write_text("# Existing example\n")
+            rendered = self.cat.render_markdown(self.committed, root)
+            assistants, dependencies = rendered.split("Shared packages (dependencies, not separate assistants):")
+            self.assertNotIn("[`examples/shared-bank`]", assistants)
+            self.assertIn("[`examples/shared-bank`]", dependencies)
+            self.assertIn("[`examples/existing-example`]", assistants)
+
     def test_main_run_is_read_from_either_readme_layout(self):
         bold = "**Main run at default settings** (`2026-09-29-gpt-5.5-default/`, 24 calls,\n48 turns):"
         table = "| Run | Calls |\n|---|---|\n| `2026-09-30-gpt-5.5-reasoning-low` (main) | 23 |"
