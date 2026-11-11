@@ -47,6 +47,7 @@ pull request that adds their project.
 | Aromal TR | [traromal](https://github.com/traromal) | [traromal-devcopilot](projects/traromal-devcopilot/) |
 | Samrudha Kelkar | [@samrudh](https://github.com/samrudh) | [samrudh-coffee-shop](projects/samrudh-coffee-shop/) |
 | Malar Saravanan | [@Malar-saravanan](https://github.com/Malar-saravanan) | [`malar-saravanan-nourishher-voice`](projects/malar-saravanan-nourishher-voice) |
+| Damilola P | [@phlenfyl](https://github.com/phlenfyl) | [`phlenfyl-notevs-agent`](projects/phlenfyl-notevs-agent) |
 
 ## Projects
 
@@ -58,6 +59,7 @@ pull request that adds their project.
 | [DevPilot](projects/traromal-devcopilot/) | Voice/text assistant for developer ops — task queue, tickets, deploy gating, hardware orders, two-way Slack, on-call handoffs, and web-search doc lookup | Aromal TR | `3.20.0.dev6` | 2026-10-13 |
 | [samrudh-coffee-shop](projects/samrudh-coffee-shop/) | Voice & text assistant for Artisan Roast Coffee Co. supporting drink ordering, customer loyalty, barista store queues, and CEO financial revenue analytics | Samrudha Kelkar (@samrudh) | `3.20.0.dev6` | 2026-09-11 |
 | [`malar-saravanan-nourishher-voice`](projects/malar-saravanan-nourishher-voice) | Voice-first women's health nutrition companion — profile, meal planning, natural meal logging, history/coaching, with optional condition-aware support | Malar Saravanan | rasa-pro 3.20.0.dev6 | 2026-09-18 |
+| [`phlenfyl-notevs-agent`](projects/phlenfyl-notevs-agent) | Chat agent for reading, searching, and managing your NoteVs VS Code notes | Damilola P | rasa-pro 3.19.0.dev5 | 2026-09-20 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a

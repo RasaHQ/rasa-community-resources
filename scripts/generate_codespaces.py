@@ -97,6 +97,11 @@ def env_example_secrets(path: Path) -> dict[str, bool]:
 
 # Resources whose first command comes from their own README rather than a Makefile target.
 FIRST = {
+    "heroes/wave-01-mantle/projects/phlenfyl-notevs-agent": (
+        "uv run --locked python -m rasa train && bash ./start.sh",
+        "the REST server starts on port 5005. Standalone chat can run without NoteVs; "
+        "real note tools need the NoteVs extension's endpoint reachable from this Codespace, as described below.",
+    ),
     "heroes/wave-01-mantle/projects/chandratechblog-hrassistant": (
         "uv run rasa train && uv run rasa inspect",
         'training finishes, then the Inspector starts. In a second terminal, '
@@ -243,6 +248,13 @@ def manifest(project) -> dict:
                         '`uv run python -m scripts.mcp_demo_serve` and '
                         '`uv run python -m scripts.mcp_slack_serve`. '
                         'Keep both bridges running before starting Rasa. Live Slack features need the optional Slack tokens.')
+    if project.rel == 'heroes/wave-01-mantle/projects/phlenfyl-notevs-agent':
+        # The source defaults to Groq and supports two optional alternatives.
+        secrets['GROQ_API_KEY'] = True
+        secrets['OPENAI_API_KEY'] = False
+        secrets['ANTHROPIC_API_KEY'] = False
+        remote_env[LICENSE_ALIAS] = '${containerEnv:RASA_LICENSE}'
+        provider_note = 'Groq is the default provider. OpenAI or Anthropic keys are only needed when you select that provider in the project setup.'
     if snapshot and 'backend' in targets:
         forward = sorted(set(forward) | {int(n) for n in re.findall(
             r'--port\s+(\d{4,5})\b', recipe((project.path / 'Makefile').read_text(), 'backend'))})

@@ -261,6 +261,70 @@ class InspectorCommandTests(unittest.TestCase):
                              [str(REPO_ROOT / '.devcontainer/resource-base/print-inspector-url.sh'), '5037'])
 
 
+class FrozenRuntimeTests(unittest.TestCase):
+    def execute_probes(self, expected, available_engine, actual=None):
+        import contextlib
+        import io
+        import types
+        from unittest.mock import patch
+        from check_project import runtime_probes
+        version, validate = runtime_probes(expected)
+        called = []
+        package = types.ModuleType('rasa')
+        package.__path__ = []
+        engine = types.ModuleType(available_engine)
+        engine.__path__ = []
+        validator = types.ModuleType(available_engine + '.validation')
+        validator.validate_project = lambda path: called.append(path)
+        modules = {'rasa': package, available_engine: engine, available_engine + '.validation': validator}
+        with patch.dict(sys.modules, modules), patch('importlib.metadata.version', return_value=actual or expected), \
+             patch('importlib.util.find_spec', side_effect=lambda name: object() if name == available_engine else None), \
+             patch('logging.disable'), contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            exec(version, {})
+            exec(validate, {})
+        return called
+
+    def test_frozen_and_current_pins_use_their_own_engine_validation(self):
+        for version, engine in [('3.19.0.dev5', 'rasa.calm_v2'), ('3.20.0.dev0', 'rasa.calm_v2'),
+                                ('3.20.0.dev1', 'rasa.mantle'), ('3.21.0.dev5', 'rasa.mantle')]:
+            with self.subTest(version=version):
+                self.assertEqual(self.execute_probes(version, engine), [Path('.')])
+
+    def test_newer_pin_does_not_accept_only_the_legacy_namespace(self):
+        with self.assertRaises(SystemExit) as error:
+            self.execute_probes('3.22.0.dev3', 'rasa.calm_v2')
+        self.assertEqual(error.exception.code, 3)
+
+    def test_wrong_installed_version_still_fails(self):
+        with self.assertRaises(SystemExit) as error:
+            self.execute_probes('3.19.0.dev5', 'rasa.calm_v2', actual='3.19.0.dev4')
+        self.assertEqual(error.exception.code, 2)
+
+
+class NoteVsSetupTests(unittest.TestCase):
+    def test_setup_uses_its_lock_and_creates_a_private_local_env_template(self):
+        script = REPO_ROOT / 'heroes/wave-01-mantle/projects/phlenfyl-notevs-agent/setup.sh'
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            script_copy = root / 'setup.sh'
+            script_copy.write_bytes(script.read_bytes())
+            (root / '.env.example').write_text('GROQ_API_KEY=\nRASA_LICENSE=\n')
+            bin_dir = root / 'bin'
+            bin_dir.mkdir()
+            (bin_dir / 'python3.13').write_text('#!/bin/sh\nif [ "$1" = "--version" ]; then echo "Python 3.13 fixture"; else mkdir -p .venv/bin; : > .venv/bin/activate; fi\n')
+            (bin_dir / 'pip').write_text('#!/bin/sh\nif [ "$1" = "install" ] && [ "$2" = "-r" ]; then test -f "$3" || exit 1; fi\n')
+            (bin_dir / 'uv').write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$PROBE_LOG"\nprintf "%s\\n" "$UV_PROJECT_ENVIRONMENT" > "$PROBE_ENV"\n')
+            for probe in bin_dir.iterdir():
+                probe.chmod(0o755)
+            env = {'PATH': str(bin_dir) + ':/usr/bin:/bin', 'PROBE_LOG': str(root / 'args'), 'PROBE_ENV': str(root / 'venv')}
+            result = subprocess.run(['/bin/bash', str(script_copy)], env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+            self.assertEqual((root / 'args').read_text().splitlines(), ['sync', '--locked', '--python', 'python3.13'])
+            self.assertEqual((root / 'venv').read_text().strip(), str(root / '.venv'))
+            self.assertEqual((root / '.env').read_bytes(), (root / '.env.example').read_bytes())
+            self.assertEqual(stat.S_IMODE((root / '.env').stat().st_mode), 0o600)
+
+
 class EnvFileTests(unittest.TestCase):
     SCRIPT = REPO_ROOT / ".devcontainer/resource-base/make-env.sh"
 

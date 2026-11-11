@@ -1,0 +1,20 @@
+[project]
+name = "notevs-agent"
+version = "0.1.0"
+description = "Local Rasa Mantle agent for talking to your NoteVs VS Code notes from a chat panel"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "rasa-pro==3.19.0.dev5",
+]
+
+# Runtime conversations go through Groq. Training compiles skills.md into the
+# Mantle model and does not call an LLM, so it needs an issued Rasa licence
+# but not the Groq key.
+[tool.rasa-catalog]
+required-secrets = ["GROQ_API_KEY"]
+training-secrets = []
+
+[tool.uv]
+prerelease = "allow"
+package = false
