@@ -1,0 +1,743 @@
+{
+  "contract": "shared-banking",
+  "version": "1.0.0",
+  "notice": "Mocks follow the shared banking contract; vendor mappings are illustrative, based on public documentation, and not tested against vendor systems.",
+  "tools": {
+    "banking_accounts": {
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_accounts:input",
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_accounts:output",
+        "type": "object",
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0"
+          },
+          "profile": {
+            "enum": [
+              "jack-henry",
+              "fiserv"
+            ]
+          },
+          "mapping_kind": {
+            "const": "illustrative"
+          },
+          "fixture": {
+            "const": "shared-banking-contract"
+          },
+          "state": {
+            "enum": [
+              "supplied",
+              "refused",
+              "unsupported",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,48}$"
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "maxItems": 32
+          }
+        },
+        "required": [
+          "contract_version",
+          "profile",
+          "mapping_kind",
+          "fixture",
+          "state"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "supplied"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "accounts"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "banking_balance": {
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_balance:input",
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "balance_type": {
+            "enum": [
+              "available",
+              "ledger"
+            ],
+            "default": "available"
+          }
+        },
+        "required": [
+          "account"
+        ],
+        "additionalProperties": false
+      },
+      "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_balance:output",
+        "type": "object",
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0"
+          },
+          "profile": {
+            "enum": [
+              "jack-henry",
+              "fiserv"
+            ]
+          },
+          "mapping_kind": {
+            "const": "illustrative"
+          },
+          "fixture": {
+            "const": "shared-banking-contract"
+          },
+          "state": {
+            "enum": [
+              "supplied",
+              "refused",
+              "unsupported",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,48}$"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^-?[0-9]{1,16}\\.[0-9]{2}$"
+          },
+          "currency": {
+            "const": "USD"
+          },
+          "balance_type": {
+            "enum": [
+              "available",
+              "ledger"
+            ]
+          }
+        },
+        "required": [
+          "contract_version",
+          "profile",
+          "mapping_kind",
+          "fixture",
+          "state"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "supplied"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "amount",
+                "currency",
+                "balance_type"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "banking_history": {
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_history:input",
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 1
+          }
+        },
+        "required": [
+          "account"
+        ],
+        "additionalProperties": false
+      },
+      "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_history:output",
+        "type": "object",
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0"
+          },
+          "profile": {
+            "enum": [
+              "jack-henry",
+              "fiserv"
+            ]
+          },
+          "mapping_kind": {
+            "const": "illustrative"
+          },
+          "fixture": {
+            "const": "shared-banking-contract"
+          },
+          "state": {
+            "enum": [
+              "supplied",
+              "refused",
+              "unsupported",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,48}$"
+          },
+          "entries": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                "amount": {
+                  "type": "string",
+                  "pattern": "^-?[0-9]{1,16}\\.[0-9]{2}$"
+                },
+                "currency": {
+                  "const": "USD"
+                },
+                "state": {
+                  "const": "posted"
+                }
+              },
+              "required": [
+                "date",
+                "amount",
+                "currency",
+                "state"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "more": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "contract_version",
+          "profile",
+          "mapping_kind",
+          "fixture",
+          "state"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "supplied"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "entries",
+                "page",
+                "more"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "banking_loan_payment": {
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_loan_payment:input",
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "account"
+        ],
+        "additionalProperties": false
+      },
+      "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_loan_payment:output",
+        "type": "object",
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0"
+          },
+          "profile": {
+            "enum": [
+              "jack-henry",
+              "fiserv"
+            ]
+          },
+          "mapping_kind": {
+            "const": "illustrative"
+          },
+          "fixture": {
+            "const": "shared-banking-contract"
+          },
+          "state": {
+            "enum": [
+              "supplied",
+              "refused",
+              "unsupported",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,48}$"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^-?[0-9]{1,16}\\.[0-9]{2}$"
+          },
+          "currency": {
+            "const": "USD"
+          }
+        },
+        "required": [
+          "contract_version",
+          "profile",
+          "mapping_kind",
+          "fixture",
+          "state"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "supplied"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "due_date",
+                "amount",
+                "currency"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "banking_payoff": {
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_payoff:input",
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        },
+        "required": [
+          "account",
+          "date"
+        ],
+        "additionalProperties": false
+      },
+      "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_payoff:output",
+        "type": "object",
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0"
+          },
+          "profile": {
+            "enum": [
+              "jack-henry",
+              "fiserv"
+            ]
+          },
+          "mapping_kind": {
+            "const": "illustrative"
+          },
+          "fixture": {
+            "const": "shared-banking-contract"
+          },
+          "state": {
+            "enum": [
+              "supplied",
+              "refused",
+              "unsupported",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,48}$"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^-?[0-9]{1,16}\\.[0-9]{2}$"
+          },
+          "currency": {
+            "const": "USD"
+          }
+        },
+        "required": [
+          "contract_version",
+          "profile",
+          "mapping_kind",
+          "fixture",
+          "state"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "supplied"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "as_of",
+                "amount",
+                "currency"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "banking_review_transfer": {
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_review_transfer:input",
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "destination": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^[0-9]{1,16}(\\.[0-9]{1,2})?$"
+          },
+          "currency": {
+            "const": "USD"
+          }
+        },
+        "required": [
+          "source",
+          "destination",
+          "amount",
+          "currency"
+        ],
+        "additionalProperties": false
+      },
+      "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_review_transfer:output",
+        "type": "object",
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0"
+          },
+          "profile": {
+            "enum": [
+              "jack-henry",
+              "fiserv"
+            ]
+          },
+          "mapping_kind": {
+            "const": "illustrative"
+          },
+          "fixture": {
+            "const": "shared-banking-contract"
+          },
+          "state": {
+            "enum": [
+              "pending",
+              "refused",
+              "unsupported",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,48}$"
+          },
+          "review": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "destination": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^-?[0-9]{1,16}\\.[0-9]{2}$"
+          },
+          "currency": {
+            "const": "USD"
+          }
+        },
+        "required": [
+          "contract_version",
+          "profile",
+          "mapping_kind",
+          "fixture",
+          "state"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "pending"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "review",
+                "source",
+                "destination",
+                "amount",
+                "currency"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "banking_submit_transfer": {
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_submit_transfer:input",
+        "type": "object",
+        "properties": {
+          "review": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          }
+        },
+        "required": [
+          "review"
+        ],
+        "additionalProperties": false
+      },
+      "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_submit_transfer:output",
+        "type": "object",
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0"
+          },
+          "profile": {
+            "enum": [
+              "jack-henry",
+              "fiserv"
+            ]
+          },
+          "mapping_kind": {
+            "const": "illustrative"
+          },
+          "fixture": {
+            "const": "shared-banking-contract"
+          },
+          "state": {
+            "enum": [
+              "accepted",
+              "queued",
+              "posted",
+              "refused",
+              "unsupported",
+              "unknown",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,48}$"
+          },
+          "operation": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          }
+        },
+        "required": [
+          "contract_version",
+          "profile",
+          "mapping_kind",
+          "fixture",
+          "state"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "banking_transfer_status": {
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_transfer_status:input",
+        "type": "object",
+        "properties": {
+          "review": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          }
+        },
+        "required": [
+          "review"
+        ],
+        "additionalProperties": false
+      },
+      "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:banking-demo:1.0.0:banking_transfer_status:output",
+        "type": "object",
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0"
+          },
+          "profile": {
+            "enum": [
+              "jack-henry",
+              "fiserv"
+            ]
+          },
+          "mapping_kind": {
+            "const": "illustrative"
+          },
+          "fixture": {
+            "const": "shared-banking-contract"
+          },
+          "state": {
+            "enum": [
+              "pending",
+              "confirmed",
+              "canceled",
+              "expired",
+              "accepted",
+              "queued",
+              "posted",
+              "refused",
+              "unsupported",
+              "unknown",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,48}$"
+          },
+          "operation": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          }
+        },
+        "required": [
+          "contract_version",
+          "profile",
+          "mapping_kind",
+          "fixture",
+          "state"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}
