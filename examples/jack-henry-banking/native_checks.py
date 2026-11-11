@@ -197,6 +197,22 @@ class NativeFlowTests(unittest.IsolatedAsyncioTestCase):
             rows = await self.turn('confirm transfer', ('banking_submit_transfer', {}))
         self.assertEqual(rows[-1][1]['state'], 'refused')
 
+    async def test_logout_without_model_tool_invalidates_the_cached_host_session(self):
+        await self.turn('List my accounts.', ('banking_accounts', {}))
+        await self.turn('logout')
+        rows = await self.turn('Read my balance.', ('banking_balance', {'account': 'checking-A'}))
+        self.assertEqual(rows[-1][1]['state'], 'unavailable')
+
+    async def test_other_conversation_cannot_confirm_a_pending_review(self):
+        await self.review()
+        original = self.sender
+        self.sender = uuid4().hex
+        rows = await self.turn('confirm transfer', ('banking_submit_transfer', {}))
+        self.assertEqual(rows[-1][1]['state'], 'refused')
+        self.sender = original
+        rows = await self.turn('Confirm transfer.', ('banking_submit_transfer', {}))
+        self.assertEqual(rows[-1][1]['state'], 'queued')
+
     async def test_unsupported_history_is_not_invented(self):
         rows = await self.turn('Read my history.', ('banking_history', {'account': 'checking-A'}))
         self.assertEqual(rows[-1][1]['state'], 'unsupported')

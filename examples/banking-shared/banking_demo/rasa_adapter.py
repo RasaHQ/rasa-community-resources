@@ -19,6 +19,7 @@ class _Conversation:
     client: object = field(repr=False)
     session: object = field(repr=False)
     pending: dict | None = field(default=None, repr=False)
+    observed_turn: int = 0
     pending_turn: int = 0
     last_review: str | None = field(default=None, repr=False)
 
@@ -62,6 +63,7 @@ async def _host(context, *, create=True):
         raise ValueError('host_unavailable')
     # No routing identifier or caller supplied as a tool/model argument.
     key = (origin, native.sender_id)
+    users = _users(context)
     conversation = _conversations.get(key)
     if conversation is None:
         if not create:
@@ -69,10 +71,20 @@ async def _host(context, *, create=True):
         from .client import HostClient
         client = HostClient(origin, capability)
         session = await asyncio.to_thread(client.open_session, 'demo-A')
-        conversation = _Conversation(client, session)
+        conversation = _Conversation(client, session, observed_turn=max(0, len(users) - 1))
         _conversations[key] = conversation
-    users = _users(context)
     text = native.turn.text.strip().lower()
+    # A model may choose no tool on logout. Observe every raw user turn since
+    # the last host operation before allowing any later protected operation.
+    resets = {'reset', 'logout', 'log out', 'switch user'}
+    unseen = users[conversation.observed_turn:]
+    conversation.observed_turn = len(users)
+    if any(str(event.get('text', '')).strip().lower() in resets for event in unseen):
+        try:
+            await asyncio.to_thread(conversation.client.reset, conversation.session)
+        finally:
+            _conversations.pop(key, None)
+        raise ValueError('session_reset')
     if conversation.pending and len(users) > conversation.pending_turn:
         # Only the immediately following exact phrase can confirm. A question,
         # denial, reset, changed request or intervening turn invalidates consent.
@@ -80,10 +92,6 @@ async def _host(context, *, create=True):
             await asyncio.to_thread(conversation.client.cancel, conversation.session,
                                     conversation.pending['review'])
             conversation.pending = None
-    if text in {'reset', 'logout', 'log out', 'switch user'}:
-        await asyncio.to_thread(conversation.client.reset, conversation.session)
-        _conversations.pop(key, None)
-        raise ValueError('session_reset')
     return conversation
 
 
