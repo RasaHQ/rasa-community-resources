@@ -9,7 +9,7 @@ import propose
 
 
 class ProposalTests(unittest.TestCase):
-    def exercise(self, merge_fails=False, paths='RASA_RELEASE.json\0RASA_PRO_VERSION\0', identity_change=True, base_changed=False, manual_branch=False):
+    def exercise(self, paths='RASA_RELEASE.json\0RASA_PRO_VERSION\0', identity_change=True, base_changed=False, manual_branch=False):
         previous = {'selected': {'version': '3.20.0.dev9'}, 'companionRevision': 'a' * 40}
         current = {'selected': {'version': '3.20.0rc1'}, 'companionRevision': 'b' * 40} if identity_change else previous
         calls = []
@@ -38,8 +38,6 @@ class ProposalTests(unittest.TestCase):
             raise AssertionError(command)
         def run(command, **kwargs):
             calls.append(command)
-            if merge_fails and command[:3] == ['gh', 'pr', 'merge']:
-                raise subprocess.CalledProcessError(1, command)
             return subprocess.CompletedProcess(command, 0)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -47,15 +45,12 @@ class ProposalTests(unittest.TestCase):
             before = Path.cwd()
             try:
                 os.chdir(root)
-                with patch.dict(os.environ, {'GITHUB_ACTIONS': 'true', 'GITHUB_REF': 'refs/heads/main', 'GITHUB_REPOSITORY': 'Example/site', 'GITHUB_RUN_ID': '123'}), patch('sys.argv', ['propose.py', '--state', str(root / 'proposal.json'), '--merge']), patch.object(propose.subprocess, 'check_output', side_effect=output), patch.object(propose.subprocess, 'run', side_effect=run):
+                with patch.dict(os.environ, {'GITHUB_ACTIONS': 'true', 'GITHUB_REF': 'refs/heads/main', 'GITHUB_REPOSITORY': 'Example/site', 'GITHUB_RUN_ID': '123'}), patch('sys.argv', ['propose.py', '--state', str(root / 'proposal.json')]), patch.object(propose.subprocess, 'check_output', side_effect=output), patch.object(propose.subprocess, 'run', side_effect=run):
                     if manual_branch:
                         with self.assertRaisesRegex(SystemExit, 'manual edits'):
                             propose.main()
                     elif base_changed:
                         with self.assertRaisesRegex(SystemExit, 'Main changed'):
-                            propose.main()
-                    elif merge_fails:
-                        with self.assertRaises(subprocess.CalledProcessError):
                             propose.main()
                     elif 'src/' in paths:
                         with self.assertRaisesRegex(SystemExit, 'Unexpected candidate'):
@@ -66,19 +61,12 @@ class ProposalTests(unittest.TestCase):
             finally:
                 os.chdir(before)
 
-    def test_exact_tested_commit_is_merged_and_checks_are_dispatched(self):
+    def test_exact_tested_candidate_is_proposed_without_merge_or_dispatch(self):
         calls, state = self.exercise()
-        merge = next(c for c in calls if c[:3] == ['gh', 'pr', 'merge'])
-        self.assertEqual(merge[-2:], ['--match-head-commit', 'c' * 40])
-        self.assertNotIn('--admin', merge)
-        self.assertTrue(any(c[:3] == ['gh', 'workflow', 'run'] for c in calls))
-        self.assertTrue(state['postMergeChecksDispatched'])
-        self.assertEqual(state['status'], 'merged')
-
-    def test_blocked_merge_retains_tested_pr_without_dispatch(self):
-        calls, state = self.exercise(merge_fails=True)
+        self.assertEqual(state['head'], 'c' * 40)
         self.assertEqual(state['status'], 'proposed')
         self.assertTrue(state['pr'].endswith('/1'))
+        self.assertFalse(any(c[:3] == ['gh', 'pr', 'merge'] for c in calls))
         self.assertFalse(any(c[:3] == ['gh', 'workflow', 'run'] for c in calls))
 
     def test_unchanged_pin_does_not_create_daily_receipt_pr(self):

@@ -47,7 +47,7 @@ from rasa_projects import (
     discover_projects,
     discover_waves,
     is_prerelease,
-    is_snapshot_path,
+    is_historical_version_path,
     read_expected_version,
     read_lock_version,
     read_pyproject_pin,
@@ -127,7 +127,7 @@ def check_version_consistency(expected: str) -> list[Finding]:
         # rewrite a contributor's verified claim into a lie, or fail the build
         # for every past cohort on every bump. Their own internal consistency
         # is checked by `snapshot-pin` instead.
-        if is_snapshot_path(_rel(path)):
+        if is_historical_version_path(_rel(path)):
             continue
         for lineno, line in _numbered(_read(path)):
             # A migration doc legitimately shows the version you are coming
@@ -275,7 +275,7 @@ def check_lock_prereleases(expected: str) -> list[Finding]:
     for lock in _tracked_files("*/uv.lock", "**/uv.lock"):
         # A frozen lock is a record of what the author installed, not something
         # `make migrate ARGS=--upgrade` is ever going to be run against.
-        if is_snapshot_path(_rel(lock)):
+        if is_historical_version_path(_rel(lock)):
             continue
         for match in package_re.finditer(_read(lock)):
             name, version = match.group("name"), match.group("version")

@@ -6,6 +6,7 @@ from types import SimpleNamespace
 import unittest
 import tempfile
 import rasa_projects
+import lint_repo
 from unittest.mock import patch
 import subprocess
 import migrate_rasa_pro as migration
@@ -38,6 +39,7 @@ class MigrationOrderTests(unittest.TestCase):
             stack.enter_context(patch.object(migration.sys,'argv',['migrate','--version','3.20.0.dev9','--no-touch-assessed-on']))
             for name,value in [('resolve_target',('3.20.0.dev9',True)),('verify_on_index',None),('verify_engine_support',None),('read_pyproject_pin','3.20.0.dev6'),('read_lock_version','3.20.0.dev9'),('_rewrite_doc',False)]:stack.enter_context(patch.object(migration,name,return_value=value))
             stack.enter_context(patch.object(migration,'discover_projects',side_effect=[projects,[]]))
+            stack.enter_context(patch.object(migration,'additional_migration_projects',return_value=[]))
             stack.enter_context(patch.object(migration,'migrate_project',side_effect=prepare))
             stack.enter_context(patch.object(migration,'_run_uv_lock',side_effect=lock))
             stack.enter_context(patch.object(migration.subprocess,'check_output',return_value=b''))
@@ -49,6 +51,67 @@ class MigrationOrderTests(unittest.TestCase):
         self.assertEqual(resolved,['a','b'])
     def test_every_manifest_precedes_any_lock(self):self.exercise()
     def test_lock_failure_never_advances_root_pin(self):self.exercise(fail=True)
+
+class NestedMigrationTests(unittest.TestCase):
+    def test_tracked_nested_inputs_migrate_without_rewriting_history_or_catalog(self):
+        old, new = '3.21.0.dev5', '3.22.0.dev3'
+        workshop = 'workshops/software-factories-masterclass/'
+        active = ['examples/mantle-factory-agent/project',
+                  'examples/mantle-flight-briefing-openai-agents/project',
+                  workshop + 'env']
+        frozen = [workshop + 'archive/2026-10-22-original/project',
+                  workshop + 'factory', workshop + 'openai-mcp',
+                  'heroes/wave-01/projects/receipt']
+        stable = workshop + 'book/ready/ch00/demo/project'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(['git', 'init', '-q', tmp], check=True)
+            for rel in active + frozen + [stable]:
+                target = root / rel / 'pyproject.toml'
+                target.parent.mkdir(parents=True)
+                marker = ' # rasa-version-ignore: qualified stable runtime' if rel == stable else ''
+                target.write_text('[project]\nname = "fixture"\nversion = "0.1.0"\ndependencies = [\n'
+                                  f'  "rasa-pro=={old}",{marker}\n]\n')
+            doc = root / 'tutorials/voice-agent-three-frameworks/shared/web/PROTOCOL.md'
+            doc.parent.mkdir(parents=True)
+            doc.write_text(f'Install rasa-pro=={old}.\n')
+            historical = root / frozen[0] / 'README.md'
+            historical.write_text(f'Verified with rasa-pro {old}\n')
+            subprocess.run(['git', '-C', tmp, 'add', '.'], check=True)
+            before = {rel: (root / rel / 'pyproject.toml').read_bytes() for rel in frozen + [stable]}
+            with patch.object(rasa_projects, 'REPO_ROOT', root), patch.object(migration, 'REPO_ROOT', root):
+                extra = rasa_projects.additional_migration_projects([])
+                self.assertEqual({p.rel for p in extra}, set(active))
+                self.assertEqual(rasa_projects.additional_migration_projects(extra), [])
+                for project in extra:
+                    result = migration.migrate_project(project, new, skip_lock=True,
+                        touch_assessed_on=False, dry_run=False)
+                    self.assertIsNone(result['error'])
+                docs = rasa_projects.tracked_version_paths('*.md')
+                self.assertEqual(docs, [doc])
+                for path in docs:
+                    migration._rewrite_doc(path, None, new, touch_assessed_on=False, dry_run=False)
+            for rel in active:
+                self.assertIn(new, (root / rel / 'pyproject.toml').read_text())
+            for rel, content in before.items():
+                self.assertEqual((root / rel / 'pyproject.toml').read_bytes(), content)
+            self.assertIn(new, doc.read_text())
+            self.assertIn(old, historical.read_text())
+
+    def test_only_explicit_history_is_exempt_from_current_version_lint(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            names = ['workshops/software-factories-masterclass/env/pyproject.toml',
+                     'workshops/software-factories-masterclass/archive/old/README.md',
+                     'workshops/software-factories-masterclass/factory/README.md',
+                     'workshops/software-factories-masterclass/openai-mcp/README.md']
+            paths = [root / name for name in names]
+            for path in paths:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text('rasa-pro==3.21.0.dev5\n')
+            with patch.object(lint_repo, 'REPO_ROOT', root), patch.object(lint_repo, '_tracked_files', return_value=paths):
+                findings = lint_repo.check_version_consistency('3.22.0.dev3')
+            self.assertEqual([f.path for f in findings], [names[0]])
 
 class TrainingCredentialsTests(unittest.TestCase):
     def test_runtime_key_is_not_mistaken_for_a_local_training_requirement(self):

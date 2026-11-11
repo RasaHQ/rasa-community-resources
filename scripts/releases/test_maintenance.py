@@ -46,6 +46,28 @@ class MaintenanceTests(unittest.TestCase):
         self.assertFalse(allowed_path('scripts/migrate_mantle_config.py', False))
         self.assertFalse(allowed_path('examples/example/tools.py', False))
 
+    def test_catalog_is_regenerated_after_migration_and_before_validation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            seen = []
+            def record(label, command, output, timeout):
+                seen.append((label, command))
+                return {'step': label, 'command': command, 'exitCode': 0, 'log': label + '.log'}
+            with patch('admission.check', return_value={'status': 'candidate', 'version': '3.22.0.dev3'}), patch('maintenance.execute', side_effect=record), patch('maintenance.handoff'), patch('maintenance.subprocess.check_output', return_value='a' * 40), patch.dict(os.environ, {'RASA_LICENSE': 'fixture', 'OPENAI_API_KEY': 'fixture', 'GITHUB_ACTIONS': ''}):
+                self.assertEqual(run('catalog', 'companion', Path(directory)), 0)
+            labels = [label for label, _ in seen]
+            self.assertLess(labels.index('discovery'), labels.index('catalog-generation'))
+            self.assertLess(labels.index('catalog-generation'), labels.index('catalog-gates'))
+            self.assertEqual(dict(seen)['catalog-generation'][1:], ['scripts/catalog_case_builds.py'])
+
+    def test_release_generated_catalog_and_only_active_workshop_environment_are_publishable(self):
+        for path in ('CATALOG.md', 'catalog/case-builds.json',
+                     'workshops/software-factories-masterclass/env/pyproject.toml',
+                     'workshops/software-factories-masterclass/env/uv.lock'):
+            self.assertTrue(allowed_path(path, False), path)
+        for path in ('catalog/arbitrary.json', 'workshops/software-factories-masterclass/factory/pyproject.toml',
+                     'workshops/software-factories-masterclass/archive/old/README.md'):
+            self.assertFalse(allowed_path(path, False), path)
+
     def test_packet_survives_setup_failure_and_explains_dependency_failure(self):
         with tempfile.TemporaryDirectory() as directory:
             out = Path(directory)
@@ -68,7 +90,7 @@ class MaintenanceTests(unittest.TestCase):
                 (output / (label + '.log')).write_text('broken release')
                 return {'step': label, 'command': command, 'exitCode': 1, 'log': label + '.log'}
             with patch('maintenance.execute', side_effect=fail), patch('maintenance.handoff'), patch('maintenance.subprocess.check_output', return_value='a' * 40), patch.dict(os.environ, {'GITHUB_ACTIONS': 'true'}):
-                self.assertEqual(run('site', 'companion', Path(directory), True), 1)
+                self.assertEqual(run('site', 'companion', Path(directory)), 1)
             self.assertEqual(seen, ['release-tests'])
 
 

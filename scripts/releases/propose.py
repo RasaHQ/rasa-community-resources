@@ -33,7 +33,10 @@ def allowed_path(path, site):
         return True
     if site:
         return path in ('examples/quickstart/pyproject.toml', 'examples/quickstart/uv.lock', 'public/og.webp') or path.startswith('public/og/')
-    if path in ('README.md', 'docs/MIGRATING.md', 'Makefile'):
+    if path in ('README.md', 'docs/MIGRATING.md', 'Makefile',
+                'CATALOG.md', 'catalog/case-builds.json',
+                'workshops/software-factories-masterclass/env/pyproject.toml',
+                'workshops/software-factories-masterclass/env/uv.lock'):
         return True
     parts = Path(path).parts
     return (parts[0] in ('examples', 'tutorials', 'patterns', 'starter-pack', 'community') and
@@ -45,7 +48,6 @@ def allowed_path(path, site):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state', type=Path, default=Path('/tmp/rasa-release-maintenance/proposal.json'))
-    parser.add_argument('--merge', action='store_true')
     args = parser.parse_args()
     if os.environ.get('GITHUB_ACTIONS') != 'true' or os.environ.get('GITHUB_REF') != 'refs/heads/main':
         raise SystemExit('Release publication runs only in trusted main-branch Actions.')
@@ -104,7 +106,7 @@ The PyPI wheel is SHA-256 verified. All required compatibility, training and con
 Evidence and repair packet: {run_url} (artifact rasa-release-maintenance).
 Tested commit: {head}. Candidate diff SHA-256: {digest}.
 
-Routine updates may merge through the normal GitHub merge API after these gates; required reviews and branch protections still apply. Netlify deployment approval remains manual.
+This candidate requires review and an operator merge; automation does not merge it. Netlify deployment approval remains manual.
 '''
     with tempfile.NamedTemporaryFile(mode='w', suffix='.md') as file:
         file.write(body)
@@ -118,20 +120,6 @@ Routine updates may merge through the normal GitHub merge API after these gates;
             number = url.rsplit('/', 1)[-1]
     state.update({'pr': f'https://github.com/{repo}/pull/{number}', 'status': 'proposed'})
     save()
-    if args.merge:
-        require_tested_base()
-        # No --admin, direct trunk push, synthetic check or approval bypass.
-        subprocess.run(['gh', 'pr', 'merge', number, '--repo', repo, '--merge', '--match-head-commit', head], check=True)
-        merged = json.loads(subprocess.check_output(['gh', 'pr', 'view', number, '--repo', repo, '--json', 'state,mergeCommit'], text=True))
-        if merged['state'] != 'MERGED':
-            raise RuntimeError('Merge requires GitHub approval/checks; candidate retained for review.')
-        state.update({'status': 'merged', 'mergeCommit': merged['mergeCommit']['oid']})
-        save()
-        # Token-originated pushes may not trigger CI. Explicit dispatch is supported.
-        workflow = 'rasa-compatibility.yml' if site else 'validate.yml'
-        subprocess.run(['gh', 'workflow', 'run', workflow, '--repo', repo, '--ref', 'main'], check=True)
-        state['postMergeChecksDispatched'] = True
-        save()
 
 
 if __name__ == '__main__':

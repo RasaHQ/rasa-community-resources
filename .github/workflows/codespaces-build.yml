@@ -2,17 +2,7 @@ name: Codespaces configurations
 on:
   push:
     branches: [main]
-    paths:
-      - '.devcontainer/**'
-      - 'scripts/generate_codespaces.py'
-      - 'scripts/codespaces_scope.py'
-      - '.github/workflows/codespaces-build.yml'
   pull_request:
-    paths:
-      - '.devcontainer/**'
-      - 'scripts/generate_codespaces.py'
-      - 'scripts/codespaces_scope.py'
-      - '.github/workflows/codespaces-build.yml'
   schedule:
     - cron: '17 5 * * 1'
   workflow_dispatch:
@@ -38,9 +28,13 @@ jobs:
       - id: list
         env:
           EVENT: ${{ github.event_name }}
-          BEFORE: ${{ github.event.before }}
+          BEFORE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
           ONLY: ${{ inputs.only }}
-        run: echo "resources=$(python3 scripts/codespaces_scope.py "$EVENT" "$BEFORE" "$GITHUB_SHA" "$ONLY")" >> "$GITHUB_OUTPUT"
+        run: |
+          set -euo pipefail
+          resources=$(python3 scripts/codespaces_scope.py "$EVENT" "$BEFORE" "$HEAD" "$ONLY")
+          echo "resources=$resources" >> "$GITHUB_OUTPUT"
   build:
     needs: matrix
     if: needs.matrix.outputs.resources != '[]'

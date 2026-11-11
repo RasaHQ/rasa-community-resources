@@ -1,20 +1,15 @@
-"""Choose which Codespace configurations the CI build covers.
+"""Select affected resources for pull requests and pushes; scheduled/manual runs are full.
 
-    python3 scripts/codespaces_scope.py EVENT BEFORE SHA [ONLY]
-
-Prints the resources to build as a JSON list of {"path", "slug"}, the same shape as
-`generate_codespaces.py --list-json`. On a push, only resources whose own
-`.devcontainer/<slug>/` directory changed between BEFORE and SHA are built, unless a shared file
-changed (`.devcontainer/resource-base/`, the generator, this script or the workflow), or BEFORE is
-unknown: then every resource is built. Every other
-event (schedule, pull request, a manual run) builds all of them, or only the slugs
-named in ONLY (space separated) on a manual run.
+PR comparisons use the merge base of the explicit base and head commits. Missing
+history or shared inputs select every resource. Local path dependencies are part
+of a resource's affected source tree, including transitive shared packages.
 """
 from __future__ import annotations
 
 import json
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -30,35 +25,68 @@ def every_resource() -> list[dict]:
     return json.loads(out)
 
 
-SHARED = (".devcontainer", "scripts/generate_codespaces.py", "scripts/codespaces_scope.py",
-          ".github/workflows/codespaces-build.yml")
+SHARED = ("scripts/", ".github/workflows/", "Makefile", "RASA_PRO_VERSION",
+          "RASA_PRO_VERSION_LINE", "RASA_RELEASE.json")
 
 
-def changed_slugs(before: str, sha: str) -> set[str] | None:
-    """Slugs whose own `.devcontainer/<slug>/` directory changed between the two commits.
+def dependency_roots(resource: str) -> set[str]:
+    """Local uv source dependencies, resolved without installing any project."""
+    pending = [ROOT / resource]
+    roots = set()
+    while pending:
+        path = pending.pop().resolve()
+        rel = path.relative_to(ROOT.resolve()).as_posix()
+        if rel in roots:
+            continue
+        roots.add(rel)
+        manifest = path / 'pyproject.toml'
+        if not manifest.is_file():
+            continue
+        data = tomllib.loads(manifest.read_text())
+        for source in data.get('tool', {}).get('uv', {}).get('sources', {}).values():
+            for item in source if isinstance(source, list) else [source]:
+                if isinstance(item, dict) and 'path' in item:
+                    pending.append(path / item['path'])
+    return roots
 
-    None means everything must be built: the earlier commit is unknown, or a file every
-    configuration depends on changed (`.devcontainer/resource-base/`, the generator, this
-    script or the workflow).
-    """
+
+def changed_slugs(before: str, sha: str, resources=None, *, pull_request=False) -> set[str] | None:
     if not before or before == ZERO:
         return None
-    names = subprocess.run(
-        ["git", "diff", "--name-only", before, sha, "--", *SHARED],
-        check=True, capture_output=True, text=True, cwd=ROOT,
-    ).stdout.split()
-    slugs: set[str] = set()
-    for name in names:
-        parts = name.split("/")
-        if len(parts) > 2 and parts[0] == ".devcontainer" and parts[1] != "resource-base":
-            slugs.add(parts[1])
-        else:
+    try:
+        if pull_request:
+            before = subprocess.check_output(['git', 'merge-base', before, sha],
+                cwd=ROOT, text=True).strip()
+        names = subprocess.run(
+            ['git', 'diff', '--name-only', '-z', before, sha],
+            check=True, capture_output=True, text=True, cwd=ROOT,
+        ).stdout.split('\0')
+        names = [name for name in names if name]
+        if any(name == prefix or name.startswith(prefix) for name in names for prefix in SHARED):
             return None
-    return slugs
+        slugs = set()
+        sources = []
+        for name in names:
+            parts = name.split('/')
+            if parts[0] == '.devcontainer':
+                if len(parts) < 3 or parts[1] == 'resource-base':
+                    return None
+                slugs.add(parts[1])
+            else:
+                sources.append(name)
+        if sources:
+            for resource in every_resource() if resources is None else resources:
+                roots = dependency_roots(resource['path'])
+                if any(name == root or name.startswith(root + '/') for name in sources for root in roots):
+                    slugs.add(resource['slug'])
+        return slugs
+    except (subprocess.CalledProcessError, ValueError, OSError):
+        # Unknown history or an unresolvable dependency is never a narrow pass.
+        return None
 
 
 def choose(event: str, resources: list[dict], changed: set[str] | None, only: str = "") -> list[dict]:
-    if event == "push":
+    if event in ("push", "pull_request"):
         return resources if changed is None else [r for r in resources if r["slug"] in changed]
     wanted = set(only.split())
     if wanted:
@@ -69,8 +97,13 @@ def choose(event: str, resources: list[dict], changed: set[str] | None, only: st
 def main(argv: list[str]) -> int:
     event, before, sha = argv[1:4]
     only = argv[4] if len(argv) > 4 else ""
-    changed = changed_slugs(before, sha) if event == "push" else set()
-    print(json.dumps(choose(event, every_resource(), changed, only)))
+    if len(argv) > 5 and argv[5] in ('catalog', 'snapshots'):
+        from rasa_projects import discover_projects
+        resources = [{'path': p.rel, 'slug': p.rel} for p in discover_projects(argv[5])]
+    else:
+        resources = every_resource()
+    changed = changed_slugs(before, sha, resources, pull_request=event == 'pull_request') if event in ('push', 'pull_request') else None
+    print(json.dumps(choose(event, resources, changed, only)))
     return 0
 
 

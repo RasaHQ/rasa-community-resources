@@ -25,9 +25,14 @@ class Choose(unittest.TestCase):
     def test_push_ignores_a_name_that_is_not_a_resource(self):
         self.assertEqual(scope.choose("push", RES, {"no-such-slug"}), [])
 
-    def test_schedule_and_pull_request_build_everything(self):
-        for event in ("schedule", "pull_request"):
+    def test_schedule_builds_everything(self):
+        for event in ("schedule",):
             self.assertEqual(scope.choose(event, RES, {"examples-a"}), RES)
+
+    def test_pull_request_selects_affected_resources(self):
+        self.assertEqual(scope.choose('pull_request', RES, {'examples-b'}), [RES[1]])
+        self.assertEqual(scope.choose('pull_request', RES, set()), [])
+        self.assertEqual(scope.choose('pull_request', RES, None), RES)
 
     def test_manual_run_builds_everything_or_the_named_slugs(self):
         self.assertEqual(scope.choose("workflow_dispatch", RES, set()), RES)
@@ -65,7 +70,7 @@ class ChangedSlugs(unittest.TestCase):
         original = scope.ROOT
         scope.ROOT = self.dir
         try:
-            return scope.changed_slugs(self.base, sha)
+            return scope.changed_slugs(self.base, sha, [])
         finally:
             scope.ROOT = original
 
@@ -100,6 +105,36 @@ class ChangedSlugs(unittest.TestCase):
     def test_unrelated_files_change_nothing(self):
         self.write("README.md", "y")
         self.assertEqual(self.changed(self.commit()), set())
+
+    def test_resource_source_lock_and_transitive_dependency_select_the_consumer(self):
+        resources = [{'path': 'examples/a', 'slug': 'a'}, {'path': 'examples/b', 'slug': 'b'}]
+        self.write('examples/a/pyproject.toml', '[tool.uv.sources]\nshared = {path = "../shared"}\n')
+        self.write('examples/shared/pyproject.toml', '[tool.uv.sources]\nleaf = {path = "../leaf"}\n')
+        self.base = self.commit()
+        for rel in ('examples/a/uv.lock', 'examples/a/tests/test_case.py', 'examples/leaf/lib.py'):
+            self.write(rel, 'new')
+            sha = self.commit()
+            original = scope.ROOT
+            scope.ROOT = self.dir
+            try:
+                self.assertEqual(scope.changed_slugs(self.base, sha, resources), {'a'})
+            finally:
+                scope.ROOT = original
+            self.base = sha
+
+    def test_pull_request_uses_merge_base_not_unrelated_new_main_changes(self):
+        self.write('.devcontainer/two/devcontainer.json', 'pr-change')
+        head = self.commit()
+        self.git('checkout', '-q', '--detach', self.base)
+        self.write('.devcontainer/resource-base/install.sh', 'main-only')
+        base = self.commit()
+        original = scope.ROOT
+        scope.ROOT = self.dir
+        try:
+            self.assertEqual(scope.changed_slugs(base, head, [], pull_request=True), {'two'})
+            self.assertIsNone(scope.changed_slugs('f' * 40, head, []))
+        finally:
+            scope.ROOT = original
 
     def test_a_new_push_with_no_before_commit_means_everything(self):
         self.assertIsNone(scope.changed_slugs("0" * 40, self.base))
