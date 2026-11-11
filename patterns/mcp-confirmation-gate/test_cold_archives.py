@@ -55,17 +55,22 @@ class ColdArchives(unittest.TestCase):
                 self.assertEqual(result.code, 0)
                 archive = Path(result.model)
                 digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+                # Deployment model groups live outside the model archive in
+                # 3.22. Retain only this non-secret loopback configuration;
+                # the source code must still be absent when the archive loads.
+                integrations = (source / 'integrations.yml').read_text()
                 source.rename(root / f'.retained-{variant}')
                 self.assertFalse(source.exists())
                 cold_dir = root / f'cold-{variant}'
                 cold_dir.mkdir()
+                (cold_dir / 'integrations.yml').write_text(integrations)
                 # The subprocess starts outside the supplied source project and
                 # receives no real credentials or parent import path.
                 env = {key: value for key, value in os.environ.items()
                        if not key.endswith(('_API_KEY', '_TOKEN', '_SECRET', '_PASSWORD'))
                        and key not in {'RASA_LICENSE', 'RASA_PRO_LICENSE', 'PYTHONPATH'}}
                 env.update({key: value for key, value in fake.items()
-                            if key not in {'OPENAI_API_KEY', 'RASA_LICENSE', 'RASA_PRO_LICENSE'}})
+                            if key not in {'RASA_LICENSE', 'RASA_PRO_LICENSE'}})
                 child = subprocess.run([sys.executable, '-B', '-c', COLD_PROBE, str(archive)],
                     cwd=cold_dir, env=env, capture_output=True, text=True, timeout=90)
                 self.assertEqual(child.returncode, 0, child.stderr)
