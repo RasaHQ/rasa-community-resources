@@ -40,3 +40,24 @@ jobs:
             cd "$(git rev-parse --show-toplevel)/examples/banking-shared"
             python -m unittest discover -s tests -v
             python "$(git rev-parse --show-toplevel)/scripts/test_banking_host_boundary.py"
+
+  banking-projects:
+    name: Banking project ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [jack-henry-banking, fiserv-banking]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Build selected demo container and run native text and speech-request controls
+        uses: devcontainers/ci@513af61f4de4f75d37e4438f184ba4358f0fc1ca
+        with:
+          configFile: .devcontainer/examples-${{ matrix.project }}/devcontainer.json
+          push: never
+          inheritEnv: false
+          runCmd: |
+            set -eu
+            unset RASA_LICENSE RASA_PRO_LICENSE OPENAI_API_KEY ANTHROPIC_API_KEY DEEPGRAM_API_KEY GEMINI_API_KEY
+            make test

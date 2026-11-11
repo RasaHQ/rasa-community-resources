@@ -36,7 +36,7 @@ class GeneratedFilesTests(unittest.TestCase):
         for entry in [g.manifest(p) for p in discover_projects("catalog")] + [g.manual_manifest(m) for m in g.MANUAL]:
             body = json.loads(g.config(entry))
             self.assertEqual(body["build"]["dockerfile"], "../resource-base/Dockerfile")
-            self.assertIn("RASA_LICENSE", body["secrets"])
+            self.assertEqual(len(set(body["secrets"]) & {"RASA_LICENSE", "RASA_PRO_LICENSE"}), 1)
             self.assertLessEqual(set(body["secrets"]), set(g.KNOWN_SECRETS))
             self.assertTrue(body["workspaceFolder"].endswith("/" + entry["path"]))
             self.assertIn("ready.sh", body["postCreateCommand"])
@@ -66,6 +66,30 @@ class GeneratedFilesTests(unittest.TestCase):
             else:
                 self.assertNotIn("remoteEnv", body, path.rel)
             self.assertNotIn("alias-license", body["onCreateCommand"])
+
+    def test_resource_can_request_the_canonical_pro_license_without_a_second_secret(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "pyproject.toml").write_text(
+                '[project]\nname = "banking-example"\n'
+                '[tool.rasa-catalog]\nlicense-secret = "RASA_PRO_LICENSE"\n')
+            (root / ".env.example").write_text(
+                '# Required\nRASA_PRO_LICENSE=\nOPENAI_API_KEY=\nDEEPGRAM_API_KEY=\n')
+            project = SimpleNamespace(path=root, pyproject=root / "pyproject.toml", rel="examples/bank")
+            entry = g.manifest(project)
+            body = json.loads(g.config(entry))
+            self.assertEqual(set(body['secrets']), {'RASA_PRO_LICENSE', 'OPENAI_API_KEY', 'DEEPGRAM_API_KEY'})
+            self.assertNotIn('remoteEnv', body)
+            self.assertIn('`RASA_PRO_LICENSE`', g.readme_block(entry, 2))
+            self.assertNotIn('`RASA_LICENSE`', g.readme_block(entry, 2))
+            self.assertIn('configured by the operator as repository or organisation Codespaces secrets', g.readme_block(entry, 2))
+            self.assertNotIn('personal Codespaces secrets', g.readme_block(entry, 2))
+            (root / "pyproject.toml").write_text(
+                '[project]\nname = "banking-example"\n'
+                '[tool.rasa-catalog]\nlicense-secret = "ARBITRARY_TOKEN"\n')
+            with self.assertRaisesRegex(ValueError, 'unsupported licence secret'):
+                g.manifest(project)
 
     def test_a_failed_env_file_does_not_hide_a_failed_cd_in_the_manual_examples(self):
         for item in g.MANUAL:

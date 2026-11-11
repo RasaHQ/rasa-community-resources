@@ -29,6 +29,7 @@ from rasa_projects import REPO_ROOT, discover_projects  # noqa: E402
 REPO = "RasaHQ/rasa-community-resources"
 KNOWN_SECRETS = {
     "RASA_LICENSE": "Full Rasa Developer Edition license",
+    "RASA_PRO_LICENSE": "Full Rasa Developer Edition license",
     "OPENAI_API_KEY": "OpenAI project key used for this resource's model calls",
     "ANTHROPIC_API_KEY": "Anthropic key used for this resource's model calls",
     "GEMINI_API_KEY": "Google Gemini key used for this resource's model calls",
@@ -163,17 +164,24 @@ def ports(path: Path) -> tuple[int, list[int]]:
 def manifest(project) -> dict:
     """The small per-resource record the template is filled from, derived from the resource's own files."""
     data = tomllib.loads(project.pyproject.read_text(encoding="utf-8"))
-    declared = data.get("tool", {}).get("rasa-catalog", {}).get("required-secrets", [])
+    catalog = data.get("tool", {}).get("rasa-catalog", {})
+    declared = catalog.get("required-secrets", [])
+    license_secret = catalog.get("license-secret", "RASA_LICENSE")
+    if license_secret not in {"RASA_LICENSE", LICENSE_ALIAS}:
+        raise ValueError(f"{project.rel}: unsupported licence secret name")
     keys = env_example_keys(project.path)
-    secrets = {"RASA_LICENSE": True}
+    secrets = {license_secret: True}
     for name, required in env_example_secrets(project.path).items():
+        if name in {"RASA_LICENSE", LICENSE_ALIAS} and name != license_secret:
+            continue
         secrets.setdefault(name, required)
     for name in declared:
-        if name in KNOWN_SECRETS:
+        if name in KNOWN_SECRETS and (name not in {"RASA_LICENSE", LICENSE_ALIAS} or name == license_secret):
             secrets[name] = True
     if not keys and not declared:
         for name in DEFAULT_SECRETS:
-            secrets.setdefault(name, True)
+            if name != "RASA_LICENSE":
+                secrets.setdefault(name, True)
     targets = make_targets(project.path)
     first_target = "inspect" if "inspect" in targets else "run" if "run" in targets else None
     primary, forward = ports(project.path)
@@ -204,7 +212,8 @@ def manifest(project) -> dict:
         "first_needs_none": first_needs_none,
         "embeds_references": uses_references(project.path),
         "secrets": secrets,
-        "alias_license": LICENSE_ALIAS in keys,
+        "alias_license": license_secret == "RASA_LICENSE" and LICENSE_ALIAS in keys,
+        "operator_secrets": license_secret == LICENSE_ALIAS,
         "install": 'bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh" ' + project.rel,
         "ready": None,
         "first": first,
@@ -284,7 +293,9 @@ def readme_block(entry: dict, depth: int) -> str:
             START,
             f"[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)]({launch_url(entry)})",
             "",
-            f"- **You need:** {need}, saved once as personal Codespaces secrets "
+            f"- **You need:** {need}, "
+            + ("configured by the operator as repository or organisation Codespaces secrets "
+               if entry.get("operator_secrets") else "saved once as personal Codespaces secrets ") +
             f"([how]({'../' * depth}{SETUP_ANCHOR})). Use this button rather than the Codespaces picker, "
             "so you get this resource's setup.",
             f"- **First command:** {first_line}",
