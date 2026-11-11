@@ -1,0 +1,50 @@
+{
+  "agent_title": "Artisan Roast Coffee Shop Agent",
+  "rasa_host": "http://localhost",
+  "rasa_port": 5005,
+  "eval_model": "deepseek/deepseek-chat",
+  "simulations_per_operation": 3,
+  "max_turns_per_simulation": 5,
+  "scenarios": {
+    "place_single_order": {
+      "enabled": true,
+      "title": "Operation 1: Place Single Beverage Order",
+      "description": "Order a single customized coffee (Medium Dark Roast Coffee with Oat Milk for pickup at Lower Manhattan).",
+      "system_prompt": "You are customer Sarah Jenkins at Artisan Roast Coffee. Your goal is to order a Medium Dark Roast Coffee with Oat Milk for pickup at the Lower Manhattan store. Answer questions directly, provide size and milk preferences when asked, and end the conversation politely once you receive order confirmation with an Order ID.",
+      "initial_user_message": "Hi, I would like to place an order for pickup at your Lower Manhattan store.",
+      "success_criteria": "The bot successfully places the single coffee order and provides an Order ID confirmation (e.g. ORD-xxx)."
+    },
+    "place_sequential_consecutive_orders": {
+      "enabled": true,
+      "title": "Operation 2: Place Two Sequential Consecutive Orders",
+      "description": "Place Order #1 for a Dark Roast Coffee at Astoria, verify confirmation, then immediately place Order #2 for a Blueberry Muffin in the same session.",
+      "system_prompt": "You are customer Marcus Vance placing two separate consecutive orders in one conversation session.\nStep 1: Order a Large Dark Roast Coffee for pickup at Astoria store.\nStep 2: Once you receive confirmation for Order #1 with an Order ID, say: 'Great! Now I want to place a second separate order for a Blueberry Muffin.'\nStep 3: Confirm details for Order #2 until you receive the second Order ID.",
+      "initial_user_message": "Hello! I need to place an order for a Large Dark Roast Coffee at Astoria store.",
+      "success_criteria": "Both Order #1 and Order #2 are successfully placed consecutively in the same session with two distinct Order IDs."
+    },
+    "place_sequential_group_order": {
+      "enabled": true,
+      "title": "Operation 3: Place Sequential Group Order",
+      "description": "Place a group order for 3 team members (1 Cappuccino, 1 Iced Americano, 1 Croissant) at Hell's Kitchen.",
+      "system_prompt": "You are ordering coffee for your team at Artisan Roast.\nYour order list:\n1) Regular Cappuccino with Whole Milk\n2) Large Iced Americano\n3) Almond Croissant\nLocation: Hell's Kitchen location.\nCommunicate items clearly, answer any sizing or customization prompts, and confirm the group order.",
+      "initial_user_message": "Hi! I want to place a group order for my team of 3 people at the Hell's Kitchen store.",
+      "success_criteria": "The agent collects all 3 items, confirms group order totals, and provides order confirmation."
+    },
+    "ceo_admin_analytics": {
+      "enabled": true,
+      "title": "Operation 4: CEO Admin Analytics & Security PIN",
+      "description": "Authenticate as CEO using security PIN 8888 (or passcode ARTISAN-EXEC-9042) and request multi-store revenue and COGS metrics.",
+      "system_prompt": "You are the CEO of Artisan Roast Coffee.\nYour objective: Request executive analytics across all stores. When asked for your 4-digit security PIN, respond clearly with: 'My Executive Security PIN is 8888'. Once authenticated, request gross profit margins, total revenue, and COGS breakdown.",
+      "initial_user_message": "I am the CEO and I need executive analytics for our store locations.",
+      "success_criteria": "The agent asks for authentication, validates passcode/PIN 8888, and returns store sales/financial analytics."
+    },
+    "sommelier_and_inventory": {
+      "enabled": true,
+      "title": "Operation 5: Sommelier Recommendation & Store Inventory Query",
+      "description": "Request a mood-based sensory coffee recommendation, then check store raw bean inventory levels at Astoria.",
+      "system_prompt": "You are a customer visiting Artisan Roast.\nStep 1: Express that you feel sleepy and stressed, and ask the Sommelier to recommend the best coffee for your mood.\nStep 2: Once recommended, ask if the Astoria store has enough Ethiopia Yirgacheffe Beans in stock.",
+      "initial_user_message": "I'm feeling really sleepy and stressed today. What coffee do you recommend for my mood?",
+      "success_criteria": "The Sommelier returns a top sensory vector match, and subsequently answers the inventory stock level query."
+    }
+  }
+}

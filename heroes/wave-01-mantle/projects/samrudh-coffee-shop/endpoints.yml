@@ -1,0 +1,17 @@
+# Platform endpoints for Artisan Roast AI Agent
+#
+# Primary LLM and voice channels are configured in integrations.yml.
+# This file configures platform services such as the contextual response rephraser.
+
+nlg:
+  type: rephrase
+  llm:
+    model_group: gemini-llm
+
+model_groups:
+  - id: gemini-llm
+    models:
+      - provider: gemini
+        model: gemini-2.5-flash
+        api_key_env: GEMINI_API_KEY
+        temperature: 0.0

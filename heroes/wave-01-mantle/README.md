@@ -45,6 +45,7 @@ pull request that adds their project.
 | Samaksh Mehra | [@samakshmehra](https://github.com/samakshmehra) | `samakshmehra-civico` |
 | Elarbi B | [@ElarbiB](https://github.com/ElarbiB) | [Terra Energy](projects/ElarbiB-terra-energy/) |
 | Aromal TR | [traromal](https://github.com/traromal) | [traromal-devcopilot](projects/traromal-devcopilot/) |
+| Samrudha Kelkar | [@samrudh](https://github.com/samrudh) | [samrudh-coffee-shop](projects/samrudh-coffee-shop/) |
 
 ## Projects
 
@@ -54,6 +55,7 @@ pull request that adds their project.
 | [`samakshmehra-civico`](projects/samakshmehra-civico/) | Voice-first civic complaint intake with deterministic routing, duplicate handling, status lookup, and overdue escalation | Samaksh Mehra | rasa-pro 3.20.0.dev6 | 2026-10-13 |
 | [ElarbiB-terra-energy](projects/ElarbiB-terra-energy/) | Solar & wind site potential assessment via NASA POWER data — site analysis, site comparison and data-source health, in a voice + text Mantle agent with a FastAPI backend. | Elarbi B | rasa-pro 3.20.0.dev6 | 2026-10-13 |
 | [DevPilot](projects/traromal-devcopilot/) | Voice/text assistant for developer ops — task queue, tickets, deploy gating, hardware orders, two-way Slack, on-call handoffs, and web-search doc lookup | Aromal TR | `3.20.0.dev6` | 2026-10-13 |
+| [samrudh-coffee-shop](projects/samrudh-coffee-shop/) | Voice & text assistant for Artisan Roast Coffee Co. supporting drink ordering, customer loyalty, barista store queues, and CEO financial revenue analytics | Samrudha Kelkar (@samrudh) | `3.20.0.dev6` | 2026-09-11 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a
