@@ -41,5 +41,5 @@
     }
   },
   "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice",
-  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice --skip-sync --use-project-pin\""
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice --skip-sync --use-project-pin && uv run --locked --no-sync python -m unittest discover -s tests -v\""
 }

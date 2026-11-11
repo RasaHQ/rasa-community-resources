@@ -149,7 +149,7 @@ does and does not cover — condition-skill routing and the levothyroxine
 reminder are checked conversationally, because the e2e fixture schema cannot
 seed the `session.project.*` flags they gate on.
 
-#### Sample evaluation report (latest run)
+#### Historical evaluation reported by the contributor
 
 See **[`docs/validation-results.md`](docs/validation-results.md)** for the
 maintainer-facing matrix (including which voice/provider paths are tested vs
@@ -157,11 +157,17 @@ connectivity-only). Summary from **2026-10-21** on Windows 11, **Python 3.13**
 (`uv`), **rasa-pro 3.20.0.dev6**. Primary LLM: OpenAI `gpt-4o` (Groq fallback
 configured; e2e runs on OpenAI-primary).
 
+The exact tested commit for those local checks was not recorded. The four
+passing end-to-end cases came from an earlier run with no recorded date or
+commit. These results are historical and were not repeated during integration;
+they are not current-head qualification. Codespaces runs the deterministic
+store/tool suite separately, after installation and project validation.
+
 | Suite | Command | Result | Notes |
 |-------|---------|--------|-------|
 | Unit / store | `make test` | **9/9 passed** | `unittest` over `tests/`; no network |
-| E2E harness | `make e2e` | **4/4 passed** | ~52s; live LLM + tools |
-| E2E + coverage | `make e2e-coverage` | **4/4 passed** | Reports under `e2e_coverage/` (gitignored) |
+| E2E harness | `make e2e` | **4/4 reported; historical** | ~52s; live LLM + tools |
+| E2E + coverage | `make e2e-coverage` | **4/4 reported; historical** | Reports under `e2e_coverage/` (gitignored) |
 
 **E2E assertion accuracy (harness summary):**
 

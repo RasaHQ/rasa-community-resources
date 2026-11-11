@@ -100,6 +100,25 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertTrue(entry['secrets'].get(name), name)
         self.assertFalse(entry['secrets'].get('USDA_FDC_API_KEY', True))
 
+    def test_nourishher_ready_invokes_its_existing_offline_suite_inside_the_project(self):
+        project = next(p for p in discover_projects('snapshots') if p.path.name == 'malar-saravanan-nourishher-voice')
+        command = json.loads(g.config(g.manifest(project)))['postCreateCommand']
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'python3').write_text('#!/bin/sh\nexit 0\n')
+            (root / 'uv').write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$PROBE_LOG"\npwd > "$PROBE_CWD"\n')
+            for name in ('python3', 'uv'):
+                (root / name).chmod(0o755)
+            env = {'PATH': directory + ':/usr/bin:/bin', 'READY_SKIP_SECRETS': '1',
+                   'PROBE_LOG': str(root / 'args'), 'PROBE_CWD': str(root / 'cwd'), 'GIT_NO_LAZY_FETCH': '1'}
+            result = subprocess.run(['/bin/bash', '-c', command], cwd=project.path,
+                                    env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('READY:', result.stdout)
+            self.assertEqual((root / 'cwd').read_text().strip(), str(project.path))
+            self.assertEqual((root / 'args').read_text().splitlines(),
+                             ['run', '--locked', '--no-sync', 'python', '-m', 'unittest', 'discover', '-s', 'tests', '-v'])
+
     def test_manual_resources_are_covered(self):
         for item in g.MANUAL:
             self.assertTrue((REPO_ROOT / ".devcontainer" / g.slug(item["path"]) / "devcontainer.json").is_file())

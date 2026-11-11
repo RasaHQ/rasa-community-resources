@@ -3,7 +3,20 @@
 Recorded for PR review. Pin: **`rasa-pro 3.20.0.dev6`** (`pyproject.toml`, `uv.lock`,
 README `Verified with:`). Re-run after rebasing or changing dependencies.
 
-## Environment
+## Evidence status
+
+These are historical results reported by the contributor. The tested commit for
+21 October was not recorded; the branch name below does not identify it. The
+prior four passing end-to-end cases also have no recorded run date or commit.
+They were not repeated during integration and do not qualify the current head.
+Deepgram connectivity is not evidence of a voice conversation.
+
+The Codespaces setup checks the installed pin and project, then runs the existing
+deterministic store/tool suite. Those current results must come from the recorded
+workflow run. No current provider, training, end-to-end or voice result is claimed
+here. Do not repeat paid calls solely to reconstruct a missing historical label.
+
+## Historical environment
 
 | Item | Value |
 |------|--------|
