@@ -1,0 +1,39 @@
+name: Banking demo container readiness
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/banking-demo-containers.yml'
+      - '.devcontainer/**'
+      - 'patterns/mcp-confirmation-gate/**'
+      - 'examples/banking-shared/**'
+      - 'examples/jack-henry-banking/**'
+      - 'examples/fiserv-banking/**'
+  push:
+    branches: ['rasa/banking-demos-20261111']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: banking-container-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native-runtime:
+    name: Native MCP controls inside the devcontainer
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Build container and run secret-free text controls
+        uses: devcontainers/ci@513af61f4de4f75d37e4438f184ba4358f0fc1ca
+        with:
+          configFile: .devcontainer/patterns-mcp-confirmation-gate/devcontainer.json
+          push: never
+          inheritEnv: false
+          runCmd: >-
+            env -u RASA_LICENSE -u RASA_PRO_LICENSE -u OPENAI_API_KEY
+            -u ANTHROPIC_API_KEY -u DEEPGRAM_API_KEY -u GEMINI_API_KEY
+            make test
