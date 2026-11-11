@@ -27,6 +27,63 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertEqual(readme.count("Open in GitHub Codespaces"), 1, project.rel)
             self.assertIn(g.slug(project.rel) + "/devcontainer.json", readme)
 
+    def test_every_frozen_heroes_project_has_a_config_button_and_own_pin_check(self):
+        snapshots = discover_projects('snapshots')
+        self.assertGreaterEqual(len(snapshots), 5)
+        listed = json.loads(subprocess.check_output(
+            [sys.executable, str(REPO_ROOT / 'scripts/generate_codespaces.py'), '--list-json'], text=True))
+        for project in snapshots:
+            with self.subTest(project=project.rel):
+                path = REPO_ROOT / '.devcontainer' / g.slug(project.rel) / 'devcontainer.json'
+                self.assertTrue(path.is_file())
+                body = json.loads(path.read_text())
+                self.assertIn('--use-project-pin', body['postCreateCommand'])
+                self.assertIn('--skip-sync', body['postCreateCommand'])
+                self.assertEqual(body['workspaceFolder'].split('/${localWorkspaceFolderBasename}/')[1], project.rel)
+                self.assertIn({'path': project.rel, 'slug': g.slug(project.rel)}, listed)
+                readme = (project.path / 'README.md').read_text()
+                self.assertEqual(readme.count(g.START), 1)
+                self.assertIn('ref=main&devcontainer_path=.devcontainer/' + g.slug(project.rel), readme)
+                self.assertIn('its own locked Rasa version', readme)
+
+    def test_snapshot_ready_command_reaches_checker_with_own_pin_and_no_sync(self):
+        project = discover_projects('snapshots')[0]
+        command = json.loads(g.config(g.manifest(project)))['postCreateCommand']
+        with tempfile.TemporaryDirectory() as directory:
+            probe = Path(directory) / 'python3'
+            log = Path(directory) / 'arguments.txt'
+            probe.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$PROBE_LOG"\n')
+            probe.chmod(0o755)
+            environment = {'PATH': directory + ':/usr/bin:/bin', 'READY_SKIP_SECRETS': '1',
+                           'PROBE_LOG': str(log), 'GIT_NO_LAZY_FETCH': '1'}
+            result = subprocess.run(['/bin/bash', '-c', command], cwd=project.path,
+                                    env=environment, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('READY:', result.stdout)
+            self.assertEqual(log.read_text().splitlines(), [str(REPO_ROOT / 'scripts/check_project.py'),
+                              project.rel, '--skip-sync', '--use-project-pin'])
+
+    def test_heroes_provider_and_service_requirements_are_not_hidden(self):
+        snapshots = {p.path.name: g.manifest(p) for p in discover_projects('snapshots')}
+        terra = snapshots['ElarbiB-terra-energy']
+        self.assertTrue(terra['secrets']['MISTRAL_API_KEY'])
+        self.assertIn(8000, terra['ports'])
+        self.assertIn('make backend', terra['before_first'])
+        pilot = snapshots['traromal-devcopilot']
+        pilot_config = json.loads(g.config(pilot))
+        self.assertIn('DeepSeek', pilot_config['secrets']['DEEPSEEK_API_KEY']['description'])
+        self.assertNotIn('OPENAI_API_KEY', pilot_config['secrets'])
+        self.assertEqual(pilot_config['remoteEnv']['OPENAI_API_KEY'], '${containerEnv:DEEPSEEK_API_KEY}')
+        self.assertIn('DeepSeek account key', g.readme_block(pilot, 4))
+        self.assertIn('python -m scripts.mcp_demo_serve', pilot['before_first'])
+        self.assertIn('python -m scripts.mcp_slack_serve', pilot['before_first'])
+        self.assertFalse(pilot['secrets']['SLACK_BOT_TOKEN'])
+        self.assertFalse(pilot['secrets']['SLACK_APP_TOKEN'])
+        self.assertNotIn('Training uses your OpenAI key', g.readme_block(pilot, 4))
+        coffee = snapshots['samrudh-coffee-shop']
+        self.assertIn('LANGFUSE_PUBLIC_KEY', coffee['secrets'])
+        self.assertIn('LANGFUSE_SECRET_KEY', coffee['secrets'])
+
     def test_manual_resources_are_covered(self):
         for item in g.MANUAL:
             self.assertTrue((REPO_ROOT / ".devcontainer" / g.slug(item["path"]) / "devcontainer.json").is_file())

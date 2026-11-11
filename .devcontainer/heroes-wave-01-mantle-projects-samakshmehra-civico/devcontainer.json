@@ -1,0 +1,36 @@
+{
+  "name": "Rasa resource: heroes/wave-01-mantle/projects/samakshmehra-civico",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1.1.0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/heroes/wave-01-mantle/projects/samakshmehra-civico",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5007
+  ],
+  "portsAttributes": {
+    "5007": {
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Required. Full Rasa Developer Edition license"
+    },
+    "OPENAI_API_KEY": {
+      "description": "Required. OpenAI project key used for this resource's model calls"
+    },
+    "DEEPGRAM_API_KEY": {
+      "description": "Required. Deepgram key for speech recognition and spoken replies"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" heroes/wave-01-mantle/projects/samakshmehra-civico",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/samakshmehra-civico \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/samakshmehra-civico --skip-sync --use-project-pin\""
+}

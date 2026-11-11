@@ -32,7 +32,13 @@ KNOWN_SECRETS = {
     "RASA_PRO_LICENSE": "Full Rasa Developer Edition license",
     "OPENAI_API_KEY": "OpenAI project key used for this resource's model calls",
     "ANTHROPIC_API_KEY": "Anthropic key used for this resource's model calls",
+    "SLACK_BOT_TOKEN": "Slack bot token for live Slack tools",
+    "SLACK_APP_TOKEN": "Slack app token for the optional Socket Mode listener",
+    "DEEPSEEK_API_KEY": "DeepSeek account key for the DevPilot orchestrator",
+    "MISTRAL_API_KEY": "Mistral account key for this resource's model calls",
     "GEMINI_API_KEY": "Google Gemini key used for this resource's model calls",
+    "LANGFUSE_PUBLIC_KEY": "Langfuse public key for this resource's tracing",
+    "LANGFUSE_SECRET_KEY": "Langfuse secret key for this resource's tracing",
     "DEEPGRAM_API_KEY": "Deepgram key for speech recognition and spoken replies",
     "RIME_API_KEY": "Rime key for spoken replies",
     "SPEECHMATICS_API_KEY": "Speechmatics key for speech recognition",
@@ -89,6 +95,11 @@ def env_example_secrets(path: Path) -> dict[str, bool]:
 
 # Resources whose first command comes from their own README rather than a Makefile target.
 FIRST = {
+    "heroes/wave-01-mantle/projects/chandratechblog-hrassistant": (
+        "uv run rasa train && uv run rasa inspect",
+        'training finishes, then the Inspector starts. In a second terminal, '
+        '`bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.',
+    ),
     "tutorials/agent-tool-inventory": ("make check", "a JSON result with `status: match`."),
     "tutorials/rasa-ai-team-casebook": (
         "python3 casebook.py --case contextual-handoff --prove",
@@ -206,7 +217,34 @@ def manifest(project) -> dict:
     first_needs_none = project.rel in FIRST_NEEDS_NONE
     if first_needs_none:
         secrets = {name: False for name in secrets}
+    snapshot = getattr(project, 'snapshot', False)
+    provider_note = ""
+    before_first = ""
+    remote_env = {}
+    if project.rel == 'heroes/wave-01-mantle/projects/traromal-devcopilot':
+        provider_note = ("Save a DeepSeek account key as `DEEPSEEK_API_KEY`. "
+                         "This Codespace maps it to the project's `OPENAI_API_KEY`.")
+        secrets.pop('OPENAI_API_KEY', None)
+        secrets['DEEPSEEK_API_KEY'] = True
+        remote_env['OPENAI_API_KEY'] = '${containerEnv:DEEPSEEK_API_KEY}'
+        secrets.setdefault('SLACK_BOT_TOKEN', False)
+        secrets.setdefault('SLACK_APP_TOKEN', False)
+        before_first = ('In two other terminals in this folder, run '
+                        '`uv run python -m scripts.mcp_demo_serve` and '
+                        '`uv run python -m scripts.mcp_slack_serve`. '
+                        'Keep both bridges running before starting Rasa. Live Slack features need the optional Slack tokens.')
+    if snapshot and 'backend' in targets:
+        forward = sorted(set(forward) | {int(n) for n in re.findall(
+            r'--port\s+(\d{4,5})\b', recipe((project.path / 'Makefile').read_text(), 'backend'))})
+        before_first = 'In another terminal in this folder, run `make backend` and keep it running for the analysis tools.'
+
+    ready = ('python3 "$(git rev-parse --show-toplevel)/scripts/check_project.py" '
+             + project.rel + ' --skip-sync --use-project-pin') if snapshot else None
     return {
+        "snapshot": snapshot,
+        "provider_note": provider_note,
+        "before_first": before_first,
+        "remote_env": remote_env,
         "path": project.rel,
         "slug": slug(project.rel),
         "first_needs_none": first_needs_none,
@@ -215,7 +253,7 @@ def manifest(project) -> dict:
         "alias_license": license_secret == "RASA_LICENSE" and LICENSE_ALIAS in keys,
         "operator_secrets": license_secret == LICENSE_ALIAS,
         "install": 'bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh" ' + project.rel,
-        "ready": None,
+        "ready": ready,
         "first": first,
         "see": see,
         "ports": forward,
@@ -255,9 +293,12 @@ def config(entry: dict) -> str:
         "onCreateCommand": install,
         "postCreateCommand": ready,
     }
+    remote_env = dict(entry.get("remote_env", {}))
     if entry["alias_license"]:
         # Holds for non-interactive shells, tasks and launch configurations, unlike a line in ~/.bashrc.
-        body["remoteEnv"] = {LICENSE_ALIAS: "${containerEnv:RASA_LICENSE}"}
+        remote_env[LICENSE_ALIAS] = "${containerEnv:RASA_LICENSE}"
+    if remote_env:
+        body["remoteEnv"] = remote_env
     return json.dumps(body, indent=2) + "\n"
 
 
@@ -277,26 +318,34 @@ def readme_block(entry: dict, depth: int) -> str:
     else:
         need = "the free Rasa Developer Edition license and the keys it names: required " + ", ".join(required)
         if optional:
-            need += "; optional " + ", ".join(optional) + " (the resource runs without them)"
+            need += "; optional " + ", ".join(optional) + (
+                " (see the project's setup requirements below)" if entry.get('snapshot')
+                else " (the resource runs without them)")
     first = entry["first"]
     if first:
         first_line = f"`{first}`. The terminal opens in this folder, and the creation log ends with `READY`."
         if entry.get("embeds_references"):
-            first_line += " Training uses your OpenAI key (a small embedding call) to index this resource's reference documents."
+            first_line += (" Training may make provider calls to index this resource's reference documents; see the setup requirements below."
+                           if entry.get('snapshot') else " Training uses your OpenAI key (a small embedding call) to index this resource's reference documents.")
         see = entry["see"]
     else:
         first_line = "follow the steps below; the creation log ends with `READY`."
         see = "`READY` at the end of the creation log."
+    snapshot_note = ("This cohort snapshot installs its own locked Rasa version; it does not track catalog upgrades.\n\n"
+                     if entry.get('snapshot') else "")
+    if entry.get('provider_note'):
+        snapshot_note += entry['provider_note'] + "\n\n"
     return "\n".join(
         [
             START,
             f"[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)]({launch_url(entry)})",
             "",
-            f"- **You need:** {need}, "
+            snapshot_note + f"- **You need:** {need}, "
             + ("configured by the operator as repository or organisation Codespaces secrets "
                if entry.get("operator_secrets") else "saved once as personal Codespaces secrets ") +
             f"([how]({'../' * depth}{SETUP_ANCHOR})). Use this button rather than the Codespaces picker, "
             "so you get this resource's setup.",
+            *((["- **Before the first command:** " + entry['before_first']]) if entry.get('before_first') else []),
             f"- **First command:** {first_line}",
             f"- **You should see:** {see}",
             END,
@@ -316,9 +365,14 @@ def with_block(text: str, block: str) -> str:
     raise ValueError("README has no top-level heading")
 
 
+def projects():
+    """Maintained and frozen runnable resources share Codespaces discovery only."""
+    return discover_projects('catalog') + discover_projects('snapshots')
+
+
 def plan() -> list[tuple[Path, str]]:
     changes: list[tuple[Path, str]] = []
-    entries = [manifest(project) for project in discover_projects("catalog")] + [manual_manifest(m) for m in MANUAL]
+    entries = [manifest(project) for project in projects()] + [manual_manifest(m) for m in MANUAL]
     for entry in entries:
         changes.append((REPO_ROOT / ".devcontainer" / entry["slug"] / "devcontainer.json", config(entry)))
         readme = REPO_ROOT / entry["path"] / "README.md"
@@ -334,14 +388,14 @@ def main() -> int:
     parser.add_argument("--list-json", action="store_true", help="print the resources as a JSON matrix for CI")
     args = parser.parse_args()
     if args.list_json:
-        paths = [project.rel for project in discover_projects("catalog")] + [item["path"] for item in MANUAL]
+        paths = [project.rel for project in projects()] + [item["path"] for item in MANUAL]
         matrix = [{"path": path, "slug": slug(path)} for path in paths]
         # The workshop's own configuration is kept by hand (it is not generated), so list it here for CI.
         matrix.append({"path": "workshops/software-factories-masterclass", "slug": "travel-factory"})
         print(json.dumps(matrix))
         return 0
     if args.list:
-        for project in discover_projects("catalog"):
+        for project in projects():
             print(project.rel)
         for item in MANUAL:
             print(item["path"])

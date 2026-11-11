@@ -1,5 +1,18 @@
 # DevPilot
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-traromal-devcopilot/devcontainer.json)
+
+This cohort snapshot installs its own locked Rasa version; it does not track catalog upgrades.
+
+Save a DeepSeek account key as `DEEPSEEK_API_KEY`. This Codespace maps it to the project's `OPENAI_API_KEY`.
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `DEEPGRAM_API_KEY`, `DEEPSEEK_API_KEY`; optional `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN` (see the project's setup requirements below), saved once as personal Codespaces secrets ([how](../../../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **Before the first command:** In two other terminals in this folder, run `uv run python -m scripts.mcp_demo_serve` and `uv run python -m scripts.mcp_slack_serve`. Keep both bridges running before starting Rasa. Live Slack features need the optional Slack tokens.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`. Training may make provider calls to index this resource's reference documents; see the setup requirements below.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
     Author:        Aromal TR
     Wave:          wave-01-mantle
     Assessed on:   2026-10-13
