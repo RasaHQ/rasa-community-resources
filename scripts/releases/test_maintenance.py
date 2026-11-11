@@ -41,6 +41,10 @@ class MaintenanceTests(unittest.TestCase):
         self.assertTrue(allowed_path('community/samrudh-gemini-voice-agent/uv.lock', False))
         self.assertFalse(allowed_path('docs/arbitrary.md', False))
         self.assertFalse(allowed_path('heroes/example/pyproject.toml', False))
+        self.assertTrue(allowed_path('examples/example/agent.yml', False))
+        self.assertTrue(allowed_path('patterns/example/integrations.scripted.yml.in', False))
+        self.assertFalse(allowed_path('scripts/migrate_mantle_config.py', False))
+        self.assertFalse(allowed_path('examples/example/tools.py', False))
 
     def test_packet_survives_setup_failure_and_explains_dependency_failure(self):
         with tempfile.TemporaryDirectory() as directory:

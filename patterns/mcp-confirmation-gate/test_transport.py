@@ -52,7 +52,7 @@ class Transport(unittest.TestCase):
                             self.assertEqual(result.structuredContent["completion_step"],
                                              "record_local_canary")
                     # Exercise Mantle's actual MCP binding and shared pool too.
-                    # The bootstrap stand-in contains only the two native input
+                    # The bootstrap stand-in contains the native input
                     # fields; this is not a trained model archive or chat turn.
                     from rasa.mantle.config.mcp import parse_mcp_servers
                     from rasa.mantle.tools.mcp_import_spec import try_parse_mcp_tool_import
@@ -63,7 +63,8 @@ class Transport(unittest.TestCase):
                     runtime = MCPRuntime()
                     try:
                         await runtime.prepare(SimpleNamespace(
-                            mcp_servers=settings, mcp_tool_allowlist={"review_case": [reference]}))
+                            mcp_servers=settings, mcp_tool_allowlist={"review_case": [reference]},
+                            tool_funcs={}))
                         self.assertTrue(runtime.has_mcp_tool("review_case", "read_case"))
                         self.assertFalse(runtime.has_mcp_tool("review_case", "record_local_canary"))
                         self.assertEqual(runtime.mcp_tool_schemas["review_case"]["read_case"].description,

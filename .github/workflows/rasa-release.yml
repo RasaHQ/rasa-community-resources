@@ -35,11 +35,7 @@ jobs:
       - name: Run release maintenance
         env:
           GH_TOKEN: ${{ github.token }}
-          AUTO_MERGE: ${{ vars.RASA_RELEASE_AUTO_MERGE != 'false' }}
-        run: |
-          merge_flag=()
-          if [ "$AUTO_MERGE" = "true" ]; then merge_flag=(--merge); fi
-          uv run --with packaging==26.3 python scripts/releases/maintenance.py --kind catalog "${merge_flag[@]}"
+        run: uv run --with packaging==26.3 python scripts/releases/maintenance.py --kind catalog
       - name: Write repair handoff even after setup failure
         if: always()
         env:

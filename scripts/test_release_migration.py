@@ -7,10 +7,24 @@ import unittest
 import tempfile
 import rasa_projects
 from unittest.mock import patch
+import subprocess
 import migrate_rasa_pro as migration
 
 
 class MigrationOrderTests(unittest.TestCase):
+    def test_lock_failure_keeps_the_conflicting_requirements_before_uv_hint(self):
+        explanation = ('rasa-pro==3.22.0.dev3 requires mcp>=1.30.0,<1.31.0\n'
+                       'project requires mcp==1.28.1\n'
+                       'No solution exists.\n\n'
+                       'hint: another platform was being resolved\n'
+                       'consider limiting environments\n')
+        failed = subprocess.CompletedProcess([], 1, stdout='', stderr=explanation)
+        with patch.object(migration.shutil, 'which', return_value='uv'), patch.object(migration.subprocess, 'run', return_value=failed):
+            with self.assertRaisesRegex(RuntimeError, 'mcp>=1.30.0,<1.31.0') as error:
+                migration._run_uv_lock(Path('/tmp/project'), '3.22.0.dev3')
+        self.assertIn('mcp==1.28.1', str(error.exception))
+        self.assertIn('consider limiting environments', str(error.exception))
+
     def exercise(self, fail=False):
         projects=[SimpleNamespace(path=Path('/tmp/a'),rel='a'),SimpleNamespace(path=Path('/tmp/b'),rel='b')]
         prepared=[];resolved=[]
