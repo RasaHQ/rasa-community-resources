@@ -21,7 +21,7 @@ still open.
 | Model groups | `orchestrator_llm` (OpenAI primary, Groq fallback-only via a weighted LiteLLM router) and `reference_embeddings` (Gemini) |
 | Contextual response rephraser | `endpoints.yml` rephraser on Gemini — natural-sounding voice replies |
 | Verbatim vs rephrased responses | `responses.yml` + the verbatim levothyroxine safety reminder |
-| e2e eval harness (`rasa test e2e`) | `tests/e2e_test_cases.yml` (4 assertion-based cases) + `make e2e` / `make e2e-coverage`; structural (`flow_started`) + response-text (`bot_uttered`) assertions. **4/4 pass** on the live OpenAI-primary orchestrator: greeting, meal logging, nutrition lookup (routes to `nutrition_qna` and grounds the reply in a real USDA tool call), safety escalation |
+| e2e eval harness (`rasa test e2e`) | `tests/e2e_test_cases.yml` (4 assertion-based cases) + `make e2e` / `make e2e-coverage`; structural (`flow_started`) + response-text (`bot_uttered`) assertions. **Historical author report: 4/4**, with the run date and tested commit unrecorded; not repeated and not current-head qualification. The nutrition assertion checks routing to `nutrition_qna` only; it does not assert a USDA call or a grounded reply. |
 | Tracing / observability | OTLP tracing + SQL tracker_store wired in `endpoints.yml` (opt-in; env-gated endpoint) |
 
 ## TODO

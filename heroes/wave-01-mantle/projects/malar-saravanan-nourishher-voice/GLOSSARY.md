@@ -31,7 +31,7 @@ USDA nutrition API, an embeddings-based knowledge base, and per-user files on di
 | `tools/` | **Shared tools** used by several skills: `nutrition.py` (USDA lookup), `profile.py` (profile read/write), `meals.py` (logging, history, plans). |
 | `lib/store.py` | Our **file-backed database**: reads/writes per-user JSON/JSONL under `data/`. |
 | `lib/usda_client.py` | Client for the live **USDA FoodData Central** nutrient API. |
-| `data/profiles/`, `data/meal_logs/`, `data/meal_plans/` | The actual saved per-user data (one file per user, keyed by their conversation id). |
+| `data/senders-v2/<sender-hash>/` | The actual saved per-user data (one file per user, keyed by their conversation id). |
 | `ui/index.html` | The embedded **web chat UI** (voice + text) that talks to the assistant. |
 | `tests/` | Automated tests for the store + tools (`make test`); no LLM/network needed. |
 | `Makefile` | Shortcut commands: `make validate | test | train | inspect | api | ui`. |
@@ -92,7 +92,7 @@ USDA nutrition API, an embeddings-based knowledge base, and per-user files on di
 
 | Tool | What it does |
 |---|---|
-| `get_user_profile` / `update_user_profile` / `delete_user_profile` | Read / change / remove the user's stored profile (in `data/profiles/`). |
+| `get_user_profile` / `update_user_profile` / `delete_user_profile` | Read / change / remove the user's stored profile (in `data/senders-v2/<sender-hash>/`). |
 | `log_meal` / `log_symptom` | Save what the user ate / how they felt (`data/meal_logs/`). |
 | `get_meal_history` / `get_behavioral_summary` | Read back recent logs / simple patterns. |
 | `create_meal_plan` / `get_saved_plan` / `create_grocery_list` | Save, recall, and derive a shopping list from a meal plan (`data/meal_plans/`). |
