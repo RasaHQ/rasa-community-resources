@@ -35,7 +35,7 @@
     }
   },
   "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" heroes/wave-01-mantle/projects/phlenfyl-notevs-agent",
-  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/phlenfyl-notevs-agent \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/phlenfyl-notevs-agent --skip-sync --use-project-pin\"",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/phlenfyl-notevs-agent \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/phlenfyl-notevs-agent --skip-sync --use-project-pin && uv run --locked --no-sync python -m unittest discover -s tests -v\"",
   "remoteEnv": {
     "RASA_PRO_LICENSE": "${containerEnv:RASA_LICENSE}"
   }

@@ -79,6 +79,7 @@ learned something negative is more useful than one that reports only successes.
 
 ## Frozen
 
-These projects are pinned to `rasa-pro 3.20.0.dev6` and are not migrated
-forward. See [`docs/SNAPSHOTS.md`](../../docs/SNAPSHOTS.md) for what that
+Each project keeps its own recorded pin and lock; catalog migration does not
+rewrite them. Its README distinguishes earlier author assessments from later
+maintainer integration results. See [`docs/SNAPSHOTS.md`](../../docs/SNAPSHOTS.md) for what that
 guarantees and what it does not.

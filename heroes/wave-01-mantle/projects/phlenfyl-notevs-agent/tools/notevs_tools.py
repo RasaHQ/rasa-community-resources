@@ -42,8 +42,16 @@ NOTEVS_FOLDER_PATH = os.environ.get("NOTEVS_FOLDER_PATH")
 
 
 async def _call(tool_name: str, args: dict, context: ToolContext | None = None) -> ToolResult:
-    if NOTEVS_FOLDER_PATH and "folderPath" not in args:
-        args = {**args, "folderPath": NOTEVS_FOLDER_PATH}
+    if not isinstance(NOTEVS_FOLDER_PATH, str) or not NOTEVS_FOLDER_PATH.strip():
+        return ToolResult(llm_response={
+            "ok": False,
+            "error": "workspace_scope_required",
+            "hint": "Set NOTEVS_FOLDER_PATH to the intended workspace on the extension host before accessing notes.",
+        })
+    # The configured extension-host workspace is authoritative, including when
+    # an internal caller supplies a different folderPath. Never use the
+    # extension server's implicit first-window fallback.
+    args = {**args, "folderPath": NOTEVS_FOLDER_PATH}
     # Also mirror it into real declared project memory (see memory.yml) so
     # it's visible in `rasa inspect` and usable by scoped instructions
     # elsewhere, on top of the args-injection above (which is what actually
