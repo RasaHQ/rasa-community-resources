@@ -250,8 +250,8 @@ function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
 function setStatus(t) { statusEl.textContent = t || ""; }
 
 // ---------------------------------------------------------------------------
-// Networking — talks to Rasa REST channel. Empty [] means the LLM backend
-// was rate-limited (Groq free tier); we retry a few times automatically.
+// Networking — send each stateful request once. An empty or failed response
+// cannot establish whether the tools already saved a change.
 // ---------------------------------------------------------------------------
 async function postMessage(text) {
   const res = await fetch(WEBHOOK, {
@@ -274,41 +274,22 @@ async function send(text, displayText) {
   autoGrow();
   showTyping();
 
-  // The free LLM tier is rate-limited, so a turn can come back empty. We
-  // wait out the token-per-minute window and retry rather than giving up —
-  // enough attempts/backoff to ride through a full ~60s reset.
-  const MAX_TRIES = 7;
-  const WAIT_MS = 12000;
-  let replies = [];
-  let ackSpoken = false;  // speak the "one moment" filler at most once per turn
-  for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
-    try {
-      replies = await postMessage(text);
-    } catch (e) {
-      hideTyping();
-      addMessage("bot", "I couldn't reach the assistant. Make sure the server is running (make api) and reachable at " + API_BASE + ".");
-      busy = false; sendBtn.disabled = false;
-      return;
-    }
-    if (replies && replies.length) break;
-    if (attempt < MAX_TRIES) {
-      // Voice users shouldn't sit in silence while we wait out the rate
-      // limit — say a short filler once, so it's clear we're still working.
-      if (speakOn && !ackSpoken) { speak("One moment, I'm still working on that."); ackSpoken = true; }
-      let remaining = Math.round(WAIT_MS / 1000);
-      setStatus("The assistant is busy (rate limit) — waiting to retry (" + attempt + "/" + (MAX_TRIES - 1) + ")… " + remaining + "s");
-      // Live countdown so the wait doesn't look frozen.
-      for (; remaining > 0; remaining--) {
-        await new Promise(r => setTimeout(r, 1000));
-        setStatus("The assistant is busy (rate limit) — waiting to retry (" + attempt + "/" + (MAX_TRIES - 1) + ")… " + (remaining - 1) + "s");
-      }
-    }
+  let replies;
+  try {
+    replies = await postMessage(text);
+  } catch (e) {
+    hideTyping();
+    setStatus("");
+    addMessage("bot", "The response was not confirmed. This request may already have changed saved data. Check your history before repeating it.");
+    busy = false; sendBtn.disabled = false;
+    inputEl.focus();
+    return;
   }
 
   hideTyping();
   setStatus("");
   if (!replies || !replies.length) {
-    addMessage("bot", "I'm still catching up after a busy stretch — please send that once more in a few seconds and I'll pick it right up.");
+    addMessage("bot", "No reply was returned. This request may already have changed saved data. Check your history before repeating it.");
   } else {
     for (const r of replies) {
       if (r.text) addMessage("bot", r.text, r.buttons);

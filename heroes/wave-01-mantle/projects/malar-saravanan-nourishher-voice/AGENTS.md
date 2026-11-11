@@ -44,7 +44,7 @@ always come from this project's `.env.example` only.
   `request_professional_referral`)
 - `lib/` — shared Python helpers: `usda_client.py` (USDA FoodData Central),
   `store.py` (real file-backed per-user profile/log/plan persistence)
-- `data/` — runtime per-user data (`profiles/`, `meal_logs/`, `meal_plans/`),
+- `data/` — runtime per-user data (`senders-v2/<sender-hash>/`),
   git-ignored; never committed
 - `tests/` — deterministic `unittest` suite over the store + tools
   (`make test`, no LLM/network)
@@ -116,7 +116,7 @@ There is no mock database. The "real data" is:
 - The person's own profile. Condition flags persist via project `memory.yml`
   (they gate skills); the richer, freely-mutable preferences (name, cuisine,
   diet, likes/dislikes, cooking time, budget, goals, health context) persist
-  in a real file-backed per-user store, `data/profiles/<sender>.json`
+  in a real file-backed per-user store, `data/senders-v2/<sender-hash>/profile.json`
   (`lib/store.py`) — not a fabricated dataset.
 - Live macro/micro nutrient lookups from the USDA FoodData Central API
   (`lib/usda_client.py`), a free public API. %Daily-value is computed in
@@ -129,7 +129,7 @@ There is no mock database. The "real data" is:
   `references/*.md` as grounding text for the `references:` retrieval
   mechanism (not treated as real-time data).
 - The person's own meal/symptom log and saved plans, in
-  `data/meal_logs/<sender>.jsonl` and `data/meal_plans/<sender>.json`
+  `data/senders-v2/<sender-hash>/history.jsonl` and `data/senders-v2/<sender-hash>/plans.json`
   (atomic writes) — a real local data store, keyed per sender id so multiple
   users (and the five documented test profiles) stay isolated.
 

@@ -1,7 +1,7 @@
 """Shared profile tools for NourishHer — real file-backed persistence.
 
 These read and write the rich, freely-mutable user profile stored per
-sender id in ``data/profiles/`` (see ``lib/store.py``). Condition *flags*
+sender id in ``data/senders-v2/<sender-hash>/`` (see ``lib/store.py``). Condition *flags*
 that gate skills stay in project memory (written by
 ``skills/intake_profile/tools.py``); everything a person can casually add,
 change, or delete — cuisine, likes/dislikes, cooking time, budget, goals —

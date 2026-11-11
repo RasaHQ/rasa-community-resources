@@ -101,9 +101,8 @@ input; text works everywhere). Point the UI at a different API with
 `?api=http://host:port`. Custom ports: `make api API_PORT=5015` and
 `make ui UI_PORT=9000`.
 
-The UI auto-retries on an empty reply and shows a clear status while it
-waits — rare in normal operation now that OpenAI is the primary LLM, see the
-note below for when it can still happen. For embedding in an existing app,
+The UI sends each message once. If a reply is empty or fails, check saved
+history before repeating a write: a tool may already have saved the change. For embedding in an existing app,
 `ui/index.html` is a single static file: host it anywhere and set its
 `?api=` to your running assistant.
 
@@ -294,8 +293,7 @@ and flow overview.
 - **Cross-session memory, the right store for each kind**: condition flags,
   meds, and allergies persist in project `memory.yml`; the freely-editable
   profile, the append-only meal/symptom log, and saved plans persist in a
-  per-sender file store (`data/profiles/`, `data/meal_logs/`,
-  `data/meal_plans/`). Project memory went write-once-per-field in
+  per-sender file store (`data/senders-v2/<sender-hash>/`). Project memory went write-once-per-field in
   `3.20.0.dev4+`, so a log that grows across many turns cannot live there.
 - **A genuine food/medication interaction**: `hypothyroidism_nutrition`
   repeats a verbatim reminder that levothyroxine must be taken on an empty
@@ -305,3 +303,20 @@ and flow overview.
   `metadata.rephrase: true` — wording for red-flag hand-offs is fixed.
 
 See [`AGENTS.md`](AGENTS.md) for the full project layout and ground rules.
+
+## Existing data and sender identities
+
+Persistent data now uses `data/senders-v2/<sha256-of-exact-sender>/`.
+Distinct sender strings keep separate profiles, history and plans. Missing or
+blank identities are rejected; no shared default is used. This partitions
+records by sender; it does not authenticate the person supplying that identity.
+
+Old files under `data/profiles/`, `data/meal_logs/` and `data/meal_plans/` remain
+unchanged. The old filename rules could merge different senders, so the app does
+not guess owners, import those files or delete them. An owner must verify an
+explicit sender-to-record mapping before any separate import. Existing sessions
+will see an empty new store until that mapping is resolved.
+
+The browser sends each message once. An empty or failed reply leaves the outcome
+unknown, because a tool may already have saved a change. Check history before
+repeating a write; the browser does not resend it automatically.

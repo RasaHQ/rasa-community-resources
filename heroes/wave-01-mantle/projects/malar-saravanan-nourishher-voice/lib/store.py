@@ -21,6 +21,7 @@ mid-write can never leave a half-written profile on disk.
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import tempfile
 from datetime import datetime, timezone
@@ -70,47 +71,39 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def user_id_from_context(context: Any) -> Optional[str]:
-    """Best-effort extraction of the conversation's sender id from a ToolContext.
+def _require_sender(user_id: Optional[str]) -> str:
+    if not isinstance(user_id, str) or not user_id.strip():
+        raise ValueError("A nonempty sender identity is required for persistent data")
+    return user_id
 
-    The public ToolContext surface (rasa-pro 3.20.0.dev6) does not expose the
-    sender id, so we read it off the underlying tracker handle defensively.
-    Returns None if unavailable, and every store function degrades to the
-    shared "default" key in that case rather than raising.
-    """
-    if context is None:
-        return None
-    try:
-        return context._handle.tracker.sender_id  # noqa: SLF001
-    except AttributeError:
-        return None
+
+def user_id_from_context(context: Any) -> str:
+    """Read the exact sender identity; never substitute a shared default."""
+    handle = getattr(context, "_handle", None)
+    tracker = getattr(handle, "tracker", None)
+    return _require_sender(getattr(tracker, "sender_id", None))
 
 
 def _safe_user_key(user_id: Optional[str]) -> str:
-    """Return a filesystem-safe key for *user_id*.
-
-    Falls back to "default" when no sender id is available (e.g. a tool run
-    outside a live turn). Keeps only characters that are safe in a filename.
-    """
-    raw = (user_id or "default").strip() or "default"
-    return "".join(c if (c.isalnum() or c in "-_") else "_" for c in raw)[:128]
+    """Hash the complete exact identity, without replacing or truncating it."""
+    return hashlib.sha256(_require_sender(user_id).encode("utf-8")).hexdigest()
 
 
 def _profile_path(user_key: str) -> Path:
-    return DATA_DIR / "profiles" / f"{user_key}.json"
+    return DATA_DIR / "senders-v2" / user_key / "profile.json"
 
 
 def _log_path(user_key: str) -> Path:
-    return DATA_DIR / "meal_logs" / f"{user_key}.jsonl"
+    return DATA_DIR / "senders-v2" / user_key / "history.jsonl"
 
 
 def _plans_path(user_key: str) -> Path:
-    return DATA_DIR / "meal_plans" / f"{user_key}.json"
+    return DATA_DIR / "senders-v2" / user_key / "plans.json"
 
 
 def _atomic_write(path: Path, text: str) -> None:
     """Write *text* to *path* atomically (temp file + os.replace)."""
-    path.parent.mkdir(parents=True, exist_ok=True)
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
@@ -196,8 +189,9 @@ def append_log(user_id: Optional[str], entry: Dict[str, Any]) -> Dict[str, Any]:
     user_key = _safe_user_key(user_id)
     record = {"timestamp": _now(), **entry}
     path = _log_path(user_key)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as f:
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+    with os.fdopen(fd, "a", encoding="utf-8") as f:
         f.write(json.dumps(record) + "\n")
     return record
 
