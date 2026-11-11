@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import io
 import json
+import subprocess
 import re
 import tomllib
 import urllib.error
@@ -139,6 +140,14 @@ DOC_SWEEP_EXCLUDES = {".venv", ".git", "node_modules", "models", ".rasa", "__pyc
 # did, the two gates disagreed and the only text that satisfied both was a
 # degenerate upgrade path naming one version twice.
 VERSION_IGNORE_MARKER = "rasa-version-ignore"
+
+# These workshop folders explicitly retain their original fixtures and results.
+# The active workshop environment is outside these prefixes and stays managed.
+HISTORICAL_VERSION_PATHS = (
+    "workshops/software-factories-masterclass/archive/",
+    "workshops/software-factories-masterclass/factory/",
+    "workshops/software-factories-masterclass/openai-mcp/",
+)
 
 # ------------------------------------------------------------------------------
 # Version tokens
@@ -514,6 +523,45 @@ def discover_projects(scope: str = "catalog") -> list[Project]:
 def is_snapshot_path(rel_path: str) -> bool:
     """True for a repo-relative path inside a frozen-snapshot root."""
     return rel_path.split("/", 1)[0] in SNAPSHOT_ROOT_NAMES
+
+
+def is_historical_version_path(rel_path: str) -> bool:
+    """Whether a path records an old runtime instead of the current catalog pin."""
+    return is_snapshot_path(rel_path) or any(
+        rel_path == prefix.rstrip("/") or rel_path.startswith(prefix)
+        for prefix in HISTORICAL_VERSION_PATHS
+    )
+
+
+def tracked_version_paths(*patterns: str) -> list[Path]:
+    """Tracked current-version inputs only; never traverse environments or links."""
+    names = subprocess.check_output(
+        ["git", "ls-files", "-z", "--", *patterns], cwd=REPO_ROOT,
+    ).decode().split("\0")
+    paths = []
+    for name in names:
+        if not name or is_historical_version_path(name):
+            continue
+        path = REPO_ROOT / name
+        if path.is_symlink():
+            raise ValueError(f"Refusing to rewrite a linked version input: {name}")
+        if path.is_file():
+            paths.append(path)
+    return paths
+
+
+def additional_migration_projects(projects: list[Project]) -> list[Project]:
+    """Active nested/manual Rasa projects, without duplicating catalog resources."""
+    known = {project.path for project in projects}
+    extra = []
+    for manifest in tracked_version_paths("pyproject.toml", "**/pyproject.toml"):
+        if manifest.parent in known:
+            continue
+        text = "\n".join(line for line in manifest.read_text().splitlines()
+                         if VERSION_IGNORE_MARKER not in line)
+        if RASA_PRO_DEP_RE.search(text) and _declares_rasa_pro(manifest):
+            extra.append(Project(manifest.parent))
+    return extra
 
 
 def discover_waves() -> list[Path]:

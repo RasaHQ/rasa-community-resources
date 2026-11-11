@@ -20,9 +20,12 @@ jobs:
         with:
           python-version: '3.12'
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
-      - name: Full maintained catalog behavior
+      - name: Affected maintained catalog behavior
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
         run: |
-          make ci KEEP_GOING=1
-          python scripts/compatibility.py --keep-going --out /tmp/rasa-catalog-offline.json
+          make validate STRICT=1
+          python scripts/compatibility.py --keep-going --affected "$EVENT" "$BEFORE" "$GITHUB_SHA" --out /tmp/rasa-catalog-offline.json
       - name: Release policy regression tests
         run: uv run --with packaging==26.3 python -m unittest discover -s scripts/releases

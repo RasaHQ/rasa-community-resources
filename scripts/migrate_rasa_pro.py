@@ -47,6 +47,9 @@ from rasa_projects import (  # noqa: E402
     IndexUnavailable,
     Project,
     discover_projects,
+    additional_migration_projects,
+    is_historical_version_path,
+    tracked_version_paths,
     is_prerelease,
     is_valid_version,
     latest_version,
@@ -526,10 +529,13 @@ def main() -> int:
     # dated, checkable claim into an unverified assertion that the maintainers
     # made on the contributor's behalf. See docs/SNAPSHOTS.md.
     projects = discover_projects()
+    projects += additional_migration_projects(projects)
     snapshots = discover_projects("snapshots")
     if args.project:
         wanted = {p.strip().rstrip("/") for p in args.project}
-        frozen = wanted & {p.rel for p in snapshots}
+        frozen = (wanted & {p.rel for p in snapshots}) | {
+            path for path in wanted if is_historical_version_path(path)
+        }
         if frozen:
             print(
                 f"Refusing to migrate frozen snapshot(s): {', '.join(sorted(frozen))}\n"
@@ -612,10 +618,9 @@ def main() -> int:
             print(f"{DIM}[SKIP] {result['path']}: already on {new_version}{detail}{RESET}")
 
     # Repo-level docs that quote the pin (root README, MIGRATING, Makefile help).
-    # Include nested starter-pack instructions and scaffolding skills; these were
-    # previously invisible because they are not runnable pyproject roots.
-    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=REPO_ROOT).decode().split("\0")
-    extra_docs = [rel for rel in tracked if rel.startswith("starter-pack/") and (rel.endswith(".md") or rel.endswith("/Makefile"))]
+    # Shared instructions can quote the runtime without being project roots.
+    extra_docs = [path.relative_to(REPO_ROOT).as_posix() for path in
+                  tracked_version_paths("*.md", "Makefile", "**/Makefile")]
     for rel in sorted(set(REPO_DOCS) | set(extra_docs)):
         if _rewrite_doc(
             REPO_ROOT / rel, None, new_version, touch_assessed_on=False, dry_run=args.dry_run

@@ -90,8 +90,10 @@ def handoff(output, kind, job_status=None):
                     target = output / source.name / file.relative_to(source)
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_text(redact(file.read_text(errors='replace')))
-    state['category'] = category if state['status'] != 'passed' else 'passed'
+    state['category'] = state['status'] if state['status'] in ('passed', 'unchanged') else category
     state['recommendation'] = recommendation if state['status'] != 'passed' else 'Routine maintenance passed. Netlify production deployment still requires the operator.'
+    if state['status'] == 'unchanged':
+        state['recommendation'] = 'No migration or licensed checks were run: ' + state['admission']['status'] + '. Existing candidate reviews and required checks remain in force.'
     write_json(state_path, state)
     lines = ['# Rasa maintenance handoff', '', f"Status: **{state['status']}**", '',
              f"Repository: `{repo}`", f"Source commit: `{state.get('sourceCommit', 'setup did not complete')}`",
@@ -115,7 +117,7 @@ def handoff(output, kind, job_status=None):
     return state
 
 
-def run(kind, companion, output, merge=False):
+def run(kind, companion, output):
     output.mkdir(parents=True, exist_ok=True)
     state = {'status': 'running', 'steps': [], 'sourceCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()}
     def step(label, command, timeout=2400):
@@ -126,11 +128,24 @@ def run(kind, companion, output, merge=False):
         if result['exitCode']:
             raise RuntimeError(label)
     try:
+        if kind == 'catalog':
+            from admission import check
+            admission = check()
+            write_json(output / 'admission.json', admission)
+            state['admission'] = admission
+            if admission['status'] != 'candidate':
+                state['status'] = 'unchanged'
+                write_json(output / 'run.json', state)
+                return 0
         step('release-tests', [sys.executable, '-m', 'unittest', 'discover', '-s', 'scripts/releases'])
         command = [sys.executable, 'scripts/releases/update.py', '--report', str(output / 'discovery.json')]
         if kind == 'site':
             command += ['--companion', companion]
         step('discovery', command)
+        if kind == 'catalog':
+            # Migration changes the version/config fields consumed by this
+            # generated index. Validate the regenerated tree, not stale data.
+            step('catalog-generation', [sys.executable, 'scripts/catalog_case_builds.py'])
         if not all(os.environ.get(key) for key in ('RASA_LICENSE', 'OPENAI_API_KEY')):
             step('credentials', [sys.executable, '-c', "import os,sys; missing=[k for k in ('RASA_LICENSE','OPENAI_API_KEY') if not os.environ.get(k)]; print('Missing required credentials: '+', '.join(missing)); sys.exit(bool(missing))"])
         if kind == 'site':
@@ -150,8 +165,6 @@ def run(kind, companion, output, merge=False):
         # Publication is explicit: local reproduction never pushes or merges.
         if os.environ.get('GITHUB_ACTIONS') == 'true':
             command = [sys.executable, 'scripts/releases/propose.py', '--state', str(output / 'proposal.json')]
-            if merge:
-                command.append('--merge')
             candidate = subprocess.check_output(['git', 'diff', '--binary', 'HEAD'], text=True)
             (output / 'candidate.patch').write_text(redact(candidate))
             step('proposal', command)
@@ -173,14 +186,13 @@ def main():
     parser.add_argument('--kind', choices=['site', 'catalog'], required=True)
     parser.add_argument('--companion', default='companion')
     parser.add_argument('--output', type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument('--merge', action='store_true')
     parser.add_argument('--report-only', action='store_true')
     parser.add_argument('--job-status')
     args = parser.parse_args()
     if args.report_only:
         handoff(args.output, args.kind, args.job_status)
         return 0
-    return run(args.kind, args.companion, args.output, args.merge)
+    return run(args.kind, args.companion, args.output)
 
 
 if __name__ == '__main__':

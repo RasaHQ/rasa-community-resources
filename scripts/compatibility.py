@@ -75,7 +75,20 @@ def main():
     parser.add_argument('--local-embeddings', metavar='PROVIDER/MODEL', help='Validate training with this local embedder for references indexes (see check_project.py)')
     parser.add_argument('--placeholder-secret', action='append', default=[], metavar='NAME', help='Set NAME to an obviously fake value when unset. For provider keys that training must see defined but never calls; recorded in the report')
     parser.add_argument('--keep-going', action='store_true', help='Run later independent checks after a failure; still fail and do not write a success report')
+    parser.add_argument('--affected', nargs=3, metavar=('EVENT', 'BEFORE', 'HEAD'), help='Select changed resources and local dependencies; unknown history selects all')
     args = parser.parse_args()
+    if args.affected and args.out.resolve() == (REPO_ROOT / 'COMPATIBILITY.json').resolve():
+        parser.error('Scoped checks require --out to a separate diagnostic receipt; never replace the full catalog receipt')
+    selected = discover_projects()
+    full = True
+    if args.affected:
+        from codespaces_scope import changed_slugs, choose
+        event, before, head = args.affected
+        resources = [{'path': p.rel, 'slug': p.rel} for p in selected]
+        changed = changed_slugs(before, head, resources, pull_request=event == 'pull_request') if event in ('push', 'pull_request') else None
+        wanted = {r['path'] for r in choose(event, resources, changed)}
+        selected = [p for p in selected if p.rel in wanted]
+        full = changed is None
     args.logs.mkdir(parents=True, exist_ok=True)
     _load_dotenv(REPO_ROOT)
     placeholders = [n for n in args.placeholder_secret if not os.environ.get(n, '').strip()]
@@ -87,7 +100,7 @@ def main():
     run('tooling', [sys.executable, 'scripts/test_tooling.py'])
     run('migration-regressions', [sys.executable, '-m', 'unittest', 'discover', '-s', 'scripts', '-p', 'test_release_migration.py'])
     projects=[]
-    for project in discover_projects():
+    for project in selected:
         rel=project.path.relative_to(REPO_ROOT).as_posix()
         command=[sys.executable,'scripts/check_project.py',rel]
         if args.train: command += ['--train','--require-license','--require-secrets']
@@ -122,9 +135,11 @@ def main():
         used=[n for n in placeholders if n in read_training_secrets(project)]
         if args.train and used: entry['placeholderSecrets']=used
         projects.append(entry)
-    run('starter-pack',['uv','run','--project','tutorials/rasa-ai-team-casebook','python','scripts/check_starter_pack.py'])
+    starter_pack = full or any(p.rel == 'tutorials/rasa-ai-team-casebook' for p in selected)
+    if starter_pack:
+        run('starter-pack',['uv','run','--project','tutorials/rasa-ai-team-casebook','python','scripts/check_starter_pack.py'])
     runner.finish()
-    report={'schema':1,'testedAt':datetime.now(timezone.utc).isoformat(),'version':read_expected_version(),'sourceHash':fingerprint(REPO_ROOT),'projects':projects,'starterPack':['scaffold-sdk-validation','lint-negative-controls'],'liveConversations':'not tested; separate website quickstart live acceptance covers four synthetic text cases only'}
+    report={'schema':1,'testedAt':datetime.now(timezone.utc).isoformat(),'version':read_expected_version(),'sourceHash':fingerprint(REPO_ROOT),'projects':projects,'coverage':'full' if full else 'affected-resources-only','starterPack':['scaffold-sdk-validation','lint-negative-controls'] if starter_pack else [],'liveConversations':'not tested; separate website quickstart live acceptance covers four synthetic text cases only'}
     args.out.write_text(json.dumps(report,indent=2)+'\n')
     print(f'{len(projects)} maintained projects passed; {args.out}')
 

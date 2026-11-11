@@ -51,7 +51,7 @@ jobs:
           path: lint-report.json
 
   upstream:
-    if: github.event_name == 'push' || github.event_name == 'schedule'
+    if: github.event_name == 'schedule'
     name: upstream release check
     runs-on: ubuntu-latest
     steps:
@@ -87,24 +87,26 @@ jobs:
       snapshots: ${{ steps.list.outputs.snapshots }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - id: list
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
         run: |
           set -euo pipefail
-          to_json() {
-            python -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'
-          }
-
-          # Project installs and training run on main/schedule only.
           printf 'projects=' >> "$GITHUB_OUTPUT"
-          python scripts/list_projects.py --paths-only | to_json >> "$GITHUB_OUTPUT"
+          python scripts/codespaces_scope.py "$EVENT" "$BEFORE" "$GITHUB_SHA" '' catalog |
+            python -c 'import json,sys; print(json.dumps([r["path"] for r in json.load(sys.stdin)]))' >> "$GITHUB_OUTPUT"
           printf 'snapshots=' >> "$GITHUB_OUTPUT"
-          python scripts/list_projects.py --scope snapshots --paths-only | to_json >> "$GITHUB_OUTPUT"
+          python scripts/codespaces_scope.py "$EVENT" "$BEFORE" "$GITHUB_SHA" '' snapshots |
+            python -c 'import json,sys; print(json.dumps([r["path"] for r in json.load(sys.stdin)]))' >> "$GITHUB_OUTPUT"
 
   check:
-    if: github.event_name == 'push' || github.event_name == 'schedule'
+    if: (github.event_name == 'push' || github.event_name == 'schedule') && needs.discover.outputs.projects != '[]'
     name: ${{ matrix.project }}
     needs: [validate, discover]
     runs-on: ubuntu-latest
