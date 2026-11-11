@@ -178,7 +178,11 @@ class Transport(unittest.TestCase):
             })
             self.assertEqual(response.status_code, 200)
             result = response.json()["result"]
-            self.assertEqual(result["structuredContent"], {
+            self.assertFalse(result.get("isError", False), result)
+            value = result.get("structuredContent")
+            if value is None:
+                value = json.loads(result["content"][0]["text"])
+            self.assertEqual(value, {
                 "state": "unsupported", "reason": "vendor_contract_unqualified",
             })
 
