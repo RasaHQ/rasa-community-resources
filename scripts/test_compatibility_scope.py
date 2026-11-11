@@ -4,6 +4,7 @@ import io
 import json
 from pathlib import Path
 import tempfile
+import subprocess
 import unittest
 from unittest.mock import patch
 import compatibility
@@ -12,17 +13,36 @@ import rasa_projects
 
 
 class CompatibilityCoverageTests(unittest.TestCase):
-    def exercise(self, changed):
+    def exercise(self, changed, source_path=None):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             projects = [rasa_projects.Project(root / 'examples/a'), rasa_projects.Project(root / 'examples/b')]
+            before, head = 'before', 'head'
+            if source_path:
+                projects.append(rasa_projects.Project(root / 'tutorials/rasa-ai-team-casebook'))
+                def git(*args):
+                    return subprocess.check_output(['git', *args], cwd=root, text=True).strip()
+                git('init', '-q')
+                target = root / source_path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text('original')
+                git('add', '.')
+                git('-c', 'user.name=fixture', '-c', 'user.email=fixture@example.test', 'commit', '-qm', 'base')
+                before = git('rev-parse', 'HEAD')
+                target.write_text('changed')
+                git('add', '.')
+                git('-c', 'user.name=fixture', '-c', 'user.email=fixture@example.test', 'commit', '-qm', 'change')
+                head = git('rev-parse', 'HEAD')
             out = root / 'receipt.json'
-            argv = ['compatibility', '--affected', 'push', 'before', 'head', '--out', str(out), '--logs', str(root / 'logs')]
+            argv = ['compatibility', '--affected', 'push', before, head, '--out', str(out), '--logs', str(root / 'logs')]
             with contextlib.ExitStack() as stack:
                 for module in (rasa_projects, compatibility):
                     stack.enter_context(patch.object(module, 'REPO_ROOT', root))
                 stack.enter_context(patch.object(compatibility, 'discover_projects', return_value=projects))
-                stack.enter_context(patch.object(codespaces_scope, 'changed_slugs', return_value=changed))
+                if source_path:
+                    stack.enter_context(patch.object(codespaces_scope, 'ROOT', root))
+                else:
+                    stack.enter_context(patch.object(codespaces_scope, 'changed_slugs', return_value=changed))
                 stack.enter_context(patch.object(compatibility, '_load_dotenv'))
                 stack.enter_context(patch.object(compatibility, 'fingerprint', return_value='a' * 64))
                 stack.enter_context(patch.object(compatibility, 'read_expected_version', return_value='3.22.0.dev3'))
@@ -59,3 +79,20 @@ class CompatibilityCoverageTests(unittest.TestCase):
         self.assertEqual(len(report['projects']), 2)
         self.assertEqual(len(report['starterPack']), 2)
         self.assertTrue(any(c[0] == 'uv' for c in commands))
+
+    def test_actual_starter_inputs_select_casebook_and_invoke_sdk_scaffold_check(self):
+        for path in ('starter-pack/.claude/skills/mantle-new-project/SKILL.md',
+                     'starter-pack/scripts/lint_mantle.py'):
+            with self.subTest(path=path):
+                report, commands = self.exercise(None, path)
+                self.assertEqual([p['path'] for p in report['projects']], ['tutorials/rasa-ai-team-casebook'])
+                self.assertEqual(report['coverage'], 'affected-resources-only')
+                self.assertEqual(report['starterPack'], ['scaffold-sdk-validation', 'lint-negative-controls'])
+                self.assertIn(['uv', 'run', '--project', 'tutorials/rasa-ai-team-casebook',
+                               'python', 'scripts/check_starter_pack.py'], commands)
+
+    def test_actual_unrelated_root_readme_still_does_not_install(self):
+        report, commands = self.exercise(None, 'README.md')
+        self.assertEqual(report['projects'], [])
+        self.assertEqual(report['starterPack'], [])
+        self.assertFalse(any(c[0] == 'uv' or 'scripts/check_project.py' in c for c in commands))

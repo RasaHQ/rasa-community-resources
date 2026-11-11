@@ -122,6 +122,23 @@ class ChangedSlugs(unittest.TestCase):
                 scope.ROOT = original
             self.base = sha
 
+    def test_starter_skill_and_lint_are_non_uv_inputs_to_casebook(self):
+        resources = [{'path': 'tutorials/rasa-ai-team-casebook', 'slug': 'tutorials-rasa-ai-team-casebook'},
+                     {'path': 'examples/a', 'slug': 'examples-a'}]
+        for rel in ('starter-pack/.claude/skills/mantle-new-project/SKILL.md',
+                    'starter-pack/scripts/lint_mantle.py'):
+            self.write(rel, 'changed')
+            sha = self.commit()
+            original = scope.ROOT
+            scope.ROOT = self.dir
+            try:
+                for is_pr in (False, True):
+                    self.assertEqual(scope.changed_slugs(self.base, sha, resources, pull_request=is_pr),
+                                     {'tutorials-rasa-ai-team-casebook'})
+            finally:
+                scope.ROOT = original
+            self.base = sha
+
     def test_pull_request_uses_merge_base_not_unrelated_new_main_changes(self):
         self.write('.devcontainer/two/devcontainer.json', 'pr-change')
         head = self.commit()

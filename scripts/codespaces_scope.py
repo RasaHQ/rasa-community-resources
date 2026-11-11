@@ -29,9 +29,14 @@ SHARED = ("scripts/", ".github/workflows/", "Makefile", "RASA_PRO_VERSION",
           "RASA_PRO_VERSION_LINE", "RASA_RELEASE.json")
 
 
+# The casebook scaffold check reads starter templates and runs lint controls
+# directly; these inputs are not represented by a uv package dependency.
+SOURCE_INPUTS = {"tutorials/rasa-ai-team-casebook": ("starter-pack",)}
+
+
 def dependency_roots(resource: str) -> set[str]:
-    """Local uv source dependencies, resolved without installing any project."""
-    pending = [ROOT / resource]
+    """Local uv and explicit source inputs, without installing any project."""
+    pending = [ROOT / resource, *(ROOT / name for name in SOURCE_INPUTS.get(resource, ()))]
     roots = set()
     while pending:
         path = pending.pop().resolve()
