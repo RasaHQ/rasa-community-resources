@@ -81,6 +81,9 @@ class _Capabilities:
                 allowed = False
         if not allowed:
             return await JSONResponse({"state": "refused"}, status_code=401)(scope, receive, send)
+        if scope["path"].startswith("/mcp/"):
+            # Do not let router redirects or alternate mounts skip raw validation.
+            return await JSONResponse({"state": "refused"}, status_code=404)(scope, receive, send)
         if scope["path"] == "/mcp" and scope["method"] == "POST":
             # Validate raw tool arguments before SDK coercion/extra-field dropping.
             # No identity/confirmation input can sneak through an ignored field.
@@ -98,8 +101,14 @@ class _Capabilities:
             try:
                 payload = json.loads(captured)
             except (ValueError, UnicodeError):
-                payload = None  # The SDK handles malformed JSON-RPC.
-            if isinstance(payload, dict) and payload.get("method") == "tools/call":
+                payload = None
+            if not isinstance(payload, dict):
+                # This endpoint accepts one JSON-RPC object, never a batch.
+                return await JSONResponse({"jsonrpc": "2.0", "id": None,
+                                           "error": {"code": -32600,
+                                                     "message": "invalid_banking_request"}},
+                                          status_code=400)(scope, receive, send)
+            if payload.get("method") == "tools/call":
                 try:
                     params = payload["params"]
                     tool = params["name"]

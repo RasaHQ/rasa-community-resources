@@ -196,6 +196,44 @@ class Transport(unittest.TestCase):
         result = self.call(session, "banking_submit_transfer", {"review": review["review"]})
         self.assertEqual(result["reason"], "confirmation_required")
 
+    def test_raw_mcp_batches_and_nonobjects_are_refused(self):
+        session = self.host.open_session()
+        call = {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {
+            "name": "banking_history", "arguments": {"account": "checking-A", "page": "1"},
+        }}
+        for payload in ([call], [], None, "private-value", 1, True):
+            with self.subTest(kind=type(payload).__name__):
+                response = httpx.post(self.url + "/mcp", content=json.dumps(payload),
+                                      headers={"Authorization": "Bearer " + session.credential,
+                                               "Content-Type": "application/json"}, trust_env=False)
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.json()["error"]["code"], -32600)
+                self.assertNotIn("private-value", response.text)
+
+    def test_alternate_mcp_paths_refuse_without_redirect_or_sdk_coercion(self):
+        session = self.host.open_session()
+        for path in ("/mcp/", "/mcp//", "/mcp/other"):
+            with self.subTest(path=path):
+                response = httpx.post(self.url + path, json={
+                    "jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {
+                        "name": "banking_history",
+                        "arguments": {"account": "checking-A", "page": "1", "confirmed": True},
+                    },
+                }, headers={"Authorization": "Bearer " + session.credential},
+                    trust_env=False, follow_redirects=False)
+                self.assertEqual(response.status_code, 404)
+                self.assertNotIn("location", response.headers)
+
+    def test_canonical_mcp_path_rejects_raw_type_coercion(self):
+        session = self.host.open_session()
+        response = httpx.post(self.url + "/mcp", json={
+            "jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {
+                "name": "banking_history", "arguments": {"account": "checking-A", "page": "1"},
+            },
+        }, headers={"Authorization": "Bearer " + session.credential}, trust_env=False)
+        self.assertEqual(response.json()["error"]["code"], -32602)
+        self.assertEqual(self.call(session, "banking_history", {"account": "checking-A", "page": 1})["page"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
