@@ -1,13 +1,13 @@
 ---
-name: maestro-migrating-from-calm
+name: mantle-migrating-from-calm
 description: >
-  Migrates a CALM (flows-based) Rasa assistant to the Maestro engine: maps flows to
+  Migrates a CALM (flows-based) Rasa assistant to the Mantle engine: maps flows to
   skills, slots to memory, custom actions to tools, and identifies what has no
   migration path (custom components, command generators, NLU pipeline, rephraser
   customizations). Use when a project contains domain.yml/config.yml/flows and the
-  goal is a Maestro agent.
+  goal is a Mantle agent.
 license: Apache-2.0
-engine: maestro
+engine: mantle
 rasa_version: ">=3.18"
 metadata:
   author: rasa
@@ -15,10 +15,10 @@ metadata:
   docs-url: https://rasa-2f7eb63d.mintlify.site
 ---
 
-# Migrating a CALM assistant to Maestro
+# Migrating a CALM assistant to Mantle
 
-Maestro is not a config translation — it's a different control model. CALM encodes
-behavior as explicit flow steps; Maestro encodes it as prose instructions plus
+Mantle is not a config translation — it's a different control model. CALM encodes
+behavior as explicit flow steps; Mantle encodes it as prose instructions plus
 targeted control levers. A mechanical 1:1 port of every flow step into an ordered
 block produces the worst of both worlds. Migrate *intent*, not *structure*.
 
@@ -42,7 +42,7 @@ layout, so there is no version key to set.
 4. **Rewrite each flow as prose** in `skill.md`: describe the goal and what to
    gather, not step numbering. Let the LLM own sequencing initially.
 5. **Re-add guarantees the old flow actually enforced** using the control ladder
-   (see `maestro-building-skills`): slot preconditions become `requires:`, branching
+   (see `mantle-building-skills`): slot preconditions become `requires:`, branching
    becomes one `if:` marker per case, confirmations become prose plus a confirmation
    memory key gated with `requires:`, mandated wording becomes verbatim `utter:`
    responses, and genuinely order-critical sections become one ordered block. For an
@@ -50,14 +50,14 @@ layout, so there is no version key to set.
    `on_failure:` in `tool_constraints` lets the engine pause and emit fixed outcome
    text instead of relying on prose.
 6. **Port config** to `agent.yml` + `integrations.yml` (see
-   `maestro-configuring-agent`).
+   `mantle-configuring-agent`).
 7. **Test side by side**: run the same conversations against the old bot and the
    new agent (`rasa inspect`); compare outcomes per the checklist in
-   `maestro-testing-debugging`.
+   `mantle-testing-debugging`.
 
 ## Mapping table
 
-| CALM artifact | Maestro target | Effort |
+| CALM artifact | Mantle target | Effort |
 |---|---|---|
 | Flow (YAML steps) | Skill prose body; ordered block only for order-critical sections | Rewrite, not transform |
 | `call` step → child flow | Same-skill prose section or `@block.<block_id>`; `@skill.<skill_id>` if reused across skills | Judgment call |
@@ -112,7 +112,7 @@ migration notes for the user — "more natural" is a change too.
 
 ## Further reading
 
-Full Maestro documentation: https://rasa-2f7eb63d.mintlify.site
+Full Mantle documentation: https://rasa-2f7eb63d.mintlify.site
 
 Fetch `https://rasa-2f7eb63d.mintlify.site/llms.txt` for the page index, or
 `https://rasa-2f7eb63d.mintlify.site/llms-full.txt` for every page in one file.
@@ -120,7 +120,7 @@ Read the specific page when this file is not enough; do not guess syntax.
 
 Most relevant here:
 
-- [Project structure](https://rasa-2f7eb63d.mintlify.site/reference/project-structure): the Maestro layout a CALM project maps onto
+- [Project structure](https://rasa-2f7eb63d.mintlify.site/reference/project-structure): the Mantle layout a CALM project maps onto
 - [skill.md reference](https://rasa-2f7eb63d.mintlify.site/reference/skill-md): what a flow becomes
 - [memory.yml reference](https://rasa-2f7eb63d.mintlify.site/reference/memory-yml): what a slot becomes
 - [Tools reference](https://rasa-2f7eb63d.mintlify.site/reference/tools): what a custom action becomes

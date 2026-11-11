@@ -1,12 +1,12 @@
 ---
-name: maestro-testing-debugging
+name: mantle-testing-debugging
 description: >
-  Tests and debugs Maestro agents: the train → converse loop, reading
+  Tests and debugs Mantle agents: the train → converse loop, reading
   memory and tool activity in the inspector, and mapping observed misbehavior to the
   control lever that fixes it. Use after any change to skills or config, when the
   agent misbehaves in conversation, or when train fails.
 license: Apache-2.0
-engine: maestro
+engine: mantle
 rasa_version: ">=3.18"
 metadata:
   author: rasa
@@ -14,7 +14,7 @@ metadata:
   docs-url: https://rasa-2f7eb63d.mintlify.site
 ---
 
-# Testing and debugging a Maestro agent
+# Testing and debugging a Mantle agent
 
 ## The loop
 
@@ -27,7 +27,7 @@ rasa inspect           # browser UI: converse + watch memory/tools live
 
 - Fix `rasa train` errors before debugging conversation behavior: it is the
   validation gate for the whole project. `rasa data validate` runs the same
-  Maestro project validation without training, which is faster when you only want
+  Mantle project validation without training, which is faster when you only want
   to check config and skills.
 - Prefer `rasa inspect` over `rasa shell` for debugging: it shows memory state,
   active skill, and tool calls per turn. Known beta quirk: `rasa shell` prints the
@@ -53,7 +53,7 @@ For each skill, walk at minimum:
 
 ## Symptom → fix table
 
-Behavioral drift is fixed with control levers (see `maestro-building-skills`), not
+Behavioral drift is fixed with control levers (see `mantle-building-skills`), not
 by rewriting prose louder. Find the symptom, apply the narrowest fix:
 
 | Symptom | Diagnosis | Fix |
@@ -75,7 +75,7 @@ by rewriting prose louder. Find the symptom, apply the narrowest fix:
 
 `requires_confirmation:`, `on_success:`, and `on_failure:` are supported on
 `tool_constraints`. Skill `utter:` triggers (`on: activate`, structured `when:`)
-emit other fixed templates — see `maestro-building-skills`.
+emit other fixed templates — see `mantle-building-skills`.
 
 ## Debugging tool failures
 
@@ -137,7 +137,7 @@ rather than silently working around it.
 
 ## Further reading
 
-Full Maestro documentation: https://rasa-2f7eb63d.mintlify.site
+Full Mantle documentation: https://rasa-2f7eb63d.mintlify.site
 
 Fetch `https://rasa-2f7eb63d.mintlify.site/llms.txt` for the page index, or
 `https://rasa-2f7eb63d.mintlify.site/llms-full.txt` for every page in one file.

@@ -1,12 +1,12 @@
 ---
-name: maestro-building-skills
+name: mantle-building-skills
 description: >
-  Authors Maestro skills: skill.md instructions, auto-discovered Python tools, and
+  Authors Mantle skills: skill.md instructions, auto-discovered Python tools, and
   the progressive control ladder (tool constraints, scoped instructions, verbatim
   responses, ordered blocks, sub-skills). Use when creating or editing any file under
   skills/, deciding how much control a skill needs, or composing skills together.
 license: Apache-2.0
-engine: maestro
+engine: mantle
 rasa_version: ">=3.18"
 metadata:
   author: rasa
@@ -14,7 +14,7 @@ metadata:
   docs-url: https://rasa-2f7eb63d.mintlify.site
 ---
 
-# Building Maestro skills
+# Building Mantle skills
 
 A skill is a folder under `skills/` holding one user goal. The only required file is
 `skill.md`: YAML frontmatter (metadata + control declarations) and a markdown body
@@ -373,7 +373,7 @@ block resumes at the same step.
 - Don't add control levers the user's requirements don't demand — every lever costs
   conversational flexibility.
 - Don't write a fully-controlled ordered block as the starting point; that recreates
-  the rigid state machines Maestro exists to replace.
+  the rigid state machines Mantle exists to replace.
 - Don't restate tool results in prose ("the tool returns JSON with...") — the LLM
   sees `llm_response` directly.
 - Don't invent frontmatter fields. The complete set is `name`, `description`,
@@ -391,7 +391,7 @@ block resumes at the same step.
 
 ## Further reading
 
-Full Maestro documentation: https://rasa-2f7eb63d.mintlify.site
+Full Mantle documentation: https://rasa-2f7eb63d.mintlify.site
 
 Fetch `https://rasa-2f7eb63d.mintlify.site/llms.txt` for the page index, or
 `https://rasa-2f7eb63d.mintlify.site/llms-full.txt` for every page in one file.

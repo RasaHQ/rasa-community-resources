@@ -262,8 +262,11 @@ def manifest(project) -> dict:
 
     ready = ('python3 "$(git rev-parse --show-toplevel)/scripts/check_project.py" '
              + project.rel + ' --skip-sync --use-project-pin') if snapshot else None
-    if project.rel == 'heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice':
-        # This contributor's existing deterministic suite makes no provider calls.
+    if project.rel in {
+        'heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice',
+        'heroes/wave-01-mantle/projects/cycywanyeki20-stammy',
+    }:
+        # These deterministic tool suites make no provider calls.
         ready += ' && uv run --locked --no-sync python -m unittest discover -s tests -v'
     return {
         "snapshot": snapshot,

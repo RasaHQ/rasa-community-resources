@@ -32,8 +32,7 @@ Re-run `rasa train` after editing `agent.yml`, `integrations.yml`, or any skill.
 
 ## Where skills guidance lives
 
-Coding-agent skills for building Mantle projects are installed under
-`.claude/skills/` (Claude Code) and `.cursor/skills/` (Cursor). Read them before
+The contributed Mantle guidance is under `.github/skills/`. Read them before
 adding or changing skills.
 
 ## Ground rules

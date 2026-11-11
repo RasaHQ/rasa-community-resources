@@ -1,14 +1,14 @@
 ---
-name: maestro-simulating-evaluating
+name: mantle-simulating-evaluating
 description: >
-  Proves a Maestro agent works using the engine's built-in simulation/evaluation
+  Proves a Mantle agent works using the engine's built-in simulation/evaluation
   framework: an LLM user-simulator plays the customer per scenario and an LLM judge
   scores the outcome against natural-language criteria and deterministic assertions.
   Use when validating an agent end to end, writing eval scenarios, or building a
   regression suite ("test my agent with simulations", "does it still pass",
   "evaluate these behaviors").
 license: Apache-2.0
-engine: maestro
+engine: mantle
 rasa_version: ">=3.18"
 metadata:
   author: rasa
@@ -16,7 +16,7 @@ metadata:
   docs-url: https://rasa-2f7eb63d.mintlify.site
 ---
 
-# Simulating and evaluating a Maestro agent
+# Simulating and evaluating a Mantle agent
 
 `rasa train` proves the project is well-formed; it says nothing about whether the
 agent *behaves*. This framework does: for each scenario, an **LLM user-simulator**
@@ -27,7 +27,7 @@ You **author** scenarios as files under `eval/` (portable, reviewable, version-
 controlled). To **run** a suite against the agent you built, drive the Rasa MCP
 server from your coding agent — see
 https://rasa.com/docs/pro/testing/simulation-evaluation/. For **engine**
-regression against the shared benchmarking agents, use `make eval-maestro-agents`.
+regression against the shared benchmarking agents, use `make eval-mantle-agents`.
 
 
 ## `eval/` layout
@@ -146,11 +146,11 @@ simulation docs for the rest.
 - **From desired behaviors.** For each thing the agent must do — happy path,
   out-of-order input, digression and resume, correction, refusal of a confirmation,
   out-of-scope request — write one scenario. The test-conversation checklist in
-  `maestro-testing-debugging` is a ready list of behaviors to encode.
+  `mantle-testing-debugging` is a ready list of behaviors to encode.
 - **From past conversations.** A real transcript is a scenario waiting to be written:
   the customer becomes the `simulation_context` persona, and what the conversation
   achieved becomes the `criteria` and `assertions`. If you built the agent with
-  `maestro-building-from-conversations`, those same transcripts are your first suite —
+  `mantle-building-from-conversations`, those same transcripts are your first suite —
   redact PII into fake placeholders before committing them.
 
 ## Running
@@ -201,7 +201,7 @@ ground truth if they differ.)
    behavior was wrong (the rationale explains why); a failed **assertion** tells you
    *exactly* which fact didn't hold.
 3. Map the symptom to a control lever using the symptom→lever table in
-   `maestro-testing-debugging`, and apply the **narrowest** lever that fixes it.
+   `mantle-testing-debugging`, and apply the **narrowest** lever that fixes it.
 4. Retrain and re-run just that scenario until green, then run the full suite to
    confirm nothing regressed.
 
@@ -215,18 +215,18 @@ before concluding.
 
 - Simulation & evaluation, incl. the MCP-driven variant:
   https://rasa.com/docs/pro/testing/simulation-evaluation/
-- Maestro docs: https://rasa-2f7eb63d.mintlify.site (index at https://rasa-2f7eb63d.mintlify.site/llms.txt)
+- Mantle docs: https://rasa-2f7eb63d.mintlify.site (index at https://rasa-2f7eb63d.mintlify.site/llms.txt)
 
 ## Related skills
 
-- `maestro-building-from-conversations` — turns transcripts into both the agent and
+- `mantle-building-from-conversations` — turns transcripts into both the agent and
   the scenarios that evaluate it.
-- `maestro-testing-debugging` — the symptom→lever mapping the fix loop depends on, and
+- `mantle-testing-debugging` — the symptom→lever mapping the fix loop depends on, and
   the manual `rasa inspect` checklist that complements automated evals.
 
 ## Further reading
 
-Full Maestro documentation: https://rasa-2f7eb63d.mintlify.site
+Full Mantle documentation: https://rasa-2f7eb63d.mintlify.site
 
 Fetch `https://rasa-2f7eb63d.mintlify.site/llms.txt` for the page index, or
 `https://rasa-2f7eb63d.mintlify.site/llms-full.txt` for every page in one file.

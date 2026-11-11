@@ -101,7 +101,13 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertFalse(entry['secrets'].get('USDA_FDC_API_KEY', True))
 
     def test_nourishher_ready_invokes_its_existing_offline_suite_inside_the_project(self):
-        project = next(p for p in discover_projects('snapshots') if p.path.name == 'malar-saravanan-nourishher-voice')
+        self._assert_offline_suite('malar-saravanan-nourishher-voice')
+
+    def test_stammy_ready_invokes_its_offline_suite_inside_the_project(self):
+        self._assert_offline_suite('cycywanyeki20-stammy')
+
+    def _assert_offline_suite(self, name):
+        project = next(p for p in discover_projects('snapshots') if p.path.name == name)
         command = json.loads(g.config(g.manifest(project)))['postCreateCommand']
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

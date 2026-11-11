@@ -1,13 +1,13 @@
 ---
-name: maestro-configuring-agent
+name: mantle-configuring-agent
 description: >
-  Configures the Maestro project config files: agent.yml (identity, persona, rules,
+  Configures the Mantle project config files: agent.yml (identity, persona, rules,
   prompt tuning, session settings), integrations.yml (LLM provider, channels
   including voice ASR/TTS, model groups, Langfuse tracing), memory.yml (schema, cross-skill
   visibility), and responses.yml (verbatim templates). Use when setting up or
   changing any of these files.
 license: Apache-2.0
-engine: maestro
+engine: mantle
 rasa_version: ">=3.18"
 metadata:
   author: rasa
@@ -15,7 +15,7 @@ metadata:
   docs-url: https://rasa-2f7eb63d.mintlify.site
 ---
 
-# Configuring a Maestro agent
+# Configuring a Mantle agent
 
 Project layout:
 
@@ -285,7 +285,7 @@ agent sounds natural.
 
 ## Further reading
 
-Full Maestro documentation: https://rasa-2f7eb63d.mintlify.site
+Full Mantle documentation: https://rasa-2f7eb63d.mintlify.site
 
 Fetch `https://rasa-2f7eb63d.mintlify.site/llms.txt` for the page index, or
 `https://rasa-2f7eb63d.mintlify.site/llms-full.txt` for every page in one file.

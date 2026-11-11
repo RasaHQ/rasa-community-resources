@@ -1,14 +1,14 @@
 ---
-name: maestro-building-from-conversations
+name: mantle-building-from-conversations
 description: >
-  Turns real conversation transcripts (files or pasted logs) into a working Maestro
+  Turns real conversation transcripts (files or pasted logs) into a working Mantle
   agent: clusters transcripts by user goal, one skill per goal, and extracts prose
   instructions, tools, memory, verbatim responses, and control levers. Use when the
   input is chat/voice transcripts ("build an agent from these logs", "turn these
   conversations into skills") — either scaffolding a NEW agent or adding skills to an
   existing one.
 license: Apache-2.0
-engine: maestro
+engine: mantle
 rasa_version: ">=3.18"
 metadata:
   author: rasa
@@ -16,14 +16,14 @@ metadata:
   docs-url: https://rasa-2f7eb63d.mintlify.site
 ---
 
-# Building a Maestro agent from conversations
+# Building a Mantle agent from conversations
 
 Real transcripts are the best spec for an agent: they show what customers actually
 ask, what a competent human did, and where the branches are. This skill turns them
-into Maestro files. Two entry points:
+into Mantle files. Two entry points:
 
-- **No project yet** — scaffold a NEW agent (config via `maestro-configuring-agent`,
-  skills via `maestro-building-skills`).
+- **No project yet** — scaffold a NEW agent (config via `mantle-configuring-agent`,
+  skills via `mantle-building-skills`).
 - **Existing agent** — read `skills/` FIRST, then EXTEND. Never duplicate a goal that
   already has a skill and never clobber existing files; add a branch, a tool, or a new
   skill alongside what's there.
@@ -54,7 +54,7 @@ agent, or wording. Each cluster becomes **one skill, named after the goal**
 A **sub-decision that recurs across several goals** — "which card?", "which
 account?", "verify identity" — is not part of any one goal. Extract it as a
 **sub-skill** the goal skills call, so the logic lives once. (See composition in
-`maestro-building-skills`.)
+`mantle-building-skills`.)
 
 ### 2. Per cluster, extract five things
 
@@ -106,7 +106,7 @@ account?", "verify identity" — is not part of any one goal. Extract it as a
   `on_failure:`), a branch the transcripts show going one way or the other (one
   `if:` marker per case, each stating its own condition), an order that is itself
   the requirement (one ordered block). The full ladder
-  is in `maestro-building-skills`; add levers after you observe drift in testing,
+  is in `mantle-building-skills`; add levers after you observe drift in testing,
   never speculatively.
 
 ## Mandatory workflow — propose, then WAIT
@@ -122,7 +122,7 @@ Do not generate files before the user confirms the breakdown.
 3. **WAIT for confirmation.** Let the user correct the clustering, merge or split
    skills, or drop goals. This is the cheapest place to fix a wrong decomposition.
 4. **Generate** the confirmed files — `skill.md` + `tools.py` (+ `memory.yml` /
-   `responses.yml` as needed) per skill; config via `maestro-configuring-agent`.
+   `responses.yml` as needed) per skill; config via `mantle-configuring-agent`.
 5. **`rasa train`** — fix train errors (undeclared memory, missing tool or response
    references, YAML quoting) before debugging conversation behavior.
 6. **Hand over** `rasa inspect` so the user can converse with the agent and watch
@@ -135,7 +135,7 @@ Do not generate files before the user confirms the breakdown.
   rather than creating a second skill for the same goal.
 - Reuse before adding: check the existing `memory.yml` and `tools.py` for a key or
   tool that already carries the fact or action before declaring a new one.
-- Preserve behavior: adding levers is additive (see `maestro-building-skills`); don't
+- Preserve behavior: adding levers is additive (see `mantle-building-skills`); don't
   rewrite prose that already works to accommodate a new transcript.
 
 ## Worked shape
@@ -153,7 +153,7 @@ breakdown, wait for the nod, then generate.
 **Every source conversation is a ready-made evaluation scenario.** The transcript's
 customer becomes a simulated persona; the goal it achieved becomes the criteria and
 assertions. Once the agent trains and converses, turn the same transcripts into a
-regression suite with `maestro-simulating-evaluating` — you already did the hard part
+regression suite with `mantle-simulating-evaluating` — you already did the hard part
 of figuring out what "correct" looks like.
 
 ## Don't
@@ -169,7 +169,7 @@ of figuring out what "correct" looks like.
 
 ## Further reading
 
-Full Maestro documentation: https://rasa-2f7eb63d.mintlify.site
+Full Mantle documentation: https://rasa-2f7eb63d.mintlify.site
 
 Fetch `https://rasa-2f7eb63d.mintlify.site/llms.txt` for the page index, or
 `https://rasa-2f7eb63d.mintlify.site/llms-full.txt` for every page in one file.

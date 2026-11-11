@@ -115,6 +115,26 @@ secrets. Its README should say so rather than implying a full green run.
 guess: reporting a frozen project as *drifted* would be a category error, and
 reporting it as *clean* would be a lie.
 
+## Integrating a contribution with no recorded engine pin
+
+If a contribution has no manifest, lock or tested version, do not invent the
+version its author ran. A maintainer may supply an installation target and
+resolve its lock while retaining this explicit metadata:
+
+```text
+Verified with: pending upstream validation
+Installation: rasa-pro <exact-version> (maintainer integration target)
+```
+
+The existing snapshot check compares `Installation:` with the manifest and
+lock when that field is present. This admits a reproducible target for review;
+it is not a passing SDK or conversation result. All other checks still apply.
+Before merge, the same PR must pass its upstream validation, Codespaces build
+and deterministic tool suite. Then fill `Verified with:` from those passing
+runs, cite their URLs, name the maintainer's assessment, and retain the fact
+that the author's tested version was not recorded. Provider, voice and user
+outcomes need separate evidence; an install does not establish them.
+
 ## Migrating a contributed resource
 
 `community/` moves with the rest of the catalog, so this is part of a normal
