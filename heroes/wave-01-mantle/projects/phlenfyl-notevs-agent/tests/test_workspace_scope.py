@@ -8,6 +8,8 @@ import asyncio
 import inspect
 from pathlib import Path
 from types import SimpleNamespace
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 import unittest
 
 SOURCE = Path(__file__).resolve().parents[1] / 'tools' / 'notevs_tools.py'
@@ -16,6 +18,10 @@ SOURCE = Path(__file__).resolve().parents[1] / 'tools' / 'notevs_tools.py'
 class WorkspaceScopeTests(unittest.TestCase):
     def setUp(self):
         self.requests = []
+        self.tmp = TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.folder = Path(self.tmp.name).resolve() / 'Project with spaces'
+        self.folder.mkdir()
         owner = self
 
         class Client:
@@ -39,7 +45,7 @@ class WorkspaceScopeTests(unittest.TestCase):
             node.decorator_list = []
         self.ns = {'ToolContext': object, 'ToolResult': SimpleNamespace,
                    'httpx': SimpleNamespace(AsyncClient=Client, HTTPError=OSError),
-                   'NOTEVS_CALL_URL': 'http://localhost:37492/call', 'NOTEVS_FOLDER_PATH': None}
+                   'Path': Path, 'NOTEVS_CALL_URL': 'http://localhost:37492/call', 'NOTEVS_FOLDER_PATH': None}
         exec(compile(ast.Module(body=functions, type_ignores=[]), str(SOURCE), 'exec'), self.ns)
 
     def call(self, name, args):
@@ -59,7 +65,7 @@ class WorkspaceScopeTests(unittest.TestCase):
         self.assertEqual(self.requests, [])
 
     def test_configured_extension_host_workspace_is_forwarded_exactly(self):
-        folder = '/desktop/notes/Project with spaces'
+        folder = str(self.folder)
         self.ns['NOTEVS_FOLDER_PATH'] = folder
         args = {'query': 'fixture'}
         self.assertTrue(self.call('notevs_search_notes', args)['ok'])
@@ -68,9 +74,40 @@ class WorkspaceScopeTests(unittest.TestCase):
         self.assertEqual(args, {'query': 'fixture'})
 
     def test_caller_args_cannot_replace_the_configured_workspace(self):
-        self.ns['NOTEVS_FOLDER_PATH'] = '/desktop/intended'
+        self.ns['NOTEVS_FOLDER_PATH'] = str(self.folder)
         self.call('notevs_delete_note', {'folderPath': '/desktop/other', 'id': 'fixture'})
-        self.assertEqual(self.requests[0][1]['args']['folderPath'], '/desktop/intended')
+        self.assertEqual(self.requests[0][1]['args']['folderPath'], str(self.folder))
+
+    def test_relative_missing_and_file_paths_are_refused_before_http(self):
+        file_path = Path(self.tmp.name) / 'not-a-directory'
+        file_path.write_text('fixture')
+        for value in ('relative/workspace', str(self.folder / 'missing'), str(file_path)):
+            with self.subTest(value=value):
+                self.ns['NOTEVS_FOLDER_PATH'] = value
+                result = self.call('notevs_list_notes', {})
+                self.assertFalse(result['ok'])
+                self.assertEqual(result['error'], 'workspace_scope_invalid')
+        self.assertEqual(self.requests, [])
+
+    def test_unresolvable_workspace_is_refused_before_http(self):
+        self.ns['NOTEVS_FOLDER_PATH'] = str(self.folder)
+        for error in (OSError('resolution failure'), RuntimeError('symlink loop'), ValueError('invalid path')):
+            with self.subTest(error=type(error).__name__):
+                with patch.object(Path, 'resolve', side_effect=error):
+                    result = self.call('notevs_create_note', {'title': 'fixture'})
+                self.assertFalse(result['ok'])
+                self.assertEqual(result['error'], 'workspace_scope_invalid')
+        self.assertEqual(self.requests, [])
+
+    def test_existing_directory_alias_is_sent_as_canonical_path(self):
+        alias = Path(self.tmp.name) / 'alias'
+        try:
+            alias.symlink_to(self.folder, target_is_directory=True)
+        except OSError:
+            self.skipTest('Directory symlinks unavailable on this host')
+        self.ns['NOTEVS_FOLDER_PATH'] = str(alias)
+        self.call('notevs_search_notes', {'query': 'fixture'})
+        self.assertEqual(self.requests[0][1]['args']['folderPath'], str(self.folder))
 
 
 if __name__ == '__main__':
