@@ -76,7 +76,8 @@ class Transport(unittest.TestCase):
     def test_host_control_refuses_without_private_capability(self):
         for token in ("", "wrong-capability"):
             response = httpx.post(self.url + "/host/open", json={"caller": "demo-A"},
-                                  headers={"Authorization": "Bearer " + token}, trust_env=False)
+                                  headers={"Authorization": "Bearer " + token} if token else {},
+                                  trust_env=False)
             self.assertEqual(response.status_code, 401)
             self.assertNotIn(self.capability, response.text)
 
@@ -151,6 +152,34 @@ class Transport(unittest.TestCase):
                     "http://127.0.0.1:9000/?secret=x", "http://127.0.0.1:9000/elsewhere"):
             with self.subTest(url=url), self.assertRaises(ValueError):
                 HostClient(url, self.capability)
+
+    def test_vendor_profile_without_explicit_domain_fixture_returns_unsupported(self):
+        from starlette.testclient import TestClient
+        from banking_demo.server import create_app
+
+        with TestClient(create_app("fiserv", self.capability)) as client:
+            opened = client.post("/host/open", json={"caller": "demo-A"},
+                                 headers={"Authorization": "Bearer " + self.capability})
+            credential = opened.json()["credential"]
+            headers = {"Authorization": "Bearer " + credential,
+                       "Accept": "application/json, text/event-stream"}
+            response = client.post("/mcp", headers=headers, json={
+                "jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+                    "protocolVersion": "2025-03-26", "capabilities": {},
+                    "clientInfo": {"name": "domain-control", "version": "0.1"},
+                },
+            })
+            self.assertEqual(response.status_code, 200)
+            response = client.post("/mcp", headers=headers, json={
+                "jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {
+                    "name": "banking_balance", "arguments": {"account": "checking-A"},
+                },
+            })
+            self.assertEqual(response.status_code, 200)
+            result = response.json()["result"]
+            self.assertEqual(result["structuredContent"], {
+                "state": "unsupported", "reason": "vendor_contract_unqualified",
+            })
 
 
 if __name__ == "__main__":
