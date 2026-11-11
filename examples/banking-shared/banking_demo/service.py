@@ -130,6 +130,14 @@ class BankingService:
             self._account(context, destination)
             if source == destination or currency != "USD":
                 raise Refused("unsupported_transfer")
+            # A new review identifier or login must not turn an unresolved
+            # dispatch into a fresh attempt. Reconciliation is a separate,
+            # explicitly supported capability, never a generic reset override.
+            if any(previous.context.principal == context.principal
+                   and previous.outcome is not None
+                   and previous.outcome.get("state") == "unknown"
+                   for previous in self._reviews.values()):
+                raise Refused("outcome_unresolved")
             transfer = Transfer(source, destination, _money(amount), currency)
             identifier = uuid4().hex
             self._reviews[identifier] = _Review(

@@ -165,6 +165,26 @@ class Guard(unittest.TestCase):
             result = self.bank.submit(self.context, review["review"])
             self.assertEqual(result["state"], state if state != "not-a-state" else "unknown")
 
+    def test_unknown_outcome_blocks_new_review_even_after_session_reset(self):
+        review = self.review()
+        self.confirm(review)
+        self.adapter.outcome = TimeoutError("fictional lost response")
+        self.assertEqual(self.bank.submit(self.context, review["review"])["state"], "unknown")
+        with self.assertRaisesRegex(Refused, "outcome_unresolved"):
+            self.review()
+        self.bank.reset(self.context)
+        replacement = replace(self.context, revision=2)
+        self.bank.open_session(replacement)
+        with self.assertRaisesRegex(Refused, "outcome_unresolved"):
+            self.bank.review_transfer(replacement, "checking-A", "savings-A", "10.00", "USD")
+        self.assertEqual(len(self.adapter.calls), 1)
+        other = replace(self.context, session="other-session", principal="other-caller",
+                        accounts=frozenset({"checking-B", "savings-B"}))
+        self.bank.open_session(other)
+        self.assertEqual(self.bank.review_transfer(
+            other, "checking-B", "savings-B", "10.00", "USD"
+        )["state"], "pending")
+
     def test_concurrent_duplicate_submission_only_dispatches_once(self):
         review = self.review()
         self.confirm(review)

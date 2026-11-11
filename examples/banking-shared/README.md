@@ -17,6 +17,11 @@ They expire, cannot survive reset/user switching, and are consumed before one
 adapter submission. A lost response remains unknown; another call returns the
 original outcome without retrying. Results distinguish accepted, queued and
 posted. Other-account refusal does not query the adapter for existence.
+An unknown outcome also blocks fresh reviews for that simulated principal,
+including after logout/reset, so a new review ID cannot silently retry it.
+There is no generic clear-unknown override. This state is in memory for the
+teaching process lifetime, not a durable bank-operation journal or restart-safe
+production guarantee; vendor reconciliation remains unimplemented.
 
 The tests use an explicitly fictional **domain fixture**, not either vendor's
 wire contract. They require no licence, model, speech key or network. Run from
