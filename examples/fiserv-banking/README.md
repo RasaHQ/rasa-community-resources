@@ -54,3 +54,9 @@ outcomes are not automatically retried; queued is not posted.
 The native text controls exercise actual archived Rasa turns and loopback MCP,
 with a scripted model. They do not establish real bank identity, vendor
 conformance or a completed browser voice check.
+
+The simulator keeps reviews and outcomes only in memory. An unknown result blocks
+new transfers for that fictional caller until the teaching host stops. Restarting
+clears this mock state; it does not reconcile a payment. There is no real bank
+state behind these examples. Never use a restart as a retry strategy for a real
+transfer.

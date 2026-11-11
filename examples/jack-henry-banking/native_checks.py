@@ -275,7 +275,6 @@ class LauncherTests(unittest.TestCase):
 
     def test_real_archive_and_private_forwarded_origin_with_owned_service_cleanup(self):
         from banking_demo import launcher
-        from banking_demo.client import HostClient
         import io
         children = []
         real_spawn = subprocess.Popen
@@ -292,7 +291,7 @@ class LauncherTests(unittest.TestCase):
             def wait(self, timeout=None):
                 return self.returncode
         def spawn(command, **kwargs):
-            if command[0] != sys.executable or len(command) < 3 or command[2] not in {'rasa', 'banking_demo.server'}:
+            if command[0] != sys.executable or len(command) < 3 or command[2] not in {'rasa', 'banking_demo.launcher'}:
                 return real_spawn(command, **kwargs)
             if command[2] == 'rasa':
                 self.assertTrue(Path(command[command.index('--model') + 1]).is_file())
@@ -303,9 +302,13 @@ class LauncherTests(unittest.TestCase):
                 self.assertEqual(config['model_groups'][0]['models'][0]['api_key'], '${OPENAI_API_KEY}')
                 child = Child(done=True)
             else:
-                self.assertIn('--domain-fixture', command)
-                child = Child()
-            self.assertTrue(kwargs['env']['BANKING_HOST_URL'].startswith('http://127.0.0.1:'))
+                for key in ('RASA_PRO_LICENSE', 'OPENAI_API_KEY', 'DEEPGRAM_API_KEY', 'RASA_LICENSE'):
+                    self.assertNotIn(key, kwargs['env'])
+                self.assertEqual(kwargs['pass_fds'], (int(command[4]),))
+                # A real backend must consume the retained socket and pass readiness.
+                child = real_spawn(command, **kwargs)
+            if command[2] == 'rasa':
+                self.assertTrue(kwargs['env']['BANKING_HOST_URL'].startswith('http://127.0.0.1:'))
             self.assertGreaterEqual(len(kwargs['env']['BANKING_HOST_CAPABILITY']), 32)
             children.append(child)
             return child
@@ -315,10 +318,8 @@ class LauncherTests(unittest.TestCase):
                 'GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN': 'app.github.dev'}), \
                 patch.object(sys, 'argv', ['run_demo.py']), \
                 patch.object(launcher.subprocess, 'Popen', side_effect=spawn), \
-                patch.object(HostClient, 'open_session', return_value=object()), \
-                patch.object(HostClient, 'reset'), \
                 patch('sys.stdout', new_callable=io.StringIO) as output:
             self.assertEqual(launcher.main(self.PROJECT), 0)
             self.assertEqual(len(children), 2)
-            self.assertTrue(children[0].terminated)
+            self.assertIsNotNone(children[0].poll())
             self.assertNotIn('placeholder-', output.getvalue())

@@ -47,19 +47,25 @@ def main(project):
     from .client import HostClient
     settings = json.loads((project / 'demo.json').read_text())
     origin, inspector_url = inspector_address(args.port)
-    with socket.socket() as reservation:
-        reservation.bind(('127.0.0.1', 0))
-        backend_port = reservation.getsockname()[1]
-    environment = dict(os.environ)
-    environment['BANKING_HOST_URL'] = f'http://127.0.0.1:{backend_port}'
-    environment['BANKING_HOST_CAPABILITY'] = secrets.token_urlsafe(32)
-    command = [sys.executable, '-m', 'banking_demo.server', '--profile', settings['profile'],
-               '--port', str(backend_port)]
-    command.append('--domain-fixture')  # Our own contract, never a vendor-wire simulation.
     server = None
     inspector = None
     try:
-        server = subprocess.Popen(command, env=environment)
+        # Keep ownership until the child inherits the listening descriptor.
+        # Closing and rebinding the selected port would leave a local race.
+        with socket.socket() as reservation:
+            reservation.bind(('127.0.0.1', 0))
+            reservation.listen(128)
+            backend_port = reservation.getsockname()[1]
+            environment = dict(os.environ)
+            environment['BANKING_HOST_URL'] = f'http://127.0.0.1:{backend_port}'
+            environment['BANKING_HOST_CAPABILITY'] = secrets.token_urlsafe(32)
+            backend_environment = {key: value for key, value in os.environ.items()
+                if key in {'PATH', 'HOME', 'LANG', 'LC_ALL', 'TMPDIR', 'PYTHONPATH', 'SYSTEMROOT'}}
+            backend_environment['BANKING_HOST_CAPABILITY'] = environment['BANKING_HOST_CAPABILITY']
+            command = [sys.executable, '-m', 'banking_demo.launcher', settings['profile'],
+                       str(reservation.fileno())]
+            server = subprocess.Popen(command, env=backend_environment,
+                                      pass_fds=(reservation.fileno(),))
         host = HostClient(environment['BANKING_HOST_URL'], environment['BANKING_HOST_CAPABILITY'])
         deadline = time.monotonic() + 20
         while True:
@@ -109,3 +115,16 @@ def main(project):
                 except subprocess.TimeoutExpired:
                     child.kill()
                     child.wait(timeout=5)
+
+
+def _serve_backend():
+    """Private child entrypoint: consume the already-bound loopback descriptor."""
+    from .server import create_app
+    import uvicorn
+    profile, descriptor = sys.argv[1:]
+    app = create_app(profile, os.environ.get('BANKING_HOST_CAPABILITY', ''), domain_fixture=True)
+    uvicorn.run(app, fd=int(descriptor), access_log=False, log_level='warning')
+
+
+if __name__ == '__main__':
+    _serve_backend()
