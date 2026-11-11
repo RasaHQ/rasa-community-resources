@@ -1,0 +1,19 @@
+scenario:
+  name: Check license seats
+  simulation_context: >
+    You are Alex Chen, a software developer at DevSoft. You are talking to
+    DevPilot, your voice assistant. You speak briefly and naturally, the way
+    you would talk to a speech assistant. You need to know whether there are
+    any GitHub Copilot seats left.
+  goals:
+    assertions:
+      - flow_started: license_check
+      - slot_was_set:
+          - name: license_check.license_product
+            value: github-copilot
+    criteria:
+      - "The bot reports total seats, used seats, seats left, and whether a new seat is available."
+      - "The bot keeps the answer fluent, truthful to the tool result, and free of invented numbers."
+    expected_tools:
+      - tool_called: check_license_seats
+        gate: true

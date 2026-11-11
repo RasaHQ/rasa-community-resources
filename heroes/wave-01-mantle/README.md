@@ -44,6 +44,7 @@ pull request that adds their project.
 | Chandra Sekhar | [@chandratechblog](https://github.com/chandratechblog) | [HR Assistant](projects/chandratechblog-hrassistant/) |
 | Samaksh Mehra | [@samakshmehra](https://github.com/samakshmehra) | `samakshmehra-civico` |
 | Elarbi B | [@ElarbiB](https://github.com/ElarbiB) | [Terra Energy](projects/ElarbiB-terra-energy/) |
+| Aromal TR | [traromal](https://github.com/traromal) | [traromal-devcopilot](projects/traromal-devcopilot/) |
 
 ## Projects
 
@@ -52,6 +53,7 @@ pull request that adds their project.
 | [HR Bot](projects/chandratechblog-hrassistant/) | HR policy guidance, attendance and leave lookups, and support-ticket workflows, with optional voice support | Chandra Sekhar | rasa-pro 3.20.0.dev6 | 2026-09-19 |
 | [`samakshmehra-civico`](projects/samakshmehra-civico/) | Voice-first civic complaint intake with deterministic routing, duplicate handling, status lookup, and overdue escalation | Samaksh Mehra | rasa-pro 3.20.0.dev6 | 2026-10-13 |
 | [ElarbiB-terra-energy](projects/ElarbiB-terra-energy/) | Solar & wind site potential assessment via NASA POWER data — site analysis, site comparison and data-source health, in a voice + text Mantle agent with a FastAPI backend. | Elarbi B | rasa-pro 3.20.0.dev6 | 2026-10-13 |
+| [DevPilot](projects/traromal-devcopilot/) | Voice/text assistant for developer ops — task queue, tickets, deploy gating, hardware orders, two-way Slack, on-call handoffs, and web-search doc lookup | Aromal TR | `3.20.0.dev6` | 2026-10-13 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a
