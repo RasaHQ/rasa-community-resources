@@ -1,0 +1,25 @@
+llm:
+  model_group: orchestrator
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-4o-mini
+        api_key: ${OPENAI_API_KEY}
+        temperature: 0
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    asr:
+      name: banking_demo.voice_privacy.OptOutASR
+      language_map:
+        en:
+          language: en
+          model: nova-3
+    tts:
+      name: banking_demo.voice_privacy.OptOutTTS
+      language_map:
+        en:
+          model: aura-2-thalia-en

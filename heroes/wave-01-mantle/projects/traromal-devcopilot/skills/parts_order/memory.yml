@@ -1,0 +1,30 @@
+schema:
+  public:
+    order_type:
+      type: categorical
+      enum_values: [order, stock_check]
+      description: What kind of order the developer wants.
+      llm_settable: true
+    part_no:
+      type: text
+      description: Part number to order or check.
+      llm_settable: true
+    qty:
+      type: text
+      description: Quantity to order.
+      llm_settable: true
+    part_is_restricted:
+      type: bool
+      description: Whether the selected item needs manager approval.
+      llm_settable: true
+    # Written by check_part_stock, never set by the LLM.
+    unit_price:
+      type: number
+    order_confirmed:
+      type: bool
+      description: Developer confirmed the order.
+      llm_settable: true
+    # Written by submit_parts_order / request_part_approval, never set by the
+    # LLM, so it carries no description.
+    order_ref:
+      type: text

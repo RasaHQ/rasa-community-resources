@@ -37,7 +37,9 @@ def allowed_path(path, site):
         return True
     parts = Path(path).parts
     return (parts[0] in ('examples', 'tutorials', 'patterns', 'starter-pack', 'community') and
-            (parts[-1] in ('pyproject.toml', 'uv.lock', 'Makefile') or path.endswith('.md')))
+            (parts[-1] in ('pyproject.toml', 'uv.lock', 'Makefile', 'agent.yml')
+             or (parts[-1].startswith('integrations') and parts[-1].endswith(('.yml', '.yml.in')))
+             or path.endswith('.md')))
 
 
 def main():
