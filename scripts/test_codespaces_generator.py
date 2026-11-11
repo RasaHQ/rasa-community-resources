@@ -325,6 +325,18 @@ class NoteVsSetupTests(unittest.TestCase):
             self.assertEqual(stat.S_IMODE((root / '.env').stat().st_mode), 0o600)
 
 
+class NoteVsWorkspaceBoundaryTests(unittest.TestCase):
+    def test_production_tool_bodies_refuse_missing_scope_before_http(self):
+        project = REPO_ROOT / 'heroes/wave-01-mantle/projects/phlenfyl-notevs-agent'
+        result = subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-v'],
+                                cwd=project, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('Ran 3 tests', result.stderr)
+        entry = g.manifest(next(p for p in discover_projects('snapshots') if p.path == project))
+        self.assertIn('--no-sync python -m unittest discover', entry['ready'])
+        self.assertIn('do not expose or tunnel', entry['see'])
+
+
 class EnvFileTests(unittest.TestCase):
     SCRIPT = REPO_ROOT / ".devcontainer/resource-base/make-env.sh"
 

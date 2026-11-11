@@ -9,7 +9,7 @@ Groq is the default provider. OpenAI or Anthropic keys are only needed when you 
 
 - **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `GROQ_API_KEY`; optional `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` (see the project's setup requirements below), saved once as personal Codespaces secrets ([how](../../../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
 - **First command:** `uv run --locked python -m rasa train && bash ./start.sh`. The terminal opens in this folder, and the creation log ends with `READY`.
-- **You should see:** the REST server starts on port 5005. Standalone chat can run without NoteVs; real note tools need the NoteVs extension's endpoint reachable from this Codespace, as described below.
+- **You should see:** the REST server starts on port 5005. Standalone chat can run without NoteVs; note operations require an explicit extension-host workspace. Real notes stay on the desktop; do not expose or tunnel the extension endpoint.
 <!-- codespaces:end -->
 
 ```text
@@ -32,7 +32,7 @@ cloud, no database) — but you don't need that running to see the agent
 itself work; see "Two ways to try it" below.
 
 This is a frozen snapshot of the agent's dev repo, pinned per
-[`docs/SNAPSHOTS.md`](../../../docs/SNAPSHOTS.md) to what's committed
+[`docs/SNAPSHOTS.md`](../../../../docs/SNAPSHOTS.md) to what's committed
 here (`pyproject.toml` + `uv.lock`), not migrated forward with the rest
 of the catalog.
 
@@ -47,14 +47,38 @@ of the catalog.
 itself: routing, skills, tool-call attempts, the session-start behavior
 below. Follow "Running this project", then either talk to it over the
 REST webhook or run `rasa inspect --debug` for a full turn-by-turn trace.
-Any note-related tool call will correctly *attempt* the call and report
-back "NoteVs doesn't seem to be running" rather than crash — you'll see
-real orchestration, just not real note data.
+Without an explicit workspace path, note tools refuse before contacting the
+extension. Chat can still exercise routing; this is not access to real notes.
 
 **2. With NoteVs running** — install NoteVs from the VS Code Marketplace,
 open any folder, create a note or two, then point this project's `.env`
-at the same Groq/Rasa credentials and run it standalone while NoteVs is
-open in another window. Tool calls now return real note data.
+at the same Groq/Rasa credentials, configure the intended workspace as below,
+and run the agent on that desktop. Only then can tools access real note data.
+
+## Bind the workspace before accessing notes
+
+For local standalone use, run the agent on the desktop hosting the NoteVs
+extension. Set `NOTEVS_CALL_URL=http://localhost:37492/call` and set
+`NOTEVS_FOLDER_PATH` to the absolute path of the intended workspace **on that
+extension host**. Use the exact path, including spaces. Confirm the folder
+with the person running the extension; endpoint reachability alone does not
+identify the right workspace.
+
+Every note read and write refuses missing or blank `NOTEVS_FOLDER_PATH` before
+HTTP I/O. The configured path is sent as `folderPath` on every request, rather
+than allowing the extension to select whichever VS Code window owns its port.
+This prevents an implicit workspace fallback; it is not user authentication.
+
+A remote Codespace can exercise standalone chat and the mocked transport
+controls below. Its `localhost` and `/workspaces` paths do not refer to your
+desktop. Keep real note operations on the extension host. The extension's
+`/call` endpoint has no authentication and can delete or export notes: never
+expose port37492 publicly or tunnel it to a remote Codespace.
+
+Run `python3 -m unittest discover -s tests -v` for the deterministic workspace
+boundary controls. They execute the shipped async tool bodies with a fake SDK
+result and HTTP transport; they do not install or test the SDK, extension,
+notes, model or confirmation UI.
 
 ## How the pieces fit together
 

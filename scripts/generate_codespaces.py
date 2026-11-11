@@ -100,7 +100,7 @@ FIRST = {
     "heroes/wave-01-mantle/projects/phlenfyl-notevs-agent": (
         "uv run --locked python -m rasa train && bash ./start.sh",
         "the REST server starts on port 5005. Standalone chat can run without NoteVs; "
-        "real note tools need the NoteVs extension's endpoint reachable from this Codespace, as described below.",
+        "note operations require an explicit extension-host workspace. Real notes stay on the desktop; do not expose or tunnel the extension endpoint.",
     ),
     "heroes/wave-01-mantle/projects/chandratechblog-hrassistant": (
         "uv run rasa train && uv run rasa inspect",
@@ -262,8 +262,11 @@ def manifest(project) -> dict:
 
     ready = ('python3 "$(git rev-parse --show-toplevel)/scripts/check_project.py" '
              + project.rel + ' --skip-sync --use-project-pin') if snapshot else None
-    if project.rel == 'heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice':
-        # This contributor's existing deterministic suite makes no provider calls.
+    if project.rel in {
+        'heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice',
+        'heroes/wave-01-mantle/projects/phlenfyl-notevs-agent',
+    }:
+        # These deterministic tool suites make no provider calls.
         ready += ' && uv run --locked --no-sync python -m unittest discover -s tests -v'
     return {
         "snapshot": snapshot,
