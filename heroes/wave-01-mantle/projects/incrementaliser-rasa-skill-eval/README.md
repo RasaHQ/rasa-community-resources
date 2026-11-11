@@ -38,8 +38,11 @@ automatically. They do not need provider keys.
 
 The September assessment and published results above are the contributor's
 historical report, retained with its original source and assets. They are not
-new results from this integration. Current installation, project validation,
-unit and lint outcomes still need their own run receipt.
+new results from this integration. The [selected integration container run](https://github.com/matorclawson/rasa-community-resources/actions/runs/43108270451)
+on initial head 70b56c50 installed the locked SDK, passed project validation,
+passed all 207 unit tests and passed Ruff. This is an offline integration
+receipt; it does not reproduce the stored model scores or establish current
+provider access. The PR's own upstream checks remain separate.
 
 Full evaluation requires the separately installed NVIDIA SkillEvaluator CLI,
 the fetched corpus, configured model endpoints and their account keys. Local

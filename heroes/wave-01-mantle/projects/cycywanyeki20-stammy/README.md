@@ -22,6 +22,8 @@ Wave:          wave-01-mantle
 This contribution offers text-based speech practice prompts for children and
 caregivers. Its rules prohibit diagnosis and promised treatment outcomes.
 It is an experimental example, not a treatment or a tested clinical service.
+A caregiver should be at the keyboard. Age and speech-focus text go to OpenAI;
+do not enter a child's name or other identifying details.
 
 The original contribution did not include a dependency manifest, lock or test
 receipt. The maintainer integration target uses the cohort's Rasa pin; it does not establish
