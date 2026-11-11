@@ -36,6 +36,8 @@ KNOWN_SECRETS = {
     "SLACK_APP_TOKEN": "Slack app token for the optional Socket Mode listener",
     "DEEPSEEK_API_KEY": "DeepSeek account key for the DevPilot orchestrator",
     "MISTRAL_API_KEY": "Mistral account key for this resource's model calls",
+    "GROQ_API_KEY": "Groq account key for this resource's configured model calls",
+    "USDA_FDC_API_KEY": "Optional USDA FoodData Central key for a higher lookup quota",
     "GEMINI_API_KEY": "Google Gemini key used for this resource's model calls",
     "LANGFUSE_PUBLIC_KEY": "Langfuse public key for this resource's tracing",
     "LANGFUSE_SECRET_KEY": "Langfuse secret key for this resource's tracing",

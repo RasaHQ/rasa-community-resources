@@ -84,6 +84,13 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertIn('LANGFUSE_PUBLIC_KEY', coffee['secrets'])
         self.assertIn('LANGFUSE_SECRET_KEY', coffee['secrets'])
 
+    def test_nourishher_declared_model_keys_are_available_to_its_codespace(self):
+        project = next(p for p in discover_projects('snapshots') if p.path.name == 'malar-saravanan-nourishher-voice')
+        entry = g.manifest(project)
+        for name in ('RASA_LICENSE', 'OPENAI_API_KEY', 'GROQ_API_KEY', 'GEMINI_API_KEY', 'DEEPGRAM_API_KEY'):
+            self.assertTrue(entry['secrets'].get(name), name)
+        self.assertFalse(entry['secrets'].get('USDA_FDC_API_KEY', True))
+
     def test_manual_resources_are_covered(self):
         for item in g.MANUAL:
             self.assertTrue((REPO_ROOT / ".devcontainer" / g.slug(item["path"]) / "devcontainer.json").is_file())

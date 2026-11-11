@@ -1,0 +1,77 @@
+# Project-wide memory shared across skills (session.project.*).
+#
+# Everything here is written by tools via context.memory.set(...), not set
+# directly by the LLM — mirrors the pattern in the mantle-voice-agent
+# reference project (e.g. get_booking writing selected_booking_ref). Skills
+# collect raw answers in their own skill-scoped memory.yml first, then a tool
+# copies the confirmed values in here so every skill can read them.
+#
+# IMPORTANT (rasa-pro 3.20.0.dev4+): project fields are write-once, and the
+# check is "is the current value non-None" — NOT "has this been written
+# before." A field declared with any non-null `initial_value` (false, "",
+# an enum member, ...) is therefore already "set" from turn one, and every
+# tool write to it fails immediately. None of the fields below declare an
+# `initial_value` for exactly this reason. `requires:` conditions comparing
+# an unset (None) field to True/False/an enum value simply evaluate False,
+# which is the correct "not yet known" behavior.
+
+user_first_name:
+  type: text
+  description: What the person likes to be called.
+
+profile_intake_complete:
+  type: bool
+  description: Whether the condition profile has been collected and confirmed at least once.
+
+has_hypothyroidism:
+  type: bool
+  description: Person reports having, or being evaluated for, hypothyroidism.
+hypothyroidism_status:
+  type: categorical
+  enum_values: [confirmed, suspected, not_applicable]
+  description: Diagnosis status for hypothyroidism.
+takes_levothyroxine:
+  type: bool
+  description: Person reports taking levothyroxine or another thyroid hormone replacement.
+levothyroxine_reminder_sent:
+  type: bool
+  description: >
+    Whether the levothyroxine timing safety reminder has already been sent
+    this session. Gates hypothyroidism_reminder_gate vs. hypothyroidism_nutrition
+    routing eligibility — see "Known open issues" in README.md (Bug 7).
+
+has_pcos:
+  type: bool
+  description: Person reports having, or being evaluated for, PCOS.
+pcos_status:
+  type: categorical
+  enum_values: [confirmed, suspected, not_applicable]
+  description: Diagnosis status for PCOS.
+
+has_type2_diabetes:
+  type: bool
+  description: Person reports having, or being evaluated for, type 2 diabetes.
+diabetes_status:
+  type: categorical
+  enum_values: [confirmed, suspected, not_applicable]
+  description: Diagnosis status for type 2 diabetes.
+
+has_fertility_focus:
+  type: bool
+  description: Person is trying to conceive or wants preconception nutrition guidance.
+fertility_status:
+  type: categorical
+  enum_values: [trying_to_conceive, preconception_planning, not_applicable]
+  description: Fertility-nutrition focus, if any.
+
+meds_list:
+  type: text
+  description: Free-text list of medications and supplements the person reports taking.
+allergies_list:
+  type: text
+  description: Free-text list of food allergies or intolerances the person reports.
+
+# meal_symptom_log deliberately does NOT live here. It needs many writes per
+# session (one per check-in), which project write-once cannot support at
+# all (not even once — see the note above). Logging now goes straight to
+# a local file from the tool instead — see skills/symptom_checkin/tools.py.
