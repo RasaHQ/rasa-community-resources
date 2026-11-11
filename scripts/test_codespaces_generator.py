@@ -337,7 +337,7 @@ class NoteVsWorkspaceBoundaryTests(unittest.TestCase):
         result = subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-v'],
                                 cwd=project, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn('Ran 6 tests', result.stderr)
+        self.assertIn('Ran 7 tests', result.stderr)
         entry = g.manifest(next(p for p in discover_projects('snapshots') if p.path == project))
         self.assertIn('--no-sync python -m unittest discover', entry['ready'])
         self.assertIn('do not expose or tunnel', entry['see'])
