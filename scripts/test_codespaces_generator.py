@@ -32,14 +32,28 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertTrue((REPO_ROOT / ".devcontainer" / g.slug(item["path"]) / "devcontainer.json").is_file())
             self.assertIn(g.START, (REPO_ROOT / item["path"] / "README.md").read_text(encoding="utf-8"))
 
-    def test_configurations_share_one_image_and_declare_only_known_secrets(self):
+    def test_configurations_use_their_selected_image_and_declare_only_known_secrets(self):
         for entry in [g.manifest(p) for p in discover_projects("catalog")] + [g.manual_manifest(m) for m in g.MANUAL]:
             body = json.loads(g.config(entry))
-            self.assertEqual(body["build"]["dockerfile"], "../resource-base/Dockerfile")
+            expected = ("../resource-base/Dockerfile.python312"
+                        if entry["path"] in g.PREINSTALLED_PYTHON_RESOURCES
+                        else "../resource-base/Dockerfile")
+            self.assertEqual(body["build"]["dockerfile"], expected)
             self.assertEqual(len(set(body["secrets"]) & {"RASA_LICENSE", "RASA_PRO_LICENSE"}), 1)
             self.assertLessEqual(set(body["secrets"]), set(g.KNOWN_SECRETS))
             self.assertTrue(body["workspaceFolder"].endswith("/" + entry["path"]))
             self.assertIn("ready.sh", body["postCreateCommand"])
+
+    def test_banking_matrix_does_not_install_python_through_a_feature(self):
+        selected = {"examples/jack-henry-banking", "examples/fiserv-banking",
+                    "patterns/mcp-confirmation-gate"}
+        for path in selected:
+            body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(path) / "devcontainer.json").read_text())
+            self.assertFalse(any("/python:" in name for name in body["features"]), path)
+            self.assertEqual(body["build"]["dockerfile"], "../resource-base/Dockerfile.python312")
+        dockerfile = (REPO_ROOT / ".devcontainer/resource-base/Dockerfile.python312").read_text()
+        self.assertRegex(dockerfile, r"FROM mcr\.microsoft\.com/devcontainers/python:1-3\.12-bookworm@sha256:[0-9a-f]{64}")
+        self.assertIn("sys.version_info[:2] == (3, 12)", dockerfile)
 
     def test_sshd_feature_is_pinned_to_an_exact_version(self):
         for project in discover_projects("catalog"):

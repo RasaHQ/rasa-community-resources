@@ -39,6 +39,14 @@ KNOWN_SECRETS = {
 }
 # Exact feature version, so a published change to the feature cannot alter a configuration unseen.
 SSHD_FEATURE = "ghcr.io/devcontainers/features/sshd:1.1.0"
+# These three configurations run the banking CI matrix. Their image already
+# contains Python, so building them does not invoke the Python feature's GPG
+# keyserver-dependent installer.
+PREINSTALLED_PYTHON_RESOURCES = {
+    "examples/jack-henry-banking",
+    "examples/fiserv-banking",
+    "patterns/mcp-confirmation-gate",
+}
 LICENSE_ALIAS = "RASA_PRO_LICENSE"
 DEFAULT_SECRETS = ["RASA_LICENSE", "OPENAI_API_KEY"]
 START, END = "<!-- codespaces:start -->", "<!-- codespaces:end -->"
@@ -259,6 +267,9 @@ def config(entry: dict) -> str:
     if entry["alias_license"]:
         # Holds for non-interactive shells, tasks and launch configurations, unlike a line in ~/.bashrc.
         body["remoteEnv"] = {LICENSE_ALIAS: "${containerEnv:RASA_LICENSE}"}
+    if entry["path"] in PREINSTALLED_PYTHON_RESOURCES:
+        body["build"]["dockerfile"] = "../resource-base/Dockerfile.python312"
+        del body["features"]["ghcr.io/devcontainers/features/python:1"]
     return json.dumps(body, indent=2) + "\n"
 
 
