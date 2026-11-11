@@ -209,3 +209,22 @@ tests/               # Pytest
 ## Heroes submission
 
 This directory is the wave-01-mantle project. Filled numbers: [runs/heroes_eval_20260920_182120/REPORT.md](runs/heroes_eval_20260920_182120/REPORT.md). Run manifest & reproducible boundary: [runs/heroes_eval_20260920_182120/MANIFEST.md](runs/heroes_eval_20260920_182120/MANIFEST.md). Corpus and license attribution: [docs/ATTRIBUTION.md](docs/ATTRIBUTION.md). Methodology: [docs/HEROES_EVAL_BRIEF.md](docs/HEROES_EVAL_BRIEF.md). Module detail: [CODEBASE.md](CODEBASE.md).
+## Local process ownership
+
+Evaluation cleanup signals only child handles started by the current Python
+process. A matching external model server can be reused, but it is not adopted
+or stopped. A wrong-model listener or an unowned peer-port conflict refuses a
+local switch before downloads or startup. Stop that service through its owner,
+or choose another configured port; the evaluator does not take it over.
+
+A fresh `local_llm stop` invocation has no retained child ownership and refuses
+an occupied unowned port. It does not discover arbitrary PIDs to kill them.
+The same rule applies when switching to hosted actors and during final cleanup.
+
+## Fresh corpus fetches and historical results
+
+`fetch-corpus` clones the current repository HEAD and writes fetch receipts in
+`corpus/pins/`; it does not check out the commits recorded by an earlier run.
+A fresh fetch is therefore not an exact replay of the September inputs. The
+saved report and manifest remain historical evidence. The default fetch
+command does not implement exact historical replay.

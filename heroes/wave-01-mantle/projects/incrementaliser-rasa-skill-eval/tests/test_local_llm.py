@@ -149,46 +149,26 @@ def test_start_llama_kills_tree_when_not_ready(monkeypatch, tmp_path: Path) -> N
     assert 19999 not in _OWNED
 
 
-def test_ensure_local_actor_restarts_wrong_external_model(monkeypatch, tmp_path: Path) -> None:
-    """A listener on the actor port serving a different alias is stopped, then replaced."""
-    from rasa_skill_eval.local_llm import OwnedLlama, ensure_local_actor
+def test_ensure_local_actor_refuses_wrong_external_model(monkeypatch, tmp_path: Path) -> None:
+    """A wrong-model foreign listener is refused without signals, downloads or starts."""
+    from rasa_skill_eval.local_llm import ensure_local_actor
 
     settings = LlmEndpointSettings(
-        id="lfm-1.2b",
-        provider="local",
-        model="LFM2-1.2B",
+        id="lfm-1.2b", provider="local", model="LFM2-1.2B",
         base_url="http://127.0.0.1:18082/v1",
     )
-    stopped: list[int] = []
-    started = {"n": 0}
 
-    class _Proc:
-        pid = 7
+    def forbidden(*_a: object, **_k: object) -> None:
+        raise AssertionError("foreign conflict must not cause process or download work")
 
-        def poll(self) -> int | None:
-            return None
-
-    fake = OwnedLlama(proc=_Proc(), port=18082, alias="LFM2-1.2B", exe="x")  # type: ignore[arg-type]
     monkeypatch.setattr("rasa_skill_eval.local_llm.owned_llama", lambda _p: None)
-    monkeypatch.setattr("rasa_skill_eval.local_llm.is_port_open", lambda *_a, **_k: True)
-    monkeypatch.setattr(
-        "rasa_skill_eval.local_llm._server_model_ids", lambda _u: ["other-model"]
-    )
-    monkeypatch.setattr(
-        "rasa_skill_eval.local_llm.stop_port",
-        lambda port, **_k: stopped.append(port),
-    )
-    monkeypatch.setattr(
-        "rasa_skill_eval.local_llm.ensure_gguf", lambda _s: tmp_path / "m.gguf"
-    )
-    monkeypatch.setattr(
-        "rasa_skill_eval.local_llm._start_llama",
-        lambda *_a, **_k: started.__setitem__("n", 1) or fake,
-    )
-    out = ensure_local_actor(settings, [settings])
-    assert stopped == [18082]
-    assert started["n"] == 1
-    assert out is fake
+    monkeypatch.setattr("rasa_skill_eval.local_llm.is_port_open", lambda *_a: True)
+    monkeypatch.setattr("rasa_skill_eval.local_llm._server_model_ids", lambda _u: ["other-model"])
+    for name in ("stop_port", "ensure_gguf", "_start_llama", "pids_listening"):
+        monkeypatch.setattr(f"rasa_skill_eval.local_llm.{name}", forbidden)
+    monkeypatch.setattr("rasa_skill_eval.local_llm.subprocess.run", forbidden)
+    with pytest.raises(RuntimeError, match="unowned listener"):
+        ensure_local_actor(settings, [settings])
 
 
 def test_ensure_local_actor_keeps_matching_external_listener(monkeypatch, tmp_path: Path) -> None:
@@ -424,3 +404,96 @@ def test_pids_listening_windows_parses_netstat(monkeypatch) -> None:
 
     monkeypatch.setattr("rasa_skill_eval.local_llm.subprocess.run", fake_run)
     assert pids_listening(8083) == [4321]
+
+
+def test_default_stop_refuses_foreign_port_without_pid_signals(monkeypatch) -> None:
+    """A port is never authority to signal its unowned listener."""
+    from rasa_skill_eval import local_llm
+
+    def forbidden(*_a: object, **_k: object) -> None:
+        raise AssertionError("must not discover or signal foreign PIDs")
+
+    monkeypatch.setattr(local_llm, "_OWNED", {})
+    monkeypatch.setattr(local_llm, "is_port_open", lambda _p: True)
+    monkeypatch.setattr(local_llm, "pids_listening", forbidden)
+    monkeypatch.setattr(local_llm.subprocess, "run", forbidden)
+    with pytest.raises(RuntimeError, match="unowned listener"):
+        local_llm.stop_port(18082)
+
+
+def test_local_switch_refuses_foreign_peer_without_signals(monkeypatch) -> None:
+    """Foreign peer ports block a local switch rather than being taken over."""
+    from rasa_skill_eval import local_llm
+
+    def forbidden(*_a: object, **_k: object) -> None:
+        raise AssertionError("foreign peers must remain untouched")
+
+    actor = LlmEndpointSettings(id="lfm-1.2b", provider="local", model="x",
+                                base_url="http://127.0.0.1:18082/v1")
+    peer = LlmEndpointSettings(id="lfm-2.6b", provider="local", model="x",
+                               base_url="http://127.0.0.1:18083/v1")
+    monkeypatch.setattr(local_llm, "_OWNED", {})
+    monkeypatch.setattr(local_llm, "is_port_open", lambda _p: True)
+    for name in ("pids_listening", "ensure_gguf", "_start_llama", "kill_process_tree"):
+        monkeypatch.setattr(local_llm, name, forbidden)
+    monkeypatch.setattr(local_llm.subprocess, "run", forbidden)
+    with pytest.raises(RuntimeError, match="unowned listener"):
+        local_llm.ensure_local_actor(actor, [actor, peer])
+
+
+def test_nonlocal_selection_cleans_only_owned_children(monkeypatch) -> None:
+    """Switching to a hosted actor leaves unowned local services running."""
+    from types import SimpleNamespace
+
+    from rasa_skill_eval import local_llm
+
+    proc = SimpleNamespace(pid=4242)
+    owned = local_llm.OwnedLlama(proc=proc, port=18082, alias="owned", exe="fixture")
+    registry = {18082: owned}
+    killed = []
+    probed = []
+    monkeypatch.setattr(local_llm, "_OWNED", registry)
+    monkeypatch.setattr(local_llm, "kill_process_tree", lambda p: killed.append(p))
+    monkeypatch.setattr(local_llm, "is_port_open", lambda p: probed.append(p) or p == 18083)
+    peers = [LlmEndpointSettings(provider="local", model="x",
+                                base_url="http://127.0.0.1:18083/v1")]
+    assert local_llm.ensure_local_actor(LlmEndpointSettings(provider="nvidia", model="x"),
+                                        peers) is None
+    assert killed == [proc]
+    assert registry == {}
+    assert 18083 not in probed
+
+
+def test_cleanup_ignores_all_unowned_actor_ports(monkeypatch) -> None:
+    """Final cleanup cannot probe or stop configured but unowned services."""
+    from rasa_skill_eval import local_llm
+
+    def forbidden(*_a: object, **_k: object) -> None:
+        raise AssertionError("unowned cleanup must not inspect or signal a port")
+
+    monkeypatch.setattr(local_llm, "_OWNED", {})
+    for name in ("is_port_open", "pids_listening", "kill_process_tree"):
+        monkeypatch.setattr(local_llm, name, forbidden)
+    local_llm.stop_local_actors([LlmEndpointSettings(provider="local", model="x")])
+
+
+def test_wrong_owned_model_can_restart_its_own_child(monkeypatch, tmp_path: Path) -> None:
+    """Owned restart remains available while the released port is checked."""
+    from types import SimpleNamespace
+
+    from rasa_skill_eval import local_llm
+
+    settings = LlmEndpointSettings(id="lfm-1.2b", provider="local", model="LFM2-1.2B",
+                                    base_url="http://127.0.0.1:18082/v1")
+    proc = SimpleNamespace(pid=4242, poll=lambda: None)
+    registry = {18082: local_llm.OwnedLlama(proc=proc, port=18082, alias="old", exe="x")}
+    killed = []
+    replacement = object()
+    monkeypatch.setattr(local_llm, "_OWNED", registry)
+    monkeypatch.setattr(local_llm, "kill_process_tree", lambda p: killed.append(p))
+    monkeypatch.setattr(local_llm, "is_port_open", lambda _p: False)
+    monkeypatch.setattr(local_llm, "_server_model_ids", lambda _u: ["old"])
+    monkeypatch.setattr(local_llm, "ensure_gguf", lambda _s: tmp_path / "fixture.gguf")
+    monkeypatch.setattr(local_llm, "_start_llama", lambda *a, **k: replacement)
+    assert local_llm.ensure_local_actor(settings, [settings]) is replacement
+    assert killed == [proc]

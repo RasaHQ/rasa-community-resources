@@ -2,7 +2,7 @@
 
 Only one GGUF stays loaded at a time so 8B CPU weights do not sit beside LFM.
 This module owns the child process: logs are kept, timeouts kill the tree, and
-port discovery is only a fallback for leftover listeners.
+unowned listeners are never terminated by evaluator cleanup.
 """
 
 from __future__ import annotations
@@ -391,37 +391,18 @@ def stop_owned(port: int) -> None:
         time.sleep(0.4)
 
 
-def stop_port(port: int, *, stale_ok: bool = True) -> None:
-    """Stop the owned child on ``port``, then any leftover listener."""
+def stop_port(port: int) -> None:
+    """Stop an owned child; refuse any remaining unowned listener.
+
+    A port number or model id is not process ownership. Administrative takeover
+    is deliberately outside this evaluator.
+    """
     stop_owned(port)
-    if not is_port_open(port):
-        return
-    pids = pids_listening(port)
-    if not pids:
-        return
-    if not stale_ok:
-        raise RuntimeError(f"Port {port} still has listeners {pids} after owned stop")
-    for pid in pids:
-        logger.warning(
-            "Stopping stale listener PID {} on port {} (not an owned llama-server)",
-            pid,
-            port,
+    if is_port_open(port):
+        raise RuntimeError(
+            f"Port {port} has an unowned listener; stop it through its owner "
+            "or choose a different configured port"
         )
-        if sys.platform == "win32":
-            subprocess.run(
-                ["taskkill", "/PID", str(pid), "/F", "/T"],
-                capture_output=True,
-                check=False,
-            )
-        else:
-            subprocess.run(
-                ["kill", "-TERM", str(pid)],
-                capture_output=True,
-                check=False,
-            )
-    deadline = time.monotonic() + 15
-    while time.monotonic() < deadline and is_port_open(port):
-        time.sleep(0.4)
 
 
 def _server_model_ids(base_url: str) -> list[str]:
@@ -585,14 +566,11 @@ def _start_llama(
 
 
 def stop_local_actors(actors: list[LlmEndpointSettings]) -> None:
-    """Stop owned llama-server children, then leftover listeners on actor ports."""
-    ports: set[int] = set(_OWNED)
-    for settings in actors:
-        if not is_local_provider(settings.provider):
-            continue
-        ports.add(port_from_base_url(local_base_url(settings)))
-    for port in sorted(ports):
-        stop_port(port)
+    """Stop only children started by this interpreter, leaving foreign peers alone."""
+    # Configured actor ports do not establish ownership of their listeners.
+    del actors
+    for port in list(_OWNED):
+        stop_owned(port)
 
 
 def ensure_local_actor(
@@ -618,7 +596,6 @@ def ensure_local_actor(
         raise ValueError(
             f"Local actor {settings.id or settings.model} is not in the GGUF catalog"
         )
-    gguf = ensure_gguf(settings)
     base = local_base_url(settings)
     owned = owned_llama(keep_port)
     if owned is not None and owned.proc.poll() is None:
@@ -632,14 +609,17 @@ def ensure_local_actor(
             )
             return owned
         logger.info("Owned process on port {} has the wrong model {}; restarting", keep_port, ids)
-        stop_owned(keep_port)
+        stop_port(keep_port)
     elif is_port_open(keep_port):
         ids = _server_model_ids(base)
         if spec.alias in ids or settings.model in ids:
             logger.info("{} already serving on port {} (external listener)", spec.alias, keep_port)
             return None
-        logger.info("Port {} has the wrong model {}; restarting", keep_port, ids)
-        stop_port(keep_port)
+        raise RuntimeError(
+            f"Port {keep_port} has an unowned listener serving {ids}; "
+            "stop it through its owner or choose a different configured port"
+        )
+    gguf = ensure_gguf(settings)
     return _start_llama(
         settings,
         spec,
@@ -668,7 +648,12 @@ def _cli(argv: list[str] | None = None) -> None:
     names = [n.strip() for n in args.ids if n.strip()]
     if args.action == "stop":
         chosen = [by_id[n] for n in names if n in by_id] if names else list(cfg.llm.agents)
-        stop_local_actors(chosen)
+        ports = {
+            port_from_base_url(local_base_url(actor))
+            for actor in chosen if is_local_provider(actor.provider)
+        }
+        for port in sorted(ports):
+            stop_port(port)
         return
     if not names:
         names = ["lfm-1.2b", "lfm-2.6b"]
