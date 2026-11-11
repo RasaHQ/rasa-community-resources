@@ -110,3 +110,7 @@ it: this teaching build has no reconciliation command. The original reference
 stays private, and fresh transfer reviews remain blocked for the process lifetime.
 Confirmation is armed only after the canonical review reaches the output channel.
 Failed or canceled delivery leaves no permission to submit.
+
+Read the original status while its simulated session is still valid. Logout,
+reset or the session's five-minute expiry invalidates it, so later status checks
+report unavailable. The uncertainty fence stays in place.
