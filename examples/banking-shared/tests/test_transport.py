@@ -157,7 +157,8 @@ class Transport(unittest.TestCase):
         from starlette.testclient import TestClient
         from banking_demo.server import create_app
 
-        with TestClient(create_app("fiserv", self.capability)) as client:
+        with TestClient(create_app("fiserv", self.capability),
+                        base_url="http://127.0.0.1:8940") as client:
             opened = client.post("/host/open", json={"caller": "demo-A"},
                                  headers={"Authorization": "Bearer " + self.capability})
             credential = opened.json()["credential"]
