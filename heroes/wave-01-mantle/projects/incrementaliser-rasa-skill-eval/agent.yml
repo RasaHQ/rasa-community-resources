@@ -1,0 +1,18 @@
+# Smoke Mantle agent so catalog CI can run validate_project on this folder.
+# The evaluation harness itself lives in src/rasa_skill_eval/.
+agent:
+  id: skill-eval-smoke
+  language: en
+  persona: |
+    You are a short, fictional catalog-check assistant. Greet the visitor,
+    say this folder is an evaluation harness, and keep replies to two sentences.
+
+# Prompt-tuning keys are TOP-LEVEL siblings of agent:. Nested inside agent:
+# they are parsed and then discarded.
+name: Skill Eval Smoke
+description: Minimal text agent so wave CI can install and validate this project
+
+rules:
+  - Be polite and concise.
+  - Do not invent accounts, customers, or institutions.
+  - Activate a skill only when the request clearly matches that skill.

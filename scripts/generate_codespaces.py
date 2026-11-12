@@ -28,6 +28,7 @@ from rasa_projects import REPO_ROOT, discover_projects  # noqa: E402
 
 REPO = "RasaHQ/rasa-community-resources"
 KNOWN_SECRETS = {
+    "NVIDIA_API_KEY": "NVIDIA Build key for this evaluation harness's scoring and model calls",
     "RASA_LICENSE": "Full Rasa Developer Edition license",
     "RASA_PRO_LICENSE": "Full Rasa Developer Edition license",
     "OPENAI_API_KEY": "OpenAI project key used for this resource's model calls",
@@ -97,6 +98,10 @@ def env_example_secrets(path: Path) -> dict[str, bool]:
 
 # Resources whose first command comes from their own README rather than a Makefile target.
 FIRST = {
+    "heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval": (
+        "uv run --locked --no-sync pytest && uv run --locked --no-sync ruff check src tests scripts",
+        "the offline unit suite and lint checks finish. Model scoring and licensed training are separate steps below; no evaluation starts automatically.",
+    ),
     "heroes/wave-01-mantle/projects/phlenfyl-notevs-agent": (
         "uv run --locked python -m rasa train && bash ./start.sh",
         "the REST server starts on port 5005. Standalone chat can run without NoteVs; "
@@ -125,7 +130,10 @@ FIRST = {
 }
 
 # Resources whose first command needs no license, key or network: their secrets are only for the later steps.
-FIRST_NEEDS_NONE = {"tutorials/rasa-ai-team-casebook"}
+FIRST_NEEDS_NONE = {
+    "tutorials/rasa-ai-team-casebook",
+    "heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval",
+}
 
 
 def uses_references(path: Path) -> bool:
@@ -269,6 +277,8 @@ def manifest(project) -> dict:
     }:
         # These deterministic tool suites make no provider calls.
         ready += ' && uv run --locked --no-sync python -m unittest discover -s tests -v'
+    if project.rel == 'heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval':
+        ready += ' && uv run --locked --no-sync pytest && uv run --locked --no-sync ruff check src tests scripts'
     return {
         "snapshot": snapshot,
         "provider_note": provider_note,
