@@ -15,7 +15,7 @@ from urllib.parse import urlencode
 from .contract import ContractError, MissingContractInput, SilverLakeContract
 
 EXPECTED_RASA = "3.21.0.dev5"
-SECRETS = ("RASA_PRO_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY")
+SECRETS = ("RASA_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY")
 
 
 def inspector_address(port):
