@@ -6,6 +6,7 @@ consent and journals the request before sending. Records live for one runtime
 turn only and are not persisted or shared with another example.
 """
 from collections import OrderedDict
+from decimal import Decimal, InvalidOperation
 import re
 import time
 from uuid import uuid4
@@ -87,6 +88,35 @@ def _declines(payload) -> bool:
     return (bool(payload.text) and not calls) or (bool(calls) and set(calls) <= {"cannot_help"})
 
 
+# The host's own review sentence (lib/native_adapter.py). A model that writes it
+# instead of calling the tool has already chosen exact details.
+_REVIEW_TEXT = re.compile(r"^\s*Review: transfer USD ([0-9]+\.[0-9]{2}) from ([a-z]+) to ([a-z]+)\.", re.IGNORECASE)
+_CONFIRMATIONS = {"yes", "confirm", "confirmed", "confirm transfer"}
+
+
+def _review_call(native, text):
+    """The review tool call a model meant when it wrote the host's review itself.
+
+    Only for a turn that asks to move that exact amount and is not a
+    confirmation. The host still checks every detail, delivers the exact
+    review and arms confirmation only after that delivery.
+    """
+    match = _REVIEW_TEXT.match(text or "")
+    raw = getattr(getattr(native, "turn", None), "text", "") or ""
+    if match is None or " ".join(raw.casefold().rstrip(".!?").split()) in _CONFIRMATIONS:
+        return None
+    try:
+        amount = Decimal(match.group(1))
+        said = {Decimal(number) for number in re.findall(r"\d+(?:\.\d+)?", raw)}
+    except InvalidOperation:
+        return None
+    if amount not in said:
+        return None
+    return {"id": "host-review-" + uuid4().hex, "tool_name": "banking_review_transfer",
+            "tool_args": {"source": match.group(2).lower(), "destination": match.group(3).lower(),
+                          "amount": match.group(1)}, "type": "function"}
+
+
 def _retry_allowed(native, sender):
     turn, count = _retries.get(sender, (None, 0))
     if turn is not native.turn:
@@ -144,6 +174,9 @@ async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePa
         # caller never hears a review or "accepted" for a transfer that was
         # never reviewed or sent.
         if payload.text and HOST_ONLY.search(payload.text):
+            call = None if payload.tool_calls else _review_call(native, payload.text)
+            if call is not None:  # the review it wrote, made by the host instead
+                return payload.model_copy(update={"text": None, "tool_calls": [call]})
             if _retry_allowed(native, payload.sender_id):
                 raise RetryModel(RETRY_REVIEW)
             return payload.model_copy(update={"text": NO_TRANSFER_TEXT})

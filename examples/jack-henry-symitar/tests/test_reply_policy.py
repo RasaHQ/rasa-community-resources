@@ -168,3 +168,18 @@ assert [call["tool_name"] for call in reply.tool_calls]==["listen"]
     def test_the_request_hook_records_the_offered_tools(self):
         source = (__import__("pathlib").Path(__file__).resolve().parents[1] / "hooks.py").read_text()
         self.assertIn("remember_offered_tools(payload)", source)
+
+    async def test_a_written_review_becomes_the_review_call_only_for_the_amount_asked(self):
+        from types import SimpleNamespace as NS
+        text="Review: transfer USD 2.00 from checking to savings. Say yes or confirm transfer next to submit exactly this fictional transfer. Anything else cancels it."
+        self.native.turn=NS(text="Review a transfer of 2 from checking to savings.")
+        reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
+        self.assertIsNone(reply.text)
+        self.assertEqual([(c["tool_name"],c["tool_args"]) for c in reply.tool_calls],
+                         [("banking_review_transfer",{"source":"checking","destination":"savings","amount":"2.00"})])
+        from rasa.mantle.hooks.exceptions import RetryModel
+        for raw in ("Yes.","Review a transfer of 5 from checking to savings.","What happened to my transfer?"):
+            with self.subTest(raw=raw):
+                policy._retries.clear();self.native.turn=NS(text=raw)
+                with self.assertRaises(RetryModel):  # never invented from a confirmation or another amount
+                    await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
