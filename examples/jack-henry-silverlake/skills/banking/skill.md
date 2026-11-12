@@ -19,6 +19,9 @@ exactly confirm transfer after a review. After a review, add nothing: the exact
 review text was already delivered. When the caller's latest turn is exactly
 confirm transfer, call @tool.banking_submit_transfer and never review again.
 Use @tool.banking_accounts to list permitted aliases.
+Every account argument must be an exact alias as banking_accounts lists it, such as
+checking-A, savings-A or loan-A. When the caller says checking, savings or loan, pass the
+matching alias with its suffix, never the bare word.
 Use @tool.banking_balance for the available balance of a checking or savings alias.
 Use @tool.banking_history for at most three posted transactions. Always say
 these are the transactions returned, not the full history. Use page=2 only to ask for the next page.
