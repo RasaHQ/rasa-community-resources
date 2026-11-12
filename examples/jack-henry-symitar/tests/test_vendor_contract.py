@@ -192,6 +192,30 @@ class ClientTests(unittest.IsolatedAsyncioTestCase):
                                        "postTransfer", REQUESTS["postTransfer"], ErrorCode.VENDOR_REJECTED)
         self.assertNotIn("fictional-sensitive", str(error))
 
+    async def test_declared_bodiless_auth_refusal_is_rejected_without_retry(self):
+        for status in (401, 403):
+            for operation in ("searchLoans", "postTransfer"):
+                with self.subTest(status=status, operation=operation):
+                    transport = Transport(WireResponse(status, "", b""))
+                    await self.assert_code(transport, operation, REQUESTS[operation],
+                                           ErrorCode.VENDOR_REJECTED)
+                    self.assertEqual(len(transport.requests), 1)
+
+    async def test_body_on_declared_bodiless_response_remains_invalid(self):
+        for status in (401, 403):
+            for operation, code in (("searchLoans", ErrorCode.INVALID_RESPONSE),
+                                    ("postTransfer", ErrorCode.UNKNOWN)):
+                with self.subTest(status=status, operation=operation):
+                    transport = Transport(WireResponse(status, "application/json", b"{}"))
+                    await self.assert_code(transport, operation, REQUESTS[operation], code)
+                    self.assertEqual(len(transport.requests), 1)
+
+    async def test_empty_undeclared_or_schema_response_is_not_auth_rejection(self):
+        for status in (200, 418):
+            with self.subTest(status=status):
+                await self.assert_code(Transport(WireResponse(status, "", b"")),
+                                       "postTransfer", REQUESTS["postTransfer"], ErrorCode.UNKNOWN)
+
     async def test_valid_nullable_receipt_is_not_invented(self):
         raw = b'{"status":"success","receiptId":null,"confirmationNumber":null}'
         result = await self.client(Transport(WireResponse(200, "application/json; charset=utf-8", raw))).call(

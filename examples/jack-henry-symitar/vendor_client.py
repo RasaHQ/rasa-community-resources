@@ -107,9 +107,16 @@ class SymitarClient:
                 raise ValueError("invalid_response")
             if not isinstance(response.body, bytes) or len(response.body) > MAX_BODY:
                 raise ValueError("oversize_response")
-            media = response.media_type.split(";", 1)[0].strip().lower()
-            data = json.loads(response.body, object_pairs_hook=_unique_object,
-                              parse_constant=_reject_constant)
+            if self._contract.allows_empty_response(operation_id, response.status):
+                # A declared no-content response must actually have zero bytes.
+                # Do not parse it as JSON or invent an error-body schema.
+                if response.body:
+                    raise ValueError("unexpected_response_body")
+                media, data = "", None
+            else:
+                media = response.media_type.split(";", 1)[0].strip().lower()
+                data = json.loads(response.body, object_pairs_hook=_unique_object,
+                                  parse_constant=_reject_constant)
             self._contract.response(operation_id, response.status, media, data)
         except Exception:
             code = ErrorCode.UNKNOWN if operation_id == "postTransfer" else ErrorCode.INVALID_RESPONSE

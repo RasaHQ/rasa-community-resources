@@ -153,9 +153,19 @@ class SymitarContract:
         except Exception:
             raise ContractError("invalid_request") from None
 
+    def allows_empty_response(self, operation_id: str, status: int) -> bool:
+        """Only an explicitly declared status without content permits no body."""
+        try:
+            _, _, responses = self._operations[operation_id]
+            return str(status) in responses and responses[str(status)] == {}
+        except Exception:
+            raise ContractError("invalid_response") from None
+
     def response(self, operation_id: str, status: int, media: str, body: object) -> None:
         try:
             _, _, responses = self._operations[operation_id]
+            if self.allows_empty_response(operation_id, status) and body is None:
+                return
             content = responses.get(str(status), responses.get("default"))
             if content is None or media not in content:
                 raise ContractError("invalid_response")
