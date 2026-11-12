@@ -34,6 +34,7 @@ class _Conversation:
         self.session, self.policy, self.accounts, self.customer = session, policy, accounts, customer
         self.draft = None
         self.cursors = {}
+        self.last_used = time.monotonic()
 
 
 class SilverLakeService:
@@ -60,7 +61,9 @@ class SilverLakeService:
                           currency="USD", assured_at=self.clock(), conversation=uuid.uuid4().hex)
         with self._lock:
             if len(self._conversations) >= 32:
-                raise Refused("session_limit")
+                # Evict the least recently used conversation instead of refusing for good.
+                oldest = min(self._conversations, key=lambda key: self._conversations[key].last_used)
+                self._conversations.pop(oldest).policy.cancel()
             token = uuid.uuid4().hex
             self._conversations[token] = _Conversation(session, HostPolicy(session, self.clock), accounts,
                                                        spec["customer"])
@@ -70,6 +73,7 @@ class SilverLakeService:
         conversation = self._conversations.get(token)
         if conversation is None:
             raise Refused("stale_session")
+        conversation.last_used = time.monotonic()
         return conversation
 
     def assure(self, token):

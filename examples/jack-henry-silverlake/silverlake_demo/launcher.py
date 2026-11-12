@@ -122,6 +122,9 @@ def main(project):
                 raise RuntimeError("agent_validation_failed")
             integrations = read_yaml_file(project / "integrations.yml", expand_env_vars=False)
             integrations["channels"]["inspector"]["server_url"] = origin
+            if not args.text_api:
+                # The REST text channel is a developer check only; keep it off otherwise.
+                integrations["channels"].pop("rest", None)
             write_yaml(integrations, run / "integrations.yml")
             (run / "agent.yml").write_bytes((project / "agent.yml").read_bytes())
             print("Vendor definitions: found and hash-verified. Mode: local SOAP mock checked against them.")
@@ -130,7 +133,9 @@ def main(project):
             print("Use only fictional speech. The speech provider receives audio; opt-out is not zero retention.")
             print("Open the Inspector: " + inspector_url, flush=True)
             print("To stop, press Ctrl+C in this terminal.", flush=True)
-            inspector = subprocess.Popen([sys.executable, "-m", "rasa", "run" if args.text_api else "inspect", "--port", str(args.port),
+            # Outside Codespaces, listen on this machine only. Codespaces forwards the port privately.
+            interface = ["--interface", "127.0.0.1"] if not os.environ.get("CODESPACE_NAME") else []
+            inspector = subprocess.Popen([sys.executable, "-m", "rasa", "run" if args.text_api else "inspect", *interface, "--port", str(args.port),
                                           "--model", str(result.model)], cwd=run, env=environment)
             while inspector.poll() is None:
                 if server.poll() is not None:

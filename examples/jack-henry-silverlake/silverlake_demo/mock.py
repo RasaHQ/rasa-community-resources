@@ -196,15 +196,16 @@ class SilverLakeMock:
                 or self._text(request, "AcctIdFrom", "FromAcctType") != source["type"]
                 or self._text(request, "AcctIdTo", "ToAcctType") != target["type"]):
             raise BusinessError(ERR_NOT_FOUND, "Transfer not permitted")
+        response = ET.Element(q("XferAddResponse"))
+        header(response, response=True)
+        sub(response, "XferKey", uuid.uuid4().hex[:20])
+        sub(response, "RsStat", "Success")
+        self.contract.validate(response)  # validate BEFORE moving any money
         source["avail"] -= cents
         source["cur"] -= cents
         target["avail"] += cents
         target["cur"] += cents
         self.transfers += 1
-        response = ET.Element(q("XferAddResponse"))
-        header(response, response=True)
-        sub(response, "XferKey", uuid.uuid4().hex[:20])
-        sub(response, "RsStat", "Success")
         return response
 
     HANDLERS = {"AcctSrch": "acct_srch", "AcctBalInq": "acct_bal_inq", "AcctHistSrch": "acct_hist_srch",
@@ -225,6 +226,8 @@ class SilverLakeMock:
                 response = getattr(self, self.HANDLERS[name])(request)
             except BusinessError as error:
                 return 500, fault("Server", error.description, error.code), False
+            except ContractError:
+                return 500, fault("Server", "Mock produced an invalid reply"), False
             if name == "XferAdd" and self.fault == "transfer-response-lost":
                 return 0, b"", True
             try:

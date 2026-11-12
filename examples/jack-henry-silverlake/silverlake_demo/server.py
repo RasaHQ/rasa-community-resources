@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: MIT
 """A naked MCP server for the Jack Henry SilverLake (jXchange) teaching example.
 
-It lives inside this example and imports nothing from zeointegrations or from
-another example. It exposes exactly seven read-only or review tools. Confirming
+It lives inside this example and imports nothing from another example or a
+shared package. It exposes exactly seven read-only or review tools. Confirming
 and sending a transfer, identity and reset are private host calls on a separate
 capability-protected path; they are not MCP tools.
 """
@@ -88,6 +88,8 @@ class _Registry:
         context = self.service.open_session(caller)  # the service's private conversation key
         token = token_urlsafe(32)
         with self.lock:
+            while len(self.sessions) >= 64:  # bounded: drop the oldest credential
+                self.sessions.pop(next(iter(self.sessions)))
             self.sessions[token] = context
         return token
 

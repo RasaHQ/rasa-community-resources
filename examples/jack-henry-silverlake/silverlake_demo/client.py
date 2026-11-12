@@ -22,6 +22,19 @@ class Unavailable(Exception):
     """A closed reason: bad status, fault, bad body or unreachable."""
 
 
+class Fault(Unavailable):
+    """A SOAP fault: who it blames (Client or Server) and any business error code."""
+
+    def __init__(self, side: str, code: str | None):
+        super().__init__("fault")
+        self.side, self.code = side, code
+
+
+# Documented business errors that mean "not done" for a transfer. Anything else
+# after a send, including a Server fault, is an unknown outcome, never a refusal.
+TRANSFER_REFUSALS = frozenset({"100199", "400001"})
+
+
 class UnknownOutcome(Exception):
     """A write was sent but no usable reply arrived. Never resend."""
 
@@ -37,13 +50,14 @@ def _money(text) -> Decimal:
 
 
 class SilverLakeClient:
-    def __init__(self, contract: SilverLakeContract, base_url: str, *, timeout=5.0):
+    def __init__(self, contract: SilverLakeContract, base_url: str, *, timeout=5.0, transport=None):
         parts = urlsplit(base_url)
         if (parts.scheme != "http" or parts.hostname != "127.0.0.1" or parts.port is None
                 or parts.path not in {"", "/"} or parts.username or parts.password
                 or parts.query or parts.fragment):
             raise ValueError("the mock client accepts only an explicit IPv4 loopback origin")
         self.contract, self.url, self.timeout = contract, base_url.rstrip("/") + PATH, timeout
+        self._transport = transport  # tests only: an in-process stand-in for the network
 
     def _call(self, operation: str, request: ET.Element, *, write=False) -> ET.Element:
         try:
@@ -51,7 +65,8 @@ class SilverLakeClient:
         except ContractError:
             raise Unavailable("invalid_request") from None
         try:
-            with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False) as http:
+            with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False,
+                              transport=self._transport) as http:
                 reply = http.post(self.url, content=envelope(request), headers={
                     "Content-Type": "text/xml; charset=utf-8",
                     "SOAPAction": '"%s"' % self.contract.actions[operation]})
@@ -62,8 +77,12 @@ class SilverLakeClient:
         except ContractError:
             raise (UnknownOutcome("invalid_reply") if write else Unavailable("invalid_response")) from None
         if body.tag == "{%s}Fault" % SOAP_ENV:
-            # A fault is a definite refusal from the service, not an unknown.
-            raise Unavailable("fault")
+            side = (body.findtext("faultcode") or "").rsplit(":", 1)[-1]
+            code = None
+            detail = body.find("detail")
+            if detail is not None:
+                code = detail.findtext(q("ErrCode"))
+            raise Fault(side, code)
         if reply.status_code != 200 or body.tag != q(operation + "Response"):
             raise (UnknownOutcome("unexpected_reply") if write else Unavailable("invalid_response"))
         try:
@@ -161,9 +180,17 @@ class SilverLakeClient:
         sub(receiver, "ToAcctType", destination[1])
         sub(sub(request, "XferRec"), "Amt", format(amount, "f"))
         try:
+            self.contract.validate(request)
+        except ContractError:
+            return "refused"  # never sent
+        try:
             body = self._call("XferAdd", request, write=True)
+        except Fault as fault:
+            if fault.side == "Client" or fault.code in TRANSFER_REFUSALS:
+                return "refused"
+            raise UnknownOutcome("server_fault") from None
         except Unavailable:
-            return "refused"  # invalid before sending, or a SOAP fault from the service
+            raise UnknownOutcome("unusable_reply") from None
         status = body.find(q("RsStat"))
         if status is None or (status.text or "").strip() != "Success":
             raise UnknownOutcome("unrecognised_status")
