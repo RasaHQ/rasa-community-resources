@@ -128,6 +128,34 @@ class SDKControls(unittest.TestCase):
         return (f"2026-01-01 12:00:{second:02d} INFO logger - [info ] {marker} "
                 f"conversation_id={session} {extra}")
 
+    def test_native_normalized_adapter_events_need_no_console_timestamp(self):
+        supplied = [event("speech.end", 100), event("audio.first_played", 1400)]
+        rows = self.parse([json.dumps(x) for x in supplied])
+        self.assertEqual(v.analyse(rows)["end_of_speech_to_first_audio"]["p50_ms"], 1300)
+
+    def test_prefixed_json_sdk_events_and_private_fields_are_projected(self):
+        def line(second, **row):
+            return f"2026-01-01 12:00:{second:02d} INFO logger - " + json.dumps(row)
+        rows = self.parse([line(0, event="mantle.turn.started", conversation_id="raw-id"),
+                           line(2, event="mantle.turn.completed", conversation_id="raw-id",
+                                iteration_count=2, source="completed", error=None, transcript="PRIVATE"),
+                           line(3, event="unrelated", conversation_id="raw-id",
+                                transcript="mantle.turn.started Worker ready")])
+        report = v.analyse(rows)
+        self.assertEqual(report["orchestration"]["p50_ms"], 2000)
+        self.assertFalse(report["turns"][0]["failed"])
+        self.assertEqual(len(report["turns"]), 1)
+        self.assertNotIn("runtime.worker_ready", [r["event"] for r in rows])
+        self.assertNotIn("PRIVATE", json.dumps(rows))
+        self.assertNotIn("raw-id", json.dumps(rows))
+
+    def test_coloured_sdk_markers_are_recognized_without_retaining_console(self):
+        rows = self.parse([self.line(0, "\x1b[32mmantle.turn.started\x1b[0m"),
+                           self.line(2, "\x1b[32mmantle.turn.completed\x1b[0m", extra="iteration_count=2")])
+        report = v.analyse(rows)
+        self.assertEqual(report["orchestration"]["count"], 1)
+        self.assertEqual(report["orchestration"]["p50_ms"], 2000)
+
     def test_interleaved_sessions_are_joined_separately_and_ids_not_exported(self):
         rows = self.parse([self.line(0, "mantle.turn.started", "PRIVATE-A"),
                            self.line(1, "mantle.turn.started", "PRIVATE-B"),

@@ -65,6 +65,11 @@ model transfer. Neither is a warm per-turn response measurement.
 
 ## Full per-turn boundary contract
 
+Capture also accepts validated normalized event JSON emitted by a native
+adapter on the runtime console, with or without a logging prefix. SDK console
+projection handles plain, ANSI-coloured and prefixed JSON event logs. Arbitrary
+transcript text containing an event name does not create a timing event.
+
 The normalized JSONL format accepts these timing boundaries from a receiving
 instrumentation adapter. Each record has `schema` =
 `rasa.voice-latency-event/v1`, `event`, a run-local `session`, a `turn`, a `clock`,
@@ -150,3 +155,44 @@ Compare fresh-process SDK model loading with that verified cache, including an
 `HF_HUB_OFFLINE=1` control. Record preparation cost separately: prefetch shifts
 work earlier rather than removing it from total setup. This isolates model load,
 not browser response latency, and should be measured again on each target.
+
+## Browser receiving adapter for a bounded fictional caller
+
+The optional `scripts/voice_latency_browser/` probe sends an **existing fictional
+mono WAV**, then measures from its last sample above −40 dBFS to the first bot
+sample above −40 dBFS consumed by its AudioWorklet. Both boundaries use the same
+AudioContext sample clock. It does not use the microphone or generate caller
+audio. Its JSONL contains only event labels, run-local identities and times.
+
+In an already authorized example Codespace, start the ordinary trained agent's
+`browser_audio` server. In a second terminal, from the repository root:
+
+```sh
+python3 -m http.server 8765 --bind 127.0.0.1 --directory scripts/voice_latency_browser
+```
+
+Open the local page in the same browser host as the local WebSocket endpoint
+(default `ws://127.0.0.1:5005/webhooks/browser_audio/websocket`). A remote
+maintainer browser needs its separately authorized forwarded WebSocket address;
+use the GitHub port access controls, never embed credentials in the URL. The
+example must already expose the standard browser_audio protocol. The page does
+not set provider keys, configure a vendor or change the server's access controls.
+
+Click **Connect once**; this starts the live speech session and can bill the
+configured providers. Wait for the greeting to finish, choose an existing
+fictional WAV under 30 seconds, then click **Send one fixture**. Click **Stop**
+after the response and **Save timing JSONL**. Analyse it with the `events` format
+above. The page refuses pending/overlapping turns, caps its queue and stops after
+180 seconds; it never reconnects or retries. Reloading and reconnecting is a new
+explicit run. Stopping the page closes the socket; stop the agent separately.
+
+This is **synthetic fixture to rendered browser audio**, not human VAD or an
+acoustic speaker measurement. The page reports the browser's base/output latency
+separately; it does not silently add it or call a headless dummy audio device a
+physical speaker. It does not by itself provide the server-side ASR/MCP/TTS
+boundaries or prove a typical latency target. Preserve these limits with every
+report, retain failed/no-pair attempts, and use the same caller fixture and clock
+method for a successor. Protocol controls are in
+`node scripts/voice_latency_browser/test-clock-worklet.cjs`; they make no speech
+or model call. A headless browser receiving control is separate from live speech
+qualification.

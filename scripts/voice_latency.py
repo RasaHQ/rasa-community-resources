@@ -33,6 +33,7 @@ STAGES = {
     "capture.started", "capture.worker_ready_observed", "capture.exited", "voice.session_started",
 }
 ID = re.compile(r"^[A-Za-z0-9_.:-]{1,100}$")
+ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 STAMP = re.compile(r"(?<!\d)(\d{4}-\d\d-\d\d)[ T](\d\d:\d\d:\d\d)(\.\d{1,6})?")
 MAPPINGS = {
     "mantle.turn.started": "turn.started",
@@ -106,6 +107,18 @@ class SDKLog:
         self.first = False
 
     def parse(self, line):
+        line = ANSI.sub("", line)
+        payload = None
+        brace = line.find("{")
+        if brace >= 0:
+            try:
+                candidate = json.loads(line[brace:], object_pairs_hook=unique_json)
+                if isinstance(candidate, dict):
+                    payload = candidate
+            except (ValueError, json.JSONDecodeError):
+                pass
+        if payload is not None and payload.get("schema") == SCHEMA:
+            return [validate(payload)]
         stamp = STAMP.search(line)
         if not stamp:
             return []
@@ -115,7 +128,9 @@ class SDKLog:
         at = relative.days * 86400000 + relative.seconds * 1000 + relative.microseconds / 1000
         resolution = 10 ** (3 - len(stamp[3][1:])) if stamp[3] else 1000
         match = re.search(r"\bconversation_id=([A-Za-z0-9_-]+)", line)
-        key = match[1] if match else None
+        key = payload.get("conversation_id") if payload is not None else (match[1] if match else None)
+        if not isinstance(key, str) or not ID.fullmatch(key):
+            key = None
         if key is not None and key not in self.sessions:
             if len(self.sessions) >= 10000:
                 raise ValueError("too many sessions")
@@ -131,8 +146,11 @@ class SDKLog:
         if not self.first:
             rows.append(event("runtime.first_log"))
             self.first = True
-        marker = next((m for m in MAPPINGS if re.search(re.escape(m) + r"(?:\s|$)", line)), None)
-        if "Worker ready" in line:
+        marker = (payload.get("event") if payload is not None else
+                  next((m for m in MAPPINGS if re.search(r"(?:\]\s+| -\s+|^\s*)" + re.escape(m) + r"(?:\s|$)", line)), None))
+        if not isinstance(marker, str) or marker not in MAPPINGS:
+            marker = None
+        if payload is None and re.search(r"(?:INFO\s+| -\s+|\]\s+)Worker ready(?:\s|$)", line):
             rows.append(event("runtime.worker_ready"))
         if marker is None:
             return rows
@@ -147,10 +165,14 @@ class SDKLog:
             meta = {}
             if stage == "turn.completed":
                 count = re.search(r"\biteration_count=(\d+)\b", line)
-                if count:
+                if payload is not None:
+                    count_value = payload.get("iteration_count")
+                    if type(count_value) is int and count_value >= 0:
+                        meta["iterations"] = count_value
+                elif count:
                     meta["iterations"] = int(count[1])
-                meta["cancelled"] = bool(re.search(r"\bsource=cancelled\b", line))
-                meta["failed"] = bool(re.search(r"\berror=", line)
+                meta["cancelled"] = payload.get("source") == "cancelled" if payload is not None else bool(re.search(r"\bsource=cancelled\b", line))
+                meta["failed"] = payload.get("error") is not None if payload is not None else bool(re.search(r"\berror=", line)
                                       and not re.search(r"\berror=(?:None|null)(?:\s|$)", line))
             rows.append(event(stage, turn, **meta))
             if stage == "turn.completed":
@@ -161,7 +183,10 @@ class SDKLog:
                 for source, target in (("endpointing", "endpointing_ms"),
                                        ("utterance_end_ms", "utterance_end_ms")):
                     value = re.search(r"['\"]?" + source + r"['\"]?\s*:\s*(\d+)\b", line)
-                    if value:
+                    config = payload.get("config") if payload is not None else None
+                    if isinstance(config, dict) and type(config.get(source)) is int and config[source] >= 0:
+                        meta[target] = config[source]
+                    elif payload is None and value:
                         meta[target] = int(value[1])
             rows.append(event(stage, **meta))
         return rows
@@ -361,8 +386,8 @@ def capture(command, output, timeout):
                             text = line.decode("utf-8", errors="replace")
                             for row in parser.parse(text):
                                 write(row)
-                            if "Worker ready" in text:
-                                write(observed("capture.worker_ready_observed"))
+                                if row["event"] == "runtime.worker_ready":
+                                    write(observed("capture.worker_ready_observed"))
                         if len(buffer) > MAX_LINE:
                             raise ValueError("runtime line exceeds 64KiB")
                 if buffer:
