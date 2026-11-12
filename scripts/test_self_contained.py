@@ -214,6 +214,28 @@ class RuntimeScopeTests(unittest.TestCase):
         self.put('examples/a/controls/helper.py', 'open("../b/private.txt").read()\n')
         self.assertTrue(self.findings())
 
+    def test_adjacent_semicolon_string_command_is_refused(self):
+        self.put('examples/a/app.py', 'import subprocess\nsubprocess.run("python controls/helper.py; true", shell=True)\n')
+        self.put('examples/a/controls/helper.py', 'open("../b/private.txt").read()\n')
+        self.assertTrue(any('use a list-form command' in finding for finding in self.findings()))
+
+    def test_shell_true_with_list_command_is_refused(self):
+        self.put('examples/a/app.py', 'import subprocess\nsubprocess.run(["python","helper.py"], shell=True)\n')
+        self.assertTrue(any('use a list-form command' in finding for finding in self.findings()))
+
+    def test_string_command_without_shell_is_refused(self):
+        self.put('examples/a/app.py', 'import subprocess\nsubprocess.run("echo ready", shell=False)\n')
+        self.assertTrue(any('use a list-form command' in finding for finding in self.findings()))
+
+    def test_keyword_and_import_alias_string_command_is_refused(self):
+        self.put('examples/a/app.py', 'from subprocess import run as execute\nexecute(args="echo ready")\n')
+        self.assertTrue(any('use a list-form command' in finding for finding in self.findings()))
+
+    def test_list_preserves_local_name_with_spaces(self):
+        self.put('examples/a/app.py', 'import subprocess\nsubprocess.run(["python","controls/helper name.py"], shell=False)\n')
+        self.put('examples/a/controls/helper name.py', 'open("data.json").read()\n')
+        self.assertEqual(self.findings(),[])
+
     def test_debt_only_shrinks_and_expires(self):
         rows = [{'example': key, 'violation': val[0], 'fix_by': val[1]} for key, val in KNOWN.items()]
         self.assertEqual(exception_findings(rows, today=date(2026,11,12)), [])

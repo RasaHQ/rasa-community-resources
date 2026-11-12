@@ -15,7 +15,6 @@ import json
 import os
 from pathlib import Path
 import re
-import shlex
 import subprocess
 import tomllib
 from urllib.parse import unquote, urlsplit
@@ -33,6 +32,7 @@ KNOWN = {
     'mantle-flight-briefing-openai-agents': ('zeocore distribution and zeo_core runtime imports', '2026-11-15'),
 }
 AUTHORING = {'tests', 'case-build', 'controls'}
+SUBPROCESS_COMMANDS = {'subprocess.'+method for method in ('run','Popen','call','check_call','check_output','getoutput','getstatusoutput')}
 IO_METHODS = {'open', 'read_text', 'read_bytes', 'write_text', 'write_bytes', 'glob', 'rglob', 'iterdir', 'exists', 'is_file', 'is_dir'}
 
 
@@ -155,7 +155,7 @@ def static_environment(tree, source, project):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 aliases[alias.asname or alias.name] = alias.name
-        elif isinstance(node, ast.ImportFrom) and node.module in {'pathlib', 'importlib', 'sys'}:
+        elif isinstance(node, ast.ImportFrom) and node.module in {'pathlib', 'importlib', 'sys', 'subprocess'}:
             for alias in node.names:
                 aliases[alias.asname or alias.name] = node.module + '.' + alias.name
     env = {ALIASES: aliases}
@@ -215,24 +215,23 @@ def python_findings(raw, source, project, root, exception=None, authoring=False)
             candidates = [value(node.args[0], env, source, project)]
         elif isinstance(node.func, ast.Attribute) and node.func.attr in IO_METHODS:
             candidates = [value(node.func.value, env, source, project)]
-        elif called.startswith('subprocess.'):
+        elif called in SUBPROCESS_COMMANDS:
             for keyword in node.keywords:
                 if keyword.arg == 'cwd':
                     candidates.append(value(keyword.value, env, source, project))
-            if node.args:
-                args = value(node.args[0], env, source, project)
-                if isinstance(args, str):
-                    try:
-                        args = shlex.split(args)
-                    except ValueError:
-                        problems.append((node.lineno, 'cannot inspect subprocess command'))
-                if isinstance(args, list):
-                    for index, arg in enumerate(args):
-                        # System executables are installed tools, not sibling
-                        # application source. Script arguments remain checked.
-                        system = index == 0 and isinstance(arg, str) and Path(arg).parent.as_posix() in {'/usr/bin', '/bin', '/usr/local/bin'}
-                        if isinstance(arg, (Path, str)) and not system:
-                            candidates.append(arg)
+            command = node.args[0] if node.args else next((keyword.value for keyword in node.keywords if keyword.arg in {'args','cmd'}), None)
+            args = value(command, env, source, project) if command is not None else None
+            uses_shell = any(keyword.arg == 'shell' and value(keyword.value, env, source, project) is not False for keyword in node.keywords)
+            if isinstance(args,str) or isinstance(command,ast.JoinedStr) or uses_shell or called in {'subprocess.getoutput','subprocess.getstatusoutput'}:
+                problems.append((node.lineno, 'use a list-form command'))
+                continue
+            if isinstance(args, list):
+                for index, arg in enumerate(args):
+                    # System executables are installed tools, not sibling
+                    # application source. Script arguments remain checked.
+                    system = index == 0 and isinstance(arg, str) and Path(arg).parent.as_posix() in {'/usr/bin', '/bin', '/usr/local/bin'}
+                    if isinstance(arg, (Path, str)) and not system:
+                        candidates.append(arg)
         for candidate in candidates:
             if isinstance(candidate, Path) and path_problem(candidate, project, root, exception):
                 problems.append((node.lineno, 'source/import path leaves its example folder'))
@@ -367,20 +366,16 @@ def runtime_files(root, files):
                     for alias in node.names:
                         for base in (project, source.parent):
                             module(base, alias.name.split('.'))
-                elif isinstance(node, ast.Call) and node.args:
+                elif isinstance(node, ast.Call):
                     called = canonical(node.func, env)
-                    resolved = value(node.args[0], env, source, project)
+                    command = node.args[0] if node.args else next((keyword.value for keyword in node.keywords if keyword.arg in {'args','cmd'}), None)
+                    resolved = value(command, env, source, project) if command is not None else None
                     if called in {'__import__', 'importlib.import_module'} and isinstance(resolved, str):
                         for base in (project, source.parent):
                             module(base, resolved.split('.'))
-                    elif called.startswith('subprocess.'):
-                        if isinstance(resolved, str):
-                            try:
-                                resolved = shlex.split(resolved)
-                            except ValueError:
-                                continue
-                        if not isinstance(resolved, list):
-                            continue
+                    elif called in SUBPROCESS_COMMANDS:
+                        if not isinstance(resolved, list) or any(keyword.arg == 'shell' and value(keyword.value, env, source, project) is not False for keyword in node.keywords):
+                            continue  # String/shell commands are findings, never parsed.
                         for arg in resolved:
                             if isinstance(arg, (Path, str)):
                                 promote(project / arg)
