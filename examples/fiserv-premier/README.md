@@ -121,6 +121,8 @@ A Codespace you stop but do not delete keeps using your storage.
 | `premier_demo/host.py` | Identity simulator, review, confirmation, one send and a durable journal |
 | `skills/banking/` | The assistant's skill and its tool bindings |
 
+The assistant also has one Rasa-side trigger, `banking_submit_transfer`. It is not an MCP tool and carries no authority: it takes no arguments, and the host sends only after it has seen your next raw turn say exactly `confirm transfer`. The MCP server itself offers exactly seven tools.
+
 The five Banking Hub operations are: accounts by party, account (checking) for the available balance, account (loan) for the next payment and current payoff, account transactions, and an immediate own-account funds transfer. The checking and loan operations share one path in Fiserv's files but have different shapes, so they are kept apart by document.
 
 ### What stays out of this repository
