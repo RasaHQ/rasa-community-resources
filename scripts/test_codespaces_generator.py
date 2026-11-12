@@ -29,7 +29,7 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertIn(g.slug(project.rel) + "/devcontainer.json", readme)
 
     def test_banking_readmes_put_vendor_inputs_before_startup_and_wait_for_server(self):
-        selected = {"examples/jack-henry-silverlake", "examples/jack-henry-symitar", "examples/fiserv-premier"}
+        selected = {"examples/jack-henry-silverlake", "examples/jack-henry-symitar", "examples/fiserv-premier-11.0.0-prm"}
         checked = set()
         for project in discover_projects("catalog"):
             if project.rel not in selected:

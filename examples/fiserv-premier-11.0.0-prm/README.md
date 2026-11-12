@@ -26,7 +26,7 @@ Time:          Not yet measured
 </details>
 
 <!-- codespaces:start -->
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-premier/devcontainer.json)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-premier-11.0.0-prm/devcontainer.json)
 
 - **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
 - **Use this badge:** it selects this example's development environment.
@@ -131,7 +131,7 @@ The **Explorer** is the file-and-folder panel on the left. The **terminal** is t
 
 The ZIP is currently on your computer. The application runs in the Codespace, so it needs its own copy.
 
-1. In the Explorer, locate the example folder named `fiserv-premier`. Expand parent folders if necessary.
+1. In the Explorer, locate the example folder named `fiserv-premier-11.0.0-prm`. Expand parent folders if necessary.
 2. If it already contains a `vendor-inputs` folder, use that folder. Otherwise, right-click `fiserv-premier`, choose **New Folder**, enter `vendor-inputs`, and press **Enter**.
 3. Right-click `vendor-inputs` and choose **Upload…**.
 4. Select `BankingHub_Premier_api_specs.zip` from your computer's Downloads folder.
