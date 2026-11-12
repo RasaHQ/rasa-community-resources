@@ -232,6 +232,7 @@ validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
 	@$(PYTHON) scripts/generate_codespaces.py --check
 	@$(PYTHON) -m unittest discover -s scripts -p test_public_tutorial_delta.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_casebook_explanations.py
+	@PYTHONPATH=examples/jack-henry-symitar $(PYTHON) -m unittest discover -s examples/jack-henry-symitar/tests -p test_mcp_server.py
 	@echo "$(MAGENTA)▸ tooling unit tests$(RESET)"
 	@out=$$($(UNITTESTS) 2>&1) || { echo "$$out"; exit 1; }; \
 		case "$$out" in *"OK"*) ;; *) echo "$$out"; \
