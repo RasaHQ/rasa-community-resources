@@ -30,6 +30,10 @@ Time:          Not yet measured
 
 ## Before you start
 
+Get [a Rasa license](https://rasa.community/keys/#rasa), [an OpenAI key](https://rasa.community/keys/#openai), and [a Deepgram key](https://rasa.community/keys/#deepgram). Create only these three for this mock; no Fiserv trial credentials are needed. Model, speech, and Codespaces usage can incur charges.
+
+Follow the download and upload steps before running `make run`. A setup log ending in `READY` means the environment is prepared. Wait for `Rasa server is up and running` before opening the printed Inspector link. For a typed conversation, click **Type your message**, enter the prompt, and press **Enter**. A typed check does not verify speech.
+
 You need three things. Each takes a few minutes and costs nothing to set up.
 
 1. **A free GitHub account.** Sign in at <https://github.com>.
@@ -84,7 +88,7 @@ If it prints `Not ready.` instead, it says what is missing in plain words: usual
 
 ### 6. Choose typing or speaking
 
-- **To type:** click in the message box at the bottom of the Inspector, type a sentence from the table below and press Enter. Nothing is sent to the speech provider.
+- **To type:** click in the message box at the bottom of the Inspector, type a sentence from the table below and press Enter. Typing does not test microphone input or spoken replies.
 - **To speak:** click the microphone, then **Allow** when your browser asks. Use only fictional things. Do not say a real name, account or card number: the speech provider receives your audio.
 
 ### 7. Talk to the bank
@@ -113,7 +117,7 @@ Click inside the terminal and press **Ctrl+C**.
 
 ### 9. Delete the Codespace
 
-A Codespace you stop but do not delete keeps using your storage.
+A Codespace you stop but do not delete keeps using your storage. Before deleting it, preserve source changes and unique receipts or private state you need. Keep vendor inputs private.
 
 1. Open <https://github.com/codespaces>.
 2. Find this Codespace, click the three dots on its row, then **Delete**.
