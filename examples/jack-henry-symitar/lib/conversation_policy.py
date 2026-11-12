@@ -6,23 +6,24 @@ its private permission table, and the reply hook still owns review delivery.
 Records live for one runtime turn only and are not persisted.
 """
 from collections import OrderedDict
-import json
-from pathlib import Path
 import re
 
 from rasa.mantle.hooks.payloads import ModelRequestPayload, ModelResponsePayload
 from rasa.mantle.orchestration.turn_context import current_turn_context
 
 # The local host opens every session over all aliases of its one fictional
-# fixture (native_host.py: shares and loans). The host still checks each alias;
-# the note only saves the model a discovery call.
-_FIXTURE = json.loads((Path(__file__).resolve().parents[1] / "fixtures" / "fictional.json").read_text())
+# fixture (native_host.py: shares and loans). They are listed here because the
+# packaged model snapshot carries Python modules only, not the fixture; a test
+# keeps them equal to it. The host still checks each alias; the note only saves
+# the model a discovery call.
+DEPOSIT_ALIASES = ("checking", "savings")
+LOAN_ALIASES = ("car",)
 ALIAS_NOTE_MARK = "[host] Permitted account aliases"
 
 
 def alias_note() -> str:
-    listed = ", ".join([f"{item['alias']} (deposit)" for item in _FIXTURE["shares"]]
-                       + [f"{item['alias']} (loan)" for item in _FIXTURE["loans"]])
+    listed = ", ".join([f"{alias} (deposit)" for alias in DEPOSIT_ALIASES]
+                       + [f"{alias} (loan)" for alias in LOAN_ALIASES])
     return (f"{ALIAS_NOTE_MARK} for this caller: {listed}. Use these exact aliases in tool "
             "arguments. Call banking_accounts only when the caller asks which accounts they have, and then "
             "name each exact alias it returns. Never read this list aloud unless the caller asks for it.")

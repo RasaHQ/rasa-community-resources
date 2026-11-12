@@ -26,6 +26,12 @@ class AliasContext(unittest.TestCase):
         self.assertNotIn("checking-B", notes[0]["content"])
         self.assertNotIn("0001", notes[0]["content"])  # never a share or loan id
 
+    def test_the_listed_aliases_are_exactly_the_host_fixture_aliases(self):
+        import json
+        fixture = json.loads((HOOKS.parent / "fixtures" / "fictional.json").read_text())
+        self.assertEqual(policy.DEPOSIT_ALIASES, tuple(item["alias"] for item in fixture["shares"]))
+        self.assertEqual(policy.LOAN_ALIASES, tuple(item["alias"] for item in fixture["loans"]))
+
     def test_the_hook_is_registered_so_no_discovery_call_is_needed(self):
         source = HOOKS.read_text()
         self.assertIn("@modify_model_request()", source)

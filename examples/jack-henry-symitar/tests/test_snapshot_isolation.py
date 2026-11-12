@@ -49,6 +49,10 @@ with tempfile.TemporaryDirectory() as temp:
     adapter = sys.modules["lib.native_adapter"]
     assert Path(adapter.__file__).is_relative_to(snapshot)
     assert Path(sys.modules["lib.host_client"].__file__).is_relative_to(snapshot)
+    # The hooks must also load from the snapshot alone, as the server loads them.
+    # (Last: the loader replaces the lib modules read above.)
+    from rasa.mantle.hooks.loader import load_hooks
+    assert load_hooks(snapshot).modifier_count == 2
     print(json.dumps({"isolated": True, "bindings": sorted(expected), "sourceImport": False}))
 '''
         environment = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
