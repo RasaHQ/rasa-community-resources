@@ -21,6 +21,10 @@ class Unavailable(Exception):
     """A closed reason: bad status, bad body or unreachable, never vendor text."""
 
 
+class NoRecords(Unavailable):
+    """The service answered that nothing matches. Not an error, not a value."""
+
+
 class UnknownOutcome(Exception):
     """A write was sent but no usable reply arrived. Never resend."""
 
@@ -42,6 +46,16 @@ class PremierClient:
         self.contract, self.base, self.organization, self.timeout = (
             contract, base_url.rstrip("/"), organization_id, timeout)
 
+    def _send(self, key: str, header: str, body: dict):
+        """One HTTP POST. Returns (status, parsed JSON or None). Subclasses add auth."""
+        with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False) as http:
+            reply = http.post(self.base + self.contract.path(key), content=json.dumps(body),
+                              headers={"EFXHeader": header, "Content-Type": "application/json"})
+        try:
+            return reply.status_code, reply.json()
+        except ValueError:
+            return reply.status_code, None
+
     def _post(self, key: str, body: dict, *, write=False):
         try:
             self.contract.validate_request(key, body)
@@ -52,28 +66,39 @@ class PremierClient:
                                          "Channel": "VOICE"}})
         try:
             self.contract.validate_header(key, header)
-            with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False) as http:
-                reply = http.post(self.base + self.contract.path(key), content=json.dumps(body),
-                                  headers={"EFXHeader": header, "Content-Type": "application/json"})
         except ContractError:
             raise Unavailable("invalid_header") from None
+        try:
+            status, data = self._send(key, header, body)
+        except Unavailable:
+            raise  # refused before sending (for example by the quota ledger)
         except Exception:
             raise (UnknownOutcome("no_reply") if write else Unavailable("unreachable")) from None
         expected = {"xfer": 201}.get(key, 200)
-        if reply.status_code != expected:
-            if write and reply.status_code >= 500:
+        if status != expected:
+            if write and status >= 500:
                 raise UnknownOutcome("server_error")
-            raise Unavailable("status_" + str(reply.status_code))
+            raise Unavailable("status_" + str(status))
         try:
-            data = reply.json()
-            self.contract.validate_response(key, reply.status_code, data)
-        except Exception:
-            raise (UnknownOutcome("invalid_reply") if write else Unavailable("invalid_response")) from None
+            self.contract.validate_response(key, status, data)
+        except ContractError:
+            if write:
+                raise UnknownOutcome("invalid_reply") from None
+            # Observed on the Premier trial: "no records" arrives as HTTP 200 with
+            # only a Status block (StatusCode 1120, Severity Info), which the pinned
+            # schema does not allow. Treat a Status-only Info/Warning body as none.
+            if (isinstance(data, dict) and set(data) == {"Status"} and isinstance(data["Status"], dict)
+                    and data["Status"].get("Severity") in {"Info", "Warning"}):
+                raise NoRecords("no_records") from None
+            raise Unavailable("invalid_response") from None
         return data
 
     def party_accounts(self, party_id: str) -> list[tuple[str, str]]:
-        data = self._post("party", {"PartyAcctRelSel": {"PartyKeys": {"PartyId": party_id}},
-                                    "RecCtrlIn": {"MaxRecLimit": 20}})
+        try:
+            data = self._post("party", {"PartyAcctRelSel": {"PartyKeys": {"PartyId": party_id}},
+                                        "RecCtrlIn": {"MaxRecLimit": 20}})
+        except NoRecords:
+            return []
         return [(row["PartyAcctRelKeys"]["AcctKeys"]["AcctId"],
                  row["PartyAcctRelKeys"]["AcctKeys"]["AcctType"]) for row in data["PartyAcctRelRec"]]
 

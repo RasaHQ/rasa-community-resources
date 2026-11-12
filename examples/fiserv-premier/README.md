@@ -138,7 +138,7 @@ No Fiserv file is stored here: no ZIP, no extracted definition and no copy of it
 - **Identity is simulated.** One fixed fictional caller. This is not bank sign-in.
 - **Accepted is not posted.** A valid reply means the request was taken.
 - **Unknown stays unknown.** If a transfer reply is lost, the example never resends. It blocks new transfers for that caller across restarts until the fictional exercise is reset (below).
-- **Trial sandbox: not available.** `premier_demo/quota.py` is a tested local ledger for a future manual trial (operator-written budget attestation, per-run, rolling and spacing limits, charge before send, no replenishment). Nothing calls Fiserv: the client that would, needs Fiserv's token request format, which this project has not been able to read from the public pages, so none is guessed.
+- **Trial sandbox: manual and read-only.** See *Optional: the Fiserv trial* below. The voice assistant always uses the mock.
 - **Not done yet:** a recorded spoken run (microphone and speech output), response-time measurement, and a scripted native test without a live model.
 
 ## For developers
@@ -167,3 +167,17 @@ python -m premier_demo.reset_fixture --reason "starting over" --acknowledge-unre
 The second one only works while the example is stopped. It writes an audit row, keeps the old unknown outcome in history, and starts a new fictional exercise. It never says the old transfer failed or succeeded.
 
 The journal lives in `var/private/` (ignored by Git). It records a caller, an opaque review id, a state and an epoch. It never stores an amount, an account or a transcript.
+
+## Optional: the Fiserv trial (manual, read-only)
+
+If you have a Fiserv Banking Hub trial, you can make a few real read-only calls to the Premier trial environment. This is separate from the voice assistant, which always uses the mock. Nothing here moves money.
+
+What it needs: three Codespaces secrets, `FISERV_BH_API_KEY_NAME`, `FISERV_BH_API_KEY` and `FISERV_BH_API_SECRET`, with this repository selected; and a short budget file you write yourself that says how many trial calls you may use (`var/private/manual-trial-budget.json`; fields are listed in `premier_demo/quota.py`). Without all three secrets and a fresh budget it refuses and the mock stays as it is.
+
+```bash
+python -m premier_demo.trial import-budget var/private/manual-trial-budget.json --runner my-codespace
+python -m premier_demo.trial read --runner my-codespace --trial my-trial --period 2026-11 --party <party id>
+```
+
+How it works: one token per run with HTTP Basic authentication, then at most three core calls, each one counted in a local ledger before it is sent, at least 7 seconds apart. Secrets are read from the environment and never printed. The trial's "no records" answer arrives as a status-only reply that Fiserv's published schema does not allow; the client reports it as "no records match". A trial answer is not production and not certification.
+
