@@ -188,6 +188,9 @@ async def _review_locked(host, context, source, destination, amount, currency):
     return ToolResult(llm_response=_safe(result))
 
 
+# Kept from the sibling examples so the conversation surface stays the same. In this
+# release example no review can ever be pending (the host refuses every transfer
+# review), so this trigger always answers confirmation_required and sends nothing.
 @tool(description="Submit only after the next raw user turn says exactly confirm transfer.")
 async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
     dispatched = False

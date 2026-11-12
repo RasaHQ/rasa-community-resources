@@ -53,6 +53,7 @@ def main():
             problems = [f"missing {text!r}" for text in needed if text.lower() not in answer.lower()]
             problems += [f"unexpected {text!r}" for text in banned if text.lower() in answer.lower()]
             print(("FAIL " if problems else "ok   ") + message + ("  -> " + "; ".join(problems) if problems else ""))
+            print("     reply: " + answer)  # keep the exact reply as evidence
             failures += bool(problems)
         print(f"{len(CHECKS) - failures}/{len(CHECKS)} checks passed")
         return 1 if failures else 0
