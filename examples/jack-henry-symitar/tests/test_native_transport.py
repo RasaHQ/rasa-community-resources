@@ -70,6 +70,36 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(result.llm_response['state'],'accepted')
             self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
             self.assertIn('not a real payment',context.messages[-1])
+            self.assertIn('Accepted does not mean posted',context.messages[-1])
+
+    async def test_delivered_review_once_and_cancelled_review_cannot_be_reconfirmed(self):
+        from lib import native_adapter, reply_policy
+        class Context:
+            is_cancelled=False
+            def __init__(self):self.messages=[];self.events=[]
+            async def send(self,text):self.messages.append(text)
+        context=Context();native_adapter._conversations.clear();reply_policy._delivered.clear()
+        self.addCleanup(native_adapter._conversations.clear)
+        self.addCleanup(reply_policy._delivered.clear)
+        native=SimpleNamespace(sender_id='reply-controls',turn=SimpleNamespace(text='review'),is_cancelled=False)
+        def turn(text):
+            native.turn=SimpleNamespace(text=text)
+            context.events.append(SimpleNamespace(as_dict=lambda:{'event':'user','text':text,'timestamp':time.time()}))
+        turn('review')
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}), \
+             patch.object(native_adapter,'current_turn_context',return_value=native), \
+             patch.object(reply_policy,'current_turn_context',return_value=native):
+            await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            self.assertEqual(len(context.messages),1)
+            self.assertIn('Review: transfer USD 1.25',context.messages[0])
+            turn('balance')
+            await native_adapter.banking_balance('checking',context=context)
+            turn('confirm transfer')
+            result=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(result.llm_response['state'],'not_submitted')
+            self.assertIn('Request a new transfer',context.messages[-1])
+            self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),0)
 
     async def test_inspector_runtime_layout_preserves_selected_voice_and_public_url(self):
         from rasa.core.config.channel_loading import resolve_channels_config

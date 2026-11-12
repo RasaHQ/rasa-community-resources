@@ -15,6 +15,7 @@ from pydantic import StrictStr
 from rasa.mantle.orchestration.turn_context import current_turn_context
 from rasa.mantle.tools.decorator import ToolContext,tool
 from rasa.mantle.tools.result import ToolResult
+from lib.reply_policy import delivery_pending, remember_delivery
 from lib.host_client import HostClient
 
 
@@ -125,9 +126,11 @@ async def _observe(conversation,context):
     if state=='reset':raise ValueError('session_reset')
     if state in {'accepted','rejected','unknown','not_dispatched'}:
         text=('The earlier request was not dispatched. A new transfer requires a new review.' if state=='not_dispatched' else
-              'The fictional transfer was accepted. This is not a real payment.' if state=='accepted' else
+              'The fictional transfer was accepted. Accepted does not mean posted. This is not a real payment.' if state=='accepted' else
               'The transfer outcome is unknown. Do not retry.' if state=='unknown' else 'The fictional transfer was rejected.')
         await context.send(text)
+        if _norm(native.turn.text) in {'yes','confirm','confirmed','confirm transfer'}:
+            remember_delivery()
         conversation.outcome={}
     return result
 
@@ -138,6 +141,8 @@ async def _call(context,name,args):
         conversation=await _conversation(context)
         async with conversation.lock:
             observed=await _observe(conversation,context)
+            if name=='banking_review_transfer' and delivery_pending():
+                return ToolResult(llm_response={'state':'review_delivered'})
             result=await conversation.client.call(conversation.credential,name,args)
             if observed.get('historical_confirmation_refused'):
                 result=dict(result,historical_confirmation='not_used',instruction='The older confirmation was not used. No new transfer was sent. Do not describe this review as accepted.')
@@ -151,7 +156,12 @@ async def _call(context,name,args):
                     try:await asyncio.shield(asyncio.to_thread(conversation.client.control,'cancel',credential=conversation.credential))
                     except (Exception,asyncio.CancelledError):pass
                     raise
+                remember_delivery()
                 return ToolResult(llm_response={'state':'review_delivered','instruction':'The exact review was delivered. Add no question or extra review.'})
+            if (name=='banking_transfer_status' and result.get('state')=='not_submitted'
+                    and _norm(current_turn_context().turn.text) in {'yes','confirm','confirmed','confirm transfer'}):
+                await context.send('The transfer review was cancelled or is no longer active. Request a new transfer before confirming.')
+                remember_delivery()
             return ToolResult(llm_response=result)
     except (Exception,asyncio.CancelledError):
         if conversation is not None and conversation.pending_request:
