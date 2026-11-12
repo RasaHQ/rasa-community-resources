@@ -1,0 +1,18 @@
+# memory.yml — project-wide shared state, declared once here and readable
+# by any skill (unlike a skill's own memory.yml, which is private unless a
+# field is marked public). Schema is a flat mapping, no `schema:` wrapper —
+# confirmed against the installed rasa-pro==3.19.0.dev5's own loader
+# (calm_v2/memory/schema.py's ProjectMemorySchema.from_yaml), not just docs.
+#
+# folder_path: written by notevs_tools.py's _call() on every tool call, from
+# the NOTEVS_FOLDER_PATH env var agentProcess.ts sets per VS Code window at
+# spawn time. This does NOT replace that env var — seeding memory straight
+# from the incoming request at session start isn't implemented yet in this
+# rasa-pro build (processor.py's _engine_prefill_commands is a no-op,
+# commented as a follow-up) — it's an addition on top: having the value in
+# real declared memory makes it visible in `rasa inspect` and usable by
+# scoped instructions (`if: project.folder_path == ...`) in skill.md files,
+# neither of which a bare env var can offer.
+folder_path:
+  type: text
+  description: "Absolute path of the VS Code workspace this conversation is scoped to."

@@ -152,6 +152,37 @@ def _has_license() -> bool:
     return bool(value) and not value.startswith("your-") and value.count(".") == 2
 
 
+def runtime_probes(expected: str) -> tuple[str, str]:
+    """Use the namespace shipped by the pinned engine, with no newer-pin fallback.
+
+    The 3.20.0.dev1 rename left frozen 3.19 projects on rasa.calm_v2.
+    """
+    engine = 'rasa.calm_v2' if expected.startswith('3.19.') or expected == '3.20.0.dev0' else 'rasa.mantle'
+    version_probe = f"""
+import importlib.metadata
+import importlib.util
+import sys
+expected = {expected!r}
+actual = importlib.metadata.version("rasa-pro")
+if actual != expected:
+    print(f"rasa-pro {{actual}} != expected {{expected}}", file=sys.stderr)
+    sys.exit(2)
+if importlib.util.find_spec("{engine}") is None:
+    print("{engine} is not importable", file=sys.stderr)
+    sys.exit(3)
+print(actual)
+"""
+    validate_probe = f"""
+import logging
+logging.disable(logging.WARNING)
+from pathlib import Path
+from {engine}.validation import validate_project
+validate_project(Path("."))
+print("validate_project: ok")
+"""
+    return version_probe, validate_probe
+
+
 def check_project(
     project: Path,
     expected: str,
@@ -202,21 +233,8 @@ def check_project(
                 print(detail, file=sys.stderr)
             return 1
 
-    # Assert installed package version + Mantle import inside the project venv.
-    version_probe = f"""
-import importlib.metadata
-import importlib.util
-import sys
-expected = {expected!r}
-actual = importlib.metadata.version("rasa-pro")
-if actual != expected:
-    print(f"rasa-pro {{actual}} != expected {{expected}}", file=sys.stderr)
-    sys.exit(2)
-if importlib.util.find_spec("rasa.mantle") is None:
-    print("rasa.mantle is not importable", file=sys.stderr)
-    sys.exit(3)
-print(actual)
-"""
+    # Assert the exact installed version and that version's engine namespace.
+    version_probe, validate_probe = runtime_probes(expected)
     try:
         proc = subprocess.run(
             [uv, "run", "--locked", "python", "-c", version_probe],
@@ -232,14 +250,6 @@ print(actual)
         fail(detail)
         return 1
 
-    validate_probe = """
-import logging
-logging.disable(logging.WARNING)
-from pathlib import Path
-from rasa.mantle.validation import validate_project
-validate_project(Path("."))
-print("validate_project: ok")
-"""
     try:
         info("validate_project")
         subprocess.run(

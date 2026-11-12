@@ -97,6 +97,11 @@ def env_example_secrets(path: Path) -> dict[str, bool]:
 
 # Resources whose first command comes from their own README rather than a Makefile target.
 FIRST = {
+    "heroes/wave-01-mantle/projects/phlenfyl-notevs-agent": (
+        "uv run --locked python -m rasa train && bash ./start.sh",
+        "the REST server starts on port 5005. Standalone chat can run without NoteVs; "
+        "note operations require an explicit extension-host workspace. Real notes stay on the desktop; do not expose or tunnel the extension endpoint.",
+    ),
     "heroes/wave-01-mantle/projects/chandratechblog-hrassistant": (
         "uv run rasa train && uv run rasa inspect",
         'training finishes, then the Inspector starts. In a second terminal, '
@@ -243,6 +248,13 @@ def manifest(project) -> dict:
                         '`uv run python -m scripts.mcp_demo_serve` and '
                         '`uv run python -m scripts.mcp_slack_serve`. '
                         'Keep both bridges running before starting Rasa. Live Slack features need the optional Slack tokens.')
+    if project.rel == 'heroes/wave-01-mantle/projects/phlenfyl-notevs-agent':
+        # The source defaults to Groq and supports two optional alternatives.
+        secrets['GROQ_API_KEY'] = True
+        secrets['OPENAI_API_KEY'] = False
+        secrets['ANTHROPIC_API_KEY'] = False
+        remote_env[LICENSE_ALIAS] = '${containerEnv:RASA_LICENSE}'
+        provider_note = 'Groq is the default provider. OpenAI or Anthropic keys are only needed when you select that provider in the project setup.'
     if snapshot and 'backend' in targets:
         forward = sorted(set(forward) | {int(n) for n in re.findall(
             r'--port\s+(\d{4,5})\b', recipe((project.path / 'Makefile').read_text(), 'backend'))})
@@ -250,8 +262,11 @@ def manifest(project) -> dict:
 
     ready = ('python3 "$(git rev-parse --show-toplevel)/scripts/check_project.py" '
              + project.rel + ' --skip-sync --use-project-pin') if snapshot else None
-    if project.rel == 'heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice':
-        # This contributor's existing deterministic suite makes no provider calls.
+    if project.rel in {
+        'heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice',
+        'heroes/wave-01-mantle/projects/phlenfyl-notevs-agent',
+    }:
+        # These deterministic tool suites make no provider calls.
         ready += ' && uv run --locked --no-sync python -m unittest discover -s tests -v'
     return {
         "snapshot": snapshot,
