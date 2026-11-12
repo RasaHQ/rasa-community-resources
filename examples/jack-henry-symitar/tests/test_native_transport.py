@@ -48,7 +48,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.vendor.sends,[])
 
     async def test_native_binding_delivers_canonical_review_and_returns_actual_tool_result(self):
-        import native_adapter
+        from lib import native_adapter
         from rasa.mantle.hooks.payloads import IncomingMessagePayload
         class Context:
             is_cancelled=False
@@ -114,7 +114,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
                         _call_state.reset(token)
 
     async def test_old_yes_after_prior_success_reports_current_review_not_submitted(self):
-        import native_adapter
+        from lib import native_adapter
         native_adapter._conversations.clear()
         events=[{'event':'user','text':'review','timestamp':time.time()}]
         class Context:
@@ -146,7 +146,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
 
     async def test_native_tracker_never_dispatches_a_historical_no_tool_yes(self):
-        import native_adapter
+        from lib import native_adapter
         native_adapter._conversations.clear()
         events=[{'event':'user','text':'review','timestamp':time.time()}]
         class Context:
@@ -165,7 +165,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.vendor.sends,[])
 
     async def test_native_tracker_keeps_no_tool_verify_age_and_refuses_stale_grant(self):
-        import native_adapter
+        from lib import native_adapter
         native_adapter._conversations.clear()
         events=[{'event':'user','text':'verify me','timestamp':time.time()-301},{'event':'user','text':'balance','timestamp':time.time()}]
         context=SimpleNamespace(is_cancelled=False,events=[SimpleNamespace(as_dict=lambda event=event:event) for event in events])
@@ -185,7 +185,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(selected['PATH'],'/bin')
 
     async def test_lost_private_reply_recovers_original_outcome_without_second_send(self):
-        import native_adapter
+        from lib import native_adapter
         from rasa.mantle.hooks.payloads import IncomingMessagePayload
         native_adapter._conversations.clear()
         with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}):
@@ -212,7 +212,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertFalse(conv.pending_request)
 
     async def test_private_pre_delivery_failure_then_no_or_logout_never_dispatches(self):
-        import native_adapter
+        from lib import native_adapter
         from rasa.mantle.hooks.payloads import IncomingMessagePayload
         for later in ('no','logout','status'):
             native_adapter._conversations.clear()
@@ -244,7 +244,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
         await asyncio.to_thread(validate_project,Path(__file__).resolve().parent.parent)
 
     async def test_actual_hook_processes_raw_turn_without_model_and_deduplicates_message_id(self):
-        import native_adapter
+        from lib import native_adapter
         from rasa.mantle.hooks.payloads import IncomingMessagePayload
         native_adapter._conversations.clear()
         with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}):

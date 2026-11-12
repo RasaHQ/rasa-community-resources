@@ -15,7 +15,7 @@ from pydantic import StrictStr
 from rasa.mantle.orchestration.turn_context import current_turn_context
 from rasa.mantle.tools.decorator import ToolContext,tool
 from rasa.mantle.tools.result import ToolResult
-from local_transport import HostClient
+from lib.host_client import HostClient
 
 
 @dataclass
