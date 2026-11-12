@@ -118,8 +118,14 @@ async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePa
         return payload
     if not is_user_turn(native):
         # The session-start pass greets before the caller's turn is answered;
-        # its text is never spoken, and nothing in it is steered.
-        return payload.model_copy(update={"text": None}) if payload.text else payload
+        # its text is never spoken, and nothing in it is steered. With no tool
+        # call left, listen ends the pass silently (an empty response would be
+        # logged as a failed turn).
+        if not payload.text:
+            return payload
+        return payload.model_copy(update={"text": None, "tool_calls": payload.tool_calls or [{
+            "id": "session-start-" + uuid4().hex, "tool_name": "listen",
+            "tool_args": {}, "type": "function"}]})
     saved = _delivered.pop(payload.sender_id, None)
     if not saved or saved[0] is not native.turn or time.monotonic()-saved[1] > _MAX_AGE:
         # A review or submit result must come from the host, not a model
