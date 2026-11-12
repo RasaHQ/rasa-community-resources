@@ -405,11 +405,12 @@ The harness is shared by every case build:
 From this example directory, run the guard controls and the constructed trace:
 
 ```bash
-python3 -B diagnostics/confirmation_trace.py --tests full
-python3 -B diagnostics/confirmation_trace.py
+python3 -B controls/confirmation_trace.py --tests full
+python3 -B controls/confirmation_trace.py
 ```
 
-The trace calls the existing fictional roadside library directly. It compares
+This authoring-only control lives outside the runtime package. The trace calls
+the existing fictional roadside library directly. It compares
 six constructed histories under the full guard and four diagnostic variants.
 Each variant removes one condition from the guard in this Python process:
 matching draft reference, location, service, or caller answer. The program
@@ -419,10 +420,10 @@ library or changes a running server.
 Check whether the controls detect each omission:
 
 ```bash
-python3 -B diagnostics/confirmation_trace.py --tests drop_location
-python3 -B diagnostics/confirmation_trace.py --tests drop_service
-python3 -B diagnostics/confirmation_trace.py --tests drop_tag
-python3 -B diagnostics/confirmation_trace.py --tests drop_answer
+python3 -B controls/confirmation_trace.py --tests drop_location
+python3 -B controls/confirmation_trace.py --tests drop_service
+python3 -B controls/confirmation_trace.py --tests drop_tag
+python3 -B controls/confirmation_trace.py --tests drop_answer
 ```
 
 These commands deliberately run a mutated guard. A detected mutation makes
