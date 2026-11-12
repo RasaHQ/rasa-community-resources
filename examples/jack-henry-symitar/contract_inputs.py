@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 from typing import Mapping
+from pathlib import Path
 
 import yaml
 from openapi_schema_validator import OAS30ReadValidator, OAS30WriteValidator
@@ -30,6 +31,40 @@ OPERATIONS = frozenset({
 
 class ContractError(Exception):
     """Closed, redacted failure; never includes vendor content or YAML errors."""
+
+
+class MissingContractInput(ContractError):
+    """Launch stops; contract tests may explicitly skip only this case."""
+
+
+def load_inputs(directory: Path | None = None) -> dict[str, bytes]:
+    """Read only manual vendor-inputs/<family>/<family>.yaml; never download.
+
+    Check every present file before reporting absence, so an invalid supplied
+    input cannot be hidden by a different missing file.
+    """
+    root = directory if directory is not None else Path(__file__).parent / "vendor-inputs"
+    inputs = {}
+    missing = []
+    for family, digest in PINS.items():
+        relative = Path(family) / (family + ".yaml")
+        try:
+            with (root / relative).open("rb") as source:
+                raw = source.read(1_048_577)
+        except FileNotFoundError:
+            missing.append(relative.as_posix())
+            continue
+        except OSError:
+            raise ContractError("vendor_input_unreadable") from None
+        if len(raw) > 1_048_576 or hashlib.sha256(raw).hexdigest() != digest:
+            raise ContractError("vendor_input_invalid: " + relative.as_posix())
+        inputs[family] = raw
+    if missing:
+        raise MissingContractInput(
+            "Vendor definitions not supplied: manually download the pinned Symitar v1 files "
+            "from " + SOURCE_BASE + " and place them in vendor-inputs/: " + ", ".join(missing)
+        )
+    return inputs
 
 
 def _pointer(document, reference):

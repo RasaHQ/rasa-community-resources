@@ -3,14 +3,52 @@
 import json
 from pathlib import Path
 import unittest
+import tempfile
 
-from contract_inputs import ContractError, OPERATIONS, PINS, SymitarContract
+from contract_inputs import (ContractError, MissingContractInput, OPERATIONS, PINS,
+                             SymitarContract, load_inputs)
 from vendor_client import ClientError, ErrorCode, SymitarClient, WireResponse
 
 
 def inputs():
-    root = Path(__file__).resolve().parents[1] / ".vendor-contracts"
-    return {family: (root / (family + ".yaml")).read_bytes() for family in PINS}
+    try:
+        return load_inputs()
+    except MissingContractInput as error:
+        raise unittest.SkipTest("SKIP: " + str(error)) from None
+
+
+class VendorFreeTests(unittest.TestCase):
+    def test_missing_input_stops_launch_with_manual_download_notice(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(MissingContractInput) as caught:
+                load_inputs(Path(directory))
+        self.assertIn("manually download", str(caught.exception))
+        self.assertIn("vendor-inputs/", str(caught.exception))
+        self.assertIn("accounts/accounts.yaml", str(caught.exception))
+
+    def test_wrong_or_malformed_present_input_fails_not_skips(self):
+        for raw in (b"wrong revision", b"{malformed yaml"):
+            with self.subTest(raw=raw), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "accounts").mkdir()
+                (root / "accounts/accounts.yaml").write_bytes(raw)
+                with self.assertRaises(ContractError) as caught:
+                    load_inputs(root)
+                self.assertNotIsInstance(caught.exception, MissingContractInput)
+
+    def test_loader_and_client_have_no_collection_runtime_import(self):
+        import ast
+        root = Path(__file__).resolve().parents[1]
+        for file in ("contract_inputs.py", "vendor_client.py"):
+            tree = ast.parse((root / file).read_text())
+            modules = []
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    modules.extend(alias.name for alias in node.names)
+                elif isinstance(node, ast.ImportFrom):
+                    modules.append(node.module or "")
+            self.assertFalse(any(name.startswith(("zeo_integrations", "zeocore", "zeo_core", "banking_demo"))
+                                 for name in modules))
 
 
 REQUESTS = {
