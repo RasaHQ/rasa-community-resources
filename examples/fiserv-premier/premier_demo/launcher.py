@@ -78,6 +78,10 @@ def main(project):
             environment = dict(os.environ)
             environment["PREMIER_HOST_URL"] = f"http://127.0.0.1:{backend_port}"
             environment["PREMIER_HOST_CAPABILITY"] = capability
+            # The tool bindings import premier_demo from this folder, and the
+            # Inspector runs from a temporary directory: make the import work.
+            environment["PYTHONPATH"] = os.pathsep.join(
+                [str(project)] + ([environment["PYTHONPATH"]] if environment.get("PYTHONPATH") else []))
             backend_environment = {key: value for key, value in os.environ.items()
                                    if key in {"PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "PYTHONPATH",
                                               "SYSTEMROOT", "PREMIER_JOURNAL"}}
