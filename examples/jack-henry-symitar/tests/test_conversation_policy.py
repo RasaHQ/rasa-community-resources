@@ -115,7 +115,7 @@ class VerifyTrigger(unittest.IsolatedAsyncioTestCase):
         p = patch.object(native_adapter, "_conversation", side_effect=conv); p.start(); self.addCleanup(p.stop)
 
     def observed(self, state):
-        async def observe(conversation, context): return {"state": state}
+        async def observe(conversation, context, **kwargs): return {"state": state}
         p = patch.object(native_adapter, "_observe", side_effect=observe); p.start(); self.addCleanup(p.stop)
 
     async def test_a_host_refresh_delivers_the_exact_sentence_once(self):
@@ -141,6 +141,30 @@ class VerifyTrigger(unittest.IsolatedAsyncioTestCase):
                 result = await native_adapter.banking_refresh_verification(context=self.context)
                 self.assertEqual(result.llm_response, {"state": "refused", "reason": "say_verify_me"})
         self.assertEqual(self.sent, [])
+
+
+class UnknownBeforeFallback(unittest.IsolatedAsyncioTestCase):
+    async def test_a_confirmation_after_an_unresolved_outcome_says_do_not_retry(self):
+        from lib import reply_policy
+        reply_policy._delivered.clear(); self.addCleanup(reply_policy._delivered.clear)
+        sent = []
+        async def send(text): sent.append(text)
+        async def call(credential, name, args):
+            return {"state": "pending", "reason": "unresolved_transfer_no_retry"}
+        conversation = SimpleNamespace(lock=__import__("asyncio").Lock(), credential="c", pending_request=None,
+                                       client=SimpleNamespace(call=call))
+        native = SimpleNamespace(sender_id="caller", turn=SimpleNamespace(text="Yes."), is_cancelled=False)
+        async def conv(context): return conversation
+        async def observe(conversation, context, *, transfer=True): return {}
+        with patch.object(native_adapter, "current_turn_context", return_value=native), \
+                patch.object(reply_policy, "current_turn_context", return_value=native), \
+                patch.object(native_adapter, "_conversation", side_effect=conv), \
+                patch.object(native_adapter, "_observe", side_effect=observe):
+            result = await native_adapter.banking_transfer_status(
+                context=SimpleNamespace(is_cancelled=False, send=send))
+        self.assertEqual(result.llm_response["reason"], "unresolved_transfer_no_retry")
+        self.assertEqual(sent, [native_adapter.UNKNOWN_TEXT])
+        self.assertNotIn("new transfer", sent[0].casefold())
 
 
 if __name__ == "__main__":

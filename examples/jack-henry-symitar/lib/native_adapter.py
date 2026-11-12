@@ -98,7 +98,17 @@ async def _conversation(context):
     return conversation
 
 
-async def _observe(conversation,context):
+_OUTCOMES={'accepted','rejected','unknown','not_dispatched'}
+UNKNOWN_TEXT='The transfer outcome is unknown. Do not retry. Check the original transfer status.'
+NO_ACTIVE_REVIEW_TEXT='The transfer review was cancelled or is no longer active. Request a new transfer before confirming.'
+_STATUS_TEXT={
+    'accepted':'The fictional transfer was accepted. Accepted does not mean posted. This is not a real payment.',
+    'rejected':'The fictional transfer was rejected.',
+    'not_dispatched':'The earlier request was not dispatched. A new transfer requires a new review.',
+}
+
+
+async def _observe(conversation,context,*,transfer=True):
     if context.is_cancelled:raise ValueError('channel_cancelled')
     native=current_turn_context()
     users=_users(context)
@@ -117,7 +127,9 @@ async def _observe(conversation,context):
             raise ValueError('trusted_event_time_required')
         observed_at=time.monotonic()-max(0,time.time()-stamp)
         await _record(conversation,event['text'],observed_at=observed_at)
-    if old_confirmation:
+    if old_confirmation and transfer:
+        # Said only where the caller is dealing with a transfer; any other tool
+        # (a read, verify me) still cancels and records it, but answers its own turn.
         conversation.outcome={}
         await context.send('The older confirmation was not used. No new transfer was sent.')
         return {'state':'not_submitted','historical_confirmation_refused':True}
@@ -150,7 +162,7 @@ async def banking_refresh_verification(context: ToolContext=None)->ToolResult:
             return ToolResult(llm_response={'state':'refused','reason':'say_verify_me'})
         conversation=await _conversation(context)
         async with conversation.lock:
-            observed=await _observe(conversation,context)
+            observed=await _observe(conversation,context,transfer=False)
             refreshed=observed.get('state')=='simulated_assurance_refreshed'
             if refreshed:
                 conversation.outcome={}  # consumed: a later call cannot re-announce it
@@ -168,7 +180,7 @@ async def _call(context,name,args):
     try:
         conversation=await _conversation(context)
         async with conversation.lock:
-            observed=await _observe(conversation,context)
+            observed=await _observe(conversation,context,transfer=name in {'banking_review_transfer','banking_transfer_status'})
             if name=='banking_review_transfer' and delivery_pending():
                 return ToolResult(llm_response={'state':'review_delivered'})
             result=await conversation.client.call(conversation.credential,name,args)
@@ -186,18 +198,25 @@ async def _call(context,name,args):
                     raise
                 remember_delivery()
                 return ToolResult(llm_response={'state':'review_delivered','instruction':'The exact review was delivered. Add no question or extra review.'})
-            if (name=='banking_transfer_status'
-                    and _norm(current_turn_context().turn.text) in {'yes','confirm','confirmed','confirm transfer'}
-                    and observed.get('state') not in {'accepted','rejected','unknown','not_dispatched'}
-                    and not observed.get('historical_confirmation_refused')
-                    and result.get('state')!='unknown'):  # an unknown outcome stays unknown, never retried
-                # A confirmation answers only the review it confirms. The observer
-                # reports this turn's own outcome above; without one, the latest
-                # retained outcome (an earlier transfer) must never answer it.
-                if not delivery_pending():
-                    await context.send('The transfer review was cancelled or is no longer active. Request a new transfer before confirming.')
+            if (name=='banking_transfer_status' and not observed.get('historical_confirmation_refused')
+                    and observed.get('state') not in _OUTCOMES):
+                # This turn produced no outcome of its own (the observer above speaks
+                # those), so the host answers the status read itself, in this order:
+                # an unresolved earlier outcome is never retried; a confirmation with
+                # no active review is never bound to an earlier transfer; an explicit
+                # status question hears the retained outcome.
+                held=result.get('reason')=='unresolved_transfer_no_retry' or result.get('state') in {'unknown','pending'}
+                confirming=_norm(current_turn_context().turn.text) in {'yes','confirm','confirmed','confirm transfer'}
+                if held:
+                    text,reply=UNKNOWN_TEXT,result
+                elif confirming:
+                    text,reply=NO_ACTIVE_REVIEW_TEXT,{'state':'not_submitted','reason':'no_active_review'}
+                else:
+                    text,reply=_STATUS_TEXT.get(result.get('state')),result
+                if text and not delivery_pending():
+                    await context.send(text)
                     remember_delivery()
-                return ToolResult(llm_response={'state':'not_submitted','reason':'no_active_review'})
+                return ToolResult(llm_response=reply)
             return ToolResult(llm_response=result)
     except (Exception,asyncio.CancelledError):
         if conversation is not None and conversation.pending_request:
