@@ -9,7 +9,7 @@ from rasa.mantle.hooks.payloads import ModelResponsePayload
 
 class HostOnlyWording(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        policy._delivered.clear()
+        policy._delivered.clear(); policy._retries.clear(); policy._sent.clear()
         self.native = SimpleNamespace(sender_id="caller", turn=object(), is_cancelled=False)
         p = patch.object(policy, "current_turn_context", return_value=self.native)
         p.start(); self.addCleanup(p.stop); self.addCleanup(policy._delivered.clear)
@@ -46,6 +46,20 @@ class HostOnlyWording(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await policy.keep_host_reply_once(plain)).text, plain.text)
         policy.remember_delivery()
         self.assertIsNone((await policy.keep_host_reply_once(self.payload("The transfer request was accepted."))).text)
+
+
+    async def test_a_session_start_pass_speaks_nothing_and_steers_nothing(self):
+        for text in ("How can I assist you with your banking accounts today?",
+                     "Review: transfer USD 7.00 from checking-A to savings-A.",
+                     "Your simulated verification was refreshed."):
+            with self.subTest(text=text):
+                self.native.turn = SimpleNamespace(text="Verify me.", trigger="session_start")
+                reply = await policy.keep_host_reply_once(self.payload(text))
+                self.assertIsNone(reply.text)
+
+    def test_the_retry_note_never_invites_a_new_transfer_after_an_unknown_outcome(self):
+        self.assertIn("banking_transfer_status", policy.RETRY_REVIEW)
+        self.assertIn("never request a new transfer", policy.RETRY_REVIEW)
 
 
 if __name__ == "__main__":

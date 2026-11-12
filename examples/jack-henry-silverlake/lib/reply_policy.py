@@ -25,9 +25,10 @@ NO_TRANSFER_TEXT = ("I cannot confirm a transfer review or outcome from that rep
 _MAX_RECORDS = 128
 _MAX_RETRIES = 2  # per turn; then the plain fallback line
 _retries = OrderedDict()
-RETRY_REVIEW = ("Do not write a transfer review or acceptance yourself. For a request to move money, "
-                "call banking_review_transfer with the exact aliases and amount; only the host may say "
-                "the review or the result.")
+RETRY_REVIEW = ("Do not write a transfer review or acceptance yourself; only the host may say them. "
+                "If the caller asks about a transfer outcome, or an earlier outcome is unknown, call "
+                "banking_transfer_status and never request a new transfer. Only for a new request to "
+                "move money, call banking_review_transfer with the exact aliases and amount.")
 RETRY_VERIFY = "The caller said verify me. Call banking_refresh_verification and add nothing else."
 _MAX_AGE = 300
 
@@ -40,6 +41,17 @@ def _turn():
     if native.is_cancelled:
         return None
     return native
+
+
+def is_user_turn(native) -> bool:
+    """True only for a turn started by the caller's message.
+
+    The first message of a session first runs as a SESSION_START turn, with the
+    caller's text hidden from the model; the same text then runs again as the
+    caller's turn. Only that second run may answer it.
+    """
+    trigger = getattr(getattr(native, "turn", None), "trigger", "user_message")
+    return getattr(trigger, "value", trigger) == "user_message"
 
 
 def _is_verify(native):
@@ -104,6 +116,10 @@ async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePa
     native = _turn()
     if native is None or native.sender_id != payload.sender_id:
         return payload
+    if not is_user_turn(native):
+        # The session-start pass greets before the caller's turn is answered;
+        # its text is never spoken, and nothing in it is steered.
+        return payload.model_copy(update={"text": None}) if payload.text else payload
     saved = _delivered.pop(payload.sender_id, None)
     if not saved or saved[0] is not native.turn or time.monotonic()-saved[1] > _MAX_AGE:
         # A review or submit result must come from the host, not a model

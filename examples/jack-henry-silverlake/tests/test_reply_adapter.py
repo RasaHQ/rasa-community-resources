@@ -97,6 +97,15 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.llm_response,{"state":"refused","reason":"verification_not_observed"})
         self.assertEqual(self.messages,[])
 
+    async def test_a_session_start_pass_never_verifies(self):
+        # Rasa first runs the opening message as a SESSION_START turn with the
+        # caller's text pending; only the caller's own turn may verify.
+        self.turn("Verify me.")
+        self.native.turn=SimpleNamespace(text="Verify me.",trigger="session_start")
+        result=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"say_verify_me"})
+        self.assertEqual((self.host.assured,self.messages),([],[]))
+
     async def test_the_same_host_sentence_is_delivered_once_per_turn(self):
         from lib import reply_policy as rp
         self.turn("Verify me.")

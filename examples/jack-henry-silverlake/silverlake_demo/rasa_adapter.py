@@ -17,7 +17,7 @@ from rasa.mantle.orchestration.turn_context import current_turn_context
 from .hostclient import HostRefused
 from rasa.mantle.tools.decorator import ToolContext, tool
 from rasa.mantle.tools.result import ToolResult
-from lib.reply_policy import delivery_pending, remember_delivery, deliver_reply
+from lib.reply_policy import delivery_pending, remember_delivery, deliver_reply, is_user_turn
 
 
 @dataclass
@@ -149,7 +149,9 @@ async def banking_refresh_verification(context: ToolContext = None) -> ToolResul
     # refreshes the simulated grant only when it observes the caller's raw
     # "verify me" turn, dated by when it was said (see _host).
     try:
-        if not _is_assure(current_turn_context().turn.text):
+        # Only the caller's own turn counts: on a session-start pass the phrase is
+        # pending, not yet this turn's message.
+        if not is_user_turn(current_turn_context()) or not _is_assure(current_turn_context().turn.text):
             return ToolResult(llm_response={"state": "refused", "reason": "say_verify_me"})
         native = current_turn_context()
         key = (os.environ.get("SILVERLAKE_HOST_URL", ""), native.sender_id)
