@@ -189,7 +189,8 @@ async def _call(context,name,args):
             if (name=='banking_transfer_status'
                     and _norm(current_turn_context().turn.text) in {'yes','confirm','confirmed','confirm transfer'}
                     and observed.get('state') not in {'accepted','rejected','unknown','not_dispatched'}
-                    and not observed.get('historical_confirmation_refused')):
+                    and not observed.get('historical_confirmation_refused')
+                    and result.get('state')!='unknown'):  # an unknown outcome stays unknown, never retried
                 # A confirmation answers only the review it confirms. The observer
                 # reports this turn's own outcome above; without one, the latest
                 # retained outcome (an earlier transfer) must never answer it.
