@@ -71,7 +71,7 @@ async def incoming(payload):
             conversation.pending_request={}
         if payload.message_id and payload.message_id in conversation.message_ids:return payload
         number=conversation.observed+1
-        request=dict(credential=conversation.credential,number=number,text=payload.text,
+        request=dict(credential=conversation.credential,number=number,text=payload.text,observed_at=time.monotonic(),
             revoked=_norm(payload.text) in {'reset','logout','log out','switch user'},cancelled=False)
         conversation.observed=number
         conversation.pending_request=request

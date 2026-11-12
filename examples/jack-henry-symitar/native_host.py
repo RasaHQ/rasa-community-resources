@@ -8,6 +8,7 @@ None of these control operations is an MCP/model tool.
 from dataclasses import dataclass, field, replace
 from decimal import Decimal
 import asyncio
+import math
 import secrets
 import threading
 import time
@@ -84,8 +85,11 @@ class Gateway:
                 return {'credential': capability}
             binding = self._binding(data.get('credential'))
             if action == 'turn':
-                if set(data) != {'credential','number','text','revoked','cancelled'} or type(data['number']) is not int or data['number'] < 1 or type(data['text']) is not str or len(data['text']) > 8192 or type(data['revoked']) is not bool or type(data['cancelled']) is not bool:
+                if set(data)-{'observed_at'} != {'credential','number','text','revoked','cancelled'} or type(data['number']) is not int or data['number'] < 1 or type(data['text']) is not str or len(data['text']) > 8192 or type(data['revoked']) is not bool or type(data['cancelled']) is not bool:
                     raise Refused('invalid_channel_turn')
+                observed=data.get('observed_at',self.clock())
+                if type(observed) not in {int,float} or not math.isfinite(observed) or observed>self.clock():
+                    raise Refused('invalid_channel_event_time')
                 if data['number'] <= binding.turn:
                     return dict(binding.last_result) if data['number']==binding.turn else {'state':'observed'}
                 binding.turn = data['number']
@@ -121,8 +125,8 @@ class Gateway:
                 return {'state':'reset'}
         if text in {'verify me','verify my identity'}:
             self._cancel(binding)
-            binding.session = replace(binding.session, revision=uuid.uuid4().hex, assured_at=self.clock())
-            return {'state':'simulated_assurance_refreshed'}
+            binding.session = replace(binding.session, revision=uuid.uuid4().hex, assured_at=data.get('observed_at',self.clock()))
+            return {'state':'simulated_assurance_refreshed' if self.clock()-binding.session.assured_at<300 else 'simulated_assurance_expired'}
         if binding.pending is not None:
             pending = binding.pending
             binding.pending = None

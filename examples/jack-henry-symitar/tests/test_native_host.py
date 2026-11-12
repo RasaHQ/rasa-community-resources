@@ -59,6 +59,22 @@ class NativeHostTests(unittest.TestCase):
         self.assertEqual(self.client.sends[0][1]['amount'],'1.25')
         self.assertEqual(self.gateway.call(self.token,'banking_transfer_status',{})['state'],'accepted')
 
+    def test_recovered_verify_keeps_original_private_observation_time(self):
+        for age in (59,60,299,300):
+            self.clock[0]=100+age
+            token=self.gateway.control('open',{'sender':'delayed-verify-'+str(age)})['credential']
+            result=self.gateway.control('turn',{'credential':token,'number':1,'text':'verify me','revoked':False,'cancelled':False,'observed_at':100.0})
+            if age<300:
+                self.assertEqual(self.gateway.call(token,'banking_balance',{'account':'checking'})['state'],'available')
+            else:
+                self.assertEqual(result['state'],'simulated_assurance_expired')
+                with self.assertRaises(Refused):self.gateway.call(token,'banking_balance',{'account':'checking'})
+            if age<60:self.review(token)
+            else:
+                with self.assertRaises(Refused):self.review(token)
+            self.gateway.control('cancel',{'credential':token})
+        self.assertFalse(any(name=='postTransfer' for name,_ in self.client.sends))
+
     def test_idle_sessions_expire_without_clearing_principal_journal_hold(self):
         for number in range(127):self.gateway.control('open',{'sender':'idle-'+str(number)})
         with self.assertRaises(Refused):self.gateway.control('open',{'sender':'over-cap'})
