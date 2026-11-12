@@ -70,7 +70,7 @@ def load_members(path: Path | None = None) -> dict[str, bytes]:
         raise MissingContractInput(
             "Vendor definitions not supplied. Download " + ARCHIVE_NAME + " from " + DOWNLOAD_PAGE
             + " (Download API specifications) and save it as vendor-inputs/" + ARCHIVE_NAME
-            + " inside the fiserv-premier folder."
+            + " inside the fiserv-premier-11.0.0-prm folder."
         ) from None
     except OSError:
         raise ContractError("vendor_input_unreadable") from None

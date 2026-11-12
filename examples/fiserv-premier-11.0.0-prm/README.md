@@ -1,7 +1,7 @@
 # Fiserv Premier banking demo (voice)
 
 <!-- codespaces:start -->
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-premier/devcontainer.json)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-premier-11.0.0-prm/devcontainer.json)
 
 - **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
 - **First command:** `make run`. The terminal opens in this folder, and the creation log ends with `READY`.
@@ -52,7 +52,7 @@ Follow the steps in order. Take your time: the first start-up has a long wait.
 
 ### 3. Put the Fiserv file in the example
 
-1. In the left panel (the **Explorer**), right-click the folder named `fiserv-premier` and choose **New Folder**. Type `vendor-inputs` and press Enter.
+1. In the left panel (the **Explorer**), right-click the folder named `fiserv-premier-11.0.0-prm` and choose **New Folder**. Type `vendor-inputs` and press Enter.
 2. Right-click the new `vendor-inputs` folder and choose **Upload…**. Pick `BankingHub_Premier_api_specs.zip` from your Downloads folder.
 3. The file now appears inside `vendor-inputs`.
 
