@@ -80,6 +80,28 @@ class TrialTests(unittest.TestCase):
             client.party_accounts("1")
         self.assertEqual(len(self.calls), 1)
 
+    def test_two_reads_in_one_run_wait_for_spacing_then_unused_holds_are_released(self):
+        contract = load_contract()
+        reservation = self.ledger.reserve("run", BINDING, 3)
+        slept = []
+
+        def fake_sleep(seconds):
+            slept.append(seconds)
+            self.wall.now += seconds
+
+        client = trial.TrialClient(contract, "tok", self.ledger, reservation,
+                                   transport=httpx.MockTransport(self.handler), sleep=fake_sleep)
+        client.party_accounts("1")
+        client.party_accounts("2")  # waits for the 7 s spacing instead of failing
+        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(slept, [7.0])
+        self.assertEqual(self.ledger.snapshot(BINDING), {"remaining": 3, "held": 1, "blocked": False})
+        self.assertEqual(self.ledger.release_unused(reservation, "end of run"), 1)
+        self.assertEqual(self.ledger.snapshot(BINDING), {"remaining": 3, "held": 0, "blocked": False})
+        with self.assertRaises(QuotaRefused):
+            self.ledger.release_unused(reservation, " ")
+        self.assertEqual(self.ledger.release_unused(reservation, "again"), 0)  # nothing left; nothing replenished
+
     def test_the_trial_client_never_moves_money(self):
         client = trial.TrialClient(load_contract(), "tok", self.ledger, 0,
                                    transport=httpx.MockTransport(self.handler))

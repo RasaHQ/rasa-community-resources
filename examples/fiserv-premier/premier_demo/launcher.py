@@ -16,7 +16,7 @@ from .client import PremierClient  # noqa: F401  (imported to fail early if brok
 from .contract import ContractError, MissingContractInput, PremierContract
 
 EXPECTED_RASA = "3.21.0.dev5"
-SECRETS = ("RASA_PRO_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY")
+SECRETS = ("RASA_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY")
 
 
 def inspector_address(port):

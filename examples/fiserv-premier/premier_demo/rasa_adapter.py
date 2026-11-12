@@ -26,6 +26,8 @@ class _Conversation:
     pending: dict | None = field(default=None, repr=False)
     observed_turn: int = 0
     pending_turn: int = 0
+    # Serialises review and submit for one conversation across their awaits.
+    lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False)
 
 
 _conversations = {}
@@ -147,32 +149,37 @@ async def banking_review_transfer(source: str, destination: str, amount: str,
                                   currency: str, context: ToolContext = None) -> ToolResult:
     try:
         host = await _host(context)
-        if host.pending:
-            await asyncio.to_thread(host.client.cancel, host.session, host.pending["review"])
-            host.pending = None
-        result = _payload(await host.client.call(host.session, "banking_review_transfer",
-            {"source": source, "destination": destination, "amount": amount, "currency": currency}))
-        if result.get("state") == "pending" and isinstance(result.get("review"), str):
-            # A draft is not confirmable until its canonical text was delivered.
-            try:
-                await context.send(f"Review: transfer {result['currency']} {result['amount']} from "
-                                   f"{result['source']} to {result['destination']}. "
-                                   "To submit exactly this transfer, say confirm transfer next. "
-                                   "Anything else cancels this review.")
-                if context.is_cancelled:
-                    raise asyncio.CancelledError()
-            except (Exception, asyncio.CancelledError):
-                host.pending = None
-                try:
-                    await asyncio.shield(asyncio.to_thread(host.client.cancel, host.session, result["review"]))
-                except (Exception, asyncio.CancelledError):
-                    pass
-                raise
-            host.pending = result
-            host.pending_turn = len(_users(context))
-        return ToolResult(llm_response=_safe(result))
+        async with host.lock:
+            return await _review_locked(host, context, source, destination, amount, currency)
     except Exception:
         return ToolResult(llm_response={"state": "refused", "reason": "review_unavailable"})
+
+
+async def _review_locked(host, context, source, destination, amount, currency):
+    if host.pending:
+        await asyncio.to_thread(host.client.cancel, host.session, host.pending["review"])
+        host.pending = None
+    result = _payload(await host.client.call(host.session, "banking_review_transfer",
+        {"source": source, "destination": destination, "amount": amount, "currency": currency}))
+    if result.get("state") == "pending" and isinstance(result.get("review"), str):
+        # A draft is not confirmable until its canonical text was delivered.
+        try:
+            await context.send(f"Review: transfer {result['currency']} {result['amount']} from "
+                               f"{result['source']} to {result['destination']}. "
+                               "To submit exactly this transfer, say confirm transfer next. "
+                               "Anything else cancels this review.")
+            if context.is_cancelled:
+                raise asyncio.CancelledError()
+        except (Exception, asyncio.CancelledError):
+            host.pending = None
+            try:
+                await asyncio.shield(asyncio.to_thread(host.client.cancel, host.session, result["review"]))
+            except (Exception, asyncio.CancelledError):
+                pass
+            raise
+        host.pending = result
+        host.pending_turn = len(_users(context))
+    return ToolResult(llm_response=_safe(result))
 
 
 @tool(description="Submit only after the next raw user turn says exactly confirm transfer.")
@@ -181,6 +188,10 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
     try:
         host = await _host(context, create=False)
         native = current_turn_context()
+        await host.lock.acquire()
+    except Exception:
+        return ToolResult(llm_response={"state": "refused", "reason": "host_or_confirmation_unavailable"})
+    try:
         if (not host.pending or context.is_cancelled
                 or len(_users(context)) != host.pending_turn + 1
                 or not _is_confirmation(native.turn.text)):
@@ -207,6 +218,8 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
         return ToolResult(llm_response=(
             {"state": "unknown", "reason": "no_retry_check_original_status"} if dispatched
             else {"state": "refused", "reason": "host_or_confirmation_unavailable"}))
+    finally:
+        host.lock.release()
 
 
 @tool(description="Check the latest retained transfer outcome without a new submission.")

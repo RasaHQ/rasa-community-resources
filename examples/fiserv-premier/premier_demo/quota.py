@@ -60,6 +60,7 @@ class Ledger:
                     held INTEGER, used INTEGER DEFAULT 0, generation INTEGER);
                 CREATE TABLE IF NOT EXISTS attempt(at REAL, kind TEXT, run_id TEXT,
                     trial_id TEXT, period_id TEXT, org TEXT, runner TEXT);
+                CREATE TABLE IF NOT EXISTS release_audit(at REAL, reservation INTEGER, released INTEGER, reason TEXT);
             """)
         except sqlite3.Error:
             self._lock_file.close()
@@ -217,6 +218,36 @@ class Ledger:
                 raise QuotaRefused("token_limit")
             self._db.execute("INSERT INTO attempt VALUES(?,?,?,?,?,?,?)", (now, "token", run_id, "", "", "", ""))
             self._db.execute("COMMIT")
+        except BaseException:
+            self._db.execute("ROLLBACK")
+            raise
+
+    def seconds_until_core(self) -> float:
+        """How long until the spacing rule allows the next core attempt (read only)."""
+        last = self._db.execute("SELECT max(at) FROM attempt WHERE kind='core'").fetchone()[0]
+        if last is None:
+            return 0.0
+        return max(0.0, MIN_SPACING - (self.clock() - last))
+
+    def release_unused(self, reservation: int, reason: str) -> int:
+        """Audited safe stop: return a run's unused held attempts. Never sends, never replenishes spent ones."""
+        if not isinstance(reason, str) or not reason.strip():
+            raise QuotaRefused("reason_required")
+        self._transaction()
+        try:
+            now = self._now()
+            row = self._db.execute("SELECT trial_id, period_id, org, runner, held FROM reservation WHERE id=?",
+                                   (reservation,)).fetchone()
+            if row is None:
+                raise QuotaRefused("reservation_unavailable")
+            key, held = tuple(row[:4]), row[4]
+            if held > 0:
+                self._db.execute("UPDATE reservation SET held=0 WHERE id=?", (reservation,))
+                self._db.execute("UPDATE allowance SET held=held-? WHERE trial_id=? AND period_id=? AND org=? "
+                                 "AND runner=?", (held, *key))
+                self._db.execute("INSERT INTO release_audit VALUES(?,?,?,?)", (now, reservation, held, reason.strip()[:200]))
+            self._db.execute("COMMIT")
+            return held
         except BaseException:
             self._db.execute("ROLLBACK")
             raise

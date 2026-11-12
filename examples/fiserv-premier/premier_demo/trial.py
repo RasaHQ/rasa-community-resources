@@ -66,11 +66,17 @@ class TrialClient(PremierClient):
     """The same validated requests as the mock client, sent to the trial host."""
 
     def __init__(self, contract: PremierContract, token: str, ledger: Ledger, reservation: int,
-                 *, transport=None, timeout=15.0):
+                 *, transport=None, timeout=15.0, sleep=None):
+        import time
         self.contract, self.base, self.organization, self.timeout = contract, CORE_BASE, ORGANIZATION, timeout
         self._token, self._ledger, self._reservation, self._transport = token, ledger, reservation, transport
+        self._sleep = sleep or time.sleep
 
     def _send(self, key, header, body):
+        # Wait for the spacing rule instead of failing every read after the first.
+        wait = self._ledger.seconds_until_core()
+        if 0 < wait <= 7.0:
+            self._sleep(wait)
         try:
             self._ledger.charge_core_attempt(self._reservation)  # BEFORE the physical call
         except QuotaRefused as refused:
@@ -148,11 +154,15 @@ def main(argv=None, environ=os.environ):
         binding = (args.trial, args.period, ORGANIZATION, args.runner)
         run_id = uuid4().hex
         reservation = ledger.reserve(run_id, binding, calls)
-        token = fetch_token(key, secret, ledger, run_id)
-        client = TrialClient(contract, token, ledger, reservation)
-        print("Manual Premier TRIAL check (read only). Not production; not certification.")
-        for line in run_reads(client, args.party, args.checking, args.loan):
-            print("  " + line)
+        try:
+            token = fetch_token(key, secret, ledger, run_id)
+            client = TrialClient(contract, token, ledger, reservation)
+            print("Manual Premier TRIAL check (read only). Not production; not certification.")
+            for line in run_reads(client, args.party, args.checking, args.loan):
+                print("  " + line)
+        finally:
+            # Return attempts this run did not use, so the binding is not blocked for good.
+            ledger.release_unused(reservation, "end of manual trial run")
         print(f"Ledger now: {ledger.snapshot(binding)}")
         return 0
     except (QuotaRefused, TrialUnavailable, ContractError) as refused:

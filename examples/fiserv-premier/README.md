@@ -3,7 +3,7 @@
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-premier/devcontainer.json)
 
-- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_PRO_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, configured by the operator as repository or organisation Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
 - **First command:** `make run`. The terminal opens in this folder, and the creation log ends with `READY`.
 - **You should see:** the server starts on port 5005.
 <!-- codespaces:end -->
@@ -29,7 +29,7 @@ Time:          Not yet measured
 You need three things. Each takes a few minutes and costs nothing to set up.
 
 1. **A free GitHub account.** Sign in at <https://github.com>.
-2. **Three Codespaces secrets** with the Rasa licence and the two speech and language keys: `RASA_PRO_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`. Add each at <https://github.com/settings/codespaces> under **Secrets**: click **New secret**, type the name exactly, paste the value, and under **Repository access** choose this repository. Never type these into a file or a chat.
+2. **Three Codespaces secrets** with the Rasa licence and the two speech and language keys: `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`. Add each at <https://github.com/settings/codespaces> under **Secrets**: click **New secret**, type the name exactly, paste the value, and under **Repository access** choose this repository. Never type these into a file or a chat.
 3. **The Fiserv file** (step 1 below). It is free and public.
 
 ## Walkthrough
