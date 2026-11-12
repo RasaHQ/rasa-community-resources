@@ -109,12 +109,14 @@ class MCP:
         try:
             if not isinstance(raw, bytes) or len(raw) > MAX_REQUEST:
                 raise ValueError("oversize")
-            message = json.loads(raw, object_pairs_hook=_unique, parse_constant=_nonfinite)
+            message = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique, parse_constant=_nonfinite)
         except (ValueError, UnicodeError, RecursionError):
             return error(None, -32700, "Invalid JSON")
         if type(message) is not dict or message.get("jsonrpc") != "2.0":
             return error(None, -32600, "Invalid request")
         identifier = message.get("id")
+        if "id" in message and identifier is None:
+            return error(None, -32600, "Null request id is not supported")
         if identifier is not None and (type(identifier) not in {str, int} or isinstance(identifier, str) and len(identifier) > 128):
             return error(None, -32600, "Invalid request id")
         method, params = message.get("method"), message.get("params", {})
@@ -224,6 +226,8 @@ def local_server(host: ScopedHost, bearer: str, port: int = 0) -> HTTPServer:
                 self.finish_response(400)
                 return
             try:
+                if re.fullmatch(r"[0-9]+", self.headers["Content-Length"]) is None:
+                    raise ValueError("invalid_size")
                 size = int(self.headers["Content-Length"])
                 if not 0 < size <= MAX_REQUEST:
                     raise ValueError("invalid_size")

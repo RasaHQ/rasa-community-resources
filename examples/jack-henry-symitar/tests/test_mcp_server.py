@@ -81,6 +81,12 @@ class ProtocolTests(unittest.TestCase):
             self.assertEqual(self.server.handle(raw)["error"]["code"], -32700)
         self.assertEqual(self.host.calls, [])
 
+    def test_utf16_body_and_null_id_cannot_reach_host(self):
+        body = '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"banking_accounts"}}'
+        self.assertEqual(self.server.handle(body.encode("utf-16"))["error"]["code"], -32700)
+        self.assertEqual(self.server.handle(body.replace('"id":1', '"id":null').encode())["error"]["code"], -32600)
+        self.assertEqual(self.host.calls, [])
+
     def test_tool_notifications_cannot_dispatch(self):
         result = self.server.handle(b'{"jsonrpc":"2.0","method":"tools/call","params":{"name":"banking_accounts"}}')
         self.assertIn("error", result)
@@ -146,6 +152,7 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(self.request(method="DELETE")[0], 405)
         self.assertEqual(self.request(headers={"Content-Type": "text/plain"})[0], 415)
         self.assertEqual(self.request(body=b'x'*(MAX_REQUEST+1))[0], 400)
+        self.assertEqual(self.request(headers={"Content-Length": "+58"})[0], 400)
         self.assertEqual(self.host.calls, [])
 
 
