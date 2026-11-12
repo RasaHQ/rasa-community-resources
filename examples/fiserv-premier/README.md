@@ -135,7 +135,8 @@ No Fiserv file is stored here: no ZIP, no extracted definition and no copy of it
 - **Identity is simulated.** One fixed fictional caller. This is not bank sign-in.
 - **Accepted is not posted.** A valid reply means the request was taken.
 - **Unknown stays unknown.** If a transfer reply is lost, the example never resends. It blocks new transfers for that caller across restarts until the fictional exercise is reset (below).
-- **Not done yet:** the optional Banking Hub trial sandbox (a manual opt-in), the native Rasa run against the installed SDK, the recorded spoken run, and response-time measurement.
+- **Trial sandbox: not available.** `premier_demo/quota.py` is a tested local ledger for a future manual trial (operator-written budget attestation, per-run, rolling and spacing limits, charge before send, no replenishment). Nothing calls Fiserv: the client that would, needs Fiserv's token request format, which this project has not been able to read from the public pages, so none is guessed.
+- **Not done yet:** the native Rasa run against the installed SDK, the recorded spoken run, and response-time measurement.
 
 ## For developers
 
