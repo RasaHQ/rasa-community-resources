@@ -221,7 +221,12 @@ SITE ?=
 catalog: ## Rebuild CATALOG.md and catalog/case-builds.json from the case builds
 	@$(PYTHON) $(SCRIPTS)/catalog_case_builds.py $(if $(SITE),--site $(SITE) --site-ref origin/main,)
 
-validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
+test-voice-latency: ## Offline timing parser, privacy and bounded process controls
+	@$(PYTHON) -B -m unittest discover -s $(SCRIPTS)/tests -p 'test_voice_*.py'
+
+.PHONY: test-voice-latency
+
+validate: test-voice-latency ## Offline correctness gate (lint + unit tests + drift). Start here.
 	@$(PYTHON) -m unittest discover -s scripts -p test_workshop_codespaces.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_codespaces_generator.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_codespaces_scope.py
