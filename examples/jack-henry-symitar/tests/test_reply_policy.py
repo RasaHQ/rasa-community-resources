@@ -34,6 +34,22 @@ class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(consumer._dispatch_tool_calls.await_count,1)
         self.assertEqual(consumer._dispatch_tool_calls.call_args.args[0][0].tool_name,"listen")
 
+    async def test_model_text_imitating_a_host_review_or_acceptance_is_replaced(self):
+        for text in ("Review: transfer USD 2.00 from checking to savings. Say yes or confirm transfer next.",
+                     "The fictional transfer was accepted. Accepted does not mean posted. This is not a real payment.",
+                     "Your transfer request was accepted."):
+            with self.subTest(text=text):
+                reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
+                self.assertEqual(reply.text,policy.NO_TRANSFER_TEXT)
+
+    async def test_ordinary_text_and_a_real_host_delivery_are_untouched(self):
+        plain=ModelResponsePayload(sender_id="caller",text="Your checking balance is USD 1,200.50.",tool_calls=[])
+        self.assertEqual((await policy.keep_host_reply_once(plain)).text,plain.text)
+        policy.remember_delivery()
+        after=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",
+            text="The fictional transfer was accepted.",tool_calls=[]))
+        self.assertIsNone(after.text)
+
     async def test_actual_snapshot_loader_registers_and_invokes_our_hook(self):
         # Other snapshot tests intentionally evict lib modules. Use a fresh
         # consumer process, with the SDK's real ContextVar, rather than an old

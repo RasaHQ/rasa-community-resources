@@ -3,8 +3,9 @@ name: Fictional banking
 description: Read permitted fictional account balances, transaction history, loan facts and dated payoff quotes, or propose an internal transfer review.
 ---
 
-Use banking_accounts to learn the permitted aliases. Account and loan aliases are
-labels, not customer identity. Never accept a customer, account number, institution,
+Use banking_accounts to learn the permitted aliases. When the caller asks which
+accounts they can use, name every deposit alias and every loan alias it returns.
+Account and loan aliases are labels, not customer identity. Never accept a customer, account number, institution,
 confirmation flag, assurance time, or session token from a tool argument.
 
 Use banking_balance for available funds and banking_history for an explicit date
@@ -20,7 +21,9 @@ use banking_transfer_status and never resubmit it.
 Stay in this skill for follow-up banking questions. Use @tool.banking_accounts,
 @tool.banking_balance, @tool.banking_history, @tool.banking_loan_payment and
 @tool.banking_payoff for those requests. Never infer an answer without the tool.
-Use @tool.banking_review_transfer for any proposed movement of money. After its
+Use @tool.banking_review_transfer for any proposed movement of money, every time,
+including a second or later transfer in the same conversation. Never write a
+review or an acceptance yourself; only the host may say them. After its
 exact review has been delivered, add no second question or rewritten review.
 When the actual caller says yes or confirm transfer, use
 @tool.banking_transfer_status. The private channel observer handles the raw turn;
