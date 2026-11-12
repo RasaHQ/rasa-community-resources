@@ -195,7 +195,7 @@ Tutorials ([catalog](tutorials/README.md)):
 
 Finished example agents that are not case builds ([catalog](examples/README.md)):
 
-- [`examples/fiserv-premier`](examples/fiserv-premier/): Fiserv Premier banking demo (voice)
+- [`examples/fiserv-premier-11.0.0-prm`](examples/fiserv-premier-11.0.0-prm/): Fiserv Premier banking demo (voice)
 - [`examples/jack-henry-silverlake`](examples/jack-henry-silverlake/): Jack Henry SilverLake banking demo (voice)
 - [`examples/jack-henry-symitar`](examples/jack-henry-symitar/): Run the fictional Symitar voice example
 - [`examples/mantle-factory-agent`](examples/mantle-factory-agent/): Mantle factory agent

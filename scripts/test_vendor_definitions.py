@@ -36,7 +36,7 @@ class VendorDefinitionGateTests(unittest.TestCase):
     def test_force_added_ignored_inputs_are_rejected_for_all_examples(self):
         self.stage(".gitignore", b"vendor-inputs/\n")
         names = ["examples/" + vendor + "/vendor-inputs/definition" for vendor in
-                 ("jack-henry-symitar", "jack-henry-silverlake", "fiserv-premier")]
+                 ("jack-henry-symitar", "jack-henry-silverlake", "fiserv-premier-11.0.0-prm")]
         for name in names:
             self.stage(name, b"authored placeholder", force=True)
         self.assertEqual({p for p, _ in gate.findings(self.root)}, set(names))
@@ -68,7 +68,7 @@ class VendorDefinitionGateTests(unittest.TestCase):
 
     def test_pinned_artifact_hash_is_rejected_without_schema_markers(self):
         raw = b"authored bytes standing in for a pinned artifact"
-        self.stage("examples/fiserv-premier/fixtures/unmarked.dat", raw)
+        self.stage("examples/fiserv-premier-11.0.0-prm/fixtures/unmarked.dat", raw)
         with patch.object(gate, "BANNED_HASHES", {hashlib.sha256(raw).hexdigest()}):
             self.assertEqual(gate.findings(self.root)[0][1], "pinned vendor artifact")
 
