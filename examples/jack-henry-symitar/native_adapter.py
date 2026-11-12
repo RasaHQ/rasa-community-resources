@@ -105,6 +105,7 @@ async def _observe(conversation,context):
         raise ValueError('current_raw_turn_required')
     await _recover(conversation)
     unseen=users[conversation.observed:]
+    old_confirmation=len(unseen)>1 and any(_norm(event.get('text','')) in {'yes','confirm','confirmed','confirm transfer'} for event in unseen[:-1])
     if len(unseen)>1:
         # An older yes must never become a late submission merely because the
         # model did not call a tool on that historical turn.
@@ -115,6 +116,10 @@ async def _observe(conversation,context):
             raise ValueError('trusted_event_time_required')
         observed_at=time.monotonic()-max(0,time.time()-stamp)
         await _record(conversation,event['text'],observed_at=observed_at)
+    if old_confirmation:
+        conversation.outcome={}
+        await context.send('The older confirmation was not used. No new transfer was sent.')
+        return {'state':'not_submitted','historical_confirmation_refused':True}
     result=conversation.outcome
     state=result.get('state')
     if state=='reset':raise ValueError('session_reset')
@@ -132,8 +137,10 @@ async def _call(context,name,args):
     try:
         conversation=await _conversation(context)
         async with conversation.lock:
-            await _observe(conversation,context)
+            observed=await _observe(conversation,context)
             result=await conversation.client.call(conversation.credential,name,args)
+            if observed.get('historical_confirmation_refused'):
+                result=dict(result,historical_confirmation='not_used',instruction='The older confirmation was not used. No new transfer was sent. Do not describe this review as accepted.')
             if name=='banking_review_transfer' and result.get('state')=='review_pending_delivery':
                 review=await asyncio.to_thread(conversation.client.control,'review',credential=conversation.credential)
                 try:
@@ -182,6 +189,6 @@ async def banking_review_transfer(source: StrictStr,destination: StrictStr,amoun
     return await _call(context,'banking_review_transfer',{'source':source,'destination':destination,'amount':amount})
 
 
-@tool(description='Read the latest retained local transfer outcome; use after the caller says yes or confirm transfer. Never retry.')
+@tool(description='Read the current review outcome, or the last recorded outcome if there is no current review. Use after yes; never retry.')
 async def banking_transfer_status(context: ToolContext=None)->ToolResult:
     return await _call(context,'banking_transfer_status',{})

@@ -113,6 +113,38 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
                     finally:
                         _call_state.reset(token)
 
+    async def test_old_yes_after_prior_success_reports_current_review_not_submitted(self):
+        import native_adapter
+        native_adapter._conversations.clear()
+        events=[{'event':'user','text':'review','timestamp':time.time()}]
+        class Context:
+            is_cancelled=False
+            def __init__(self):self.messages=[]
+            @property
+            def events(self):return [SimpleNamespace(as_dict=lambda event=event:event) for event in events]
+            async def send(self,text):self.messages.append(text)
+        context=Context();native=SimpleNamespace(sender_id='prior-success-replay',turn=SimpleNamespace(text='review'))
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):
+            await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            original_yes={'event':'user','text':'yes','timestamp':time.time()}
+            events.append(original_yes);native.turn.text='yes'
+            first=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(first.llm_response['state'],'accepted')
+            events.append({'event':'user','text':'another review','timestamp':time.time()});native.turn.text='another review'
+            await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            offset=len(context.messages)
+            events.append(dict(original_yes))
+            events.append({'event':'user','text':'current status','timestamp':time.time()});native.turn.text='current status'
+            status=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(status.llm_response['state'],'not_submitted')
+            replies=' '.join(context.messages[offset:]).casefold()
+            self.assertIn('older confirmation was not used',replies)
+            self.assertIn('no new transfer was sent',replies)
+            self.assertNotIn('accepted',replies)
+            again=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(again.llm_response['state'],'not_submitted')
+            self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
+
     async def test_native_tracker_never_dispatches_a_historical_no_tool_yes(self):
         import native_adapter
         native_adapter._conversations.clear()
@@ -129,7 +161,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             events.extend([{'event':'user','text':'yes','timestamp':time.time()},{'event':'user','text':'status','timestamp':time.time()}])
             native.turn.text='status'
             result=await native_adapter.banking_transfer_status(context=context)
-            self.assertEqual(result.llm_response['state'],'none')
+            self.assertEqual(result.llm_response['state'],'not_submitted')
         self.assertEqual(self.vendor.sends,[])
 
     async def test_native_tracker_keeps_no_tool_verify_age_and_refuses_stale_grant(self):

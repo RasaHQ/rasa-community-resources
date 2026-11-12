@@ -31,6 +31,7 @@ class Binding:
     pending: object = None
     last_seen: float = 0
     last_result: dict = field(default_factory=dict)
+    current_transfer_state: str | None = None
 
 
 class ConversationHost:
@@ -64,6 +65,7 @@ class Gateway:
         return self.sessions[credential]
 
     def _cancel(self, binding):
+        if binding.pending is not None:binding.current_transfer_state='not_submitted'
         binding.policy.cancel()
         binding.pending = None
 
@@ -120,6 +122,7 @@ class Gateway:
                     self._cancel(binding)
                     raise Refused('review_unavailable')
                 binding.policy.delivered(binding.pending)
+                binding.current_transfer_state='review_delivered'
                 return {'state':'review_delivered'}
             if action == 'cancel':
                 if set(data) != {'credential'}:
@@ -146,8 +149,11 @@ class Gateway:
                 permit = binding.policy.confirm(binding.session, pending.intent,
                     data['text'].strip().casefold().rstrip('.!?'), binding.turn)
             except Refused:
+                binding.current_transfer_state='not_submitted'
                 return {'state':'review_cancelled'}
-            return self._dispatch(binding, permit)
+            result=self._dispatch(binding,permit)
+            binding.current_transfer_state=result['state']
+            return result
         return {'state':'observed'}
 
     def _dispatch(self, binding, permit):
@@ -196,15 +202,21 @@ class Gateway:
             binding = self._binding(credential)
             if name == 'banking_transfer_status':
                 binding.policy.require_read(binding.session,'checking')
-                return {'state':self.journal.latest(self.principal) or 'none'}
+                latest=self.journal.latest(self.principal)
+                if self.journal.held(self.principal):
+                    return {'state':latest or 'unknown','reason':'unresolved_transfer_no_retry'}
+                state=binding.current_transfer_state or latest or 'none'
+                return {'state':state}
             if name == 'banking_review_transfer':
                 self._cancel(binding)
+                binding.current_transfer_state='not_submitted'
                 if self.journal.held(self.principal):
                     return {'state':'refused','reason':'unresolved_transfer_no_retry'}
                 if args['source'] not in self.shares or args['destination'] not in self.shares:
                     raise Refused('outside_scope')
                 intent=TransferIntent(args['source'],args['destination'],args['amount'],binding.session.currency)
                 binding.pending=binding.policy.review(binding.session,intent,binding.turn)
+                binding.current_transfer_state='review_pending_delivery'
                 return {'state':'review_pending_delivery','source':intent.source,'destination':intent.destination,
                         'amount':format(Decimal(intent.amount),'.2f'),'currency':intent.currency}
             number=self.fixture['account_number']
