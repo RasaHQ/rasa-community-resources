@@ -52,6 +52,32 @@ def stop_child(child):
     except subprocess.TimeoutExpired:raise ValueError('owned_process_did_not_stop') from None
 
 
+
+def cleanup(child,servers,threads,state,journal,previous):
+    """Drain owned resources even if a second stop signal or child error arrives."""
+    failed=[]
+    def step(name,action):
+        try:action()
+        except (Exception,KeyboardInterrupt):failed.append(name)
+    for sig in previous:
+        step('signal',lambda sig=sig:signal.signal(sig,signal.SIG_IGN))
+    try:
+        step('child',lambda:stop_child(child))
+        # shutdown waits for serve_forever; never call it on an unstarted server.
+        for server,thread in reversed(list(zip(servers,threads))):
+            if thread.is_alive():step('server',server.shutdown)
+        for thread in threads:
+            step('thread',lambda thread=thread:thread.join(timeout=10))
+            if thread.is_alive():failed.append('thread')
+        for server in servers:step('server_close',server.server_close)
+        if state is not None:step('state',state.close)
+        if journal is not None:step('journal',journal.close)
+    finally:
+        for sig,handler in previous.items():
+            step('restore_signal',lambda sig=sig,handler=handler:signal.signal(sig,handler))
+    return failed
+
+
 def prepare_runtime(run,public_origin,*,text_api=False):
     """Keep the SDK's full Mantle layout when writing runtime-only settings."""
     from rasa.shared.utils.yaml import read_yaml_file,write_yaml
@@ -149,10 +175,7 @@ def main():
     except Exception:
         print('Not ready. An owned service or fixture recovery failed. State is preserved; no raw service error or secret is printed.');return 1
     finally:
-        stop_child(child)
-        for server in reversed(servers):server.shutdown()
-        for thread in threads:thread.join(timeout=10)
-        for server in servers:server.server_close()
-        if state is not None:state.close()
-        if journal is not None:journal.close()
-        for sig,handler in previous.items():signal.signal(sig,handler)
+        failed=cleanup(child,servers,threads,state,journal,previous)
+        if failed:
+            print('Not ready. Owned cleanup incomplete ('+', '.join(failed)+'); preserve state and stop the Codespace.')
+            return 1
