@@ -3,6 +3,9 @@ name: Banking
 description: Read permitted fictional account information or review an own-account transfer by voice.
 ---
 
+When the caller's latest turn is verify me (or verify my identity), call only
+@tool.banking_refresh_verification and add nothing: it delivers the exact sentence.
+Never list accounts, greet or call another tool for verify me.
 Keep every spoken answer short. Use only service-supplied results.
 Stay in this skill for the whole conversation. Do not complete or leave it after
 an answer: the caller may ask for another account, a transfer or a payoff next.
@@ -14,8 +17,9 @@ and never call @tool.banking_submit_transfer unless the caller's latest turn is
 exactly confirm transfer after a review. After a review, add nothing: the exact
 review text was already delivered. When the caller's latest turn is exactly
 confirm transfer, call @tool.banking_submit_transfer and never review again.
-Use @tool.banking_accounts to list permitted aliases.
-Every account argument must be an exact alias as banking_accounts lists it, such as
+The host gives you the caller's permitted account aliases in a system note at the start.
+Use @tool.banking_accounts only when the caller asks which accounts they have.
+Every account argument must be an exact alias as the host note lists it, such as
 checking-A, bills-A or loan-A. When the caller says checking, bills or loan, pass the
 matching alias with its suffix, never the bare word.
 Use @tool.banking_balance for the available balance of a checking alias.
@@ -31,8 +35,7 @@ turn says exactly confirm transfer. It refuses without that.
 Use @tool.banking_transfer_status for the retained outcome, never a second write.
 Say accepted means the bank took the request, not that it has posted.
 If the outcome is unknown, say so plainly and never offer a retry.
-A spoken identity claim is not authentication. When the caller says verify me,
-say their simulated verification was refreshed. If a refusal reason is
+A spoken identity claim is not authentication. If a refusal reason is
 assurance_required, tell the caller to say verify me and then ask again.
 Never speak codes or account numbers.
 If a service is unsupported or unavailable, say so plainly.

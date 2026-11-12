@@ -14,7 +14,7 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.native=SimpleNamespace(sender_id="reply-controls",turn=SimpleNamespace(text="review"),is_cancelled=False)
         self.host=Host()
         self.conversation=adapter._Conversation("http://127.0.0.1:1",self.host,"session")
-        adapter._conversations.clear();policy._delivered.clear()
+        adapter._conversations.clear();policy._delivered.clear();policy._sent.clear()
         adapter._conversations[("http://127.0.0.1:1",self.native.sender_id)]=self.conversation
         self.addCleanup(adapter._conversations.clear);self.addCleanup(policy._delivered.clear)
         for target,name,value in [(adapter,"current_turn_context",lambda:self.native),
@@ -65,8 +65,65 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("Request a new transfer",self.messages[-1])
 
 
+    async def test_verify_me_refreshes_once_and_delivers_the_exact_sentence(self):
+        self.turn("Verify me.")
+        result=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(result.llm_response,{"state":"verified"})
+        self.assertEqual(len(self.host.assured),1)
+        self.assertLess(self.host.assured[0],5)
+        self.assertEqual(self.messages,[adapter.VERIFIED_TEXT])
+        self.assertEqual((self.host.sends,self.host.reviews),(0,0))
+
+    async def test_verify_me_without_a_usable_timestamp_says_nothing_refreshed(self):
+        self.native.turn=SimpleNamespace(text="Verify me.")
+        self.context.events.append(SimpleNamespace(as_dict=lambda:{"event":"user","text":"Verify me.","timestamp":None}))
+        result=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"verification_not_observed"})
+        self.assertEqual((self.host.assured,self.messages),([],[]))
+
+    async def test_a_consumed_verify_phrase_is_not_announced_twice(self):
+        self.turn("Verify me.")
+        await adapter.banking_refresh_verification(context=self.context)
+        again=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(again.llm_response,{"state":"refused","reason":"verification_not_observed"})
+        self.assertEqual(len(self.host.assured),1)
+        self.assertEqual(self.messages,[adapter.VERIFIED_TEXT])
+
+    async def test_a_stale_verify_phrase_gives_no_success_wording(self):
+        self.native.turn=SimpleNamespace(text="Verify me.")
+        stamp=time.time()-adapter.FRESH_SECONDS-5
+        self.context.events.append(SimpleNamespace(as_dict=lambda:{"event":"user","text":"Verify me.","timestamp":stamp}))
+        result=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"verification_not_observed"})
+        self.assertEqual(self.messages,[])
+
+    async def test_a_session_start_pass_never_verifies(self):
+        # Rasa first runs the opening message as a SESSION_START turn with the
+        # caller's text pending; only the caller's own turn may verify.
+        self.turn("Verify me.")
+        self.native.turn=SimpleNamespace(text="Verify me.",trigger="session_start")
+        result=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"say_verify_me"})
+        self.assertEqual((self.host.assured,self.messages),([],[]))
+
+    async def test_the_same_host_sentence_is_delivered_once_per_turn(self):
+        from lib import reply_policy as rp
+        self.turn("Verify me.")
+        await rp.deliver_reply(self.context, adapter.VERIFIED_TEXT)
+        rp._delivered.clear()  # as after the reply hook consumed the delivery record
+        await rp.deliver_reply(self.context, adapter.VERIFIED_TEXT)
+        self.assertEqual(self.messages, [adapter.VERIFIED_TEXT])
+
+    async def test_verification_tool_does_nothing_without_the_raw_phrase(self):
+        self.turn("what is my balance")
+        result=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"say_verify_me"})
+        self.assertEqual(self.host.assured,[])
+        self.assertEqual(self.messages,[])
+
 class Host:
-    def __init__(self):self.reviews=0;self.sends=0;self.state="accepted"
+    def __init__(self):self.reviews=0;self.sends=0;self.state="accepted";self.assured=[]
+    def assure(self,session,age):self.assured.append(age)
     async def call(self,session,name,args):
         if name=="banking_review_transfer":
             self.reviews+=1
