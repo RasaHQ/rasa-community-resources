@@ -151,6 +151,34 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
             self.assertFalse(conv.pending_request)
 
+    async def test_private_pre_delivery_failure_then_no_or_logout_never_dispatches(self):
+        import native_adapter
+        from rasa.mantle.hooks.payloads import IncomingMessagePayload
+        for later in ('no','logout','status'):
+            native_adapter._conversations.clear()
+            sender='pre-delivery-'+later
+            with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}):
+                await native_adapter.incoming(IncomingMessagePayload(sender_id=sender,text='review',message_id=sender+'1'))
+                conv=native_adapter._conversations[(self.url,sender)]
+                await self.client.call(conv.credential,'banking_review_transfer',{'source':'checking','destination':'savings','amount':'1.25'})
+                review=await asyncio.to_thread(self.client.control,'review',credential=conv.credential)
+                await asyncio.to_thread(self.client.control,'delivered',credential=conv.credential,review=review['review'])
+                original=conv.client.control
+                dropped=[False]
+                def fail_before_host(action,**data):
+                    if action=='turn' and data['number']==2 and not dropped[0]:
+                        dropped[0]=True
+                        raise ConnectionError('injected before host delivery')
+                    return original(action,**data)
+                with patch.object(conv.client,'control',side_effect=fail_before_host):
+                    with self.assertRaises(ConnectionError):
+                        await native_adapter.incoming(IncomingMessagePayload(sender_id=sender,text='yes',message_id=sender+'2'))
+                    await native_adapter.incoming(IncomingMessagePayload(sender_id=sender,text=later,message_id=sender+'3'))
+                # Delayed original request cannot turn recovery into first send.
+                late=await asyncio.to_thread(self.client.control,'turn',credential=conv.credential,number=2,text='yes',revoked=False,cancelled=False)
+                self.assertNotEqual(late['state'],'accepted')
+                self.assertEqual(self.vendor.sends,[])
+
     async def test_sdk_validates_real_project_and_seven_native_bindings(self):
         from rasa.mantle.validation import validate_project
         await asyncio.to_thread(validate_project,Path(__file__).resolve().parent.parent)

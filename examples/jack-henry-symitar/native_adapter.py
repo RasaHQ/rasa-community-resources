@@ -62,7 +62,8 @@ async def _conversation_for(sender):
 
 async def _recover(conversation):
     if conversation.pending_request:
-        previous=await asyncio.to_thread(conversation.client.control,'turn',**conversation.pending_request)
+        previous=await asyncio.to_thread(conversation.client.control,'recover',
+            credential=conversation.pending_request['credential'],number=conversation.pending_request['number'])
         conversation.outcome=previous
         conversation.pending_request={}
 
@@ -117,8 +118,9 @@ async def _observe(conversation,context):
     result=conversation.outcome
     state=result.get('state')
     if state=='reset':raise ValueError('session_reset')
-    if state in {'accepted','rejected','unknown'}:
-        text=('The fictional transfer was accepted. This is not a real payment.' if state=='accepted' else
+    if state in {'accepted','rejected','unknown','not_dispatched'}:
+        text=('The earlier request was not dispatched. A new transfer requires a new review.' if state=='not_dispatched' else
+              'The fictional transfer was accepted. This is not a real payment.' if state=='accepted' else
               'The transfer outcome is unknown. Do not retry.' if state=='unknown' else 'The fictional transfer was rejected.')
         await context.send(text)
         conversation.outcome={}

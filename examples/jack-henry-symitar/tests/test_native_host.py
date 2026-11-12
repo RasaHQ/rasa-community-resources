@@ -85,6 +85,20 @@ class NativeHostTests(unittest.TestCase):
         self.assertEqual(self.gateway.call(token,'banking_review_transfer',{'source':'checking','destination':'savings','amount':'1.25'})['state'],'refused')
         self.assertEqual(self.client.sends,[])
 
+    def test_recover_unseen_confirmation_fences_late_original_packet(self):
+        self.turn(1,'review');self.review();self.deliver()
+        recovered=self.gateway.control('recover',{'credential':self.token,'number':2})
+        self.assertEqual(recovered['state'],'not_dispatched')
+        self.assertEqual(self.turn(2,'yes')['state'],'not_dispatched')
+        self.assertEqual(self.turn(3,'no')['state'],'observed')
+        self.assertEqual(self.client.sends,[])
+
+    def test_recover_seen_accepted_outcome_is_read_only_and_cannot_send_again(self):
+        self.turn(1,'review');self.review();self.deliver();self.turn(2,'yes')
+        result=self.gateway.control('recover',{'credential':self.token,'number':2})
+        self.assertEqual(result['state'],'accepted')
+        self.assertEqual(len(self.client.sends),1)
+
     def test_no_correction_intervening_turn_and_missing_raw_confirmation_refuse(self):
         for text,number in [('no',2),('change amount to 2',2),('yes',3)]:
             self.turn(1,'review');self.review();self.deliver()

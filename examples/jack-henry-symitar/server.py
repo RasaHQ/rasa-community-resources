@@ -196,7 +196,7 @@ def local_server(host: ScopedHost, bearer: str, port: int = 0, *, gateway=None) 
             expected_host = "127.0.0.1:" + str(self.server.server_port)
             self.action = None
             self.protocol = protocol
-            controls = {'open','turn','review','delivered','cancel'}
+            controls = {'open','turn','review','delivered','cancel','recover'}
             if self.headers.get_all("Host") != [expected_host] or self.headers.get_all("Origin"):
                 self.finish_response(403)
                 return False

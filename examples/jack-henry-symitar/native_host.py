@@ -84,6 +84,18 @@ class Gateway:
                 self.sessions[capability] = Binding(session, HostPolicy(session, self.clock),last_seen=self.clock())
                 return {'credential': capability}
             binding = self._binding(data.get('credential'))
+            if action == 'recover':
+                if set(data) != {'credential','number'} or type(data['number']) is not int or data['number']<1:
+                    raise Refused('invalid_recovery')
+                if data['number']<=binding.turn:
+                    return dict(binding.last_result) if data['number']==binding.turn else {'state':'superseded'}
+                # Atomically retire an unseen confirmation. Even a delayed
+                # original packet for this number is now a cached no-effect
+                # result, never the first physical dispatch.
+                self._cancel(binding)
+                binding.turn=data['number']
+                binding.last_result={'state':'not_dispatched','reason':'unseen_private_turn_retired; new_review_required'}
+                return dict(binding.last_result)
             if action == 'turn':
                 if set(data)-{'observed_at'} != {'credential','number','text','revoked','cancelled'} or type(data['number']) is not int or data['number'] < 1 or type(data['text']) is not str or len(data['text']) > 8192 or type(data['revoked']) is not bool or type(data['cancelled']) is not bool:
                     raise Refused('invalid_channel_turn')
