@@ -27,7 +27,7 @@ class InputHandling(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / ARCHIVE_NAME
             with zipfile.ZipFile(path, "w") as archive:
-                archive.writestr("R2026.1.00TPGPub/Validation/TPG_Inquiry.wsdl", "<definitions/>")
+                archive.writestr("R2026.1.00TPGPub/Validation/TPG_Inquiry.wsdl", "not a vendor definition")
             with self.assertRaises(ContractError) as raised:
                 extract(path, Path(folder) / "cache")
             self.assertNotIsInstance(raised.exception, MissingContractInput)
