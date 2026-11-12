@@ -3,6 +3,9 @@
 The channel adapter owns these calls. It binds real user turns to a fictional
 session; none of these methods is a model tool. This slice produces a consumed
 review permit. A dispatcher must persist its journal marker before sending.
+
+The Symitar and SilverLake examples keep this vendor-neutral policy paired;
+changes to either copy must receive the same host-policy controls.
 """
 from __future__ import annotations
 
@@ -17,20 +20,31 @@ import uuid
 from typing import Callable
 
 
+def _finite(value) -> bool:
+    try:
+        return math.isfinite(value)
+    except (OverflowError, TypeError, ValueError):
+        return False
+
+
 class Refused(Exception):
     """A redacted policy outcome suitable for a generic refusal."""
 
 
 @dataclass(frozen=True)
 class Session:
+    """Built by the trusted host; assured_at uses the policy monotonic clock."""
     principal: str
     revision: str
     aliases: frozenset[str]
     currency: str
     assured_at: float
+    conversation: str
 
     def __post_init__(self) -> None:
         if not isinstance(self.principal, str) or not isinstance(self.revision, str) or not self.principal or not self.revision:
+            raise Refused("invalid_session")
+        if not isinstance(self.conversation, str) or not self.conversation:
             raise Refused("invalid_session")
         if not isinstance(self.currency, str) or not re.fullmatch(r"[A-Z]{3}", self.currency):
             raise Refused("invalid_currency_context")
@@ -40,7 +54,7 @@ class Session:
             raise Refused("invalid_scope")
         if isinstance(self.assured_at, bool) or not isinstance(self.assured_at, (int, float)):
             raise Refused("invalid_assurance")
-        if not math.isfinite(self.assured_at):
+        if not _finite(self.assured_at):
             raise Refused("invalid_assurance")
 
 
@@ -55,6 +69,11 @@ class TransferIntent:
         if not isinstance(self.amount, str) or len(self.amount) > 32:
             raise Refused("invalid_amount")
         if not re.fullmatch(r"[0-9]+(?:\.[0-9]+)?", self.amount):
+            raise Refused("invalid_amount")
+        # The fictional fixtures support USD and GBP, both with two minor digits.
+        if self.currency not in ("USD", "GBP"):
+            raise Refused("invalid_currency")
+        if "." in self.amount and len(self.amount.partition(".")[2]) > 2:
             raise Refused("invalid_amount")
         value = Decimal(self.amount)
         if value <= 0:
@@ -100,7 +119,10 @@ class HostPolicy:
     REVIEW_LIFETIME = 30.0
     CONFIRMATIONS = frozenset({"yes", "confirm", "confirmed", "confirm transfer"})
 
-    def __init__(self, clock: Callable[[], float] = time.monotonic) -> None:
+    def __init__(self, session: Session, clock: Callable[[], float] = time.monotonic) -> None:
+        # One policy per trusted principal/conversation; foreign calls cannot
+        # consume, replace or deliver this conversation's pending consent.
+        self._binding = (session.principal, session.conversation)
         self._clock = clock
         self._lock = threading.RLock()
         self._pending: Review | None = None
@@ -108,9 +130,13 @@ class HostPolicy:
 
     def _now(self) -> float:
         now = self._clock()
-        if isinstance(now, bool) or not isinstance(now, (int, float)) or not math.isfinite(now):
+        if isinstance(now, bool) or not isinstance(now, (int, float)) or not _finite(now):
             raise Refused("invalid_clock")
         return now
+
+    def _require_binding(self, session: Session) -> None:
+        if (session.principal, session.conversation) != self._binding:
+            raise Refused("review_changed")
 
     def _assurance(self, session: Session, limit: float, now: float) -> None:
         age = now - session.assured_at
@@ -130,12 +156,14 @@ class HostPolicy:
             raise Refused("currency_mismatch")
 
     def require_read(self, session: Session, alias: str) -> None:
+        self._require_binding(session)
         self._assurance(session, self.READ_LIFETIME, self._now())
-        if alias not in session.aliases:
+        if not isinstance(alias, str) or alias not in session.aliases:
             raise Refused("outside_scope")
 
     @_serialized
     def review(self, session: Session, intent: TransferIntent, user_turn: int) -> Review:
+        self._require_binding(session)
         # Any new intent invalidates the old pending consent, even if it refuses.
         self.cancel()
         self._turn(user_turn)
@@ -148,6 +176,7 @@ class HostPolicy:
 
     @_serialized
     def delivered(self, pending: Review) -> None:
+        self._require_binding(pending.session)
         # The actual output adapter calls this only after successful delivery.
         if pending is not self._pending:
             self.cancel()
@@ -162,6 +191,7 @@ class HostPolicy:
     @_serialized
     def confirm(self, session: Session, intent: TransferIntent,
                 raw_utterance: str, user_turn: int) -> ConsumedReview:
+        self._require_binding(session)
         pending, delivered = self._pending, self._delivered
         # Consume before any subsequent action; refusal cannot revive a review.
         self.cancel()
