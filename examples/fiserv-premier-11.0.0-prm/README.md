@@ -132,7 +132,7 @@ The **Explorer** is the file-and-folder panel on the left. The **terminal** is t
 The ZIP is currently on your computer. The application runs in the Codespace, so it needs its own copy.
 
 1. In the Explorer, locate the example folder named `fiserv-premier-11.0.0-prm`. Expand parent folders if necessary.
-2. If it already contains a `vendor-inputs` folder, use that folder. Otherwise, right-click `fiserv-premier`, choose **New Folder**, enter `vendor-inputs`, and press **Enter**.
+2. If it already contains a `vendor-inputs` folder, use that folder. Otherwise, right-click `fiserv-premier-11.0.0-prm`, choose **New Folder**, enter `vendor-inputs`, and press **Enter**.
 3. Right-click `vendor-inputs` and choose **Upload…**.
 4. Select `BankingHub_Premier_api_specs.zip` from your computer's Downloads folder.
 5. Wait for the upload to finish.
@@ -143,7 +143,7 @@ The file must be at this location **relative to the example folder**:
 vendor-inputs/BankingHub_Premier_api_specs.zip
 ```
 
-**Checkpoint:** you can see the ZIP inside `fiserv-premier` → `vendor-inputs` in the Explorer. Upload the ZIP itself, not its extracted contents, and do not place it in a `vendor-inputs` folder at the repository root.
+**Checkpoint:** you can see the ZIP inside `fiserv-premier-11.0.0-prm` → `vendor-inputs` in the Explorer. Upload the ZIP itself, not its extracted contents, and do not place it in a `vendor-inputs` folder at the repository root.
 
 ### 6. Start the assistant
 
@@ -287,7 +287,7 @@ The assistant has a Rasa-side trigger called `banking_submit_transfer`. It takes
 
 The **journal** is a durable record of transfer state. If a transfer response is lost, the request may have been accepted even though the caller did not receive an answer. Retrying could submit it twice. The demo therefore does not resend and blocks new transfers for the caller across application restarts.
 
-The journal lives in `var/private/`. It records a caller, opaque review ID, state and **epoch**—an identifier for the fictional exercise. It never stores an amount, account, or transcript.
+The journal lives in `var/private/`. It records a caller, opaque review ID, state, and **epoch**—an identifier for the fictional exercise. It never stores an amount, account, or transcript.
 
 ## Explore the code
 
@@ -346,7 +346,7 @@ make validate
 
 Validates the Rasa project configuration. This is separate from running a conversation.
 
-continuous integration (CI)—the repository's automated checks—does not have the Fiserv ZIP, so contract-dependent tests there report that they were skipped.
+Continuous integration (CI)—the repository's automated checks—does not have the Fiserv ZIP, so contract-dependent tests there report that they were skipped.
 
 For a live text conversation check:
 
@@ -354,7 +354,7 @@ For a live text conversation check:
 uv run --locked python tests/live_text_check.py
 ```
 
-This uses a real model through the representational state transfer (REST) text channel: an hypertext transfer protocol (HTTP) interface rather than the microphone. `uv run --locked` uses the project's locked dependency versions.
+This uses a real model through the representational state transfer (REST) text channel: a hypertext transfer protocol (HTTP) interface rather than the microphone. `uv run --locked` uses the project's locked dependency versions.
 
 It needs all three demo secrets and the Fiserv ZIP, consumes API usage, and is not included in `make test`. Passing it does not verify speech recognition, spoken replies, or voice latency.
 
