@@ -51,6 +51,11 @@ async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePa
         return payload
     saved = _delivered.pop(payload.sender_id, None)
     if not saved or saved[0] is not native.turn or time.monotonic()-saved[1] > _MAX_AGE:
+        # A review or submit result must come from the host, not a model
+        # prediction spoken before that tool runs. Keep the requested calls.
+        protected = {"banking_review_transfer", "banking_submit_transfer", "banking_transfer_status"}
+        if payload.text and any(call.get("tool_name") in protected for call in payload.tool_calls):
+            return payload.model_copy(update={"text": None})
         return payload
     # Agentic banking has no collect/confirmation flow steps. The supported
     # listen tool ends this turn without a second review, status paraphrase,

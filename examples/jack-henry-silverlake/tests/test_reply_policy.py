@@ -62,7 +62,7 @@ assert [call["tool_name"] for call in reply.tool_calls]==["listen"]
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
 
     async def test_ordinary_response_and_next_turn_are_unchanged(self):
-        payload=self.payload()
+        payload=ModelResponsePayload(sender_id="caller",text="An ordinary answer.")
         self.assertIs(await policy.keep_host_reply_once(payload),payload)
         policy.remember_delivery();self.native.turn=object()
         self.assertIs(await policy.keep_host_reply_once(payload),payload)
@@ -72,8 +72,15 @@ assert [call["tool_name"] for call in reply.tool_calls]==["listen"]
         other=self.payload().model_copy(update={"sender_id":"other"})
         self.assertIs(await policy.keep_host_reply_once(other),other)
         with patch.object(policy.time,"monotonic",return_value=10**12):
-            payload=self.payload()
+            payload=ModelResponsePayload(sender_id="caller",text="An ordinary answer.")
             self.assertIs(await policy.keep_host_reply_once(payload),payload)
+
+    async def test_model_cannot_announce_a_review_or_result_before_the_host_runs(self):
+        for name in ["banking_review_transfer","banking_submit_transfer","banking_transfer_status"]:
+            payload=self.payload().model_copy(update={"tool_calls":[{"id":"request","tool_name":name,"tool_args":{}}]})
+            reply=await policy.keep_host_reply_once(payload)
+            self.assertIsNone(reply.text)
+            self.assertEqual(reply.tool_calls,payload.tool_calls)
 
     async def test_cancelled_turn_cannot_mark_delivery(self):
         self.native.is_cancelled=True
