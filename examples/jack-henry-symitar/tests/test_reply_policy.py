@@ -56,6 +56,7 @@ class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
                 self.native.turn=SimpleNamespace(text="Verify me.",trigger="session_start")
                 reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
                 self.assertIsNone(reply.text)
+                self.assertEqual([c["tool_name"] for c in reply.tool_calls],["listen"])
 
     async def test_verify_me_answered_in_text_is_steered_to_its_trigger(self):
         from rasa.mantle.hooks.exceptions import RetryModel
