@@ -1,6 +1,6 @@
 ---
 name: Banking
-description: Read permitted fictional account information or review an own-account transfer by voice.
+description: Read permitted fictional account information or review an own-account transfer by voice. Also refresh simulated verification when the caller says verify me.
 ---
 
 When the caller's latest turn is verify me (or verify my identity), call only
