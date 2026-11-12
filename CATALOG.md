@@ -195,6 +195,7 @@ Tutorials ([catalog](tutorials/README.md)):
 
 Finished example agents that are not case builds ([catalog](examples/README.md)):
 
+- [`examples/fiserv-banking-hub-11.0.0.2026.4.1`](examples/fiserv-banking-hub-11.0.0.2026.4.1/): Fiserv Banking Hub release 11.0.0.2026.4.1 demo (voice)
 - [`examples/fiserv-premier`](examples/fiserv-premier/): Fiserv Premier banking demo (voice)
 - [`examples/jack-henry-silverlake`](examples/jack-henry-silverlake/): Jack Henry SilverLake banking demo (voice)
 - [`examples/jack-henry-symitar`](examples/jack-henry-symitar/): Run the fictional Symitar voice example

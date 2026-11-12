@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-PROJECTS=('jack-henry-symitar','jack-henry-silverlake','fiserv-premier')
+PROJECTS=('jack-henry-symitar','jack-henry-silverlake','fiserv-premier','fiserv-banking-hub-11.0.0.2026.4.1')
 
 
 def selected(root=ROOT):

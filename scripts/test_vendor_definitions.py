@@ -36,7 +36,7 @@ class VendorDefinitionGateTests(unittest.TestCase):
     def test_force_added_ignored_inputs_are_rejected_for_all_examples(self):
         self.stage(".gitignore", b"vendor-inputs/\n")
         names = ["examples/" + vendor + "/vendor-inputs/definition" for vendor in
-                 ("jack-henry-symitar", "jack-henry-silverlake", "fiserv-premier")]
+                 ("jack-henry-symitar", "jack-henry-silverlake", "fiserv-premier", "fiserv-banking-hub-11.0.0.2026.4.1")]
         for name in names:
             self.stage(name, b"authored placeholder", force=True)
         self.assertEqual({p for p, _ in gate.findings(self.root)}, set(names))
