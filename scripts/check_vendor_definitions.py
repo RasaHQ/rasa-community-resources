@@ -48,7 +48,7 @@ def git(root: Path, *args: str) -> bytes:
 def in_scope(path: PurePosixPath) -> bool:
     return (len(path.parts) > 2 and path.parts[0] == "examples"
             and (path.parts[1].startswith("jack-henry-")
-                 or path.parts[1] in {"fiserv-premier", "fiserv-banking-hub-11.0.0.2026.4.1"}))
+                 or path.parts[1] in {"fiserv-premier-11.0.0-prm", "fiserv-banking-hub-11.0.0.2026.4.1"}))
 
 
 def findings(root: Path) -> list[tuple[str, str]]:

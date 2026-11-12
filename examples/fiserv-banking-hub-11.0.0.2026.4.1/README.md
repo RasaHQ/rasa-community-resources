@@ -16,7 +16,7 @@ Behind it sits a local **mock built from Fiserv's release files**. You download 
 
 **What this proves and what it does not.** The mock proves our conversation design and our code against the shapes Fiserv publishes in this release. It does **not** prove that this works with a real Fiserv system, and it makes no claim about any particular Fiserv core product. Every person, account and date is invented.
 
-Looking for a working balance, payoff and transfer? The older [Fiserv Premier example](../fiserv-premier/) uses Fiserv's Premier-specific definitions, which do declare those values.
+Looking for a working balance, payoff and transfer? The older [Fiserv Premier example](../fiserv-premier-11.0.0-prm/) uses Fiserv's Premier-specific definitions, which do declare those values.
 
 ```text
 Author:        Rasa Community contributors
