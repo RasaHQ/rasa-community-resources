@@ -4,8 +4,9 @@
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-banking-hub-11.0.0.2026.4.1/devcontainer.json)
 
 - **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **Before the first command:** Download Fiserv's release ZIP and upload it to `vendor-inputs/` in this folder (README steps 1 and 3); without it `make run` stops with a plain message.
 - **First command:** `make run`. The terminal opens in this folder, and the creation log ends with `READY`.
-- **You should see:** the server starts on port 5005.
+- **You should see:** `Vendor definitions: found and hash-verified`, then `Rasa server is up and running`; only then open the printed Inspector link.
 <!-- codespaces:end -->
 
 Talk to a fictional bank by voice or by typing. This example is built on Fiserv's **current public Banking Hub release** (version 11.0.0.2026.4.1), and it is honest about what that release lets it say. The assistant lists your accounts and tells you a loan's next payment date. For a balance, a payment amount, a payoff, recent transactions or a transfer, it tells you plainly that this release cannot supply them, and why.
@@ -75,7 +76,7 @@ Follow the steps in order. Take your time: the first start-up has a long wait.
 2. Type `make run` and press Enter.
 3. Wait. The first start takes a little while.
 
-**Checkpoint:** the terminal prints `Vendor definitions: found and hash-verified` and a line starting `Open the Inspector:` followed by a long link.
+**Checkpoint:** the terminal prints `Vendor definitions: found and hash-verified` and a line starting `Open the Inspector:` followed by a long link. The link is not usable yet: keep waiting until the terminal also prints `Rasa server is up and running`.
 
 If it prints `Not ready.` instead, it says what is missing in plain words: usually the release file is not in `vendor-inputs`, or one of the three secrets is not set for this repository.
 

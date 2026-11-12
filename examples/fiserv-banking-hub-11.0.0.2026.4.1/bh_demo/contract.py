@@ -164,13 +164,15 @@ class _Document:
         # The header parameter is declared as a string holding "Serialized JSON
         # representing EFXHeaderObject". The component's declared type differs
         # between members (object in one, string in others), so we check the
-        # decoded object against its properties and required list only.
+        # decoded object against its properties and required list, ignoring
+        # only that root type. Nested properties, including the optional
+        # Context object, are checked against the member's own local schemas.
         header = document["components"]["schemas"]["EFXHeader"]
         self.header_required = tuple(header.get("required", ()))
         self.header_schema = {
             "type": "object", "required": list(self.header_required),
-            "properties": {name: dict(spec) for name, spec in header["properties"].items()
-                           if name != "Context"},
+            "properties": {name: dict(spec) for name, spec in header["properties"].items()},
+            "components": document["components"],  # resolves the local "#/components/..." refs
         }
 
 

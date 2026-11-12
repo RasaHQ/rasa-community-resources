@@ -80,6 +80,26 @@ class PinnedContract(unittest.TestCase):
             with self.assertRaises(ContractError):
                 self.contract.validate_header("acct", bad)
 
+    def test_the_optional_context_is_checked_against_the_release_schema(self):
+        import json
+        good = {"OrganizationId": "ORG", "Context": {"ClientAppName": "a" * 40, "Channel": "VOICE"}}
+        for key in ("party", "acct", "trn"):
+            self.contract.validate_header(key, json.dumps(good))
+        malformed = [[], "context", {"ClientAppName": "a" * 41}, {"Channel": "c" * 81},
+                     {"ClientAppName": 5}, {"isOverridden": "yes"}]
+        for context in malformed:
+            for key in ("party", "acct", "trn"):
+                with self.subTest(key=key, context=context), self.assertRaises(ContractError):
+                    self.contract.validate_header(key, json.dumps({"OrganizationId": "ORG", "Context": context}))
+
+    def test_the_header_the_client_sends_passes(self):
+        import json
+        from bh_demo.mock import MOCK_ORGANIZATION
+        header = {"OrganizationId": MOCK_ORGANIZATION, "TrnId": "0" * 36,
+                  "Context": {"ClientAppName": "rasa-community-fiserv-banking-hub", "Channel": "VOICE"}}
+        for key in ("party", "acct", "trn"):
+            self.contract.validate_header(key, json.dumps(header))
+
 
 class ReleaseDefect(unittest.TestCase):
     """Pins the vendor schema defect the README names, so the claim stays true.
