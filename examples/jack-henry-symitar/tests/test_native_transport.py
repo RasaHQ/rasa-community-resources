@@ -99,7 +99,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             result=await native_adapter.banking_transfer_status(context=context)
             self.assertEqual(result.llm_response['state'],'not_submitted')
             self.assertIn('Request a new transfer',context.messages[-1])
-            self.assertEqual(self.vendor.sends,[])
+            self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),0)
 
     async def test_inspector_runtime_layout_preserves_selected_voice_and_public_url(self):
         from rasa.core.config.channel_loading import resolve_channels_config

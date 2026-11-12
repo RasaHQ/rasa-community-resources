@@ -9,7 +9,6 @@ from collections import OrderedDict
 import time
 from uuid import uuid4
 
-from rasa.mantle.hooks import modify_model_response
 from rasa.mantle.hooks.payloads import ModelResponsePayload
 from rasa.mantle.orchestration.turn_context import current_turn_context
 
@@ -53,7 +52,6 @@ async def deliver_reply(context, text):
     remember_delivery()
 
 
-@modify_model_response()
 async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePayload:
     native = _turn()
     if native is None or native.sender_id != payload.sender_id:

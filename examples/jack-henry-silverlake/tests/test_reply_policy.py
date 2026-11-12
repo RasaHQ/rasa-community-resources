@@ -34,6 +34,17 @@ class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(consumer._dispatch_tool_calls.await_count,1)
         self.assertEqual(consumer._dispatch_tool_calls.call_args.args[0][0].tool_name,"listen")
 
+    async def test_actual_snapshot_loader_registers_and_invokes_our_hook(self):
+        from pathlib import Path
+        from rasa.mantle.hooks.loader import load_hooks
+        registry=load_hooks(Path(__file__).resolve().parents[1],evict_lib=False)
+        self.assertEqual(registry.modifier_count,1)
+        registered=registry.all_hooks()[0]
+        policy.remember_delivery()
+        reply=await registered.func(self.payload())
+        self.assertIsNone(reply.text)
+        self.assertEqual([call["tool_name"] for call in reply.tool_calls],["listen"])
+
     async def test_ordinary_response_and_next_turn_are_unchanged(self):
         payload=self.payload()
         self.assertIs(await policy.keep_host_reply_once(payload),payload)
