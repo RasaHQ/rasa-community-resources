@@ -8,10 +8,6 @@
 - **You should see:** the server starts on port 5005.
 <!-- codespaces:end -->
 
-Development build: native text controls exercise all eight shared banking
-actions. Independent source review and the final spoken browser check remain
-open. This is not a qualified vendor integration.
-
 ```text
 Author:        Rasa Community contributors
 Assessed on:   11 November 2026, native text controls only
@@ -22,16 +18,110 @@ Audience:      Developers building banking voice assistants
 Time:          Not yet measured
 ```
 
+## Run it in your browser
+
+Codespaces gives you a computer in your browser. You do not need to install
+Python or open a terminal on your own computer. Keep this page open in one
+browser tab while you follow the steps in another.
+
+Before you start, sign in to GitHub. Ask the person running the demo to check
+that your account can use the three Codespaces secrets listed above. Never
+paste their values into the terminal or a screenshot. Model and speech
+services can incur charges. This demo uses fictional accounts only.
+
+1. **Create the right Codespace.** Click the Codespaces button at the top of
+   this page. On the creation page, keep this example's configuration
+   and click **Create codespace**. If GitHub asks you to select a configuration,
+   choose **Rasa resource: examples/jack-henry-banking**. Keep the recommended
+   machine size. Do not choose another banking example.
+
+2. **Wait for setup to finish.** First creation downloads the tools and can
+   take several minutes; this example has no measured first-start estimate yet.
+   Let setup finish before typing. The successful creation log ends with:
+
+   ```text
+   READY: examples/jack-henry-banking is installed, its secrets are set, and it passes its check. Start with the first command in its README.
+   ```
+
+   If the editor opens before that message appears, use **View → Command
+   Palette**, type **Codespaces: View Creation Log**, and select it.
+   **NOT READY** means setup needs attention: follow the named missing-secret
+   message or ask the person running the demo. Do not continue past it.
+
+3. **Find the terminal at the bottom.** When the browser editor opens, select
+   the **TERMINAL** tab in its bottom panel. If the panel is hidden, choose
+   **Terminal → New Terminal** from the editor menu. This configuration opens
+   the terminal in `examples/jack-henry-banking`, the correct folder. The prompt
+   ends with a cursor where you can type. You do not need to change folders.
+
+4. **Start the demo there.** Click next to that cursor, type this single
+   command, and press **Enter**:
+
+   ```sh
+   make run
+   ```
+
+   Leave this terminal open. Wait for the line beginning **Inspector (keep the
+   forwarded port private):** followed by a web address. The process keeps
+   running; it does not return to a new prompt until you stop it.
+
+5. **Open Inspector.** Click the full web address printed after **Inspector**.
+   If clicking does not open it, copy that address into a new browser tab.
+   Keep its path and everything after the question mark. If a GitHub port
+   notice appears, continue to the application. Keep the port private.
+   You can find port **5005** in the editor's **PORTS** tab beside **TERMINAL**;
+   its globe button opens the forwarded address. If that opens the server
+   rather than Inspector, use the full address printed in the terminal.
+
+6. **Check text, then allow the microphone.** In Inspector, start a text
+   conversation and send **List my accounts.** You should see the fictional
+   checking, savings and loan accounts. Choose Inspector's voice option.
+   When your browser asks to use the microphone, click **Allow**. Use
+   headphones if the speaker feeds sound back into your microphone. Speak
+   only fictional information: the speech provider receives your audio.
+
+7. **Try three spoken questions.** Say one sentence, then wait for the reply
+   before saying the next:
+
+   - **List my accounts.** The reply should name the fictional checking,
+     savings and loan accounts.
+   - **What is my checking balance?** It should say the available balance is
+     **100 US dollars**.
+   - **What is my next loan payment?** It should say **75 US dollars**, due
+     **20 January 2026**. This is historical mock data.
+
+   Wording may vary, but those facts must match. These questions do not move
+   money. Voice worked in the operator's browser check, but replies were slow;
+   response time is still being investigated. If you cannot hear a reply,
+   check the browser tab's sound and microphone permissions first.
+
+8. **Stop the demo.** Return to the editor's **TERMINAL** tab. Click inside the
+   terminal running the demo, hold **Ctrl** and press **C**. A new prompt means
+   the launcher has stopped its two services. Closing Inspector alone does
+   not stop them.
+
+9. **Stop the Codespace too.** Open [Your Codespaces](https://github.com/codespaces)
+   in another tab. Find this Codespace, open its **…** menu and choose
+   **Stop codespace**. Wait until it is stopped. To discard it, choose
+   **Delete** from that menu and confirm. Closing the browser tab alone does
+   not stop compute use. Stopping ends compute use; stored Codespaces can
+   still use storage, so delete it when you no longer need it.
+
+Development build: native text controls exercise all eight shared banking
+actions. The operator reached Inspector and used text and voice on 12 November
+2026, then ended two voice sessions because replies were slow. This is not a
+qualified vendor integration.
+
+
+
 The build uses the current catalogue pin under an explicit baseline ruling.
 Rasa Pro 3.22 promotion still needs the normal release qualification; it has
 not been silently adopted here.
 
-## Start and test
+## Setup and test details
 
-Open this project’s Codespaces configuration and run
-`make run`. Inspector uses private forwarded port 5005. PR CI runs `make test`
-with no licence, model or speech keys. The final real spoken check belongs to
-the operator after the browser path and text controls are ready.
+Inspector uses private forwarded port 5005. PR CI runs `make test` with no
+licence, model or speech keys. The walkthrough above is the browser start path.
 
 The operator supplies Codespaces secrets named `RASA_PRO_LICENSE`,
 `OPENAI_API_KEY` and `DEEPGRAM_API_KEY`. Values never belong in this repository,
@@ -68,7 +158,8 @@ transfer.
 Run `make run`, then open the private Inspector URL printed by the launcher.
 Type in Inspector first. For speech, use that same page over the forwarded
 HTTPS URL, allow the browser's microphone request and speak only fictional data.
-The actual browser microphone and playback check is still pending.
+The operator's browser check reached microphone input and spoken replies;
+it did not establish acceptable response time.
 
 The following values are authored mock data, including the historical dates.
 They are not current bank balances, payment dates or financial quotes.
