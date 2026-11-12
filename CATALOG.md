@@ -197,6 +197,7 @@ Finished example agents that are not case builds ([catalog](examples/README.md))
 
 - [`examples/fiserv-banking`](examples/fiserv-banking/): Fiserv banking demo
 - [`examples/jack-henry-banking`](examples/jack-henry-banking/): Jack Henry banking demo
+- [`examples/jack-henry-silverlake`](examples/jack-henry-silverlake/): Jack Henry SilverLake banking demo (voice)
 - [`examples/mantle-factory-agent`](examples/mantle-factory-agent/): Mantle factory agent
 - [`examples/mantle-flight-briefing-openai-agents`](examples/mantle-flight-briefing-openai-agents/): Brief me before I fly — work in progress
 - [`examples/mantle-voice-agent`](examples/mantle-voice-agent/): Atlas — Voice Travel Agent with Rasa Skills

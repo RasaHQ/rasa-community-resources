@@ -1,0 +1,210 @@
+# SPDX-License-Identifier: MIT
+"""Rasa-owned host glue. Routing IDs are not real customer authentication.
+
+Only the private teaching launcher chooses the fixed fictional caller. The model
+tools never receive the host capability, the MCP credential or a review handle.
+Confirming and sending a transfer are private host calls made only after the
+next raw user turn says exactly "confirm transfer".
+"""
+import asyncio
+from dataclasses import dataclass, field
+import json
+import os
+import re
+
+from rasa.mantle.orchestration.turn_context import current_turn_context
+from .hostclient import HostRefused
+from rasa.mantle.tools.decorator import ToolContext, tool
+from rasa.mantle.tools.result import ToolResult
+
+
+@dataclass
+class _Conversation:
+    origin: str = field(repr=False)
+    client: object = field(repr=False)
+    session: object = field(repr=False)
+    pending: dict | None = field(default=None, repr=False)
+    observed_turn: int = 0
+    pending_turn: int = 0
+
+
+_conversations = {}
+
+
+def _is_confirmation(text):
+    return re.fullmatch(r"confirm\s+transfer[.!]?", text.strip().casefold()) is not None
+
+
+def _norm(text):
+    return " ".join(text.strip().casefold().rstrip(".!?").split())
+
+
+def _is_reset(text):
+    return _norm(text) in {"reset", "logout", "log out", "switch user"}
+
+
+def _is_assure(text):
+    return _norm(text) in {"verify me", "verify my identity"}
+
+
+def _users(context):
+    return [event.as_dict() for event in context.events if event.as_dict().get("event") == "user"]
+
+
+def _payload(result):
+    if result.isError:
+        return {"state": "refused", "reason": "service_refused"}
+    data = result.structuredContent
+    if data is None:
+        data = json.loads(result.content[0].text)
+    if not isinstance(data, dict):
+        raise ValueError("invalid_result")
+    return data
+
+
+def _safe(data):
+    # Never forward transport errors, capabilities or host handles to the model.
+    allowed = {"state", "reason", "accounts", "amount", "currency", "source", "destination",
+               "balance_type", "entries", "page", "more", "scope", "amount_due", "next_due_date", "as_of", "say"}
+    return {key: value for key, value in data.items() if key in allowed}
+
+
+async def _host(context, *, create=True):
+    native = current_turn_context()
+    origin = os.environ.get("SILVERLAKE_HOST_URL", "")
+    capability = os.environ.get("SILVERLAKE_HOST_CAPABILITY", "")
+    if not origin or len(capability) < 32:
+        raise ValueError("host_unavailable")
+    key = (origin, native.sender_id)  # never a tool or model argument
+    users = _users(context)
+    conversation = _conversations.get(key)
+    if conversation is None:
+        if not create:
+            raise ValueError("review_unavailable")
+        from .hostclient import HostClient
+        client = HostClient(origin, capability)
+        session = await asyncio.to_thread(client.open_session, "demo-A")
+        conversation = _Conversation(origin, client, session, observed_turn=max(0, len(users) - 1))
+        _conversations[key] = conversation
+    text = native.turn.text.strip().lower()
+    # A model may choose no tool on logout. Observe every raw user turn since the
+    # last host operation before any later protected operation.
+    unseen = users[conversation.observed_turn:]
+    conversation.observed_turn = len(users)
+    if any(_is_reset(str(event.get("text", ""))) for event in unseen):
+        try:
+            await asyncio.to_thread(conversation.client.reset, conversation.session)
+        finally:
+            _conversations.pop(key, None)
+        raise ValueError("session_reset")
+    if any(_is_assure(str(event.get("text", ""))) for event in unseen):
+        await asyncio.to_thread(conversation.client.assure, conversation.session)
+    if conversation.pending and len(users) > conversation.pending_turn:
+        # Only the immediately following exact phrase can confirm. A question,
+        # denial, reset, changed request or intervening turn invalidates consent.
+        if len(users) != conversation.pending_turn + 1 or not _is_confirmation(text):
+            await asyncio.to_thread(conversation.client.cancel, conversation.session)
+            conversation.pending = None
+    return conversation
+
+
+async def _read(context, name, arguments):
+    try:
+        host = await _host(context)
+        return ToolResult(llm_response=_safe(_payload(await host.client.call(host.session, name, arguments))))
+    except Exception:
+        return ToolResult(llm_response={"state": "unavailable", "reason": "host_or_service_unavailable"})
+
+
+@tool(description="List only permitted fictional account aliases.")
+async def banking_accounts(context: ToolContext = None) -> ToolResult:
+    return await _read(context, "banking_accounts", {})
+
+
+@tool(description="Read the supplied available balance of a permitted checking or savings account.")
+async def banking_balance(account: str, context: ToolContext = None) -> ToolResult:
+    return await _read(context, "banking_balance", {"account": account})
+
+
+@tool(description="Read one returned page of posted transactions, at most three.")
+async def banking_history(account: str, page: int = 1, context: ToolContext = None) -> ToolResult:
+    return await _read(context, "banking_history", {"account": account, "page": page})
+
+
+@tool(description="Read the current payment due and the next due date of a permitted loan, as two facts.")
+async def banking_loan_payment(account: str, context: ToolContext = None) -> ToolResult:
+    return await _read(context, "banking_loan_payment", {"account": account})
+
+
+@tool(description="Read a payoff quote for one date (YYYY-MM-DD), only if the bank supplies it.")
+async def banking_payoff(account: str, date: str, context: ToolContext = None) -> ToolResult:
+    return await _read(context, "banking_payoff", {"account": account, "date": date})
+
+
+@tool(description="Review an own-account transfer without submitting it.")
+async def banking_review_transfer(source: str, destination: str, amount: str,
+                                  currency: str, context: ToolContext = None) -> ToolResult:
+    try:
+        host = await _host(context)
+        if host.pending:
+            await asyncio.to_thread(host.client.cancel, host.session)
+            host.pending = None
+        result = _payload(await host.client.call(host.session, "banking_review_transfer",
+            {"source": source, "destination": destination, "amount": amount, "currency": currency}))
+        if result.get("state") == "pending" and isinstance(result.get("review"), str):
+            # A draft is not confirmable until its canonical text was delivered.
+            try:
+                await context.send(f"Review: transfer {result['currency']} {result['amount']} from "
+                                   f"{result['source']} to {result['destination']}. "
+                                   "To submit exactly this transfer, say confirm transfer next. "
+                                   "Anything else cancels this review.")
+                if context.is_cancelled:
+                    raise asyncio.CancelledError()
+            except (Exception, asyncio.CancelledError):
+                host.pending = None
+                try:
+                    await asyncio.shield(asyncio.to_thread(host.client.cancel, host.session))
+                except (Exception, asyncio.CancelledError):
+                    pass
+                raise
+            # Only now, after actual delivery, does the host arm the review for the next turn.
+            await asyncio.to_thread(host.client.arm, host.session, result["review"], len(_users(context)))
+            host.pending = result
+            host.pending_turn = len(_users(context))
+        return ToolResult(llm_response=_safe(result))
+    except Exception:
+        return ToolResult(llm_response={"state": "refused", "reason": "review_unavailable"})
+
+
+@tool(description="Submit only after the next raw user turn says exactly confirm transfer.")
+async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
+    dispatched = False
+    try:
+        host = await _host(context, create=False)
+        native = current_turn_context()
+        turn = len(_users(context))
+        if (not host.pending or context.is_cancelled or turn != host.pending_turn + 1
+                or not _is_confirmation(native.turn.text)):
+            return ToolResult(llm_response={"state": "refused", "reason": "confirmation_required"})
+        host.pending = None  # consume local permission before the first effectful call
+        dispatched = True
+        try:
+            # The host re-checks the raw utterance, the turn number, the review age
+            # and the assurance itself, writes its journal marker, then sends once.
+            result = await asyncio.to_thread(host.client.confirm_and_send, host.session,
+                                             native.turn.text, turn)
+        except HostRefused as refused:
+            return ToolResult(llm_response={"state": "refused", "reason": refused.reason})
+        if result.get("state") not in {"accepted", "refused", "unknown"}:
+            raise ValueError("unresolved_submit_outcome")
+        return ToolResult(llm_response=_safe(result))
+    except Exception:
+        # A failure after dispatch must never invite an automatic retry.
+        return ToolResult(llm_response=(
+            {"state": "unknown", "reason": "no_retry_check_original_status"} if dispatched
+            else {"state": "refused", "reason": "host_or_confirmation_unavailable"}))
+
+
+@tool(description="Check the latest retained transfer outcome without a new submission.")
+async def banking_transfer_status(context: ToolContext = None) -> ToolResult:
+    return await _read(context, "banking_transfer_status", {})
