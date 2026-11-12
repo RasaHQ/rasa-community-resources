@@ -196,6 +196,7 @@ Tutorials ([catalog](tutorials/README.md)):
 Finished example agents that are not case builds ([catalog](examples/README.md)):
 
 - [`examples/fiserv-banking`](examples/fiserv-banking/): Fiserv banking demo
+- [`examples/fiserv-premier`](examples/fiserv-premier/): Fiserv Premier banking demo (voice)
 - [`examples/jack-henry-banking`](examples/jack-henry-banking/): Jack Henry banking demo
 - [`examples/mantle-factory-agent`](examples/mantle-factory-agent/): Mantle factory agent
 - [`examples/mantle-flight-briefing-openai-agents`](examples/mantle-flight-briefing-openai-agents/): Brief me before I fly — work in progress

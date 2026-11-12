@@ -1,0 +1,19 @@
+[project]
+name = "fiserv-premier-demo"
+version = "0.1.0"
+description = "Fictional Premier banking conversations on the learner-downloaded Fiserv Banking Hub contracts"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "rasa-pro==3.21.0.dev5",
+  "mcp>=1.28.1,<2",
+  "pyyaml>=6,<7",
+  "openapi-schema-validator>=0.6,<0.7",
+]
+
+[tool.rasa-catalog]
+license-secret = "RASA_PRO_LICENSE"
+required-secrets = ["OPENAI_API_KEY", "DEEPGRAM_API_KEY"]
+
+[tool.uv]
+prerelease = "allow"
+package = false
