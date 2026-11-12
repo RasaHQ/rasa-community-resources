@@ -194,6 +194,12 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertNotIn('`RASA_LICENSE`', g.readme_block(entry, 2))
             self.assertIn('configured by the operator as repository or organisation Codespaces secrets', g.readme_block(entry, 2))
             self.assertNotIn('personal Codespaces secrets', g.readme_block(entry, 2))
+            with (root / "pyproject.toml").open('a') as stream:
+                stream.write('secret-setup = "personal"\n')
+            personal = g.manifest(project)
+            self.assertIn('saved once as personal Codespaces secrets', g.readme_block(personal, 2))
+            self.assertEqual(json.loads(g.config(personal))['secrets'], body['secrets'])
+            self.assertNotIn('remoteEnv', json.loads(g.config(personal)))
             (root / "pyproject.toml").write_text(
                 '[project]\nname = "banking-example"\n'
                 '[tool.rasa-catalog]\nlicense-secret = "ARBITRARY_TOKEN"\n')

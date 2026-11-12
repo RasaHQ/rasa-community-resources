@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Voice timing receiving probe</title>
+<style>body{font:16px system-ui;max-width:56rem;margin:3rem auto;padding:0 1rem}input,button{font:inherit;margin:.5rem;padding:.4rem}pre{white-space:pre-wrap}</style>
+<h1>Voice timing receiving probe</h1>
+<p>Maintainer tool for an authorized fictional caller run. Connecting starts a live
+speech session and may bill the configured providers. No keys belong on this page.
+Use a local browser_audio endpoint. Start one fixture only after its greeting finishes.</p>
+<label>Local endpoint <input id="endpoint" size="55" value="ws://127.0.0.1:5005/webhooks/browser_audio/websocket"></label>
+<button id="connect">Connect once</button><button id="stop">Stop</button><br>
+<label>Existing fictional WAV <input id="fixture" type="file" accept="audio/wav"></label>
+<button id="speak">Send one fixture</button><button id="save">Save timing JSONL</button>
+<button id="save-run">Save run report</button>
+<p>The interval uses the last fixture sample above −40 dBFS and the first bot sample
+above −40 dBFS rendered by the worklet, on one audio clock. It measures synthetic
+fixture/render timing, not a person's speech boundary or physical speaker output.
+The browser's output-latency limits are shown separately. Do not call it acoustic proof.</p>
+<pre id="status">Disconnected. No session started.</pre>
+<script type="module" src="probe.js"></script>
+</html>

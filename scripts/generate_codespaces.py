@@ -195,6 +195,10 @@ def manifest(project) -> dict:
     license_secret = catalog.get("license-secret", "RASA_LICENSE")
     if license_secret not in {"RASA_LICENSE", LICENSE_ALIAS}:
         raise ValueError(f"{project.rel}: unsupported licence secret name")
+    # Secret ownership is independent of the SDK's licence variable name.
+    secret_setup = catalog.get("secret-setup", "operator" if license_secret == LICENSE_ALIAS else "personal")
+    if secret_setup not in {"personal", "operator"}:
+        raise ValueError(f"{project.rel}: unsupported secret setup")
     keys = env_example_keys(project.path)
     secrets = {license_secret: True}
     for name, required in env_example_secrets(project.path).items():
@@ -290,7 +294,7 @@ def manifest(project) -> dict:
         "embeds_references": uses_references(project.path),
         "secrets": secrets,
         "alias_license": license_secret == "RASA_LICENSE" and LICENSE_ALIAS in keys,
-        "operator_secrets": license_secret == LICENSE_ALIAS,
+        "operator_secrets": secret_setup == "operator",
         "install": 'bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh" ' + project.rel,
         "ready": ready,
         "first": first,
