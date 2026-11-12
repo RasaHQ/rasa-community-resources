@@ -1,0 +1,42 @@
+{
+  "name": "Rasa resource: heroes/wave-01-mantle/projects/samrudh-coffee-shop",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1.1.0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/heroes/wave-01-mantle/projects/samrudh-coffee-shop",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5005
+  ],
+  "portsAttributes": {
+    "5005": {
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Required. Full Rasa Developer Edition license"
+    },
+    "GEMINI_API_KEY": {
+      "description": "Required. Google Gemini key used for this resource's model calls"
+    },
+    "DEEPGRAM_API_KEY": {
+      "description": "Required. Deepgram key for speech recognition and spoken replies"
+    },
+    "LANGFUSE_PUBLIC_KEY": {
+      "description": "Optional. Langfuse public key for this resource's tracing"
+    },
+    "LANGFUSE_SECRET_KEY": {
+      "description": "Optional. Langfuse secret key for this resource's tracing"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" heroes/wave-01-mantle/projects/samrudh-coffee-shop",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/samrudh-coffee-shop \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/samrudh-coffee-shop --skip-sync --use-project-pin\""
+}

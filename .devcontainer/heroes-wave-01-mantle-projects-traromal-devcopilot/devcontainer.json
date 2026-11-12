@@ -1,0 +1,45 @@
+{
+  "name": "Rasa resource: heroes/wave-01-mantle/projects/traromal-devcopilot",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1.1.0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/heroes/wave-01-mantle/projects/traromal-devcopilot",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5005
+  ],
+  "portsAttributes": {
+    "5005": {
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Required. Full Rasa Developer Edition license"
+    },
+    "DEEPGRAM_API_KEY": {
+      "description": "Required. Deepgram key for speech recognition and spoken replies"
+    },
+    "DEEPSEEK_API_KEY": {
+      "description": "Required. DeepSeek account key for the DevPilot orchestrator"
+    },
+    "SLACK_BOT_TOKEN": {
+      "description": "Optional. Slack bot token for live Slack tools"
+    },
+    "SLACK_APP_TOKEN": {
+      "description": "Optional. Slack app token for the optional Socket Mode listener"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" heroes/wave-01-mantle/projects/traromal-devcopilot",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/traromal-devcopilot \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/traromal-devcopilot --skip-sync --use-project-pin\"",
+  "remoteEnv": {
+    "OPENAI_API_KEY": "${containerEnv:DEEPSEEK_API_KEY}"
+  }
+}

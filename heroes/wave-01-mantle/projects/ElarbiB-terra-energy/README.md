@@ -10,6 +10,17 @@ Time: 15 min
 
 # Terra — TerraEnergy
 
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-ElarbiB-terra-energy/devcontainer.json)
+
+This cohort snapshot installs its own locked Rasa version; it does not track catalog upgrades.
+
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `MISTRAL_API_KEY`, saved once as personal Codespaces secrets ([how](../../../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **Before the first command:** In another terminal in this folder, run `make backend` and keep it running for the analysis tools.
+- **First command:** `make train && make inspect`. The terminal opens in this folder, and the creation log ends with `READY`. Training may make provider calls to index this resource's reference documents; see the setup requirements below.
+- **You should see:** training finishes, then the Inspector starts. In a second terminal, `bash "$(git rev-parse --show-toplevel)/.devcontainer/resource-base/print-inspector-url.sh"` prints its address.
+<!-- codespaces:end -->
+
 Presentation website + **Rasa Pro Mantle** conversational assistant for
 assessing the solar and wind energy potential of any location worldwide
 (satellite/reanalysis data: NASA POWER / PVGIS / NSRDB / ERA5 / Open-Meteo).

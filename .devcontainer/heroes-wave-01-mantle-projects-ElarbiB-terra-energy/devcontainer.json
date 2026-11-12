@@ -1,0 +1,37 @@
+{
+  "name": "Rasa resource: heroes/wave-01-mantle/projects/ElarbiB-terra-energy",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1.1.0": {}
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/heroes/wave-01-mantle/projects/ElarbiB-terra-energy",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    5005,
+    8000
+  ],
+  "portsAttributes": {
+    "5005": {
+      "onAutoForward": "silent"
+    },
+    "8000": {
+      "onAutoForward": "silent"
+    }
+  },
+  "secrets": {
+    "RASA_LICENSE": {
+      "description": "Required. Full Rasa Developer Edition license"
+    },
+    "MISTRAL_API_KEY": {
+      "description": "Required. Mistral account key for this resource's model calls"
+    }
+  },
+  "onCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/install.sh\" heroes/wave-01-mantle/projects/ElarbiB-terra-energy",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" heroes/wave-01-mantle/projects/ElarbiB-terra-energy \"python3 \\\"$(git rev-parse --show-toplevel)/scripts/check_project.py\\\" heroes/wave-01-mantle/projects/ElarbiB-terra-energy --skip-sync --use-project-pin\""
+}
