@@ -36,6 +36,11 @@ class GeneratedFilesTests(unittest.TestCase):
                 continue
             block = g.readme_block(g.manifest(project), 2)
             self.assertIn("https://rasa.community/keys/", block)
+            config_path = REPO_ROOT / ".devcontainer" / g.slug(project.rel) / "devcontainer.json"
+            secrets = json.loads(config_path.read_text())["secrets"]
+            required = {name for name, spec in secrets.items() if spec["description"].startswith("Required.")}
+            named = set(re.findall(r"`([A-Z][A-Z0-9_]+)`", block)) - {"READY"}
+            self.assertEqual(named, required, project.rel)
             self.assertIn("Rasa server is up and running", block)
             prerequisite = "`make download`" if project.rel.endswith("silverlake") else "`vendor-inputs/`"
             self.assertLess(block.index(prerequisite), block.index("`make run`"))

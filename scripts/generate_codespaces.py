@@ -367,7 +367,7 @@ def readme_block(entry: dict, depth: int) -> str:
             START,
             f"[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)]({launch_url(entry)})",
             "",
-            "- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY` and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).",
+            "- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).",
             "- **Use this badge:** it selects this example's development environment.",
             f"- **After the setup log says `READY`:** {inputs}, then run `make run`.",
             "- **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.",

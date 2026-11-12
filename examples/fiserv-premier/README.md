@@ -1,4 +1,4 @@
-# Talk to a fictional bank: a Rasa voice demo for Premier 11.0.0_PRM
+# Talk to a fictional bank: A Rasa voice demo for Premier 11.0.0_PRM
 
 Ask for your balance, explore recent transactions, check a loan payment, and request a transfer between your own accounts—all through a conversation.
 
@@ -8,7 +8,7 @@ This example connects a Rasa assistant to a **local simulation of Fiserv Banking
 
 > **Demo status:** text conversations have been checked with a real model. A recorded spoken run and response-time measurements are still outstanding. The voice walkthrough below describes the intended experience; the complete microphone-to-spoken-reply path has not yet been verified.
 >
-> All people, accounts and amounts are fictional. The voice assistant always uses the local mock, never a real Fiserv banking system. Model and speech services are external, so use only fictional information.
+> All people, accounts, and amounts are fictional. The voice assistant always uses the local mock, never a real Fiserv banking system. Model and speech services are external, so use only fictional information.
 
 <details>
 <summary>Qualification recorded before this walkthrough rewrite</summary>
@@ -28,7 +28,7 @@ Time:          Not yet measured
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-premier/devcontainer.json)
 
-- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY` and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
+- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
 - **Use this badge:** it selects this example's development environment.
 - **After the setup log says `READY`:** upload the unopened Premier ZIP into `vendor-inputs/`, then run `make run`.
 - **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.
@@ -46,7 +46,7 @@ By running this example, you will see how to:
 - Report unavailable information without inventing an answer.
 - Handle a lost transfer response without accidentally sending the transfer twice.
 
-You can complete the walkthrough without knowing OpenAPI, MCP or banking terminology. These concepts are explained as you encounter them, with implementation details after the walkthrough.
+You can complete the walkthrough without knowing API definitions or banking terminology. These concepts are explained as you encounter them, with implementation details after the walkthrough.
 
 ## Before you start
 
@@ -93,7 +93,7 @@ A **Codespaces secret** keeps a sensitive value outside the repository. GitHub m
 4. Paste only the license value into the value field. Do not add `RASA_LICENSE=` or surrounding quotes.
 5. Under **Repository access**, select `RasaHQ/rasa-community-resources`.
 6. Save the secret.
-7. Repeat for `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY`.
+7. Repeat for `OPENAI_API_KEY` and `DEEPGRAM_API_KEY`.
 
 Use **Codespaces secrets**, not GitHub Actions secrets. Give each secret access to this repository.
 
@@ -199,7 +199,7 @@ Wording may vary. Check the facts rather than expecting an exact sentence.
 
 | Say | Expected information | What you are testing |
 |---|---|---|
-| “What accounts do I have?” | `checking-A`, `bills-A` and `loan-A` | Finding the fictional customer's accounts |
+| “What accounts do I have?” | `checking-A`, `bills-A`, and `loan-A` | Finding the fictional customer's accounts |
 | “What did I spend recently?” | Up to three recent **posted** transactions, described as the returned transactions | Reporting the available history without claiming it is complete |
 | “What is my next loan payment?” | **USD 182.40**, due **December 1, 2026** | Reading the next installment and due date |
 | “What is my loan payoff?” | Current payoff: **USD 4,120.55** | Reading the supplied current payoff |
@@ -227,7 +227,7 @@ Try these additional checks:
 
 | Try | Expected behavior |
 |---|---|
-| Request another transfer, then say something other than `confirm transfer` immediately after its review | The review is cancelled and the transfer is not sent |
+| Request another transfer, then say something other than `confirm transfer` immediately after its review | The review is canceled and the transfer is not sent |
 | Ask for another person's account, such as `checking-B` | Access is refused |
 | Attempt a transfer after verification expires | If refused for stale verification, say “Verify me,” then request the transfer again |
 
@@ -253,7 +253,7 @@ Ctrl+C stops the application, not the Codespace. Stopping a Codespace ends its c
 | `make` cannot find the requested task | Check that you used this README's badge and that your terminal is in the example folder. |
 | `Not ready.` reports a missing vendor file | Check the exact filename and location: `vendor-inputs/BankingHub_Premier_api_specs.zip` inside this example. |
 | The ZIP fails hash verification | Keep the original download intact. A newly published archive needs maintainer review; renaming or repackaging it will not make its contents match. |
-| A secret is missing | Check its exact name, Codespaces settings and repository access. Stop and restart the Codespace after adding or changing secrets. |
+| A secret is missing | Check its exact name, Codespaces settings, and repository access. Stop and restart the Codespace after adding or changing secrets. |
 | A provider reports authentication or quota errors | Check the key and available usage in that provider's dashboard. Do not print or share the key. |
 | The Inspector does not open | Confirm that `make run` is still running. Try the globe icon for port `5005` in the **Ports** tab. |
 | You cannot use the microphone | Check the browser's site microphone permission and selected input device. Record visible errors if voice still fails. |
@@ -261,7 +261,7 @@ Ctrl+C stops the application, not the Codespace. Stopping a Codespace ends its c
 | Transfers remain blocked after an unknown result | This is intentional. Use the documented fictional-exercise reset only after stopping the demo; do not delete the journal. |
 | An answer is slow | Record the approximate delay and fictional prompt. Response time has not yet been measured. |
 
-When asking for help, include the step number, command or fictional prompt, expected result and actual error. Remove keys and private information from logs or screenshots.
+When asking for help, include the step number, command or fictional prompt, expected result, and actual error. Remove keys and private information from logs or screenshots.
 
 ## How the pieces fit together
 
@@ -271,13 +271,13 @@ The assistant handles the conversation. The host code controls whether a transfe
 |---|---|
 | Inspector and speech services | Provide the voice interaction |
 | Rasa and the language model | Interpret requests and produce conversational replies |
-| MCP server | Exposes seven banking tools the assistant can call |
+| Model Context Protocol (MCP) server | Exposes seven banking tools the assistant can call |
 | Host policy and journal | Check transfer conditions and retain transfer state |
 | Banking Hub client | Builds requests for the supported banking operations |
 | Local Premier mock | Handles requests using fictional data |
 | Downloaded API definitions | Define the allowed request and response structures |
 
-**MCP (Model Context Protocol)** provides the tool interface used here. **OpenAPI** is the format of the API definitions. A **contract validator** checks that a message follows those definitions. **Loopback** means the client talks to a mock in the same development environment, rather than over a connection to a bank.
+**Model Context Protocol (MCP)** provides the tool interface used here. **OpenAPI** is the format of the API definitions. A **contract validator** checks that a message follows those definitions. **Loopback** means the client talks to a mock in the same development environment, rather than over a connection to a bank.
 
 The normal voice demo uses external model and speech services, but its banking requests stay local. The optional Fiserv trial at the end of this README is a separate, manual workflow.
 
@@ -287,7 +287,7 @@ The assistant has a Rasa-side trigger called `banking_submit_transfer`. It takes
 
 The **journal** is a durable record of transfer state. If a transfer response is lost, the request may have been accepted even though the caller did not receive an answer. Retrying could submit it twice. The demo therefore does not resend and blocks new transfers for the caller across application restarts.
 
-The journal lives in `var/private/`. It records a caller, opaque review ID, state and **epoch**—an identifier for the fictional exercise. It never stores an amount, account or transcript.
+The journal lives in `var/private/`. It records a caller, opaque review ID, state and **epoch**—an identifier for the fictional exercise. It never stores an amount, account, or transcript.
 
 ## Explore the code
 
@@ -295,7 +295,7 @@ The journal lives in `var/private/`. It records a caller, opaque review ID, stat
 |---|---|
 | `skills/banking/` | The assistant's banking instructions and tool bindings |
 | `premier_demo/server.py` | The MCP server's seven tools |
-| `premier_demo/host.py` | Simulated identity, transfer review, confirmation, one send and the durable journal |
+| `premier_demo/host.py` | Simulated identity, transfer review, confirmation, one send, and the durable journal |
 | `premier_demo/client.py` | The direct Banking Hub client for five operations |
 | `premier_demo/mock.py` | Fiserv's paths and message bodies with fictional data |
 | `premier_demo/contract.py` | ZIP verification and request/response checks built from Fiserv's files |
@@ -318,7 +318,7 @@ Only checking-type **DDA (demand deposit account)** and loan definitions are pin
 
 ### Files that stay out of Git
 
-No Fiserv ZIP, extracted definition or copied schema is included in this repository. Download the original ZIP yourself.
+No Fiserv ZIP, extracted definition, or copied schema is included in this repository. Download the original ZIP yourself.
 
 - `vendor-inputs/` holds the vendor input and is ignored by Git.
 - `var/private/` holds private runtime state, including the journal, and is ignored by Git.
@@ -346,7 +346,7 @@ make validate
 
 Validates the Rasa project configuration. This is separate from running a conversation.
 
-CI—the repository's automated checks—does not have the Fiserv ZIP, so contract-dependent tests there report that they were skipped.
+continuous integration (CI)—the repository's automated checks—does not have the Fiserv ZIP, so contract-dependent tests there report that they were skipped.
 
 For a live text conversation check:
 
@@ -354,11 +354,11 @@ For a live text conversation check:
 uv run --locked python tests/live_text_check.py
 ```
 
-This uses a real model through the REST text channel: an HTTP interface rather than the microphone. `uv run --locked` uses the project's locked dependency versions.
+This uses a real model through the representational state transfer (REST) text channel: an hypertext transfer protocol (HTTP) interface rather than the microphone. `uv run --locked` uses the project's locked dependency versions.
 
-It needs all three demo secrets and the Fiserv ZIP, consumes API usage, and is not included in `make test`. Passing it does not verify speech recognition, spoken replies or voice latency.
+It needs all three demo secrets and the Fiserv ZIP, consumes API usage, and is not included in `make test`. Passing it does not verify speech recognition, spoken replies, or voice latency.
 
-## Optional exercise: a lost transfer response
+## Optional exercise: A lost transfer response
 
 This developer exercise demonstrates why an uncertain result must not be retried automatically.
 
@@ -369,7 +369,7 @@ This developer exercise demonstrates why an uncertain result must not be retried
    uv run --locked python run_demo.py --fault transfer-response-lost
    ```
 
-3. Open the Inspector using the startup link and follow the verification, transfer-review and confirmation sequence from the walkthrough.
+3. Open the Inspector using the startup link and follow the verification, transfer-review, and confirmation sequence from the walkthrough.
 4. In this simulated fault, the transfer succeeds in the mock but its response is lost. The caller cannot establish that outcome, so the journal retains uncertainty and blocks new transfers. It does not resend.
 5. Stop the demo with **Ctrl+C** before resetting the exercise.
 
@@ -398,7 +398,7 @@ The transfer reply controls have source tests. A fresh end-to-end run of this re
 | Author | Rasa Community contributors |
 | Assessment date | November 12, 2026 |
 | Environment | `rasa-pro 3.21.0.dev5`, Python 3.12; development build |
-| Source and contract checks | Source tests with the real contract, OpenAPI validators, pinned Fiserv ZIP and loopback mock |
+| Source and contract checks | Source tests with the real contract, OpenAPI validators, pinned Fiserv ZIP, and loopback mock |
 | Conversation check | Live text check in a Codespace with a real model through the REST channel |
 | Spoken conversation | Recorded microphone-and-speech-output run still outstanding |
 | Response time and setup duration | Not yet measured |
@@ -415,7 +415,7 @@ The transfer reply controls have source tests. A fresh end-to-end run of this re
 - **Unknown remains unknown.** A lost transfer response is not retried. Resetting the fictional exercise preserves the unresolved history.
 - **The trial is separate.** It is manual and read-only. The voice assistant always uses the mock.
 
-## Optional: try the Fiserv trial environment
+## Optional: Try the Fiserv trial environment
 
 **Skip this section for your first run.** It is for developers who already have Fiserv Banking Hub trial access. It makes real read-only calls to the Premier trial environment, not to a production bank. It does not move money or switch the voice assistant away from the mock.
 
@@ -437,7 +437,7 @@ You also need a fresh **budget file** specifying the permitted trial calls:
 var/private/manual-trial-budget.json
 ```
 
-Read `premier_demo/quota.py` for the required JSON fields and construct the file from those requirements. Do not guess field names. The budget is separate from the credentials; credentials belong in secrets, not in the budget file.
+Read `premier_demo/quota.py` for the required JavaScript Object Notation (JSON) fields and construct the file from those requirements. Do not guess field names. The budget is separate from the credentials; credentials belong in secrets, not in the budget file.
 
 Without all three credentials and a fresh budget, the trial command refuses to run. The mock is unaffected.
 

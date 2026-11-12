@@ -1,12 +1,12 @@
-# Talk to a fictional credit union: a Rasa voice demo with a Symitar mock
+# Talk to a fictional credit union: A Rasa voice demo with a Symitar mock
 
 Ask for your balance, explore recent transactions, check a loan payment, and request a transfer between your checking and savings accounts—all through a conversation.
 
-This example connects a Rasa assistant to a **local simulation of the Jack Henry Symitar core through the Symitar-in-Platform v1 REST API**. You will run it in your browser using GitHub Codespaces. You do not need to install Python on your computer or have a Jack Henry account.
+This example connects a Rasa assistant to a **local simulation of the Jack Henry Symitar core through the Symitar-in-Platform v1 web API**. You will run it in your browser using GitHub Codespaces. You do not need to install Python on your computer or have a Jack Henry account.
 
 **Your first goal:** open the assistant and ask, “What is available in checking?” With the initial demo data, the expected answer is **USD 1,200.50 available**.
 
-> **Demo status:** typed native checks and isolated SDK snapshot loading have been recorded. A cold trained-archive check and a complete spoken transfer walkthrough remain outstanding. The voice steps below describe the intended experience, not a verified microphone-to-spoken-reply result. Setup and response time have not been measured for this walkthrough.
+> **Demo status:** typed native checks and isolated software development kit (SDK) snapshot loading have been recorded. A cold trained-archive check and a complete spoken transfer walkthrough remain outstanding. The voice steps below describe the intended experience, not a verified microphone-to-spoken-reply result. Setup and response time have not been measured for this walkthrough.
 >
 > All people, accounts, and amounts are fictional. No banking request goes to a real credit union. Model and speech services are external, so use only fictional information.
 
@@ -26,13 +26,13 @@ Status:        Development branch; see the PR for current native qualification
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-symitar/devcontainer.json)
 
-- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY` and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
+- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
 - **Use this badge:** it selects this example's development environment.
 - **After the setup log says `READY`:** upload the four definitions into `vendor-inputs/`, then run `make run`.
 - **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.
 <!-- codespaces:end -->
 
-For the other Jack Henry API, see the separate [SilverLake jXchange example](../jack-henry-silverlake/). It uses SOAP/XML for SilverLake rather than the Symitar REST API.
+For the other Jack Henry API, see the separate [SilverLake jXchange example](../jack-henry-silverlake/). SilverLake uses simple object access protocol (SOAP) messages in extensible markup language (XML). Symitar uses a representational state transfer (REST) API.
 
 ## What you will learn
 
@@ -41,7 +41,7 @@ For the other Jack Henry API, see the separate [SilverLake jXchange example](../
 - Require the next actual user turn to confirm a reviewed transfer.
 - Keep an uncertain transfer outcome unresolved rather than resending it.
 
-You can follow the walkthrough without knowing banking APIs or MCP. These terms are explained after your first conversation.
+You can follow the walkthrough without knowing banking APIs or the tools used here. These terms are explained after your first conversation.
 
 ## Before you start
 
@@ -171,14 +171,14 @@ The dates are fixed fixture data, not automatically updated to today's date. A l
 | 2 | “Review a transfer of 1.25 from checking to savings.” | The host reads the exact amount and accounts, then asks for confirmation |
 | 3 | “Yes.” | The host reports acceptance and explains that accepted does not mean posted; this must be the immediately next actual user turn |
 
-Verification is simulated. This is not bank sign-in. A review that was changed, cancelled, expired, or not delivered cannot authorize submission. An unrelated next message cancels the review; request a new review before confirming again.
+Verification is simulated. This is not bank sign-in. A review that was changed, canceled, expired, or not delivered cannot authorize submission. An unrelated next message cancels the review; request a new review before confirming again.
 
 A successful fixture transfer may have no receipt. A missing receipt does not establish failure, and an acceptance is not proof of posting. If a response is lost after dispatch, the outcome is unknown. Do not retry or delete state to clear the hold. The hold applies across conversations for that fictional customer; reads and local status remain available.
 
 ### 9. Stop and clean up
 
 1. Press **Ctrl+C** in the terminal running `make run`.
-2. Wait for its Inspector, MCP, and mock processes to stop.
+2. Wait for its Inspector, Model Context Protocol (MCP), and mock processes to stop.
 3. Open [your Codespaces](https://github.com/codespaces) and stop the Codespace when finished.
 4. Before deleting it, preserve any private fixture state or work you need. Never commit secrets, vendor definitions, or private journals.
 
@@ -194,7 +194,7 @@ Closing the browser or stopping the application does not stop Codespaces compute
 | `make download` fails | This example has no download target; use the four manual download links above |
 | The Inspector is unavailable | Wait for server readiness, check terminal errors, and use port `5005` in the Ports tab |
 | A read or transfer says verification expired | Say “Verify me,” then make a new request |
-| A transfer review was cancelled | Request a new review; repeating an old confirmation does not restore it |
+| A transfer review was canceled | Request a new review; repeating an old confirmation does not restore it |
 | A transfer outcome is unknown | Keep the journal and do not resend; see the fictional reset instructions below |
 | The spoken path does not work | Record the visible error without keys or private data; voice qualification remains outstanding |
 
@@ -210,7 +210,7 @@ The assistant handles the conversation. The host controls transfer authority. Th
 | Host policy and journal | Own identity simulation, review, confirmation, one send, and unresolved state |
 | Symitar client and contract mock | Build and check requests against the four supplied definitions |
 
-MCP means Model Context Protocol, the interface used for tools. REST uses HTTP requests for the banking API. OpenAPI describes the permitted request and response structures. All banking traffic stays on loopback, inside this development environment. Model and speech services remain external.
+MCP means Model Context Protocol, the interface used for tools. REST uses hypertext transfer protocol (HTTP) requests for the banking API. OpenAPI describes the permitted request and response structures. All banking traffic stays on loopback, inside this development environment. Model and speech services remain external.
 
 The model has no submit, confirm, reset, or identity-creation tool. The trusted host observes the next actual user turn before deciding whether it may send.
 
@@ -250,7 +250,7 @@ make validate
 
 `make test` runs source, state, transport, and snapshot controls. `make contract-test` runs the vendor contract tests. Contract-dependent tests skip without the four vendor files; a skip does not prove conformance. `make validate` checks the Rasa configuration. None of these is a spoken conversation check.
 
-## Optional: start a new fictional exercise
+## Optional: Start a new fictional exercise
 
 With every copy of the example stopped, run:
 
