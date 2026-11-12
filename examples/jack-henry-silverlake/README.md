@@ -1,149 +1,348 @@
-# Jack Henry SilverLake banking demo (voice)
+# Talk to a fictional bank: a Rasa voice demo with a SilverLake mock
+
+Ask for your balance, explore recent transactions, and request a transfer between your checking and savings accounts—all through a conversation.
+
+This example connects a Rasa assistant to a **local simulation of the Jack Henry SilverLake core through jXchange SOAP/XML**, its banking API. You will run it in your browser using GitHub Codespaces. You do not need to install Python on your computer or have a Jack Henry account.
+
+**Your first goal:** open the assistant and ask, “What is my checking balance?” With the initial demo data, the expected answer is **USD 1,250.00 available**.
+
+> **Demo status:** text conversations have been checked with a real model. A recorded spoken run and response-time measurements are still outstanding. The voice walkthrough below describes the intended experience; it is not a claim that the full voice path has been verified.
+>
+> All people, accounts and amounts are fictional. No request goes to a real bank. The language-model and speech services are external services, so use only fictional information.
 
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-silverlake/devcontainer.json)
 
-- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
-- **First command:** `make run`. The terminal opens in this folder, and the creation log ends with `READY`.
-- **You should see:** the server starts on port 5005.
+- **Before clicking:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. Follow [the setup below](#1-get-your-license-and-api-keys).
+- **Use this badge:** it selects this example's development environment.
+- **After the setup log says `READY`:** run `make download`, wait for `Saved and checked`, then run `make run`.
+- **Open the assistant:** follow the `Open the Inspector:` link printed in the terminal. The server uses port `5005`.
 <!-- codespaces:end -->
 
-Talk to a fictional bank by voice. The assistant lists accounts, reads a balance, reads recent transactions, tells you the current payment due and the next due date of a loan, gives a dated loan payoff when one is supplied, and moves money between your own checking and savings accounts after you say `confirm transfer`.
+For the other Jack Henry API, see the separate [Symitar-in-Platform example](../jack-henry-symitar/). It uses Symitar REST/OpenAPI definitions rather than SilverLake jXchange.
 
-Behind it sits a local **mock of Jack Henry SilverLake**, speaking jXchange SOAP. You download Jack Henry's own published schema archive yourself; this example checks the file and validates every request and every reply against it. Nothing here contacts Jack Henry, and no Jack Henry account is needed.
+## What you will learn
 
-**What this proves and what it does not.** The mock proves our conversation design and our code against the shapes Jack Henry publishes. It does **not** prove that this works with a real SilverLake system, which needs a bank, an agreement and credentials this example does not have. Every person, account and amount is invented.
+By running this example, you will see how to:
 
-```text
-Author:        Rasa Community contributors
-Assessed on:   12 November 2026, text conversation only (development build)
-Assessed by:   Source tests with the real schemas, and a live text check in a Codespace
-Verified with: The pinned jXchange archive, schema validation of every SOAP body, a real model over the REST text channel; spoken run and latency still open
-Installation:  rasa-pro 3.21.0.dev5, Python 3.12
-Audience:      Developers building banking voice assistants
-Time:          Not yet measured
-```
+- Connect a conversational assistant to banking tools.
+- Check that requests and responses follow a published API format.
+- Require an explicit confirmation before submitting a transfer.
+- Handle missing information and uncertain transfer outcomes without guessing.
+
+You can follow the walkthrough without knowing SOAP, MCP or banking APIs. Those terms are explained after your first conversation.
 
 ## Before you start
 
-You need two things, and both are free to set up.
+Have these ready:
 
-1. **A GitHub account.** Sign in at <https://github.com>.
-2. **Three Codespaces secrets**: `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`. Add each at <https://github.com/settings/codespaces> under **Secrets**: click **New secret**, type the name exactly, paste the value, and under **Repository access** choose this repository. Never type these into a file or a chat.
+| You need | Why |
+|---|---|
+| A [GitHub account](https://github.com) with Codespaces access | Runs the example in a cloud development environment |
+| A Rasa Developer Edition license | Enables the Rasa runtime |
+| An OpenAI API key with available API usage | Gives the assistant access to the language model |
+| A Deepgram API key with available API usage | Gives the demo access to speech services |
+| A browser and a working microphone | Lets you use the voice interface |
+
+**Cost:** the Rasa Developer Edition license is free. Do not assume the entire demo is free: OpenAI and Deepgram usage may consume credits or incur charges, and Codespaces has usage allowances. Check your accounts before starting. [ChatGPT and OpenAI API billing are separate](https://help.openai.com/en/articles/9039756-managing-billing-for-chatgpt-and-the-api-platform). See [GitHub's Codespaces billing guide](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces).
+
+**Time:** one recorded fresh setup reached the running server in about six minutes, including harness corrections. That is not a typical setup estimate. Allow extra time for the first environment build and schema loading.
 
 ## Walkthrough
 
-Follow the steps in order. Take your time: the first start-up has a long wait.
+Follow these steps in order. Each step includes a checkpoint so you know when to continue.
 
-> Each step says what to click and what you should see. If your screen does not match a step, stop and ask the maintainers before going on.
+### 1. Get your license and API keys
 
-### 1. Open the example in a Codespace
+A **license key** enables a product. An **API key** lets this application use a service through your account. Treat these values like passwords.
 
-1. Click the badge at the top of this page that shows the GitHub Codespaces logo with the word “Open” on it.
-2. A page titled **Create codespace** opens. Click the green **Create codespace** button.
-3. Wait. A browser tab shows a code editor while it builds; this takes a few minutes. You are ready when the black panel at the bottom (the **terminal**) ends with the word `READY`.
-
-### 2. Put Jack Henry's file in the example
-
-1. Click once inside the terminal at the bottom of the window. It is already in the right folder.
-2. Type this one line and press Enter. It downloads Jack Henry's public schema archive into a folder named `vendor-inputs`:
-
-   `make download`
-
-3. The terminal prints `Saved and checked`. If it prints anything else, the file is not the expected one; do not continue.
-
-### 3. Start it
-
-1. In the same terminal, type `make run` and press Enter.
-2. The first start takes a little longer while the schemas load. The terminal prints `Vendor definitions: found and hash-verified` and a line starting `Open the Inspector:` followed by a long link.
-
-If it prints `Not ready.` instead, it says what is missing in plain words: usually the file is not in `vendor-inputs`, or one of the three secrets is not set for this repository.
-
-### 4. Open the Inspector
-
-1. Hold Ctrl (Command on a Mac) and click the long link in the terminal.
-2. If the link does not open, click the **Ports** tab next to the terminal, find port `5005`, and click the small globe icon on its row.
-3. A page called **Inspector** opens in a new browser tab.
-
-### 5. Allow the microphone
-
-1. Your browser asks to use the microphone. Click **Allow**.
-2. Use only fictional things. Do not say a real name, account or card number: the speech provider receives your audio.
-
-### 6. Talk to the bank
-
-The assistant already knows one fictional customer. Say each sentence and wait for the reply. Numbers below are the invented data in the mock.
-
-| Say | You should hear |
+| Secret name—copy exactly | Where to get its value |
 |---|---|
-| "What accounts do I have?" | `checking-A`, `savings-A` and `loan-A` |
-| "What is my checking balance?" | USD 1,250.00 available |
-| "What did I spend recently?" | Up to three recent transactions, said to be the ones returned |
-| "What is my next loan payment?" | Two separate facts: current payment due USD 242.40; next due date December 1, 2026 |
-| "What is my loan payoff on November 20, 2026?" | USD 4,120.55 for that date |
-| "What is my loan payoff on December 24, 2026?" | A plain no: no quote is supplied for that date. It does not calculate one |
-| "Verify me." | That your verification was refreshed. Do this just before a transfer; it lasts about a minute |
-| "Move 25 dollars from checking to savings." | The exact transfer read back to you, and an instruction to say `confirm transfer` next |
-| "Confirm transfer." | `accepted`, and a reminder that accepted is not the same as posted |
+| `RASA_LICENSE` | [Get a free Rasa Developer Edition license](https://rasa.community/keys/#rasa) |
+| `OPENAI_API_KEY` | [Create an OpenAI API key and check billing](https://rasa.community/keys/#openai) |
+| `DEEPGRAM_API_KEY` | [Create a Deepgram project API key](https://rasa.community/keys/#deepgram) |
 
-Things to try on purpose:
+Save each value securely. Do not put keys in source files, commit them to Git, or paste them into a conversation or issue.
 
-- After a review, say something else instead of `confirm transfer`. The review is cancelled and nothing moves.
-- Ask for another person's account, for example `checking-B`. It refuses.
-- If a transfer is refused because verification is stale, say `verify me` and ask again.
+**Checkpoint:** you have all three values. Having a ChatGPT login alone does not provide an OpenAI API key.
 
-If it takes more than a couple of seconds to answer, note how long and tell the maintainers: response time is still being measured.
+### 2. Add the keys to GitHub Codespaces
 
-### 7. Stop it
+A **Codespaces secret** stores a sensitive value outside the repository. GitHub makes it available to the running application as an environment variable—a named setting the program can read.
 
-Click inside the terminal and press **Ctrl+C**. The terminal returns to a prompt and the Inspector tab stops working.
+1. Open your [personal Codespaces settings](https://github.com/settings/codespaces).
+2. Under **Secrets**, click **New secret**.
+3. Enter `RASA_LICENSE` as the name.
+4. Paste only the license value into the value field. Do not add `RASA_LICENSE=` or surrounding quotes.
+5. Under **Repository access**, select `RasaHQ/rasa-community-resources`.
+6. Save the secret.
+7. Repeat for `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY`.
 
-### 8. Delete the Codespace
+These are **Codespaces secrets**, not GitHub Actions secrets. Each secret needs access to this repository.
 
-A Codespace you stop but do not delete keeps using your storage.
+**Checkpoint:** all three names appear in your Codespaces secrets list. GitHub hides their saved values; that is expected.
 
-1. Open <https://github.com/codespaces>.
-2. Find this Codespace, click the three dots on its row, then **Delete**.
+> Already created a Codespace? After adding or changing a secret, stop and restart the Codespace so it receives the updated value. See [GitHub's secret-management guide](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-your-account-specific-secrets-for-github-codespaces).
 
-## What is inside
+### 3. Open the example
 
-| File or folder | What it does |
-|---|---|
-| `silverlake_demo/contract.py` | Checks the downloaded archive, extracts it safely, reads SOAPActions from the WSDLs and loads the schemas |
-| `silverlake_demo/mock.py` | The local SOAP mock: six jXchange operations, fictional data, every body validated |
-| `silverlake_demo/client.py` | Our direct jXchange client |
-| `silverlake_demo/server.py` | The MCP server the assistant calls: exactly seven tools |
-| `silverlake_demo/service.py` | Ties the host policy and journal to the client |
-| `host.py`, `journal.py` | The host review policy (assurance, review, next-turn confirmation) and the durable transfer journal |
-| `skills/banking/` | The assistant's skill and its tool bindings |
+1. Click **Open in GitHub Codespaces** near the top of this page. Use that badge so GitHub selects this example's setup.
+2. On the **Create codespace** page, click **Create codespace**.
+3. Wait for the browser-based editor to open and the environment to finish building.
+4. Look for `READY` at the end of the setup log.
 
-The six jXchange operations are AcctSrch, AcctBalInq, AcctHistSrch, AcctInq (loan), LnPayoffInq and XferAdd (immediate internal transfer only; ACH and future-dated modes are refused). The assistant also has one Rasa-side trigger, `banking_submit_transfer`. It is not an MCP tool and carries no authority: the host sends only after it has seen your next raw turn say `confirm transfer`.
+The **terminal** is the panel where you enter commands. It opens in this example's folder. You do not need to change directories.
 
-### What stays out of this repository
+**Checkpoint:** setup has printed `READY` and the terminal is available for input. This means the environment is prepared; the banking assistant is not running yet.
 
-No Jack Henry file is stored here: no archive, no extracted schema and no copy. `vendor-inputs/` and `var/` are ignored by Git. If the file is not exactly the one this example was written for, it refuses to start rather than guess.
+### 4. Download the banking API definitions
 
-### Honest limits
-
-- **Wire shape, not behaviour.** Schema-valid replies say nothing about how a real SilverLake system answers, or which fields it supports for a given loan type.
-- **The archive's XML-signature schema is not loaded.** It declares a DTD entity, which this example refuses to process; that optional security namespace stays unresolved. None of the six operations here needs it.
-- **Business errors** come back as SOAP faults (for example zero amount, `100199`); the client treats any fault as a refusal and never overrides it.
-- **Identity is simulated.** One fixed fictional caller. This is not bank sign-in.
-- **Accepted is not posted.** `RsStat` Success means the request was taken.
-- **Unknown stays unknown.** If a transfer reply is lost, the example never resends. The journal holds new transfers for that caller across restarts.
-- **Not done yet:** a recorded spoken run, response-time measurement, and an audited reset command for the journal.
-
-## For developers
+In the terminal, paste this command and press **Enter**:
 
 ```bash
-make test           # source, host, journal and SOAP mock tests; schema tests skip without the archive
-make validate       # Rasa project validation
+make download
 ```
 
-A live text check goes through the REST channel with a real model (a few cents, needs the three secrets and the archive). It is not part of `make test`:
+`make` runs a task defined by the project. Here, the `download` task fetches Jack Henry's public schema archive into `vendor-inputs/` and checks that it matches the version expected by this example.
+
+A **schema** describes the allowed structure of an API message: which fields it can contain and what types of values they accept. Think of it as a form with rules for filling in each field.
+
+**Checkpoint:** the terminal prints `Saved and checked`.
+
+If the download or check fails, do not continue or substitute a different archive. Read the error and use [Troubleshooting](#troubleshooting).
+
+### 5. Start the assistant
+
+Run:
+
+```bash
+make run
+```
+
+The first start takes longer while the schemas load. Look for:
+
+```text
+Vendor definitions: found and hash-verified
+```
+
+Then find the line beginning:
+
+```text
+Open the Inspector:
+```
+
+The link after it opens the assistant's test interface. **Leave this terminal running.** It may continue printing messages instead of returning to a command prompt; that is normal while the server runs.
+
+**Checkpoint:** wait for `Rasa server is up and running` before opening the Inspector. The link prints before the server is ready; opening it immediately can fail. If you see `Not ready.`, fix the reported missing item before continuing.
+
+### 6. Open the Inspector and choose text or speech
+
+1. Hold **Ctrl** (or **Command** on a Mac) and click the Inspector link in the terminal.
+2. If it does not open, select the editor's **Ports** tab, find port `5005`, and click its globe icon to open it in your browser.
+3. When the browser requests microphone access, choose **Allow**.
+
+For a text conversation, click **Type your message**, type the prompt, and press **Enter**. This lets you continue without a microphone. A typed check does not verify speech.
+
+The **Inspector** is the browser interface for trying the assistant. A **port** is a numbered endpoint for a running service; `5005` is the one used by this demo.
+
+Use only fictional information. The speech provider receives your audio.
+
+**Checkpoint:** the Inspector is open and microphone permission is allowed. If no microphone prompt appears or you cannot start a voice conversation, use the troubleshooting section; the spoken path is still awaiting verification.
+
+### 7. Ask your first questions
+
+The demo already has one fictional customer. You do not need to create a bank account or sign in as a bank customer.
+
+Start with:
+
+> What is my checking balance?
+
+With the initial mock data, the expected answer is **USD 1,250.00 available**. Then try the following, one at a time. Wait for each reply before speaking again.
+
+The wording may vary. Check the facts in the answer rather than expecting an exact sentence.
+
+| Say | Expected information | What you are testing |
+|---|---|---|
+| “What accounts do I have?” | `checking-A`, `savings-A` and `loan-A` | Finding the fictional customer's accounts |
+| “What did I spend recently?” | Up to three recent transactions, described as the returned transactions | Reporting the available history without claiming it is complete |
+| “What is my next loan payment?” | Current payment due: **USD 242.40**. Next due date: **December 1, 2026** | Keeping the amount due and the next due date as separate facts |
+| “What is my loan payoff on November 20, 2026?” | **USD 4,120.55** for that date | Looking up a supplied, date-specific payoff quote |
+| “What is my loan payoff on December 24, 2026?” | No quote is supplied for that date | Admitting missing information instead of calculating an answer |
+
+A **loan payment** is an installment. A **payoff quote** is the amount quoted to settle the loan on a particular date. They are different questions.
+
+The dates above are fixed demo fixtures. Keep the stated dates when testing these examples; they are not automatically updated to today's date.
+
+### 8. Try a transfer with explicit confirmation
+
+This example supports immediate transfers between the fictional customer's own checking and savings accounts.
+
+Follow this sequence without inserting another message between the transfer review and confirmation:
+
+| Step | Say | Expected behavior |
+|---|---|---|
+| 1 | “Verify me.” | The assistant reports that simulated verification was refreshed. It lasts about a minute. |
+| 2 | “Move 25 dollars from checking to savings.” | The assistant reads back the exact transfer and asks you to say `confirm transfer`. |
+| 3 | “Confirm transfer.” | The assistant reports `accepted` and explains that accepted does not mean posted. |
+
+**Verification is simulated:** saying “Verify me” is a demo shortcut, not a way to authenticate a real bank customer.
+
+**Accepted is not posted:** the mock has acknowledged the request. This is not proof that a real bank has completed a transfer or updated its ledger.
+
+Try these additional checks:
+
+| Try | Expected behavior |
+|---|---|
+| Request another transfer, then say something other than `confirm transfer` immediately after the review | The review is cancelled and the transfer is not sent. Request a new review before any new confirmation |
+| Ask for another person's account, such as `checking-B` | The assistant refuses access |
+| Attempt a transfer after verification expires | If refused for stale verification, say “Verify me,” then request the transfer again |
+
+If a transfer result is **unknown**, do not repeatedly submit it or delete the journal to clear the block. The example deliberately holds further transfers for that caller because it cannot establish what happened. See [Transfer safeguards](#transfer-safeguards).
+
+### 9. Stop and clean up
+
+When you finish:
+
+1. Click the terminal running the server and press **Ctrl+C**, including on a Mac. The server stops and the terminal returns to a prompt.
+2. Open [your Codespaces](https://github.com/codespaces).
+3. If you want to keep your work, save or commit appropriate changes before deleting the environment. Never commit secrets or downloaded vendor files.
+4. Find this Codespace, open its three-dot menu, and choose **Delete** if you no longer need it.
+
+Stopping the application with Ctrl+C does not stop the Codespace. Stopping a Codespace ends its compute usage, but retained storage still counts toward storage usage. Deleting it removes its local files, including the demo journal.
+
+## Troubleshooting
+
+| What you see | What to check or do |
+|---|---|
+| The environment has not printed `READY` | Wait for the build to finish. If it reports an error, record that error before trying more commands. |
+| `make` cannot find the requested task | Check that you used this README's badge and that the terminal is in the example folder. The general Codespaces picker may select a different setup. |
+| `make download` fails or does not print `Saved and checked` | Read the download/check error. Do not disable verification or replace the expected archive with an arbitrary version. |
+| `Not ready.` | Follow the application's message. Common causes are missing files in `vendor-inputs/` or missing Codespaces secrets. |
+| A secret is missing even though you saved it | Check its exact name, repository access and that it is a Codespaces secret. Stop and restart the Codespace after changes. |
+| A provider reports an authentication or quota error | Check the key and available usage in that provider's dashboard. Do not print or share the key. |
+| The Inspector link does not open | Confirm that `make run` is still running. Try the globe icon for port `5005` in the **Ports** tab. |
+| You cannot use the microphone | Check the browser's site microphone permission and your selected input device. Record any visible error if voice still fails. |
+| A transfer is refused because verification expired | Say “Verify me,” then request and confirm the transfer again. |
+| Transfers remain blocked after an unknown result | This is an intentional journal safeguard. Ask the maintainers; an audited journal reset command is not available yet. |
+| A response is slow | Record the approximate delay and which prompt you used. Latency has not yet been measured. |
+
+If you need help, report the step number, command or fictional prompt, expected result and actual error. Remove keys and private information from logs or screenshots before sharing them.
+
+If a reply suggests confirming again after cancellation, request a new transfer review first. An old confirmation cannot authorize a new review.
+
+## How the pieces fit together
+
+The assistant understands the conversation, but code controls which banking operations can be sent. The bank itself is simulated inside the development environment.
+
+| Component | Its role |
+|---|---|
+| Inspector and speech services | Provide the voice interaction |
+| Rasa and the language model | Interpret requests and produce conversational replies |
+| MCP server | Exposes banking tools the assistant can call |
+| Host policy and transfer journal | Check whether a transfer is allowed and remember its state |
+| jXchange client | Builds requests in the banking API's message format |
+| Local SilverLake mock | Handles requests using fictional banking data |
+| Downloaded schemas | Validate the structure of request and response bodies |
+
+**MCP (Model Context Protocol)** is the interface used here to expose tools to the assistant. **jXchange** is the banking interface used by this example. It uses **SOAP**, an XML-based format for exchanging structured messages. **WSDL** files describe service operations; this example reads their SOAPAction values to identify the requested operations.
+
+The banking connection stays local to the Codespace. The demo still uses external model and speech services and downloads the public schema archive.
+
+### Transfer safeguards
+
+A transfer review is not permission to send money indefinitely. The host requires the next raw user turn to say `confirm transfer` before it sends the reviewed request. An unrelated next message cancels that review.
+
+The assistant also has a Rasa-side trigger named `banking_submit_transfer`. It is **not an MCP tool** and cannot authorize a transfer by itself. The host enforces the confirmation rule.
+
+The **journal** is a persistent record of transfer state. If a transfer response is lost, the request might have been accepted even though the client did not receive the answer. Automatically retrying could submit it twice. This example does not resend and holds new transfers for that caller, including across application restarts.
+
+## Explore the code
+
+After the walkthrough, use this map to find the relevant implementation:
+
+| File or folder | What to look for |
+|---|---|
+| `skills/banking/` | The assistant's banking instructions and tool bindings |
+| `silverlake_demo/server.py` | The MCP server's seven tools |
+| `silverlake_demo/service.py` | How the host policy and journal connect to the client |
+| `host.py`, `journal.py` | Verification requirements, transfer review, next-turn confirmation and durable state |
+| `silverlake_demo/client.py` | Direct jXchange requests |
+| `silverlake_demo/mock.py` | Six simulated jXchange operations and fictional data; validation of every SOAP body |
+| `silverlake_demo/contract.py` | Archive checks, safe extraction, WSDL SOAPActions and schema loading |
+
+### Supported banking operations
+
+The mock implements six jXchange operations. These names belong to the banking API; they are not necessarily the names of the seven MCP tools.
+
+| Operation | Purpose in this example |
+|---|---|
+| `AcctSrch` | Find accounts |
+| `AcctBalInq` | Read an account balance |
+| `AcctHistSrch` | Read recent account transactions |
+| `AcctInq` | Read loan information |
+| `LnPayoffInq` | Read a supplied payoff quote for a date |
+| `XferAdd` | Request an immediate internal transfer |
+
+ACH transfers and future-dated transfers are refused. ACH is a separate bank-payment network; this demo only supports the immediate internal-transfer case.
+
+### Files that stay out of Git
+
+No Jack Henry archive or extracted schema is included in this repository. You download the vendor definitions yourself using `make download`.
+
+- `vendor-inputs/` holds downloaded vendor input and is ignored by Git.
+- `var/` holds runtime data and is ignored by Git.
+- `var/private/journal/` holds the transfer journal. It records a caller, an opaque operation ID and a state—never an amount, account or transcript.
+
+The archive is **pinned**: the example expects one specific version and verifies its hash, a fingerprint of its contents. A different file causes startup to fail instead of silently changing the API definitions.
+
+## Run the checks
+
+These commands are for developers inspecting or changing the example. Run them from this example's folder in a terminal that is not occupied by the running server.
+
+```bash
+make test
+```
+
+Runs source, host, journal and SOAP mock tests. **Schema tests skip if the archive is missing.** Run `make download` first if you want those tests included, and inspect the results for skipped tests.
+
+```bash
+make validate
+```
+
+Validates the Rasa project configuration. This is separate from testing a conversation.
 
 ```bash
 uv run --locked python tests/live_text_check.py
 ```
 
-The journal lives in `var/private/journal/` (ignored by Git). It records a caller, an opaque operation id and a state; never an amount, an account or a transcript.
+Runs a live text check through the REST channel with a real model. REST is the HTTP text interface used by the test, rather than the microphone. `uv run --locked` uses the project's locked dependency versions.
+
+This live check needs all three configured secrets and the downloaded archive. It consumes API usage and is not included in `make test`. Passing it does not verify speech recognition, spoken replies or voice latency.
+
+## What has been verified—and what has not
+
+The transfer reply controls have source tests. A fresh end-to-end run of this revised walkthrough is still outstanding.
+
+| Item | Recorded status |
+|---|---|
+| Author | Rasa Community contributors |
+| Assessment date | November 12, 2026 |
+| Environment | `rasa-pro 3.21.0.dev5`, Python 3.12; development build |
+| Source and schema checks | Source tests using the published schemas |
+| Conversation check | Live text check in a Codespace using a real model through the REST channel |
+| Request and response validation | SOAP bodies validated against the pinned jXchange definitions |
+| Spoken conversation | Recorded run still outstanding |
+| Response time and setup duration | Not yet measured |
+| Real SilverLake integration | Not tested; requires a bank, an agreement and credentials |
+
+### Limits to understand before adapting this demo
+
+- **Valid structure does not prove real-bank compatibility.** A schema-valid message follows the published format. It does not establish how a real SilverLake system behaves or which fields a particular loan type supports.
+- **Identity is simulated.** There is one fixed fictional caller. This is not bank sign-in or production identity verification.
+- **Acceptance is not completion.** `RsStat` Success means the request was accepted, not that it was posted.
+- **Missing data stays missing.** The assistant reports a supplied payoff quote; it does not invent one for an unsupported date.
+- **A fault can leave a transfer outcome unknown.** The mock returns SOAP faults, such as the zero-amount error `100199`. For transfers, only a Client fault or documented business error `100199` or `400001` establishes refusal. Any other fault after sending is an unknown outcome and is never resent. For reads, a fault means the information is unavailable.
+- **One optional security schema is excluded.** The archive's XML-signature schema declares a DTD entity, which the loader refuses to process. That namespace remains unresolved; none of the six demonstrated operations needs it.
+- **Unknown transfer results require care.** The journal blocks further transfers for the caller after an uncertain result. An audited reset command remains outstanding.
+
+Use this example to learn the conversation flow, integration structure and transfer controls. A real banking deployment needs further integration work and validation beyond the checks recorded here.
