@@ -1,6 +1,6 @@
 .PHONY: install run check-inputs contract-test validate test reset-fixture
 install:
-	uv sync --locked --prerelease=allow
+	uv sync --prerelease=allow --locked
 run:
 	uv run --locked python run_demo.py
 check-inputs:
