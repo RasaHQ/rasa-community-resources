@@ -187,6 +187,31 @@ class GuardTests(unittest.TestCase):
         blocked = self.dispatch(draft, hc.Conversation())
         self.assertEqual(blocked["reason"], "wrong_incident_location")
 
+    def test_current_version_does_not_approve_a_different_service(self):
+        _, draft = self.draft()
+        tow_confirmation = confirmed(self.svc, draft)
+        result, updated = hc.update_dispatch_draft(self.svc, draft.draft_id,
+                                                   service_needed="jump_start")
+        self.assertEqual(result["status"], "updated")
+        # Current memory/version, same place and an answered question: only
+        # the question's old service must prevent this dispatch.
+        memory = hc.memory_values(self.svc, updated)
+        blocked = hc.request_dispatch(self.svc, draft.draft_id, memory, tow_confirmation)
+        self.assertEqual((blocked["status"], blocked["reason"], blocked["effects"]),
+                         ("blocked", "wrong_incident_location", 0))
+        self.assertEqual(self.svc.dispatches, [])
+
+    def test_matching_question_does_not_approve_a_different_draft_tag(self):
+        _, draft = self.draft()
+        memory = hc.memory_values(self.svc, draft)
+        # Deliberate inconsistent-memory control, not a claim about what the
+        # running engine produces. All other confirmation facts match.
+        memory["pending_draft_ref"] = "different-draft v1"
+        blocked = hc.request_dispatch(self.svc, draft.draft_id, memory, confirmed(self.svc, draft))
+        self.assertEqual((blocked["status"], blocked["reason"], blocked["effects"]),
+                         ("blocked", "wrong_incident_location", 0))
+        self.assertEqual(self.svc.dispatches, [])
+
     def test_electric_car_never_gets_a_wheel_lift(self):
         result, draft = self.draft(KEVIN, KEVIN_EV, "tow", "exit 16", preferred="Ridgeline Towing")
         self.assertEqual(result["preferred_provider"]["used"], False)
