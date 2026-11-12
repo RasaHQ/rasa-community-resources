@@ -195,6 +195,7 @@ Tutorials ([catalog](tutorials/README.md)):
 
 Finished example agents that are not case builds ([catalog](examples/README.md)):
 
+- [`examples/fiserv-premier`](examples/fiserv-premier/): Fiserv Premier banking demo (voice)
 - [`examples/mantle-factory-agent`](examples/mantle-factory-agent/): Mantle factory agent
 - [`examples/mantle-flight-briefing-openai-agents`](examples/mantle-flight-briefing-openai-agents/): Brief me before I fly — work in progress
 - [`examples/mantle-voice-agent`](examples/mantle-voice-agent/): Atlas — Voice Travel Agent with Rasa Skills
