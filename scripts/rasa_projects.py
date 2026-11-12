@@ -141,6 +141,12 @@ DOC_SWEEP_EXCLUDES = {".venv", ".git", "node_modules", "models", ".rasa", "__pyc
 # degenerate upgrade path naming one version twice.
 VERSION_IGNORE_MARKER = "rasa-version-ignore"
 
+
+def is_historical_version_line(line: str) -> bool:
+    """Explicit history can be preserved; a current Installation field cannot."""
+    return (VERSION_IGNORE_MARKER in line
+            and re.match(r"^\s*Installation\s*:", line, re.IGNORECASE) is None)
+
 # These workshop folders explicitly retain their original fixtures and results.
 # The active workshop environment is outside these prefixes and stays managed.
 HISTORICAL_VERSION_PATHS = (
@@ -558,7 +564,7 @@ def additional_migration_projects(projects: list[Project]) -> list[Project]:
         if manifest.parent in known:
             continue
         text = "\n".join(line for line in manifest.read_text().splitlines()
-                         if VERSION_IGNORE_MARKER not in line)
+                         if not is_historical_version_line(line))
         if RASA_PRO_DEP_RE.search(text) and _declares_rasa_pro(manifest):
             extra.append(Project(manifest.parent))
     return extra
@@ -635,7 +641,7 @@ def read_readme_verified(project: Project) -> str | None:
     # Use the same explicit historical-line exemption as migration and lint.
     # Otherwise a preserved assessment is mistaken for the current install pin.
     text = "\n".join(line for line in readme.read_text(encoding="utf-8").splitlines()
-                     if VERSION_IGNORE_MARKER not in line)
+                     if not is_historical_version_line(line))
     # Current installation targets are separate from preserved human assessment
     # history. Old snapshots without the new field keep their original contract.
     match = re.search(rf"Installation:\s*rasa-pro[ \t]+(?P<version>{VERSION_TOKEN})", text)
@@ -649,7 +655,7 @@ def stale_doc_versions(project: Project, expected: str) -> dict[str, list[str]]:
 
     Catches the drift `read_readme_verified` misses: a header bumped but a
     `rasa-pro==…` left behind further down, or a stale pin in AGENTS.md.
-    Lines carrying `rasa-version-ignore` are exempt, so an upgrade
+    Historical lines carrying `rasa-version-ignore` are exempt, so an upgrade
     illustration can name the version it upgrades FROM.
     """
     stale: dict[str, list[str]] = {}
@@ -662,7 +668,7 @@ def stale_doc_versions(project: Project, expected: str) -> dict[str, list[str]]:
         # string cannot see the marker at all, which made this gate reject
         # every honest two-version upgrade path while the lint accepted it.
         for line in text.splitlines():
-            if VERSION_IGNORE_MARKER in line:
+            if is_historical_version_line(line):
                 continue
             found.update(
                 m.group("version") for pattern in patterns for m in pattern.finditer(line)
