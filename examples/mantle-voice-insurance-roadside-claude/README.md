@@ -434,7 +434,8 @@ the command exit nonzero; keep its failed assertions with the full-guard
 result. The service control uses current draft memory with an old service
 question. The draft-reference control deliberately supplies inconsistent
 memory while the question and answer otherwise match. That second input tests
-the library boundary; it is not a claim about memory the live engine produces.
+the library boundary with a hand-constructed inconsistent state. A live-engine
+state-transition check would require a separate run.
 
 All calls use the example's invented data in fresh in-memory service objects.
 This is an offline source exercise, separate from the recorded model and
