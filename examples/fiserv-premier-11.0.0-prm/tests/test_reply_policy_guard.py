@@ -56,6 +56,7 @@ class HostOnlyWording(unittest.IsolatedAsyncioTestCase):
                 self.native.turn = SimpleNamespace(text="Verify me.", trigger="session_start")
                 reply = await policy.keep_host_reply_once(self.payload(text))
                 self.assertIsNone(reply.text)
+                self.assertEqual([c["tool_name"] for c in reply.tool_calls], ["listen"])
 
     def test_the_retry_note_never_invites_a_new_transfer_after_an_unknown_outcome(self):
         self.assertIn("banking_transfer_status", policy.RETRY_REVIEW)
