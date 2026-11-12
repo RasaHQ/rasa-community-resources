@@ -1264,6 +1264,31 @@ class TestSnapshotPin(unittest.TestCase):
             repo.project(self.WAVE, pin="3.19.0.dev5")
             self.assertEqual(self._findings(), [])
 
+    def test_pending_maintainer_installation_target_does_not_invent_verification(self):
+        with FakeRepo() as repo:
+            project = repo.project(self.WAVE)
+            readme = project / "README.md"
+            original = readme.read_text().replace(
+                "Verified with: rasa-pro 3.19.0.dev5, Python 3.11+, uv",
+                "Verified with: pending upstream validation\n"
+                "Installation: rasa-pro 3.19.0.dev5 (maintainer integration target)")
+            readme.write_text(original)
+            self.assertEqual(self._findings(), [])
+            self.assertEqual(readme.read_text(), original)
+            self.assertNotIn("Verified with: rasa-pro", original)
+
+    def test_pending_installation_target_still_must_match_pin_and_lock(self):
+        with FakeRepo() as repo:
+            project = repo.project(self.WAVE)
+            readme = project / "README.md"
+            readme.write_text(readme.read_text().replace(
+                "Verified with: rasa-pro 3.19.0.dev5, Python 3.11+, uv",
+                "Verified with: pending upstream validation\n"
+                "Installation: rasa-pro 3.20.0.dev6 (maintainer integration target)"))
+            found = self._findings()
+            self.assertEqual(len(found), 1)
+            self.assertIn("snapshot-pin", found[0].check)
+
     def test_stable_pin_needs_no_prerelease_allowance(self):
         with FakeRepo() as repo:
             repo.project(self.WAVE, pin="3.18.0", prerelease=None)

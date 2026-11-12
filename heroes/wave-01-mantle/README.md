@@ -48,6 +48,7 @@ pull request that adds their project.
 | Samrudha Kelkar | [@samrudh](https://github.com/samrudh) | [samrudh-coffee-shop](projects/samrudh-coffee-shop/) |
 | Malar Saravanan | [@Malar-saravanan](https://github.com/Malar-saravanan) | [`malar-saravanan-nourishher-voice`](projects/malar-saravanan-nourishher-voice) |
 | Damilola P | [@phlenfyl](https://github.com/phlenfyl) | [`phlenfyl-notevs-agent`](projects/phlenfyl-notevs-agent) |
+| cycywanyeki20 | [@cycywanyeki20](https://github.com/cycywanyeki20) | [Stammy](projects/cycywanyeki20-stammy/) |
 
 ## Projects
 
@@ -60,6 +61,7 @@ pull request that adds their project.
 | [samrudh-coffee-shop](projects/samrudh-coffee-shop/) | Voice & text assistant for Artisan Roast Coffee Co. supporting drink ordering, customer loyalty, barista store queues, and CEO financial revenue analytics | Samrudha Kelkar (@samrudh) | `3.20.0.dev6` | 2026-09-11 |
 | [`malar-saravanan-nourishher-voice`](projects/malar-saravanan-nourishher-voice) | Voice-first women's health nutrition companion — profile, meal planning, natural meal logging, history/coaching, with optional condition-aware support | Malar Saravanan | rasa-pro 3.20.0.dev6 | 2026-09-18 |
 | [`phlenfyl-notevs-agent`](projects/phlenfyl-notevs-agent) | Chat agent for reading, searching, and managing your NoteVs VS Code notes | Damilola P | rasa-pro 3.19.0.dev5 | 2026-09-20 |
+| [Stammy](projects/cycywanyeki20-stammy/) | Experimental text-based speech-support practice prompts | cycywanyeki20 | Maintainer target 3.20.0.dev6; runtime not yet verified | Source integration 2026-11-11 |
 
 Every project directory under `projects/` must appear in this table — the build
 fails otherwise, because an unlisted project is one nobody can find. Adding a

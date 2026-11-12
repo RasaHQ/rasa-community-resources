@@ -264,6 +264,7 @@ def manifest(project) -> dict:
              + project.rel + ' --skip-sync --use-project-pin') if snapshot else None
     if project.rel in {
         'heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice',
+        'heroes/wave-01-mantle/projects/cycywanyeki20-stammy',
         'heroes/wave-01-mantle/projects/phlenfyl-notevs-agent',
     }:
         # These deterministic tool suites make no provider calls.
