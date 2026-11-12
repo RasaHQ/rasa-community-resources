@@ -19,7 +19,9 @@ From the example's terminal, this wraps the same `make run` command:
 python ../../scripts/voice_latency.py capture --output "$HOME/voice-latency/events.jsonl" --timeout 600 -- make run
 ```
 
-The runtime's usual console output remains visible. The private timing file
+The runtime's usual console output remains visible through deadline-aware,
+nonblocking forwarding with at most one read chunk pending. An open pipe that
+is not being consumed cannot bypass the capture timeout or owned-group cleanup. The private timing file
 retains only recognized markers and numeric metadata, with run-local session
 labels. It does not retain console text, transcripts, URLs, environment values
 or command arguments. The ordinary console may still contain private runtime
@@ -93,7 +95,9 @@ first non-silent sample consumed by the playback worklet and retain any output
 latency/calibration limits; queued or scheduled audio alone is insufficient.
 
 Reports retain incomplete calls, ambiguous duplicate boundaries, reversed times
-and cancellations. P50 is the median and P95 the nearest-rank 95th percentile;
+and cancellations. Multiple completions make a turn terminally ambiguous; all
+cancellation/failure flags survive in either order and the turn is excluded from
+successful percentiles. A valid audio-only observation needs no completion event. P50 is the median and P95 the nearest-rank 95th percentile;
 the actual non-cancelled sample count is always reported. Streaming phases can
 overlap, so their durations are never added to manufacture end-to-end latency.
 No sample distribution or provenance is invented and no target pass is implied

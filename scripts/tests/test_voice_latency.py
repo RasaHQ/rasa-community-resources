@@ -83,6 +83,26 @@ class TimingControls(unittest.TestCase):
         self.assertEqual(report["orchestration"]["count"], 0)
         self.assertEqual(report["turns"][0]["orchestration"]["ms"], 250)
 
+    def test_conflicting_terminals_are_order_independent_and_never_successes(self):
+        for flag in ("cancelled", "failed"):
+            for reverse in (False, True):
+                ends = [event("turn.completed", 200), event("turn.completed", 250, **{flag: True})]
+                rows = [event("speech.end", 0), event("audio.first_played", 200)]
+                rows += list(reversed(ends)) if reverse else ends
+                report = v.analyse(rows)
+                self.assertTrue(report["turns"][0][flag])
+                self.assertEqual(report["turns"][0]["terminal_state"], "ambiguous")
+                self.assertEqual(report["ambiguous_terminal_turns"], 1)
+                self.assertEqual(report["end_of_speech_to_first_audio"]["count"], 0)
+        # Even two apparently successful completions are not a unique terminal.
+        rows = [event("speech.end", 0), event("audio.first_played", 200),
+                event("turn.completed", 250), event("turn.completed", 300)]
+        self.assertEqual(v.analyse(rows)["end_of_speech_to_first_audio"]["count"], 0)
+        # Completion is optional for independent, valid audio-only observations.
+        audio_only = v.analyse(rows[:2])
+        self.assertEqual(audio_only["end_of_speech_to_first_audio"]["count"], 1)
+        self.assertEqual(audio_only["turns"][0]["terminal_state"], "absent")
+
     def test_percentiles_disclose_their_actual_sample_count(self):
         rows = []
         for i, latency in enumerate([100, 200, 300, 400]):
@@ -209,6 +229,35 @@ class CaptureControls(unittest.TestCase):
             with self.assertRaises(ProcessLookupError):
                 os.killpg(pid, 0)
             self.assertEqual(v.read_events(output, "events")[-1]["termination"], "timeout")
+
+    @unittest.skipUnless(os.name == "posix", "owned process groups require POSIX")
+    def test_stalled_stdout_sink_cannot_bypass_deadline_or_group_cleanup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "timing.jsonl"
+            pidfile = Path(directory) / "pid"
+            child = ("import os,pathlib; pathlib.Path(" + repr(str(pidfile)) +
+                     ").write_text(str(os.getpid())); os.write(1,b'x'*(16*1024*1024))")
+            process = subprocess.Popen([sys.executable, str(SCRIPT), "capture", "--timeout", ".4",
+                                        "--output", str(output), "--", sys.executable, "-c", child],
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            try:
+                # Keep the pipe OPEN without draining it. communicate() would hide the bug.
+                self.assertEqual(process.wait(timeout=5), 124)
+                pid = int(pidfile.read_text())
+                with self.assertRaises(ProcessLookupError):
+                    os.killpg(pid, 0)
+                self.assertEqual(v.read_events(output, "events")[-1]["termination"], "timeout")
+            finally:
+                if pidfile.exists():
+                    try:
+                        os.killpg(int(pidfile.read_text()), signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=5)
+                process.stdout.close()
+                process.stderr.close()
 
     def test_existing_capture_is_never_overwritten_or_rerun(self):
         with tempfile.TemporaryDirectory() as directory:

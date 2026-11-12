@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import selectors
+import select
 import signal
 import statistics
 import subprocess
@@ -232,7 +233,8 @@ def analyse(events, target_ms=1500):
             if any(sum(r["event"] == stage for r in rows) > 1 for stage in (a, b)):
                 return {"status": "ambiguous_boundaries", "ms": None}
             return span(first(a), first(b))
-        completed = first("turn.completed")
+        completions = [r for r in rows if r["event"] == "turn.completed"]
+        completed = completions[0] if len(completions) == 1 else None
         call_ids = {r["call"] for r in rows if r["event"].startswith("mcp.") and "call" in r}
         mcp = []
         for call in sorted(call_ids):
@@ -244,8 +246,9 @@ def analyse(events, target_ms=1500):
             mcp.append(dict(call=call, **measured))
         turns.append({"session": session, "turn": turn,
                       "context": "voice_session_observed" if session in voice_sessions else "unclassified",
-                      "cancelled": completed.get("cancelled", False) if completed else False,
-                      "failed": completed.get("failed", False) if completed else False,
+                      "terminal_state": "ambiguous" if len(completions) > 1 else ("single" if completions else "absent"),
+                      "cancelled": any(r.get("cancelled", False) for r in completions),
+                      "failed": any(r.get("failed", False) for r in completions),
                       "iterations": completed.get("iterations") if completed else None,
                       "end_of_speech_to_first_audio": measure("speech.end", "audio.first_played"),
                       "asr_final": measure("speech.end", "asr.final"),
@@ -254,7 +257,8 @@ def analyse(events, target_ms=1500):
                       "mcp_timing_status": "observations_present" if mcp else "missing_boundaries",
                       "tool_dispatches": sum(r["event"] == "tool.dispatch" for r in rows),
                       "tts_first_chunk": measure("tts.requested", "tts.first_chunk")})
-    usable = [r for r in turns if not r["cancelled"] and not r["failed"]]
+    usable = [r for r in turns if not r["cancelled"] and not r["failed"]
+              and r["terminal_state"] != "ambiguous"]
     return {
         "schema": "rasa.voice-latency-report/v1", "target_ms": target_ms,
         "timing_provenance": "Supplied timing observations; not authenticated audio or a qualification receipt",
@@ -264,6 +268,7 @@ def analyse(events, target_ms=1500):
                                                  if r["session"] in voice_sessions]),
         "cancelled_turns": sum(r["cancelled"] for r in turns), "turns": turns,
         "failed_turns": sum(r["failed"] for r in turns),
+        "ambiguous_terminal_turns": sum(r["terminal_state"] == "ambiguous" for r in turns),
         "cold_start": {
             "first_runtime_log_to_worker_ready": span(runtime.get("runtime.first_log"), runtime.get("runtime.worker_ready")),
             "model_loading_to_voice_initialization": span(runtime.get("runtime.model_loading"), runtime.get("runtime.voice_ready")),
@@ -278,6 +283,28 @@ def analyse(events, target_ms=1500):
                    "SDK wall timestamps can be coarse; intervals expose their resolution.",
                    "Percentiles describe only the observed non-cancelled samples, not typical production performance."],
     }
+
+
+def forward_stdout(chunk, deadline):
+    """Forward at most one read chunk without letting an unread sink beat the deadline."""
+    fd = sys.stdout.fileno()
+    blocking = os.get_blocking(fd)
+    try:
+        os.set_blocking(fd, False)
+        pending = memoryview(chunk)
+        while pending:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired("capture stdout", 0)
+            try:
+                written = os.write(fd, pending)
+                if written == 0:
+                    raise BrokenPipeError("stdout closed")
+                pending = pending[written:]
+            except BlockingIOError:
+                select.select([], [fd], [], min(.1, remaining))
+    finally:
+        os.set_blocking(fd, blocking)
 
 
 def capture(command, output, timeout):
@@ -325,8 +352,7 @@ def capture(command, output, timeout):
                             eof = True
                             break
                         # Preserve normal terminal output, but never retain it in the artifact.
-                        sys.stdout.buffer.write(chunk)
-                        sys.stdout.buffer.flush()
+                        forward_stdout(chunk, started + timeout)
                         buffer += chunk
                         while b"\n" in buffer:
                             line, buffer = buffer.split(b"\n", 1)
