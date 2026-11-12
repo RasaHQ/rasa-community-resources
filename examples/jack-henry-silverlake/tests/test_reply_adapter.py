@@ -94,6 +94,16 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         asked=await adapter.banking_transfer_status(context=self.context)
         self.assertEqual(asked.llm_response["state"],"accepted")  # an explicit question still gets it
 
+    async def test_a_confirmation_after_an_unknown_outcome_never_invites_a_new_transfer(self):
+        await self.review();self.host.state="unknown";self.turn("confirm transfer")
+        await adapter.banking_submit_transfer(context=self.context)
+        self.turn("Yes.");policy._delivered.clear()
+        result=await adapter.banking_transfer_status(context=self.context)
+        self.assertEqual(result.llm_response["state"],"unknown")
+        self.assertIn("Do not retry",self.messages[-1])
+        self.assertNotIn("Request a new transfer",self.messages[-1])
+        self.assertEqual(self.host.sends,1)
+
     async def test_unknown_outcome_never_invites_a_new_transfer(self):
         await self.review();self.host.state="unknown";self.turn("confirm transfer")
         await adapter.banking_submit_transfer(context=self.context)
