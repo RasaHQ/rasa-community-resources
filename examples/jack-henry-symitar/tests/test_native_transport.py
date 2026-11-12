@@ -85,6 +85,34 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(inspector['asr']['name'],'voice_privacy.OptOutASR')
             self.assertEqual(inspector['tts']['name'],'voice_privacy.OptOutTTS')
 
+    async def test_single_word_confirmation_and_revocation_survive_active_response(self):
+        # A drained audio queue does not imply that SDK response processing ended.
+        # Exercise its actual handler with no NLI model, without speech/network calls.
+        from rasa.core.config.channel_loading import resolve_channels_config
+        from rasa.core.channels.voice_stream.call_state import CallState, InterruptionConfig, _call_state
+        from rasa.core.voice.event_composition.handlers.barge_in.barge_in_handler import BargeInHandler
+        from rasa.core.voice.event_composition.handlers.barge_in import backchannel
+        from rasa.core.voice.event_composition.events.input_events import FinalTranscriptInputEvent
+        from rasa.core.voice.event_composition.events import BargeInInteractionEvent
+        from launcher import prepare_runtime
+        with tempfile.TemporaryDirectory() as temporary:
+            run=Path(temporary);prepare_runtime(run,'https://fictional-5005.app.github.dev')
+            inspector=resolve_channels_config(project_root=run).channels['inspector']
+            for text in ('yes','no','cancel'):
+                with self.subTest(text=text):
+                    state=CallState(is_rasa_processing=True,is_bot_audio_active=False,
+                        interruption_config=InterruptionConfig(**inspector.get('interruptions',{'enabled':True})))
+                    token=_call_state.set(state)
+                    try:
+                        queue=SimpleNamespace(conversation_id='fictional-short-input',put=unittest.mock.AsyncMock())
+                        with patch.object(backchannel,'loaded_model',return_value=None):
+                            handler=BargeInHandler(queue,bot_text_provider=lambda:None)
+                            await handler.handle(FinalTranscriptInputEvent(text=text))
+                        self.assertTrue(state.barge_in_accepted)
+                        self.assertIsInstance(queue.put.call_args.args[0],BargeInInteractionEvent)
+                    finally:
+                        _call_state.reset(token)
+
     async def test_native_tracker_never_dispatches_a_historical_no_tool_yes(self):
         import native_adapter
         native_adapter._conversations.clear()
