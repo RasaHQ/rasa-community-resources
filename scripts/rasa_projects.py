@@ -141,6 +141,11 @@ DOC_SWEEP_EXCLUDES = {".venv", ".git", "node_modules", "models", ".rasa", "__pyc
 # degenerate upgrade path naming one version twice.
 VERSION_IGNORE_MARKER = "rasa-version-ignore"
 
+
+def is_historical_version_line(line: str) -> bool:
+    """Explicit history can be preserved; a current Installation field cannot."""
+    return VERSION_IGNORE_MARKER in line and INSTALLATION_VERSION_RE.search(line) is None
+
 # These workshop folders explicitly retain their original fixtures and results.
 # The active workshop environment is outside these prefixes and stays managed.
 HISTORICAL_VERSION_PATHS = (
@@ -154,6 +159,10 @@ HISTORICAL_VERSION_PATHS = (
 # ------------------------------------------------------------------------------
 # PEP 440-ish: 3.19.1, 3.19.0.dev5, 3.19.0rc1, 3.19.0b2, 3.19.1.post1.
 VERSION_TOKEN = r"\d+\.\d+(?:\.\d+)?(?:(?:a|b|rc)\d+)?(?:\.(?:dev|post)\d+)?"
+# The detector and historical-line guard must recognize identical syntax.
+INSTALLATION_VERSION_RE = re.compile(
+    rf"Installation\s*:\s*rasa-pro[ \t]+(?P<version>{VERSION_TOKEN})", re.IGNORECASE
+)
 _VERSION_FULLMATCH = re.compile(rf"^{VERSION_TOKEN}$")
 _PRERELEASE_RE = re.compile(r"(?:(?:a|b|rc)\d+|\.dev\d+)$")
 
@@ -558,7 +567,7 @@ def additional_migration_projects(projects: list[Project]) -> list[Project]:
         if manifest.parent in known:
             continue
         text = "\n".join(line for line in manifest.read_text().splitlines()
-                         if VERSION_IGNORE_MARKER not in line)
+                         if not is_historical_version_line(line))
         if RASA_PRO_DEP_RE.search(text) and _declares_rasa_pro(manifest):
             extra.append(Project(manifest.parent))
     return extra
@@ -632,10 +641,13 @@ def read_readme_verified(project: Project) -> str | None:
     readme = project.path / "README.md"
     if not readme.is_file():
         return None
-    text = readme.read_text(encoding="utf-8")
+    # Use the same explicit historical-line exemption as migration and lint.
+    # Otherwise a preserved assessment is mistaken for the current install pin.
+    text = "\n".join(line for line in readme.read_text(encoding="utf-8").splitlines()
+                     if not is_historical_version_line(line))
     # Current installation targets are separate from preserved human assessment
     # history. Old snapshots without the new field keep their original contract.
-    match = re.search(rf"Installation:\s*rasa-pro[ \t]+(?P<version>{VERSION_TOKEN})", text)
+    match = INSTALLATION_VERSION_RE.search(text)
     if match is None:
         match = VERIFIED_WITH_RE.search(text)
     return match.group("version") if match else None
@@ -646,7 +658,7 @@ def stale_doc_versions(project: Project, expected: str) -> dict[str, list[str]]:
 
     Catches the drift `read_readme_verified` misses: a header bumped but a
     `rasa-pro==…` left behind further down, or a stale pin in AGENTS.md.
-    Lines carrying `rasa-version-ignore` are exempt, so an upgrade
+    Historical lines carrying `rasa-version-ignore` are exempt, so an upgrade
     illustration can name the version it upgrades FROM.
     """
     stale: dict[str, list[str]] = {}
@@ -659,7 +671,7 @@ def stale_doc_versions(project: Project, expected: str) -> dict[str, list[str]]:
         # string cannot see the marker at all, which made this gate reject
         # every honest two-version upgrade path while the lint accepted it.
         for line in text.splitlines():
-            if VERSION_IGNORE_MARKER in line:
+            if is_historical_version_line(line):
                 continue
             found.update(
                 m.group("version") for pattern in patterns for m in pattern.finditer(line)

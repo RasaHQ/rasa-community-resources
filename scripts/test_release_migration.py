@@ -113,6 +113,97 @@ class NestedMigrationTests(unittest.TestCase):
                 findings = lint_repo.check_version_consistency('3.22.0.dev3')
             self.assertEqual([f.path for f in findings], [names[0]])
 
+class HistoricalReadmeDriftTests(unittest.TestCase):
+    OLD = "3.21.0.dev5"
+    NEW = "3.22.0.dev3"
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.folder = self.root / "patterns/mcp-confirmation-gate"
+        self.folder.mkdir(parents=True)
+        replacement = patch.object(rasa_projects, "REPO_ROOT", self.root)
+        replacement.start()
+        self.addCleanup(replacement.stop)
+        self.project = rasa_projects.Project(self.folder)
+        self.manifest(self.OLD)
+        self.lock(self.NEW)
+
+    def manifest(self, version):
+        (self.folder / "pyproject.toml").write_text(
+            '[project]\nname = "fixture"\nversion = "0.1.0"\n'
+            f'dependencies = ["rasa-pro=={version}"]\n'
+            '[tool.uv]\nprerelease = "allow"\n')
+
+    def lock(self, version):
+        (self.folder / "uv.lock").write_text(
+            f'[[package]]\nname = "rasa-pro"\nversion = "{version}"\n')
+
+    def test_migrated_project_keeps_assessment_without_false_readme_drift(self):
+        historical = ("Assessed on: 2026-10-15\n"
+                      f"Verified with: rasa-pro {self.OLD}, Python 3.12 "
+                      "# rasa-version-ignore: historical assessment\n")
+        readme = self.folder / "README.md"
+        readme.write_text(historical)
+        result = migration.migrate_project(self.project, self.NEW, skip_lock=True,
+                    touch_assessed_on=False, dry_run=False)
+        self.assertIsNone(result["error"])
+        self.assertEqual(readme.read_text(), historical)
+        self.assertIsNone(rasa_projects.read_readme_verified(self.project))
+        drift = rasa_projects.project_drift(self.project, self.NEW)
+        self.assertTrue(drift.ok, drift.issues())
+
+    def test_unmarked_stale_assessment_still_blocks(self):
+        self.manifest(self.NEW)
+        (self.folder / "README.md").write_text(f"Verified with: rasa-pro {self.OLD}\n")
+        drift = rasa_projects.project_drift(self.project, self.NEW)
+        self.assertFalse(drift.ok)
+        self.assertEqual(drift.readme, self.OLD)
+
+    def test_current_installation_takes_precedence_over_marked_history(self):
+        (self.folder / "README.md").write_text(
+            f"Verified with: rasa-pro {self.OLD} # rasa-version-ignore: history\n"
+            f"Installation: rasa-pro {self.OLD}\n")
+        migration.migrate_project(self.project, self.NEW, skip_lock=True,
+                                  touch_assessed_on=False, dry_run=False)
+        self.assertEqual(rasa_projects.read_readme_verified(self.project), self.NEW)
+        self.assertIn(f"Verified with: rasa-pro {self.OLD}",
+                      (self.folder / "README.md").read_text())
+
+    def test_marked_installation_is_checked_and_migrated_as_current(self):
+        for prefix in ("  ", "- ", "> "):
+            with self.subTest(prefix=prefix):
+                self.manifest(self.NEW)
+                readme = self.folder / "README.md"
+                readme.write_text(f"{prefix}Installation: rasa-pro {self.OLD} "
+                                  "# rasa-version-ignore: must not hide the current pin\n")
+                self.assertEqual(rasa_projects.read_readme_verified(self.project), self.OLD)
+                self.assertFalse(rasa_projects.project_drift(self.project, self.NEW).ok)
+                with patch.object(lint_repo, "REPO_ROOT", self.root), \
+                     patch.object(lint_repo, "_tracked_files", return_value=[readme]):
+                    self.assertTrue(lint_repo.check_version_consistency(self.NEW))
+                    result = migration.migrate_project(self.project, self.NEW, skip_lock=True,
+                                        touch_assessed_on=False, dry_run=False)
+                    self.assertIsNone(result["error"])
+                    self.assertEqual(lint_repo.check_version_consistency(self.NEW), [])
+                self.assertEqual(rasa_projects.read_readme_verified(self.project), self.NEW)
+                self.assertTrue(rasa_projects.project_drift(self.project, self.NEW).ok)
+                self.assertIn("rasa-version-ignore", readme.read_text())
+
+    def test_history_marker_never_exempts_manifest_or_lock_drift(self):
+        (self.folder / "README.md").write_text(
+            f"Verified with: rasa-pro {self.OLD} # rasa-version-ignore: history\n")
+        for manifest, lock in ((self.OLD, self.NEW), (self.NEW, self.OLD)):
+            with self.subTest(manifest=manifest, lock=lock):
+                self.manifest(manifest)
+                self.lock(lock)
+                drift = rasa_projects.project_drift(self.project, self.NEW)
+                self.assertFalse(drift.ok)
+                self.assertTrue(any(issue.startswith(("pyproject=", "lock="))
+                                    for issue in drift.issues()))
+
+
 class TrainingCredentialsTests(unittest.TestCase):
     def test_runtime_key_is_not_mistaken_for_a_local_training_requirement(self):
         with tempfile.TemporaryDirectory() as tmp:

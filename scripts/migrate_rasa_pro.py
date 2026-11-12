@@ -49,6 +49,7 @@ from rasa_projects import (  # noqa: E402
     discover_projects,
     additional_migration_projects,
     is_historical_version_path,
+    is_historical_version_line,
     tracked_version_paths,
     is_prerelease,
     is_valid_version,
@@ -186,7 +187,7 @@ def rewrite_version_text(
     # Marked historical observations must remain verbatim across migrations.
     lines = []
     for line in text.splitlines(keepends=True):
-        if "rasa-version-ignore" not in line:
+        if not is_historical_version_line(line):
             for pattern, replace in [(VERIFIED_WITH_RE, bump), (NOTES_HEADING_RE, bump_notes),
                                      (PROSE_EQ_RE, bump), (PROSE_SPACE_RE, bump),
                                      (MAKE_VERSION_RE, bump), (ECHO_PIN_RE, bump_echo)]:
