@@ -133,6 +133,13 @@ class WireTests(unittest.TestCase):
             ((201, dict(valid, XferStatusRec={"XferKeys": {}, "XferStatus": {"XferStatusCode": "Rejected"}}),
               False), "refused"),
             ((422, {"Status": status("1020", "Not permitted", "Error")}, False), "refused"),
+            # Council M1: the EFX gate itself decides. Each of these carries a Valid status.
+            ((201, dict(valid, Status=status("0", "Success", "Warning")), False), UnknownOutcome),
+            ((201, dict(valid, Status=status("1040", "Request declined", "Info")), False), UnknownOutcome),
+            ((201, dict(valid, XferStatusRec={"XferKeys": {}, "XferStatus": {"XferStatusCode": "valid"}}),
+              False), UnknownOutcome),
+            ((201, dict(valid, XferStatusRec={"XferKeys": {}, "XferStatus": {"XferStatusCode": " Valid"}}),
+              False), UnknownOutcome),
         ]
         for reply, expected in cases:
             with self.subTest(reply=reply[:2]):
@@ -143,6 +150,47 @@ class WireTests(unittest.TestCase):
                         self.client.transfer(*args)
                 else:
                     self.assertEqual(self.client.transfer(*args), expected)
+
+
+class RawReplies(unittest.TestCase):
+    """Council L2 and L3: a duplicated key or a malformed reply never decides by accident."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.contract = load_contract()
+
+    def client_with(self, code, raw):
+        client = BankingHubClient(self.contract, "http://127.0.0.1:9", MOCK_ORGANIZATION)
+        transport = httpx.MockTransport(lambda request: httpx.Response(code, content=raw))
+        original = httpx.Client
+        def patched(**kwargs):
+            kwargs["transport"] = transport
+            return original(**kwargs)
+        return client, patch.object(httpx, "Client", patched)
+
+    def test_a_duplicated_status_key_is_unknown_for_a_transfer(self):
+        raw = (b'{"Status": {"StatusCode": "0", "StatusDesc": "Success", "Severity": "Info", '
+               b'"SvcProviderName": "X"}, "XferStatusRec": {"XferKeys": {}, "XferStatus": '
+               b'{"XferStatusCode": "Rejected", "XferStatusCode": "Valid"}}}')
+        client, patched = self.client_with(201, raw)
+        with patched, self.assertRaises(UnknownOutcome):
+            client.transfer("5550010001", "DDA", "5550010002", "SDA", Decimal("1.00"))
+
+    def test_a_duplicated_balance_label_is_unavailable(self):
+        raw = (b'{"Status": {"StatusCode": "0", "StatusDesc": "Success", "Severity": "Info", '
+               b'"SvcProviderName": "X"}, "AcctRec": {"AcctKeys": {"AcctId": "5550010001", "AcctType": "DDA"}, '
+               b'"AcctStatus": {"AcctStatusCode": "x"}, "DepositAcctInfo": {"AcctBal": [{"BalType": "Ledger", '
+               b'"BalType": "Avail", "CurAmt": {"Amt": 1.0, "CurCode": {"CurCodeValue": "USD"}}}]}}}')
+        client, patched = self.client_with(200, raw)
+        with patched, self.assertRaises(Unavailable):
+            client.available_balance("5550010001")
+
+    def test_an_amount_the_wire_cannot_carry_exactly_is_refused_unsent(self):
+        fx = Fixture(self.contract)
+        self.addCleanup(fx.close)
+        self.assertEqual(fx.client.transfer("5550010001", "DDA", "5550010002", "SDA",
+                                            Decimal("9007199254740993.00")), "refused")
+        self.assertEqual(fx.mock.transfers, 0)
 
 
 class LostReply(unittest.TestCase):
@@ -283,7 +331,8 @@ class HostTests(unittest.TestCase):
 
     def test_unsupported_transfers_are_refused_before_review(self):
         context = self.build()
-        for args in (("DDA-A", "DDA-A", "1.00", "USD"), ("DDA-A", "SDA-A", "1.00", "EUR"),
+        for args in (("DDA-A", "SDA-A", "1000000.01", "USD"),  # council L1: above the teaching cap
+                     ("DDA-A", "DDA-A", "1.00", "USD"), ("DDA-A", "SDA-A", "1.00", "EUR"),
                      ("DDA-A", "LOAN-A", "1.00", "USD"), ("DDA-A", "SDA-A", "0", "USD"),
                      ("DDA-A", "SDA-A", "1.001", "USD"), ("DDA-A", "DDA-B", "1.00", "USD"),
                      ("SDA-A", "DDA-A", "1.00", "USD")):

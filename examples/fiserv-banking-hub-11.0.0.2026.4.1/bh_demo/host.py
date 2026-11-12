@@ -28,6 +28,7 @@ from .client import BankingHubClient, Unavailable, UnknownOutcome
 READ_GRANT_SECONDS = 300
 TRANSFER_GRANT_SECONDS = 60
 REVIEW_SECONDS = 30
+MAX_TRANSFER = Decimal("1000000.00")  # a teaching cap; the wire carries a JSON number
 
 # Facts this release cannot supply with a sourced value (see the README).
 UNSOURCED = {
@@ -324,6 +325,8 @@ class BankingHubService:
             if self.journal.held(context.principal):
                 raise Refused("outcome_unresolved")
             cleaned = _money(amount)
+            if cleaned > MAX_TRANSFER:
+                raise Refused("amount_too_large")
             identifier = uuid4().hex
             self._reviews[identifier] = _Review(context, source, destination, format(cleaned, "f"),
                                                 self.clock() + REVIEW_SECONDS)

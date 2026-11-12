@@ -64,6 +64,25 @@ def _money(node) -> Decimal:
         raise Unavailable("no_amount") from None
 
 
+def _no_duplicate_keys(pairs):
+    """A repeated key would let JSON order decide a status or a balance label."""
+    keys = [key for key, _ in pairs]
+    if len(keys) != len(set(keys)):
+        raise ValueError("duplicate_key")
+    return dict(pairs)
+
+
+def _closed(method):
+    """A schema-valid but malformed reply fails with a closed reason, never a crash."""
+    def wrapper(*args, **kwargs):
+        try:
+            return method(*args, **kwargs)
+        except (KeyError, TypeError, AttributeError, OverflowError):
+            raise Unavailable("malformed_reply") from None
+    wrapper.__name__, wrapper.__doc__ = method.__name__, method.__doc__
+    return wrapper
+
+
 def _exactly_one(entries, field, label):
     if not isinstance(entries, list):
         raise Unavailable("no_" + label.lower())
@@ -109,7 +128,7 @@ class BankingHubClient:
                 raise Unavailable("status_" + str(reply.status_code))
             raise UnknownOutcome("unexpected_status")
         try:
-            data = reply.json()
+            data = json.loads(reply.content, object_pairs_hook=_no_duplicate_keys)
         except ValueError:
             raise (UnknownOutcome("invalid_reply") if write else Unavailable("invalid_response")) from None
         try:
@@ -125,6 +144,7 @@ class BankingHubClient:
             raise Unavailable("not_success")  # warnings and errors are never success
         return data
 
+    @_closed
     def party_accounts(self, party_id: str) -> list[tuple[str, str]]:
         try:
             data = self._post("party", {"PartyAcctRelSel": {"PartyKeys": {"PartyId": party_id}},
@@ -142,6 +162,7 @@ class BankingHubClient:
                 related.append((keys["AcctId"], keys["AcctType"]))
         return related
 
+    @_closed
     def _record(self, account_id: str, account_type: str) -> dict:
         data = self._post("acct", {"AcctSel": {"AcctKeys": {"AcctId": account_id, "AcctType": account_type}}})
         record = data.get("AcctRec")
@@ -150,11 +171,13 @@ class BankingHubClient:
             raise Unavailable("no_matching_account")  # never read a cross-type record
         return record
 
+    @_closed
     def available_balance(self, account_id: str) -> Decimal:
         """The one DepositAcctInfo.AcctBal entry with BalType exactly "Avail"."""
         balances = self._record(account_id, "DDA").get("DepositAcctInfo", {}).get("AcctBal")
         return _money(_exactly_one(balances, "BalType", "Avail").get("CurAmt"))
 
+    @_closed
     def loan_payment(self, account_id: str) -> dict:
         """NextPmt PmtDt and the one PmtCompositeAmt entry typed exactly "Total"."""
         next_payment = self._record(account_id, "LOAN").get("LoanAcctInfo", {}).get("NextPmt", {})
@@ -172,6 +195,8 @@ class BankingHubClient:
         values. Fiserv's official Premier Add Transfer samples omit it, so this
         request omits it too, and carries no recurrence fields.
         """
+        if Decimal(repr(float(amount))) != amount:
+            return "refused"  # the wire number must be exactly the reviewed amount
         body = {"XferInfo": {
             "FromAcctRef": {"AcctKeys": {"AcctId": source_id, "AcctType": source_type}},
             "ToAcctRef": {"AcctKeys": {"AcctId": destination_id, "AcctType": destination_type}},
@@ -183,7 +208,10 @@ class BankingHubClient:
             # For a write, Unavailable means the request was never sent (invalid
             # request or header) or the vendor answered 4xx: a clean refusal.
             return "refused"
-        status = data.get("XferStatusRec", {}).get("XferStatus", {}).get("XferStatusCode")
+        try:
+            status = data.get("XferStatusRec", {}).get("XferStatus", {}).get("XferStatusCode")
+        except AttributeError:
+            raise UnknownOutcome("malformed_reply") from None  # sent; the effect is not known
         if status == "Valid":
             return "accepted"  # Valid is not proof of final posting
         if status == "Rejected":
