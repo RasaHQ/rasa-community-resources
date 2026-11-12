@@ -353,6 +353,26 @@ def launch_url(entry: dict) -> str:
 
 
 def readme_block(entry: dict, depth: int) -> str:
+    # These banking demos require a learner-supplied contract before startup.
+    # This changes README guidance only, never the devcontainer or its commands.
+    name = entry["path"].split("/")[-1]
+    if entry["path"] in {
+        "examples/jack-henry-silverlake", "examples/jack-henry-symitar",
+        "examples/fiserv-premier", "examples/fiserv-premier-11.0.0-prm",
+    }:
+        inputs = ("run `make download` and wait for `Saved and checked`" if name == "jack-henry-silverlake"
+                  else "upload the four definitions into `vendor-inputs/`" if name == "jack-henry-symitar"
+                  else "upload the unopened Premier ZIP into `vendor-inputs/`")
+        return "\n".join([
+            START,
+            f"[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)]({launch_url(entry)})",
+            "",
+            "- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).",
+            "- **Use this badge:** it selects this example's development environment.",
+            f"- **After the setup log says `READY`:** {inputs}, then run `make run`.",
+            "- **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.",
+            END,
+        ])
     required = [f"`{n}`" for n, req in entry["secrets"].items() if req]
     optional = [f"`{n}`" for n, req in entry["secrets"].items() if not req]
     if entry.get("first_needs_none"):

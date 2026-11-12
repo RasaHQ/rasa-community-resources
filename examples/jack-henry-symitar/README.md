@@ -1,12 +1,17 @@
-# Run the fictional Symitar voice example
+# Talk to a fictional credit union: A Rasa voice demo with a Symitar mock
 
-<!-- codespaces:start -->
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-symitar/devcontainer.json)
+Ask for your balance, explore recent transactions, check a loan payment, and request a transfer between your checking and savings accounts—all through a conversation.
 
-- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
-- **First command:** `make run`. The terminal opens in this folder, and the creation log ends with `READY`.
-- **You should see:** the server starts on port 5005.
-<!-- codespaces:end -->
+This example connects a Rasa assistant to a **local simulation of the Jack Henry Symitar core through the Symitar-in-Platform v1 web API**. You will run it in your browser using GitHub Codespaces. You do not need to install Python on your computer or have a Jack Henry account.
+
+**Your first goal:** open the assistant and ask, “What is available in checking?” With the initial demo data, the expected answer is **USD 1,200.50 available**.
+
+> **Demo status:** typed native checks and isolated software development kit (SDK) snapshot loading have been recorded. A cold trained-archive check and a complete spoken transfer walkthrough remain outstanding. The voice steps below describe the intended experience, not a verified microphone-to-spoken-reply result. Setup and response time have not been measured for this walkthrough.
+>
+> All people, accounts, and amounts are fictional. No banking request goes to a real credit union. Model and speech services are external, so use only fictional information.
+
+<details>
+<summary>Qualification recorded before this walkthrough rewrite</summary>
 
 ```text
 Author:        Rasa Community contributors
@@ -16,132 +21,266 @@ Verified with: rasa-pro 3.21.0.dev5, Python 3.12
 Status:        Development branch; see the PR for current native qualification
 ```
 
-Talk to a local fictional banking assistant. It uses this folder's own MCP server,
-OpenAPI contract mock, fictional data, tests and voice configuration. It never
-connects to a bank. The customer, balances, transactions and loan are invented.
+</details>
 
-The model can request seven read, review and status tools. It cannot create an
-identity, confirm a review, submit a transfer, reset the fixture or clear an
-unknown outcome. The trusted host handles the next actual confirmation.
+<!-- codespaces:start -->
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-symitar/devcontainer.json)
 
-## 1. Save your existing personal Codespaces secrets
+- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
+- **Use this badge:** it selects this example's development environment.
+- **After the setup log says `READY`:** upload the four definitions into `vendor-inputs/`, then run `make run`.
+- **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.
+<!-- codespaces:end -->
 
-In GitHub, open **Settings → Codespaces → New secret**. Add each secret below and
-allow it access to `RasaHQ/rasa-community-resources`:
+For the other Jack Henry API, see the separate [SilverLake jXchange example](../jack-henry-silverlake/). SilverLake uses simple object access protocol (SOAP) messages in extensible markup language (XML). Symitar uses a representational state transfer (REST) API.
 
-- `RASA_LICENSE`: your Rasa Pro Developer Edition license.
-- `OPENAI_API_KEY`: the model provider key for this exercise.
-- `DEEPGRAM_API_KEY`: speech recognition and spoken replies.
+## What you will learn
 
-The mock and contract tests need none of these secrets. The voice agent uses
-provider services and may incur charges. Never paste a secret into chat, a tool
-argument, a source file or a screenshot. After changing secret access, stop and
-reopen the Codespace so it receives the new values.
+- Connect a conversational assistant to banking tools.
+- Check requests and responses against published API definitions.
+- Require the next actual user turn to confirm a reviewed transfer.
+- Keep an uncertain transfer outcome unresolved rather than resending it.
 
-## 2. Open the example and find the terminal
+You can follow the walkthrough without knowing banking APIs or the tools used here. These terms are explained after your first conversation.
 
-Use this example's Codespaces button once the PR is merged. Its setup selects
-this folder and the locked environment. Wait for `READY`; a missing-secret notice
-is a setup condition, not a running voice agent.
+## Before you start
 
-Open **Terminal → New Terminal** in the browser editor. The terminal is the panel
-at the bottom. Its folder should end in `examples/jack-henry-symitar`. If it does
-not, enter:
+| You need | Why |
+|---|---|
+| A [GitHub account](https://github.com) with Codespaces access | Runs the example in a cloud development environment |
+| A Rasa Developer Edition license | Enables the Rasa runtime |
+| An OpenAI API key with available API usage | Provides the language model |
+| A Deepgram API key with available API usage | Provides speech recognition and spoken replies |
+| Four Symitar-in-Platform v1 definition files | Supplies the contract used by the mock |
+| A browser; a microphone if you want to try speech | Opens the Inspector; typing is also available |
 
-```bash
-cd /workspaces/rasa-community-resources/examples/jack-henry-symitar
-```
+**Cost:** the Rasa Developer Edition license is free within its license limits. Model, speech, and Codespaces usage can incur charges. Check your accounts before starting. The local banking mock needs no bank credentials.
 
-## 3. Supply the four vendor definitions manually
+**Time:** first-build and walkthrough duration have not been measured. Allow time for environment creation and model training.
 
-Open each official definition below in your browser and save its original YAML
-file. Do not copy rendered page text or change the file contents.
+## Walkthrough
 
-| Definition | Official file | Destination in this folder |
+Follow these steps in order. Each step includes a checkpoint.
+
+### 1. Get your license and API keys
+
+A license enables a product. An API key lets this application use a service through your account. Treat both like passwords.
+
+| Secret name—copy exactly | Where to get its value |
+|---|---|
+| `RASA_LICENSE` | [Get a free Rasa Developer Edition license](https://rasa.community/keys/#rasa) |
+| `OPENAI_API_KEY` | [Create an OpenAI API key and check billing](https://rasa.community/keys/#openai) |
+| `DEEPGRAM_API_KEY` | [Create a Deepgram project API key](https://rasa.community/keys/#deepgram) |
+
+**Checkpoint:** you have all three values. Keep them out of source files, chats, issues, and screenshots.
+
+### 2. Add the keys to GitHub Codespaces
+
+1. Open your [personal Codespaces settings](https://github.com/settings/codespaces).
+2. Under **Secrets**, choose **New secret**.
+3. Enter `RASA_LICENSE` as the name.
+4. Paste only the value, without `RASA_LICENSE=` or surrounding quotes.
+5. Under **Repository access**, select `RasaHQ/rasa-community-resources`.
+6. Choose **Add secret**.
+7. Repeat for `OPENAI_API_KEY` and `DEEPGRAM_API_KEY`.
+
+These are Codespaces secrets, not GitHub Actions secrets. If you use your own fork, select that repository instead.
+
+**Checkpoint:** all three names appear in your Codespaces secret list, with access to the repository you will use. Their saved values are hidden; that is expected.
+
+If the Codespace already exists, stop and restart it after adding or changing a secret. See [GitHub's instructions](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-your-account-specific-secrets-for-github-codespaces).
+
+### 3. Open the example
+
+1. Click the Codespaces badge near the top of this page.
+2. On the creation page, choose **Create codespace**.
+3. Wait for the browser editor and environment setup to finish.
+4. Look for `READY` in the setup log.
+
+The terminal is the panel where you enter commands. It opens in this example's folder. If needed, choose **Terminal → New Terminal**.
+
+**Checkpoint:** the terminal's current folder ends in `examples/jack-henry-symitar`. Setup is ready; the assistant is not running yet.
+
+### 4. Download and upload the four API definitions
+
+Open each official file in your browser and save its original YAML bytes. YAML is a text format for these API definitions. Save the file itself, not the rendered webpage.
+
+| Definition | Official file | Destination inside this example |
 |---|---|---|
 | Accounts | [accounts.yaml](https://jackhenry.dev/digital-core-api-docs/symitar-in-platform/api-reference/v1/accounts/accounts.yaml) | `vendor-inputs/accounts/accounts.yaml` |
 | Transactions | [transactions.yaml](https://jackhenry.dev/digital-core-api-docs/symitar-in-platform/api-reference/v1/transactions/transactions.yaml) | `vendor-inputs/transactions/transactions.yaml` |
 | Loans | [loans.yaml](https://jackhenry.dev/digital-core-api-docs/symitar-in-platform/api-reference/v1/loans/loans.yaml) | `vendor-inputs/loans/loans.yaml` |
 | Transfers | [transfers.yaml](https://jackhenry.dev/digital-core-api-docs/symitar-in-platform/api-reference/v1/transfers/transfers.yaml) | `vendor-inputs/transfers/transfers.yaml` |
 
-Create the destination folders, then upload each saved file into the matching
-folder in the editor's file explorer:
+In the terminal, create the destination folders:
 
 ```bash
 mkdir -p vendor-inputs/accounts vendor-inputs/transactions vendor-inputs/loans vendor-inputs/transfers
 ```
 
-These files are ignored by Git. This example does not download them, execute
-anything in them, or publish their contents. `contract_inputs.py` checks all four
-SHA256 pins before the mock is built. A missing file stops launch; a changed hash
-fails rather than silently accepting a different vendor release.
+The Explorer is the file-and-folder panel in the editor. Right-click each destination folder, choose **Upload…**, and select its matching saved file.
 
-## 4. Start and open the voice conversation
+**Checkpoint:** all four files are in the locations shown above. The program checks their hashes before building the mock. A hash is a fingerprint of a file's exact bytes. A changed or missing file stops startup; do not edit the expected hashes to get past it.
 
-In this folder, run:
+This example has no `make download` target. Download and upload the four files yourself. Vendor definitions are ignored by Git and are not included in this repository.
+
+### 5. Start the assistant
+
+In this example's terminal, run:
 
 ```bash
 make run
 ```
 
-The launcher checks the local inputs and required secrets, owns the local MCP
-and mock processes, trains the native project, then starts the Inspector. Read
-the printed Inspector URL and open it. If the browser does not open it directly,
-open the **Ports** tab beside Terminal and choose the Inspector port's browser
-button. Keep the MCP and mock ports private.
+The launcher checks the supplied files and secrets, starts the local mock and banking tools, trains the project, and starts the Inspector server on port `5005` by default.
 
-Allow microphone access when your browser asks. Use the microphone in the
-Inspector to speak. Typing is also available, but a typed check is not a speech
-qualification.
+Open the Inspector URL printed by the terminal. Leave this terminal running. If the link does not open, use the editor's **Ports** tab and the browser button for the Inspector port. Keep the other local ports private.
 
-## 5. Try the fictional questions
+**Checkpoint:** wait for `Rasa server is up and running` before sending a message. A printed link alone is not proof that startup or training has completed. Read any reported error before continuing.
 
-Start with: “What accounts can I use?” The permitted deposit aliases are
-`checking` and `savings`; the loan alias is `car`.
+### 6. Open the Inspector and choose text or speech
 
-- “What is available in checking?” The baseline available balance is USD 1,200.50.
-- “What is my car loan payment?” Current payment due is USD 250.75. The next due
-  date is December 1, 2026. Regular payment, minimum payment and past due are
-  different fixture values; none is a substitute for current payment due.
-- “What is the payoff quote for November 13, 2026?” The dated fictional quote
-  uses that date. It does not make a payment or change a balance.
-- “Review a transfer of 1.25 from checking to savings.” Read or listen to the
-  host's exact review, then say “yes” as the immediately next user turn. A changed
-  amount, changed destination, cancellation, expired assurance or missing review
-  delivery prevents submission.
+For a text conversation, click **Type your message**, type a prompt, and press **Enter**. This lets you try the conversation without a microphone.
 
-A successful fixture transfer may have no receipt. That does not make it a
-failure. If a response is lost after dispatch, the outcome is unknown: do not
-retry. The hold covers new transfer details and new conversations for this
-fictional principal. Reads and local status remain available.
+For speech, allow microphone access when the browser asks and use the Inspector microphone. The speech provider receives your audio. A typed check does not establish that speech recognition or spoken replies work.
 
-## 6. Stop the exercise
+**Checkpoint:** the Inspector is connected and accepts your first message. The complete spoken path remains unverified.
 
-Press **Ctrl+C** in the terminal running `make run`. Wait for the owned Inspector,
-MCP and mock processes to stop. Stop the Codespace from GitHub's Codespaces page
-when finished; closing the browser tab does not stop its billed runtime.
+### 7. Ask your first questions
 
-Reopening the same fixture preserves its state and unresolved transfer holds.
-A conversation restart is not a fixture reset. A deliberate reset must be run
-locally with the services stopped, acknowledgement and a reason; it preserves
-old state and writes an audit before a new fictional epoch. It never resolves
-or retries an earlier transfer. With every copy stopped, run:
+Start with:
+
+> What is available in checking?
+
+The initial available balance is **USD 1,200.50**. Wording can vary; check the facts rather than expecting one exact sentence.
+
+| Say | Expected information | What you are testing |
+|---|---|---|
+| “What accounts can I use?” | Deposit aliases `checking` and `savings`; loan alias `car` | Finding the fictional customer's accounts |
+| “What did I spend recently?” | The returned transactions, without claiming complete history | Reporting only the available data |
+| “What is my car loan payment?” | Current payment due **USD 250.75**, next due **December 1, 2026** | Keeping current due, regular payment, and past due separate |
+| “What is the payoff quote for my car loan on November 13, 2026?” | A dated quote from the fictional loan fixture | Using the requested date rather than guessing a payment |
+
+The dates are fixed fixture data, not automatically updated to today's date. A loan payment is an installment; a payoff quote is an amount for settling the loan on a date.
+
+### 8. Try a transfer with explicit confirmation
+
+| Step | Say | Expected behavior |
+|---|---|---|
+| 1 | “Verify me.” | Refresh simulated verification before requesting a transfer |
+| 2 | “Review a transfer of 1.25 from checking to savings.” | The host reads the exact amount and accounts, then asks for confirmation |
+| 3 | “Yes.” | The host reports acceptance and explains that accepted does not mean posted; this must be the immediately next actual user turn |
+
+Verification is simulated. This is not bank sign-in. A review that was changed, canceled, expired, or not delivered cannot authorize submission. An unrelated next message cancels the review; request a new review before confirming again.
+
+A successful fixture transfer may have no receipt. A missing receipt does not establish failure, and an acceptance is not proof of posting. If a response is lost after dispatch, the outcome is unknown. Do not retry or delete state to clear the hold. The hold applies across conversations for that fictional customer; reads and local status remain available.
+
+### 9. Stop and clean up
+
+1. Press **Ctrl+C** in the terminal running `make run`.
+2. Wait for its Inspector, Model Context Protocol (MCP), and mock processes to stop.
+3. Open [your Codespaces](https://github.com/codespaces) and stop the Codespace when finished.
+4. Before deleting it, preserve any private fixture state or work you need. Never commit secrets, vendor definitions, or private journals.
+
+Closing the browser or stopping the application does not stop Codespaces compute usage. Stopping a Codespace ends compute use; retained storage still counts toward storage usage. Deleting it removes its local files.
+
+## Troubleshooting
+
+| What you see | What to check or do |
+|---|---|
+| Setup has not printed `READY` | Read the setup error before running the assistant |
+| A required secret is missing | Check its name and repository access, then stop and restart the Codespace |
+| A vendor file is missing or has a different hash | Check its exact destination and original bytes; do not weaken the hash check |
+| `make download` fails | This example has no download target; use the four manual download links above |
+| The Inspector is unavailable | Wait for server readiness, check terminal errors, and use port `5005` in the Ports tab |
+| A read or transfer says verification expired | Say “Verify me,” then make a new request |
+| A transfer review was canceled | Request a new review; repeating an old confirmation does not restore it |
+| A transfer outcome is unknown | Keep the journal and do not resend; see the fictional reset instructions below |
+| The spoken path does not work | Record the visible error without keys or private data; voice qualification remains outstanding |
+
+## How the pieces fit together
+
+The assistant handles the conversation. The host controls transfer authority. The bank is a local mock using fictional data.
+
+| Component | Role |
+|---|---|
+| Inspector and speech services | Present text or speech conversations |
+| Rasa and the language model | Interpret requests and compose replies |
+| This folder's MCP server | Exposes seven read, review, and status tools |
+| Host policy and journal | Own identity simulation, review, confirmation, one send, and unresolved state |
+| Symitar client and contract mock | Build and check requests against the four supplied definitions |
+
+MCP means Model Context Protocol, the interface used for tools. REST uses hypertext transfer protocol (HTTP) requests for the banking API. OpenAPI describes the permitted request and response structures. All banking traffic stays on loopback, inside this development environment. Model and speech services remain external.
+
+The model has no submit, confirm, reset, or identity-creation tool. The trusted host observes the next actual user turn before deciding whether it may send.
+
+## Explore the code
+
+| File or folder | What to look for |
+|---|---|
+| `skills/banking/`, `lib/native_adapter.py` | Banking instructions, native bindings, and raw-turn observation |
+| `mcp_server.py`, `tools.py` | This example's seven MCP tools |
+| `host.py`, `journal.py` | Private authority, review, confirmation, and retained transfer state |
+| `vendor_client.py`, `contract_mock.py` | Symitar-shaped client and fictional mock |
+| `contract_inputs.py` | Four exact file hashes and OpenAPI checks |
+| `fixtures/fictional.json` | Fictional accounts, balances, transactions, and loan data |
+
+### Supported banking operations
+
+Six vendor operations support the seven tools. These counts describe different interfaces.
+
+| Vendor operation | Purpose |
+|---|---|
+| `findAccountBy` | Find the permitted account |
+| `findAccountByWithBalances` | Read account balances |
+| `searchAccountTransactions` | Read the returned transaction history |
+| `searchLoans` | Read loan information |
+| `calculateLoanPayoffQuote` | Request a quote for a supplied date |
+| `postTransfer` | Submit the host-authorized transfer |
+
+## Run the checks
+
+Run these commands in another terminal from the example folder:
+
+```bash
+make test
+make contract-test
+make validate
+```
+
+`make test` runs source, state, transport, and snapshot controls. `make contract-test` runs the vendor contract tests. Contract-dependent tests skip without the four vendor files; a skip does not prove conformance. `make validate` checks the Rasa configuration. None of these is a spoken conversation check.
+
+## Optional: Start a new fictional exercise
+
+With every copy of the example stopped, run:
 
 ```bash
 make reset-fixture REASON="new fictional exercise"
 ```
 
-Old databases remain in `.runtime/` with their hashes in the reset audit. Do not
-delete state files to clear a hold.
+This audited reset preserves old databases and their hashes, acknowledges that unresolved transfers remain unresolved, and starts a new fictional exercise. It never resolves or retries an earlier transfer. Do not delete the state files in `.runtime/` to clear a hold.
 
-## Checks and limits
+## What has been verified—and what has not
 
-Run `make test` for local controls. Without the four definitions, contract tests
-explicitly skip and launch refuses; skipped tests do not establish conformance.
-With the pinned inputs, checks validate raw wire types, nullable responses,
-fictional state, authority and private confirmation boundaries. Native voice and
-first-start receipts are separate from unit and HTTP test results.
+The transfer reply controls have source tests. A fresh end-to-end run of this revised walkthrough is still outstanding.
 
-This fixture is not customer authentication, vendor idempotency, production
-banking or proof of zero provider retention. Only fictional data belongs in the
-exercise. No live adapter, real payment or vendor credential is included.
+| Item | Recorded status |
+|---|---|
+| Author | Rasa Community contributors |
+| Assessment date | November 12, 2026 |
+| Environment | `rasa-pro 3.21.0.dev5`, Python 3.12; development build |
+| Source, mock, and snapshot controls | Tested; real SDK snapshot loads all seven bindings without the live source directory |
+| Typed native conversation | Recorded fixture checks; separate from cold trained-archive qualification |
+| Cold trained archive | Qualification still outstanding |
+| Complete spoken transfer | Not proved |
+| Setup duration and response time | Not measured for this walkthrough |
+| Real Symitar integration | Not established by this mock or its checks |
+
+### Limits before adapting the demo
+
+- Schema-valid data does not prove compatibility with a real credit union installation.
+- Identity and verification are simulated for one fictional customer.
+- Missing data stays unavailable; do not substitute a regular payment for the amount currently due.
+- No receipt does not mean failure; acceptance does not mean posting.
+- A lost response stays unknown and blocks resending across conversations and restarts.
+- The fixture is not evidence of bank authentication, production idempotency, or zero provider retention.
