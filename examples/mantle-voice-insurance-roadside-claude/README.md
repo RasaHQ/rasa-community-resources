@@ -11,7 +11,7 @@
 ```text
 Author:        Rasa Community
 Assessed on:   2026-09-30
-Assessed by:   Claude Code (casebook case builds; live runs recorded in case-build/results/)
+Assessed by:   reviewer-e43544601ef44781 (casebook case builds; live runs recorded in case-build/results/)
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting Claude behind a Rasa voice agent that dispatches a real-world service
 Time:          15 minutes to run the agent; about 25 minutes and 2.40 USD for the live call suite
@@ -425,6 +425,9 @@ python3 -B controls/confirmation_trace.py --tests drop_service
 python3 -B controls/confirmation_trace.py --tests drop_tag
 python3 -B controls/confirmation_trace.py --tests drop_answer
 ```
+
+To inspect another source revision, pass that worktree's example directory
+with `--project`. It selects both the library to import and its guard tests.
 
 These commands deliberately run a mutated guard. A detected mutation makes
 the command exit nonzero; keep its failed assertions with the full-guard
