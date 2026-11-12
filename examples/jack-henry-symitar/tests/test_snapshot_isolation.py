@@ -15,11 +15,25 @@ class SnapshotIsolationTests(unittest.TestCase):
 import json
 from pathlib import Path
 import sys
+import sysconfig
 import tempfile
 source = Path(sys.argv[1]).resolve()
 assert sys.flags.isolated
 assert not Path.cwd().is_relative_to(source)
-assert all(not Path(p).resolve().is_relative_to(source) for p in sys.path if p)
+# uv installs the locked environment inside project/.venv. Its exact SDK
+# site-packages directories remain legitimate under -I; source roots do not.
+installed_sites = {Path(sysconfig.get_path(kind)).resolve() for kind in ("purelib", "platlib")}
+def live_source_paths():
+    return [Path(p).resolve() for p in sys.path if p
+        and Path(p).resolve().is_relative_to(source)
+        and Path(p).resolve() not in installed_sites]
+assert not live_source_paths(), live_source_paths()
+# Negative controls: permitting installed packages must not permit source or lib.
+for forbidden in (source, source / "lib"):
+    sys.path.append(str(forbidden))
+    assert forbidden in live_source_paths(), forbidden
+    sys.path.pop()
+assert not live_source_paths(), live_source_paths()
 assert "lib.native_adapter" not in sys.modules
 from rasa.mantle.model_archive.snapshot import populate_snapshot
 from rasa.mantle.skills.catalog import load_skill_catalog
