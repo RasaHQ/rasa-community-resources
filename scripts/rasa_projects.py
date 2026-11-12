@@ -632,7 +632,10 @@ def read_readme_verified(project: Project) -> str | None:
     readme = project.path / "README.md"
     if not readme.is_file():
         return None
-    text = readme.read_text(encoding="utf-8")
+    # Use the same explicit historical-line exemption as migration and lint.
+    # Otherwise a preserved assessment is mistaken for the current install pin.
+    text = "\n".join(line for line in readme.read_text(encoding="utf-8").splitlines()
+                     if VERSION_IGNORE_MARKER not in line)
     # Current installation targets are separate from preserved human assessment
     # history. Old snapshots without the new field keep their original contract.
     match = re.search(rf"Installation:\s*rasa-pro[ \t]+(?P<version>{VERSION_TOKEN})", text)
