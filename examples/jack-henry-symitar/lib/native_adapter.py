@@ -15,7 +15,7 @@ from pydantic import StrictStr
 from rasa.mantle.orchestration.turn_context import current_turn_context
 from rasa.mantle.tools.decorator import ToolContext,tool
 from rasa.mantle.tools.result import ToolResult
-from lib.reply_policy import delivery_pending, remember_delivery
+from lib.reply_policy import delivery_pending, is_user_turn, remember_delivery
 from lib.host_client import HostClient
 
 
@@ -134,6 +134,34 @@ async def _observe(conversation,context):
         conversation.outcome={}
     return result
 
+
+VERIFIED_TEXT='Your simulated verification was refreshed. This is not bank sign-in.'
+
+
+@tool(description='ALWAYS call this, and nothing else, when the caller says verify me or verify my identity. Refreshes simulated verification from the raw turn and delivers the sentence.')
+async def banking_refresh_verification(context: ToolContext=None)->ToolResult:
+    # A Rasa-side trigger with no authority of its own and no account read. The
+    # host refreshes simulated assurance only from the caller's observed raw
+    # turn; this says so only when the host reports that refresh for this turn.
+    try:
+        # Only the caller's own turn counts: on a session-start pass the phrase is
+        # pending, not yet this turn's message.
+        if not is_user_turn(current_turn_context()) or _norm(current_turn_context().turn.text) not in {'verify me','verify my identity'}:
+            return ToolResult(llm_response={'state':'refused','reason':'say_verify_me'})
+        conversation=await _conversation(context)
+        async with conversation.lock:
+            observed=await _observe(conversation,context)
+            refreshed=observed.get('state')=='simulated_assurance_refreshed'
+            if refreshed:
+                conversation.outcome={}  # consumed: a later call cannot re-announce it
+        if not refreshed:
+            return ToolResult(llm_response={'state':'refused','reason':'verification_not_observed'})
+        if not delivery_pending():
+            await context.send(VERIFIED_TEXT)
+            remember_delivery()
+        return ToolResult(llm_response={'state':'verified'})
+    except (Exception,asyncio.CancelledError):
+        return ToolResult(llm_response={'state':'unavailable','reason':'host_or_service_unavailable'})
 
 async def _call(context,name,args):
     conversation=None

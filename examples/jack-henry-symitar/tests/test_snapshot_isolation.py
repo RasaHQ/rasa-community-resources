@@ -9,7 +9,7 @@ import unittest
 
 
 class SnapshotIsolationTests(unittest.TestCase):
-    def test_real_sdk_snapshot_loads_all_seven_bindings_without_live_source(self):
+    def test_real_sdk_snapshot_loads_all_eight_bindings_without_live_source(self):
         source = Path(__file__).resolve().parents[1]
         probe = r'''
 import json
@@ -43,7 +43,8 @@ with tempfile.TemporaryDirectory() as temp:
     populate_snapshot(snapshot, source, source / "agent.yml")
     bindings = load_tools_for_skill_catalog(load_skill_catalog(snapshot), snapshot / "skills")
     expected = {"banking_accounts", "banking_balance", "banking_history",
-        "banking_loan_payment", "banking_payoff", "banking_review_transfer", "banking_transfer_status"}
+        "banking_loan_payment", "banking_payoff", "banking_refresh_verification", "banking_review_transfer",
+        "banking_transfer_status"}
     assert set(bindings["banking"]) == expected, bindings
     adapter = sys.modules["lib.native_adapter"]
     assert Path(adapter.__file__).is_relative_to(snapshot)

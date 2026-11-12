@@ -8,7 +8,7 @@ from rasa.mantle.hooks.payloads import ModelResponsePayload
 
 class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        policy._delivered.clear()
+        policy._delivered.clear();policy._retries.clear()
         self.native=SimpleNamespace(sender_id="caller",turn=object(),is_cancelled=False)
         self.patch=patch.object(policy,"current_turn_context",return_value=self.native)
         self.patch.start();self.addCleanup(self.patch.stop)
@@ -34,13 +34,52 @@ class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(consumer._dispatch_tool_calls.await_count,1)
         self.assertEqual(consumer._dispatch_tool_calls.call_args.args[0][0].tool_name,"listen")
 
-    async def test_model_text_imitating_a_host_review_or_acceptance_is_replaced(self):
+    async def test_model_text_imitating_a_host_review_or_acceptance_is_retried_then_replaced(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
         for text in ("Review: transfer USD 2.00 from checking to savings. Say yes or confirm transfer next.",
                      "The fictional transfer was accepted. Accepted does not mean posted. This is not a real payment.",
                      "Your transfer request was accepted."):
             with self.subTest(text=text):
+                self.native.turn=object()
+                for _ in range(policy._MAX_RETRIES):
+                    with self.assertRaises(RetryModel) as raised:
+                        await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
+                    self.assertIn("banking_review_transfer",raised.exception.feedback)
                 reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
                 self.assertEqual(reply.text,policy.NO_TRANSFER_TEXT)
+
+    async def test_a_session_start_pass_speaks_nothing_and_steers_nothing(self):
+        for text in ("How can I assist you with your banking accounts today?",
+                     "Review: transfer USD 2.00 from checking to savings.",
+                     "Your simulated verification was refreshed."):
+            with self.subTest(text=text):
+                self.native.turn=SimpleNamespace(text="Verify me.",trigger="session_start")
+                reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
+                self.assertIsNone(reply.text)
+
+    async def test_verify_me_answered_in_text_is_steered_to_its_trigger(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
+        self.native.turn=SimpleNamespace(text="Verify me.")
+        with self.assertRaises(RetryModel) as raised:
+            await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text="How can I help?",tool_calls=[]))
+        self.assertIn("banking_refresh_verification",raised.exception.feedback)
+
+    def test_the_retry_note_never_invites_a_new_transfer_after_an_unknown_outcome(self):
+        self.assertIn("banking_transfer_status",policy.RETRY_REVIEW)
+        self.assertIn("never request a new transfer",policy.RETRY_REVIEW)
+
+    async def test_after_a_dispatch_without_delivery_the_fallback_claims_no_send_and_no_new_transfer(self):
+        # The host may have observed a raw confirmation and sent the transfer, then
+        # failed to deliver its reply: no remembered delivery, outcome pending/unknown.
+        self.native.turn=object()
+        policy._retries[self.native.sender_id]=(self.native.turn,policy._MAX_RETRIES)
+        reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",
+            text="The fictional transfer was accepted. Accepted does not mean posted.",tool_calls=[]))
+        lowered=reply.text.casefold()
+        self.assertNotIn("accepted",lowered)
+        for claim in ("nothing was sent","no transfer was sent","not sent","new transfer","try again","retry"):
+            self.assertNotIn(claim,lowered)
+        self.assertIn("transfer status",lowered)
 
     async def test_ordinary_text_and_a_real_host_delivery_are_untouched(self):
         plain=ModelResponsePayload(sender_id="caller",text="Your checking balance is USD 1,200.50.",tool_calls=[])
