@@ -181,8 +181,11 @@ not set provider keys, configure a vendor or change the server's access controls
 Click **Connect once**; this starts the live speech session and can bill the
 configured providers. Wait for the greeting to finish, choose an existing
 fictional WAV under 30 seconds, then click **Send one fixture**. Click **Stop**
-after the response and **Save timing JSONL**. Analyse it with the `events` format
-above. The page refuses pending/overlapping turns, caps its queue and stops after
+after the response. Use **Save run report** to preserve partial events, failure
+state, the measurement method and the pre-close audio sample rate/base/output
+latency. Save this report even when no usable pair was produced. It contains no
+endpoint, filename, transcript, audio or credentials. **Save timing JSONL** remains
+available for the analyser's `events` format above. The page refuses pending/overlapping turns, caps its queue and stops after
 180 seconds; it never reconnects or retries. Reloading and reconnecting is a new
 explicit run. Stopping the page closes the socket; stop the agent separately.
 
@@ -196,3 +199,39 @@ method for a successor. Protocol controls are in
 `node scripts/voice_latency_browser/test-clock-worklet.cjs`; they make no speech
 or model call. A headless browser receiving control is separate from live speech
 qualification.
+
+The run report keeps the observed browser output latency separate from the event
+interval; it never silently adds device latency or fills missing measurements
+with zero. Stop is idempotent, and connecting after Stop requires an explicit
+page reload. The exported report remains available after stopping. Offline page
+controller and artifact controls run with `node
+scripts/voice_latency_browser/test-probe.cjs` and
+`node scripts/voice_latency_browser/test-artifact.cjs`.
+
+## Snapshot SDK phase metadata before stopping the agent
+
+After the response, while the same authorized SDK server is still alive, use
+its observed conversation identity from the private runtime console locally:
+
+```sh
+python3 scripts/voice_tracker.py --base-url http://127.0.0.1:5005 --conversation-id OBSERVED_ID --output "$HOME/voice-latency/server-phases.json"
+```
+
+Run this in the Codespace, then stop the browser probe and the agent. The tool
+makes one read-only request to the explicit loopback HTTP API, with a total
+three-second deadline (including a slow-drip response), a response-size limit
+and no redirects, proxies, credentials or retries. It refuses existing output
+files before requesting anything. A failed collection produces a private
+`not_collected` artifact containing the error type; no response body or identity
+is written. It never opens a speech or model session.
+
+The projection retains only allowlisted numeric SDK `BotTurnEnded` metadata:
+LLM first-token/generation, TTS first-byte/generation and prediction-loop times
+when present. Missing values remain null; invalid values are identified. SDK
+`user_perceived_latency_ms` is explicitly labelled
+`server_trigger_to_first_output_ms`; it is **not** the browser speech/playback
+interval. Server ordinals do not establish a browser clock or turn join.
+ASR-final and per-MCP invocation timing remain separate native-adapter events;
+they are not manufactured from this snapshot. Never disable API authentication
+to use this limited local collector: a protected endpoint should retain its
+existing authorized adapter/event route.

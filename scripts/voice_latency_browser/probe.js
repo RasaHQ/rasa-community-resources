@@ -1,5 +1,6 @@
+import {audioMetadata, runArtifact} from './artifact.mjs';
 const status = document.querySelector('#status');
-const rows = []; let socket, context, node, timeout, turn = 0, stopped = false, queued = 0, lastAudio = null, failure = null;
+const rows = []; let socket, context, node, timeout, turn = 0, stopped = false, queued = 0, lastAudio = null, failure = null, audio = null, stopPromise = null;
 const clock = `browser.audio.${crypto.randomUUID()}`;
 const session = 'session-1';
 function show(text) { status.textContent += `\n${text}`; }
@@ -9,19 +10,25 @@ function pcm(samples) {
   return btoa(String.fromCharCode(...bytes));
 }
 async function stop() {
+  if (stopPromise) return stopPromise;
   stopped = true; clearTimeout(timeout);
-  socket?.close(); node?.disconnect(); if (context) await context.close();
-  show('Stopped. No automatic reconnect or retry.');
+  audio = audioMetadata(context) ?? audio;
+  socket?.close(); node?.disconnect();
+  stopPromise = (async () => {
+    if (context && context.state !== 'closed') await context.close();
+    show('Stopped. No automatic reconnect or retry.');
+  })();
+  return stopPromise;
 }
 async function connect() {
-  if (socket || context) throw Error('One connection per page; reload explicitly for another run.');
+  if (stopped || socket || context) throw Error('One connection per page; reload explicitly for another run.');
   const url = new URL(document.querySelector('#endpoint').value);
   if (!['ws:', 'wss:'].includes(url.protocol) || url.username || url.password || url.search || url.hash)
     throw Error('Expected a WebSocket URL without credentials/query/fragment.');
   socket = new WebSocket(url);
   timeout = setTimeout(stop, 180000);
   socket.onclose = () => { if (!stopped) stop(); };
-  socket.onerror = () => show('WebSocket error; no retry.');
+  socket.onerror = () => { failure='websocket_error'; show('WebSocket error; no retry.'); };
   let incoming = Promise.resolve();
   socket.onmessage = ({data}) => {
     incoming = incoming.then(async () => {
@@ -44,6 +51,7 @@ async function connect() {
           }
         };
         node.connect(context.destination); await context.resume();
+        audio = audioMetadata(context);
         show(JSON.stringify({sample_rate:context.sampleRate, base_latency_s:context.baseLatency,
           output_latency_s:context.outputLatency ?? null, method:'synthetic_fixture_worklet_render_not_acoustic'}));
       } else if (!node) throw Error('Audio arrived before ready handshake.');
@@ -80,4 +88,11 @@ document.querySelector('#save').onclick = () => {
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 // Timing-only inspection for an automated receiving control. No console/audio capture.
-window.voiceTiming = () => ({events:rows.slice(), failure, state:context?.state ?? 'not_started', queued_samples:queued, received_audio:lastAudio!==null, quiet_ms:lastAudio===null?null:performance.now()-lastAudio});
+window.voiceTiming = () => runArtifact({events:rows, failure, state:context?.state ?? 'not_started',
+  stopped, queued, receivedAudio:lastAudio!==null, quietMs:lastAudio===null?null:performance.now()-lastAudio,
+  audio:stopped?audio:audioMetadata(context)});
+document.querySelector('#save-run').onclick = () => {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(window.voiceTiming(),null,2)+'\n'], {type:'application/json'}));
+  const a = document.createElement('a'); a.href=url; a.download='voice-run.json'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
