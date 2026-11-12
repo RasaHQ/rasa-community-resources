@@ -3,7 +3,7 @@
 
 The release ZIP is never bundled, fetched or relicensed here. The learner
 downloads it by hand from Fiserv's public Resources page; this module checks the
-whole archive hash, then reads only three pinned members, with hard size limits,
+whole archive hash, then reads only four pinned members, with hard size limits,
 and builds request and response validators from those exact bytes. A changed
 upstream file needs reviewed new pins, never silent acceptance.
 
@@ -25,7 +25,7 @@ from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT4
 
 ARCHIVE_NAME = "esf-service-swagger-release-11.0.0.2026.4.1.zip"
-DOWNLOAD_PAGE = "https://developer.fiserv.com/product/BankingHub/docs/resources/resources.md?branch=active"
+DOWNLOAD_PAGE = "https://developer.fiserv.com/product/BankingHub/docs/resources/resources.md?branch=main"
 ARCHIVE_SHA256 = "844bb52475f442da9b96a093c3443c4d9b6a47e7c9834c509f0cf92a117f2fd3"
 MAX_ARCHIVE = 4 * 1024 * 1024
 MAX_ENTRIES = 256
@@ -45,7 +45,12 @@ MEMBERS = {
     "trn": (_PREFIX + "Bank_Sol_Org-AcctTrnService-11.0.0-resolved.yaml",
             "1eb4d5a8a98a2be84d47356716055cf3d0e49a376e4f78056aa5e9830366267f",
             "getAcctTrnSecured", "/acctTrn/secured"),
+    # Add Transfer. Its declared success is HTTP 201, not the reads' 200.
+    "xfer": (_PREFIX + "Bank_Sol_Org-XferService-11.0.0-resolved.yaml",
+             "ff1a683ae0bbc4ff755a9c9bc1896198a2695a6483c4552e805642c19085f0da",
+             "XferAddOper", "/transfers"),
 }
+SUCCESS = {"party": 200, "acct": 200, "trn": 200, "xfer": 201}
 
 
 class ContractError(Exception):
@@ -61,7 +66,7 @@ def default_path() -> Path:
 
 
 def load_members(path: Path | None = None) -> dict[str, bytes]:
-    """Check the whole archive, then read only the three pinned members."""
+    """Check the whole archive, then read only the four pinned members."""
     path = path or default_path()
     try:
         size = path.stat().st_size
@@ -177,7 +182,7 @@ class _Document:
 
 
 class BankingHubContract:
-    """Pinned request/response validators for three generic release operations.
+    """Pinned request/response validators for four generic release operations.
 
     This validates wire shape only; it does not certify provider behaviour.
     """

@@ -1,11 +1,13 @@
 """Client against the local mock, both built from the learner-supplied release file."""
 import json
+from pathlib import Path
+import tempfile
 import unittest
 
 import httpx
 
 from bh_demo.client import BankingHubClient, NoRecords, Unavailable
-from bh_demo.host import BankingHubService, UNSOURCED
+from bh_demo.host import BankingHubService, Journal, UNSOURCED
 from bh_demo.mock import MOCK_ORGANIZATION, BankingHubMock, serve, status
 from bh_demo.permissions import PERMISSIONS
 from tests.support import listener, load_contract
@@ -41,13 +43,10 @@ class WireTests(unittest.TestCase):
     def test_no_records_is_1120_info_and_an_empty_list(self):
         self.assertEqual(self.client.party_accounts("NOBODY"), [])
 
-    def test_next_payment_date_is_supplied_for_a_loan(self):
-        self.assertEqual(self.client.next_payment_date("5550019001"), "2026-12-01")
-
     def test_a_cross_type_or_unknown_account_is_unavailable(self):
         for ident in ("5550010001", "0000000000"):  # a DDA asked as LOAN, and no account
             with self.subTest(ident=ident), self.assertRaises(Unavailable):
-                self.client.next_payment_date(ident)
+                self.client.loan_payment(ident)
 
     def test_mock_rejects_a_request_that_breaks_the_contract(self):
         header = json.dumps({"OrganizationId": MOCK_ORGANIZATION})
@@ -61,11 +60,12 @@ class WireTests(unittest.TestCase):
                               headers={"EFXHeader": header})
         self.assertEqual(bad.status_code, 400)
         self.assertEqual(no_header.status_code, 400)
-        self.assertEqual(other.status_code, 404)  # the mock has no transfer route at all
+        self.assertEqual(other.status_code, 400)  # an empty transfer breaks the contract
+        self.assertEqual(self.fx.mock.transfers, 0)
 
 
 class StatusRules(unittest.TestCase):
-    """Success is EFX 0 + Info on HTTP 200; a schema-valid reply alone is not success."""
+    """Read success is EFX 0 + Info on HTTP 200; a schema-valid reply alone is not success."""
 
     @classmethod
     def setUpClass(cls):
@@ -81,7 +81,7 @@ class StatusRules(unittest.TestCase):
             return original(**kwargs)
         httpx.Client = patched
         try:
-            return client.next_payment_date("5550019001")
+            return client.loan_payment("5550019001")
         finally:
             httpx.Client = original
 
@@ -91,14 +91,17 @@ class StatusRules(unittest.TestCase):
 
     def test_warning_and_error_statuses_are_never_success(self):
         record = {"AcctKeys": {"AcctId": "5550019001", "AcctType": "LOAN"},
-                  "AcctStatus": {"AcctStatusCode": "x"}, "LoanAcctInfo": {"NextPmt": {"PmtDt": "2026-12-01"}}}
+                  "AcctStatus": {"AcctStatusCode": "x"}, "LoanAcctInfo": {"NextPmt": {
+                      "PmtDt": "2026-12-01", "PmtCompositeAmt": [{"CompositeCurAmtType": "Total", "CurAmt": {
+                          "Amt": 182.4, "CurCode": {"CurCodeType": "ISO4217-Alpha", "CurCodeValue": "USD"}}}]}}}
         for code, efx in ((200, status("50", "General warning", "Warning")),
                           (200, status("1040", "Request declined", "Warning")),
                           (404, status("1121", "No records found", "Error")),
                           (200, status("0", "Success", "Warning"))):
             with self.subTest(efx=efx["StatusCode"]), self.assertRaises(Unavailable):
                 self.reply(code, {"Status": efx, "AcctRec": record})
-        self.assertEqual(self.reply(200, {"Status": status(), "AcctRec": record}), "2026-12-01")
+        self.assertEqual(self.reply(200, {"Status": status(), "AcctRec": record}),
+                         {"due_date": "2026-12-01", "amount": "182.40", "currency": "USD"})
 
     def test_no_records_is_distinct_from_unavailable(self):
         with self.assertRaises(NoRecords):
@@ -112,19 +115,24 @@ class EndToEnd(unittest.TestCase):
     def setUpClass(cls):
         cls.contract = load_contract()
 
-    def test_a_caller_gets_aliases_a_date_and_honest_unavailable_answers(self):
+    def test_a_caller_gets_sourced_facts_and_honest_unavailable_answers(self):
         fx = Fixture(self.contract)
         self.addCleanup(fx.close)
-        service = BankingHubService(fx.client, PERMISSIONS)
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        journal = Journal(Path(folder.name) / "journal.sqlite3")
+        self.addCleanup(journal.close)
+        service = BankingHubService(fx.client, journal, PERMISSIONS)
         ctx = service.open_session("demo-A")
         self.assertEqual(service.accounts(ctx), {"accounts": ["DDA-A", "LOAN-A", "SDA-A"]})
-        self.assertEqual(service.loan_payment(ctx, "LOAN-A")["due_date"], "2026-12-01")
+        self.assertEqual(service.balance(ctx, "DDA-A")["amount"], "1250.00")
+        self.assertEqual(service.loan_payment(ctx, "LOAN-A"),
+                         {"state": "supplied", "due_date": "2026-12-01", "amount": "182.40", "currency": "USD"})
         before = fx.mock.calls
-        self.assertEqual(service.balance(ctx, "DDA-A")["reason"], UNSOURCED["balance"])
+        self.assertEqual(service.balance(ctx, "SDA-A")["reason"], UNSOURCED["sda_balance"])
         self.assertEqual(service.payoff(ctx, "LOAN-A")["reason"], UNSOURCED["payoff"])
         self.assertEqual(service.history(ctx, "SDA-A")["reason"], UNSOURCED["history"])
         self.assertEqual(fx.mock.calls, before)  # unavailable answers never reach the bank
-
 
 if __name__ == "__main__":
     unittest.main()

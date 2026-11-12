@@ -2,13 +2,14 @@
 """A naked MCP server for the Fiserv Banking Hub release teaching example.
 
 It lives inside this example and imports nothing from another example. It
-exposes exactly seven read-only tools; facts the release cannot supply answer
-"unavailable" with a closed reason. Identity, assurance and reset are private
-host calls on a separate capability-protected path; they are not MCP tools.
-No path sends a transfer.
+exposes exactly seven read-only or review tools; facts the release cannot
+supply answer "unavailable" with a closed reason. Confirming and sending a
+transfer, identity and reset are private host calls on a separate
+capability-protected path; they are not MCP tools.
 """
 from __future__ import annotations
 
+import argparse
 from hmac import compare_digest
 import json
 import os
@@ -172,7 +173,7 @@ def create_app(service: BankingHubService, host_token: str):
 
     @server.tool(structured_output=True)
     def banking_balance(account: str, ctx: Context) -> dict[str, object]:
-        """Available balance of one permitted DDA or SDA alias (not in this release)."""
+        """Read the supplied available balance of one permitted DDA alias; an SDA balance is unavailable."""
         return invoke(ctx, service.balance, account)
 
     @server.tool(structured_output=True)
@@ -182,7 +183,7 @@ def create_app(service: BankingHubService, host_token: str):
 
     @server.tool(structured_output=True)
     def banking_loan_payment(account: str, ctx: Context) -> dict[str, object]:
-        """Next payment date of one permitted LOAN alias; the amount is not in this release."""
+        """Read the next payment total and date of one permitted LOAN alias."""
         return invoke(ctx, service.loan_payment, account)
 
     @server.tool(structured_output=True)
@@ -193,12 +194,12 @@ def create_app(service: BankingHubService, host_token: str):
     @server.tool(structured_output=True)
     def banking_review_transfer(source: str, destination: str, amount: str, currency: str,
                                 ctx: Context) -> dict[str, object]:
-        """Transfers are not available in this release example. Never sends anything."""
+        """Prepare exact own-account transfer details. This never sends anything."""
         return invoke(ctx, service.review_transfer, source, destination, amount, currency)
 
     @server.tool(structured_output=True)
     def banking_transfer_status(ctx: Context) -> dict[str, object]:
-        """Transfer outcome: none can exist in this release example."""
+        """Read the latest retained local transfer outcome. Never resends."""
         return invoke(ctx, service.status)
 
     app = server.streamable_http_app()
@@ -246,27 +247,37 @@ def create_app(service: BankingHubService, host_token: str):
 def serve_backend():
     """Private child entrypoint: consume the already-bound loopback descriptors.
 
-    argv: mock_fd mcp_fd. The vendor definitions are read here, at run time,
-    from the learner-supplied archive; a missing or changed file stops the
-    backend with a short message.
+    argv: mock_fd mcp_fd fault. The vendor definitions are read here, at run
+    time, from the learner-supplied archive; a missing or changed file stops
+    the backend with a short message.
     """
     import socket
+    from pathlib import Path
     import uvicorn
     from .client import BankingHubClient
     from .contract import ContractError, BankingHubContract
+    from .host import Journal
     from .mock import MOCK_ORGANIZATION, BankingHubMock, serve
-    mock_fd, mcp_fd = sys.argv[1], sys.argv[2]
+    mock_fd, mcp_fd, fault = sys.argv[1], sys.argv[2], sys.argv[3]
     try:
         contract = BankingHubContract.from_path()
     except ContractError as exc:
         print(str(exc), flush=True)
         raise SystemExit(3)
     mock_socket = socket.socket(fileno=int(mock_fd))
-    serve(BankingHubMock(contract), mock_socket)
+    mock = BankingHubMock(contract, fault=fault)
+    serve(mock, mock_socket)
     port = mock_socket.getsockname()[1]
     client = BankingHubClient(contract, f"http://127.0.0.1:{port}", MOCK_ORGANIZATION)
+    try:
+        journal = Journal(Path(os.environ.get("BANKINGHUB_JOURNAL", "")) if os.environ.get("BANKINGHUB_JOURNAL")
+                          else Path(__file__).resolve().parents[1] / "var" / "private" / "journal.sqlite3")
+    except Refused as refused:
+        if str(refused) == "journal_in_use":
+            raise SystemExit(4) from None
+        raise
     from .permissions import PERMISSIONS
-    service = BankingHubService(client, PERMISSIONS)
+    service = BankingHubService(client, journal, PERMISSIONS)
     app = create_app(service, os.environ.get("BANKINGHUB_HOST_CAPABILITY", ""))
     uvicorn.run(app, fd=int(mcp_fd), access_log=False, log_level="warning")
 

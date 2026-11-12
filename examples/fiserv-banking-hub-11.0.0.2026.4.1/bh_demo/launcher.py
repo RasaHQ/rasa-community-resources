@@ -40,6 +40,8 @@ def _listener():
 def main(project):
     parser = argparse.ArgumentParser(description="Start the fictional Banking Hub release example.")
     parser.add_argument("--port", type=int, default=5005)
+    parser.add_argument("--fault", choices=["none", "transfer-response-lost"], default="none",
+                        help="Fictional failure scenario for the transfer, never a vendor fault.")
     parser.add_argument("--text-api", action="store_true",
                         help="Developer check: serve the REST text channel (rasa run) instead of the Inspector.")
     args = parser.parse_args()
@@ -87,16 +89,20 @@ def main(project):
                 [str(project)] + ([environment["PYTHONPATH"]] if environment.get("PYTHONPATH") else []))
             backend_environment = {key: value for key, value in os.environ.items()
                                    if key in {"PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "PYTHONPATH",
-                                              "SYSTEMROOT"}}
+                                              "SYSTEMROOT", "BANKINGHUB_JOURNAL"}}
             backend_environment["BANKINGHUB_HOST_CAPABILITY"] = capability
             server = subprocess.Popen(
                 [sys.executable, "-m", "bh_demo.server", str(mock_socket.fileno()),
-                 str(mcp_socket.fileno())], env=backend_environment, cwd=project,
+                 str(mcp_socket.fileno()), args.fault], env=backend_environment, cwd=project,
                 pass_fds=(mock_socket.fileno(), mcp_socket.fileno()))
         host = HostClient(environment["BANKINGHUB_HOST_URL"], capability)
         deadline = time.monotonic() + 20
         while True:
             if server.poll() is not None:
+                if server.returncode == 4:
+                    print("Not ready. Another copy of this example is still running. "
+                          "Press Ctrl+C in its terminal, or close that terminal, then try again.")
+                    return 1
                 raise RuntimeError("backend_exited")
             try:
                 session = host.open_session()
@@ -118,8 +124,7 @@ def main(project):
             (run / "agent.yml").write_bytes((project / "agent.yml").read_bytes())
             print("Vendor definitions: found and hash-verified. Mode: local mock built from them.")
             print("This mock uses fictional data only. It proves the conversation, not Fiserv compatibility.")
-            print("This release does not define balance, payment amount, payoff or transfer codes: "
-                  "those answers are unavailable on purpose.")
+            print("Transaction history and payoff are unavailable on purpose: this release cannot supply them.")
             print("Identity: one private teaching host, a fixed simulated caller; not real bank sign-in.")
             print("Use only fictional speech. The speech provider receives audio; opt-out is not zero retention.")
             print("Open the Inspector: " + inspector_url, flush=True)

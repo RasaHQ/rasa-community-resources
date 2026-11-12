@@ -27,8 +27,11 @@ class InputHandling(unittest.TestCase):
                 load_members(path)
             self.assertNotIsInstance(raised.exception, MissingContractInput)
 
-    def test_only_three_members_are_read_and_none_from_the_archive_folder(self):
-        self.assertEqual(set(MEMBERS), {"party", "acct", "trn"})
+    def test_only_four_members_are_read_and_none_from_the_archive_folder(self):
+        self.assertEqual(set(MEMBERS), {"party", "acct", "trn", "xfer"})
+        self.assertEqual(MEMBERS["xfer"][1:],
+                         ("ff1a683ae0bbc4ff755a9c9bc1896198a2695a6483c4552e805642c19085f0da",
+                          "XferAddOper", "/transfers"))
         for name, _, _, _ in MEMBERS.values():
             self.assertNotIn("/archive/", name)
             self.assertTrue(name.endswith("-11.0.0-resolved.yaml"))

@@ -17,17 +17,21 @@ ROOT = Path(__file__).resolve().parents[1]
 PORT = 5006
 URL = f"http://127.0.0.1:{PORT}/webhooks/rest/webhook"
 
-CHECKS = [  # (sender, message, all of these substrings, none of these)
+CHECKS = [  # (sender, message, all of these substrings, none of these): the README rows, in order
     ("a", "What accounts do I have?", ["DDA", "SDA", "LOAN"], ["checking", "savings"]),
-    ("a", "What is the balance of DDA-A?", ["not available"], ["$", "USD"]),
+    ("a", "What is the balance of DDA-A?", ["1,250.00"], ["1,275"]),
+    ("a", "What is the balance of SDA-A?", ["not available"], ["5,400", "$"]),
+    ("a", "When is my next loan payment on LOAN-A?", ["182.40", "December 1"], ["152.00", "30.40"]),
     ("a", "What did I spend recently on DDA-A?", ["not available"], ["USD"]),
-    ("a", "When is my next loan payment on LOAN-A?", ["December 1", "not available"], ["$", "USD"]),
     ("a", "What is my payoff on LOAN-A?", ["not available"], ["$", "USD"]),
     ("a", "What is the balance of DDA-B?", [], ["available balance is"]),
-    ("b", "Move 5 dollars from DDA-A to SDA-A.", ["not available"], ["confirm transfer", "accepted"]),
+    ("b", "Verify me.", ["verification was refreshed"], []),
+    ("b", "Move 25 dollars from DDA-A to SDA-A.", ["Review: transfer USD 25.00 from DDA-A to SDA-A"], ["accepted"]),
+    ("b", "Confirm transfer.", ["accepted does not mean posted"], ["Review:"]),
+    ("b", "Move 7 dollars from DDA-A to SDA-A.", ["Review: transfer USD 7.00 from DDA-A to SDA-A"], ["accepted"]),
+    ("b", "No, do not transfer.", ["cancel"], ["accepted"]),
     ("b", "Confirm transfer.", [], ["accepted"]),
 ]
-
 
 def say(sender, message):
     request = urllib.request.Request(URL, json.dumps({"sender": sender, "message": message}).encode(),

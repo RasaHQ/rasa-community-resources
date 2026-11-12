@@ -1,9 +1,11 @@
 """HTTP tests of the naked MCP server and its private host routes. Vendor-free; run in CI."""
+from pathlib import Path
+import tempfile
 import unittest
 
 from starlette.testclient import TestClient
 
-from bh_demo.host import BankingHubService, UNSOURCED
+from bh_demo.host import Journal, BankingHubService, UNSOURCED
 from bh_demo.permissions import PERMISSIONS
 from bh_demo.server import TOOLS, create_app
 from tests.fakes import FakeClient
@@ -14,8 +16,12 @@ MCP_HEADERS = {"Accept": "application/json, text/event-stream", "Content-Type": 
 
 class ServerHttp(unittest.TestCase):
     def setUp(self):
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        self.journal = Journal(Path(folder.name) / "journal.sqlite3")
+        self.addCleanup(self.journal.close)
         self.client_double = FakeClient()
-        service = BankingHubService(self.client_double, PERMISSIONS)
+        service = BankingHubService(self.client_double, self.journal, PERMISSIONS)
         self.http = TestClient(create_app(service, CAPABILITY), base_url="http://127.0.0.1:8000")
         self.http.__enter__()
         self.addCleanup(self.http.__exit__, None, None, None)
@@ -66,24 +72,25 @@ class ServerHttp(unittest.TestCase):
                          ["DDA-A", "LOAN-A", "SDA-A"])
 
     def test_an_unsourced_fact_answers_unavailable_over_mcp(self):
-        reply = self.rpc(self.credential(), "tools/call", {"name": "banking_balance",
+        reply = self.rpc(self.credential(), "tools/call", {"name": "banking_history",
                                                            "arguments": {"account": "DDA-A"}})
         self.assertEqual(reply.json()["result"]["structuredContent"],
-                         {"state": "unavailable", "reason": UNSOURCED["balance"]})
+                         {"state": "unavailable", "reason": UNSOURCED["history"]})
 
-    def test_no_host_route_can_send_a_transfer(self):
+    def test_confirm_and_submit_are_host_only_and_send_once(self):
         credential = self.credential()
         review = self.rpc(credential, "tools/call", {"name": "banking_review_transfer", "arguments": {
             "source": "DDA-A", "destination": "SDA-A", "amount": "5", "currency": "USD"}})
-        self.assertEqual(review.json()["result"]["structuredContent"],
-                         {"state": "refused", "reason": UNSOURCED["transfer"]})
+        result = review.json()["result"]["structuredContent"]
         headers = {"Authorization": "Bearer " + CAPABILITY}
-        for route in ("confirm", "submit"):
-            reply = self.http.post("/host/" + route, headers=headers, json={
-                "credential": credential, "review": "anything", "transfer": {}})
-            self.assertEqual(reply.status_code, 403)
-            self.assertEqual(reply.json()["reason"], UNSOURCED["transfer"])
-        self.assertEqual(self.client_double.calls, [("party", "PARTY-A")])
+        exact = {key: result[key] for key in ("source", "destination", "amount", "currency")}
+        self.assertEqual(self.http.post("/host/confirm", headers=headers, json={
+            "credential": credential, "review": result["review"], "transfer": exact}).status_code, 200)
+        sent = self.http.post("/host/submit", headers=headers, json={"credential": credential, "review": result["review"]})
+        self.assertEqual(sent.json()["state"], "accepted")
+        again = self.http.post("/host/submit", headers=headers, json={"credential": credential, "review": result["review"]})
+        self.assertEqual(again.status_code, 403)
+        self.assertEqual(self.client_double.mock.transfers, 1)
 
 
 class AdapterHelpers(unittest.TestCase):
