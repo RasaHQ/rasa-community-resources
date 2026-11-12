@@ -222,7 +222,7 @@ catalog: ## Rebuild CATALOG.md and catalog/case-builds.json from the case builds
 	@$(PYTHON) $(SCRIPTS)/catalog_case_builds.py $(if $(SITE),--site $(SITE) --site-ref origin/main,)
 
 test-voice-latency: ## Offline timing parser, privacy and bounded process controls
-	@$(PYTHON) -B -m unittest discover -s $(SCRIPTS)/tests -p test_voice_latency.py
+	@$(PYTHON) -B -m unittest discover -s $(SCRIPTS)/tests -p 'test_voice_*.py'
 
 .PHONY: test-voice-latency
 

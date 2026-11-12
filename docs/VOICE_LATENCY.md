@@ -115,3 +115,34 @@ report cold separately from warm runs.
 - Compare model/region choices only with explicit runtime/cost authority and
   unchanged scenarios. Source inspection and scripted timing controls are not
   provider or microphone measurements.
+
+## Prefetch the pinned SDK 3.21.0.dev5 barge-in model
+
+Run inside the example's locked environment, as the same user and with the same
+Hugging Face cache settings used by its runtime:
+
+```sh
+uv run --locked python ../../scripts/prefetch_voice_model.py --download
+uv run --locked python ../../scripts/prefetch_voice_model.py
+```
+
+The first command explicitly permits downloading the three public model files.
+The second checks only the existing cache and never permits network fetches.
+Neither command contacts a speech/LLM provider, reads a licence, opens a voice
+session or loads ONNX inference. Downloads remain in the ordinary runtime cache;
+no cache directory or SDK environment is copied between hosts.
+
+The helper checks the installed SDK version, resolved `main` snapshot revision,
+byte lengths and SHA-256 digests of tokenizer, config and quantized ONNX files.
+It uses the same `main` lookup as the inspected SDK loader so that a separate
+revision-only cache does not falsely pass. An SDK/revision/hash mismatch fails
+without a warm-cache claim. It does not update those pins automatically. This
+command does not support the newer SDK's different CDN downloader. Do not add
+it to a generic image shared by projects with other SDK versions.
+
+To move first-session download work into setup, run the explicit download command
+after the resource's locked install, then keep the same cache through launch.
+Compare fresh-process SDK model loading with that verified cache, including an
+`HF_HUB_OFFLINE=1` control. Record preparation cost separately: prefetch shifts
+work earlier rather than removing it from total setup. This isolates model load,
+not browser response latency, and should be measured again on each target.
