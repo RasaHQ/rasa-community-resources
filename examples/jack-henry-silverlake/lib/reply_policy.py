@@ -6,6 +6,7 @@ consent and journals the request before sending. Records live for one runtime
 turn only and are not persisted or shared with another example.
 """
 from collections import OrderedDict
+import re
 import time
 from uuid import uuid4
 
@@ -13,6 +14,10 @@ from rasa.mantle.hooks.payloads import ModelResponsePayload
 from rasa.mantle.orchestration.turn_context import current_turn_context
 
 _delivered = OrderedDict()
+# Host-owned wording (silverlake_demo/rasa_adapter.py): a transfer review and an acceptance.
+HOST_ONLY = re.compile(r"\breview:\s*transfer\b|\btransfer (request )?was accepted\b|\baccepted does not mean posted\b",
+                       re.IGNORECASE)
+NO_TRANSFER_TEXT = "No transfer was reviewed or sent in this turn. To move money, ask for a new transfer review."
 _MAX_RECORDS = 128
 _MAX_AGE = 300
 
@@ -63,6 +68,12 @@ async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePa
         protected = {"banking_review_transfer", "banking_submit_transfer", "banking_transfer_status"}
         if payload.text and any(call.get("tool_name") in protected for call in payload.tool_calls):
             return payload.model_copy(update={"text": None})
+        # Only the host may announce a review or an acceptance. With no host
+        # delivery this turn, model text that imitates one is replaced, so a
+        # caller never hears a review or "accepted" for a transfer that was
+        # never reviewed or sent.
+        if payload.text and HOST_ONLY.search(payload.text):
+            return payload.model_copy(update={"text": NO_TRANSFER_TEXT})
         return payload
     # Agentic banking has no collect/confirmation flow steps. The supported
     # listen tool ends this turn without a second review, status paraphrase,
