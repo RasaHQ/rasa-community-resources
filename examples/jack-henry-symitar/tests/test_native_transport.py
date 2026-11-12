@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import threading
+import time
 import unittest
 from unittest.mock import patch
 from types import SimpleNamespace
@@ -51,18 +52,20 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
         from rasa.mantle.hooks.payloads import IncomingMessagePayload
         class Context:
             is_cancelled=False
-            def __init__(self):self.messages=[]
+            def __init__(self):self.messages=[];self.events=[]
             async def send(self,text):self.messages.append(text)
         context=Context();native_adapter._conversations.clear()
-        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}), patch.object(native_adapter,'current_turn_context',return_value=SimpleNamespace(sender_id='native-channel')):
-            await native_adapter.incoming(IncomingMessagePayload(sender_id='native-channel',text='balance',message_id='n1'))
+        native=SimpleNamespace(sender_id='native-channel',turn=SimpleNamespace(text='balance'))
+        context.events=[SimpleNamespace(as_dict=lambda:{'event':'user','text':'balance','timestamp':time.time()})]
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}), patch.object(native_adapter,'current_turn_context',return_value=native):
             result=await native_adapter.banking_balance('checking',context=context)
             self.assertEqual(result.llm_response['amount'],'1200.50')
             review=await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
             self.assertEqual(review.llm_response['state'],'review_delivered')
             self.assertIn('USD 1.25 from checking to savings',context.messages[-1])
             self.assertFalse(any(name=='postTransfer' for name,_ in self.vendor.sends))
-            await native_adapter.incoming(IncomingMessagePayload(sender_id='native-channel',text='yes',message_id='n2'))
+            native.turn.text='yes'
+            context.events.append(SimpleNamespace(as_dict=lambda:{'event':'user','text':'yes','timestamp':time.time()}))
             result=await native_adapter.banking_transfer_status(context=context)
             self.assertEqual(result.llm_response['state'],'accepted')
             self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
@@ -81,6 +84,36 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(inspector['server_url'],'https://fictional-5005.app.github.dev')
             self.assertEqual(inspector['asr']['name'],'voice_privacy.OptOutASR')
             self.assertEqual(inspector['tts']['name'],'voice_privacy.OptOutTTS')
+
+    async def test_native_tracker_never_dispatches_a_historical_no_tool_yes(self):
+        import native_adapter
+        native_adapter._conversations.clear()
+        events=[{'event':'user','text':'review','timestamp':time.time()}]
+        class Context:
+            is_cancelled=False
+            @property
+            def events(self):return [SimpleNamespace(as_dict=lambda event=event:event) for event in events]
+            async def send(self,text):pass
+        context=Context();native=SimpleNamespace(sender_id='historical-yes',turn=SimpleNamespace(text='review'))
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):
+            result=await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            self.assertEqual(result.llm_response['state'],'review_delivered')
+            events.extend([{'event':'user','text':'yes','timestamp':time.time()},{'event':'user','text':'status','timestamp':time.time()}])
+            native.turn.text='status'
+            result=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(result.llm_response['state'],'none')
+        self.assertEqual(self.vendor.sends,[])
+
+    async def test_native_tracker_keeps_no_tool_verify_age_and_refuses_stale_grant(self):
+        import native_adapter
+        native_adapter._conversations.clear()
+        events=[{'event':'user','text':'verify me','timestamp':time.time()-301},{'event':'user','text':'balance','timestamp':time.time()}]
+        context=SimpleNamespace(is_cancelled=False,events=[SimpleNamespace(as_dict=lambda event=event:event) for event in events])
+        native=SimpleNamespace(sender_id='aged-native-channel',turn=SimpleNamespace(text='balance'))
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):
+            result=await native_adapter.banking_balance('checking',context=context)
+        self.assertEqual(result.llm_response['state'],'unavailable')
+        self.assertEqual(self.vendor.sends,[])
 
     async def test_child_environment_drops_unrelated_secrets_and_python_paths(self):
         from launcher import child_environment
@@ -118,7 +151,7 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
             self.assertFalse(conv.pending_request)
 
-    async def test_sdk_validates_real_project_and_seven_tools_plus_incoming_modifier(self):
+    async def test_sdk_validates_real_project_and_seven_native_bindings(self):
         from rasa.mantle.validation import validate_project
         await asyncio.to_thread(validate_project,Path(__file__).resolve().parent.parent)
 

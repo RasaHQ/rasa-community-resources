@@ -1,14 +1,15 @@
 # SPDX-License-Identifier: MIT
 """Native Rasa bindings; identity, raw turns and delivery come from the SDK.
 
-Exactly seven tools are exported. The private per-turn observer consumes actual
-channel confirmation before tool execution; no submit/confirm tool exists.
+Exactly seven tools are exported. The private native adapter consumes actual
+channel events before tool execution; no submit/confirm tool exists.
 The model cannot supply the host capability, session, review handle or raw turn.
 """
 import asyncio
 from dataclasses import dataclass,field
 import os
 import time
+import math
 
 from pydantic import StrictStr
 from rasa.mantle.orchestration.turn_context import current_turn_context
@@ -59,39 +60,60 @@ async def _conversation_for(sender):
     return conversation
 
 
+async def _recover(conversation):
+    if conversation.pending_request:
+        previous=await asyncio.to_thread(conversation.client.control,'turn',**conversation.pending_request)
+        conversation.outcome=previous
+        conversation.pending_request={}
+
+
+async def _record(conversation,text,message_id=None,observed_at=None):
+    await _recover(conversation)
+    if message_id and message_id in conversation.message_ids:return
+    number=conversation.observed+1
+    request=dict(credential=conversation.credential,number=number,text=text,
+        observed_at=time.monotonic() if observed_at is None else observed_at,
+        revoked=_norm(text) in {'reset','logout','log out','switch user'},cancelled=False)
+    conversation.observed=number
+    conversation.pending_request=request
+    if message_id:conversation.message_ids.add(message_id)
+    result=await asyncio.to_thread(conversation.client.control,'turn',**request)
+    conversation.pending_request={}
+    if result.get('state')!='observed' or not conversation.outcome:conversation.outcome=result
+
+
 async def incoming(payload):
-    """Awaited only by the SDK incoming-message modifier, never a model tool."""
+    """Private channel adapter helper, never a model-discovered tool."""
     conversation=await _conversation_for(payload.sender_id)
     async with conversation.lock:
-        # Recover the exact previous private request before observing new input.
-        # A lost HTTP reply never rebinds its confirmation to a later raw turn.
-        if conversation.pending_request:
-            previous=await asyncio.to_thread(conversation.client.control,'turn',**conversation.pending_request)
-            conversation.outcome=previous
-            conversation.pending_request={}
-        if payload.message_id and payload.message_id in conversation.message_ids:return payload
-        number=conversation.observed+1
-        request=dict(credential=conversation.credential,number=number,text=payload.text,observed_at=time.monotonic(),
-            revoked=_norm(payload.text) in {'reset','logout','log out','switch user'},cancelled=False)
-        conversation.observed=number
-        conversation.pending_request=request
-        if payload.message_id:conversation.message_ids.add(payload.message_id)
-        result=await asyncio.to_thread(conversation.client.control,'turn',**request)
-        conversation.pending_request={}
-        if result.get('state')!='observed' or not conversation.outcome:
-            conversation.outcome=result
+        await _record(conversation,payload.text,payload.message_id)
     return payload
 
 
 async def _conversation(context):
     if context is None or context.is_cancelled:raise ValueError('channel_unavailable')
     conversation=await _conversation_for(current_turn_context().sender_id)
-    if not conversation.observed:raise ValueError('incoming_hook_required')
     return conversation
 
 
 async def _observe(conversation,context):
     if context.is_cancelled:raise ValueError('channel_cancelled')
+    native=current_turn_context()
+    users=_users(context)
+    if not users or native.turn.text!=users[-1].get('text') or len(users)<conversation.observed:
+        raise ValueError('current_raw_turn_required')
+    await _recover(conversation)
+    unseen=users[conversation.observed:]
+    if len(unseen)>1:
+        # An older yes must never become a late submission merely because the
+        # model did not call a tool on that historical turn.
+        await asyncio.to_thread(conversation.client.control,'cancel',credential=conversation.credential)
+    for event in unseen:
+        stamp=event.get('timestamp')
+        if type(stamp) not in {int,float} or not math.isfinite(stamp) or stamp>time.time()+1:
+            raise ValueError('trusted_event_time_required')
+        observed_at=time.monotonic()-max(0,time.time()-stamp)
+        await _record(conversation,event['text'],observed_at=observed_at)
     result=conversation.outcome
     state=result.get('state')
     if state=='reset':raise ValueError('session_reset')
@@ -104,6 +126,7 @@ async def _observe(conversation,context):
 
 
 async def _call(context,name,args):
+    conversation=None
     try:
         conversation=await _conversation(context)
         async with conversation.lock:
@@ -122,6 +145,8 @@ async def _call(context,name,args):
                 return ToolResult(llm_response={'state':'review_delivered','instruction':'The exact review was delivered. Add no question or extra review.'})
             return ToolResult(llm_response=result)
     except (Exception,asyncio.CancelledError):
+        if conversation is not None and conversation.pending_request:
+            return ToolResult(llm_response={'state':'unknown','reason':'A prior transfer may have occurred. Do not retry or request another transfer. Check local status when the host returns.'})
         return ToolResult(llm_response={'state':'unavailable','reason':'host_or_service_refused; say verify me if simulated assurance expired'})
 
 
