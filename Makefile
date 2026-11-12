@@ -221,7 +221,12 @@ SITE ?=
 catalog: ## Rebuild CATALOG.md and catalog/case-builds.json from the case builds
 	@$(PYTHON) $(SCRIPTS)/catalog_case_builds.py $(if $(SITE),--site $(SITE) --site-ref origin/main,)
 
-validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
+test-voice-latency: ## Offline timing parser, privacy and bounded process controls
+	@$(PYTHON) -B -m unittest discover -s $(SCRIPTS)/tests -p 'test_voice_*.py'
+
+.PHONY: test-voice-latency
+
+validate: test-voice-latency ## Offline correctness gate (lint + unit tests + drift). Start here.
 	@$(PYTHON) -m unittest discover -s scripts -p test_workshop_codespaces.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_codespaces_generator.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_codespaces_scope.py
@@ -230,6 +235,8 @@ validate: ## Offline correctness gate (lint + unit tests + drift). Start here.
 	@$(PYTHON) scripts/generate_codespaces.py --check
 	@$(PYTHON) -m unittest discover -s scripts -p test_public_tutorial_delta.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_casebook_explanations.py
+	@$(PYTHON) -m unittest discover -s scripts -p test_self_contained.py
+	@$(PYTHON) scripts/check_self_contained.py
 	@echo "$(MAGENTA)▸ tooling unit tests$(RESET)"
 	@out=$$($(UNITTESTS) 2>&1) || { echo "$$out"; exit 1; }; \
 		case "$$out" in *"OK"*) ;; *) echo "$$out"; \
