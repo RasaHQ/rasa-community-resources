@@ -12,6 +12,18 @@ Choose what you want to do:
 
 This is the code companion to [rasa.community](https://rasa.community/). Tutorials, examples, and reference code live in their own folders, with setup instructions and the versions they were tested against. For the presenter-led Software Factories workshop, follow the [workshop guide](workshops/software-factories-masterclass/README.md). It needs no local installation; the hosted builds use your own OpenAI key and can incur charges.
 
+## Banking examples
+
+The banking examples are being built as independent folders, each with its own
+MCP server, vendor-contract mock, data, tests, and voice agent:
+
+- [Jack Henry Symitar / SymXchange — in development](https://github.com/RasaHQ/rasa-community-resources/pull/205)
+- [Jack Henry SilverLake / jXchange — in development](https://github.com/RasaHQ/rasa-community-resources/pull/206)
+- [Fiserv Premier / Banking Hub — in development](https://github.com/RasaHQ/rasa-community-resources/pull/209)
+
+These pull requests are the current implementation work. The earlier shared
+banking demo has been removed. Use the replacement's README when it is merged.
+
 ## Browse the repository
 
 Use the category catalogs below when you already know what you need. For isolated local development, read [workspaces and environments](docs/WORKSPACES.md) before installing a resource.
