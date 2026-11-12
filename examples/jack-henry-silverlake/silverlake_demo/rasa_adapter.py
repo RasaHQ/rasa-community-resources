@@ -123,9 +123,22 @@ async def _host(context, *, create=True):
     return conversation
 
 
+_CONFIRMATIONS = {"yes", "confirm", "confirmed", "confirm transfer"}
+NO_ACTIVE_REVIEW_TEXT = ("The transfer review was cancelled or is no longer active. "
+                         "Request a new transfer before confirming.")
+
+
 async def _read(context, name, arguments):
     try:
         host = await _host(context)
+        if name == "banking_transfer_status" and _norm(current_turn_context().turn.text) in _CONFIRMATIONS:
+            # A confirmation is about the review just read back, never an earlier
+            # transfer: the latest retained outcome must not answer it.
+            if host.pending:
+                return ToolResult(llm_response={"state": "confirmation_pending",
+                                                "instruction": "Call banking_submit_transfer now."})
+            await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)
+            return ToolResult(llm_response={"state": "not_submitted", "reason": "no_active_review"})
         result = _safe(_payload(await host.client.call(host.session, name, arguments)))
         if name == "banking_transfer_status" and result.get("state") == "accepted":
             await deliver_reply(context, "The transfer request was accepted. Accepted does not mean posted.")
@@ -251,7 +264,7 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
             if host.last_submit_state == "unknown":
                 await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
                 return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
-            await deliver_reply(context, "The transfer review was cancelled or is no longer active. Request a new transfer before confirming.")
+            await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)
             return ToolResult(llm_response={"state": "refused", "reason": "new_review_required"})
         host.pending = None  # consume local permission before the first effectful call
         dispatched = True

@@ -74,6 +74,26 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(self.host.sends, 0)
                 self.assertNotIn("accepted", self.messages[-1].casefold())
 
+    async def test_a_confirmation_never_reads_an_earlier_accepted_transfer_as_this_one(self):
+        # Transfer A accepted; review B then cancelled; a raw confirm routed to the
+        # status tool must not say accepted, and nothing new is sent.
+        await self.review();self.turn("confirm transfer")
+        await adapter.banking_submit_transfer(context=self.context)
+        self.assertEqual(self.host.sends,1)
+        self.turn("review");await self.review()
+        self.turn("No, do not transfer.")
+        for text in ("Confirm transfer.","Yes."):
+            with self.subTest(text=text):
+                self.turn(text);policy._delivered.clear();before=len(self.messages)
+                result=await adapter.banking_transfer_status(context=self.context)
+                self.assertEqual(result.llm_response["state"],"not_submitted")
+                self.assertTrue(all("accepted" not in m.casefold() for m in self.messages[before:]))
+                self.assertIn("Request a new transfer",self.messages[-1])
+        self.assertEqual(self.host.sends,1)
+        self.turn("What happened to my earlier transfer?")
+        asked=await adapter.banking_transfer_status(context=self.context)
+        self.assertEqual(asked.llm_response["state"],"accepted")  # an explicit question still gets it
+
     async def test_unknown_outcome_never_invites_a_new_transfer(self):
         await self.review();self.host.state="unknown";self.turn("confirm transfer")
         await adapter.banking_submit_transfer(context=self.context)
@@ -148,6 +168,7 @@ class Host:
         if name=="banking_review_transfer":
             self.reviews+=1
             data=dict(state="pending",review="private-review",source="checking-A",destination="savings-A",amount="5.00",currency="USD")
+        elif name=="banking_transfer_status":data=dict(state=self.state if self.sends else "none")
         else:data=dict(state="available",amount="1250.00",currency="USD")
         return SimpleNamespace(isError=False,structuredContent=data)
     def arm(self,*args):pass
