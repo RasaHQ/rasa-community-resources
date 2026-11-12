@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 import fcntl
+import math
 import hashlib
 from pathlib import Path
 import re
@@ -176,11 +177,14 @@ class PremierService:
             self._assured[context.session] = self.clock()
         return context
 
-    def assure(self, context):
-        """Simulated step-up. The host calls this on an exact raw user phrase."""
+    def assure(self, context, age_seconds=0):
+        """Simulated step-up, dated by when the raw phrase was actually said."""
+        if (isinstance(age_seconds, bool) or not isinstance(age_seconds, (int, float))
+                or not math.isfinite(age_seconds) or age_seconds < 0 or age_seconds > 86400):
+            raise Refused("invalid_assurance_event")
         with self._lock:
             self._bound(context)
-            self._assured[context.session] = self.clock()
+            self._assured[context.session] = self.clock() - age_seconds
 
     def _bound(self, context):
         if not isinstance(context, SessionContext) or self._sessions.get(context.session) != context:

@@ -63,9 +63,9 @@ class HostClient:
         return self._host("confirm", {"credential": session.credential,
                                       "review": review, "transfer": exact_transfer})
 
-    def assure(self, session):
-        """Simulated step-up, only on an exact raw user phrase seen by the host."""
-        return self._host("assure", {"credential": session.credential})
+    def assure(self, session, age_seconds):
+        """Simulated step-up, bound to how long ago the raw phrase was actually said."""
+        return self._host("assure", {"credential": session.credential, "age": age_seconds})
 
     def submit(self, session, review):
         """The private physical send. Not an MCP tool; the model cannot call it."""

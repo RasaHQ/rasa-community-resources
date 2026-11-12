@@ -149,6 +149,22 @@ class HostTests(unittest.TestCase):
         self.service.assure(context)
         self.service.accounts(context)
 
+    def test_assurance_is_dated_by_when_the_phrase_was_said(self):
+        context = self.build()
+        self.service.assure(context, 299)
+        self.service.accounts(context)
+        self.service.assure(context, 300)
+        with self.assertRaises(Refused):
+            self.service.accounts(context)
+        self.service.assure(context, 59)
+        self.review(context)
+        self.service.assure(context, 60)
+        with self.assertRaises(Refused):
+            self.review(context)
+        for bad in (-1, float("nan"), float("inf"), True, "0", 10 ** 9):
+            with self.assertRaises(Refused):
+                self.service.assure(context, bad)
+
     def test_transfer_needs_a_fresh_grant_at_review_and_at_send(self):
         context = self.build()
         self.clock.now += TRANSFER_GRANT_SECONDS

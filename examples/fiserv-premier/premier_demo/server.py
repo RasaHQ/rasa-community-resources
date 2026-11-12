@@ -217,7 +217,7 @@ def create_app(service: PremierService, host_token: str):
             if context is None:
                 raise Refused("invalid_host_binding")
             if path == "/host/assure":
-                service.assure(context)
+                service.assure(context, body.get("age"))
                 return JSONResponse({"state": "assured"})
             if path == "/host/confirm":
                 service.confirm(context, body.get("review"), body.get("transfer"))
