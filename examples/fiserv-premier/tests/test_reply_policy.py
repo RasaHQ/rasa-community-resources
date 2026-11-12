@@ -35,15 +35,31 @@ class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(consumer._dispatch_tool_calls.call_args.args[0][0].tool_name,"listen")
 
     async def test_actual_snapshot_loader_registers_and_invokes_our_hook(self):
+        # Other snapshot tests intentionally evict lib modules. Use a fresh
+        # consumer process, with the SDK's real ContextVar, rather than an old
+        # test import or a mocked loader.
         from pathlib import Path
-        from rasa.mantle.hooks.loader import load_hooks
-        registry=load_hooks(Path(__file__).resolve().parents[1],evict_lib=False)
-        self.assertEqual(registry.modifier_count,1)
-        registered=registry.all_hooks()[0]
-        policy.remember_delivery()
-        reply=await registered.func(self.payload())
-        self.assertIsNone(reply.text)
-        self.assertEqual([call["tool_name"] for call in reply.tool_calls],["listen"])
+        import subprocess
+        import sys
+        program = """
+import asyncio
+from pathlib import Path
+from types import SimpleNamespace
+from rasa.mantle.hooks.loader import load_hooks
+from rasa.mantle.hooks.payloads import ModelResponsePayload
+from rasa.mantle.orchestration.turn_context import _current_turn_ctx
+registry=load_hooks(Path.cwd())
+assert registry.modifier_count==1
+from lib import reply_policy
+_current_turn_ctx.set(SimpleNamespace(sender_id="caller",turn=object(),is_cancelled=False))
+reply_policy.remember_delivery()
+reply=asyncio.run(registry.all_hooks()[0].func(ModelResponsePayload(sender_id="caller",text="duplicate")))
+assert reply.text is None
+assert [call["tool_name"] for call in reply.tool_calls]==["listen"]
+"""
+        result=subprocess.run([sys.executable,"-c",program],cwd=Path(__file__).resolve().parents[1],
+                              capture_output=True,text=True,timeout=60)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
 
     async def test_ordinary_response_and_next_turn_are_unchanged(self):
         payload=self.payload()
