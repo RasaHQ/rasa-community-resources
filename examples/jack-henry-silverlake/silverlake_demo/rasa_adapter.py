@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 import json
 import os
 import re
+import time
 
 from rasa.mantle.orchestration.turn_context import current_turn_context
 from .hostclient import HostRefused
@@ -99,8 +100,13 @@ async def _host(context, *, create=True):
         finally:
             _conversations.pop(key, None)
         raise ValueError("session_reset")
-    if any(_is_assure(str(event.get("text", ""))) for event in unseen):
-        await asyncio.to_thread(conversation.client.assure, conversation.session)
+    said = [event.get("timestamp") for event in unseen if _is_assure(str(event.get("text", "")))]
+    said = [stamp for stamp in said if isinstance(stamp, (int, float)) and not isinstance(stamp, bool)]
+    if said:
+        # Bind the simulated step-up to when the caller actually said it, not to
+        # when a later tool call happened to notice it. A stale phrase stays stale.
+        age = time.time() - max(said)
+        await asyncio.to_thread(conversation.client.assure, conversation.session, age)
     if conversation.pending and len(users) > conversation.pending_turn:
         # Only the immediately following exact phrase can confirm. A question,
         # denial, reset, changed request or intervening turn invalidates consent.

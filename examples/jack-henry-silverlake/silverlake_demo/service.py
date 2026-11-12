@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from decimal import Decimal
+import math
 from threading import RLock
 import time
 import uuid
@@ -76,12 +77,19 @@ class SilverLakeService:
         conversation.last_used = time.monotonic()
         return conversation
 
-    def assure(self, token):
-        """Simulated step-up on an exact raw user phrase seen by the host."""
+    def assure(self, token, age_seconds):
+        """Simulated step-up, dated by when the raw phrase was actually said.
+
+        A phrase said 300 seconds ago gives no read grant now; one said 60 seconds
+        ago gives no transfer grant now. The age comes from the trusted host adapter.
+        """
+        if (isinstance(age_seconds, bool) or not isinstance(age_seconds, (int, float))
+                or not math.isfinite(age_seconds) or age_seconds < 0 or age_seconds > 86400):
+            raise Refused("invalid_assurance_event")
         with self._lock:
             conversation = self._get(token)
             conversation.policy.cancel()
-            conversation.session = replace(conversation.session, assured_at=self.clock(),
+            conversation.session = replace(conversation.session, assured_at=self.clock() - age_seconds,
                                            revision=uuid.uuid4().hex)
 
     def reset(self, token):

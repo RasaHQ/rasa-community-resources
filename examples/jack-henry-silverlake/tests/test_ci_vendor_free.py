@@ -134,3 +134,45 @@ class AdapterHelpers(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AdapterAssuranceTime(unittest.IsolatedAsyncioTestCase):
+    """A 'verify me' turn that called no tool must not become a fresh grant later."""
+
+    async def test_a_stale_phrase_is_passed_with_its_real_age(self):
+        import os
+        import time
+        from types import SimpleNamespace
+        from unittest import mock
+        from silverlake_demo import rasa_adapter as adapter
+
+        calls = []
+
+        class FakeHost:
+            def __init__(self, origin, capability):
+                pass
+
+            def open_session(self, caller):
+                return "session"
+
+            def assure(self, session, age):
+                calls.append(age)
+
+        def event(text, stamp):
+            return SimpleNamespace(as_dict=lambda: {"event": "user", "text": text, "timestamp": stamp})
+
+        now = time.time()
+        turn = SimpleNamespace(sender_id="caller-1", turn=SimpleNamespace(text="what is my balance"))
+        environ = {"SILVERLAKE_HOST_URL": "http://127.0.0.1:1", "SILVERLAKE_HOST_CAPABILITY": "c" * 40}
+        with mock.patch.dict(os.environ, environ), \
+                mock.patch("silverlake_demo.hostclient.HostClient", FakeHost), \
+                mock.patch.object(adapter, "current_turn_context", lambda: turn):
+            adapter._conversations.clear()
+            first = SimpleNamespace(events=[event("hello", now - 400)])
+            await adapter._host(first)  # opens the conversation; nothing to assure
+            later = SimpleNamespace(events=[event("hello", now - 400), event("verify me", now - 301),
+                                            event("what is my balance", now)])
+            await adapter._host(later)
+        self.assertEqual(len(calls), 1)
+        self.assertGreaterEqual(calls[0], 301)  # the host gets the real age, so no fresh grant
+        adapter._conversations.clear()

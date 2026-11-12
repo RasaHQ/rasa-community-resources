@@ -52,8 +52,26 @@ class ServiceTests(unittest.TestCase):
         self.clock.now += 1
         with self.assertRaises(Refused):
             self.service.balance(token, "checking-A")
-        self.service.assure(token)
+        self.service.assure(token, 0)
         self.service.balance(token, "checking-A")
+
+    def test_assurance_is_dated_by_when_the_phrase_was_said(self):
+        token = self.build()
+        self.service.assure(token, 299)  # said 299 s ago: a read is still allowed
+        self.service.balance(token, "checking-A")
+        self.service.assure(token, 300)  # said 300 s ago: no read grant
+        with self.assertRaises(Refused):
+            self.service.balance(token, "checking-A")
+        self.service.assure(token, 59)
+        review = self.service.review_transfer(token, "checking-A", "savings-A", "1", "USD")
+        self.service.arm(token, review["review"], 4)  # 59 s: transfer still allowed
+        self.service.assure(token, 60)
+        review = self.service.review_transfer(token, "checking-A", "savings-A", "1", "USD")
+        with self.assertRaises(Refused):
+            self.service.arm(token, review["review"], 6)  # 60 s: no transfer grant
+        for bad in (-1, float("nan"), float("inf"), True, "0", 10 ** 9):
+            with self.assertRaises(Refused):
+                self.service.assure(token, bad)
 
     def test_one_confirmed_review_sends_once(self):
         token = self.build()

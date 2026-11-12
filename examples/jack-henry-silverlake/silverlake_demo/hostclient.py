@@ -54,9 +54,9 @@ class HostClient:
     def open_session(self, caller="demo-A"):
         return HostSession(self._host("open", {"caller": caller})["credential"])
 
-    def assure(self, session):
-        """Simulated step-up, only on an exact raw user phrase seen by the host."""
-        return self._host("assure", {"credential": session.credential})
+    def assure(self, session, age_seconds):
+        """Simulated step-up, bound to how long ago the raw phrase was actually said."""
+        return self._host("assure", {"credential": session.credential, "age": age_seconds})
 
     def arm(self, session, review, user_turn):
         """Arm the review after its canonical text was actually delivered."""

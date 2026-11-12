@@ -221,7 +221,7 @@ def create_app(service: SilverLakeService, host_token: str):
             if context is None:
                 raise Refused("invalid_host_binding")
             if path == "/host/assure":
-                service.assure(context)
+                service.assure(context, body.get("age"))
                 return JSONResponse({"state": "assured"})
             if path == "/host/arm":
                 return JSONResponse(service.arm(context, body.get("review"), body.get("turn")))
