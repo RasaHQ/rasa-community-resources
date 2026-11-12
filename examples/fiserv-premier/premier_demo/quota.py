@@ -14,6 +14,7 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import math
 from pathlib import Path
 import sqlite3
 import time
@@ -85,9 +86,12 @@ class Ledger:
     # -- attestation -----------------------------------------------------------
     def import_budget(self, raw: bytes, *, approved_runner: str) -> dict:
         """Import an operator-written attestation. Only a trusted local command calls this."""
+        def _reject_constant(name):
+            raise ValueError(name)  # NaN, Infinity and -Infinity are not JSON numbers
+
         try:
-            record = json.loads(raw)
-        except ValueError:
+            record = json.loads(raw, parse_constant=_reject_constant)
+        except (ValueError, TypeError, RecursionError):
             raise QuotaRefused("budget_invalid") from None
         if (not isinstance(record, dict) or set(record) != set(FIELDS)
                 or any(not isinstance(record[name], str) or not record[name].strip()
@@ -97,6 +101,7 @@ class Ledger:
                 or isinstance(record["as_of"], bool) or isinstance(record["expires_at"], bool)
                 or not isinstance(record["as_of"], (int, float))
                 or not isinstance(record["expires_at"], (int, float))
+                or not math.isfinite(record["as_of"]) or not math.isfinite(record["expires_at"])
                 or not 0 <= record["remaining_core_attempts"] <= MAX_REMAINING):
             raise QuotaRefused("budget_invalid")
         if record["organization_id"] != ORGANIZATION or record["runner_id"] != approved_runner:

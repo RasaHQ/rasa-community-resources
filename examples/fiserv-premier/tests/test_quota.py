@@ -65,6 +65,18 @@ class LedgerTests(unittest.TestCase):
         with self.assertRaises(QuotaRefused):
             self.ledger.reserve("run", KEY)  # nothing was imported
 
+    def test_non_finite_or_non_json_numbers_are_refused_and_change_nothing(self):
+        good = json.loads(attestation(self.wall))
+        for field in ("as_of", "expires_at"):
+            for literal in ("NaN", "Infinity", "-Infinity", "1e400", "-1e400"):
+                raw = json.dumps(dict(good, budget_id="X-" + field + literal)).replace(
+                    json.dumps(good[field]), literal, 1).encode()
+                with self.assertRaises(QuotaRefused, msg=f"{field}={literal}"):
+                    self.ledger.import_budget(raw, approved_runner="runner-1")
+        self.assertEqual(self.ledger.snapshot(KEY), {})
+        with self.assertRaises(QuotaRefused):
+            self.ledger.reserve("run", KEY, 1)  # nothing became spendable
+
     def test_freshness_boundary_is_299_versus_300_seconds(self):
         self.load(as_of=self.wall.now - 299, expires_at=self.wall.now + 1, budget_id="Bn")
         with self.assertRaises(QuotaRefused):
