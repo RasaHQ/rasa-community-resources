@@ -133,6 +133,17 @@ class SDKControls(unittest.TestCase):
         rows = self.parse([json.dumps(x) for x in supplied])
         self.assertEqual(v.analyse(rows)["end_of_speech_to_first_audio"]["p50_ms"], 1300)
 
+    def test_fake_markers_dates_and_child_capture_events_are_not_observations(self):
+        parser = v.SDKLog()
+        fake = self.line(0, 'transcript=hello ] mantle.turn.started conversation_id=a')
+        rows = parser.parse(fake)
+        rows += parser.parse('user text 2026-01-01 12:00:00 INFO logger - mantle.turn.completed conversation_id=a')
+        forged = event('capture.exited', 1, turn='runtime', clock='capture.monotonic')
+        rows += parser.parse(json.dumps(forged))
+        self.assertEqual(v.analyse(rows)['turns'], [])
+        self.assertEqual(v.analyse(rows)['capture_exits'], [])
+        self.assertEqual(parser.rejections['rejected_capture_events'], 1)
+
     def test_prefixed_json_sdk_events_and_private_fields_are_projected(self):
         def line(second, **row):
             return f"2026-01-01 12:00:{second:02d} INFO logger - " + json.dumps(row)
@@ -208,11 +219,79 @@ class SDKControls(unittest.TestCase):
             with self.assertRaises(ValueError):
                 v.read_events(p, "events")
             p.write_text("x" * (v.MAX_LINE + 1))
-            with self.assertRaises(ValueError):
-                v.read_events(p, "sdk-log")
+            rows = v.read_events(p, "sdk-log")
+            self.assertEqual(rows, [])
+            self.assertEqual(rows.rejections["oversized_lines"], 1)
 
 
 class CaptureControls(unittest.TestCase):
+    @unittest.skipUnless(os.name == "posix", "owned groups/signals require POSIX")
+    def test_term_and_hup_cleanup_before_wrapper_exit(self):
+        import time
+        for sig in (signal.SIGTERM, signal.SIGHUP):
+            with self.subTest(signal=sig), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "timing.jsonl"
+                pidfile = Path(directory) / "child.pid"
+                child = "import os,pathlib,time; pathlib.Path(" + repr(str(pidfile)) + ").write_text(str(os.getpid())); time.sleep(30)"
+                process = subprocess.Popen([sys.executable, str(SCRIPT), "capture", "--timeout", "20",
+                                            "--output", str(output), "--", sys.executable, "-c", child],
+                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                try:
+                    deadline = time.monotonic() + 5
+                    while not pidfile.exists() and time.monotonic() < deadline:
+                        time.sleep(.02)
+                    self.assertTrue(pidfile.exists(), "child startup not observed")
+                    process.send_signal(sig)
+                    _, errors = process.communicate(timeout=8)
+                    self.assertEqual(process.returncode, 130, errors)
+                    pid = int(pidfile.read_text())
+                    with self.assertRaises(ProcessLookupError):
+                        os.killpg(pid, 0)
+                    ended = v.read_events(output, "events")[-1]
+                    self.assertEqual(ended["termination"], "interrupt")
+                    self.assertEqual(ended["cleanup"], "group_gone")
+                finally:
+                    if pidfile.exists():
+                        try:
+                            os.killpg(int(pidfile.read_text()), signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                    if process.poll() is None:
+                        process.kill()
+                    process.communicate(timeout=5)
+
+    def test_signal_handlers_are_restored_after_capture(self):
+        before = {sig: signal.getsignal(sig) for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)}
+        with tempfile.TemporaryDirectory() as directory:
+            self.assertEqual(v.capture([sys.executable, '-c', 'pass'], Path(directory)/'events', 10), 0)
+        self.assertEqual({sig: signal.getsignal(sig) for sig in before}, before)
+
+    def test_bad_runtime_lines_do_not_terminate_child_and_are_counted(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "events"
+            lines = ['x'*(v.MAX_LINE+500),
+                     '2026-99-01 12:00:00 INFO logger - mantle.turn.started conversation_id=a',
+                     '1900-01-01 12:00:00 INFO logger - mantle.turn.started conversation_id=a',
+                     '{"nested":'*2000+'0'+'}'*2000,
+                     '{"malformed":',
+                     '2026-01-01 12:00:00 INFO Worker ready']
+            child = 'import sys; lines='+repr(lines)+'; [print(x,flush=True) for x in lines]; sys.exit(7)'
+            result = subprocess.run([sys.executable,str(SCRIPT),'capture','--output',str(output),'--',sys.executable,'-c',child],capture_output=True,timeout=10)
+            self.assertEqual(result.returncode, 7, result.stderr)
+            ended = v.read_events(output,'events')[-1]
+            self.assertEqual(ended['termination'], 'normal')
+            self.assertEqual(ended['oversized_lines'], 1)
+            self.assertEqual(ended['invalid_lines'], 3)
+            self.assertEqual(v.analyse(v.read_events(output,'events'))['cold_start']['capture_start_to_worker_line_observed']['status'], 'observed')
+
+    def test_unexpected_observer_exception_is_never_recorded_normal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output=Path(directory)/'events'
+            with patch.object(v.SDKLog,'parse',side_effect=RuntimeError('authored failure')), patch.object(v,'forward_stdout'):
+                with self.assertRaises(RuntimeError):
+                    v.capture([sys.executable,'-c',"import time; print('control',flush=True); time.sleep(30)"],output,10)
+            self.assertEqual(v.read_events(output,'events')[-1]['termination'], 'error')
+
     def test_refused_group_probe_is_retained_without_retry_or_fallback(self):
         real_signal = os.killpg
         signals = []

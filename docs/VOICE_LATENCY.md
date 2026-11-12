@@ -235,3 +235,30 @@ ASR-final and per-MCP invocation timing remain separate native-adapter events;
 they are not manufactured from this snapshot. Never disable API authentication
 to use this limited local collector: a protected endpoint should retain its
 existing authorized adapter/event route.
+
+### Observation failures and process lifetime
+
+SIGINT, SIGTERM and SIGHUP route through bounded cleanup of the owned child
+process group and record an interrupted exit. Signal handlers and the stdout
+blocking mode are restored. SIGKILL cannot run cleanup. The capture deadline
+covers the whole owned group and its output pipe: a leader that exits while a
+descendant holds stdout open can still end with timeout status 124.
+
+Malformed, oversized and invalid SDK log rows are skipped and counted in the
+final capture event and offline report. The observer keeps forwarding output
+and lets the runtime continue. Child-supplied `capture.*` lifecycle events are
+rejected; those observations belong to the wrapper. Normalized event-file
+input remains strict. An unexpected observer exception records termination
+`error` and cleans up rather than claiming a normal run. Analysis output uses
+exclusive creation and mode 0600, just like capture output.
+
+The opt-in prefetch download writes into the configured Hugging Face cache.
+A failed post-download hash check does not roll back those files or mark the
+cache verified. Do not use a failed candidate as an approved cache; retain the
+failure and prepare a separate clean cache before another authorized attempt.
+
+The tracker field mapping is a projection of the inspected SDK 3.21 metadata
+shape, with authored controls; it is not a live SDK compatibility attestation.
+No supported numeric values produces `no_phase_values` and a nonzero collector
+exit. Missing ASR, MCP and TTS phases remain unknown. Server metrics never
+establish a browser clock join.

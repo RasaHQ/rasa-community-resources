@@ -8,6 +8,7 @@ caller; it never chooses credentials, a provider, a model or a retry.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 from datetime import datetime
 import json
 import math
@@ -34,7 +35,7 @@ STAGES = {
 }
 ID = re.compile(r"^[A-Za-z0-9_.:-]{1,100}$")
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
-STAMP = re.compile(r"(?<!\d)(\d{4}-\d\d-\d\d)[ T](\d\d:\d\d:\d\d)(\.\d{1,6})?")
+STAMP = re.compile(r"^\s*\[?(\d{4}-\d\d-\d\d)[ T](\d\d:\d\d:\d\d)(\.\d{1,6})?")
 MAPPINGS = {
     "mantle.turn.started": "turn.started",
     "mantle.turn.completed": "turn.completed",
@@ -55,7 +56,7 @@ def finite(value, name):
 def validate(row):
     if not isinstance(row, dict) or row.get("schema") != SCHEMA:
         raise ValueError("unsupported timing schema")
-    if row.get("event") not in STAGES:
+    if not isinstance(row.get("event"), str) or row["event"] not in STAGES:
         raise ValueError("unsupported timing event")
     for key in ("session", "turn", "clock"):
         if not isinstance(row.get(key), str) or not ID.fullmatch(row[key]):
@@ -67,7 +68,7 @@ def validate(row):
     # Do not propagate arbitrary JSON fields, transcripts, URLs or payloads.
     result = {k: row[k] for k in ("schema", "event", "session", "turn", "clock", "at_ms")}
     result["resolution_ms"] = row.get("resolution_ms", 0)
-    for key in ("iterations", "endpointing_ms", "utterance_end_ms"):
+    for key in ("iterations", "endpointing_ms", "utterance_end_ms", "invalid_lines", "oversized_lines", "rejected_capture_events", "dropped_events"):
         if key in row:
             value = finite(row[key], key)
             if type(value) is not int:
@@ -105,29 +106,55 @@ class SDKLog:
         self.turns = {}
         self.pending = {}
         self.first = False
+        self.rejections = dict(invalid_lines=0, oversized_lines=0, rejected_capture_events=0)
 
     def parse(self, line):
-        line = ANSI.sub("", line)
-        payload = None
-        brace = line.find("{")
-        if brace >= 0:
-            try:
-                candidate = json.loads(line[brace:], object_pairs_hook=unique_json)
-                if isinstance(candidate, dict):
-                    payload = candidate
-            except (ValueError, json.JSONDecodeError):
-                pass
-        if payload is not None and payload.get("schema") == SCHEMA:
-            return [validate(payload)]
-        stamp = STAMP.search(line)
+        if len(line) > MAX_LINE:
+            self.rejections["oversized_lines"] += 1
+            return []
+        try:
+            return self._parse(line)
+        except (ValueError, TypeError, OverflowError, RecursionError):
+            self.rejections["invalid_lines"] += 1
+            return []
+
+    def normalized(self, payload):
+        row = validate(payload)
+        if row["event"].startswith("capture."):
+            self.rejections["rejected_capture_events"] += 1
+            return []  # Only the wrapper can emit its lifecycle observations.
+        return [row]
+
+    def _parse(self, line):
+        line = ANSI.sub("", line).strip()
+        if line.startswith("{"):
+            payload = json.loads(line, object_pairs_hook=unique_json)
+            if isinstance(payload, dict) and payload.get("schema") == SCHEMA:
+                return self.normalized(payload)
+            return []
+        stamp = STAMP.match(line)
         if not stamp:
             return []
         date = datetime.fromisoformat(stamp[1] + "T" + stamp[2] + (stamp[3] or ""))
-        # Abstract server wall-clock axis; no assumption about local UTC offset.
         relative = date - datetime(1970, 1, 1)
         at = relative.days * 86400000 + relative.seconds * 1000 + relative.microseconds / 1000
+        finite(at, "timestamp")
         resolution = 10 ** (3 - len(stamp[3][1:])) if stamp[3] else 1000
-        match = re.search(r"\bconversation_id=([A-Za-z0-9_-]+)", line)
+        # Recognize only the start of the actual log body, never a later quoted
+        # date, JSON object or marker inside transcript/console text.
+        tail = line[stamp.end():].lstrip()
+        if tail.startswith("]"):
+            tail = tail[1:].lstrip()
+        header = re.match(r"^(?:(?:DEBUG|INFO|WARNING|ERROR|CRITICAL)\s+[\w.:-]+\s+-\s*)?(?:\[\s*(?:debug|info|warning|error)\s*\]\s*)?", tail)
+        body = tail[header.end():]
+        payload = None
+        if body.startswith("{"):
+            candidate = json.loads(body, object_pairs_hook=unique_json)
+            if isinstance(candidate, dict):
+                payload = candidate
+            if payload is not None and payload.get("schema") == SCHEMA:
+                return self.normalized(payload)
+        match = re.search(r"\bconversation_id=([A-Za-z0-9_-]+)", body)
         key = payload.get("conversation_id") if payload is not None else (match[1] if match else None)
         if not isinstance(key, str) or not ID.fullmatch(key):
             key = None
@@ -147,10 +174,10 @@ class SDKLog:
             rows.append(event("runtime.first_log"))
             self.first = True
         marker = (payload.get("event") if payload is not None else
-                  next((m for m in MAPPINGS if re.search(r"(?:\]\s+| -\s+|^\s*)" + re.escape(m) + r"(?:\s|$)", line)), None))
+                  next((m for m in MAPPINGS if re.match(re.escape(m) + r"(?:\s|$)", body)), None))
         if not isinstance(marker, str) or marker not in MAPPINGS:
             marker = None
-        if payload is None and re.search(r"(?:INFO\s+| -\s+|\]\s+)Worker ready(?:\s|$)", line):
+        if payload is None and re.match(r"(?:INFO\s+)?Worker ready(?:\s|$)", body):
             rows.append(event("runtime.worker_ready"))
         if marker is None:
             return rows
@@ -201,23 +228,34 @@ def unique_json(pairs):
     return row
 
 
+class EventList(list):
+    pass
+
+
 def read_events(path, format_):
     parser = SDKLog()
-    result = []
+    result = EventList()
+    discarding = False
     with Path(path).open("rb") as stream:
         while True:
             line = stream.readline(MAX_LINE + 1)
             if not line:
                 break
+            if format_ == "sdk-log" and (discarding or len(line) > MAX_LINE):
+                if not discarding:
+                    parser.rejections["oversized_lines"] += 1
+                discarding = not line.endswith(b"\n")
+                continue
             if len(line) > MAX_LINE:
                 raise ValueError("input line exceeds 64KiB")
-            text = line.decode("utf-8")
+            text = line.decode("utf-8", errors="replace" if format_ == "sdk-log" else "strict")
             if format_ == "sdk-log":
                 result.extend(parser.parse(text))
             elif text.strip():
                 result.append(validate(json.loads(text, object_pairs_hook=unique_json)))
             if len(result) > MAX_EVENTS:
                 raise ValueError("too many timing events")
+    result.rejections = dict(parser.rejections)
     return result
 
 
@@ -287,6 +325,7 @@ def analyse(events, target_ms=1500):
     return {
         "schema": "rasa.voice-latency-report/v1", "target_ms": target_ms,
         "timing_provenance": "Supplied timing observations; not authenticated audio or a qualification receipt",
+        "log_parse_rejections": getattr(events, "rejections", {}),
         "end_of_speech_to_first_audio": summary([r["end_of_speech_to_first_audio"] for r in usable]),
         "orchestration": summary([r["orchestration"] for r in usable]),
         "voice_session_orchestration": summary([r["orchestration"] for r in usable
@@ -332,6 +371,28 @@ def forward_stdout(chunk, deadline):
         os.set_blocking(fd, blocking)
 
 
+@contextmanager
+def shutdown_handlers():
+    state = {"launching": False, "interrupted": False, "cleanup": False}
+    previous = {}
+
+    def interrupt(signum, frame):
+        if state["cleanup"]:
+            return  # bounded owned cleanup cannot be interrupted a second time
+        state["interrupted"] = True
+        if not state["launching"]:
+            raise KeyboardInterrupt
+
+    try:
+        for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+            previous[sig] = signal.getsignal(sig)
+            signal.signal(sig, interrupt)
+        yield state
+    finally:
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
+
+
 def capture(command, output, timeout):
     if not command:
         raise ValueError("capture requires an explicit runtime command")
@@ -343,14 +404,16 @@ def capture(command, output, timeout):
     reason = None
     cleanup = "not_started"
     count = 0
+    dropped_events = 0
     # Refuse to overwrite previous observations and keep timing artifacts private.
     descriptor = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(descriptor, "w") as out:
+    with os.fdopen(descriptor, "w") as out, shutdown_handlers() as shutdown:
         def write(row):
-            nonlocal count
+            nonlocal count, dropped_events
+            if count >= MAX_EVENTS - 1 and row["event"] != "capture.exited":
+                dropped_events += 1
+                return
             count += 1
-            if count > MAX_EVENTS:
-                raise ValueError("too many timing events")
             out.write(json.dumps(validate(row), allow_nan=False) + "\n")
             out.flush()
 
@@ -359,14 +422,23 @@ def capture(command, output, timeout):
                         clock="capture.monotonic", at_ms=(time.monotonic() - started) * 1000,
                         resolution_ms=time.get_clock_info("monotonic").resolution * 1000, **meta)
 
-        write(observed("capture.started"))
         try:
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                       start_new_session=True)
+            write(observed("capture.started"))
+            # Do not raise in the middle of Popen: retain the returned child
+            # identity before routing a pending signal into owned cleanup.
+            shutdown["launching"] = True
+            try:
+                process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                           start_new_session=True)
+            finally:
+                shutdown["launching"] = False
+            if shutdown["interrupted"]:
+                raise KeyboardInterrupt
             with selectors.DefaultSelector() as selector:
                 selector.register(process.stdout, selectors.EVENT_READ)
                 buffer = b""
                 eof = False
+                discarding = False
                 while not eof:
                     if time.monotonic() - started >= timeout:
                         reason = "timeout"
@@ -379,18 +451,29 @@ def capture(command, output, timeout):
                         # Preserve normal terminal output, but never retain it in the artifact.
                         forward_stdout(chunk, started + timeout)
                         buffer += chunk
-                        while b"\n" in buffer:
+                        while buffer:
+                            if discarding:
+                                if b"\n" not in buffer:
+                                    buffer = b""
+                                    break
+                                _, buffer = buffer.split(b"\n", 1)
+                                discarding = False
+                                continue
+                            if b"\n" not in buffer:
+                                if len(buffer) > MAX_LINE:
+                                    parser.rejections["oversized_lines"] += 1
+                                    buffer = b""
+                                    discarding = True
+                                break
                             line, buffer = buffer.split(b"\n", 1)
                             if len(line) > MAX_LINE:
-                                raise ValueError("runtime line exceeds 64KiB")
-                            text = line.decode("utf-8", errors="replace")
-                            for row in parser.parse(text):
+                                parser.rejections["oversized_lines"] += 1
+                                continue
+                            for row in parser.parse(line.decode("utf-8", errors="replace")):
                                 write(row)
                                 if row["event"] == "runtime.worker_ready":
                                     write(observed("capture.worker_ready_observed"))
-                        if len(buffer) > MAX_LINE:
-                            raise ValueError("runtime line exceeds 64KiB")
-                if buffer:
+                if buffer and not discarding:
                     for row in parser.parse(buffer.decode("utf-8", errors="replace")):
                         write(row)
             if reason is None:
@@ -399,10 +482,11 @@ def capture(command, output, timeout):
             reason = "interrupt"
         except subprocess.TimeoutExpired:
             reason = "timeout"
-        except (ValueError, OSError):
+        except BaseException:
             reason = "error"
             raise
         finally:
+            shutdown["cleanup"] = True
             if process is not None:
                 # Signal the whole owned group even if its leader already exited.
                 for sig in (signal.SIGTERM, signal.SIGKILL):
@@ -440,7 +524,7 @@ def capture(command, output, timeout):
                 if process.stdout is not None:
                     process.stdout.close()
             meta = {"termination": reason or ("normal" if process is not None else "error"),
-                    "cleanup": cleanup}
+                    "cleanup": cleanup, **parser.rejections, "dropped_events": dropped_events}
             if process is not None and process.returncode is not None:
                 meta["exit_code"] = process.returncode
             write(observed("capture.exited", **meta))
@@ -476,12 +560,13 @@ def main():
         text = json.dumps(result, indent=2, allow_nan=False) + "\n"
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
-            with args.output.open("x") as out:
+            fd = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, "w") as out:
                 out.write(text)
         else:
             sys.stdout.write(text)
         return 0
-    except (ValueError, OSError, json.JSONDecodeError) as error:
+    except (ValueError, TypeError, OSError, RecursionError) as error:
         # Do not echo source rows, command arguments, response bodies or secrets.
         print(f"voice-latency: {type(error).__name__}; no completed measurement claimed", file=sys.stderr)
         return 2

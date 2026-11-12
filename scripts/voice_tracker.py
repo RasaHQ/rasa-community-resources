@@ -54,7 +54,7 @@ def project(tracker):
                 metrics[name] = None
                 invalid.append(name)
         turns.append({'server_turn_ordinal': len(turns) + 1, 'metrics': metrics, 'invalid_metrics': invalid})
-    return {'schema': 'rasa.voice-latency-server-projection/v1', 'status': 'collected', 'turns': turns,
+    return {'schema': 'rasa.voice-latency-server-projection/v1', 'status': ('collected' if any(value is not None for turn in turns for value in turn['metrics'].values()) else 'no_phase_values'), 'turns': turns,
             'scope': 'SDK numeric metadata; server trigger/output is not browser speech/playback',
             'browser_clock_join': 'not_established', 'asr_final': 'not_collected', 'mcp_calls': 'not_collected'}
 
@@ -64,12 +64,15 @@ def fetch(base_url, conversation_id, timeout):
     if (parsed.scheme != 'http' or parsed.hostname not in ('127.0.0.1', '::1') or
             parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in ('', '/')):
         raise ValueError('expected an explicit uncredentialed loopback HTTP API')
-    if not re.fullmatch(r'[A-Za-z0-9_.:-]{1,128}', conversation_id):
+    if conversation_id in ('.', '..') or not re.fullmatch(r'[A-Za-z0-9_.:-]{1,128}', conversation_id):
         raise ValueError('invalid conversation identity')
     if not math.isfinite(timeout) or not 0 < timeout <= 10:
         raise ValueError('timeout must be positive and at most ten seconds')
+    port = parsed.port if parsed.port is not None else 80
+    if port == 0:
+        raise ValueError('invalid API port')
     deadline = time.monotonic() + timeout
-    connection = http.client.HTTPConnection(parsed.hostname, parsed.port or 80, timeout=timeout)
+    connection = http.client.HTTPConnection(parsed.hostname, port, timeout=timeout)
     timer = None
     try:
         connection.connect()  # literal loopback: no DNS/proxy or external transport

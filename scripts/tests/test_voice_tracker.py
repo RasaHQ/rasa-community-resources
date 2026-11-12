@@ -29,6 +29,17 @@ class TrackerControls(unittest.TestCase):
         self.assertEqual(result['turns'][0]['invalid_metrics'], ['llm_generation_ms'])
         self.assertEqual(result['browser_clock_join'], 'not_established')
 
+    def test_empty_projection_is_not_a_completed_phase_collection(self):
+        for tracker in ({'events': []}, {'events': [{'event': 'bot_turn_ended'}]}):
+            self.assertEqual(v.project(tracker)['status'], 'no_phase_values')
+
+    def test_dot_segments_and_zero_port_never_connect(self):
+        with patch.object(v.http.client, 'HTTPConnection') as connect:
+            for url, identity in (('http://127.0.0.1', '.'), ('http://127.0.0.1', '..'), ('http://127.0.0.1:0', 'fixture')):
+                with self.assertRaises(ValueError):
+                    v.fetch(url, identity, 1)
+            connect.assert_not_called()
+
     def test_existing_artifact_never_triggers_a_second_request(self):
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / 'snapshot.json'
