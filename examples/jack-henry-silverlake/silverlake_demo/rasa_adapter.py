@@ -134,6 +134,24 @@ async def banking_accounts(context: ToolContext = None) -> ToolResult:
     return await _read(context, "banking_accounts", {})
 
 
+VERIFIED_TEXT = "Your simulated verification was refreshed. It lasts about a minute."
+
+
+@tool(description="ALWAYS call this, and nothing else, when the caller says verify me or verify my identity. Refreshes simulated verification and delivers the confirmation sentence.")
+async def banking_refresh_verification(context: ToolContext = None) -> ToolResult:
+    # Rasa-side trigger, not an MCP tool, and no authority of its own: the host
+    # refreshes the simulated grant only when it observes the caller's raw
+    # "verify me" turn, dated by when it was said (see _host).
+    try:
+        await _host(context)
+        if not _is_assure(current_turn_context().turn.text):
+            return ToolResult(llm_response={"state": "refused", "reason": "say_verify_me"})
+        await deliver_reply(context, VERIFIED_TEXT)
+        return ToolResult(llm_response={"state": "verified"})
+    except Exception:
+        return ToolResult(llm_response={"state": "unavailable", "reason": "host_or_service_unavailable"})
+
+
 @tool(description="Read the supplied available balance of a permitted checking or savings account.")
 async def banking_balance(account: str, context: ToolContext = None) -> ToolResult:
     return await _read(context, "banking_balance", {"account": account})

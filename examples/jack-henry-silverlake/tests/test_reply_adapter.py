@@ -65,8 +65,25 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("Request a new transfer",self.messages[-1])
 
 
+    async def test_verify_me_refreshes_once_and_delivers_the_exact_sentence(self):
+        self.turn("Verify me.")
+        result=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(result.llm_response,{"state":"verified"})
+        self.assertEqual(len(self.host.assured),1)
+        self.assertLess(self.host.assured[0],5)
+        self.assertEqual(self.messages,[adapter.VERIFIED_TEXT])
+        self.assertEqual((self.host.sends,self.host.reviews),(0,0))
+
+    async def test_verification_tool_does_nothing_without_the_raw_phrase(self):
+        self.turn("what is my balance")
+        result=await adapter.banking_refresh_verification(context=self.context)
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"say_verify_me"})
+        self.assertEqual(self.host.assured,[])
+        self.assertEqual(self.messages,[])
+
 class Host:
-    def __init__(self):self.reviews=0;self.sends=0;self.state="accepted"
+    def __init__(self):self.reviews=0;self.sends=0;self.state="accepted";self.assured=[]
+    def assure(self,session,age):self.assured.append(age)
     async def call(self,session,name,args):
         if name=="banking_review_transfer":
             self.reviews+=1
