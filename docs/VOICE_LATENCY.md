@@ -84,6 +84,14 @@ Current ordinary SDK INFO logs do not supply all these boundaries; absent
 markers remain `missing_boundary` with null durations. Completing a browser,
 ASR or TTS adapter is required before claiming end-to-end voice improvement.
 
+The existing `scripts/case_builds/voice_driver.py` assigns its
+`first_audible` timestamp when a received PCM chunk contains sound, before its
+emulated speaker drains the queue. That is a non-silent **receive** observation,
+not browser playback. Do not rename that field to `audio.first_played` when
+adapting old case-build results. A receiving browser adapter must observe the
+first non-silent sample consumed by the playback worklet and retain any output
+latency/calibration limits; queued or scheduled audio alone is insufficient.
+
 Reports retain incomplete calls, ambiguous duplicate boundaries, reversed times
 and cancellations. P50 is the median and P95 the nearest-rank 95th percentile;
 the actual non-cancelled sample count is always reported. Streaming phases can
