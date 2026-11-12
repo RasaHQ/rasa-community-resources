@@ -10,13 +10,28 @@ This example connects a Rasa assistant to a **local simulation of the Jack Henry
 >
 > All people, accounts and amounts are fictional. No request goes to a real bank. The language-model and speech services are external services, so use only fictional information.
 
+<details>
+<summary>Qualification recorded before this walkthrough rewrite</summary>
+
+```text
+Author:        Rasa Community contributors
+Assessed on:   12 November 2026, text conversation only (development build)
+Assessed by:   Source tests with the real schemas, and a live text check in a Codespace
+Verified with: The pinned jXchange archive, schema validation of every SOAP body, a real model over the REST text channel; spoken run and latency still open
+Installation:  rasa-pro 3.21.0.dev5, Python 3.12
+Audience:      Developers building banking voice assistants
+Time:          Not yet measured
+```
+
+</details>
+
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-silverlake/devcontainer.json)
 
-- **Before clicking:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. Follow [the setup below](#1-get-your-license-and-api-keys).
+- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY` and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
 - **Use this badge:** it selects this example's development environment.
-- **After the setup log says `READY`:** run `make download`, wait for `Saved and checked`, then run `make run`.
-- **Open the assistant:** follow the `Open the Inspector:` link printed in the terminal. The server uses port `5005`.
+- **After the setup log says `READY`:** run `make download` and wait for `Saved and checked`, then run `make run`.
+- **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.
 <!-- codespaces:end -->
 
 For the other Jack Henry API, see the separate [Symitar-in-Platform example](../jack-henry-symitar/). It uses Symitar REST/OpenAPI definitions rather than SilverLake jXchange.
@@ -86,7 +101,7 @@ These are **Codespaces secrets**, not GitHub Actions secrets. Each secret needs 
 
 ### 3. Open the example
 
-1. Click **Open in GitHub Codespaces** near the top of this page. Use that badge so GitHub selects this example's setup.
+1. Click the Codespaces badge near the top of this page. Use that badge so GitHub selects this example's setup.
 2. On the **Create codespace** page, click **Create codespace**.
 3. Wait for the browser-based editor to open and the environment to finish building.
 4. Look for `READY` at the end of the setup log.

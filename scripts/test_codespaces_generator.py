@@ -28,6 +28,20 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertEqual(readme.count("Open in GitHub Codespaces"), 1, project.rel)
             self.assertIn(g.slug(project.rel) + "/devcontainer.json", readme)
 
+    def test_banking_readmes_put_vendor_inputs_before_startup_and_wait_for_server(self):
+        selected = {"examples/jack-henry-silverlake", "examples/jack-henry-symitar", "examples/fiserv-premier"}
+        checked = set()
+        for project in discover_projects("catalog"):
+            if project.rel not in selected:
+                continue
+            block = g.readme_block(g.manifest(project), 2)
+            self.assertIn("https://rasa.community/keys/", block)
+            self.assertIn("Rasa server is up and running", block)
+            prerequisite = "`make download`" if project.rel.endswith("silverlake") else "`vendor-inputs/`"
+            self.assertLess(block.index(prerequisite), block.index("`make run`"))
+            checked.add(project.rel)
+        self.assertEqual(checked, selected)
+
     def test_every_frozen_heroes_project_has_a_config_button_and_own_pin_check(self):
         snapshots = discover_projects('snapshots')
         self.assertGreaterEqual(len(snapshots), 5)

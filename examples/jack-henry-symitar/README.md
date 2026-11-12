@@ -10,13 +10,26 @@ This example connects a Rasa assistant to a **local simulation of the Jack Henry
 >
 > All people, accounts, and amounts are fictional. No banking request goes to a real credit union. Model and speech services are external, so use only fictional information.
 
+<details>
+<summary>Qualification recorded before this walkthrough rewrite</summary>
+
+```text
+Author:        Rasa Community contributors
+Assessed on:   2026-11-12
+Assessed by:   Contract, state and transport checks; native voice qualification recorded separately
+Verified with: rasa-pro 3.21.0.dev5, Python 3.12
+Status:        Development branch; see the PR for current native qualification
+```
+
+</details>
+
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-symitar/devcontainer.json)
 
-- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. Follow [the setup below](#1-get-your-license-and-api-keys).
+- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY` and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
 - **Use this badge:** it selects this example's development environment.
-- **After the setup log says `READY`:** upload the four vendor definitions described below, then run `make run`.
-- **Open the assistant:** follow the printed Inspector link. Keep the local banking and MCP ports private.
+- **After the setup log says `READY`:** upload the four definitions into `vendor-inputs/`, then run `make run`.
+- **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.
 <!-- codespaces:end -->
 
 For the other Jack Henry API, see the separate [SilverLake jXchange example](../jack-henry-silverlake/). It uses SOAP/XML for SilverLake rather than the Symitar REST API.
@@ -79,7 +92,7 @@ If the Codespace already exists, stop and restart it after adding or changing a 
 
 ### 3. Open the example
 
-1. Click **Open in GitHub Codespaces** near the top of this page.
+1. Click the Codespaces badge near the top of this page.
 2. On the creation page, choose **Create codespace**.
 3. Wait for the browser editor and environment setup to finish.
 4. Look for `READY` in the setup log.

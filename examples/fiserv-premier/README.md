@@ -10,13 +10,28 @@ This example connects a Rasa assistant to a **local simulation of Fiserv Banking
 >
 > All people, accounts and amounts are fictional. The voice assistant always uses the local mock, never a real Fiserv banking system. Model and speech services are external, so use only fictional information.
 
+<details>
+<summary>Qualification recorded before this walkthrough rewrite</summary>
+
+```text
+Author:        Rasa Community contributors
+Assessed on:   12 November 2026, text conversation only (development build)
+Assessed by:   Source tests with the real contract, and a live text check in a Codespace
+Verified with: Real OpenAPI validators and loopback mock, the pinned Fiserv ZIP, a real model over the REST text channel; spoken run and latency still open
+Installation:  rasa-pro 3.21.0.dev5, Python 3.12
+Audience:      Developers building banking voice assistants
+Time:          Not yet measured
+```
+
+</details>
+
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-premier/devcontainer.json)
 
-- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets, and download `BankingHub_Premier_api_specs.zip`. Follow the walkthrough below.
+- **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY` and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
 - **Use this badge:** it selects this example's development environment.
-- **After the setup log says `READY`:** upload the unopened ZIP into this example's `vendor-inputs/` folder, then run `make run`.
-- **Open the assistant:** follow the `Open the Inspector:` link printed in the terminal. The server uses port `5005`.
+- **After the setup log says `READY`:** upload the unopened Premier ZIP into `vendor-inputs/`, then run `make run`.
+- **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.
 <!-- codespaces:end -->
 
 **Which version do I need?** This example targets the Premier-specific `11.0.0_PRM` definitions in `BankingHub_Premier_api_specs.zip`. The newer general Banking Hub release `11.0.0.2026.4.1` has different response structures and is not a replacement input for this folder. Use the API definitions required by your bank.
@@ -103,7 +118,7 @@ The example expects a specific version of the ZIP, not simply any file with that
 
 ### 4. Open the example in a Codespace
 
-1. Click **Open in GitHub Codespaces** near the top of this page. That badge selects this example's setup.
+1. Click the Codespaces badge near the top of this page. That badge selects this example's setup.
 2. On the **Create codespace** page, click **Create codespace**.
 3. Wait for the browser-based editor to open and finish building the environment. This may take several minutes.
 4. Look for `READY` at the end of the setup log.
