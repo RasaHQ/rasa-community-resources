@@ -138,6 +138,9 @@ async def _read(context, name, arguments):
             if host.pending:
                 return ToolResult(llm_response={"state": "confirmation_pending",
                                                 "instruction": "Call banking_submit_transfer now."})
+            if host.last_submit_state == "unknown":  # an unknown outcome is never retried
+                await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
+                return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
             await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)
             return ToolResult(llm_response={"state": "not_submitted", "reason": "no_active_review"})
         result = _safe(_payload(await host.client.call(host.session, name, arguments)))
