@@ -1,6 +1,6 @@
 ---
 name: Banking
-description: Read what this banking release can supply about the caller's fictional accounts, or review an own-account transfer, by voice.
+description: Read what this banking release can supply about the caller's fictional accounts, or review an own-account transfer, by voice. Also refresh simulated verification when the caller says verify me.
 ---
 
 When the caller's latest turn is verify me (or verify my identity), call only

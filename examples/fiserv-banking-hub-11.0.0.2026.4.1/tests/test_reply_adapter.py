@@ -54,6 +54,26 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("Request a new transfer",self.messages[-1])
         self.assertNotIn("confirm again",self.messages[-1])
 
+    async def test_no_confirmation_is_accepted_after_an_interrupted_or_declined_review(self):
+        # The three sequences from the four-bank walkthroughs. The middle turn calls
+        # no tool at all, as a model may answer it in text, so only the raw turn
+        # count stands between it and a late acceptance.
+        for middle, last in (("What is my balance?", "Confirm transfer."),
+                             ("No, do not transfer.", "Confirm transfer."),
+                             ("No, do not transfer.", "Yes.")):
+            with self.subTest(middle=middle, last=last):
+                adapter._conversations.clear(); policy._delivered.clear(); policy._sent.clear()
+                self.host = Host()
+                self.conversation = adapter._Conversation("http://127.0.0.1:1", self.host, "session")
+                adapter._conversations[("http://127.0.0.1:1", self.native.sender_id)] = self.conversation
+                self.turn("review"); await self.review()
+                self.turn(middle)
+                self.turn(last)
+                result = await adapter.banking_submit_transfer(context=self.context)
+                self.assertNotEqual(result.llm_response["state"], "accepted")
+                self.assertEqual(self.host.sends, 0)
+                self.assertNotIn("accepted", self.messages[-1].casefold())
+
     async def test_unknown_outcome_never_invites_a_new_transfer(self):
         await self.review();self.host.state="unknown";self.turn("confirm transfer")
         await adapter.banking_submit_transfer(context=self.context)

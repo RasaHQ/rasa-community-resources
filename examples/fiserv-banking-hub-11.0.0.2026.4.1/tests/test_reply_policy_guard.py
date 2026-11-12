@@ -62,6 +62,29 @@ class HostOnlyWording(unittest.IsolatedAsyncioTestCase):
         self.assertIn("banking_transfer_status", policy.RETRY_REVIEW)
         self.assertIn("never request a new transfer", policy.RETRY_REVIEW)
 
+    async def test_verify_me_declined_before_the_skill_is_active_asks_for_activation_first(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
+        from types import SimpleNamespace as NS
+        for calls in ([], [{"id": "c", "tool_name": "cannot_help", "tool_args": {}, "type": "function"}]):
+            with self.subTest(calls=calls):
+                policy._retries.clear(); policy._offered_tools.clear()
+                self.native.turn = NS(text="Verify me.")
+                policy.remember_offered_tools(NS(tool_names=["activate", "cannot_help"]))
+                with self.assertRaises(RetryModel) as raised:
+                    await policy.keep_host_reply_once(ModelResponsePayload(
+                        sender_id="caller", text=None if calls else "How can I help?", tool_calls=calls))
+                self.assertIn("activate", raised.exception.feedback)
+                policy.remember_offered_tools(NS(tool_names=["banking_refresh_verification", "listen"]))
+                with self.assertRaises(RetryModel) as raised:
+                    await policy.keep_host_reply_once(ModelResponsePayload(
+                        sender_id="caller", text=None if calls else "How can I help?", tool_calls=calls))
+                self.assertNotIn("activate", raised.exception.feedback)
+                self.assertIn("banking_refresh_verification", raised.exception.feedback)
+
+    def test_the_request_hook_records_the_offered_tools(self):
+        source = (__import__("pathlib").Path(__file__).resolve().parents[1] / "hooks.py").read_text()
+        self.assertIn("remember_offered_tools(payload)", source)
+
 
 if __name__ == "__main__":
     unittest.main()
