@@ -40,6 +40,7 @@ from rasa_projects import (
     REPO_ROOT,
     VERIFIED_WITH_RE,
     VERSION_IGNORE_MARKER,
+    is_historical_version_line,
     VERSION_LINE_FILE,
     WAVE_DIR,
     WAVE_SLUG_RE,
@@ -135,7 +136,7 @@ def check_version_consistency(expected: str) -> list[Finding]:
             # Marking those lines explicitly keeps the check strict everywhere
             # else — the alternative is authors phrasing around the gate, which
             # is how a gate quietly stops working.
-            if VERSION_IGNORE_MARKER in line:
+            if is_historical_version_line(line):
                 continue
             for pattern in patterns:
                 for match in pattern.finditer(line):
