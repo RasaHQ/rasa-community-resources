@@ -17,6 +17,7 @@ from rasa.mantle.orchestration.turn_context import current_turn_context
 from .hostclient import HostRefused
 from rasa.mantle.tools.decorator import ToolContext, tool
 from rasa.mantle.tools.result import ToolResult
+from lib.reply_policy import delivery_pending, remember_delivery, deliver_reply
 
 
 @dataclass
@@ -27,6 +28,7 @@ class _Conversation:
     pending: dict | None = field(default=None, repr=False)
     observed_turn: int = 0
     pending_turn: int = 0
+    last_submit_state: str | None = None
     # Serialises review and submit for one conversation across their awaits.
     lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False)
 
@@ -119,7 +121,10 @@ async def _host(context, *, create=True):
 async def _read(context, name, arguments):
     try:
         host = await _host(context)
-        return ToolResult(llm_response=_safe(_payload(await host.client.call(host.session, name, arguments))))
+        result = _safe(_payload(await host.client.call(host.session, name, arguments)))
+        if name == "banking_transfer_status" and result.get("state") == "accepted":
+            await deliver_reply(context, "The transfer request was accepted. Accepted does not mean posted.")
+        return ToolResult(llm_response=result)
     except Exception:
         return ToolResult(llm_response={"state": "unavailable", "reason": "host_or_service_unavailable"})
 
@@ -161,6 +166,8 @@ async def banking_review_transfer(source: str, destination: str, amount: str,
 
 
 async def _review_locked(host, context, source, destination, amount, currency):
+    if delivery_pending():
+        return ToolResult(llm_response={"state": "review_delivered"})
     if host.pending:
         await asyncio.to_thread(host.client.cancel, host.session)
         host.pending = None
@@ -186,6 +193,10 @@ async def _review_locked(host, context, source, destination, amount, currency):
         await asyncio.to_thread(host.client.arm, host.session, result["review"], len(_users(context)))
         host.pending = result
         host.pending_turn = len(_users(context))
+    if host.pending:
+        host.last_submit_state = None
+        remember_delivery()
+        return ToolResult(llm_response={"state": "review_delivered"})
     return ToolResult(llm_response=_safe(result))
 
 
@@ -197,12 +208,17 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
         native = current_turn_context()
         await host.lock.acquire()
     except Exception:
+        await deliver_reply(context, "The current transfer review is unavailable. Check the original transfer status before making another request.")
         return ToolResult(llm_response={"state": "refused", "reason": "host_or_confirmation_unavailable"})
     try:
         turn = len(_users(context))
         if (not host.pending or context.is_cancelled or turn != host.pending_turn + 1
                 or not _is_confirmation(native.turn.text)):
-            return ToolResult(llm_response={"state": "refused", "reason": "confirmation_required"})
+            if host.last_submit_state == "unknown":
+                await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
+                return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
+            await deliver_reply(context, "The transfer review was cancelled or is no longer active. Request a new transfer before confirming.")
+            return ToolResult(llm_response={"state": "refused", "reason": "new_review_required"})
         host.pending = None  # consume local permission before the first effectful call
         dispatched = True
         try:
@@ -214,8 +230,13 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
             return ToolResult(llm_response={"state": "refused", "reason": refused.reason})
         if result.get("state") not in {"accepted", "refused", "unknown"}:
             raise ValueError("unresolved_submit_outcome")
+        host.last_submit_state = result["state"]
+        if result.get("state") == "accepted":
+            await deliver_reply(context, "The transfer request was accepted. Accepted does not mean posted.")
         return ToolResult(llm_response=_safe(result))
     except Exception:
+        if dispatched:
+            host.last_submit_state = "unknown"
         # A failure after dispatch must never invite an automatic retry.
         return ToolResult(llm_response=(
             {"state": "unknown", "reason": "no_retry_check_original_status"} if dispatched
