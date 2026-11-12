@@ -160,7 +160,7 @@ class MCP:
         return {"jsonrpc": "2.0", "id": identifier, "result": result}
 
 
-def local_server(host: ScopedHost, bearer: str, port: int = 0) -> HTTPServer:
+def local_server(host: ScopedHost, bearer: str, port: int = 0, *, gateway=None) -> HTTPServer:
     """Bind loopback only; one scoped host and serialized request at a time.
 
     The trusted launcher injects a private random bearer into its MCP client.
@@ -194,11 +194,34 @@ def local_server(host: ScopedHost, bearer: str, port: int = 0) -> HTTPServer:
 
         def authorized(self):
             expected_host = "127.0.0.1:" + str(self.server.server_port)
-            if self.path != "/mcp" or self.headers.get_all("Host") != [expected_host] or self.headers.get_all("Origin"):
+            self.action = None
+            self.protocol = protocol
+            controls = {'open','turn','review','delivered','cancel'}
+            if self.headers.get_all("Host") != [expected_host] or self.headers.get_all("Origin"):
                 self.finish_response(403)
                 return False
             values = self.headers.get_all("Authorization")
-            if values is None or len(values) != 1 or not hmac.compare_digest(values[0].encode("utf-8"), ("Bearer " + bearer).encode("ascii")):
+            if values is None or len(values) != 1 or not values[0].startswith('Bearer '):
+                self.finish_response(401)
+                return False
+            credential = values[0][7:]
+            if self.path.startswith('/host/') and gateway is not None:
+                action = self.path[6:]
+                if action not in controls or not hmac.compare_digest(credential.encode(), bearer.encode()):
+                    self.finish_response(403)
+                    return False
+                self.action = action
+                return True
+            if self.path != '/mcp':
+                self.finish_response(403)
+                return False
+            if gateway is not None:
+                try:
+                    self.protocol = MCP(gateway.resolve(credential))
+                except Exception:
+                    self.finish_response(401)
+                    return False
+            elif not hmac.compare_digest(credential.encode(), bearer.encode()):
                 self.finish_response(401)
                 return False
             return True
@@ -219,7 +242,7 @@ def local_server(host: ScopedHost, bearer: str, port: int = 0) -> HTTPServer:
                 self.finish_response(400)
                 return
             accepted = {part.strip().split(";", 1)[0] for part in self.headers.get("Accept", "").split(",")}
-            if not {"application/json", "text/event-stream"} <= accepted:
+            if self.action is None and not {"application/json", "text/event-stream"} <= accepted:
                 self.finish_response(406)
                 return
             if self.headers.get_all("Transfer-Encoding") or self.headers.get_all("Content-Length") is None or len(self.headers.get_all("Content-Length")) != 1:
@@ -240,7 +263,15 @@ def local_server(host: ScopedHost, bearer: str, port: int = 0) -> HTTPServer:
             except (ValueError, socket.timeout, OSError):
                 self.finish_response(400)
                 return
-            result = protocol.handle(raw)
+            if self.action is not None:
+                try:
+                    data = json.loads(raw.decode('utf-8'), object_pairs_hook=_unique, parse_constant=_nonfinite)
+                    result = gateway.control(self.action, data)
+                except Exception:
+                    self.finish_response(403, {'state':'refused','reason':'private_host_refused'})
+                    return
+            else:
+                result = self.protocol.handle(raw)
             self.finish_response(202 if result is None else 200, result)
 
     return HTTPServer(("127.0.0.1", port), Handler)

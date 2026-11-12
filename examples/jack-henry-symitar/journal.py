@@ -138,6 +138,18 @@ class Journal:
         except sqlite3.Error:
             raise JournalRefused("fixture_recovery_required") from None
 
+    def latest(self, principal):
+        """Read this principal's latest retained local outcome; never reconcile."""
+        principal = _identifier(principal)
+        with self._thread:
+            if self._closed:
+                raise JournalRefused("journal_closed")
+            try:
+                row = self._db.execute("SELECT state FROM operations WHERE principal=? ORDER BY rowid DESC LIMIT 1", (principal,)).fetchone()
+                return row[0] if row else None
+            except sqlite3.Error:
+                raise JournalRefused("fixture_recovery_required") from None
+
     def close(self):
         with self._thread:
             if self._closed:

@@ -1,0 +1,63 @@
+name: Self-contained banking contract controls
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/banking-contract-examples.yml'
+      - '.devcontainer/**'
+      - 'examples/jack-henry-symitar/**'
+      - 'examples/jack-henry-silverlake/**'
+      - 'examples/fiserv-premier/**'
+  push:
+    branches: ['rasa/jh-symitar-contract-voice-20261112']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selected:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.projects.outputs.projects }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - id: projects
+        name: Select complete contract examples present on this revision
+        run: |
+          python3 - <<'PYTHON'
+          import json, os
+          from pathlib import Path
+          projects=[]
+          for name in ('jack-henry-symitar','jack-henry-silverlake','fiserv-premier'):
+              project=Path('examples')/name
+              if not project.exists(): continue
+              for required in (project/'Makefile', project/'uv.lock', Path('.devcontainer')/('examples-'+name)/'devcontainer.json'):
+                  if not required.is_file(): raise SystemExit('Incomplete example: '+str(required))
+              projects.append(name)
+          if not projects: raise SystemExit('No banking contract examples selected')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+              output.write('projects='+json.dumps(projects)+'\n')
+          PYTHON
+  controls:
+    needs: selected
+    name: Banking contract tests (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJSON(needs.selected.outputs.projects) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Build the selected locked environment and run actual controls
+        uses: devcontainers/ci@513af61f4de4f75d37e4438f184ba4358f0fc1ca
+        with:
+          configFile: .devcontainer/examples-${{ matrix.project }}/devcontainer.json
+          push: never
+          inheritEnv: false
+          runCmd: |
+            set -eu
+            unset RASA_LICENSE RASA_PRO_LICENSE OPENAI_API_KEY ANTHROPIC_API_KEY DEEPGRAM_API_KEY GEMINI_API_KEY
+            cd "$(git rev-parse --show-toplevel)/examples/${{ matrix.project }}"
+            make test
