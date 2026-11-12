@@ -10,8 +10,8 @@ from host import HostPolicy, Refused, Session, TransferIntent
 class HostPolicyTests(unittest.TestCase):
     def setUp(self):
         self.now = 0.0
-        self.policy = HostPolicy(lambda: self.now)
-        self.session = Session("fictional-A", "revision-A", frozenset({"checking", "savings"}), "GBP", 0.0)
+        self.session = Session("fictional-A", "revision-A", frozenset({"checking", "savings"}), "GBP", 0.0, "conversation-A")
+        self.policy = HostPolicy(self.session, lambda: self.now)
         self.intent = TransferIntent("checking", "savings", "50.00", "GBP")
 
     def prepare(self):
@@ -156,12 +156,47 @@ class HostPolicyTests(unittest.TestCase):
                 with self.assertRaises(Refused):
                     replace(self.intent, **change)
 
+    def test_foreign_principal_or_conversation_cannot_replace_or_consume(self):
+        for change in ({"principal": "fictional-B"}, {"conversation": "conversation-B"}):
+            with self.subTest(change=change):
+                own = self.prepare()
+                other = replace(self.session, **change)
+                foreign = HostPolicy(other, lambda: self.now)
+                review = foreign.review(other, self.intent, 4)
+                foreign.delivered(review)
+                for action in (lambda: self.policy.review(other, self.intent, 4),
+                               lambda: self.policy.confirm(other, self.intent, "yes", 5),
+                               lambda: self.policy.delivered(review)):
+                    with self.assertRaises(Refused):
+                        action()
+                self.assertEqual(self.policy.confirm(self.session, self.intent, "yes", 5).operation_id, own.operation_id)
+                self.assertEqual(foreign.confirm(other, self.intent, "yes", 5).operation_id, review.operation_id)
+
+    def test_malformed_alias_and_huge_clock_refuse_without_revival(self):
+        self.prepare()
+        with self.assertRaises(Refused):
+            self.policy.require_read(self.session, [])
+        with self.assertRaises(Refused):
+            replace(self.session, assured_at=10 ** 1000)
+        self.now = 10 ** 1000
+        with self.assertRaises(Refused):
+            self.policy.confirm(self.session, self.intent, "yes", 5)
+        self.now = 0
+        with self.assertRaises(Refused):
+            self.policy.confirm(self.session, self.intent, "yes", 5)
+
+    def test_usd_minor_units_are_rejected_without_rounding(self):
+        for amount in ("0.001", "1.005", "1.000"):
+            with self.subTest(amount=amount), self.assertRaises(Refused):
+                TransferIntent("checking", "savings", amount, "USD")
+        self.assertEqual(TransferIntent("checking", "savings", "1.50", "USD").amount, "1.5")
+
     def test_invalid_amounts_refuse_without_rounding(self):
-        for amount in ("0", "-1", "NaN", "1e4", "1,000", True, "9" * 33):
+        for amount in ("0", "-1", "NaN", "1e4", "1,000", True, "9" * 33, "0.001", "1.005", "0.0100"):
             with self.subTest(amount=amount):
                 with self.assertRaises(Refused):
                     replace(self.intent, amount=amount)
-        self.assertEqual(replace(self.intent, amount="0.0100").amount, "0.01")
+        self.assertEqual(replace(self.intent, amount="0.01").amount, "0.01")
 
 
 if __name__ == "__main__":
