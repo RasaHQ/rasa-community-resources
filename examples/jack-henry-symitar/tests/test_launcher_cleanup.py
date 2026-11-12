@@ -25,13 +25,20 @@ signal.signal(signal.SIGINT,interrupted)
 def stop(_):print('cleanup_begin',flush=True);time.sleep(.5)
 def close():os.close(fd);(p/'released').write_text('closed')
 launcher.stop_child=stop
-failed=launcher.cleanup(None,[],[],None,SimpleNamespace(close=close),{signal.SIGINT:interrupted})
+try:
+ print('running',flush=True)
+ while True:time.sleep(.05)
+except KeyboardInterrupt:pass
+finally:
+ failed=launcher.cleanup(None,[],[],None,SimpleNamespace(close=close),{signal.SIGINT:interrupted})
 print('cleanup_complete',flush=True)
 raise SystemExit(bool(failed))
 '''
         with tempfile.TemporaryDirectory() as temporary:
             child=subprocess.Popen([sys.executable,'-c',script,temporary],cwd=Path(__file__).resolve().parents[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             try:
+                self.assertEqual(child.stdout.readline().strip(),'running')
+                child.send_signal(signal.SIGINT)
                 self.assertEqual(child.stdout.readline().strip(),'cleanup_begin')
                 child.send_signal(signal.SIGINT)
                 out,err=child.communicate(timeout=5)
