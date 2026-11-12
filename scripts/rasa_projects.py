@@ -144,8 +144,7 @@ VERSION_IGNORE_MARKER = "rasa-version-ignore"
 
 def is_historical_version_line(line: str) -> bool:
     """Explicit history can be preserved; a current Installation field cannot."""
-    return (VERSION_IGNORE_MARKER in line
-            and re.match(r"^\s*Installation\s*:", line, re.IGNORECASE) is None)
+    return VERSION_IGNORE_MARKER in line and INSTALLATION_VERSION_RE.search(line) is None
 
 # These workshop folders explicitly retain their original fixtures and results.
 # The active workshop environment is outside these prefixes and stays managed.
@@ -160,6 +159,10 @@ HISTORICAL_VERSION_PATHS = (
 # ------------------------------------------------------------------------------
 # PEP 440-ish: 3.19.1, 3.19.0.dev5, 3.19.0rc1, 3.19.0b2, 3.19.1.post1.
 VERSION_TOKEN = r"\d+\.\d+(?:\.\d+)?(?:(?:a|b|rc)\d+)?(?:\.(?:dev|post)\d+)?"
+# The detector and historical-line guard must recognize identical syntax.
+INSTALLATION_VERSION_RE = re.compile(
+    rf"Installation\s*:\s*rasa-pro[ \t]+(?P<version>{VERSION_TOKEN})", re.IGNORECASE
+)
 _VERSION_FULLMATCH = re.compile(rf"^{VERSION_TOKEN}$")
 _PRERELEASE_RE = re.compile(r"(?:(?:a|b|rc)\d+|\.dev\d+)$")
 
@@ -644,7 +647,7 @@ def read_readme_verified(project: Project) -> str | None:
                      if not is_historical_version_line(line))
     # Current installation targets are separate from preserved human assessment
     # history. Old snapshots without the new field keep their original contract.
-    match = re.search(rf"Installation:\s*rasa-pro[ \t]+(?P<version>{VERSION_TOKEN})", text)
+    match = INSTALLATION_VERSION_RE.search(text)
     if match is None:
         match = VERIFIED_WITH_RE.search(text)
     return match.group("version") if match else None
