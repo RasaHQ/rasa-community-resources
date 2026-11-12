@@ -15,6 +15,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import tomllib
 from urllib.parse import unquote, urlsplit
@@ -148,12 +149,7 @@ def manifest_findings(raw, project, root, source=None, exception=None):
     return findings
 
 
-def python_findings(raw, source, project, root, exception=None, authoring=False):
-    try:
-        tree = ast.parse(raw)
-    except SyntaxError:
-        return [(1, 'invalid Python prevents dependency inspection')]
-    problems = []
+def static_environment(tree, source, project):
     aliases = {}
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -171,6 +167,16 @@ def python_findings(raw, source, project, root, exception=None, authoring=False)
                     for target in node.targets:
                         if isinstance(target, ast.Name):
                             env[target.id] = resolved
+    return env
+
+
+def python_findings(raw, source, project, root, exception=None, authoring=False):
+    try:
+        tree = ast.parse(raw)
+    except SyntaxError:
+        return [(1, 'invalid Python prevents dependency inspection')]
+    problems = []
+    env = static_environment(tree, source, project)
     for node in ast.walk(tree):
         imports = []
         if isinstance(node, ast.Import):
@@ -215,8 +221,18 @@ def python_findings(raw, source, project, root, exception=None, authoring=False)
                     candidates.append(value(keyword.value, env, source, project))
             if node.args:
                 args = value(node.args[0], env, source, project)
+                if isinstance(args, str):
+                    try:
+                        args = shlex.split(args)
+                    except ValueError:
+                        problems.append((node.lineno, 'cannot inspect subprocess command'))
                 if isinstance(args, list):
-                    candidates.extend(a for a in args if isinstance(a, Path))
+                    for index, arg in enumerate(args):
+                        # System executables are installed tools, not sibling
+                        # application source. Script arguments remain checked.
+                        system = index == 0 and isinstance(arg, str) and Path(arg).parent.as_posix() in {'/usr/bin', '/bin', '/usr/local/bin'}
+                        if isinstance(arg, (Path, str)) and not system:
+                            candidates.append(arg)
         for candidate in candidates:
             if isinstance(candidate, Path) and path_problem(candidate, project, root, exception):
                 problems.append((node.lineno, 'source/import path leaves its example folder'))
@@ -292,32 +308,75 @@ def make_runtime_lines(raw):
 
 
 def runtime_files(root, files):
-    """Promote authoring modules imported by an application back into scope."""
+    """Follow static runtime imports/entrypoints through authoring folders.
+
+    Relative imports use their real package base, including module-less forms
+    such as ``from . import controls``. Importing a package also executes its
+    parent initializers. Static importlib calls and Make/shell Python entrypoints
+    receive the same closure treatment; genuine unreferenced parity tests stay
+    authoring-only. This does not resolve arbitrary computed import names.
+    """
     active = {f for f in files if not (set(Path(f).parts[2:-1]) & AUTHORING)}
-    changed = True
-    while changed:
-        changed = False
+    def promote(candidate):
+        candidate = normalized(candidate)
+        if not inside(candidate, root):
+            return
+        relative = candidate.relative_to(root).as_posix()
+        if relative in files:
+            active.add(relative)
+
+    def module(base, parts):
+        local = base
+        for part in parts:
+            local /= part
+            promote(local / '__init__.py')
+        if parts:
+            promote(local.with_suffix('.py'))
+
+    previous = None
+    while previous != active:
+        previous = active.copy()
         for relative in list(active):
             source = root / relative
-            if source.suffix != '.py' or not source.is_file():
+            if not source.is_file():
+                continue
+            project = root / 'examples' / Path(relative).parts[1]
+            if source.name == 'Makefile' or source.suffix == '.sh':
+                lines = make_runtime_lines(source.read_text()) if source.name == 'Makefile' else enumerate(source.read_text().splitlines(), 1)
+                for _, text in lines:
+                    for match in re.finditer(r'(?:^|[\s\"\x27])([\w./-]+\.(?:py|sh))(?:$|[\s\"\x27;])', text):
+                        promote(project / match[1])
+                continue
+            if source.suffix != '.py':
                 continue
             try:
                 tree = ast.parse(source.read_text())
             except SyntaxError:
                 continue
-            project = root / 'examples' / Path(relative).parts[1]
+            env = static_environment(tree, source, project)
             for node in ast.walk(tree):
-                modules = [a.name for a in node.names] if isinstance(node, ast.Import) else [node.module or ''] if isinstance(node, ast.ImportFrom) else []
-                if isinstance(node, ast.ImportFrom) and node.module:
-                    modules.extend(node.module + '.' + alias.name for alias in node.names)
-                for module in modules:
-                    for base in (project, source.parent):
-                        local = base.joinpath(*module.split('.'))
-                        for candidate in (local.with_suffix('.py'), local / '__init__.py'):
-                            rel = candidate.relative_to(root).as_posix()
-                            if rel in files and rel not in active:
-                                active.add(rel)
-                                changed = True
+                if isinstance(node, ast.ImportFrom):
+                    bases = (source.parent.joinpath(*(['..'] * (node.level - 1))),) if node.level else (project, source.parent)
+                    parts = node.module.split('.') if node.module else []
+                    for base in bases:
+                        module(base, parts)
+                        for alias in node.names:
+                            if alias.name != '*':
+                                module(base, parts + [alias.name])
+                elif isinstance(node, ast.Import):
+                    for alias in node.names:
+                        for base in (project, source.parent):
+                            module(base, alias.name.split('.'))
+                elif isinstance(node, ast.Call) and node.args:
+                    called = canonical(node.func, env)
+                    resolved = value(node.args[0], env, source, project)
+                    if called in {'__import__', 'importlib.import_module'} and isinstance(resolved, str):
+                        for base in (project, source.parent):
+                            module(base, resolved.split('.'))
+                    elif called.startswith('subprocess.') and isinstance(resolved, list):
+                        for arg in resolved:
+                            if isinstance(arg, (Path, str)):
+                                promote(project / arg)
     return active
 
 

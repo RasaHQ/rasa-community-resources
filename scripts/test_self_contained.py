@@ -180,6 +180,35 @@ class RuntimeScopeTests(unittest.TestCase):
         self.put('examples/b/app.py', 'import zeo_core\n')
         self.assertTrue(inspect(self.root, self.files, rows))
 
+    def test_literal_subprocess_script_outside_example_is_refused(self):
+        self.put('examples/a/app.py', 'import subprocess\nsubprocess.run(["python", "../b/run.py"])\n')
+        self.assertTrue(self.findings())
+
+    def test_literal_subprocess_local_script_and_os_interpreter_are_allowed(self):
+        self.put('examples/a/app.py', 'import subprocess\nsubprocess.run(["/usr/bin/python3", "./runner.py"])\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_relative_import_controls_package_is_runtime(self):
+        self.put('examples/a/pkg/main.py', 'from . import controls\n')
+        self.put('examples/a/pkg/controls/__init__.py', 'from .helper import run\n')
+        self.put('examples/a/pkg/controls/helper.py', 'from pathlib import Path\n(Path(__file__).parents[4]/"outside.txt").read_text()\n')
+        self.assertTrue(self.findings())
+
+    def test_parent_relative_import_controls_module_is_runtime(self):
+        self.put('examples/a/pkg/nested/main.py', 'from ..controls import helper\n')
+        self.put('examples/a/pkg/controls/helper.py', 'open("../b/private.txt")\n')
+        self.assertTrue(self.findings())
+
+    def test_literal_dynamic_control_import_is_runtime(self):
+        self.put('examples/a/main.py', 'from importlib import import_module as load\nload("controls" + ".helper")\n')
+        self.put('examples/a/controls/helper.py', 'open("../b/private.txt")\n')
+        self.assertTrue(self.findings())
+
+    def test_runtime_make_target_promotes_control_script(self):
+        self.put('examples/a/Makefile', 'run:\n\tpython controls/helper.py\n')
+        self.put('examples/a/controls/helper.py', 'open("../b/private.txt")\n')
+        self.assertTrue(self.findings())
+
     def test_debt_only_shrinks_and_expires(self):
         rows = [{'example': key, 'violation': val[0], 'fix_by': val[1]} for key, val in KNOWN.items()]
         self.assertEqual(exception_findings(rows, today=date(2026,11,12)), [])
