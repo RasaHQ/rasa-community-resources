@@ -222,6 +222,37 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(len(self.vendor.sends),before)
                 self.assertFalse(any('accepted' in m.casefold() for m in context.messages[1:]))
 
+    async def test_a_yes_never_reads_an_earlier_accepted_transfer_as_a_cancelled_one(self):
+        # Transfer A accepted; review B then declined with no tool; a raw yes routed
+        # to the status tool must not report A's acceptance, and nothing new is sent.
+        from lib import native_adapter
+        native_adapter._conversations.clear()
+        events=[{'event':'user','text':'review','timestamp':time.time()}]
+        class Context:
+            is_cancelled=False
+            messages=[]
+            @property
+            def events(self):return [SimpleNamespace(as_dict=lambda event=event:event) for event in events]
+            async def send(self,text):self.messages.append(text)
+        context=Context();native=SimpleNamespace(sender_id='a-then-b',turn=SimpleNamespace(text='review'))
+        def say(text):
+            events.append({'event':'user','text':text,'timestamp':time.time()});native.turn.text=text
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):
+            await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            say('yes')
+            first=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(first.llm_response['state'],'accepted')
+            sends=len(self.vendor.sends)
+            say('review');await native_adapter.banking_review_transfer('checking','savings','2.00',context=context)
+            say('No, do not transfer.')
+            say('yes')
+            offset=len(context.messages)
+            second=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(second.llm_response['state'],'not_submitted')
+            self.assertFalse(any('accepted' in m.casefold() for m in context.messages[offset:]))
+            self.assertTrue(any('request a new transfer' in m.casefold() for m in context.messages[offset:]))
+        self.assertEqual(len(self.vendor.sends),sends)
+
     async def test_native_tracker_keeps_no_tool_verify_age_and_refuses_stale_grant(self):
         from lib import native_adapter
         native_adapter._conversations.clear()

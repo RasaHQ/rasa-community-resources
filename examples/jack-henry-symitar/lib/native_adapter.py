@@ -186,10 +186,17 @@ async def _call(context,name,args):
                     raise
                 remember_delivery()
                 return ToolResult(llm_response={'state':'review_delivered','instruction':'The exact review was delivered. Add no question or extra review.'})
-            if (name=='banking_transfer_status' and result.get('state')=='not_submitted'
-                    and _norm(current_turn_context().turn.text) in {'yes','confirm','confirmed','confirm transfer'}):
-                await context.send('The transfer review was cancelled or is no longer active. Request a new transfer before confirming.')
-                remember_delivery()
+            if (name=='banking_transfer_status'
+                    and _norm(current_turn_context().turn.text) in {'yes','confirm','confirmed','confirm transfer'}
+                    and observed.get('state') not in {'accepted','rejected','unknown','not_dispatched'}
+                    and not observed.get('historical_confirmation_refused')):
+                # A confirmation answers only the review it confirms. The observer
+                # reports this turn's own outcome above; without one, the latest
+                # retained outcome (an earlier transfer) must never answer it.
+                if not delivery_pending():
+                    await context.send('The transfer review was cancelled or is no longer active. Request a new transfer before confirming.')
+                    remember_delivery()
+                return ToolResult(llm_response={'state':'not_submitted','reason':'no_active_review'})
             return ToolResult(llm_response=result)
     except (Exception,asyncio.CancelledError):
         if conversation is not None and conversation.pending_request:
