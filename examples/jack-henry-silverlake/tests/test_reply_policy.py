@@ -49,11 +49,13 @@ from rasa.mantle.hooks.loader import load_hooks
 from rasa.mantle.hooks.payloads import ModelResponsePayload
 from rasa.mantle.orchestration.turn_context import _current_turn_ctx
 registry=load_hooks(Path.cwd())
-assert registry.modifier_count==1
+assert registry.modifier_count==2
+reply_hook=[h for h in registry.all_hooks() if h.func.__name__=="banking_host_reply"][0]
+alias_hook=[h for h in registry.all_hooks() if h.func.__name__=="banking_alias_context"][0]
 from lib import reply_policy
 _current_turn_ctx.set(SimpleNamespace(sender_id="caller",turn=object(),is_cancelled=False))
 reply_policy.remember_delivery()
-reply=asyncio.run(registry.all_hooks()[0].func(ModelResponsePayload(sender_id="caller",text="duplicate")))
+reply=asyncio.run(reply_hook.func(ModelResponsePayload(sender_id="caller",text="duplicate")))
 assert reply.text is None
 assert [call["tool_name"] for call in reply.tool_calls]==["listen"]
 """

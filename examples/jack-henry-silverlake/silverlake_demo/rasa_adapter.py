@@ -29,6 +29,9 @@ class _Conversation:
     observed_turn: int = 0
     pending_turn: int = 0
     last_submit_state: str | None = None
+    # Each successful simulated step-up, with the age of the raw phrase it used.
+    assured_count: int = 0
+    assured_age: float | None = None
     # Serialises review and submit for one conversation across their awaits.
     lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False)
 
@@ -109,6 +112,8 @@ async def _host(context, *, create=True):
         # when a later tool call happened to notice it. A stale phrase stays stale.
         age = time.time() - max(said)
         await asyncio.to_thread(conversation.client.assure, conversation.session, age)
+        conversation.assured_count += 1
+        conversation.assured_age = age
     if conversation.pending and len(users) > conversation.pending_turn:
         # Only the immediately following exact phrase can confirm. A question,
         # denial, reset, changed request or intervening turn invalidates consent.
@@ -135,6 +140,7 @@ async def banking_accounts(context: ToolContext = None) -> ToolResult:
 
 
 VERIFIED_TEXT = "Your simulated verification was refreshed. It lasts about a minute."
+FRESH_SECONDS = 60  # the host's transfer grant window, "about a minute"
 
 
 @tool(description="ALWAYS call this, and nothing else, when the caller says verify me or verify my identity. Refreshes simulated verification and delivers the confirmation sentence.")
@@ -143,9 +149,17 @@ async def banking_refresh_verification(context: ToolContext = None) -> ToolResul
     # refreshes the simulated grant only when it observes the caller's raw
     # "verify me" turn, dated by when it was said (see _host).
     try:
-        await _host(context)
         if not _is_assure(current_turn_context().turn.text):
             return ToolResult(llm_response={"state": "refused", "reason": "say_verify_me"})
+        native = current_turn_context()
+        key = (os.environ.get("SILVERLAKE_HOST_URL", ""), native.sender_id)
+        before = _conversations[key].assured_count if key in _conversations else 0
+        host = await _host(context)
+        # Say "refreshed" only when this call made the host grant a step-up from
+        # a fresh raw phrase: a missing timestamp, an already consumed phrase or
+        # a stale one gives no success wording.
+        if host.assured_count <= before or host.assured_age is None or host.assured_age >= FRESH_SECONDS:
+            return ToolResult(llm_response={"state": "refused", "reason": "verification_not_observed"})
         await deliver_reply(context, VERIFIED_TEXT)
         return ToolResult(llm_response={"state": "verified"})
     except Exception:

@@ -17,11 +17,29 @@ class HostOnlyWording(unittest.IsolatedAsyncioTestCase):
     def payload(self, text):
         return ModelResponsePayload(sender_id="caller", text=text, tool_calls=[])
 
-    async def test_imitated_review_or_acceptance_is_replaced(self):
+    async def test_imitated_review_or_acceptance_is_retried_then_replaced(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
         for text in ("Review: transfer USD 7.00 from checking-A to savings-A. Say confirm transfer next.",
                      "The transfer request was accepted. Accepted does not mean posted."):
             with self.subTest(text=text):
-                self.assertEqual((await policy.keep_host_reply_once(self.payload(text))).text, policy.NO_TRANSFER_TEXT)
+                self.native.turn = object()
+                for _ in range(policy._MAX_RETRIES):
+                    with self.assertRaises(RetryModel) as raised:
+                        await policy.keep_host_reply_once(self.payload(text))
+                    self.assertIn("banking_review_transfer", raised.exception.feedback)
+                reply = await policy.keep_host_reply_once(self.payload(text))
+                self.assertEqual(reply.text, policy.NO_TRANSFER_TEXT)
+                self.assertNotIn("nothing was sent", reply.text.casefold())
+
+    async def test_verify_me_answered_in_text_is_steered_to_its_trigger(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
+        self.native.turn = SimpleNamespace(text="Verify me.")
+        with self.assertRaises(RetryModel) as raised:
+            await policy.keep_host_reply_once(self.payload("How can I assist you today?"))
+        self.assertIn("banking_refresh_verification", raised.exception.feedback)
+        activation = ModelResponsePayload(sender_id="caller", text=None, tool_calls=[
+            {"id": "a", "tool_name": "activate", "tool_args": {"target_id": "banking"}, "type": "function"}])
+        self.assertEqual((await policy.keep_host_reply_once(activation)).tool_calls, activation.tool_calls)
 
     async def test_ordinary_text_and_a_real_host_delivery_are_untouched(self):
         plain = self.payload("Your simulated verification was refreshed. It lasts about a minute.")
