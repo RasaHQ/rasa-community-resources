@@ -27,3 +27,5 @@ When the actual caller says yes or confirm transfer, use
 the status tool itself cannot confirm or submit. On no, a changed request or a
 question, the review is cancelled. On verify me, use the requested read/status
 and explain that this refreshes the simulated assurance, not bank sign-in.
+
+The host delivers the exact review and accepted-versus-posted notice. Do not repeat those messages. If the review was cancelled or is absent, request a new transfer review; never suggest confirming the old review again.

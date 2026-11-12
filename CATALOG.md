@@ -196,9 +196,9 @@ Tutorials ([catalog](tutorials/README.md)):
 Finished example agents that are not case builds ([catalog](examples/README.md)):
 
 - [`examples/fiserv-banking-hub-11.0.0.2026.4.1`](examples/fiserv-banking-hub-11.0.0.2026.4.1/): Fiserv Banking Hub release 11.0.0.2026.4.1 demo (voice)
-- [`examples/fiserv-premier-11.0.0-prm`](examples/fiserv-premier-11.0.0-prm/): Fiserv Premier banking demo (voice)
-- [`examples/jack-henry-silverlake`](examples/jack-henry-silverlake/): Jack Henry SilverLake banking demo (voice)
-- [`examples/jack-henry-symitar`](examples/jack-henry-symitar/): Run the fictional Symitar voice example
+- [`examples/fiserv-premier-11.0.0-prm`](examples/fiserv-premier-11.0.0-prm/): Talk to a fictional bank: A Rasa voice demo for Premier 11.0.0_PRM
+- [`examples/jack-henry-silverlake`](examples/jack-henry-silverlake/): Talk to a fictional bank: A Rasa voice demo with a SilverLake mock
+- [`examples/jack-henry-symitar`](examples/jack-henry-symitar/): Talk to a fictional credit union: A Rasa voice demo with a Symitar mock
 - [`examples/mantle-factory-agent`](examples/mantle-factory-agent/): Mantle factory agent
 - [`examples/mantle-flight-briefing-openai-agents`](examples/mantle-flight-briefing-openai-agents/): Brief me before I fly — work in progress
 - [`examples/mantle-voice-agent`](examples/mantle-voice-agent/): Atlas — Voice Travel Agent with Rasa Skills
