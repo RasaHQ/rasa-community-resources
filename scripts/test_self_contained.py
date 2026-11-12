@@ -209,6 +209,11 @@ class RuntimeScopeTests(unittest.TestCase):
         self.put('examples/a/controls/helper.py', 'open("../b/private.txt")\n')
         self.assertTrue(self.findings())
 
+    def test_runtime_shell_string_promotes_local_control_script(self):
+        self.put('examples/a/app.py', 'import subprocess\nsubprocess.run("python controls/helper.py", shell=True)\n')
+        self.put('examples/a/controls/helper.py', 'open("../b/private.txt").read()\n')
+        self.assertTrue(self.findings())
+
     def test_debt_only_shrinks_and_expires(self):
         rows = [{'example': key, 'violation': val[0], 'fix_by': val[1]} for key, val in KNOWN.items()]
         self.assertEqual(exception_findings(rows, today=date(2026,11,12)), [])

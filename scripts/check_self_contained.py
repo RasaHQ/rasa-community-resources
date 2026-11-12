@@ -373,7 +373,14 @@ def runtime_files(root, files):
                     if called in {'__import__', 'importlib.import_module'} and isinstance(resolved, str):
                         for base in (project, source.parent):
                             module(base, resolved.split('.'))
-                    elif called.startswith('subprocess.') and isinstance(resolved, list):
+                    elif called.startswith('subprocess.'):
+                        if isinstance(resolved, str):
+                            try:
+                                resolved = shlex.split(resolved)
+                            except ValueError:
+                                continue
+                        if not isinstance(resolved, list):
+                            continue
                         for arg in resolved:
                             if isinstance(arg, (Path, str)):
                                 promote(project / arg)
