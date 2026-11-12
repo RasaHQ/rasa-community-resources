@@ -17,7 +17,7 @@ from rasa.mantle.orchestration.turn_context import current_turn_context
 from .hostclient import HostRefused
 from rasa.mantle.tools.decorator import ToolContext, tool
 from rasa.mantle.tools.result import ToolResult
-from lib.reply_policy import delivery_pending, remember_delivery, deliver_reply
+from lib.reply_policy import delivery_pending, remember_delivery, deliver_reply, is_user_turn
 
 
 @dataclass
@@ -29,6 +29,9 @@ class _Conversation:
     observed_turn: int = 0
     pending_turn: int = 0
     last_submit_state: str | None = None
+    # Each successful simulated step-up, with the age of the raw phrase it used.
+    assured_count: int = 0
+    assured_age: float | None = None
     # Serialises review and submit for one conversation across their awaits.
     lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False)
 
@@ -109,6 +112,8 @@ async def _host(context, *, create=True):
         # when a later tool call happened to notice it. A stale phrase stays stale.
         age = time.time() - max(said)
         await asyncio.to_thread(conversation.client.assure, conversation.session, age)
+        conversation.assured_count += 1
+        conversation.assured_age = age
     if conversation.pending and len(users) > conversation.pending_turn:
         # Only the immediately following exact phrase can confirm. A question,
         # denial, reset, changed request or intervening turn invalidates consent.
@@ -118,9 +123,25 @@ async def _host(context, *, create=True):
     return conversation
 
 
+_CONFIRMATIONS = {"yes", "confirm", "confirmed", "confirm transfer"}
+NO_ACTIVE_REVIEW_TEXT = ("The transfer review was cancelled or is no longer active. "
+                         "Request a new transfer before confirming.")
+
+
 async def _read(context, name, arguments):
     try:
         host = await _host(context)
+        if name == "banking_transfer_status" and _norm(current_turn_context().turn.text) in _CONFIRMATIONS:
+            # A confirmation is about the review just read back, never an earlier
+            # transfer: the latest retained outcome must not answer it.
+            if host.pending:
+                return ToolResult(llm_response={"state": "confirmation_pending",
+                                                "instruction": "Call banking_submit_transfer now."})
+            if host.last_submit_state == "unknown":  # an unknown outcome is never retried
+                await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
+                return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
+            await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)
+            return ToolResult(llm_response={"state": "not_submitted", "reason": "no_active_review"})
         result = _safe(_payload(await host.client.call(host.session, name, arguments)))
         if name == "banking_transfer_status" and result.get("state") == "accepted":
             await deliver_reply(context, "The transfer request was accepted. Accepted does not mean posted.")
@@ -132,6 +153,35 @@ async def _read(context, name, arguments):
 @tool(description="List only permitted fictional account aliases.")
 async def banking_accounts(context: ToolContext = None) -> ToolResult:
     return await _read(context, "banking_accounts", {})
+
+
+VERIFIED_TEXT = "Your simulated verification was refreshed. It lasts about a minute."
+FRESH_SECONDS = 60  # the host's transfer grant window, "about a minute"
+
+
+@tool(description="ALWAYS call this, and nothing else, when the caller says verify me or verify my identity. Refreshes simulated verification and delivers the confirmation sentence.")
+async def banking_refresh_verification(context: ToolContext = None) -> ToolResult:
+    # Rasa-side trigger, not an MCP tool, and no authority of its own: the host
+    # refreshes the simulated grant only when it observes the caller's raw
+    # "verify me" turn, dated by when it was said (see _host).
+    try:
+        # Only the caller's own turn counts: on a session-start pass the phrase is
+        # pending, not yet this turn's message.
+        if not is_user_turn(current_turn_context()) or not _is_assure(current_turn_context().turn.text):
+            return ToolResult(llm_response={"state": "refused", "reason": "say_verify_me"})
+        native = current_turn_context()
+        key = (os.environ.get("SILVERLAKE_HOST_URL", ""), native.sender_id)
+        before = _conversations[key].assured_count if key in _conversations else 0
+        host = await _host(context)
+        # Say "refreshed" only when this call made the host grant a step-up from
+        # a fresh raw phrase: a missing timestamp, an already consumed phrase or
+        # a stale one gives no success wording.
+        if host.assured_count <= before or host.assured_age is None or host.assured_age >= FRESH_SECONDS:
+            return ToolResult(llm_response={"state": "refused", "reason": "verification_not_observed"})
+        await deliver_reply(context, VERIFIED_TEXT)
+        return ToolResult(llm_response={"state": "verified"})
+    except Exception:
+        return ToolResult(llm_response={"state": "unavailable", "reason": "host_or_service_unavailable"})
 
 
 @tool(description="Read the supplied available balance of a permitted checking or savings account.")
@@ -217,7 +267,7 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
             if host.last_submit_state == "unknown":
                 await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
                 return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
-            await deliver_reply(context, "The transfer review was cancelled or is no longer active. Request a new transfer before confirming.")
+            await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)
             return ToolResult(llm_response={"state": "refused", "reason": "new_review_required"})
         host.pending = None  # consume local permission before the first effectful call
         dispatched = True
