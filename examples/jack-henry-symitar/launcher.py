@@ -52,6 +52,17 @@ def stop_child(child):
     except subprocess.TimeoutExpired:raise ValueError('owned_process_did_not_stop') from None
 
 
+def prepare_runtime(run,public_origin):
+    """Keep the SDK's full Mantle layout when writing runtime-only settings."""
+    from rasa.shared.utils.yaml import read_yaml_file,write_yaml
+    integrations=read_yaml_file(ROOT/'integrations.yml',expand_env_vars=False)
+    integrations['channels']['inspector']['server_url']=public_origin
+    write_yaml(integrations,run/'integrations.yml')
+    for relative in ('agent.yml','skills/banking/skill.md','skills/banking/tools.py'):
+        target=run/relative;target.parent.mkdir(parents=True,exist_ok=True)
+        target.write_bytes((ROOT/relative).read_bytes())
+
+
 def main():
     parser=argparse.ArgumentParser(description='Start this fictional Symitar voice example.')
     parser.add_argument('--port',type=int,default=5005)
@@ -114,10 +125,7 @@ def main():
             if status:raise ValueError('training_failed')
             archive=models/'symitar.tar.gz'
             if not archive.is_file():raise ValueError('trained_model_missing')
-            from rasa.shared.utils.yaml import read_yaml_file,write_yaml
-            integrations=read_yaml_file(ROOT/'integrations.yml',expand_env_vars=False)
-            integrations['channels']['inspector']['server_url']=origin
-            write_yaml(integrations,run/'integrations.yml');(run/'agent.yml').write_bytes((ROOT/'agent.yml').read_bytes())
+            prepare_runtime(run,origin)
             print('Mode: fictional local mock, four vendor input hashes verified. Routing identity is a simulator, not bank authentication.')
             print('Speak only fictional data. Request-level speech opt-out is enabled; it is not zero retention.')
             print('Inspector URL: '+url,flush=True)

@@ -68,6 +68,19 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
             self.assertIn('not a real payment',context.messages[-1])
 
+    async def test_inspector_runtime_layout_preserves_selected_voice_and_public_url(self):
+        from rasa.core.config.channel_loading import resolve_channels_config
+        from launcher import prepare_runtime
+        with tempfile.TemporaryDirectory() as temporary:
+            run=Path(temporary)
+            prepare_runtime(run,'https://fictional-5005.app.github.dev')
+            credentials=resolve_channels_config(project_root=run)
+            self.assertIsNotNone(credentials)
+            inspector=credentials.channels['inspector']
+            self.assertEqual(inspector['server_url'],'https://fictional-5005.app.github.dev')
+            self.assertEqual(inspector['asr']['name'],'voice_privacy.OptOutASR')
+            self.assertEqual(inspector['tts']['name'],'voice_privacy.OptOutTTS')
+
     async def test_sdk_validates_real_project_and_seven_tools_plus_incoming_modifier(self):
         from rasa.mantle.validation import validate_project
         await asyncio.to_thread(validate_project,Path(__file__).resolve().parent.parent)
