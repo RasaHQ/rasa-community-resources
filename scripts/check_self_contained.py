@@ -29,7 +29,7 @@ KNOWN = {
     'mantle-voice-banking-dispute-claude': ('patterns/voice-vendor-router', '2026-11-13'),
     'mantle-voice-healthcare-refill-request-gpt-local': ('patterns/voice-vendor-router', '2026-11-14'),
     'mantle-factory-agent': ('zeocore distribution', '2026-11-14'),
-    'mantle-flight-briefing-openai-agents': ('zeocore distribution', '2026-11-15'),
+    'mantle-flight-briefing-openai-agents': ('zeocore distribution and zeo_core runtime imports', '2026-11-15'),
 }
 AUTHORING = {'tests', 'case-build', 'controls'}
 IO_METHODS = {'open', 'read_text', 'read_bytes', 'write_text', 'write_bytes', 'glob', 'rglob', 'iterdir', 'exists', 'is_file', 'is_dir'}
@@ -138,7 +138,7 @@ def manifest_findings(raw, project, root, source=None, exception=None):
         elif isinstance(item, str):
             distribution = re.split(r'[<>=!~\[;@ ]', item, maxsplit=1)[0]
             if re.sub(r'[-_.]', '', distribution).lower() in FORBIDDEN | {'bankingdemoshared'}:
-                if distribution != 'zeocore' or exception != 'zeocore distribution':
+                if re.sub(r'[-_.]', '', distribution).lower() != 'zeocore' or exception not in {'zeocore distribution', 'zeocore distribution and zeo_core runtime imports'}:
                     findings.append('forbidden shared application distribution')
             if 'file:' in item:
                 url = urlsplit(item.split('@', 1)[-1].strip())
@@ -184,8 +184,10 @@ def python_findings(raw, source, project, root, exception=None, authoring=False)
             if isinstance(resolved, str):
                 imports = [resolved]
         for module in imports:
-            if module.split('.')[0] in FORBIDDEN:
-                problems.append((node.lineno, 'forbidden zeointegrations/zeocore import'))
+            module_root = re.sub(r'[-_]', '', module.split('.')[0]).lower()
+            if module_root in FORBIDDEN:
+                if module_root != 'zeocore' or exception != 'zeocore distribution and zeo_core runtime imports':
+                    problems.append((node.lineno, 'forbidden zeointegrations/zeocore import'))
             if module.split('.')[0] in {'examples', 'patterns', 'tutorials', 'scripts'}:
                 local = project.joinpath(*module.split('.'))
                 if not local.is_dir() and not local.with_suffix('.py').is_file():

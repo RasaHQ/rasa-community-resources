@@ -49,8 +49,8 @@ class ExampleClosureTests(unittest.TestCase):
         self.assertTrue(self.findings())
 
     def test_zeo_imports_are_refused_under_aliases(self):
-        self.put('examples/a/app.py', 'import zeocore as core\nfrom zeointegrations.client import Client as C\n')
-        self.assertEqual(len(self.findings()), 2)
+        self.put('examples/a/app.py', 'import zeocore as core\nfrom zeointegrations.client import Client as C\nfrom zeo_integrations import Client\nimport zeo_core\n')
+        self.assertEqual(len(self.findings()), 4)
 
     def test_literal_dynamic_import_and_concatenation_are_refused(self):
         self.put('examples/a/app.py', 'from importlib import import_module as load\nload("zeo"+"core")\n')
@@ -169,6 +169,15 @@ class RuntimeScopeTests(unittest.TestCase):
     def test_debt_cannot_waive_python_import(self):
         self.put('examples/mantle-factory-agent/app.py', 'import zeocore\n')
         rows = [{'example': 'mantle-factory-agent', 'violation': 'zeocore distribution'}]
+        self.assertTrue(inspect(self.root, self.files, rows))
+
+    def test_flight_exception_only_covers_zeocore_and_its_own_example(self):
+        self.put('examples/mantle-flight-briefing-openai-agents/app.py', 'import zeo_core\n')
+        rows = [{'example': 'mantle-flight-briefing-openai-agents', 'violation': 'zeocore distribution and zeo_core runtime imports'}]
+        self.assertEqual(inspect(self.root, self.files, rows), [])
+        self.put('examples/mantle-flight-briefing-openai-agents/app.py', 'import zeo_integrations\n')
+        self.assertTrue(inspect(self.root, self.files, rows))
+        self.put('examples/b/app.py', 'import zeo_core\n')
         self.assertTrue(inspect(self.root, self.files, rows))
 
     def test_debt_only_shrinks_and_expires(self):
