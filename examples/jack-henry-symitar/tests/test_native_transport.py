@@ -194,6 +194,34 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(result.llm_response['state'],'not_submitted')
         self.assertEqual(self.vendor.sends,[])
 
+    async def test_no_yes_is_accepted_after_an_interrupted_or_declined_review(self):
+        # The four-bank walkthrough sequences: review, then an unrelated question
+        # or an explicit no answered without any tool, then yes or confirm.
+        from lib import native_adapter
+        for middle,last in (('What is my balance?','yes'),('No, do not transfer.','yes'),
+                            ('No, do not transfer.','confirm transfer')):
+            with self.subTest(middle=middle,last=last):
+                native_adapter._conversations.clear()
+                events=[{'event':'user','text':'review','timestamp':time.time()}]
+                class Context:
+                    is_cancelled=False
+                    messages=[]
+                    @property
+                    def events(self):return [SimpleNamespace(as_dict=lambda event=event:event) for event in events]
+                    async def send(self,text):self.messages.append(text)
+                context=Context();native=SimpleNamespace(sender_id='declined-'+str(len(middle))+last,turn=SimpleNamespace(text='review'))
+                before=len(self.vendor.sends)
+                with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):
+                    result=await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+                    self.assertEqual(result.llm_response['state'],'review_delivered')
+                    events.append({'event':'user','text':middle,'timestamp':time.time()})
+                    events.append({'event':'user','text':last,'timestamp':time.time()})
+                    native.turn.text=last
+                    result=await native_adapter.banking_transfer_status(context=context)
+                    self.assertNotEqual(result.llm_response.get('state'),'accepted')
+                self.assertEqual(len(self.vendor.sends),before)
+                self.assertFalse(any('accepted' in m.casefold() for m in context.messages[1:]))
+
     async def test_native_tracker_keeps_no_tool_verify_age_and_refuses_stale_grant(self):
         from lib import native_adapter
         native_adapter._conversations.clear()

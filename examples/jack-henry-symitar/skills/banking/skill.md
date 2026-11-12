@@ -1,6 +1,6 @@
 ---
 name: Fictional banking
-description: Read permitted fictional account balances, transaction history, loan facts and dated payoff quotes, or propose an internal transfer review.
+description: Read permitted fictional account balances, transaction history, loan facts and dated payoff quotes, or propose an internal transfer review. Also refresh simulated verification when the caller says verify me.
 ---
 
 When the caller's latest turn is verify me (or verify my identity), call only

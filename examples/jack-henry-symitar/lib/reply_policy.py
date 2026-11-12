@@ -28,6 +28,11 @@ RETRY_REVIEW = ("Do not write a transfer review or acceptance yourself; only the
                 "banking_transfer_status and never request a new transfer. Only for a new request to "
                 "move money, call banking_review_transfer with the exact aliases and amount.")
 RETRY_VERIFY = "The caller said verify me. Call banking_refresh_verification and add nothing else."
+# Before the banking skill is active its trigger is not offered; asking for it then
+# leaves the model without the tool, so it is asked to activate the skill first.
+RETRY_ACTIVATE = ("The caller said verify me. This is a banking request: call activate with "
+                  "target_id banking now, then call banking_refresh_verification and add nothing else.")
+_offered_tools = OrderedDict()  # sender -> (turn object, tools offered on its latest model call)
 _MAX_RETRIES = 2  # per turn; then the plain fallback line
 _retries = OrderedDict()
 _MAX_RECORDS = 128
@@ -58,6 +63,28 @@ def is_user_turn(native) -> bool:
 def _is_verify(native):
     text = getattr(getattr(native, "turn", None), "text", "") or ""
     return " ".join(text.strip().casefold().rstrip(".!?").split()) in {"verify me", "verify my identity"}
+
+
+def remember_offered_tools(payload) -> None:
+    """Called by the model-request hook: which tools this call offers the model."""
+    native = _turn()
+    if native is None:
+        return
+    _offered_tools[native.sender_id] = (native.turn, frozenset(getattr(payload, "tool_names", None) or ()))
+    _offered_tools.move_to_end(native.sender_id)
+    while len(_offered_tools) > _MAX_RECORDS:
+        _offered_tools.popitem(last=False)
+
+
+def _offered(native, name) -> bool:
+    turn, names = _offered_tools.get(native.sender_id, (None, frozenset()))
+    return turn is native.turn and name in names
+
+
+def _declines(payload) -> bool:
+    """Plain text with no tool call, or only Rasa's built-in cannot_help."""
+    calls = [call.get("tool_name") for call in payload.tool_calls]
+    return (bool(payload.text) and not calls) or (bool(calls) and set(calls) <= {"cannot_help"})
 
 
 def _retry_allowed(native, sender):
@@ -123,9 +150,10 @@ async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePa
         # "Verify me" is answered only by its trigger, which checks the host's refresh.
         # Only a pure-text answer is steered; a tool call (such as skill activation)
         # proceeds, so the trigger can still run later this turn.
-        if (_is_verify(native) and payload.text and not payload.tool_calls
+        if (_is_verify(native) and _declines(payload)
                 and _retry_allowed(native, payload.sender_id)):
-            raise RetryModel(RETRY_VERIFY)
+            raise RetryModel(RETRY_VERIFY if _offered(native, "banking_refresh_verification")
+                             else RETRY_ACTIVATE)
         return payload
     # Agentic banking has no collect/confirmation flow steps. The supported
     # listen tool ends this turn without a second review, status paraphrase,
