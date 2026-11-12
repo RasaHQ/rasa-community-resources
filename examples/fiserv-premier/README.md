@@ -16,9 +16,9 @@ Behind it sits a local **mock of Fiserv Banking Hub (Premier)**. You download Fi
 
 ```text
 Author:        Rasa Community contributors
-Assessed on:   not yet assessed (development build)
-Assessed by:   source tests only; native Rasa run, spoken run and latency are still open
-Verified with: Not yet verified; source tests and a hand-written schema check only
+Assessed on:   12 November 2026, text conversation only (development build)
+Assessed by:   Source tests with the real contract, and a live text check in a Codespace
+Verified with: Real OpenAPI validators and loopback mock, the pinned Fiserv ZIP, a real model over the REST text channel; spoken run and latency still open
 Installation:  rasa-pro 3.21.0.dev5, Python 3.12
 Audience:      Developers building banking voice assistants
 Time:          Not yet measured
@@ -139,7 +139,7 @@ No Fiserv file is stored here: no ZIP, no extracted definition and no copy of it
 - **Accepted is not posted.** A valid reply means the request was taken.
 - **Unknown stays unknown.** If a transfer reply is lost, the example never resends. It blocks new transfers for that caller across restarts until the fictional exercise is reset (below).
 - **Trial sandbox: not available.** `premier_demo/quota.py` is a tested local ledger for a future manual trial (operator-written budget attestation, per-run, rolling and spacing limits, charge before send, no replenishment). Nothing calls Fiserv: the client that would, needs Fiserv's token request format, which this project has not been able to read from the public pages, so none is guessed.
-- **Not done yet:** the native Rasa run against the installed SDK, the recorded spoken run, and response-time measurement.
+- **Not done yet:** a recorded spoken run (microphone and speech output), response-time measurement, and a scripted native test without a live model.
 
 ## For developers
 
@@ -150,6 +150,12 @@ make validate       # Rasa project validation
 ```
 
 CI has no Fiserv file, so contract-dependent tests print that they were skipped. A skipped input never qualifies the contract.
+
+A live text check goes through the REST channel with a real model (a few cents, needs the three secrets and the Fiserv file). It is not part of `make test`:
+
+```bash
+uv run --locked python tests/live_text_check.py
+```
 
 Two optional commands, run in the example folder:
 

@@ -4,6 +4,16 @@ description: Read permitted fictional account information or review an own-accou
 ---
 
 Keep every spoken answer short. Use only service-supplied results.
+Stay in this skill for the whole conversation. Do not complete or leave it after
+an answer: the caller may ask for another account, a transfer or a payoff next.
+Every balance request, for any checking alias, goes to @tool.banking_balance
+with that alias. Never refuse a permitted alias without calling the tool.
+For ANY request to move money, call @tool.banking_review_transfer first and say
+only what it returns. Never describe a transfer or ask for confirmation yourself,
+and never call @tool.banking_submit_transfer unless the caller's latest turn is
+exactly confirm transfer after a review. After a review, add nothing: the exact
+review text was already delivered. When the caller's latest turn is exactly
+confirm transfer, call @tool.banking_submit_transfer and never review again.
 Use @tool.banking_accounts to list permitted aliases.
 Use @tool.banking_balance for the available balance of a checking alias.
 Use @tool.banking_history for at most three posted transactions; say they are

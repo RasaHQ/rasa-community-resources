@@ -268,8 +268,13 @@ def serve_backend():
     serve(mock, mock_socket)
     port = mock_socket.getsockname()[1]
     client = PremierClient(contract, f"http://127.0.0.1:{port}", MOCK_ORGANIZATION)
-    journal = Journal(Path(os.environ.get("PREMIER_JOURNAL", "")) if os.environ.get("PREMIER_JOURNAL")
-                      else Path(__file__).resolve().parents[1] / "var" / "private" / "journal.sqlite3")
+    try:
+        journal = Journal(Path(os.environ.get("PREMIER_JOURNAL", "")) if os.environ.get("PREMIER_JOURNAL")
+                          else Path(__file__).resolve().parents[1] / "var" / "private" / "journal.sqlite3")
+    except Refused as refused:
+        if str(refused) == "journal_in_use":
+            raise SystemExit(4) from None
+        raise
     from .permissions import PERMISSIONS
     service = PremierService(client, journal, PERMISSIONS)
     app = create_app(service, os.environ.get("PREMIER_HOST_CAPABILITY", ""))

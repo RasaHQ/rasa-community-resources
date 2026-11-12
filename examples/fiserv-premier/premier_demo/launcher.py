@@ -4,6 +4,7 @@ import argparse
 import os
 from pathlib import Path
 import secrets
+import signal
 import socket
 import subprocess
 import sys
@@ -41,6 +42,8 @@ def main(project):
     parser.add_argument("--port", type=int, default=5005)
     parser.add_argument("--fault", choices=["none", "transfer-response-lost"], default="none",
                         help="Fictional failure scenario for the transfer, never a vendor fault.")
+    parser.add_argument("--text-api", action="store_true",
+                        help="Developer check: serve the REST text channel (rasa run) instead of the Inspector.")
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
         parser.error("choose an unprivileged Inspector port")
@@ -71,6 +74,8 @@ def main(project):
     from .hostclient import HostClient
     origin, inspector_url = inspector_address(args.port)
     server = inspector = None
+    # A plain terminate (closing the terminal, a kill) must also stop the owned services.
+    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
     try:
         with _listener() as mock_socket, _listener() as mcp_socket:
             capability = secrets.token_urlsafe(32)
@@ -94,6 +99,10 @@ def main(project):
         deadline = time.monotonic() + 20
         while True:
             if server.poll() is not None:
+                if server.returncode == 4:
+                    print("Not ready. Another copy of this example is still running. "
+                          "Press Ctrl+C in its terminal, or close that terminal, then try again.")
+                    return 1
                 raise RuntimeError("backend_exited")
             try:
                 session = host.open_session()
@@ -119,7 +128,7 @@ def main(project):
             print("Use only fictional speech. The speech provider receives audio; opt-out is not zero retention.")
             print("Open the Inspector: " + inspector_url, flush=True)
             print("To stop, press Ctrl+C in this terminal.", flush=True)
-            inspector = subprocess.Popen([sys.executable, "-m", "rasa", "inspect", "--port", str(args.port),
+            inspector = subprocess.Popen([sys.executable, "-m", "rasa", "run" if args.text_api else "inspect", "--port", str(args.port),
                                           "--model", str(result.model)], cwd=run, env=environment)
             while inspector.poll() is None:
                 if server.poll() is not None:
