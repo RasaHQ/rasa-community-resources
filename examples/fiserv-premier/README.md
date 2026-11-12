@@ -18,6 +18,7 @@ Behind it sits a local **mock of Fiserv Banking Hub (Premier)**. You download Fi
 Author:        Rasa Community contributors
 Assessed on:   not yet assessed (development build)
 Assessed by:   source tests only; native Rasa run, spoken run and latency are still open
+Verified with: Not yet verified; source tests and a hand-written schema check only
 Installation:  rasa-pro 3.21.0.dev5, Python 3.12
 Audience:      Developers building banking voice assistants
 Time:          Not yet measured
@@ -45,7 +46,7 @@ Follow the steps in order. Take your time: the first start-up has a long wait.
 
 ### 2. Open the example in a Codespace
 
-1. Click the **Open in GitHub Codespaces** button at the top of this page.
+1. Click the badge at the top of this page that shows the GitHub Codespaces logo with the word “Open” on it.
 2. A page titled **Create codespace** opens. Click the green **Create codespace** button.
 3. Wait. A browser tab shows a code editor while it builds; this can take several minutes. You are ready when the black panel at the bottom (the **terminal**) ends with the word `READY`.
 
