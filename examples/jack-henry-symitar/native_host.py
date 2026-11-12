@@ -5,7 +5,7 @@ Routing is a fictional identity simulator, never bank authentication. The Rasa
 adapter supplies actual channel turns through the private control interface.
 None of these control operations is an MCP/model tool.
 """
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from decimal import Decimal
 import asyncio
 import secrets
@@ -28,6 +28,8 @@ class Binding:
     policy: HostPolicy
     turn: int = 0
     pending: object = None
+    last_seen: float = 0
+    last_result: dict = field(default_factory=dict)
 
 
 class ConversationHost:
@@ -69,40 +71,28 @@ class Gateway:
             if type(data) is not dict:
                 raise Refused('invalid_control')
             if action == 'open':
+                for old, existing in list(self.sessions.items()):
+                    if self.clock()-existing.last_seen>=300:
+                        self._cancel(existing)
+                        del self.sessions[old]
                 if set(data) != {'sender'} or not isinstance(data['sender'], str) or not 1 <= len(data['sender']) <= 128 or len(self.sessions) >= 128:
                     raise Refused('invalid_routing_context')
                 capability = secrets.token_urlsafe(32)
                 session = Session(self.principal, uuid.uuid4().hex,
                     frozenset(self.shares) | frozenset(self.loans), 'USD', self.clock(), data['sender'])
-                self.sessions[capability] = Binding(session, HostPolicy(session, self.clock))
+                self.sessions[capability] = Binding(session, HostPolicy(session, self.clock),last_seen=self.clock())
                 return {'credential': capability}
             binding = self._binding(data.get('credential'))
             if action == 'turn':
                 if set(data) != {'credential','number','text','revoked','cancelled'} or type(data['number']) is not int or data['number'] < 1 or type(data['text']) is not str or len(data['text']) > 8192 or type(data['revoked']) is not bool or type(data['cancelled']) is not bool:
                     raise Refused('invalid_channel_turn')
                 if data['number'] <= binding.turn:
-                    return {'state':'observed'}  # duplicate tool calls cannot resend
+                    return dict(binding.last_result) if data['number']==binding.turn else {'state':'observed'}
                 binding.turn = data['number']
-                text = norm(data['text'])
-                if data['cancelled'] or data['revoked'] or text in {'reset','logout','log out','switch user'}:
-                    self._cancel(binding)
-                    binding.session = replace(binding.session, revision=uuid.uuid4().hex, assured_at=self.clock()-301)
-                    if text not in {'verify me','verify my identity'}:
-                        return {'state':'reset'}
-                if text in {'verify me','verify my identity'}:
-                    self._cancel(binding)
-                    binding.session = replace(binding.session, revision=uuid.uuid4().hex, assured_at=self.clock())
-                    return {'state':'simulated_assurance_refreshed'}
-                if binding.pending is not None:
-                    pending = binding.pending
-                    binding.pending = None
-                    try:
-                        permit = binding.policy.confirm(binding.session, pending.intent,
-                            data['text'].strip().casefold().rstrip('.!?'), binding.turn)
-                    except Refused:
-                        return {'state':'review_cancelled'}
-                    return self._dispatch(binding, permit)
-                return {'state':'observed'}
+                binding.last_seen = self.clock()
+                result = self._turn(binding,data)
+                binding.last_result = dict(result)
+                return result
             if action == 'review':
                 if set(data) != {'credential'} or binding.pending is None:
                     raise Refused('review_unavailable')
@@ -121,6 +111,28 @@ class Gateway:
                 self._cancel(binding)
                 return {'state':'review_cancelled'}
             raise Refused('unknown_control')
+
+    def _turn(self,binding,data):
+        text = norm(data['text'])
+        if data['cancelled'] or data['revoked'] or text in {'reset','logout','log out','switch user'}:
+            self._cancel(binding)
+            binding.session = replace(binding.session, revision=uuid.uuid4().hex, assured_at=self.clock()-301)
+            if text not in {'verify me','verify my identity'}:
+                return {'state':'reset'}
+        if text in {'verify me','verify my identity'}:
+            self._cancel(binding)
+            binding.session = replace(binding.session, revision=uuid.uuid4().hex, assured_at=self.clock())
+            return {'state':'simulated_assurance_refreshed'}
+        if binding.pending is not None:
+            pending = binding.pending
+            binding.pending = None
+            try:
+                permit = binding.policy.confirm(binding.session, pending.intent,
+                    data['text'].strip().casefold().rstrip('.!?'), binding.turn)
+            except Refused:
+                return {'state':'review_cancelled'}
+            return self._dispatch(binding, permit)
+        return {'state':'observed'}
 
     def _dispatch(self, binding, permit):
         # HostPolicy rechecked authority, exact review and immediately next raw

@@ -52,15 +52,25 @@ def stop_child(child):
     except subprocess.TimeoutExpired:raise ValueError('owned_process_did_not_stop') from None
 
 
-def prepare_runtime(run,public_origin):
+def prepare_runtime(run,public_origin,*,text_api=False):
     """Keep the SDK's full Mantle layout when writing runtime-only settings."""
     from rasa.shared.utils.yaml import read_yaml_file,write_yaml
     integrations=read_yaml_file(ROOT/'integrations.yml',expand_env_vars=False)
+    integrations['channels'].pop('rest',None)
+    if text_api:integrations['channels']['rest']={'enabled':True}
     integrations['channels']['inspector']['server_url']=public_origin
     write_yaml(integrations,run/'integrations.yml')
     for relative in ('agent.yml','skills/banking/skill.md','skills/banking/tools.py'):
         target=run/relative;target.parent.mkdir(parents=True,exist_ok=True)
         target.write_bytes((ROOT/relative).read_bytes())
+
+
+def child_environment():
+    allowed={'PATH','HOME','TMPDIR','TMP','TEMP','LANG','LC_ALL','LC_CTYPE',
+             'SSL_CERT_FILE','SSL_CERT_DIR','REQUESTS_CA_BUNDLE','CURL_CA_BUNDLE',
+             'UV_CACHE_DIR','HF_HOME','HUGGINGFACE_HUB_CACHE','XDG_CACHE_HOME',
+             'USER','LOGNAME','RASA_LICENSE','OPENAI_API_KEY','DEEPGRAM_API_KEY'}
+    return {key:value for key,value in os.environ.items() if key in allowed}
 
 
 def main():
@@ -112,9 +122,9 @@ def main():
         host=local_server(None,capability,gateway=gateway);servers.append(host)
         for server in servers:
             thread=threading.Thread(target=server.serve_forever,kwargs={'poll_interval':.05});thread.start();threads.append(thread)
-        environment=dict(os.environ)
+        environment=child_environment()
         environment.update(SYMITAR_HOST_URL='http://127.0.0.1:'+str(host.server_port),SYMITAR_HOST_CAPABILITY=capability)
-        environment['PYTHONPATH']=os.pathsep.join([str(ROOT)]+([environment['PYTHONPATH']] if environment.get('PYTHONPATH') else []))
+        environment['PYTHONPATH']=str(ROOT)
         origin,url=inspector_address(args.port)
         with tempfile.TemporaryDirectory(prefix='symitar-run-') as temporary:
             run=Path(temporary).resolve();models=run/'models'
@@ -125,12 +135,12 @@ def main():
             if status:raise ValueError('training_failed')
             archive=models/'symitar.tar.gz'
             if not archive.is_file():raise ValueError('trained_model_missing')
-            prepare_runtime(run,origin)
+            prepare_runtime(run,origin,text_api=args.text_api)
             print('Mode: fictional local mock, four vendor input hashes verified. Routing identity is a simulator, not bank authentication.')
             print('Speak only fictional data. Request-level speech opt-out is enabled; it is not zero retention.')
             print('Inspector URL: '+url,flush=True)
             print('To stop every owned service: Ctrl+C in this terminal. Then stop the Codespace.',flush=True)
-            child=subprocess.Popen([sys.executable,'-m','rasa','run' if args.text_api else 'inspect','--port',str(args.port),'--model',str(archive)],cwd=run,env=environment,start_new_session=True)
+            child=subprocess.Popen([sys.executable,'-m','rasa','run' if args.text_api else 'inspect','--interface','127.0.0.1','--port',str(args.port),'--model',str(archive)],cwd=run,env=environment,start_new_session=True)
             while child.poll() is None:
                 if any(not thread.is_alive() for thread in threads):raise ValueError('owned_server_exited')
                 time.sleep(.1)

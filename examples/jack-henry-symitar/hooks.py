@@ -11,4 +11,4 @@ async def observe_actual_input(payload: IncomingMessagePayload) -> IncomingMessa
     try:
         return await incoming(payload)
     except Exception as error:
-        raise HookRejection('The private fictional banking host is unavailable. No model turn was started.') from error
+        raise HookRejection('The transfer outcome may be unknown. Do not retry or request another transfer. Check status when the private fictional host is available.') from error

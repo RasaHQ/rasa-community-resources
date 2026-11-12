@@ -76,10 +76,47 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             prepare_runtime(run,'https://fictional-5005.app.github.dev')
             credentials=resolve_channels_config(project_root=run)
             self.assertIsNotNone(credentials)
+            self.assertNotIn('rest',credentials.channels)
             inspector=credentials.channels['inspector']
             self.assertEqual(inspector['server_url'],'https://fictional-5005.app.github.dev')
             self.assertEqual(inspector['asr']['name'],'voice_privacy.OptOutASR')
             self.assertEqual(inspector['tts']['name'],'voice_privacy.OptOutTTS')
+
+    async def test_child_environment_drops_unrelated_secrets_and_python_paths(self):
+        from launcher import child_environment
+        with patch.dict('os.environ',{'GH_TOKEN':'not-a-credential-test-marker','UNRELATED_SECRET':'test-marker','PYTHONPATH':'/unrelated/source','PATH':'/bin'}):
+            selected=child_environment()
+            self.assertNotIn('GH_TOKEN',selected)
+            self.assertNotIn('UNRELATED_SECRET',selected)
+            self.assertNotIn('PYTHONPATH',selected)
+            self.assertEqual(selected['PATH'],'/bin')
+
+    async def test_lost_private_reply_recovers_original_outcome_without_second_send(self):
+        import native_adapter
+        from rasa.mantle.hooks.payloads import IncomingMessagePayload
+        native_adapter._conversations.clear()
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}):
+            await native_adapter.incoming(IncomingMessagePayload(sender_id='lost-reply',text='review',message_id='lost1'))
+            conv=native_adapter._conversations[(self.url,'lost-reply')]
+            await self.client.call(conv.credential,'banking_review_transfer',{'source':'checking','destination':'savings','amount':'1.25'})
+            review=await asyncio.to_thread(self.client.control,'review',credential=conv.credential)
+            await asyncio.to_thread(self.client.control,'delivered',credential=conv.credential,review=review['review'])
+            original=conv.client.control
+            lost=[False]
+            def lose_reply(action,**data):
+                result=original(action,**data)
+                if action=='turn' and data['number']==2 and not lost[0]:
+                    lost[0]=True
+                    raise TimeoutError('injected post-effect private reply loss')
+                return result
+            with patch.object(conv.client,'control',side_effect=lose_reply):
+                with self.assertRaises(TimeoutError):
+                    await native_adapter.incoming(IncomingMessagePayload(sender_id='lost-reply',text='yes',message_id='lost2'))
+                await native_adapter.incoming(IncomingMessagePayload(sender_id='lost-reply',text='check status',message_id='lost3'))
+            self.assertEqual(conv.observed,3)
+            self.assertEqual(conv.outcome['state'],'accepted')
+            self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
+            self.assertFalse(conv.pending_request)
 
     async def test_sdk_validates_real_project_and_seven_tools_plus_incoming_modifier(self):
         from rasa.mantle.validation import validate_project

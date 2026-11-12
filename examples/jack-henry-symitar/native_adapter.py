@@ -8,6 +8,7 @@ The model cannot supply the host capability, session, review handle or raw turn.
 import asyncio
 from dataclasses import dataclass,field
 import os
+import time
 
 from pydantic import StrictStr
 from rasa.mantle.orchestration.turn_context import current_turn_context
@@ -21,6 +22,8 @@ class Conversation:
     client: object=field(repr=False)
     credential: StrictStr=field(repr=False)
     observed: int=0
+    last_seen: float=field(default_factory=time.monotonic)
+    pending_request: dict=field(default_factory=dict,repr=False)
     message_ids: set=field(default_factory=set,repr=False)
     outcome: dict=field(default_factory=dict,repr=False)
     lock: object=field(default_factory=asyncio.Lock,repr=False)
@@ -43,12 +46,16 @@ async def _conversation_for(sender):
     if not url or len(capability)<32:raise ValueError('host_unavailable')
     key=(url,sender)
     async with _open_lock:
+        for old, existing in list(_conversations.items()):
+            if time.monotonic()-existing.last_seen>=300 and not existing.lock.locked():
+                del _conversations[old]
         conversation=_conversations.get(key)
         if conversation is None:
             client=HostClient(url,capability)
             opened=await asyncio.to_thread(client.control,'open',sender=str(sender))
             conversation=Conversation(client,opened['credential'])
             _conversations[key]=conversation
+    conversation.last_seen=time.monotonic()
     return conversation
 
 
@@ -56,13 +63,23 @@ async def incoming(payload):
     """Awaited only by the SDK incoming-message modifier, never a model tool."""
     conversation=await _conversation_for(payload.sender_id)
     async with conversation.lock:
+        # Recover the exact previous private request before observing new input.
+        # A lost HTTP reply never rebinds its confirmation to a later raw turn.
+        if conversation.pending_request:
+            previous=await asyncio.to_thread(conversation.client.control,'turn',**conversation.pending_request)
+            conversation.outcome=previous
+            conversation.pending_request={}
         if payload.message_id and payload.message_id in conversation.message_ids:return payload
         number=conversation.observed+1
-        result=await asyncio.to_thread(conversation.client.control,'turn',credential=conversation.credential,
-            number=number,text=payload.text,revoked=_norm(payload.text) in {'reset','logout','log out','switch user'},cancelled=False)
+        request=dict(credential=conversation.credential,number=number,text=payload.text,
+            revoked=_norm(payload.text) in {'reset','logout','log out','switch user'},cancelled=False)
         conversation.observed=number
+        conversation.pending_request=request
         if payload.message_id:conversation.message_ids.add(payload.message_id)
-        conversation.outcome=result
+        result=await asyncio.to_thread(conversation.client.control,'turn',**request)
+        conversation.pending_request={}
+        if result.get('state')!='observed' or not conversation.outcome:
+            conversation.outcome=result
     return payload
 
 

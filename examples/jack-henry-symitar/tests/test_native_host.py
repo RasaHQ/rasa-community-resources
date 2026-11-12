@@ -54,10 +54,20 @@ class NativeHostTests(unittest.TestCase):
     def test_delivered_next_actual_yes_sends_once_and_duplicate_observation_cannot_repeat(self):
         self.turn(1,'review a transfer');self.review();self.deliver()
         self.assertEqual(self.turn(2,'yes')['state'],'accepted')
-        self.assertEqual(self.turn(2,'yes')['state'],'observed')
+        self.assertEqual(self.turn(2,'yes')['state'],'accepted')
         self.assertEqual(len(self.client.sends),1)
         self.assertEqual(self.client.sends[0][1]['amount'],'1.25')
         self.assertEqual(self.gateway.call(self.token,'banking_transfer_status',{})['state'],'accepted')
+
+    def test_idle_sessions_expire_without_clearing_principal_journal_hold(self):
+        for number in range(127):self.gateway.control('open',{'sender':'idle-'+str(number)})
+        with self.assertRaises(Refused):self.gateway.control('open',{'sender':'over-cap'})
+        self.journal.reserve(self.gateway.principal,'uncertain',self.journal.epoch)
+        self.clock[0]+=300
+        token=self.gateway.control('open',{'sender':'new-after-idle'})['credential']
+        self.assertEqual(len(self.gateway.sessions),1)
+        self.assertEqual(self.gateway.call(token,'banking_review_transfer',{'source':'checking','destination':'savings','amount':'1.25'})['state'],'refused')
+        self.assertEqual(self.client.sends,[])
 
     def test_no_correction_intervening_turn_and_missing_raw_confirmation_refuse(self):
         for text,number in [('no',2),('change amount to 2',2),('yes',3)]:
