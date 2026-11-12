@@ -6,6 +6,7 @@ import tempfile
 import threading
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
 
 from fixture_control import INSTANCE
 from journal import Journal
@@ -44,6 +45,28 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(Exception):await self.client.call(self.token,'confirm',{})
         with self.assertRaises(Exception):await self.client.call(self.token,'banking_review_transfer',{'source':'checking','destination':'savings','amount':1.25})
         self.assertEqual(self.vendor.sends,[])
+
+    async def test_native_binding_delivers_canonical_review_and_returns_actual_tool_result(self):
+        import native_adapter
+        from rasa.mantle.hooks.payloads import IncomingMessagePayload
+        class Context:
+            is_cancelled=False
+            def __init__(self):self.messages=[]
+            async def send(self,text):self.messages.append(text)
+        context=Context();native_adapter._conversations.clear()
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}), patch.object(native_adapter,'current_turn_context',return_value=SimpleNamespace(sender_id='native-channel')):
+            await native_adapter.incoming(IncomingMessagePayload(sender_id='native-channel',text='balance',message_id='n1'))
+            result=await native_adapter.banking_balance('checking',context=context)
+            self.assertEqual(result.llm_response['amount'],'1200.50')
+            review=await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            self.assertEqual(review.llm_response['state'],'review_delivered')
+            self.assertIn('USD 1.25 from checking to savings',context.messages[-1])
+            self.assertFalse(any(name=='postTransfer' for name,_ in self.vendor.sends))
+            await native_adapter.incoming(IncomingMessagePayload(sender_id='native-channel',text='yes',message_id='n2'))
+            result=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(result.llm_response['state'],'accepted')
+            self.assertEqual(sum(name=='postTransfer' for name,_ in self.vendor.sends),1)
+            self.assertIn('not a real payment',context.messages[-1])
 
     async def test_sdk_validates_real_project_and_seven_tools_plus_incoming_modifier(self):
         from rasa.mantle.validation import validate_project
