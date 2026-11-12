@@ -227,6 +227,8 @@ test-voice-latency: ## Offline timing parser, privacy and bounded process contro
 .PHONY: test-voice-latency
 
 validate: test-voice-latency ## Offline correctness gate (lint + unit tests + drift). Start here.
+	@$(PYTHON) -m unittest discover -s scripts -p test_vendor_definitions.py
+	@$(PYTHON) scripts/check_vendor_definitions.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_workshop_codespaces.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_codespaces_generator.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_codespaces_scope.py
@@ -237,6 +239,7 @@ validate: test-voice-latency ## Offline correctness gate (lint + unit tests + dr
 	@$(PYTHON) -m unittest discover -s scripts -p test_casebook_explanations.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_self_contained.py
 	@$(PYTHON) scripts/check_self_contained.py
+	@PYTHONPATH=examples/jack-henry-symitar $(PYTHON) -m unittest discover -s examples/jack-henry-symitar/tests -p test_mcp_server.py
 	@echo "$(MAGENTA)▸ tooling unit tests$(RESET)"
 	@out=$$($(UNITTESTS) 2>&1) || { echo "$$out"; exit 1; }; \
 		case "$$out" in *"OK"*) ;; *) echo "$$out"; \
