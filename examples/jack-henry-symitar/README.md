@@ -153,7 +153,7 @@ Open the Inspector URL printed by the terminal. Leave this terminal running. If 
 
 For a text conversation, click **Type your message**, type a prompt, and press **Enter**. This lets you try the conversation without a microphone.
 
-For speech, allow microphone access when the browser asks and use the Inspector microphone. The speech provider receives your audio. A typed check does not establish that speech recognition or spoken replies work.
+For speech, allow microphone access when the browser asks and use the Inspector microphone. The speech provider receives your audio. A typed check covers the conversation only. Speech recognition and spoken replies need their own spoken run.
 
 **Checkpoint:** the Inspector is connected and accepts your first message. The complete spoken path remains unverified.
 
@@ -214,7 +214,7 @@ The dates are fixed fixture data, not automatically updated to today's date. A l
 
 Verification is simulated. This is not bank sign-in. A review that was changed, canceled, expired, or not delivered cannot authorize submission. An unrelated next message cancels the review; request a new review before confirming again.
 
-A successful fixture transfer may have no receipt. A missing receipt does not establish failure, and an acceptance is not proof of posting. If a response is lost after dispatch, the outcome is unknown. Do not retry or delete state to clear the hold. The hold applies across conversations for that fictional customer; reads and local status remain available.
+A successful fixture transfer may have no receipt. A missing receipt leaves the outcome open, and an acceptance means the request was received. Posting is a separate step, outside what this example sees. If a response is lost after dispatch, the outcome is unknown. Do not retry or delete state to clear the hold. The hold applies across conversations for that fictional customer; reads and local status remain available.
 
 ## What is happening
 
@@ -258,7 +258,7 @@ The transfer reply controls have source tests. A fresh end-to-end run of this re
 
 ### Limits before adapting the demo
 
-- Schema-valid data does not prove compatibility with a real credit union installation.
+- Schema-valid data shows that the messages match the published files. Compatibility with a real credit union installation needs a test against that installation.
 - Identity and verification are simulated for one fictional customer.
 - Missing data stays unavailable; do not substitute a regular payment for the amount currently due.
 - No receipt does not mean failure; acceptance does not mean posting.
@@ -358,4 +358,4 @@ make validate
 
 To regenerate the models after a vendor update (needs the four files in `vendor-inputs/`), run `make models`; `make models-check` fails if the committed models differ from a fresh generation. The generator, datamodel-code-generator, is installed only for these two commands.
 
-`make test` runs source, state, transport, and snapshot controls. `make contract-test` runs the vendor contract tests. Contract-dependent tests skip without the four vendor files; a skip does not prove conformance. `make validate` checks the Rasa configuration. None of these is a spoken conversation check.
+`make test` runs source, state, transport, and snapshot controls. `make contract-test` runs the vendor contract tests. Contract-dependent tests need the four vendor files and skip without them; only a run in which they pass shows conformance to those contracts. `make validate` checks the Rasa configuration. None of these is a spoken conversation check.
