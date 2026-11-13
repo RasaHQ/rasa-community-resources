@@ -24,7 +24,9 @@ At start, the example compares your archive and the five definitions with the ha
 - the `EFXHeader` and every request it sends to the five operations;
 - the reply it reads from each one.
 
-If your definitions still accept all of it, the example starts and prints: "Your Fiserv download differs from the one this example was tested with (…); everything this example uses is unchanged."
+It also compares the replies: for each of the five definitions, the reply the example reads (the success status, references inlined, with only descriptions, examples and summaries left out) must be exactly the same as in the pinned archive. A reply that became looser, for example a field no longer required, a value that may now be null or a longer list of allowed values, would still accept the recorded replies, yet the example could receive something it was never tested with. Any difference stops start-up with "the reply of <operation> changed; review it and record a new version".
+
+If your definitions still accept all of the traffic and every reply is unchanged, the example starts and prints: "Your Fiserv download differs from the one this example was tested with (…); everything this example uses is unchanged."
 
 If they do not, or a definition or operation is missing, it stops and names the operation and what the definitions no longer accept. If the check itself cannot run on your files, it stops with "Could not check". Then this example needs an update: please open an issue.
 

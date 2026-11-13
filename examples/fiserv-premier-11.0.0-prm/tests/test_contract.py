@@ -249,16 +249,47 @@ class VendorVersions(unittest.TestCase):
 
         self.assert_stops("xfer", narrow, "XferAddOper (xfer) 201 response is no longer valid at XferStatusRec/XferStatus/XferStatusCode")
 
-    def test_documentation_changes_and_a_new_optional_field_still_load(self):
+    def test_documentation_changes_and_a_new_optional_request_field_still_load(self):
         def reworded(document):
             self._resolve(document, self._acct_id_holder(document)["AcctId"])["description"] = "Reworded by the vendor."
+            record = self._resolve(document, self._reply_root(document, "dda")["properties"]["AcctRec"])
+            record["description"] = "Reworded by the vendor."
+            self._post(document, "dda")["summary"] = "Reworded summary."
 
-        def new_sibling(document):
+        def new_request_field(document):
+            self._request_root(document, "dda")["properties"]["NewOptionalField"] = {"type": "string"}
+
+        self.assert_loads("dda", reworded)
+        self.assert_loads("dda", new_request_field)
+
+    def test_a_relaxed_or_otherwise_changed_reply_stops_even_though_old_replies_still_fit(self):
+        def optional(document):
+            root = self._reply_root(document, "xfer", "201")
+            self.assertTrue(root.get("required"))
+            root["required"] = root["required"][1:]
+
+        def nullable(document):
+            self._xfer_status_code(document)["nullable"] = True
+
+        def wider_enum(document):
+            code = self._xfer_status_code(document)
+            code["enum"] = list(code.get("enum", ["Valid", "Rejected"])) + ["PendingReview"]
+
+        def new_reply_field(document):
             record = self._resolve(document, self._reply_root(document, "dda")["properties"]["AcctRec"])
             self._resolve(document, record["properties"]["DepositAcctInfo"])["properties"]["NewOptionalField"] = {"type": "string"}
 
-        self.assert_loads("dda", reworded)
-        self.assert_loads("dda", new_sibling)
+        for key, edit, label in (("xfer", optional, "XferAddOper (xfer)"), ("xfer", nullable, "XferAddOper (xfer)"),
+                                 ("xfer", wider_enum, "XferAddOper (xfer)"),
+                                 ("dda", new_reply_field, "getAccountsSecured (dda)")):
+            with self.subTest(edit=edit.__name__):
+                self.assert_stops(key, edit, f"the reply of {label} changed; review it and record a new version")
+
+    def test_the_reply_digests_match_the_pinned_archive(self):
+        import yaml
+        from premier_demo.contract import REPLY_SHA256, reply_schema
+        members = load_members()
+        self.assertEqual({key: reply_schema(key, yaml.safe_load(raw)) for key, raw in members.items()}, REPLY_SHA256)
 
     def test_reference_cycles_are_refused_with_a_clear_reason_not_a_hang(self):
         def self_cycle(document):

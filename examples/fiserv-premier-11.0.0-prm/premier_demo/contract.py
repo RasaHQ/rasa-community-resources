@@ -53,6 +53,20 @@ MEMBERS = {
 SUCCESS = {"party": "200", "dda": "200", "loan": "200", "trn": "200", "xfer": "201"}
 TESTED_WITH = "Fiserv Banking Hub Premier 11.0.0_PRM specifications as downloaded 12 Nov 2026"  # VENDOR-FILES.md
 _MAX_HOPS = 64
+# sha256 of reply_schema() for each pinned document: the reply of the one status
+# code the client reads (SUCCESS, or "default" if that status is not declared),
+# references inlined, with only description, example(s) and summary removed. A
+# newer file must give exactly the same digest, because a relaxed reply (a field
+# no longer required, nullable, a wider enum or type) would still accept the
+# recorded replies yet send the example something it was never tested with.
+REPLY_SHA256 = {
+    "party": "b2fccab727f3f17b4c915f6c952397044eaeca7cbdd9169329197d781f014307",
+    "dda": "f96e1aa79f1b82b16a4d63e4c7833c872843b33278f66edb1f8f89de3d70f409",
+    "loan": "e0588b3cff91020572fd4c7b980687736043d0d00dfeb41e4debd4738c41aad0",
+    "trn": "605634a2e267583c778b766efd3507ecbe9b8b7b67d96c3cfcccdad3a7e6b1e5",
+    "xfer": "6e6e4a9a308f2b40855d693d60f40434a39ebcdf01a2f8162dcee2e5b04fe17b",
+}
+_DOC_ONLY = frozenset({"description", "example", "examples", "summary"})
 
 
 class ContractError(Exception):
@@ -178,6 +192,34 @@ def _check_local_references(node, root):
             _check_local_references(child, root)
 
 
+def _inline(node, document, stack=(), depth=0):
+    """node with every local $ref replaced by its target, documentation removed."""
+    if depth > 200:
+        raise ContractError("schema_too_deep")
+    if isinstance(node, dict):
+        if "$ref" in node:
+            reference = node["$ref"]
+            if reference in stack:  # a recursive schema: name the loop, do not unroll it
+                return {"$recursive": reference}
+            target = _inline(_pointer(document, reference), document, stack + (reference,), depth + 1)
+            rest = {key: _inline(value, document, stack, depth + 1) for key, value in node.items()
+                    if key != "$ref" and key not in _DOC_ONLY}
+            return {"$inlined": target, **rest} if rest else target
+        return {key: _inline(value, document, stack, depth + 1) for key, value in sorted(node.items())
+                if key not in _DOC_ONLY}
+    if isinstance(node, list):
+        return [_inline(value, document, stack, depth + 1) for value in node]
+    return node
+
+
+def reply_schema(key: str, document: dict) -> str:
+    """sha256 of the resolved reply the client reads for this document."""
+    responses = document["paths"][MEMBERS[key][3]]["post"]["responses"]
+    status = SUCCESS[key] if SUCCESS[key] in responses else "default"
+    replies = {status: _inline(responses.get(status), document)}
+    return hashlib.sha256(json.dumps(replies, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
 class _Document:
     def __init__(self, key: str, raw: bytes):
         _, _, operation, path = MEMBERS[key]
@@ -193,6 +235,7 @@ class _Document:
             raise ContractError("unsupported_operation")
         root = uri + "#/paths/" + _escape(path) + "/post"
         self.key, self.path = key, path
+        self.reply = reply_schema(key, document)
         self.request = OAS30WriteValidator(
             {"$ref": root + "/requestBody/content/application~1json/schema"},
             registry=registry, format_checker=OAS30WriteValidator.FORMAT_CHECKER)
@@ -239,7 +282,9 @@ class PremierContract:
                         raise VendorChanged([f"{operation} ({key}) is no longer at {path}"]) from None
                     raise
             if drifted:
-                problems = self.exchange_problems()
+                problems = [f"the reply of {MEMBERS[key][2]} ({key}) changed; review it and record a new version"
+                            for key in MEMBERS if self._documents[key].reply != REPLY_SHA256[key]]
+                problems += self.exchange_problems()
                 if problems:
                     raise VendorChanged(problems)
                 self.newer_files = drifted
