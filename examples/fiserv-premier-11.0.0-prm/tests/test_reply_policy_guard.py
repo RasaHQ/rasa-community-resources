@@ -85,6 +85,34 @@ class HostOnlyWording(unittest.IsolatedAsyncioTestCase):
         source = (__import__("pathlib").Path(__file__).resolve().parents[1] / "hooks.py").read_text()
         self.assertIn("remember_offered_tools(payload)", source)
 
+    async def test_a_written_review_becomes_the_review_call_only_for_the_amount_asked(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
+        text = ("Review: transfer USD 7.00 from checking-A to bills-A. To submit exactly this transfer, "
+                "say confirm transfer next. Anything else cancels this review.")
+        self.native.turn = SimpleNamespace(text="Move 7 dollars from checking to bills.")
+        reply = await policy.keep_host_reply_once(self.payload(text))
+        self.assertIsNone(reply.text)
+        self.assertEqual([(c["tool_name"], c["tool_args"]) for c in reply.tool_calls],
+                         [("banking_review_transfer", {"source": "checking-A", "destination": "bills-A",
+                                                       "amount": "7.00", "currency": "USD"})])
+        for raw in ("Move 9 dollars from checking.", "What happened?"):
+            with self.subTest(raw=raw):
+                policy._retries.clear(); self.native.turn = SimpleNamespace(text=raw)
+                with self.assertRaises(RetryModel):  # never for another amount
+                    await policy.keep_host_reply_once(self.payload(text))
+
+    async def test_a_confirmation_is_always_answered_by_the_host_submit_path(self):
+        # rasa-bench on merged main: with no active review the model said
+        # "Please say confirm transfer". The host now answers every confirmation.
+        for raw, text in (("Confirm transfer.", "Please say confirm transfer to proceed."),
+                          ("Yes.", "Great, your transfer is on its way."),
+                          ("confirm transfer", "Review: transfer USD 7.00 from checking-A to bills-A.")):
+            with self.subTest(raw=raw):
+                self.native.turn = SimpleNamespace(text=raw)
+                reply = await policy.keep_host_reply_once(self.payload(text))
+                self.assertIsNone(reply.text)
+                self.assertEqual([c["tool_name"] for c in reply.tool_calls], ["banking_submit_transfer"])
+
 
 if __name__ == "__main__":
     unittest.main()

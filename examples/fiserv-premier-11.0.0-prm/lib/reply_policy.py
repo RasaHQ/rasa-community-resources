@@ -6,6 +6,7 @@ consent and journals the request before sending. Records live for one runtime
 turn only and are not persisted or shared with another example.
 """
 from collections import OrderedDict
+from decimal import Decimal, InvalidOperation
 import re
 import time
 from uuid import uuid4
@@ -86,6 +87,48 @@ def _declines(payload) -> bool:
     return (bool(payload.text) and not calls) or (bool(calls) and set(calls) <= {"cannot_help"})
 
 
+# The host's own review sentence (see the adapter). A model that writes it
+# instead of calling the tool has already chosen exact details.
+_REVIEW_TEXT = re.compile(r"^\s*Review: transfer USD ([0-9]+\.[0-9]{2}) from ([A-Za-z]+-[A-Za-z]) to ([A-Za-z]+-[A-Za-z])\.")
+_CONFIRMATIONS = {"yes", "confirm", "confirmed", "confirm transfer"}
+
+
+def _raw(native):
+    text = getattr(getattr(native, "turn", None), "text", "") or ""
+    return " ".join(text.casefold().rstrip(".!?").split())
+
+
+def _review_call(native, text):
+    """The review tool call a model meant when it wrote the host's review itself.
+
+    Only for a turn that asks to move that exact amount and is not a
+    confirmation. The host still checks every detail, delivers the exact
+    review and arms confirmation only after that delivery.
+    """
+    match = _REVIEW_TEXT.match(text or "")
+    if match is None or _raw(native) in _CONFIRMATIONS:
+        return None
+    raw = getattr(getattr(native, "turn", None), "text", "") or ""
+    try:
+        amount = Decimal(match.group(1))
+        said = {Decimal(number) for number in re.findall(r"\d+(?:\.\d+)?", raw)}
+    except InvalidOperation:
+        return None
+    if amount not in said:
+        return None
+    return {"id": "host-review-" + uuid4().hex, "tool_name": "banking_review_transfer",
+            "tool_args": {"source": match.group(2), "destination": match.group(3),
+                          "amount": match.group(1), "currency": "USD"}, "type": "function"}
+
+
+def _submit_call():
+    """A confirmation is answered by the host's submit path, whatever the model wrote:
+    it sends only for an armed review and the exact raw phrase, and otherwise speaks
+    the cancelled or unknown sentence itself."""
+    return {"id": "host-confirm-" + uuid4().hex, "tool_name": "banking_submit_transfer",
+            "tool_args": {}, "type": "function"}
+
+
 def _retry_allowed(native, sender):
     turn, count = _retries.get(sender, (None, 0))
     if turn is not native.turn:
@@ -164,7 +207,14 @@ async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePa
         # delivery this turn, model text that imitates one is replaced, so a
         # caller never hears a review or "accepted" for a transfer that was
         # never reviewed or sent.
+        names = {call.get("tool_name") for call in payload.tool_calls}
+        if (_raw(native) in _CONFIRMATIONS
+                and not names & {"banking_submit_transfer", "banking_transfer_status"}):
+            return payload.model_copy(update={"text": None, "tool_calls": [_submit_call()]})
         if payload.text and HOST_ONLY.search(payload.text):
+            call = None if payload.tool_calls else _review_call(native, payload.text)
+            if call is not None:  # the review it wrote, made by the host instead
+                return payload.model_copy(update={"text": None, "tool_calls": [call]})
             if _retry_allowed(native, payload.sender_id):
                 raise RetryModel(RETRY_REVIEW)
             return payload.model_copy(update={"text": NO_TRANSFER_TEXT})
