@@ -50,9 +50,10 @@ OPERATIONS = frozenset(USED)
 # sha256 of used_surface() for the files in PINS. Each used field is recorded by its
 # whole schema (every validation keyword, refs inlined, allOf/oneOf/anyOf kept;
 # only documentation keys such as description and example are left out), plus
-# the paths and the required lists around sent fields. Any difference stops
+# the paths, the required lists around sent fields and the own rules of every
+# container passed on the way to a used field (e.g. additionalProperties, maxItems). Any difference stops
 # start-up. It cannot see a change of meaning that keeps the shape.
-USED_SURFACE_SHA256 = "bc038e258b235f8c8ddf0f3eb89617c38542b567aa7f0e495420115319ca30d8"
+USED_SURFACE_SHA256 = "7e552338bc06440c4d1a426aa695b9ba8bdcee6977cba9240e8a06a591aec89d"
 
 
 class ContractError(Exception):
@@ -192,12 +193,36 @@ def _describe(schema, document):
     return _canonical(schema, document)
 
 
-def _walk(schema, path, document, required_trail):
-    """The unresolved schema of the field at path, recording the required list of each object passed."""
+_COMPOSITIONS = ("allOf", "oneOf", "anyOf")
+
+
+def _container(raw, document, stack=()):
+    """A container passed on the way to a used field, from its unmerged schema: every
+    rule except its children (properties, items, required lists) and documentation,
+    including the rules inside each allOf, oneOf and anyOf part. Sibling fields the
+    example does not use are left out; the container's own rules count."""
+    node, stack = _follow(raw, document, stack)
+    if not isinstance(node, dict):
+        return node
+    own = {}
+    for key, value in node.items():
+        if key in ("properties", "items", "required") or key in _DOC_ONLY or str(key).startswith("x-"):
+            continue
+        if key in _COMPOSITIONS and isinstance(value, list):
+            own[key] = [_container(part, document, stack) for part in value]
+        else:
+            own[key] = _canonical(value, document, stack)
+    return own
+
+
+def _walk(schema, path, document, required_trail, containers):
+    """The unresolved schema of the field at path. Records the required list of each
+    object passed (for sent fields) and every container's own rules (both directions)."""
     node, raw = _resolve(schema, document), schema
     for token in [t for t in path.split(".") if t]:
         name, is_items = (token[:-2], True) if token.endswith("[]") else (token, False)
         if name:
+            containers.append(_container(raw, document))
             if required_trail is not None:
                 required_trail.append(sorted(node.get("required", [])))
             properties = node.get("properties", {})
@@ -206,6 +231,7 @@ def _walk(schema, path, document, required_trail):
             raw = properties[name]
             node = _resolve(raw, document)
         if is_items:
+            containers.append(_container(raw, document))
             if "items" not in node:
                 return None
             raw = node["items"]
@@ -222,19 +248,23 @@ def used_surface(documents: Mapping[str, dict]) -> dict:
                 name = operation.get("operationId") if isinstance(operation, dict) else None
                 if name not in USED:
                     continue
-                entry = {"method": method, "path": path, "sends": {}, "required": [], "reads": {}}
+                entry = {"method": method, "path": path, "sends": {}, "required": [], "reads": {},
+                         "containers": {}}
                 request = operation.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema")
                 for field in USED[name]["sends"]:
-                    trail = []
-                    node = _walk(request, field, document, trail) if request is not None else None
+                    trail, containers = [], []
+                    node = _walk(request, field, document, trail, containers) if request is not None else None
                     entry["sends"][field] = _describe(node, document) if node is not None else "missing"
                     entry["required"].append(trail)
+                    entry["containers"]["sends " + field] = containers
                 ok = operation.get("responses", {}).get("200", {})
                 schema = ok.get("content", {}).get("application/json", {}).get("schema")
                 entry["reads"]["200"] = "present" if schema is not None else "missing"
                 for field in USED[name]["reads"]:
-                    node = _walk(schema, field, document, None) if schema is not None else None
+                    containers = []
+                    node = _walk(schema, field, document, None, containers) if schema is not None else None
                     entry["reads"][field] = _describe(node, document) if node is not None else "missing"
+                    entry["containers"]["reads " + field] = containers
                 surface[name] = entry
     for name in USED:
         surface.setdefault(name, "missing")
@@ -263,6 +293,10 @@ def _changes(expected: dict, actual: dict) -> list[str]:
                     changes.append(f"{name} {'request' if side == 'sends' else 'response'} field {field} changed")
         if old.get("required") != new.get("required"):
             changes.append(f"{name} now requires different request fields")
+        for field in sorted(set(old.get("containers", {})) | set(new.get("containers", {}))):
+            if old.get("containers", {}).get(field) != new.get("containers", {}).get(field):
+                side, path = field.split(" ", 1)
+                changes.append(f"{name} {'request' if side == 'sends' else 'response'} structure around {path} changed")
     return changes or ["the operations this example uses changed"]
 
 

@@ -198,6 +198,86 @@ class ContractTests(unittest.TestCase):
         contract = SymitarContract(self._edited("transfers", describe))
         self.assertEqual(contract.newer_files, ("transfers",))
 
+    def test_a_container_rule_on_the_way_to_a_used_field_counts_but_a_new_sibling_does_not(self):
+        from contract_inputs import VendorChanged
+
+        def reply_schema(document, name):
+            op = next(o for methods in document["paths"].values() for o in methods.values()
+                      if isinstance(o, dict) and o.get("operationId") == name)
+            node = op["responses"]["200"]["content"]["application/json"]["schema"]
+            while "$ref" in node:
+                target = document
+                for part in node["$ref"][2:].split("/"):
+                    target = target[part]
+                node = target
+            return node
+
+        def resolved(document, node):
+            while "$ref" in node:
+                target = document
+                for part in node["$ref"][2:].split("/"):
+                    target = target[part]
+                node = target
+            return node
+
+        def fewer_items(document):
+            body = reply_schema(document, "searchAccountTransactions")
+            resolved(document, body["properties"]["transactions"])["maxItems"] = 1
+
+        def new_sibling(document):
+            body = reply_schema(document, "searchAccountTransactions")
+            paging = resolved(document, body["properties"]["paging"])
+            paging["properties"]["previousOffset"] = {"type": "string", "nullable": True}
+
+        with self.assertRaises(VendorChanged) as caught:
+            SymitarContract(self._edited("transactions", fewer_items))
+        self.assertIn("searchAccountTransactions response structure around transactions[].postDate changed",
+                      caught.exception.changes)
+        self.assertEqual(SymitarContract(self._edited("transactions", new_sibling)).newer_files, ("transactions",))
+
+    def test_a_rule_on_the_request_root_or_a_nested_container_counts(self):
+        # The reviewer's witness: maxProperties 0 on postTransfer's request root keeps every
+        # property, required list and leaf, yet rejects every real transfer request.
+        from contract_inputs import VendorChanged
+
+        def request_root(document):
+            body = next(o for methods in document["paths"].values() for o in methods.values()
+                        if isinstance(o, dict) and o.get("operationId") == "postTransfer")
+            node = body["requestBody"]["content"]["application/json"]["schema"]
+            while "$ref" in node:
+                target = document
+                for part in node["$ref"][2:].split("/"):
+                    target = target[part]
+                node = target
+            return node
+
+        def root_rule(document):
+            request_root(document)["maxProperties"] = 0
+
+        def nested_rule(document):
+            donor = request_root(document)["properties"]["donor"]
+            while "$ref" in donor:
+                target = document
+                for part in donor["$ref"][2:].split("/"):
+                    target = target[part]
+                donor = target
+            donor["additionalProperties"] = False
+            donor["maxProperties"] = 1
+
+        def root_composed(document):
+            # Original keys kept; the rule sits only inside an allOf part.
+            request_root(document)["allOf"] = [{"maxProperties": 0}]
+
+        def nested_composed(document):
+            properties = request_root(document)["properties"]
+            properties["donor"] = {"allOf": [properties["donor"], {"maxProperties": 1}]}
+
+        for edit, field in ((root_rule, "amount"), (nested_rule, "donor.accountNumber"),
+                            (root_composed, "amount"), (nested_composed, "donor.accountNumber")):
+            with self.subTest(edit=edit.__name__), self.assertRaises(VendorChanged) as caught:
+                SymitarContract(self._edited("transfers", edit))
+            self.assertIn(f"postTransfer request structure around {field} changed", caught.exception.changes)
+
     def test_reference_cycles_are_refused_with_a_clear_reason_not_a_hang(self):
         def self_cycle(document):
             document.setdefault("components", {}).setdefault("schemas", {})["Loop"] = {
