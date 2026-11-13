@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM agent between a customer and the way out
 Time:          15 minutes to run the agent; about 10 minutes and 1 USD for the live conversation suite
 Industry:      Telco
 You learn:     How to record a cancellation first and stop making offers once the customer says no.
+Catalog name:  Contract cancellation and retention chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

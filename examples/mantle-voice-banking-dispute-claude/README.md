@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM voice agent in front of card disputes
 Time:          15 minutes to run the agent; about 25 minutes and 1.92 USD for the live call suite
 Industry:      Banking
 You learn:     How to file a card dispute by voice without promising a refund before any review.
+Catalog name:  Card charge dispute voice agent (Claude)
 ```
 
 A Rasa Mantle voice agent for one casebook case,

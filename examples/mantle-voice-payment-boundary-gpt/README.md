@@ -17,6 +17,7 @@ Audience:      Engineers putting payments behind a Rasa voice agent
 Time:          15 minutes to run the agent; about 25 minutes and 2.65 USD for the live call suite
 Industry:      Retail
 You learn:     How to keep card numbers out of a voice agent's records and take payment through a secure link.
+Catalog name:  Card-safe order payment voice agent (GPT)
 ```
 
 A Rasa Mantle voice agent for one casebook case,

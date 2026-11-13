@@ -16,6 +16,8 @@ Audience: Practitioners connecting Rasa Mantle to a managed specialist
 Time: Allow time for the first dependency download
 Industry: Travel
 You learn: How a Mantle agent shows a pre-flight briefing built from public sources beside the conversation.
+Catalog name: Pre-flight briefing agent with OpenAI Agents
+Status: work in progress
 
 **Self-paced start:** [SELF-PACED-GUIDE.md](SELF-PACED-GUIDE.md) gives five checkpoints with expected behavior and failure cases.
 

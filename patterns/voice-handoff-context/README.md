@@ -17,6 +17,7 @@
     Time:          30–45 minutes
     Industry:      General
     You learn:     How to pass what the agent already knows to a human, so callers never repeat themselves.
+    Catalog name:  Human handoff with full conversation context
 
 **A handoff is a state transfer, not a phone transfer.** The measure of a good
 one is that the human starts from what the agent already knew, and the caller is

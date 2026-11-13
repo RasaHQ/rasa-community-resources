@@ -18,6 +18,7 @@ Audience:      Practitioners building voice banking agents with Rasa Skills
 Time:          75–90 minutes
 Industry:      Banking
 You learn:     How a voice banking agent built with Rasa skills checks balances, sends money and blocks cards.
+Catalog name:  Rasano retail banking voice agent
 ```
 
 Build a **voice** retail banking agent with the new Rasa **Skills / Mantle**

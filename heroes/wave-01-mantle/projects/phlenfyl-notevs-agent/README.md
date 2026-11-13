@@ -22,6 +22,7 @@ Audience:      Developers building tool-calling Mantle agents against a local se
 Time:          20–30 minutes (uv sync + first chat), plus ~12 minutes for ./retest.sh
 Industry:      IT
 You learn:     How a local Mantle agent works with your VS Code notes through tool calls.
+Catalog name:  VS Code notes chat agent
 ```
 
 A local, Rasa Mantle-powered conversational agent for talking to your

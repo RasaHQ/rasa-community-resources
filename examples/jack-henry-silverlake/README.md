@@ -21,6 +21,7 @@ Audience:      Developers building banking voice assistants
 Time:          Not yet measured
 Industry:      Banking
 You learn:     How to connect a voice assistant to banking tools and check requests against a published API format.
+Catalog name:  Jack Henry SilverLake voice banking demo
 ```
 
 </details>

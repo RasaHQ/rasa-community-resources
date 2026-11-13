@@ -35,6 +35,7 @@ Audience:      Developers building banking voice assistants
 Time:          Not yet measured
 Industry:      Banking
 You learn:     How a voice assistant uses only the values a published banking API defines, and never guesses the rest.
+Catalog name:  Fiserv Banking Hub voice banking demo
 ```
 
 ## What you need

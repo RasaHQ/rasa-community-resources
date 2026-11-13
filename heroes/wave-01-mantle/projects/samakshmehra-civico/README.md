@@ -22,6 +22,7 @@ Audience:      Builders evaluating reliable voice intake with Rasa Mantle
 Time:          15–20 minutes to install and run after keys are available
 Industry:      General
 You learn:     How a voice complaint line turns an unstructured call into a validated, routed and trackable report.
+Catalog name:  Civic complaint voice line
 ```
 
 Built for Rasa Heroes Wave 01 on the Mantle engine.

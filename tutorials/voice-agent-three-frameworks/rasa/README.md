@@ -15,6 +15,7 @@ Assessed by:   Codex (tutorial source and publication-boundary review)
 Verified with: Python 3.12; uv.lock pins rasa-pro 3.21.0.dev5
 Industry:      General
 You learn:     How a Rasa voice agent sends a refill request only after identity, selection and confirmation checks.
+Catalog name:  Clinic refill voice agent built with Rasa
 ```
 
 Rasa Pro Mantle declares the send prerequisites and confirmation in skill configuration. Tools write the protected identity and selected medicine into memory.

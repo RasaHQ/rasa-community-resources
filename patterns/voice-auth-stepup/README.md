@@ -18,6 +18,7 @@ Audience:      Practitioners building voice agents that can do something worth s
 Time:          40–60 minutes
 Industry:      General
 You learn:     How to ask for stronger identity checks at the moment a caller tries a riskier action.
+Catalog name:  Risk-based voice authentication step-up
 ```
 
 Most voice agents authenticate like a bouncer: once, at the door, and then you

@@ -20,6 +20,7 @@ takes an order reference.
 **Verified with:** Standard-library policy checks; SDK steps are locked to Rasa Pro 3.21.0.dev5 and Agno 3.1.2.
 **Industry:** General
 **You learn:** How to add a return check, based on a written policy, to an existing Agno shopping assistant.
+**Catalog name:** Agno shopping assistant with Rasa return checks
 
 ## Check a return against the shop's written policy
 

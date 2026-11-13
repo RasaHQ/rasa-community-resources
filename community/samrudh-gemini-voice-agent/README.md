@@ -19,6 +19,7 @@ Audience:      Practitioners who want a Mantle voice agent without an OpenAI key
 Time:          30–45 minutes
 Industry:      Travel
 You learn:     How to run a Mantle voice agent on Google Gemini with local embeddings and no OpenAI key.
+Catalog name:  Gemini voice travel agent with local embeddings
 ```
 
 The [Atlas voice travel agent](../../examples/mantle-voice-agent) reconfigured

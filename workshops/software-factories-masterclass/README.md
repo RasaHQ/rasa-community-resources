@@ -7,6 +7,7 @@ By the end you will have built a **traveler-facing Mantle agent** that calls pub
 ```text
 Industry:      General
 You learn:     How to build a traveler-facing Mantle agent and use a factory agent that builds another one.
+Catalog name:  Travel agent factory workshop with Codex
 ```
 
 **Join the Rasa Community:** [rasa.community/join](https://rasa.community/join/)

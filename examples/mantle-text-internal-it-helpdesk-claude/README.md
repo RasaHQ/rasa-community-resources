@@ -17,6 +17,7 @@ Audience:      Engineers putting Claude behind a Rasa chat agent that changes em
 Time:          15 minutes to run the agent; about 5 minutes and 0.71 USD for the live conversation suite
 Industry:      IT
 You learn:     How to grant access only with the role owner's approval, never because a request sounds urgent.
+Catalog name:  IT helpdesk access request chat agent (Claude)
 ```
 
 A Rasa Mantle text agent for one casebook case,

@@ -23,6 +23,7 @@ Audience:      Developers building banking voice assistants
 Time:          Not yet measured
 Industry:      Banking
 You learn:     How to connect a voice assistant to banking tools and confirm a transfer before it is sent.
+Catalog name:  Fiserv Premier voice banking demo
 ```
 
 </details>

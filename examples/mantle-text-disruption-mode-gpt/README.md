@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM agent in front of customers during a mas
 Time:          15 minutes to run the agent; about 10 minutes and 2 USD for the live conversation suite
 Industry:      Travel
 You learn:     How to keep a seat search, a seat hold and a confirmed journey apart while a storm cancels flights.
+Catalog name:  Storm disruption seat hold chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

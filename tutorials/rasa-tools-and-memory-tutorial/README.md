@@ -18,6 +18,7 @@ Audience:      Practitioners deciding where a tool or a memory field belongs
 Time:          30–45 minutes
 Industry:      General
 You learn:     How to decide whether a tool or a memory field belongs to one skill or to the whole agent.
+Catalog name:  Where tools and memory belong in a Mantle agent
 ```
 
 A small Meridian Bank agent that exists to answer four questions:

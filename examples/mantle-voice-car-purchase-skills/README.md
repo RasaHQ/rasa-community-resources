@@ -18,6 +18,7 @@ Audience:      Practitioners building voice auto-retail agents with Rasa Skills
 Time:          75–90 minutes
 Industry:      Retail
 You learn:     How a voice car-buying assistant researches cars, reserves one at a dealer and quotes financing.
+Catalog name:  Autono car buying voice agent
 ```
 
 A production-style **voice car-purchase agent** built with the new Rasa **Skills / Mantle** architecture and **Deepgram** for speech-to-text and text-to-speech.

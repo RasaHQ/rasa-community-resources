@@ -17,6 +17,7 @@
     Time:          45–60 minutes
     Industry:      General
     You learn:     How to build a document from checked data, so the model can never write a figure into it.
+    Catalog name:  Documents built from checked data, not model text
 
 **A bank asked for an agent that produces a document, not advice.** The obvious
 build is a conversational PDF generator: let the model write prose into a file.

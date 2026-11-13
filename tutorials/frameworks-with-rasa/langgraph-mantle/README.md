@@ -18,6 +18,7 @@ Mantle tools. The model never chooses the worker run ID or account context.
 **Verified with:** Rasa Pro 3.21.0.dev5 native tool bindings and a real separately locked worker; no model conversation or audio qualification
 **Industry:** General
 **You learn:** How to put a Rasa conversation in front of an existing LangGraph statement workflow.
+**Catalog name:** LangGraph statement workflow with Rasa dialogue
 
 Install only the selected worker and this conversation environment, separately.
 Use `scripts/workspace.py start` from the repository root; keep both lockfiles.

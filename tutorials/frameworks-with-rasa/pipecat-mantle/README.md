@@ -17,6 +17,7 @@ Project validation, licensed training and cold archive loading pass separately;
 see `../pipecat-verification.json` for source and dated evidence hashes.
 **Industry:** General
 **You learn:** How to add Rasa dialogue to an existing Pipecat voice pipeline and keep its speech services.
+**Catalog name:** Pipecat voice pipeline with Rasa dialogue
 
 Juniper Mobile is fictional. This public example asks the caller to choose
 north or central and explains a fixed maintenance observation. It keeps

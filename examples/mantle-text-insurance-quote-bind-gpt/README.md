@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM agent between a quote screen and a bindi
 Time:          15 minutes to run the agent; about 10 minutes and 1.60 USD for the live conversation suite
 Industry:      Insurance
 You learn:     How to keep an estimate, an offer and a bound policy apart, with confirmation before binding.
+Catalog name:  Insurance quote and bind chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

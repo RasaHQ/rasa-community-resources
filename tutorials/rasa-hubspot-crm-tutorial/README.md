@@ -18,6 +18,7 @@ Audience:      Practitioners wiring an agent to a system of record
 Time:          45–60 minutes, plus 20–30 for the MCP chapter
 Industry:      General
 You learn:     How to connect an agent to a CRM over REST and then MCP, and handle timeouts and outages.
+Catalog name:  HubSpot CRM support agent over REST and MCP
 ```
 
 A support agent that looks a customer up in HubSpot, reads their open tickets,

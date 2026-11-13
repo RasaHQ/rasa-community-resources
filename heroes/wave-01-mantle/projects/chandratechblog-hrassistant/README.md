@@ -20,6 +20,7 @@ Audience:      HR teams and Rasa practitioners prototyping conversational HR sup
 Time:          15–20 minutes
 Industry:      General
 You learn:     How an HR assistant explains policies and creates leave requests and tickets after confirmation.
+Catalog name:  HR policy, leave and ticket assistant
 ```
 
 An HR support assistant built on the Rasa Mantle engine. It helps employees

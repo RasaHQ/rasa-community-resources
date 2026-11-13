@@ -17,6 +17,7 @@
     Time:          45–60 minutes
     Industry:      General
     You learn:     How to test an agent with tracker assertions, an LLM judge and a simulated user.
+    Catalog name:  Agent evaluation with simulated users and an LLM judge
 
 Three different questions get asked about an agent, and they need three
 different instruments:

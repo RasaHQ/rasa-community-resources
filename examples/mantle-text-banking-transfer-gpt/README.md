@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM agent in front of money movement
 Time:          15 minutes to run the agent; about 10 minutes and 1.80 USD for the live conversation suite
 Industry:      Banking
 You learn:     How to let the bank's ledger, not the model, decide whether a transfer can go through.
+Catalog name:  Money transfer chat agent with ledger checks (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

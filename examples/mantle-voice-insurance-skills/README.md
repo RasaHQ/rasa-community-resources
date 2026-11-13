@@ -18,6 +18,7 @@ Audience:      Practitioners building voice insurance agents with Rasa Skills
 Time:          75–90 minutes
 Industry:      Insurance
 You learn:     How a voice insurance agent files claims, checks claim status and books inspections.
+Catalog name:  Poly insurance claims voice agent
 ```
 
 A production-style **voice insurance agent** built with Rasa **Skills / Mantle** (`rasa.mantle`) and **Deepgram** for speech-to-text (Flux) and text-to-speech (Aura).

@@ -17,6 +17,7 @@ Audience:      Engineers putting Claude behind a Rasa voice agent that dispatche
 Time:          15 minutes to run the agent; about 25 minutes and 2.40 USD for the live call suite
 Industry:      Insurance
 You learn:     How to send roadside help to where the car is now, as the caller confirmed, not to the policy address.
+Catalog name:  Roadside assistance dispatch voice agent (Claude)
 ```
 
 A Rasa Mantle voice agent for one casebook case,

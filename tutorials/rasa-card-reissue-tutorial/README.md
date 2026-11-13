@@ -18,6 +18,7 @@ Audience:      Practitioners whose agent can do something that cannot be undone
 Time:          45–60 minutes
 Industry:      General
 You learn:     How to guard an action that cannot be undone, such as posting a card to a new address.
+Catalog name:  Guarding card reissue to a new address
 ```
 
 Ask a scaffolded banking agent to send a replacement card somewhere, and it

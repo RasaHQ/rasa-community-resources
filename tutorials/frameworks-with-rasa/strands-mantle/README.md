@@ -19,6 +19,7 @@ refuses generation; Mantle still uses its configured conversational model.
 **Verified with:** Rasa Pro 3.21.0.dev5, strands-agents 1.57.1; 18 distinct native controls; native tool dispatch, wrapper context and decorated Mantle bindings
 **Industry:** General
 **You learn:** How to give existing Strands tools a Rasa conversation that asks for missing details.
+**Catalog name:** Strands tools with a Rasa conversation
 
 ## Run the example
 

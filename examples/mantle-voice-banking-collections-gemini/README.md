@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM voice agent in front of past-due custome
 Time:          15 minutes to run the agent; about 30 minutes and 1.60 USD for the live call suite
 Industry:      Banking
 You learn:     How a Spanish voice agent records only permitted repayment plans and passes hardship cases to a team.
+Catalog name:  Spanish debt collections voice agent (Gemini)
 ```
 
 A Rasa Mantle voice agent for one casebook case,

@@ -15,6 +15,7 @@ Here you run it in scripted mode, which needs no OpenAI key. A live coding build
 ```text
 Industry:      General
 You learn:     How a Mantle agent sends a change request to a software factory whose locked tests accept or reject it.
+Catalog name:  Software factory agent with locked tests
 ```
 
 ## What you need

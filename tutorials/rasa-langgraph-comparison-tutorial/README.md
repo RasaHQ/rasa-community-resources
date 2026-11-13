@@ -18,6 +18,7 @@ Audience:      Anyone comparing agent frameworks, or porting a CALM v1 agent
 Time:          60–90 minutes
 Industry:      General
 You learn:     How LangGraph's customer-support bot looks when it is rebuilt as Rasa Mantle skills.
+Catalog name:  LangGraph support bot rebuilt in Rasa
 ```
 
 The Swiss Airlines travel assistant from

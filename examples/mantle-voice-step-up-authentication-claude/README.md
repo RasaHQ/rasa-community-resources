@@ -17,6 +17,7 @@ Audience:      Engineers putting Claude behind a Rasa voice agent that changes s
 Time:          15 minutes to run the agent; about 25 minutes and 2.55 USD for the live call suite
 Industry:      IT
 You learn:     How to change someone's access only after a fresh approval on their own registered phone.
+Catalog name:  IT account unlock voice agent with phone approval (Claude)
 ```
 
 A Rasa Mantle voice agent for one casebook case,

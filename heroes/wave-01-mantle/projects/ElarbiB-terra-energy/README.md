@@ -8,6 +8,7 @@ Audience: Developers building a voice + text Rasa Mantle assistant with a FastAP
 Time: 15 min
 Industry: Utilities
 You learn: How a voice and text assistant with a FastAPI backend assesses a site's solar and wind potential.
+Catalog name: Solar and wind site assessment assistant
 ---
 
 # Terra — TerraEnergy

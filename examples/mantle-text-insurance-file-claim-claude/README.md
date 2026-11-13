@@ -17,6 +17,7 @@ Audience:      Engineers putting Claude behind a Rasa chat agent that files some
 Time:          15 minutes to run the agent; about 8 minutes and 1.60 USD for the live conversation suite
 Industry:      Insurance
 You learn:     How to file a claim only when the claims system confirms it, and let the tool send the reference.
+Catalog name:  Insurance claim filing chat agent (Claude)
 ```
 
 A Rasa Mantle text agent for one casebook case,

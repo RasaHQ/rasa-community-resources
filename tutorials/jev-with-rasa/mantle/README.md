@@ -21,6 +21,7 @@ The initial offline run passed 22 controls; the cold-archive control needs
 licensed training first. Jev responses were scripted through the actual SDK.
 **Industry:** General
 **You learn:** How to let a local model propose an account and have Rasa ask the user to confirm it.
+**Catalog name:** Local model account selector with confirmation
 
 Run `make install`, `make demo` and `make test` here. `make worker` serves scripted
 SDK responses; `make worker-local` uses the separately running pinned Laya model; `make worker-live` requires `TYPESAFE_API_KEY` and sends paid Jev

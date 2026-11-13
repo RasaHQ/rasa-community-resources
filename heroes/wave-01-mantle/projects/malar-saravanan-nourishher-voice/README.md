@@ -19,6 +19,7 @@ This cohort snapshot installs its own locked Rasa version; it does not track cat
     Time:          60–90 minutes to install, train, and inspect
     Industry:      Healthcare
     You learn:     How a voice nutrition companion plans meals, logs food and hands red-flag symptoms to a human.
+    Catalog name:  NourishHer nutrition coaching voice agent
 
 > **Frozen wave-01-mantle snapshot.** Pinned to `rasa-pro 3.20.0.dev6` and not
 > migrated forward — see [`docs/SNAPSHOTS.md`](../../../../docs/SNAPSHOTS.md).

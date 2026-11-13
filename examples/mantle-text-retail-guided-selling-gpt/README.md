@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM agent in front of a product catalogue
 Time:          15 minutes to run the agent; about 10 minutes and 1 USD for the live conversation suite
 Industry:      Retail
 You learn:     How to recommend an accessory only when the product data shows that it fits.
+Catalog name:  Accessory compatibility shopping chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

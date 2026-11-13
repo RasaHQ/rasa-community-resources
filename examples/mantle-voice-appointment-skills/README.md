@@ -18,6 +18,7 @@ Audience:      Practitioners building voice appointment agents with Rasa Skills
 Time:          60–75 minutes
 Industry:      Healthcare
 You learn:     How a voice assistant books clinic appointments, manages contacts and hands off to the clinic team.
+Catalog name:  Schedora clinic appointment voice agent
 ```
 
 A production-style **voice appointment-booking agent** for a medical clinic, built with the new Rasa **Skills / Mantle** architecture and **Deepgram** for speech-to-text and text-to-speech.

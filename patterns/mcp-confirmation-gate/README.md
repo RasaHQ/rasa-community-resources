@@ -17,6 +17,7 @@ Audience:      Engineers connecting MCP tools to a Rasa agent
 Time:          About 30 minutes for the local exercise, excluding installation
 Industry:      General
 You learn:     How to check that a tool which needs confirmation does not run until the user agrees.
+Catalog name:  MCP tool confirmation test
 ```
 
 Use this pattern to check what your agent does when a model requests a tool

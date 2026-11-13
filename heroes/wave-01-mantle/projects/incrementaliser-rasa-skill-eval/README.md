@@ -20,6 +20,7 @@ Audience:      People scoring Rasa Mantle skills and measuring live TSR
 Time:          30 minutes to install and read the filled report; hours to hours for a full eval
 Industry:      General
 You learn:     How to score Mantle skills with NVIDIA SkillEvaluator after converting them to Agent Skills packages.
+Catalog name:  Mantle skill scoring with NVIDIA SkillEvaluator
 ```
 
 Score Mantle example skills with [NVIDIA SkillEvaluator](https://docs.nvidia.com/skills/skillevaluator/quickstart) **after converting them to Agent Skills packages**, improve those copies with Matt Pocock’s `writing-for-agents` (plus unslop), then measure **weighted task success rate** and tokens/task on live Rasano and personalization agents across actor models listed in `config.yaml`.

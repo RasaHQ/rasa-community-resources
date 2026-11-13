@@ -17,6 +17,7 @@ Audience:      AI teams rehearsing evidence, authorization and recovery boundari
 Time:          20–40 minutes per case; optional model integration takes longer
 Industry:      General
 You learn:     How to spot where a proposed action, its authorization and its service receipt disagree, offline.
+Catalog name:  Casebook lab for agent authorization checks
 
 This project accompanies 62 fictional scenarios, each with six role exercises.
 It is a shared **synthetic evidence lab**. It does not implement a bank, clinic,

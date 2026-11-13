@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM agent in front of loan servicing, and an
 Time:          15 minutes to run the agent; about 6 minutes and 1.20 USD for the live conversation suite
 Industry:      Banking
 You learn:     How to quote a loan payoff only from a dated quote, never from yesterday's balance.
+Catalog name:  Loan payoff quote chat agent (Claude)
 ```
 
 A Rasa Mantle text agent for one casebook case,

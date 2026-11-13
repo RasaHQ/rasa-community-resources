@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM agent in front of account history
 Time:          15 minutes to run the agent; about 6 minutes and 1.05 USD for the live conversation suite
 Industry:      Banking
 You learn:     How to search transactions so each answer states its dates, its statuses and whether it is complete.
+Catalog name:  Transaction history search chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

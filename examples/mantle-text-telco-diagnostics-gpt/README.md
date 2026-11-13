@@ -17,6 +17,7 @@ Audience:      Engineers letting an LLM agent send commands to customer devices
 Time:          15 minutes to run the agent; about 7 minutes and 1.20 USD for the live conversation suite
 Industry:      Telco
 You learn:     How to keep diagnostics, a reboot and a factory reset apart, so an outage never triggers a reset.
+Catalog name:  Router diagnostics and outage chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

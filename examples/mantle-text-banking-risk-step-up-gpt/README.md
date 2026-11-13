@@ -17,6 +17,7 @@ Audience:      Engineers putting an LLM agent in front of payments or any action
 Time:          15 minutes to run the agent; about 15 minutes and 2 USD for the live conversation suite
 Industry:      Banking
 You learn:     How to require a fresh verification for each transfer, not just a sign-in.
+Catalog name:  Transfer step-up verification chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

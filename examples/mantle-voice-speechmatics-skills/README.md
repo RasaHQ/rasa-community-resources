@@ -18,6 +18,7 @@ Audience:      Practitioners whose ASR provider is not one Rasa ships
 Time:          45–60 minutes
 Industry:      Banking
 You learn:     How to write a custom speech-to-text (ASR) engine for a provider that Rasa does not ship.
+Catalog name:  Custom Speechmatics speech-to-text engine
 ```
 
 The same banking agent as [`mantle-voice-rime-skills`](../mantle-voice-rime-skills),

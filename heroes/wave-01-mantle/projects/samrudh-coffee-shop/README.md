@@ -18,6 +18,7 @@ Assessed by:   Samrudha Kelkar
 Verified with: rasa-pro 3.20.0.dev6, Python 3.12, uv
 Industry:      Retail
 You learn:     How a coffee shop assistant serves customers, baristas and managers with separate skills and roles.
+Catalog name:  Coffee shop ordering and loyalty assistant
 ```
 
 > **Overview for Rasa Practitioners & Architects:**  

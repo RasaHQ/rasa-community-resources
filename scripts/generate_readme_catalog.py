@@ -2,14 +2,18 @@
 """Generate the resource catalog in the root README from each resource's own README.
 
 Every resource with an Open in GitHub Codespaces button (the same list scripts/generate_codespaces.py builds) gets one
-row. Its title is the README's top heading; its industry and one-line summary come from two lines in the README's
-metadata block:
+row. Its name, industry and one-line summary come from lines in the README's metadata block:
 
     Industry:      Banking
     You learn:     How to ...
+    Catalog name:  Bank advisor booking voice agent (Claude)
+    Status:        work in progress      (optional; the only accepted value)
 
-`--check` fails if a resource lacks those lines, names an unknown industry, points at a missing folder, or if the
-README section differs from a fresh generation. It is part of `make validate`.
+Work-in-progress resources are listed in their own section at the end, not in the industry tables.
+
+`--check` fails if a resource lacks those lines, names an unknown industry or status, has a catalog name that breaks
+a naming rule, points at a missing folder, or if the README section differs from a fresh generation. It is part of
+`make validate`.
 
 Usage:
     python3 scripts/generate_readme_catalog.py            # rewrite the catalog section of README.md
@@ -22,6 +26,7 @@ import argparse
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 _SCRIPTS = Path(__file__).resolve().parent
@@ -67,10 +72,22 @@ CASE_BUILD_INDUSTRY = {
     "Internal services": "IT",
 }
 MAX_LEARN = 120
+WIP = "work in progress"
 BANK_KEYS_NOTE = ("The bank integrations need a Rasa license, an OpenAI key and a Deepgram key. "
                   "[rasa.community/keys](https://rasa.community/keys/) shows how to get each one.")
 
-FIELD_RE = re.compile(r"^\s*(?:\*\*)?(Industry|You learn):(?:\*\*)?\s*(.*?)\s*$")
+# Catalog name rules. The shorthand terms are the rasa.community title checker's confusingTitleTerms.
+MAX_NAME = 60
+CONFUSING_TERMS = ("account boundary", "memory owner", "response owner")
+GENERIC_OPENINGS = ("a guide to", "guide to", "best practices", "introduction to", "an introduction to")
+LISTICLE_RE = re.compile(r"^\d+\s")
+MIN_NAME_WORDS = 3
+# At most this many names in one industry table may start with the same two words.
+MAX_SHARED_OPENING = 2
+
+# Either `Key: value` or `**Key:** value`; a bold sentence such as "**Status: all runs passed**" is prose.
+_KEYS = r"(Industry|You learn|Catalog name|Status)"
+FIELD_RE = re.compile(rf"^\s*(?:\*\*{_KEYS}:\*\*|{_KEYS}:)\s*(.*?)\s*$")
 META_KEY_RE = re.compile(r"^\s*(?:\*\*)?(Author|Assessed on|Assessed by|Verified with):")
 HEAD_LINES = 80
 
@@ -94,6 +111,29 @@ def kind_of(path: str) -> str:
             "starter-pack": "starter", "heroes": "heroes"}.get(top, "example")
 
 
+def check_catalog_name(name: str, others: list[str] | tuple[str, ...] = ()) -> list[str]:
+    """Every naming rule the name breaks, in plain words. `others` are the names already taken."""
+    problems = []
+    lowered = name.casefold()
+    if len(name) > MAX_NAME:
+        problems.append(f"is {len(name)} characters; keep it to {MAX_NAME} or fewer")
+    for term in CONFUSING_TERMS:
+        if term in lowered:
+            problems.append(f"uses the shorthand {term!r}; say plainly what the resource is")
+    for opening in GENERIC_OPENINGS:
+        if lowered.startswith(opening):
+            problems.append(f"starts with the generic opening {opening!r}; start with what it is")
+    if LISTICLE_RE.match(name):
+        problems.append("starts with a number like a listicle; start with what it is")
+    if len(name.split()) < MIN_NAME_WORDS:
+        problems.append(f"has fewer than {MIN_NAME_WORDS} words; a topic label alone does not say what it is")
+    if name and not name[-1].isalnum() and name[-1] != ")":
+        problems.append("ends with punctuation; remove it")
+    if lowered in (other.casefold() for other in others):
+        problems.append("is already used by another resource; make it unique")
+    return problems
+
+
 def _outside_codespaces(lines: list[str]):
     """(1-based line number, line) for each line that is not inside the generated Codespaces block."""
     inside = False
@@ -106,38 +146,13 @@ def _outside_codespaces(lines: list[str]):
             inside = False
 
 
-def title(text: str) -> str:
-    """The README's top-level heading, as plain text."""
-    fenced = False
-    lines = text.splitlines()
-    start = 0
-    if lines and lines[0].strip() == "---":  # YAML front matter
-        for index in range(1, len(lines)):
-            if lines[index].strip() == "---":
-                start = index + 1
-                break
-    for line in lines[start:]:
-        if line.startswith("```"):
-            fenced = not fenced
-        if not fenced and line.startswith("# "):
-            return plain(line[2:])
-    raise CatalogError("README has no top-level heading")
-
-
-def plain(text: str) -> str:
-    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
-    text = text.replace("`", "").replace("**", "").replace("__", "")
-    return " ".join(text.split())
-
-
 def metadata_end(lines: list[str]) -> int | None:
     """Line number of the last line of the Author / Assessed on / Verified with block (where new keys go)."""
     for number, line in _outside_codespaces(lines[:HEAD_LINES]):
         if META_KEY_RE.match(line):
             end = number
             while end < len(lines):
-                following = lines[end]
-                stripped = following.strip()
+                stripped = lines[end].strip()
                 if not stripped or stripped.startswith(("```", "---", "</details>")):
                     break
                 end += 1
@@ -146,12 +161,14 @@ def metadata_end(lines: list[str]) -> int | None:
 
 
 def read_fields(text: str) -> dict[str, tuple[str, int]]:
-    """{"Industry" | "You learn": (value, line number)} from the README's opening lines."""
+    """{field: (value, line number)} for Industry, You learn, Catalog name and Status in the opening lines."""
     found: dict[str, tuple[str, int]] = {}
     for number, line in _outside_codespaces(text.splitlines()[:HEAD_LINES]):
         match = FIELD_RE.match(line)
-        if match and match.group(1) not in found:
-            found[match.group(1)] = (match.group(2), number)
+        if match:
+            key = match.group(1) or match.group(2)
+            if key not in found:
+                found[key] = (match.group(3), number)
     return found
 
 
@@ -163,6 +180,10 @@ def case_build_industries(root: Path) -> dict[str, str]:
     return {b["path"]: CASE_BUILD_INDUSTRY[b["industry"]] for b in builds if b.get("industry") in CASE_BUILD_INDUSTRY}
 
 
+def _opening(name: str) -> str:
+    return " ".join(name.casefold().split()[:2])
+
+
 def collect(root: Path = REPO_ROOT, targets: list[dict] | None = None) -> tuple[list[dict], list[str]]:
     """One row per resource, and every problem found, each naming the file to fix."""
     targets = launch_matrix() if targets is None else targets
@@ -170,6 +191,7 @@ def collect(root: Path = REPO_ROOT, targets: list[dict] | None = None) -> tuple[
     rows: list[dict] = []
     errors: list[str] = []
     seen: set[str] = set()
+    names: dict[str, str] = {}
     for target in targets:
         path = target["path"]
         if path in seen:
@@ -185,20 +207,24 @@ def collect(root: Path = REPO_ROOT, targets: list[dict] | None = None) -> tuple[
             errors.append(f"{path}/README.md: missing")
             continue
         text = readme.read_text(encoding="utf-8")
-        lines = text.splitlines()
         fields = read_fields(text)
         rel = f"{path}/README.md"
-        after = metadata_end(lines)
+        after = metadata_end(text.splitlines())
         where = f"after line {after} (the end of the Author / Assessed on / Verified with block)" if after else \
             "in a metadata block near the top"
-        if "Industry" not in fields:
-            errors.append(f"{rel}: add 'Industry: <{' | '.join(INDUSTRIES)}>' {where}")
-        if "You learn" not in fields:
-            errors.append(f"{rel}: add 'You learn: <one plain sentence>' {where}")
-        if "Industry" not in fields or "You learn" not in fields:
+        wanted = {
+            "Industry": f"<{' | '.join(INDUSTRIES)}>",
+            "You learn": "<one plain sentence>",
+            "Catalog name": f"<a short name, at most {MAX_NAME} characters>",
+        }
+        missing = [key for key in wanted if key not in fields]
+        for key in missing:
+            errors.append(f"{rel}: add '{key}: {wanted[key]}' {where}")
+        if missing:
             continue
         industry, industry_line = fields["Industry"]
         learn, learn_line = fields["You learn"]
+        name, name_line = fields["Catalog name"]
         if industry not in INDUSTRIES:
             errors.append(f"{rel}:{industry_line}: Industry {industry!r} is not one of {', '.join(INDUSTRIES)}")
             continue
@@ -209,19 +235,33 @@ def collect(root: Path = REPO_ROOT, targets: list[dict] | None = None) -> tuple[
             errors.append(f"{rel}:{learn_line}: 'You learn' is empty")
         elif len(learn) > MAX_LEARN:
             errors.append(f"{rel}:{learn_line}: 'You learn' is {len(learn)} characters; keep it under {MAX_LEARN}")
-        try:
-            heading = title(text)
-        except CatalogError as error:
-            errors.append(f"{rel}: {error}")
-            continue
+        for problem in check_catalog_name(name, list(names.values())):
+            errors.append(f"{rel}:{name_line}: Catalog name {name!r} {problem}")
+        names[path] = name
+        wip = False
+        if "Status" in fields:
+            status, status_line = fields["Status"]
+            if status != WIP:
+                errors.append(f"{rel}:{status_line}: Status {status!r} is not accepted; "
+                              f"use 'Status: {WIP}' or remove the line")
+            wip = status == WIP
         rows.append({
             "path": path,
             "url": launch_url(target),
-            "title": heading,
+            "name": name,
             "kind": kind_of(path),
             "industry": industry,
             "learn": learn,
+            "wip": wip,
         })
+    for industry in INDUSTRIES:
+        openings = Counter(_opening(r["name"]) for r in rows if r["industry"] == industry and not r["wip"])
+        for opening, n in sorted(openings.items()):
+            if n > MAX_SHARED_OPENING:
+                paths = ", ".join(r["path"] for r in rows if r["industry"] == industry and not r["wip"]
+                                  and _opening(r["name"]) == opening)
+                errors.append(f"{n} catalog names in the {industry} table start with {opening!r} "
+                              f"(at most {MAX_SHARED_OPENING}); vary them in: {paths}")
     return rows, errors
 
 
@@ -230,44 +270,50 @@ def _cell(text: str) -> str:
 
 
 def _order(row: dict) -> tuple:
-    return KIND_ORDER[row["kind"]], row["title"].casefold(), row["path"]
+    return KIND_ORDER[row["kind"]], row["name"].casefold(), row["path"]
 
 
-def render(rows: list[dict]) -> str:
+def _table(rows: list[dict]) -> list[str]:
+    out = ["| Resource | Kind | What you learn | Open |", "| --- | --- | --- | --- |"]
+    for row in sorted(rows, key=_order):
+        out.append(f"| [{_cell(row['name'])}]({row['path']}/) | {KIND_LABEL[row['kind']]} | "
+                   f"{_cell(row['learn'])} | [Open]({row['url']}) |")
+    return out
+
+
+def render(all_rows: list[dict]) -> str:
     def count(n: int, key: str) -> str:
         _, label, plural = next(k for k in KINDS if k[0] == key)
         return f"{n} {label.lower() if n == 1 else plural}"
 
+    rows = [r for r in all_rows if not r["wip"]]
+    wip = [r for r in all_rows if r["wip"]]
     kinds = [key for key, _, _ in KINDS if any(r["kind"] == key for r in rows)]
     industries = [name for name in INDUSTRIES if any(r["industry"] == name for r in rows)]
-    out = [
-        START,
-        NOTICE,
-        "",
-        "## Find a resource by industry",
-        "",
-        f"There are {len(rows)} resources: "
-        + ", ".join(count(sum(r["kind"] == key for r in rows), key) for key in kinds) + ". "
-        "Each **Open** link starts that resource's own Codespace; it is the same link as the button in its README. "
-        "**General** resources teach a technique that works in any industry.",
-        "",
-    ]
+    intro = (f"There are {len(rows)} resources: "
+             + ", ".join(count(sum(r["kind"] == key for r in rows), key) for key in kinds) + ". ")
+    if wip:
+        intro += f"{len(wip)} more {'is' if len(wip) == 1 else 'are'} still a work in progress, listed at the end. "
+    intro += ("Each **Open** link starts that resource's own Codespace; it is the same link as the button in its "
+              "README. **General** resources teach a technique that works in any industry.")
+    out = [START, NOTICE, "", "## Find a resource by industry", "", intro, ""]
     for industry in industries:
-        selected = sorted((r for r in rows if r["industry"] == industry), key=_order)
+        selected = [r for r in rows if r["industry"] == industry]
         out += [f"### {industry}", ""]
         if industry == "Banking" and any(r["kind"] == "bank" for r in selected):
             out += [BANK_KEYS_NOTE, ""]
-        out += ["| Resource | Kind | What you learn | Open |", "| --- | --- | --- | --- |"]
-        for row in selected:
-            out.append(f"| [{_cell(row['title'])}]({row['path']}/) | {KIND_LABEL[row['kind']]} | "
-                       f"{_cell(row['learn'])} | [Open]({row['url']}) |")
-        out.append("")
+        out += _table(selected) + [""]
     out += ["## Find a resource by kind", ""]
     for key in kinds:
         selected = sorted((r for r in rows if r["kind"] == key), key=_order)
-        links = " · ".join(f"[{r['title']}]({r['path']}/)" for r in selected)
+        links = " · ".join(f"[{r['name']}]({r['path']}/)" for r in selected)
         out.append(f"- **{KIND_LABEL[key]}** ({len(selected)}): {links}")
-    out += ["", END]
+    out.append("")
+    if wip:
+        out += ["## Work in progress", "",
+                "These resources are not finished yet. Their READMEs say what still needs checking.", ""]
+        out += _table(wip) + [""]
+    out.append(END)
     return "\n".join(out)
 
 

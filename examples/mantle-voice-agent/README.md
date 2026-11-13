@@ -18,6 +18,7 @@ Audience:      Practitioners building voice agents with Rasa Skills
 Time:          60–90 minutes
 Industry:      Travel
 You learn:     How to run a voice travel assistant built with Rasa skills and Deepgram speech-to-text and text-to-speech.
+Catalog name:  Atlas travel assistant voice agent
 ```
 
 Flagship companion repository for the tutorial

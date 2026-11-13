@@ -18,6 +18,7 @@ Audience:      Practitioners running voice agents who cannot afford one vendor t
 Time:          30–45 minutes
 Industry:      General
 You learn:     How to switch to another speech vendor when one fails, so a voice call keeps going.
+Catalog name:  Voice vendor router for speech failover
 ```
 
 Rasa picks **one** ASR and **one** TTS engine per call. If that vendor fails,
