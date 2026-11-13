@@ -85,6 +85,22 @@ class HostOnlyWording(unittest.IsolatedAsyncioTestCase):
         source = (__import__("pathlib").Path(__file__).resolve().parents[1] / "hooks.py").read_text()
         self.assertIn("remember_offered_tools(payload)", source)
 
+    async def test_a_written_review_becomes_the_review_call_only_for_the_amount_asked(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
+        text = ("Review: transfer USD 7.00 from DDA-A to SDA-A. To submit exactly this transfer, "
+                "say confirm transfer next. Anything else cancels this review.")
+        self.native.turn = SimpleNamespace(text="Move 7 dollars from DDA-A to SDA-A.")
+        reply = await policy.keep_host_reply_once(self.payload(text))
+        self.assertIsNone(reply.text)
+        self.assertEqual([(c["tool_name"], c["tool_args"]) for c in reply.tool_calls],
+                         [("banking_review_transfer", {"source": "DDA-A", "destination": "SDA-A",
+                                                       "amount": "7.00", "currency": "USD"})])
+        for raw in ("Confirm transfer.", "Move 9 dollars from DDA-A to SDA-A.", "What happened?"):
+            with self.subTest(raw=raw):
+                policy._retries.clear(); self.native.turn = SimpleNamespace(text=raw)
+                with self.assertRaises(RetryModel):  # never from a confirmation or another amount
+                    await policy.keep_host_reply_once(self.payload(text))
+
 
 if __name__ == "__main__":
     unittest.main()
