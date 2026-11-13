@@ -9,6 +9,7 @@ from dataclasses import dataclass, field, replace
 from decimal import Decimal
 import asyncio
 import math
+import re
 import secrets
 import threading
 import time
@@ -23,6 +24,31 @@ def norm(text):
     return ' '.join(text.strip().casefold().rstrip('.!?').split())
 
 
+# An account name with a suffix, such as checking-B or "checking B": the caller is
+# asking about an account other than their own bare-named one. The model must never
+# quietly answer it from the caller's own account of the same kind. Only explicit
+# forms count, so ordinary speech is never refused: a hyphen with a short suffix
+# (checking-B, loan-2; not checking-account or car-free), or a space and one capital
+# letter other than A and I (checking B; not "the car I bought" or "savings 5 dollars").
+_KINDS = r'(?i:checking|savings|share|loan|car)'
+_SUFFIXED = re.compile(r'\b' + _KINDS + r'-([A-Za-z0-9]{1,3})\b')
+_SPACED = re.compile(r'\b' + _KINDS + r'\s+([B-HJ-Z])\b')
+
+
+def foreign_aliases(text, permitted):
+    """Suffixed account names in the caller's raw words that are not theirs."""
+    named = set()
+    for pattern in (_SUFFIXED, _SPACED):
+        for match in pattern.finditer(text):
+            kind = match.group(0)[:match.start(1) - match.start(0)].rstrip(' -\t').casefold()
+            named.add(f'{kind}-{match.group(1).casefold()}')
+    return tuple(sorted(named - {alias.casefold() for alias in permitted}))
+
+
+_ACCOUNT_TOOLS = frozenset({'banking_balance', 'banking_history', 'banking_loan_payment',
+                            'banking_payoff', 'banking_review_transfer'})
+
+
 @dataclass
 class Binding:
     session: Session
@@ -32,6 +58,7 @@ class Binding:
     last_seen: float = 0
     last_result: dict = field(default_factory=dict)
     current_transfer_state: str | None = None
+    foreign: tuple = ()  # suffixed account names in the latest raw turn that are not the caller's
 
 
 class ConversationHost:
@@ -108,6 +135,7 @@ class Gateway:
                     return dict(binding.last_result) if data['number']==binding.turn else {'state':'observed'}
                 binding.turn = data['number']
                 binding.last_seen = self.clock()
+                binding.foreign = foreign_aliases(data['text'], self.shares.keys() | self.loans.keys())
                 result = self._turn(binding,data)
                 binding.last_result = dict(result)
                 return result
@@ -200,6 +228,14 @@ class Gateway:
         # host enforces account scope and freshness independently every time.
         with self._lock:
             binding = self._binding(credential)
+            if name in _ACCOUNT_TOOLS:
+                named = [args[key] for key in ('account', 'loan', 'source', 'destination') if key in args]
+                if binding.foreign or any(not isinstance(alias, str) or alias not in self.shares and alias not in self.loans
+                                          for alias in named):
+                    # The caller named an account that is not theirs (or the model passed
+                    # one): refuse, never answer from one of their own accounts. Nothing
+                    # is read or sent; the adapter speaks the host's words.
+                    return {'state': 'refused', 'reason': 'account_not_available'}
             if name == 'banking_transfer_status':
                 binding.policy.require_read(binding.session,'checking')
                 latest=self.journal.latest(self.principal)
