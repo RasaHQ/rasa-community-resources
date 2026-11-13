@@ -95,11 +95,24 @@ class HostOnlyWording(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([(c["tool_name"], c["tool_args"]) for c in reply.tool_calls],
                          [("banking_review_transfer", {"source": "DDA-A", "destination": "SDA-A",
                                                        "amount": "7.00", "currency": "USD"})])
-        for raw in ("Confirm transfer.", "Move 9 dollars from DDA-A to SDA-A.", "What happened?"):
+        # A confirmation never becomes a review: the confirmation test covers it (submit path).
+        for raw in ("Move 9 dollars from DDA-A to SDA-A.", "What happened?"):
             with self.subTest(raw=raw):
                 policy._retries.clear(); self.native.turn = SimpleNamespace(text=raw)
-                with self.assertRaises(RetryModel):  # never from a confirmation or another amount
+                with self.assertRaises(RetryModel):  # never for another amount
                     await policy.keep_host_reply_once(self.payload(text))
+
+    async def test_a_confirmation_is_always_answered_by_the_host_submit_path(self):
+        # rasa-bench 126 on 217: after No then Yes the model said "Please say confirm
+        # transfer". The host now answers every confirmation.
+        for raw, text in (("Confirm transfer.", "Please say confirm transfer to proceed."),
+                          ("Yes.", "Please say confirm transfer."),
+                          ("confirm transfer", "Great, your transfer is on its way.")):
+            with self.subTest(raw=raw):
+                self.native.turn = SimpleNamespace(text=raw)
+                reply = await policy.keep_host_reply_once(self.payload(text))
+                self.assertIsNone(reply.text)
+                self.assertEqual([c["tool_name"] for c in reply.tool_calls], ["banking_submit_transfer"])
 
 
 if __name__ == "__main__":

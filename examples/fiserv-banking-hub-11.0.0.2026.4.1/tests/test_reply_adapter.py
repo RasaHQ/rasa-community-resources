@@ -104,6 +104,35 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("Request a new transfer",self.messages[-1])
         self.assertEqual(self.host.sends,1)
 
+    async def test_an_unknown_outcome_held_across_a_restart_is_never_retried(self):
+        self.host.sends,self.host.state=1,"unknown"
+        self.assertIsNone(self.conversation.last_submit_state)
+        for text,tool in (("Confirm transfer.",adapter.banking_submit_transfer),("Yes.",adapter.banking_transfer_status)):
+            with self.subTest(text=text):
+                self.turn(text);policy._delivered.clear();policy._sent.clear()
+                result=await tool(context=self.context)
+                self.assertEqual(result.llm_response["state"],"unknown")
+                self.assertIn("Do not retry",self.messages[-1])
+                self.assertNotIn("Request a new transfer",self.messages[-1])
+        self.assertEqual(self.host.sends,1)
+
+    async def test_a_status_that_was_never_learned_is_never_cleared_after_a_restart(self):
+        # A failed (MCP isError), stateless or unrecognized status probe is not a
+        # resolved outcome: no new-transfer advice and no send, on both routes.
+        for label,reply in (("mcp_error",SimpleNamespace(isError=True,structuredContent=None,content=[])),
+                            ("no_state",SimpleNamespace(isError=False,structuredContent={})),
+                            ("unrecognized",SimpleNamespace(isError=False,structuredContent={"state":"queued"}))):
+            for text,tool in (("Confirm transfer.",adapter.banking_submit_transfer),("Yes.",adapter.banking_transfer_status)):
+                with self.subTest(label=label,text=text):
+                    self.host.status_reply=reply
+                    self.assertIsNone(self.conversation.last_submit_state)
+                    self.turn(text);policy._delivered.clear();policy._sent.clear()
+                    result=await tool(context=self.context)
+                    self.assertEqual(result.llm_response["state"],"unknown")
+                    self.assertIn("Do not retry",self.messages[-1])
+                    self.assertNotIn("Request a new transfer",self.messages[-1])
+        self.assertEqual(self.host.sends,0)
+
     async def test_unknown_outcome_never_invites_a_new_transfer(self):
         await self.review();self.host.state="unknown";self.turn("confirm transfer")
         await adapter.banking_submit_transfer(context=self.context)
@@ -178,7 +207,9 @@ class Host:
         if name=="banking_review_transfer":
             self.reviews+=1
             data=dict(state="pending",review="private-review",source="DDA-A",destination="SDA-A",amount="5.00",currency="USD")
-        elif name=="banking_transfer_status":data=dict(state=self.state if self.sends else "none")
+        elif name=="banking_transfer_status":
+            if getattr(self,"status_reply",None) is not None:return self.status_reply
+            data=dict(state=self.state if self.sends else "none")
         else:data=dict(state="available",amount="1250.00",currency="USD")
         return SimpleNamespace(isError=False,structuredContent=data)
     def arm(self,*args):pass

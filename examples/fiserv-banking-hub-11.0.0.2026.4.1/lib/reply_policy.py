@@ -116,6 +116,14 @@ def _review_call(native, text):
                           "amount": match.group(1), "currency": "USD"}, "type": "function"}
 
 
+def _submit_call():
+    """A confirmation is answered by the host's submit path, whatever the model wrote:
+    it sends only for an armed review and the exact raw phrase, and otherwise speaks
+    the cancelled or unknown sentence itself."""
+    return {"id": "host-confirm-" + uuid4().hex, "tool_name": "banking_submit_transfer",
+            "tool_args": {}, "type": "function"}
+
+
 def _retry_allowed(native, sender):
     turn, count = _retries.get(sender, (None, 0))
     if turn is not native.turn:
@@ -194,6 +202,10 @@ async def keep_host_reply_once(payload: ModelResponsePayload) -> ModelResponsePa
         # delivery this turn, model text that imitates one is replaced, so a
         # caller never hears a review or "accepted" for a transfer that was
         # never reviewed or sent.
+        raw = " ".join((getattr(getattr(native, "turn", None), "text", "") or "").casefold().rstrip(".!?").split())
+        names = {call.get("tool_name") for call in payload.tool_calls}
+        if raw in _CONFIRMATIONS and not names & {"banking_submit_transfer", "banking_transfer_status"}:
+            return payload.model_copy(update={"text": None, "tool_calls": [_submit_call()]})
         if payload.text and HOST_ONLY.search(payload.text):
             call = None if payload.tool_calls else _review_call(native, payload.text)
             if call is not None:  # the review it wrote, made by the host instead
