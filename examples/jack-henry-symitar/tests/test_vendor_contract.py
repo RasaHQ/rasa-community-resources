@@ -239,6 +239,18 @@ class ContractTests(unittest.TestCase):
             status = self._resolve(document, self._reply_root(document, "postTransfer")["properties"]["status"])
             status["enum"] = list(status["enum"]) + ["pending-review"]
 
+        def widened_description_field(document):
+            # A reply field named "description" is a field, not an annotation. It is
+            # already nullable in the pinned files, so widen it: any type is allowed.
+            rows = self._resolve(document, self._reply_root(document, "searchAccountTransactions")["properties"]["transactions"])
+            row = self._resolve(document, rows["items"])
+            field = self._resolve(document, row["properties"]["description"])
+            self.assertTrue(field.get("nullable"))
+            del field["type"]
+
+        def new_reply_field_named_summary(document):
+            self._reply_root(document, "postTransfer")["properties"]["summary"] = {"type": "string", "nullable": True}
+
         def new_reply_field(document):
             paging = self._resolve(document, self._reply_root(document, "searchAccountTransactions")["properties"]["paging"])
             paging["properties"]["previousOffset"] = {"type": "string", "nullable": True}
@@ -246,7 +258,9 @@ class ContractTests(unittest.TestCase):
         for family, edit, operation in (("transactions", optional, "searchAccountTransactions"),
                                         ("transfers", nullable, "postTransfer"),
                                         ("transfers", wider_enum, "postTransfer"),
-                                        ("transactions", new_reply_field, "searchAccountTransactions")):
+                                        ("transactions", new_reply_field, "searchAccountTransactions"),
+                                        ("transactions", widened_description_field, "searchAccountTransactions"),
+                                        ("transfers", new_reply_field_named_summary, "postTransfer")):
             with self.subTest(edit=edit.__name__):
                 self.assert_stops(family, edit,
                                   f"the reply of {operation} changed; review it and record a new version")
