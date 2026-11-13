@@ -193,6 +193,31 @@ class VendorVersions(unittest.TestCase):
             contract = PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(reworded))))
             self.assertEqual(contract.newer_files, ("dda",))
 
+    def test_a_container_rule_on_the_way_to_a_used_field_counts_but_a_new_sibling_does_not(self):
+        from premier_demo.contract import VendorChanged
+
+        def balances(document):
+            body = self._resolve(document, self._post(document, "dda")["responses"]["200"]["content"]["application/json"]["schema"])
+            record = self._resolve(document, body["properties"]["AcctRec"])
+            info = self._resolve(document, record["properties"]["DepositAcctInfo"])
+            return info
+
+        def fewer_items(document):
+            info = balances(document)
+            self._resolve(document, info["properties"]["AcctBal"])["maxItems"] = 1
+
+        def new_sibling(document):
+            balances(document)["properties"]["NewOptionalField"] = {"type": "string"}
+
+        with tempfile.TemporaryDirectory() as folder:
+            with self.assertRaises(VendorChanged) as raised:
+                PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(fewer_items))))
+            self.assertIn("getAccountsSecured (dda) response structure around AcctRec.DepositAcctInfo.AcctBal[].BalType changed",
+                          raised.exception.changes)
+        with tempfile.TemporaryDirectory() as folder:
+            contract = PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(new_sibling))))
+            self.assertEqual(contract.newer_files, ("dda",))
+
     def test_reference_cycles_are_refused_with_a_clear_reason_not_a_hang(self):
         def self_cycle(document):
             document["components"]["schemas"]["Loop"] = {"$ref": "#/components/schemas/Loop"}
