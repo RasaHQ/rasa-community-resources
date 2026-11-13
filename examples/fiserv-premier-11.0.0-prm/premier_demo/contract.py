@@ -236,13 +236,26 @@ def _describe(schema, document):
     return _canonical(schema, document)
 
 
-def _container(node, document):
-    """A container passed on the way to a used field: every keyword except its
-    children (properties, items) and documentation. Sibling fields the example
-    does not use are left out; the container's own rules (additionalProperties,
-    minItems, maxItems, nullable, ...) are kept."""
-    own = {key: value for key, value in node.items() if key not in ("properties", "items", "required")}
-    return _canonical(own, document)
+_COMPOSITIONS = ("allOf", "oneOf", "anyOf")
+
+
+def _container(raw, document, stack=()):
+    """A container passed on the way to a used field, from its unmerged schema: every
+    rule except its children (properties, items, required lists) and documentation,
+    including the rules inside each allOf, oneOf and anyOf part. Sibling fields the
+    example does not use are left out; the container's own rules count."""
+    node, stack = _follow(raw, document, stack)
+    if not isinstance(node, dict):
+        return node
+    own = {}
+    for key, value in node.items():
+        if key in ("properties", "items", "required") or key in _DOC_ONLY or str(key).startswith("x-"):
+            continue
+        if key in _COMPOSITIONS and isinstance(value, list):
+            own[key] = [_container(part, document, stack) for part in value]
+        else:
+            own[key] = _canonical(value, document, stack)
+    return own
 
 
 def _walk(schema, path, document, required_trail, containers):
@@ -252,7 +265,7 @@ def _walk(schema, path, document, required_trail, containers):
     for token in [t for t in path.split(".") if t]:
         name, is_items = (token[:-2], True) if token.endswith("[]") else (token, False)
         if name:
-            containers.append(_container(node, document))
+            containers.append(_container(raw, document))
             if required_trail is not None:
                 required_trail.append(sorted(node.get("required", [])))
             properties = node.get("properties", {})
@@ -261,7 +274,7 @@ def _walk(schema, path, document, required_trail, containers):
             raw = properties[name]
             node = _resolve(raw, document)
         if is_items:
-            containers.append(_container(node, document))
+            containers.append(_container(raw, document))
             if "items" not in node:
                 return None
             raw = node["items"]

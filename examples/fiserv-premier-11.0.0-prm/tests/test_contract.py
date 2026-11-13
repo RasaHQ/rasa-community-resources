@@ -218,6 +218,29 @@ class VendorVersions(unittest.TestCase):
             contract = PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(new_sibling))))
             self.assertEqual(contract.newer_files, ("dda",))
 
+    def test_a_rule_on_the_request_root_or_a_nested_container_counts_even_inside_allof(self):
+        from premier_demo.contract import VendorChanged
+
+        def request_root(document):
+            return self._resolve(document, self._post(document, "dda")["requestBody"]["content"]["application/json"]["schema"])
+
+        def root_composed(document):
+            request_root(document)["allOf"] = [{"maxProperties": 0}]  # original keys kept
+
+        def nested_composed(document):
+            properties = request_root(document)["properties"]
+            properties["AcctSel"] = {"allOf": [properties["AcctSel"], {"maxProperties": 0}]}
+
+        def root_direct(document):
+            request_root(document)["maxProperties"] = 0
+
+        for edit in (root_direct, root_composed, nested_composed):
+            with self.subTest(edit=edit.__name__), tempfile.TemporaryDirectory() as folder:
+                with self.assertRaises(VendorChanged) as raised:
+                    PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(edit))))
+                self.assertIn("getAccountsSecured (dda) request structure around AcctSel.AcctKeys.AcctId changed",
+                              raised.exception.changes)
+
     def test_reference_cycles_are_refused_with_a_clear_reason_not_a_hang(self):
         def self_cycle(document):
             document["components"]["schemas"]["Loop"] = {"$ref": "#/components/schemas/Loop"}
