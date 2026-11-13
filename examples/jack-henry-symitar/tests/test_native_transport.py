@@ -194,6 +194,106 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(result.llm_response['state'],'not_submitted')
         self.assertEqual(self.vendor.sends,[])
 
+    async def test_no_yes_is_accepted_after_an_interrupted_or_declined_review(self):
+        # The four-bank walkthrough sequences: review, then an unrelated question
+        # or an explicit no answered without any tool, then yes or confirm.
+        from lib import native_adapter
+        for middle,last in (('What is my balance?','yes'),('No, do not transfer.','yes'),
+                            ('No, do not transfer.','confirm transfer')):
+            with self.subTest(middle=middle,last=last):
+                native_adapter._conversations.clear()
+                events=[{'event':'user','text':'review','timestamp':time.time()}]
+                class Context:
+                    is_cancelled=False
+                    messages=[]
+                    @property
+                    def events(self):return [SimpleNamespace(as_dict=lambda event=event:event) for event in events]
+                    async def send(self,text):self.messages.append(text)
+                context=Context();native=SimpleNamespace(sender_id='declined-'+str(len(middle))+last,turn=SimpleNamespace(text='review'))
+                before=len(self.vendor.sends)
+                with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):
+                    result=await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+                    self.assertEqual(result.llm_response['state'],'review_delivered')
+                    events.append({'event':'user','text':middle,'timestamp':time.time()})
+                    events.append({'event':'user','text':last,'timestamp':time.time()})
+                    native.turn.text=last
+                    result=await native_adapter.banking_transfer_status(context=context)
+                    self.assertNotEqual(result.llm_response.get('state'),'accepted')
+                self.assertEqual(len(self.vendor.sends),before)
+                self.assertFalse(any('accepted' in m.casefold() for m in context.messages[1:]))
+
+    async def test_a_yes_never_reads_an_earlier_accepted_transfer_as_a_cancelled_one(self):
+        # Transfer A accepted; review B then declined with no tool; a raw yes routed
+        # to the status tool must not report A's acceptance, and nothing new is sent.
+        from lib import native_adapter
+        native_adapter._conversations.clear()
+        events=[{'event':'user','text':'review','timestamp':time.time()}]
+        class Context:
+            is_cancelled=False
+            messages=[]
+            @property
+            def events(self):return [SimpleNamespace(as_dict=lambda event=event:event) for event in events]
+            async def send(self,text):self.messages.append(text)
+        context=Context();native=SimpleNamespace(sender_id='a-then-b',turn=SimpleNamespace(text='review'))
+        def say(text):
+            events.append({'event':'user','text':text,'timestamp':time.time()});native.turn.text=text
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):
+            await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            say('yes')
+            first=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(first.llm_response['state'],'accepted')
+            sends=len(self.vendor.sends)
+            say('review');await native_adapter.banking_review_transfer('checking','savings','2.00',context=context)
+            say('No, do not transfer.')
+            say('yes')
+            offset=len(context.messages)
+            second=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(second.llm_response['state'],'not_submitted')
+            self.assertFalse(any('accepted' in m.casefold() for m in context.messages[offset:]))
+            self.assertTrue(any('request a new transfer' in m.casefold() for m in context.messages[offset:]))
+        self.assertEqual(len(self.vendor.sends),sends)
+
+    def harness(self,sender):
+        from lib import native_adapter
+        native_adapter._conversations.clear()
+        events=[{'event':'user','text':'review','timestamp':time.time()}]
+        class Context:
+            is_cancelled=False
+            def __init__(self):self.messages=[]
+            @property
+            def events(self):return [SimpleNamespace(as_dict=lambda event=event:event) for event in events]
+            async def send(self,text):self.messages.append(text)
+        native=SimpleNamespace(sender_id=sender,turn=SimpleNamespace(text='review'),is_cancelled=False)
+        def say(text):  # a new runtime turn, as each real caller message is
+            events.append({'event':'user','text':text,'timestamp':time.time()});native.turn=SimpleNamespace(text=text)
+        return native_adapter,Context(),native,say
+
+    async def test_a_later_verify_me_never_speaks_the_older_confirmation_sentence(self):
+        native_adapter,context,native,say=self.harness('n2-verify')
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):
+            await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            say('yes')          # answered by the model with no tool
+            say('Verify me.')
+            offset=len(context.messages)
+            result=await native_adapter.banking_refresh_verification(context=context)
+        self.assertEqual(result.llm_response,{'state':'verified'})
+        self.assertEqual(context.messages[offset:],[native_adapter.VERIFIED_TEXT])
+        self.assertEqual(self.vendor.sends,[])
+
+    async def test_a_status_question_hears_the_outcome_from_the_host(self):
+        native_adapter,context,native,say=self.harness('m3-status')
+        from lib import reply_policy
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native),patch.object(reply_policy,'current_turn_context',return_value=native):
+            await native_adapter.banking_review_transfer('checking','savings','1.25',context=context)
+            say('yes');await native_adapter.banking_transfer_status(context=context)
+            say('What happened to my transfer?')
+            offset=len(context.messages)
+            reply_policy._delivered.clear()
+            result=await native_adapter.banking_transfer_status(context=context)
+            self.assertEqual(result.llm_response['state'],'accepted')
+            self.assertEqual(context.messages[offset:],[native_adapter._STATUS_TEXT['accepted']])
+            self.assertTrue(reply_policy.delivery_pending())  # remembered: the turn ends after it
+
     async def test_native_tracker_keeps_no_tool_verify_age_and_refuses_stale_grant(self):
         from lib import native_adapter
         native_adapter._conversations.clear()

@@ -157,7 +157,7 @@ The initial available balance is **USD 1,200.50**. Wording can vary; check the f
 | Say | Expected information | What you are testing |
 |---|---|---|
 | “What accounts can I use?” | Deposit aliases `checking` and `savings`; loan alias `car` | Finding the fictional customer's accounts |
-| “What did I spend recently?” | The returned transactions, without claiming complete history | Reporting only the available data |
+| “What did I spend in checking from November 1 to November 12, 2026?” | The returned transactions for that range (fixture: November 10 and 11, 2026), without claiming complete history | Reporting only the available data; the history lookup needs an explicit date range |
 | “What is my car loan payment?” | Current payment due **USD 250.75**, next due **December 1, 2026** | Keeping current due, regular payment, and past due separate |
 | “What is the payoff quote for my car loan on November 13, 2026?” | A dated quote from the fictional loan fixture | Using the requested date rather than guessing a payment |
 
@@ -167,7 +167,7 @@ The dates are fixed fixture data, not automatically updated to today's date. A l
 
 | Step | Say | Expected behavior |
 |---|---|---|
-| 1 | “Verify me.” | Refresh simulated verification before requesting a transfer |
+| 1 | “Verify me.” | The host replies “Your simulated verification was refreshed. This is not bank sign-in.” only after it refreshes simulated verification from this turn |
 | 2 | “Review a transfer of 1.25 from checking to savings.” | The host reads the exact amount and accounts, then asks for confirmation |
 | 3 | “Yes.” | The host reports acceptance and explains that accepted does not mean posted; this must be the immediately next actual user turn |
 
@@ -269,7 +269,7 @@ The transfer reply controls have source tests. A fresh end-to-end run of this re
 | Author | Rasa Community contributors |
 | Assessment date | November 12, 2026 |
 | Environment | `rasa-pro 3.21.0.dev5`, Python 3.12; development build |
-| Source, mock, and snapshot controls | Tested; real SDK snapshot loads all seven bindings without the live source directory |
+| Source, mock, and snapshot controls | Tested; real SDK snapshot loads all eight bindings (the seven tools plus the Rasa-side verify trigger) without the live source directory |
 | Typed native conversation | Recorded fixture checks; separate from cold trained-archive qualification |
 | Cold trained archive | Qualification still outstanding |
 | Complete spoken transfer | Not proved |
