@@ -82,20 +82,19 @@ MAX_NAME = 60
 CONFUSING_TERMS = ("account boundary", "memory owner", "response owner")
 GENERIC_OPENINGS = ("a guide to", "guide to", "best practices", "introduction to", "an introduction to")
 LISTICLE_RE = re.compile(r"^\d+\s")
-# A catalog name says what the resource is, not what to do: a command in front fails.
-# "How to ..." passes, and so do questions and noun phrases. A listed verb leads a command only
-# when what follows is its object: a determiner or pronoun ("Build the ..."), a capitalised name
-# ("Use Rime ..."), or an -ing form ("Stop sending ..."). Followed by a lower-case noun it is
-# read as a noun ("Design patterns for ...", "Stop sequences for ...").
+# A catalog name says what the resource is, not what to do: a name led by a listed command verb
+# fails. "How to ..." passes, and so do questions and noun phrases. A few compound nouns start
+# with one of those verbs ("Design patterns ...", "Stop sequences ..."); only the pairs listed in
+# NOUN_OPENERS are read as nouns. Add a pair here when a real name needs one.
 IMPERATIVE_LEADS = frozenset({
     "add", "ask", "avoid", "build", "call", "catch", "check", "choose", "compare", "connect", "create",
     "debug", "deploy", "design", "evaluate", "explain", "find", "fix", "get", "give", "guard", "handle",
     "keep", "learn", "let", "make", "measure", "migrate", "move", "prevent", "protect", "read", "replace",
     "route", "run", "scale", "see", "send", "set", "ship", "start", "stop", "swap", "teach", "try", "turn",
     "understand", "use", "verify", "write"})
-OBJECT_STARTERS = frozenset({
-    "a", "all", "an", "any", "every", "each", "her", "his", "it", "its", "more", "my", "no", "our", "that",
-    "the", "their", "them", "these", "this", "those", "up", "your"})
+NOUN_OPENERS = frozenset({
+    "build logs", "check digits", "design patterns", "design system", "design systems", "run logs",
+    "start page", "stop sequences", "stop words", "use cases"})
 MIN_NAME_WORDS = 3
 # At most this many names in one industry table may start with the same two words.
 MAX_SHARED_OPENING = 2
@@ -127,12 +126,10 @@ def kind_of(path: str) -> str:
 
 
 def _leads_with_command(name: str) -> bool:
-    words = name.split()
-    if len(words) < 2 or words[0].casefold() not in IMPERATIVE_LEADS:
+    words = [word.strip("(),.:;'\"").casefold() for word in name.split()]
+    if not words or words[0] not in IMPERATIVE_LEADS:
         return False
-    following = words[1].strip("(),.:;'\"")
-    return (following.casefold() in OBJECT_STARTERS or following[:1].isupper()
-            or following.casefold().endswith("ing"))
+    return " ".join(words[:2]) not in NOUN_OPENERS
 
 
 def check_catalog_name(name: str, others: list[str] | tuple[str, ...] = ()) -> list[str]:

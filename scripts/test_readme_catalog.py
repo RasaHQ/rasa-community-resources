@@ -163,7 +163,8 @@ class CheckTests(unittest.TestCase):
             self.assertFalse(command(noun_phrase), noun_phrase)
             self.assertEqual(c.check_catalog_name(noun_phrase), [], noun_phrase)
         for imperative in ("Design Rasa voice agents", "Stop sending duplicate requests",
-                           "Build the Atlas voice travel agent step by step", "Use your own voice vendor"):
+                           "Build the Atlas voice travel agent step by step", "Use your own voice vendor",
+                           "Build voice agents", "Learn voice banking"):
             self.assertTrue(command(imperative), imperative)
 
     def test_shared_openings_within_one_industry_are_limited(self):
