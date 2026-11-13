@@ -1,0 +1,75 @@
+name: Vendor file drift
+
+# Daily: download each bank example's official vendor files, run the example's
+# own start-up compatibility check against them, and open or update one issue
+# per example when the files differ, a used part changed, or the download
+# failed. Downloaded vendor files stay in the runner and are never committed.
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vendor-drift
+  cancel-in-progress: false
+
+jobs:
+  selected:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.projects.outputs.projects }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - id: projects
+        name: Select the bank examples present on this revision
+        run: python3 scripts/banking_contract_scope.py
+  drift:
+    needs: selected
+    if: ${{ needs.selected.outputs.projects != '[]' }}
+    name: Vendor drift (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJSON(needs.selected.outputs.projects) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Download the official vendor files
+        run: python3 scripts/vendor_drift.py download "${{ matrix.project }}"
+      - name: Run the example's own compatibility check in its locked environment
+        uses: devcontainers/ci@513af61f4de4f75d37e4438f184ba4358f0fc1ca
+        with:
+          configFile: .devcontainer/examples-${{ matrix.project }}/devcontainer.json
+          push: never
+          inheritEnv: false
+          runCmd: |
+            set -eu
+            cd "$(git rev-parse --show-toplevel)/examples/${{ matrix.project }}"
+            uv run --locked python ../../scripts/vendor_drift.py check "${{ matrix.project }}"
+      - name: Write the issue text, if any
+        if: ${{ always() }}
+        run: python3 scripts/vendor_drift.py report "${{ matrix.project }}"
+      - name: Open or update the issue
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROJECT: ${{ matrix.project }}
+        run: |
+          set -eu
+          title_file="vendor-drift-results/$PROJECT.title"
+          [ -f "$title_file" ] || { echo "No issue text was written for $PROJECT."; exit 0; }
+          title="$(cat "$title_file")"
+          number="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$title\"" \
+                    --json number,title --jq "map(select(.title == \"$title\")) | .[0].number // empty")"
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --repo "$GITHUB_REPOSITORY" --body-file "vendor-drift-results/$PROJECT.body"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "vendor-drift-results/$PROJECT.body"
+          fi
