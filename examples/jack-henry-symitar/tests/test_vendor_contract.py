@@ -86,62 +86,12 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(contract.newer_files, ("loans",))
         self.assertEqual(SymitarContract(self.raw).newer_files, ())
 
-    def test_a_change_to_anything_used_stops_and_names_it(self):
-        import yaml
-        from contract_inputs import VendorChanged
-
-        def changed(family, edit):
-            document = yaml.safe_load(self.raw[family])
-            edit(document)
-            raw = dict(self.raw)
-            raw[family] = yaml.safe_dump(document).encode()
-            return raw
-
-        def operation(document, name):
-            return next(op for methods in document["paths"].values() for op in methods.values()
-                        if isinstance(op, dict) and op.get("operationId") == name)
-
-        def resolve(document, node):
-            while isinstance(node, dict) and "$ref" in node:
-                target = document
-                for part in node["$ref"][2:].split("/"):
-                    target = target[part.replace("~1", "/").replace("~0", "~")]
-                node = target
-            return node
-
-        def payoff_amount_type(document):
-            ok = operation(document, "calculateLoanPayoffQuote")["responses"]["200"]
-            body = resolve(document, ok["content"]["application/json"]["schema"])
-            resolve(document, body["properties"]["totalPayoffAmount"])["type"] = "number"
-
-        def drop_next_offset(document):
-            ok = operation(document, "searchAccountTransactions")["responses"]["200"]
-            body = resolve(document, ok["content"]["application/json"]["schema"])
-            paging = resolve(document, body["properties"]["paging"])
-            paging["properties"].pop("nextOffset")
-
-        def require_new_field(document):
-            body = resolve(document, operation(document, "searchLoans")["requestBody"]["content"]["application/json"]["schema"])
-            body.setdefault("properties", {})["memberNumbers"] = {"type": "array", "items": {"type": "string"}}
-            body["required"] = sorted(set(body.get("required", [])) | {"memberNumbers"})
-
-        def limit_account_number(document):
-            body = resolve(document, operation(document, "searchLoans")["requestBody"]["content"]["application/json"]["schema"])
-            resolve(document, body["properties"]["accountNumber"])["maxLength"] = 3
-
-        def remove_transfers(document):
-            operation(document, "postTransfer")["operationId"] = "postTransferV2"
-
-        cases = (("loans", payoff_amount_type, "calculateLoanPayoffQuote response field totalPayoffAmount changed"),
-                 ("transactions", drop_next_offset, "searchAccountTransactions response field paging.nextOffset changed"),
-                 ("loans", require_new_field, "searchLoans now requires different request fields"),
-                 ("loans", limit_account_number, "searchLoans request field accountNumber changed"),
-                 ("transfers", remove_transfers, "postTransfer is no longer in the files"))
-        for family, edit, expected in cases:
-            with self.subTest(expected=expected), self.assertRaises(VendorChanged) as caught:
-                SymitarContract(changed(family, edit))
-            self.assertIn(expected, caught.exception.changes)
-            self.assertNotIn("contract_drift", str(caught.exception))
+    def test_the_recorded_exchanges_are_valid_on_the_pinned_files_and_cover_every_operation(self):
+        from recorded_exchanges import EXCHANGES
+        self.assertEqual(self.contract.exchange_problems(), [])
+        self.assertEqual({name for name, side, *_ in EXCHANGES if side == "request"}, OPERATIONS)
+        self.assertEqual({name for name, side, status, *_ in EXCHANGES if side == "response" and status == 200},
+                         OPERATIONS)
 
     def _edited(self, family, edit):
         import yaml
@@ -152,155 +102,152 @@ class ContractTests(unittest.TestCase):
         return raw
 
     @staticmethod
-    def _amount_holder(document):
-        """The schema object that holds postTransfer's request property 'amount'."""
-        body = next(op for methods in document["paths"].values() for op in methods.values()
-                    if isinstance(op, dict) and op.get("operationId") == "postTransfer")
-        node = body["requestBody"]["content"]["application/json"]["schema"]
-        while "$ref" in node:
+    def _resolve(document, node):
+        while isinstance(node, dict) and "$ref" in node:
             target = document
             for part in node["$ref"][2:].split("/"):
-                target = target[part]
+                target = target[part.replace("~1", "/").replace("~0", "~")]
             node = target
-        return node["properties"]
+        return node
 
-    def test_any_validation_keyword_on_a_used_field_counts_including_inside_allof(self):
+    def _operation(self, document, name):
+        return next(op for methods in document["paths"].values() for op in methods.values()
+                    if isinstance(op, dict) and op.get("operationId") == name)
+
+    def _request_root(self, document, name):
+        schema = self._operation(document, name)["requestBody"]["content"]["application/json"]["schema"]
+        return self._resolve(document, schema)
+
+    def _reply_root(self, document, name):
+        schema = self._operation(document, name)["responses"]["200"]["content"]["application/json"]["schema"]
+        return self._resolve(document, schema)
+
+    def assert_stops(self, family, edit, prefix):
         from contract_inputs import VendorChanged
+        with self.assertRaises(VendorChanged) as caught:
+            SymitarContract(self._edited(family, edit))
+        self.assertTrue(any(change.startswith(prefix) for change in caught.exception.changes),
+                        caught.exception.changes)
+        self.assertNotIn("contract_drift", str(caught.exception))
 
-        def max_length(document):
-            holder = self._amount_holder(document)
+    def test_a_change_the_recorded_traffic_no_longer_fits_stops_and_names_it(self):
+        def payoff_amount_type(document):
+            body = self._reply_root(document, "calculateLoanPayoffQuote")
+            self._resolve(document, body["properties"]["totalPayoffAmount"])["type"] = "number"
+
+        def require_new_field(document):
+            body = self._request_root(document, "searchLoans")
+            body.setdefault("properties", {})["memberNumbers"] = {"type": "array", "items": {"type": "string"}}
+            body["required"] = sorted(set(body.get("required", [])) | {"memberNumbers"})
+
+        def limit_account_number(document):
+            body = self._request_root(document, "searchLoans")
+            self._resolve(document, body["properties"]["accountNumber"])["maxLength"] = 3
+
+        def amount_max_length_in_all_of(document):
+            holder = self._request_root(document, "postTransfer")["properties"]
             holder["amount"] = {"allOf": [holder["amount"]], "maxLength": 1}
 
-        def all_of_enum(document):
-            holder = self._amount_holder(document)
-            holder["amount"] = {"allOf": [holder["amount"], {"enum": ["1.00"]}]}
-
-        def unknown_keyword(document):
-            holder = self._amount_holder(document)
-            holder["amount"] = {"allOf": [holder["amount"]], "multipleOf": 0.5}
-
-        for edit in (max_length, all_of_enum, unknown_keyword):
-            with self.subTest(edit=edit.__name__), self.assertRaises(VendorChanged) as caught:
-                SymitarContract(self._edited("transfers", edit))
-            self.assertIn("postTransfer request field amount changed", caught.exception.changes)
-
-    def test_a_documentation_only_change_on_a_used_field_still_loads(self):
-        def describe(document):
-            holder = self._amount_holder(document)
-            target = holder["amount"]
-            while "$ref" in target:
-                node = document
-                for part in target["$ref"][2:].split("/"):
-                    node = node[part]
-                target = node
-            target["description"] = "Reworded by the vendor."
-            target["example"] = "9.99"
-        contract = SymitarContract(self._edited("transfers", describe))
-        self.assertEqual(contract.newer_files, ("transfers",))
-
-    def test_a_container_rule_on_the_way_to_a_used_field_counts_but_a_new_sibling_does_not(self):
-        from contract_inputs import VendorChanged
-
-        def reply_schema(document, name):
-            op = next(o for methods in document["paths"].values() for o in methods.values()
-                      if isinstance(o, dict) and o.get("operationId") == name)
-            node = op["responses"]["200"]["content"]["application/json"]["schema"]
-            while "$ref" in node:
-                target = document
-                for part in node["$ref"][2:].split("/"):
-                    target = target[part]
-                node = target
-            return node
-
-        def resolved(document, node):
-            while "$ref" in node:
-                target = document
-                for part in node["$ref"][2:].split("/"):
-                    target = target[part]
-                node = target
-            return node
-
         def fewer_items(document):
-            body = reply_schema(document, "searchAccountTransactions")
-            resolved(document, body["properties"]["transactions"])["maxItems"] = 1
+            body = self._reply_root(document, "searchAccountTransactions")
+            self._resolve(document, body["properties"]["transactions"])["maxItems"] = 1
 
-        def new_sibling(document):
-            body = reply_schema(document, "searchAccountTransactions")
-            paging = resolved(document, body["properties"]["paging"])
-            paging["properties"]["previousOffset"] = {"type": "string", "nullable": True}
+        def remove_transfers(document):
+            self._operation(document, "postTransfer")["operationId"] = "postTransferV2"
 
-        with self.assertRaises(VendorChanged) as caught:
-            SymitarContract(self._edited("transactions", fewer_items))
-        self.assertIn("searchAccountTransactions response structure around transactions[].postDate changed",
-                      caught.exception.changes)
-        self.assertEqual(SymitarContract(self._edited("transactions", new_sibling)).newer_files, ("transactions",))
+        cases = (("loans", payoff_amount_type, "calculateLoanPayoffQuote 200 response is no longer valid at totalPayoffAmount"),
+                 ("loans", require_new_field, "searchLoans request is no longer valid at the whole body"),
+                 ("loans", limit_account_number, "searchLoans request is no longer valid at accountNumber"),
+                 ("transfers", amount_max_length_in_all_of, "postTransfer request is no longer valid at amount"),
+                 ("transactions", fewer_items, "searchAccountTransactions 200 response is no longer valid at transactions"),
+                 ("transfers", remove_transfers, "postTransfer is no longer in the files"))
+        for family, edit, prefix in cases:
+            with self.subTest(edit=edit.__name__):
+                self.assert_stops(family, edit, prefix)
 
-    def test_a_rule_on_the_request_root_or_a_nested_container_counts(self):
-        # The reviewer's witness: maxProperties 0 on postTransfer's request root keeps every
-        # property, required list and leaf, yet rejects every real transfer request.
-        from contract_inputs import VendorChanged
+    def test_a_required_field_added_inside_every_oneof_or_anyof_branch_stops(self):
+        def history_one_of(document):
+            # Every oneOf branch of the history request gains a required field; the
+            # branch count and order, outer properties and required list are unchanged.
+            root = self._request_root(document, "searchAccountTransactions")
+            self.assertTrue(root.get("oneOf"))
+            for branch in root["oneOf"]:
+                self._resolve(document, branch)["required"] = list(
+                    self._resolve(document, branch).get("required", [])) + ["newRequiredField"]
 
-        def request_root(document):
-            body = next(o for methods in document["paths"].values() for o in methods.values()
-                        if isinstance(o, dict) and o.get("operationId") == "postTransfer")
-            node = body["requestBody"]["content"]["application/json"]["schema"]
-            while "$ref" in node:
-                target = document
-                for part in node["$ref"][2:].split("/"):
-                    target = target[part]
-                node = target
-            return node
+        def transfer_any_of(document):
+            self._request_root(document, "postTransfer")["anyOf"] = [
+                {"required": ["newRequiredField"]}, {"required": ["otherNewField"]}]
 
+        self.assert_stops("transactions", history_one_of, "searchAccountTransactions request is no longer valid")
+        self.assert_stops("transfers", transfer_any_of, "postTransfer request is no longer valid")
+
+    def test_a_rule_on_the_request_root_or_a_nested_object_stops(self):
         def root_rule(document):
-            request_root(document)["maxProperties"] = 0
+            self._request_root(document, "postTransfer")["maxProperties"] = 0
+
+        def root_composed(document):
+            self._request_root(document, "postTransfer")["allOf"] = [{"maxProperties": 0}]
 
         def nested_rule(document):
-            donor = request_root(document)["properties"]["donor"]
-            while "$ref" in donor:
-                target = document
-                for part in donor["$ref"][2:].split("/"):
-                    target = target[part]
-                donor = target
+            donor = self._resolve(document, self._request_root(document, "postTransfer")["properties"]["donor"])
             donor["additionalProperties"] = False
             donor["maxProperties"] = 1
 
-        def root_composed(document):
-            # Original keys kept; the rule sits only inside an allOf part.
-            request_root(document)["allOf"] = [{"maxProperties": 0}]
-
         def nested_composed(document):
-            properties = request_root(document)["properties"]
+            properties = self._request_root(document, "postTransfer")["properties"]
             properties["donor"] = {"allOf": [properties["donor"], {"maxProperties": 1}]}
 
-        for edit, field in ((root_rule, "amount"), (nested_rule, "donor.accountNumber"),
-                            (root_composed, "amount"), (nested_composed, "donor.accountNumber")):
-            with self.subTest(edit=edit.__name__), self.assertRaises(VendorChanged) as caught:
-                SymitarContract(self._edited("transfers", edit))
-            self.assertIn(f"postTransfer request structure around {field} changed", caught.exception.changes)
+        for edit, where in ((root_rule, "the whole body"), (root_composed, "the whole body"),
+                            (nested_rule, "donor"), (nested_composed, "donor")):
+            with self.subTest(edit=edit.__name__):
+                self.assert_stops("transfers", edit, "postTransfer request is no longer valid at " + where)
+
+    def test_a_narrowed_enum_on_a_value_the_example_reads_stops(self):
+        def narrow_status(document):
+            status = self._resolve(document, self._reply_root(document, "postTransfer")["properties"]["status"])
+            self.assertIn("success", status["enum"])
+            status["enum"] = [value for value in status["enum"] if value != "success"]
+
+        self.assert_stops("transfers", narrow_status, "postTransfer 200 response is no longer valid at status")
+
+    def test_documentation_changes_and_a_new_optional_field_still_load(self):
+        def describe(document):
+            target = self._resolve(document, self._request_root(document, "postTransfer")["properties"]["amount"])
+            target["description"] = "Reworded by the vendor."
+            target["example"] = "9.99"
+
+        def new_sibling(document):
+            paging = self._resolve(document, self._reply_root(document, "searchAccountTransactions")["properties"]["paging"])
+            paging["properties"]["previousOffset"] = {"type": "string", "nullable": True}
+
+        self.assertEqual(SymitarContract(self._edited("transfers", describe)).newer_files, ("transfers",))
+        self.assertEqual(SymitarContract(self._edited("transactions", new_sibling)).newer_files, ("transactions",))
 
     def test_reference_cycles_are_refused_with_a_clear_reason_not_a_hang(self):
         def self_cycle(document):
             document.setdefault("components", {}).setdefault("schemas", {})["Loop"] = {
                 "$ref": "#/components/schemas/Loop"}
-            self._amount_holder(document)["amount"] = {"$ref": "#/components/schemas/Loop"}
+            self._request_root(document, "postTransfer")["properties"]["amount"] = {"$ref": "#/components/schemas/Loop"}
 
         def mutual_cycle(document):
             schemas = document.setdefault("components", {}).setdefault("schemas", {})
             schemas["LoopA"] = {"$ref": "#/components/schemas/LoopB"}
             schemas["LoopB"] = {"$ref": "#/components/schemas/LoopA"}
-            self._amount_holder(document)["amount"] = {"$ref": "#/components/schemas/LoopA"}
+            self._request_root(document, "postTransfer")["properties"]["amount"] = {"$ref": "#/components/schemas/LoopA"}
 
         for edit in (self_cycle, mutual_cycle):
             with self.subTest(edit=edit.__name__), self.assertRaisesRegex(ContractError, "schema_reference_cycle"):
                 SymitarContract(self._edited("transfers", edit))
 
-    def test_the_recorded_surface_is_exactly_the_pinned_files(self):
-        import yaml
-        from contract_inputs import USED_SURFACE_SHA256, surface_digest, used_surface
-        from used_surface_expected import EXPECTED
-        surface = used_surface({family: yaml.safe_load(raw) for family, raw in self.raw.items()})
-        self.assertEqual(surface, EXPECTED)
-        self.assertEqual(surface_digest(surface), USED_SURFACE_SHA256)
+    def test_a_validator_that_cannot_run_is_could_not_check_never_compatible(self):
+        from unittest import mock
+        raw = dict(self.raw)
+        raw["loans"] += b"\n"
+        with mock.patch("recorded_exchanges.EXCHANGES", [("searchLoans", "request", None, None, object())]), \
+                mock.patch("contract_inputs.best_match", side_effect=RuntimeError("validator broke")):
+            with self.assertRaisesRegex(ContractError, "could_not_check"):
+                SymitarContract(raw)
 
     def test_missing_document_refuses(self):
         raw = dict(self.raw)

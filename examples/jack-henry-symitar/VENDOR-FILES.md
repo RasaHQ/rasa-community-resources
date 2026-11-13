@@ -26,12 +26,14 @@ What changed between versions is in [CHANGELOG.md](CHANGELOG.md).
 
 ## If you download newer files
 
-At start, the example compares your files with the hashes above. If they differ, it does not stop straight away. It checks the shape of exactly what it uses, as listed in `USED` in `contract_inputs.py`:
+At start, the example compares your files with the hashes above. If they differ, it does not stop straight away. It checks its own recorded traffic against your files, using the same OpenAPI validators it uses while running. The traffic is in `recorded_exchanges.py`, all fictional data:
 
-- the six operations and their addresses;
-- each request field it sends, with its type, format, allowed values and limits, and the required fields around it;
-- each field it reads from a successful (200) reply, with the same details.
+- every request it sends to the six operations;
+- the reply it reads from each one;
+- the refusals it handles (a problem reply and a bodiless 401).
 
-This is a check of shape only. If Jack Henry changed what a field means but kept its shape, the check cannot see it.
+If your files still accept all of it, the example starts and prints: "Your Jack Henry files differ from the ones this example was tested with (…); everything this example uses is unchanged."
 
-If none of that changed, it starts and prints: "Your Jack Henry files differ from the ones this example was tested with (…); everything this example uses is unchanged." If any of it changed, it stops and names the operation and field. Then this example needs an update: please open an issue.
+If they do not, it stops and names the operation and what the files no longer accept. If the check itself cannot run on your files, it stops with "Could not check".
+
+The check is about the shape of the data. If Jack Henry changed what a field means but kept its shape, the check cannot see it. Then this example needs an update: please open an issue.

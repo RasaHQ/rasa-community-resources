@@ -5,20 +5,21 @@ Vendor documents are not bundled or relicensed here. The caller supplies the
 four downloaded byte strings. PINS records the exact files this example was
 tested with (see VENDOR-FILES.md). Jack Henry serves each file from one URL
 that always returns its newest version, so a learner may download newer bytes.
-Then this module checks exactly what the example uses (USED): the operations,
-the request fields it sends with their types and the required fields around
-them, and the success-response fields it reads. If none of that changed, the
-example runs and says so; if any of it changed, it stops and names it.
+Then this module validates the example's own recorded traffic
+(recorded_exchanges.py: every request it sends and every reply it reads) against
+the supplied files, with the same validators it uses at runtime. If all of it is
+still valid, the example runs and says so; if not, it stops and names the
+operation and what the files no longer accept.
 Requires PyYAML and openapi-schema-validator (OpenAPI 3.0 semantics).
 """
 from __future__ import annotations
 
 import hashlib
-import json
 from typing import Mapping
 from pathlib import Path
 
 import yaml
+from jsonschema.exceptions import best_match
 from openapi_schema_validator import OAS30ReadValidator, OAS30WriteValidator
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT4
@@ -31,29 +32,11 @@ PINS = {
     "transfers": "bd5ec66744b21cb3632d37e2cbdb53bbf7f3bd79cb7047cafafa9caca186de95",
 }
 TESTED_WITH = "Jack Henry Symitar files as published 12 Nov 2026, 22:38 UTC"  # see VENDOR-FILES.md
-# Everything this example sends to or reads from each vendor operation. A path
-# segment "x[]" is the items of array x; "[]" is the items of a top-level array.
-USED = {
-    "findAccountBy": {"sends": ("accountNumber",), "reads": ()},
-    "findAccountByWithBalances": {"sends": ("accountNumber",),
-                                  "reads": ("shares[].shareId", "shares[].availableBalance")},
-    "searchAccountTransactions": {"sends": ("accountNumber", "shareId", "startDate", "endDate", "count", "offset"),
-                                  "reads": ("transactions[].postDate", "transactions[].description",
-                                            "transactions[].amount", "paging.nextOffset")},
-    "searchLoans": {"sends": ("accountNumber", "loanId"), "reads": ("[].loanId", "[].paymentDue", "[].dueDate")},
-    "calculateLoanPayoffQuote": {"sends": ("accountNumber", "loanId", "payoffDate"),
-                                 "reads": ("totalPayoffAmount", "payoffDate")},
-    "postTransfer": {"sends": ("donor.accountNumber", "donor.shareId", "recipient.accountNumber",
-                               "recipient.shareId", "amount"), "reads": ("status",)},
-}
-OPERATIONS = frozenset(USED)
-# sha256 of used_surface() for the files in PINS. Each used field is recorded by its
-# whole schema (every validation keyword, refs inlined, allOf/oneOf/anyOf kept;
-# only documentation keys such as description and example are left out), plus
-# the paths, the required lists around sent fields and the own rules of every
-# container passed on the way to a used field (e.g. additionalProperties, maxItems). Any difference stops
-# start-up. It cannot see a change of meaning that keeps the shape.
-USED_SURFACE_SHA256 = "7e552338bc06440c4d1a426aa695b9ba8bdcee6977cba9240e8a06a591aec89d"
+# The vendor operations this example calls. What it sends and reads is recorded
+# in recorded_exchanges.py.
+OPERATIONS = frozenset({"findAccountBy", "findAccountByWithBalances", "searchAccountTransactions",
+                        "searchLoans", "calculateLoanPayoffQuote", "postTransfer"})
+_MAX_HOPS = 64
 
 
 class ContractError(Exception):
@@ -65,7 +48,10 @@ class MissingContractInput(ContractError):
 
 
 class VendorChanged(ContractError):
-    """Something this example uses changed in the supplied vendor files."""
+    """The supplied vendor files no longer accept this example's recorded traffic.
+
+    Each change names the operation and the validator's message, which may quote
+    a schema value from the vendor file (for example an allowed enum value)."""
 
     def __init__(self, changes):
         self.changes = tuple(changes)
@@ -123,7 +109,14 @@ def _pointer(document, reference):
 def _references(value, document):
     if isinstance(value, dict):
         if "$ref" in value:
-            _pointer(document, value["$ref"])
+            # A chain of references that only point at further references, and comes
+            # back to itself, has no schema at its end: refuse it by name.
+            seen, target = [], value
+            while isinstance(target, dict) and "$ref" in target:
+                if target["$ref"] in seen or len(seen) > _MAX_HOPS:
+                    raise ContractError("schema_reference_cycle: " + str(value["$ref"]))
+                seen.append(target["$ref"])
+                target = _pointer(document, target["$ref"])
         for child in value.values():
             _references(child, document)
     elif isinstance(value, list):
@@ -135,178 +128,12 @@ def _escape(value):
     return value.replace("~", "~0").replace("/", "~1")
 
 
-_MAX_HOPS = 64
-
-
-def _follow(node, document, stack):
-    """Follow local $refs with a cycle guard; returns (schema, references followed)."""
-    while isinstance(node, dict) and "$ref" in node:
-        reference = node["$ref"]
-        if reference in stack:
-            raise ContractError("schema_reference_cycle: " + str(reference))
-        if len(stack) >= _MAX_HOPS:
-            raise ContractError("schema_too_deep")
-        stack = stack + (reference,)
-        node = _pointer(document, reference)
-    return node, stack
-
-
-def _resolve(node, document, stack=()):
-    """A schema with $refs followed and allOf merged, to find properties and required lists."""
-    node, stack = _follow(node, document, stack)
-    if isinstance(node, dict) and "allOf" in node:
-        merged = {key: value for key, value in node.items() if key != "allOf"}
-        properties, required = dict(merged.get("properties", {})), list(merged.get("required", []))
-        for part in node["allOf"]:
-            part = _resolve(part, document, stack)
-            properties.update(part.get("properties", {}))
-            required += part.get("required", [])
-            for key in ("type", "nullable", "items"):
-                if key in part and key not in merged:
-                    merged[key] = part[key]
-        merged["properties"], merged["required"] = properties, sorted(set(required))
-        node = merged
-    return node if isinstance(node, dict) else {}
-
-
-# Keys that only document a schema; every other key counts as validation.
-_DOC_ONLY = frozenset({"description", "example", "examples", "title", "externalDocs", "deprecated", "xml"})
-
-
-def _canonical(node, document, stack=()):
-    """The whole schema of a used field: refs inlined, allOf/oneOf/anyOf kept, every
-    validation keyword included. Any difference in it counts as a change (fail closed)."""
-    if len(stack) > _MAX_HOPS:
-        raise ContractError("schema_too_deep")
-    if isinstance(node, dict):
-        if "$ref" in node:
-            target, deeper = _follow(node, document, stack)
-            return _canonical(target, document, deeper)
-        return {key: _canonical(value, document, stack) for key, value in sorted(node.items())
-                if key not in _DOC_ONLY and not str(key).startswith("x-")}
-    if isinstance(node, list):
-        return [_canonical(value, document, stack) for value in node]
-    return node
-
-
-def _describe(schema, document):
-    return _canonical(schema, document)
-
-
-_COMPOSITIONS = ("allOf", "oneOf", "anyOf")
-
-
-def _container(raw, document, stack=()):
-    """A container passed on the way to a used field, from its unmerged schema: every
-    rule except its children (properties, items, required lists) and documentation,
-    including the rules inside each allOf, oneOf and anyOf part. Sibling fields the
-    example does not use are left out; the container's own rules count."""
-    node, stack = _follow(raw, document, stack)
-    if not isinstance(node, dict):
-        return node
-    own = {}
-    for key, value in node.items():
-        if key in ("properties", "items", "required") or key in _DOC_ONLY or str(key).startswith("x-"):
-            continue
-        if key in _COMPOSITIONS and isinstance(value, list):
-            own[key] = [_container(part, document, stack) for part in value]
-        else:
-            own[key] = _canonical(value, document, stack)
-    return own
-
-
-def _walk(schema, path, document, required_trail, containers):
-    """The unresolved schema of the field at path. Records the required list of each
-    object passed (for sent fields) and every container's own rules (both directions)."""
-    node, raw = _resolve(schema, document), schema
-    for token in [t for t in path.split(".") if t]:
-        name, is_items = (token[:-2], True) if token.endswith("[]") else (token, False)
-        if name:
-            containers.append(_container(raw, document))
-            if required_trail is not None:
-                required_trail.append(sorted(node.get("required", [])))
-            properties = node.get("properties", {})
-            if name not in properties:
-                return None
-            raw = properties[name]
-            node = _resolve(raw, document)
-        if is_items:
-            containers.append(_container(raw, document))
-            if "items" not in node:
-                return None
-            raw = node["items"]
-            node = _resolve(raw, document)
-    return raw
-
-
-def used_surface(documents: Mapping[str, dict]) -> dict:
-    """Exactly what this example relies on, extracted from parsed vendor documents."""
-    surface = {}
-    for document in documents.values():
-        for path, methods in document.get("paths", {}).items():
-            for method, operation in methods.items():
-                name = operation.get("operationId") if isinstance(operation, dict) else None
-                if name not in USED:
-                    continue
-                entry = {"method": method, "path": path, "sends": {}, "required": [], "reads": {},
-                         "containers": {}}
-                request = operation.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema")
-                for field in USED[name]["sends"]:
-                    trail, containers = [], []
-                    node = _walk(request, field, document, trail, containers) if request is not None else None
-                    entry["sends"][field] = _describe(node, document) if node is not None else "missing"
-                    entry["required"].append(trail)
-                    entry["containers"]["sends " + field] = containers
-                ok = operation.get("responses", {}).get("200", {})
-                schema = ok.get("content", {}).get("application/json", {}).get("schema")
-                entry["reads"]["200"] = "present" if schema is not None else "missing"
-                for field in USED[name]["reads"]:
-                    containers = []
-                    node = _walk(schema, field, document, None, containers) if schema is not None else None
-                    entry["reads"][field] = _describe(node, document) if node is not None else "missing"
-                    entry["containers"]["reads " + field] = containers
-                surface[name] = entry
-    for name in USED:
-        surface.setdefault(name, "missing")
-    return surface
-
-
-def surface_digest(surface: dict) -> str:
-    return hashlib.sha256(json.dumps(surface, sort_keys=True).encode()).hexdigest()
-
-
-def _changes(expected: dict, actual: dict) -> list[str]:
-    changes = []
-    for name in sorted(USED):
-        old, new = expected.get(name), actual.get(name)
-        if old == new:
-            continue
-        if not isinstance(new, dict):
-            changes.append(name + " is no longer in the files")
-            continue
-        for part in ("method", "path"):
-            if old.get(part) != new.get(part):
-                changes.append(f"{name} {part} changed")
-        for side in ("sends", "reads"):
-            for field in sorted(set(old.get(side, {})) | set(new.get(side, {}))):
-                if old.get(side, {}).get(field) != new.get(side, {}).get(field):
-                    changes.append(f"{name} {'request' if side == 'sends' else 'response'} field {field} changed")
-        if old.get("required") != new.get("required"):
-            changes.append(f"{name} now requires different request fields")
-        for field in sorted(set(old.get("containers", {})) | set(new.get("containers", {}))):
-            if old.get("containers", {}).get(field) != new.get("containers", {}).get(field):
-                side, path = field.split(" ", 1)
-                changes.append(f"{name} {'request' if side == 'sends' else 'response'} structure around {path} changed")
-    return changes or ["the operations this example uses changed"]
-
-
 class SymitarContract:
     """Pinned operation schemas; does not certify provider deployment semantics."""
 
     def __init__(self, inputs: Mapping[str, bytes]):
         self._operations = {}
         self.newer_files = ()  # families whose bytes differ from PINS but stay compatible
-        documents = {}
         try:
             if set(inputs) != set(PINS):
                 raise ContractError("missing_contract")
@@ -315,7 +142,6 @@ class SymitarContract:
                 if not isinstance(raw, bytes) or len(raw) > 1_048_576:
                     raise ContractError("invalid_contract")
                 document = yaml.safe_load(raw)
-                documents[family] = document
                 if document.get("openapi") != "3.0.1" or document["info"]["version"] != "v1":
                     raise ContractError("unsupported_contract")
                 _references(document, document)
@@ -350,10 +176,9 @@ class SymitarContract:
             drifted = tuple(family for family, digest in PINS.items()
                             if hashlib.sha256(inputs[family]).hexdigest() != digest)
             if drifted:
-                surface = used_surface(documents)
-                if surface_digest(surface) != USED_SURFACE_SHA256:
-                    from used_surface_expected import EXPECTED
-                    raise VendorChanged(_changes(EXPECTED, surface))
+                problems = self.exchange_problems()
+                if problems:
+                    raise VendorChanged(problems)
                 self.newer_files = drifted
             if set(self._operations) != OPERATIONS:
                 raise ContractError("missing_operation")
@@ -361,6 +186,47 @@ class SymitarContract:
             raise
         except Exception:
             raise ContractError("invalid_contract") from None
+
+    def exchange_problems(self) -> list[str]:
+        """Validate every recorded exchange with this contract's runtime validators.
+
+        Returns one line per exchange the files no longer accept, naming the
+        operation and the validator's message. If the validators cannot run on
+        the files at all, raises ContractError("could_not_check").
+        """
+        from recorded_exchanges import EXCHANGES
+        problems = []
+        try:
+            for operation, side, status, media, body in EXCHANGES:
+                if operation not in self._operations:
+                    if f"{operation} is no longer in the files" not in problems:
+                        problems.append(f"{operation} is no longer in the files")
+                    continue
+                _, request, responses = self._operations[operation]
+                label = f"{operation} request" if side == "request" else f"{operation} {status} response"
+                if side == "request":
+                    validator = request
+                elif body is None:
+                    if responses.get(str(status)) != {}:
+                        problems.append(f"{label} is no longer declared without a body")
+                    continue
+                else:
+                    content = responses.get(str(status), responses.get("default"))
+                    if not content or media not in content:
+                        problems.append(f"{label} ({media}) is no longer declared")
+                        continue
+                    validator = content[media]
+                error = best_match(validator.iter_errors(body))
+                if error is not None:
+                    where = "/".join(str(part) for part in error.absolute_path) or "the whole body"
+                    message = str(error.message)
+                    if message.startswith(repr(error.instance)):  # don't repeat the recorded body
+                        message = "the recorded value" + message[len(repr(error.instance)):]
+                    message = " ".join(message.split())
+                    problems.append(f"{label} is no longer valid at {where}: {message[:200]}")
+        except Exception:
+            raise ContractError("could_not_check") from None
+        return problems
 
     def request(self, operation_id: str, body: object) -> str:
         """Validate vendor JSON and return only its pinned path template."""
