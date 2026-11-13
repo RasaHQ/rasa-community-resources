@@ -15,6 +15,7 @@ import tomllib
 from urllib.parse import urlencode
 
 from contract_inputs import TESTED_WITH,ContractError,MissingContractInput,SymitarContract,VendorChanged,load_inputs
+from demo_data import choose_seed,seed_line
 from fixture_control import INSTANCE,current,reset
 from journal import Journal
 from local_transport import LocalTransport
@@ -99,6 +100,29 @@ def child_environment():
     return {key:value for key,value in os.environ.items() if key in allowed}
 
 
+def demo_seed():
+    """Print the demo data seed as the first line; return (seed, None) or (None, exit status).
+
+    The seed belongs to the saved fictional exercise: it is chosen (or taken
+    from DEMO_SEED) only when that state is first created or reset, and the
+    stored seed is printed on every later start.
+    """
+    try:requested=choose_seed(os.environ)
+    except ValueError as error:
+        print('Not ready. '+str(error));return None,2
+    if not (ROOT/'.runtime').exists():
+        print(seed_line(requested),flush=True);return requested,None
+    try:stored=current(ROOT/'.runtime')['seed']
+    except Exception:
+        print('Not ready. An owned service or fixture recovery failed. State is preserved; no raw service error or secret is printed.');return None,1
+    print(seed_line(stored),flush=True)
+    if os.environ.get('DEMO_SEED') is not None and requested!=stored:
+        print(f'Not ready. The saved fictional exercise uses seed {stored}, not DEMO_SEED={requested}. '
+              f'To start a new fictional exercise with seed {requested}, stop every copy and run: '
+              f'DEMO_SEED={requested} make reset-fixture REASON="new fictional exercise"');return None,2
+    return stored,None
+
+
 def main():
     parser=argparse.ArgumentParser(description='Start this fictional Symitar voice example.')
     parser.add_argument('--port',type=int,default=5005)
@@ -110,10 +134,20 @@ def main():
     args=parser.parse_args()
     if not 1024<=args.port<=65535:parser.error('choose an unprivileged port')
     if args.reset_fixture:
-        try:reset(ROOT/'.runtime',acknowledge=args.ack_unknown,reason=args.reason)
+        # A reset is a fresh start: it draws (or takes DEMO_SEED as) the seed
+        # for the new fictional exercise.
+        try:seed=choose_seed(os.environ)
+        except ValueError as error:
+            print('Reset refused. '+str(error));return 2
+        print(seed_line(seed),flush=True)
+        try:reset(ROOT/'.runtime',acknowledge=args.ack_unknown,reason=args.reason,seed=seed)
         except Exception:
             print('Reset refused. Stop every copy first; preserve original state and supply acknowledgement plus a nonsecret reason.');return 2
         print('New fictional epoch created. Original state and audit are retained; no old transfer was resolved or retried.');return 0
+    seed=None
+    if not args.check_inputs:
+        seed,status=demo_seed()
+        if status is not None:return status
     try:
         inputs=load_inputs();contract=SymitarContract(inputs)
     except MissingContractInput as error:
@@ -145,10 +179,12 @@ def main():
     def interrupted(*_):raise KeyboardInterrupt()
     previous={sig:signal.signal(sig,interrupted) for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGHUP)}
     try:
-        record=current(ROOT/'.runtime',initialize=True);directory=ROOT/'.runtime'/record['directory']
+        record=current(ROOT/'.runtime',initialize=True,seed=seed);directory=ROOT/'.runtime'/record['directory']
         journal=Journal(directory/'journal',INSTANCE)
         if journal.epoch!=record['epoch']:raise ValueError('fixture_epoch_changed')
         state=FixtureState(directory/'mock.sqlite3',journal.epoch)
+        # The printed seed, the manifest and the stored mock state must agree.
+        if not state.seed==record['seed']==seed:raise ValueError('fixture_seed_changed')
         fixture,_=state.snapshot();mock=SymitarMock(inputs,state)
         wire_key=secrets.token_urlsafe(32)
         wire=local_mock_server(mock,wire_key);servers.append(wire)

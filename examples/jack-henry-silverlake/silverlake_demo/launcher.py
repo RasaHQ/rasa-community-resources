@@ -47,6 +47,14 @@ def main(project):
     if not 1024 <= args.port <= 65535:
         parser.error("choose an unprivileged Inspector port")
     project = Path(project).resolve()
+    # Step 0: choose the fictional data once; its seed is the first line of output.
+    from .demo_data import choose_seed, seed_line
+    try:
+        seed = choose_seed(os.environ)
+    except ValueError as error:
+        print("Not ready. " + str(error))
+        return 2
+    print(seed_line(seed), flush=True)
     # Step 1: the learner-supplied vendor definitions. Stop with a plain message.
     try:
         contract = SilverLakeContract.from_path()
@@ -103,6 +111,7 @@ def main(project):
                                    if key in {"PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "PYTHONPATH",
                                               "SYSTEMROOT", "SILVERLAKE_JOURNAL_DIR"}}
             backend_environment["SILVERLAKE_HOST_CAPABILITY"] = capability
+            backend_environment["DEMO_SEED"] = str(seed)  # the mock uses the same data the seed line names
             server = subprocess.Popen(
                 [sys.executable, "-m", "silverlake_demo.server", str(mock_socket.fileno()),
                  str(mcp_socket.fileno()), args.fault], env=backend_environment, cwd=project,

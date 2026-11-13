@@ -39,6 +39,14 @@ def request_body(operation: str, **fields) -> dict:
     return REQUEST[operation].model_validate(fields).model_dump(mode="json", by_alias=True, exclude_unset=True)
 
 
+def reply_body(operation: str, data):
+    """A successful reply body built through its model (the mock's replies).
+
+    A missing required field or a value of the wrong type (a number where the
+    files declare a string amount, say) fails here, before the reply is sent."""
+    return REPLY[operation].model_validate(data).model_dump(mode="json", by_alias=True, exclude_unset=True)
+
+
 def present(value):
     """An optional field's value, or None when the reply left it out (MISSING)."""
     return None if value is MISSING else value

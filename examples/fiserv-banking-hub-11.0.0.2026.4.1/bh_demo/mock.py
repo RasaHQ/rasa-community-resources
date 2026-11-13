@@ -15,11 +15,14 @@ and no payoff (see the README).
 """
 from __future__ import annotations
 
+from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-import json
 from threading import Lock, Thread
 
+from pydantic import ValidationError
+
 from .contract import ContractError, BankingHubContract
+from .vendor_api import dumps, loads, reply_body
 
 MOCK_ORGANIZATION = "FICTIONAL-MOCK-ORG"
 PROVIDER = "FictionalMockBankingHub"
@@ -27,7 +30,9 @@ PROVIDER = "FictionalMockBankingHub"
 # sends this clearly fictional placeholder; the client never reads it.
 MOCK_ACCOUNT_STATUS = "FictionalMockStatus"
 
-# Authored fictional data. Money is kept in cents; the wire carries JSON numbers.
+# Authored fictional data. Money is kept in whole cents; each reply is built through
+# its generated model with the amount as an exact Decimal, and the wire carries
+# that Decimal as a JSON number (never a float).
 ACCOUNTS = {
     "5550010001": {"type": "DDA", "party": "PARTY-A", "avail": 125000, "ledger": 127500},
     "5550010002": {"type": "SDA", "party": "PARTY-A", "avail": 540000, "ledger": 540000},
@@ -41,7 +46,20 @@ ACCOUNTS = {
 
 
 def _amount(cents: int) -> dict:
-    return {"Amt": cents / 100, "CurCode": {"CurCodeType": "ISO4217-Alpha", "CurCodeValue": "USD"}}
+    if isinstance(cents, bool) or not isinstance(cents, int):
+        raise TypeError("money is whole cents")
+    return {"Amt": Decimal(cents).scaleb(-2),
+            "CurCode": {"CurCodeType": "ISO4217-Alpha", "CurCodeValue": "USD"}}
+
+
+def _cents(amount) -> int | None:
+    """A request amount (Decimal or int, never float) in whole cents, or None if it is not a finite number."""
+    if isinstance(amount, bool) or not isinstance(amount, (Decimal, int)):
+        return None
+    try:
+        return int((Decimal(amount) * 100).to_integral_value(ROUND_HALF_EVEN))
+    except (InvalidOperation, ValueError, OverflowError):
+        return None
 
 
 def status(code="0", description="Success", severity="Info"):
@@ -51,11 +69,12 @@ def status(code="0", description="Success", severity="Info"):
 
 
 class BankingHubMock:
-    def __init__(self, contract: BankingHubContract, *, fault: str = "none"):
+    def __init__(self, contract: BankingHubContract, *, fault: str = "none", data: dict | None = None):
+        """data: accounts shaped like ACCOUNTS (see demo_data.generate); None uses ACCOUNTS."""
         if fault not in {"none", "transfer-response-lost"}:
             raise ValueError("unknown fault")
         self.contract, self.fault = contract, fault
-        self.accounts = {key: dict(value) for key, value in ACCOUNTS.items()}
+        self.accounts = {key: dict(value) for key, value in (ACCOUNTS if data is None else data).items()}
         self.lock = Lock()
         self.calls = 0
         self.transfers = 0
@@ -68,9 +87,9 @@ class BankingHubMock:
                  "PartyAcctRelStatus": {"PartyAcctRelStatusCode": "Valid"}}
                 for ident, account in sorted(self.accounts.items()) if account["party"] == party]
         if not rows:
-            return 200, {"Status": status("1120", "No records match the selection criteria")}
-        return 200, {"Status": status(), "RecCtrlOut": {"SentRecCount": len(rows)},
-                     "PartyAcctRelRec": rows}
+            return 200, reply_body("party", {"Status": status("1120", "No records match the selection criteria")})
+        return 200, reply_body("party", {"Status": status(), "RecCtrlOut": {"SentRecCount": len(rows)},
+                                         "PartyAcctRelRec": rows})
 
     def _account(self, body):
         keys = body["AcctSel"]["AcctKeys"]
@@ -88,7 +107,7 @@ class BankingHubMock:
                 {"CompositeCurAmtType": "Principal", "CurAmt": _amount(account["principal"])},
                 {"CompositeCurAmtType": "Interest", "CurAmt": _amount(account["interest"])},
                 {"CompositeCurAmtType": "Total", "CurAmt": _amount(account["total"])}]}}
-        return 200, {"Status": status(), "AcctRec": record}
+        return 200, reply_body("acct", {"Status": status(), "AcctRec": record})
 
     def _transfer(self, body):
         info = body["XferInfo"]
@@ -98,22 +117,24 @@ class BankingHubMock:
         source_keys, target_keys = info["FromAcctRef"]["AcctKeys"], info["ToAcctRef"]["AcctKeys"]
         source = self.accounts.get(source_keys.get("AcctId"))
         target = self.accounts.get(target_keys.get("AcctId"))
-        amount = round(info["CurAmt"]["Amt"] * 100)
+        amount = _cents(info["CurAmt"]["Amt"])
         if (source is None or target is None or source["type"] != "DDA"
                 or target["type"] not in {"DDA", "SDA"}
                 or source_keys.get("AcctType") != source["type"]
                 or target_keys.get("AcctType") != target["type"]
-                or source["party"] != target["party"] or amount <= 0
+                or source["party"] != target["party"] or amount is None or amount <= 0
                 or info["CurAmt"]["CurCode"]["CurCodeValue"] != "USD"
                 or source_keys["AcctId"] == target_keys["AcctId"] or amount > source["avail"]):
             return 422, {"Status": status("1020", "Transfer not permitted", "Error")}
+        # Build the reply through its model before any money moves.
+        response = reply_body("xfer", {"Status": status(), "XferStatusRec": {
+            "XferKeys": {"XferId": "FICTIONAL-XFER-" + str(self.transfers + 1)},
+            "XferStatus": {"XferStatusCode": "Valid"}}})
         for account, sign in ((source, -1), (target, 1)):
             account["avail"] += sign * amount
             account["ledger"] += sign * amount
         self.transfers += 1
-        return 201, {"Status": status(), "XferStatusRec": {
-            "XferKeys": {"XferId": "FICTIONAL-XFER-" + str(self.transfers)},
-            "XferStatus": {"XferStatusCode": "Valid"}}}
+        return 201, response
 
     def handle(self, path: str, header_value: str | None, raw: bytes):
         """Return (status, body, drop_connection)."""
@@ -122,14 +143,17 @@ class BankingHubMock:
         if key is None:
             return 404, {"Status": status("400", "Function not available", "Error")}, False
         try:
-            body = json.loads(raw)
+            body = loads(raw)  # numbers as exact Decimal, never float
             self.contract.validate_header(key, header_value or "")
             self.contract.validate_request(key, body)
         except (ContractError, ValueError, TypeError, AttributeError):
             return 400, {"Status": status("1020", "Required element not included", "Error")}, False
         with self.lock:
             self.calls += 1
-            code, response = {"party": self._party, "acct": self._account, "xfer": self._transfer}[key](body)
+            try:
+                code, response = {"party": self._party, "acct": self._account, "xfer": self._transfer}[key](body)
+            except ValidationError:
+                raise ContractError("invalid_response") from None  # a reply that does not fit its model
             if key == "xfer" and code == 201 and self.fault == "transfer-response-lost":
                 return 0, None, True  # the transfer happened; the reply never arrives
             self.contract.validate_response(key, code, response)  # self-check, every reply
@@ -151,7 +175,7 @@ def serve(mock: BankingHubMock, sock) -> ThreadingHTTPServer:
                 self.close_connection = True
                 self.connection.close()
                 return
-            payload = json.dumps(body).encode()
+            payload = dumps(body).encode()
             self.send_response(code)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(payload)))

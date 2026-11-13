@@ -10,7 +10,7 @@ Ask for your balance, explore recent transactions, check a loan payment, and req
 
 You will run it in your browser using GitHub Codespaces. You do not need to install Python on your computer or have a Jack Henry account.
 
-**Your first goal:** open the assistant and ask, “What is available in checking?” With the initial demo data, the expected answer is **USD 1,200.50 available**.
+**Your first goal:** open the assistant and ask, “What is available in checking?” With the reference demo data (start with `DEMO_SEED=0 make run`), the expected answer is **USD 1,200.50 available**.
 
 ### What you will learn
 
@@ -180,6 +180,14 @@ Yes.
 
 The initial available balance in checking is **USD 1,200.50**. Wording can vary; check the facts rather than expecting one exact sentence.
 
+Each new fictional exercise uses different fictional amounts, loan figures and transactions. The first line `make run` prints shows the demo data seed, for example `Demo data seed: 48213; set DEMO_SEED=48213 to get the same data again.` The seed is chosen when the saved fixture state is first created or reset, and every later start prints the same seed. Setting `DEMO_SEED=<n>` at that moment reproduces a run. The values above and in the checked sequence below are the reference data, seed `0`. To follow the checked sequence exactly, start with:
+
+```bash
+DEMO_SEED=0 make run
+```
+
+If a saved exercise already uses another seed, that command stops and tells you to start a new fictional exercise with `DEMO_SEED=0 make reset-fixture REASON="new fictional exercise"` first; see [Start a new fictional exercise](#start-a-new-fictional-exercise).
+
 ### The full checked sequence
 
 #### Ask your first questions
@@ -267,10 +275,10 @@ Change one fictional value and see it in a reply. The mock reads its fictional b
 
 1. Stop every copy of the example (press **Ctrl+C** in the terminal running `make run`).
 2. Open `fixtures/fictional.json`. In the `checking` entry under `shares`, change `"available": "1200.50"` to another fictional amount, such as `"available": "1300.50"`.
-3. The saved fixture state records a fingerprint of this file, so the mock refuses a changed file until you start a new fictional exercise. Run the reset command from [Start a new fictional exercise](#start-a-new-fictional-exercise) below.
+3. The saved fixture state records a fingerprint of this file, so the mock refuses a changed file until you start a new fictional exercise. The file is the reference data (seed `0`), so put `DEMO_SEED=0` in front of the reset command from [Start a new fictional exercise](#start-a-new-fictional-exercise) below: `DEMO_SEED=0 make reset-fixture REASON="new fictional exercise"`.
 4. Run `make run` again and ask, “What is available in checking?” The reply should use your new amount.
 
-To undo the change, restore `"1200.50"` and start another new fictional exercise.
+To undo the change, restore `"1200.50"` and start another new fictional exercise with `DEMO_SEED=0`.
 
 ### Start a new fictional exercise
 
@@ -280,7 +288,7 @@ With every copy of the example stopped, run:
 make reset-fixture REASON="new fictional exercise"
 ```
 
-This audited reset preserves old databases and their hashes, acknowledges that unresolved transfers remain unresolved, and starts a new fictional exercise. It never resolves or retries an earlier transfer. Do not delete the state files in `.runtime/` to clear a hold.
+This audited reset preserves old databases and their hashes, acknowledges that unresolved transfers remain unresolved, and starts a new fictional exercise with a new demo data seed (or the one in `DEMO_SEED`, if set). It never resolves or retries an earlier transfer. Do not delete the state files in `.runtime/` to clear a hold.
 
 ## Troubleshooting
 
@@ -320,6 +328,7 @@ Wait for server readiness, check terminal errors, and use port `5005` in the Por
 | `contract_inputs.py`, `recorded_exchanges.py` | Four exact file hashes, OpenAPI checks, and the recorded traffic checked against newer files |
 | `vendor_models/`, `vendor_api.py`, `make_models.py` | Pydantic models generated from the four pinned Jack Henry files (names, types, required fields, allowed values; no vendor descriptions), and the map from each operation to its request and reply model. The host builds requests and reads replies through them |
 | `fixtures/fictional.json` | Fictional accounts, balances, transactions, and loan data |
+| `demo_data.py` | Seeded fictional data for each new exercise; seed `0` is `fixtures/fictional.json` |
 
 ### Supported banking operations
 

@@ -13,7 +13,6 @@ from copy import deepcopy
 from datetime import date
 from decimal import Decimal
 import fcntl
-import hashlib
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import hmac
 import json
@@ -26,9 +25,11 @@ import threading
 import yaml
 
 from contract_inputs import ContractError, OPERATIONS, SymitarContract, load_inputs
+import demo_data
+import vendor_api
 from vendor_client import MAX_BODY, WireRequest, WireResponse, _unique_object, _reject_constant
 
-FIXTURE = Path(__file__).resolve().parent / "fixtures" / "fictional.json"
+FIXTURE = demo_data.FIXTURE
 
 
 class MockRefused(Exception):
@@ -89,14 +90,23 @@ class FixtureState:
     Initialization is explicit and refuses an existing database. Recovery never
     reseeds, unlinks or clears state. The future stopped-fixture reset command
     must preserve old epochs and audit before deliberately initializing another.
+
+    The demo data seed is chosen once, when the state is initialized, and is
+    stored with it; ``seed`` is ignored when reopening. Seed 0 is the reference
+    data. Every reopen checks the stored fingerprint against
+    ``demo_data.data_hash(stored_seed)``. A database from before seeds existed
+    has no seed column and is treated as seed 0 with the same file check.
     """
-    def __init__(self, path: Path, epoch: str, *, initialize=False):
+    def __init__(self, path: Path, epoch: str, *, initialize=False, seed=demo_data.REFERENCE_SEED):
         self._connection = None
         self._lease = None
         self._mutex = threading.RLock()
+        self.seed = None
         path = Path(path).absolute()
         if path != path.resolve() or not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", epoch):
             raise MockRefused("invalid_fixture_location_or_epoch")
+        if type(seed) is not int or not 0 <= seed <= demo_data.MAX_SEED:
+            raise MockRefused("invalid_fixture_seed")
         try:
             if initialize:
                 # Preserve partially initialized files on failure; never reseed.
@@ -112,10 +122,9 @@ class FixtureState:
             self._connection.execute("PRAGMA synchronous=FULL")
             self._connection.execute("PRAGMA busy_timeout=1000")
             if initialize:
-                raw = FIXTURE.read_bytes()
-                fixture = json.loads(raw)
-                self._connection.execute("CREATE TABLE fixture (id INTEGER PRIMARY KEY CHECK(id=1), epoch TEXT NOT NULL, seed_hash TEXT NOT NULL, data TEXT NOT NULL, sends INTEGER NOT NULL)")
-                self._connection.execute("INSERT INTO fixture VALUES (1,?,?,?,0)", (epoch, hashlib.sha256(raw).hexdigest(), json.dumps(fixture)))
+                fixture = demo_data.generate(seed)
+                self._connection.execute("CREATE TABLE fixture (id INTEGER PRIMARY KEY CHECK(id=1), epoch TEXT NOT NULL, seed_hash TEXT NOT NULL, data TEXT NOT NULL, sends INTEGER NOT NULL, seed INTEGER NOT NULL)")
+                self._connection.execute("INSERT INTO fixture VALUES (1,?,?,?,0,?)", (epoch, demo_data.data_hash(seed), json.dumps(fixture), seed))
                 self._connection.commit()
                 for folder in (path.parent,):
                     descriptor = os.open(folder, os.O_RDONLY | os.O_DIRECTORY)
@@ -123,10 +132,14 @@ class FixtureState:
                         os.fsync(descriptor)
                     finally:
                         os.close(descriptor)
-            row = self._connection.execute("SELECT epoch,seed_hash,data,sends FROM fixture WHERE id=1").fetchone()
-            if row is None or row[0] != epoch or row[1] != hashlib.sha256(FIXTURE.read_bytes()).hexdigest():
+            columns = {item[1] for item in self._connection.execute("PRAGMA table_info(fixture)")}
+            seed_column = "seed" if "seed" in columns else str(demo_data.REFERENCE_SEED)
+            row = self._connection.execute(f"SELECT epoch,seed_hash,data,sends,{seed_column} FROM fixture WHERE id=1").fetchone()
+            if (row is None or row[0] != epoch or type(row[4]) is not int or not 0 <= row[4] <= demo_data.MAX_SEED
+                    or (initialize and row[4] != seed) or row[1] != demo_data.data_hash(row[4])):
                 raise MockRefused("fixture_epoch_or_seed_changed")
             json.loads(row[2])
+            self.seed = row[4]
         except Exception:
             self.close()
             raise MockRefused("fixture_state_unavailable") from None
@@ -275,6 +288,9 @@ class SymitarMock:
             self.contract.request(operation, body)
             def execute(data):
                 response, changed = self._response(operation, body, data)
+                # Built through the operation's generated model; a value that does not fit
+                # fails here and the fixture change is rolled back.
+                response = vendor_api.reply_body(operation, response)
                 self.contract.response(operation, 200, "application/json", response)
                 return WireResponse(200, "application/json", json.dumps(response, allow_nan=False).encode()), changed
             return self.state.transact(execute)

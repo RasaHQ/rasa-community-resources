@@ -25,7 +25,7 @@ Time:          Not yet measured
 
 You will run it in your browser using GitHub Codespaces. You do not need to install Python on your computer or have a Jack Henry account.
 
-**Your first goal:** open the assistant and ask, “What is my checking balance?” With the initial demo data, the expected answer is **USD 1,250.00 available**.
+**Your first goal:** open the assistant and ask, “What is my checking balance?” With the reference demo data (start with `DEMO_SEED=0 make run`), the expected answer is **USD 1,250.00 available**.
 
 ### What you will learn
 
@@ -198,6 +198,12 @@ The demo already has one fictional customer. You do not need to create a bank ac
 
 The wording may vary. Check the facts in the answer rather than expecting an exact sentence.
 
+Each start uses different fictional balances, loan amounts and transactions, so the amounts you hear can differ from the ones on this page. The first line that `make run` prints shows the seed, for example `Demo data seed: 4821; set DEMO_SEED=4821 to get the same data again.` Start with `DEMO_SEED=4821 make run` to get that same data again. To follow the checked sequence below exactly, start with the reference data:
+
+```bash
+DEMO_SEED=0 make run
+```
+
 ### The full checked sequence
 
 Start with:
@@ -320,7 +326,7 @@ A small exercise: add a payoff quote for a new date and see it in a reply.
 
 1. Open `silverlake_demo/mock.py`. Find the fictional loan account `7001001` in `ACCOUNTS`. Its `payoff` entry maps dates to amounts in cents: `{"2026-11-20": 412055, "2026-12-01": 413390}`.
 2. Add a new date, for example `"2026-12-15": 415000`. Do not change the `2026-11-20` value: the start-up check and the tests expect it.
-3. Stop the server with **Ctrl+C** and run `make run` again.
+3. Stop the server with **Ctrl+C** and run `DEMO_SEED=0 make run` (the reference data, where this exact amount applies).
 4. Ask: “What is my loan payoff on December 15, 2026?” The answer should now be **USD 4,150.00**.
 5. Undo your change when you finish. Do not use December 24, 2026; the tests expect that date to have no quote.
 

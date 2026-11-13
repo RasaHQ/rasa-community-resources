@@ -37,6 +37,15 @@ def request_body(key: str, value: dict) -> dict:
     return plain(REQUEST[key].model_validate(value))
 
 
+def reply_body(key: str, value: dict) -> dict:
+    """A success reply body built through its model (the mock's replies).
+
+    The value goes through dumps() and loads() first, so a float is refused rather than
+    coerced, and the model checks exactly what the wire will carry: a missing required
+    field or a value of the wrong type fails here, before the reply is sent."""
+    return plain(REPLY[key].model_validate(loads(dumps(value))))
+
+
 def plain(model: BaseModel):
     """The model as JSON values, with every number as an exact Decimal.
 

@@ -9,12 +9,18 @@ compatibility with a real SilverLake system.
 """
 from __future__ import annotations
 
+from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock, Thread
 import uuid
 import xml.etree.ElementTree as ET
 
+from xsdata.models.datatype import XmlDate
+
+from . import vendor_api
 from .contract import ContractError, SilverLakeContract, envelope, header, open_envelope, q, sub, NS, SOAP_ENV
+from .vendor_api import ModelError
+from .vendor_models import inquiry
 
 PATH = "/jxchange"
 
@@ -45,8 +51,26 @@ ERR_ZERO_AMOUNT = "100199"
 ERR_NOT_FOUND = "400001"  # fictional mock code for an unknown or unpermitted account
 
 
-def money(cents: int) -> str:
-    return f"{cents / 100:.2f}"
+def money(cents: int) -> Decimal:
+    """Whole cents as an exact Decimal amount (USD 1,250.00 for 125000); never a float."""
+    if isinstance(cents, bool) or not isinstance(cents, int):
+        raise TypeError("money is whole cents")
+    return Decimal(cents).scaleb(-2)
+
+
+def _account_id(ident: str, kind: str):
+    return inquiry.AccountIdCtype(acct_id=inquiry.AcctIdType(value=ident), acct_type=inquiry.AcctTypeType(value=kind))
+
+
+def _rs_header(*, search: bool = False, sent: int = 0, more: bool = False, cursor: str | None = None):
+    """The reply header as its dataclass: MsgRsHdr, or SrchMsgRsHdr for a search."""
+    jx = inquiry.JXchangeHdrCtype(audit_usr_id=inquiry.AuditUsrIdType(value="rasa-demo"),
+                                  audit_ws_id=inquiry.AuditWsIdType(value="rasa-demo"))
+    if not search:
+        return inquiry.MsgRsHdrCtype(j_xchange_hdr=jx)
+    return inquiry.SrchMsgRsHdrCtype(j_xchange_hdr=jx, sent_rec=inquiry.SentRecType(value=sent),
+                                     more_rec=inquiry.MoreRecType(value="true" if more else "false"),
+                                     cursor=inquiry.CursorType(value=cursor) if cursor else None)
 
 
 class BusinessError(Exception):
@@ -56,11 +80,15 @@ class BusinessError(Exception):
 
 
 class SilverLakeMock:
-    def __init__(self, contract: SilverLakeContract, *, fault: str = "none"):
+    def __init__(self, contract: SilverLakeContract, *, fault: str = "none", data: dict | None = None):
+        """`data` comes from demo_data.generate(seed); None means the reference data above."""
         if fault not in {"none", "transfer-response-lost"}:
             raise ValueError("unknown fault")
         self.contract, self.fault = contract, fault
-        self.accounts = {key: dict(value) for key, value in ACCOUNTS.items()}
+        if data is None:
+            data = {"customers": CUSTOMERS, "accounts": ACCOUNTS, "history": HISTORY}
+        self.customers, self.history = data["customers"], data["history"]
+        self.accounts = {key: dict(value) for key, value in data["accounts"].items()}
         self.lock = Lock()
         self.transfers = 0
 
@@ -79,14 +107,14 @@ class SilverLakeMock:
 
     def acct_srch(self, request):
         customer = self._text(request, "CustId")
-        if customer not in CUSTOMERS:
+        if customer not in self.customers:
             raise BusinessError(ERR_NOT_FOUND, "Customer not found")
         response = ET.Element(q("AcctSrchResponse"))
         hdr = header(response, search=True, response=True)
-        sub(hdr, "SentRec", str(len(CUSTOMERS[customer])))
+        sub(hdr, "SentRec", str(len(self.customers[customer])))
         sub(hdr, "MoreRec", "false")
         array = sub(response, "AcctSrchRecArray")
-        for ident in CUSTOMERS[customer]:
+        for ident in self.customers[customer]:
             record = sub(array, "AcctSrchRec")
             account_id = sub(record, "AccountId")
             sub(account_id, "AcctId", ident)
@@ -101,14 +129,10 @@ class SilverLakeMock:
         account = self._account(ident, {"D", "S"})
         if kind != account["type"]:
             raise BusinessError(ERR_NOT_FOUND, "Account not found")
-        response = ET.Element(q("AcctBalInqResponse"))
-        header(response, response=True)
-        in_acct = sub(response, "InAcctId")
-        sub(in_acct, "AcctId", ident)
-        sub(in_acct, "AcctType", kind)
-        sub(response, "CurBal", money(account["cur"]))
-        sub(response, "AvlBal", money(account["avail"]))
-        return response
+        return vendor_api.reply_element(inquiry.AcctBalInqResponse(
+            msg_rs_hdr=_rs_header(), in_acct_id=_account_id(ident, kind),
+            cur_bal=inquiry.CurBalType(value=money(account["cur"])),
+            avl_bal=inquiry.AvlBalType(value=money(account["avail"]))))
 
     def acct_hist_srch(self, request):
         ident = self._text(request, "InAcctId", "AcctId")
@@ -118,28 +142,21 @@ class SilverLakeMock:
         max_rec = int(self._text(request, "SrchMsgRqHdr", "MaxRec") or 3)
         cursor = self._text(request, "SrchMsgRqHdr", "Cursor")
         start = int(cursor) if cursor and cursor.isdigit() else 0
-        rows = HISTORY.get(ident, [])
+        rows = self.history.get(ident, [])
         page = rows[start:start + max_rec]
-        response = ET.Element(q("AcctHistSrchResponse"))
-        hdr = header(response, search=True, response=True)
-        sub(hdr, "SentRec", str(len(page)))
         more = start + max_rec < len(rows)
-        sub(hdr, "MoreRec", "true" if more else "false")
-        if more:
-            sub(hdr, "Cursor", str(start + max_rec))
-        array = sub(response, "AcctHistSrchRecArray")
-        for posted, cents, description in page:
-            dep = sub(sub(array, "AcctHistSrchRec"), "DepHistSrchRec")
-            account_id = sub(dep, "DepAcctId")
-            sub(account_id, "AcctId", ident)
-            sub(account_id, "AcctType", account["type"])
-            sub(dep, "TrnCodeCode", "100" if cents > 0 else "200")
-            sub(dep, "TrnCodeDesc", description)
-            sub(dep, "PostDt", posted)
-            sub(dep, "Amt", money(abs(cents)))
-            sub(dep, "TrnType", "Credit" if cents > 0 else "Debit")
-            sub(dep, "AffCode", "0")
-        return response
+        records = [inquiry.AcctHistSrchRecCtype(dep_hist_srch_rec=inquiry.DepHistSrchRecCtype(
+            dep_acct_id=_account_id(ident, account["type"]),
+            trn_code_code=inquiry.TrnCodeCodeType(value="100" if cents > 0 else "200"),
+            trn_code_desc=inquiry.TrnCodeDescType(value=description),
+            post_dt=inquiry.PostDtType(value=XmlDate.from_string(posted)),
+            amt=inquiry.AmtType(value=money(abs(cents))),
+            trn_type=inquiry.TrnTypeType(value="Credit" if cents > 0 else "Debit"),
+            aff_code=inquiry.AffCodeType(value="0"))) for posted, cents, description in page]
+        return vendor_api.reply_element(inquiry.AcctHistSrchResponse(
+            srch_msg_rs_hdr=_rs_header(search=True, sent=len(page), more=more,
+                                       cursor=str(start + max_rec) if more else None),
+            acct_hist_srch_rec_array=inquiry.AcctHistSrchRecArrayAtype(acct_hist_srch_rec=records)))
 
     def acct_inq(self, request):
         ident = self._text(request, "InAcctId", "AcctId")
@@ -149,13 +166,14 @@ class SilverLakeMock:
         response = ET.Element(q("AcctInqResponse"))
         header(response, response=True)
         x_info = sub(sub(response, "LnAcctInqRec"), "x_LnInfoRec")
-        info = sub(x_info, "LnInfoRec")
-        # Order follows the schema sequence: PmtAmtDue, PmtAmt, PastDueAmt, NxtSchedPmtDt, NxtPayDt.
-        sub(info, "PmtAmtDue", money(account["due"]))
-        sub(info, "PmtAmt", money(account["regular"]))
-        sub(info, "PastDueAmt", money(account["past_due"]))
-        sub(info, "NxtSchedPmtDt", account["next_sched"])
-        sub(info, "NxtPayDt", account["next_pay"])
+        # AcctInqResponse has no generated class; its loan payment record does (vendor_api.LOAN_PAYMENT).
+        x_info.append(vendor_api.reply_element(vendor_api.LOAN_PAYMENT(
+            pmt_amt_due=inquiry.PmtAmtDueType(value=money(account["due"])),
+            pmt_amt=inquiry.PmtAmtType(value=money(account["regular"])),
+            past_due_amt=inquiry.PastDueAmtType(value=money(account["past_due"])),
+            nxt_sched_pmt_dt=inquiry.NxtSchedPmtDtType(value=XmlDate.from_string(account["next_sched"])),
+            nxt_pay_dt=inquiry.NxtPayDtType(value=XmlDate.from_string(account["next_pay"]))),
+            vendor_api.LOAN_PAYMENT_PATH[-1]))
         loan_id = sub(x_info, "LoanAcctId")
         sub(loan_id, "AcctId", ident)
         sub(loan_id, "AcctType", "L")
@@ -166,17 +184,11 @@ class SilverLakeMock:
         ident = self._text(request, "AccountId", "AcctId")
         account = self._account(ident, {"L"})
         wanted = self._text(request, "EffDt")
-        response = ET.Element(q("LnPayoffInqResponse"))
-        header(response, response=True)
-        account_id = sub(response, "AccountId")
-        sub(account_id, "AcctId", ident)
-        sub(account_id, "AcctType", "L")
-        if wanted:
-            sub(response, "EffDt", wanted)
-        amount = account["payoff"].get(wanted)
-        if amount is not None:  # no quote is calculated for any other date
-            sub(response, "PayoffAmt", money(amount))
-        return response
+        amount = account["payoff"].get(wanted)  # no quote is calculated for any other date
+        return vendor_api.reply_element(inquiry.LnPayoffInqResponse(
+            msg_rs_hdr=_rs_header(), account_id=_account_id(ident, "L"),
+            eff_dt=inquiry.EffDtType(value=XmlDate.from_string(wanted)) if wanted else None,
+            payoff_amt=inquiry.PayoffAmtType(value=money(amount)) if amount is not None else None))
 
     def xfer_add(self, request):
         if request.find(q("ACHXferRec")) is not None or request.find(q("FutXferRec")) is not None:
@@ -187,8 +199,8 @@ class SilverLakeMock:
         source = self._account(source_id, {"D", "S"})
         target = self._account(target_id, {"D", "S"})
         try:
-            cents = round(float(amount_text) * 100)
-        except (TypeError, ValueError):
+            cents = int((Decimal(amount_text) * 100).to_integral_value(ROUND_HALF_EVEN))  # exact, never a float
+        except (TypeError, ValueError, InvalidOperation, OverflowError):
             raise BusinessError(ERR_ZERO_AMOUNT, "Invalid amount") from None
         if cents <= 0:
             raise BusinessError(ERR_ZERO_AMOUNT, "Amount must be greater than zero")
@@ -226,7 +238,7 @@ class SilverLakeMock:
                 response = getattr(self, self.HANDLERS[name])(request)
             except BusinessError as error:
                 return 500, fault("Server", error.description, error.code), False
-            except ContractError:
+            except (ContractError, ModelError):
                 return 500, fault("Server", "Mock produced an invalid reply"), False
             if name == "XferAdd" and self.fault == "transfer-response-lost":
                 return 0, b"", True
