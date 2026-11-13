@@ -1373,6 +1373,46 @@ class TestIndexRows(unittest.TestCase):
             self.assertEqual(self._findings(), [])
 
 
+class TestBankReadmes(unittest.TestCase):
+    GOOD = "# Title\n\n" + "".join(f"## {title}\n\ntext\n\n### detail\n\n"
+                                    for title in lint_repo.BANK_README_HEADINGS)
+
+    def test_the_shared_layout_is_clean_and_code_blocks_are_ignored(self):
+        with FakeRepo() as repo:
+            repo.index("examples/jack-henry-symitar/README.md",
+                       self.GOOD + "```sh\n## not a heading\n```\n")
+            self.assertEqual(lint_repo.check_bank_readmes(), [])
+
+    def test_a_missing_extra_or_reordered_heading_is_named(self):
+        titles = list(lint_repo.BANK_README_HEADINGS)
+        cases = {
+            "missing": "".join(f"## {t}\n" for t in titles if t != "Change it"),
+            "extra": "".join(f"## {t}\n" for t in titles) + "## Run the checks\n",
+            "order": "".join(f"## {t}\n" for t in [titles[1], titles[0]] + titles[2:]),
+        }
+        expected = {"missing": "missing the heading '## Change it'",
+                    "extra": "'## Run the checks' is not one of",
+                    "order": "out of order"}
+        for case, body in cases.items():
+            with self.subTest(case=case), FakeRepo() as repo:
+                repo.index("examples/fiserv-premier-11.0.0-prm/README.md", "# T\n" + body)
+                found = lint_repo.check_bank_readmes()
+                self.assertTrue(any(expected[case] in f.message for f in found), found)
+
+    def test_an_inner_fence_does_not_end_a_longer_code_block(self):
+        body = self.GOOD + "````markdown\n```sh\n## not a heading\n```\n## still not a heading\n````\n"
+        with FakeRepo() as repo:
+            repo.index("examples/jack-henry-symitar/README.md", body)
+            self.assertEqual(lint_repo.check_bank_readmes(), [])
+
+    def test_absent_examples_are_skipped_and_a_missing_readme_is_reported(self):
+        with FakeRepo() as repo:
+            self.assertEqual(lint_repo.check_bank_readmes(), [])
+            (repo.root / "examples/jack-henry-silverlake").mkdir(parents=True)
+            found = lint_repo.check_bank_readmes()
+        self.assertEqual([f.message for f in found], ["missing README.md"])
+
+
 class TestHeroesLayout(unittest.TestCase):
     """One shape per wave, so no cohort is half-filed."""
 

@@ -78,6 +78,7 @@ Every check below exists because the failure it describes actually happened here
 | `snapshot-pin` | frozen | A wave project's `pyproject.toml`, `uv.lock`, and README `Verified with:` all name the same version — and a lock exists at all | `uv lock` in the resource, then make the three agree |
 | `index-rows` | both | The resource is listed in `community/README.md` or in its wave charter | Add the catalog row |
 | `heroes-layout` | frozen | Wave slugs are `wave-NN-<theme>`; every project sits at `<wave>/projects/<project>/`; every wave is listed in `heroes/README.md` | Rename or move; add the wave row |
+| `bank-readme` | maintained | Each bank example README (`examples/jack-henry-*`, `examples/fiserv-*`) has exactly these `##` headings, in this order: What this example shows, What you need, Start it, Try these conversations, What is happening, Vendor files and versions, Change it, Troubleshooting, Files | Add the missing heading, or turn an extra `##` into a `###` under the closest one |
 
 ### Pinning GitHub Actions
 

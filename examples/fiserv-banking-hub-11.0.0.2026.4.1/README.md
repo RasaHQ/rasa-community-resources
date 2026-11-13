@@ -9,7 +9,13 @@
 - **You should see:** `Vendor definitions: found and hash-verified`, then `Rasa server is up and running`; only then open the printed Inspector link.
 <!-- codespaces:end -->
 
-Talk to a fictional bank by voice or by typing. This example is built on Fiserv's **current public Banking Hub release** (version 11.0.0.2026.4.1), and it is honest about what that release lets it say. The assistant lists your accounts, reads the available balance of a `DDA` account, tells you a loan's next payment amount and date, and reviews and sends an own-account transfer only after you confirm it. For recent transactions or a payoff, it tells you plainly that this release cannot supply them, and why.
+## What this example shows
+
+Talk to a fictional bank by voice or by typing. The example is built and tested on Fiserv's **Banking Hub release 11.0.0.2026.4.1**, Fiserv's current public Banking Hub release. The release file and its version facts are in [Vendor files and versions](#vendor-files-and-versions).
+
+### About this example
+
+This example is honest about what that release lets it say. The assistant lists your accounts, reads the available balance of a `DDA` account, tells you a loan's next payment amount and date, and reviews and sends an own-account transfer only after you confirm it. For recent transactions or a payoff, it tells you plainly that this release cannot supply them, and why.
 
 That is the lesson. A published API definition can describe a field without saying which values fill it. An assistant built on it must not guess: it uses a value only where Fiserv publishes one, says where that value comes from, and says "not available" everywhere else.
 
@@ -29,19 +35,21 @@ Audience:      Developers building banking voice assistants
 Time:          Not yet measured
 ```
 
-## Before you start
+## What you need
 
-Get [a Rasa license](https://rasa.community/keys/#rasa), [an OpenAI key](https://rasa.community/keys/#openai), and [a Deepgram key](https://rasa.community/keys/#deepgram). Create only these three for this mock; no Fiserv trial credentials are needed. Model, speech, and Codespaces usage can incur charges.
-
-Follow the download and upload steps before running `make run`. A setup log ending in `READY` means the environment is prepared. Wait for `Rasa server is up and running` before opening the printed Inspector link. For a typed conversation, click **Type your message**, enter the prompt, and press **Enter**. A typed check does not verify speech.
+Get [a Rasa license](https://rasa.community/keys/#rasa), [an OpenAI key](https://rasa.community/keys/#openai), and [a Deepgram key](https://rasa.community/keys/#deepgram). The page <https://rasa.community/keys/> explains how to get each one. Create only these three for this mock; no Fiserv trial credentials are needed. Model, speech, and Codespaces usage can incur charges.
 
 You need three things. Each takes a few minutes and costs nothing to set up.
 
 1. **A free GitHub account.** Sign in at <https://github.com>.
 2. **Three Codespaces secrets** with the Rasa licence and the two speech and language keys: `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`. Add each at <https://github.com/settings/codespaces> under **Secrets**: click **New secret**, type the name exactly, paste the value, and under **Repository access** choose this repository. Never type these into a file or a chat.
-3. **Fiserv's release file** (step 1 below). It is free and public; you do not need to sign in.
+3. **Fiserv's release file** (step 1 in [Start it](#start-it)). It is free and public; you do not need to sign in.
 
-## Walkthrough
+## Start it
+
+This example runs only in GitHub Codespaces, which gives everyone the same tested setup. There are no local setup steps: running it on your own computer is not tested or supported.
+
+Follow the download and upload steps before running `make run`. A setup log ending in `READY` means the environment is prepared. Wait for `Rasa server is up and running` before opening the printed Inspector link. For a typed conversation, click **Type your message**, enter the prompt, and press **Enter**. A typed check does not verify speech.
 
 Follow the steps in order. Take your time: the first start-up has a long wait.
 
@@ -76,9 +84,13 @@ Follow the steps in order. Take your time: the first start-up has a long wait.
 2. Type `make run` and press Enter.
 3. Wait. The first start takes a little while.
 
+```bash
+make run
+```
+
 **Checkpoint:** the terminal prints `Vendor definitions: found and hash-verified` and a line starting `Open the Inspector:` followed by a long link. The link is not usable yet: keep waiting until the terminal also prints `Rasa server is up and running`.
 
-If it prints `Not ready.` instead, it says what is missing in plain words: usually the release file is not in `vendor-inputs`, or one of the three secrets is not set for this repository.
+If it prints `Not ready.` instead, it says what is missing in plain words: usually the release file is not in `vendor-inputs`, or one of the three secrets is not set for this repository. See [Troubleshooting](#troubleshooting).
 
 ### 5. Open the Inspector
 
@@ -89,10 +101,39 @@ If it prints `Not ready.` instead, it says what is missing in plain words: usual
 
 ### 6. Choose typing or speaking
 
-- **To type:** click in the message box at the bottom of the Inspector, type a sentence from the table below and press Enter. Typing does not test microphone input or spoken replies.
+- **To type:** click in the message box at the bottom of the Inspector, type a sentence from the table in [Try these conversations](#try-these-conversations) and press Enter. Typing does not test microphone input or spoken replies.
 - **To speak:** click the microphone, then **Allow** when your browser asks. Use only fictional things. Do not say a real name, account or card number: the speech provider receives your audio.
 
 ### 7. Talk to the bank
+
+Go to [Try these conversations](#try-these-conversations) and send each sentence there.
+
+### 8. Stop it
+
+Click inside the terminal and press **Ctrl+C**.
+
+**Checkpoint:** the terminal returns to a prompt and the Inspector tab stops working.
+
+### 9. Delete the Codespace
+
+A Codespace you stop but do not delete keeps using your storage. Before deleting it, preserve source changes and unique receipts or private state you need. Keep vendor inputs private.
+
+1. Open <https://github.com/codespaces>.
+2. Find this Codespace, click the three dots on its row, then **Delete**.
+
+## Try these conversations
+
+Start with these lines, one at a time:
+
+- "What accounts do I have?"
+- "What is the balance of DDA-A?"
+- "When is my next loan payment on LOAN-A?"
+- "What did I spend recently on DDA-A?"
+- "Verify me."
+- "Move 25 dollars from DDA-A to SDA-A."
+- "Confirm transfer."
+
+### The full checked sequence
 
 The assistant already knows one fictional customer. Send each sentence and wait for the reply. The account names use the release's own codes: `DDA`, `SDA` and `LOAN`. The release does not say which product each code names, so the assistant never calls them checking or savings.
 
@@ -123,20 +164,25 @@ Now try a transfer. Send these one at a time, in this order:
 
 The sound is a single synthetic voice. If it takes more than a couple of seconds to answer, note how long and tell the maintainers: response time is something this project is still measuring.
 
-### 8. Stop it
+## What is happening
 
-Click inside the terminal and press **Ctrl+C**.
+```text
+You (voice or typing, in the Inspector)
+  -> Rasa assistant (model + the banking skill in skills/banking/)
+  -> MCP server (bh_demo/server.py, exactly seven tools)
+  -> private host (bh_demo/host.py: identity simulator, permitted reads,
+     transfer review, one confirmed send, private journal)
+  -> local mock bank (bh_demo/mock.py), built from Fiserv's release file
+     and checked against it by bh_demo/contract.py
+```
 
-**Checkpoint:** the terminal returns to a prompt and the Inspector tab stops working.
+Nothing in this chain contacts Fiserv.
 
-### 9. Delete the Codespace
+The operations used are the party account relationship inquiry (`/partyacctrel/secured`), the account inquiry (`/accounts/secured`) and Add Transfer (`/transfers`). The transaction definition (`/acctTrn/secured`) is loaded too, so the tests can prove the error described below.
 
-A Codespace you stop but do not delete keeps using your storage. Before deleting it, preserve source changes and unique receipts or private state you need. Keep vendor inputs private.
+The assistant also has two Rasa-side triggers, `banking_refresh_verification` and `banking_submit_transfer`. They are not MCP tools and carry no authority: the host refreshes verification only from your own words "verify me", and sends a transfer only after your very next words are exactly "confirm transfer".
 
-1. Open <https://github.com/codespaces>.
-2. Find this Codespace, click the three dots on its row, then **Delete**.
-
-## What the release supplies, and where each value comes from
+### What the release supplies, and where each value comes from
 
 Fiserv's release files describe the shape of each reply. For some fields they also list the allowed values; for others they leave the values to each bank. This example uses a value only when Fiserv publishes it. Where the release lists none but Fiserv's official sample collection shows one, the example says so and uses exactly that value.
 
@@ -157,7 +203,68 @@ A transfer is the one call that changes money, so a reply the example cannot rea
 
 Fiserv may publish a corrected release. This example then needs a reviewed update; it will not accept a changed file on its own.
 
-## What is inside
+### Honest limits
+
+- **Wire shape, not behaviour.** The mock validates every request and its own replies against the release. That does not tell you how a real Fiserv system answers.
+- **No product claim.** These are Fiserv's generic Banking Hub definitions. They do not say which values a particular Fiserv core uses.
+- **One mock value is invented.** The release requires an account status code but declares no values for it. The mock sends `FictionalMockStatus`; the client never reads it.
+- **Identity is simulated.** One fixed fictional caller. This is not bank sign-in.
+- **Older samples for two labels.** `Avail` and `Total` come from Fiserv's official R2026.3.3 sample collection, not from this release (see above).
+- **A private journal.** The host keeps a small local journal so an unknown transfer outcome blocks the next transfer, even after a restart. It holds no amount, account or transcript.
+- **Not done yet:** a recorded spoken run and response-time measurement.
+
+## Vendor files and versions
+
+- **Vendor release:** Fiserv Banking Hub release 11.0.0.2026.4.1.
+- **Release file:** `esf-service-swagger-release-11.0.0.2026.4.1.zip`, about 1.1 MB, from Fiserv's Banking Hub **Resources** page under **API Specification** (**Download API Specifications (v11.0.0.2026.4.1)**).
+- **Where it goes:** `vendor-inputs/` inside this folder. The file stays out of Git.
+- **Pinned:** this example is pinned to 11.0.0.2026.4.1. It checks the file when it starts and refuses any other file.
+- **What it reads:** `bh_demo/contract.py` builds request and response checks from four of Fiserv's release files.
+- **Known error in the release:** the transaction definition, `AcctTrnService` 11.0.0 (see [What is happening](#what-is-happening)).
+- **Older sample labels:** `Avail` and `Total` come from Fiserv's official Premier sample collection R2026.3.3, not from this release.
+- **Runtime:** rasa-pro 3.21.0.dev5, Python 3.12.
+
+The exact files and their hashes are in [VENDOR-FILES.md](VENDOR-FILES.md), and what changed over time is in [CHANGELOG.md](CHANGELOG.md).
+
+## Change it
+
+A small exercise: change a fictional balance in the mock bank and hear the new amount in a reply.
+
+1. Open `bh_demo/mock.py`. Find the `ACCOUNTS` table. The first row, `"5550010001"`, is the account the assistant calls `DDA-A`. Money is kept in cents, so `"avail": 125000` is USD 1,250.00.
+2. Change `125000` to another number, for example `99900` (USD 999.00). Save the file.
+3. Stop the example with **Ctrl+C** if it is running, then start it again with `make run`.
+4. In the Inspector, ask "What is the balance of DDA-A?". The reply now gives your new amount.
+5. Change the number back to `125000` when you are done. The tests and the checked sequence in [Try these conversations](#try-these-conversations) expect USD 1,250.00.
+
+## Troubleshooting
+
+When something is missing, `make run` stops and prints a line that starts with `Not ready.` and says what to fix.
+
+### 1. The release file is missing
+
+The terminal says `Not ready. Vendor definitions not supplied.` and names the file to download.
+
+Fix: do [steps 1 and 3 of Start it](#start-it). The file must be named exactly `esf-service-swagger-release-11.0.0.2026.4.1.zip` and sit in `vendor-inputs/` inside the `fiserv-banking-hub-11.0.0.2026.4.1` folder. Do not unzip it.
+
+### 2. The release file is not the right one
+
+The terminal says `Not ready. The file in vendor-inputs/ is not the expected Fiserv download. Delete it and download it again from the official page.`
+
+Fix: this example is pinned to 11.0.0.2026.4.1 and refuses any other file. Delete the file, then download version 11.0.0.2026.4.1 again from Fiserv's **Resources** page (step 1 of [Start it](#start-it)).
+
+### 3. A secret is missing
+
+The terminal says `Not ready. Add these Codespaces secrets, then rebuild:` followed by the names that are missing.
+
+Fix: add each named secret (`RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`) as described in [What you need](#what-you-need), with **Repository access** set to this repository. Then rebuild the Codespace. The Fiserv mock needs no Fiserv secrets.
+
+### The Inspector link does not open
+
+Wait until the terminal prints `Rasa server is up and running`. If the link still does not open, click the **Ports** tab next to the terminal, find port `5005`, and click the small globe icon on its row.
+
+## Files
+
+### What is inside
 
 | File or folder | What it does |
 |---|---|
@@ -169,25 +276,11 @@ Fiserv may publish a corrected release. This example then needs a reviewed updat
 | `lib/`, `hooks.py` | Presentation controls: your aliases at the start, no repeated text, and only the host announces a review or an acceptance |
 | `skills/banking/` | The assistant's skill and its tool bindings |
 
-The operations used are the party account relationship inquiry (`/partyacctrel/secured`), the account inquiry (`/accounts/secured`) and Add Transfer (`/transfers`). The transaction definition (`/acctTrn/secured`) is loaded too, so the tests can prove the error described above.
-
-The assistant also has two Rasa-side triggers, `banking_refresh_verification` and `banking_submit_transfer`. They are not MCP tools and carry no authority: the host refreshes verification only from your own words "verify me", and sends a transfer only after your very next words are exactly "confirm transfer".
-
 ### What stays out of this repository
 
 No Fiserv file is stored here: no ZIP, no extracted definition and no copy of its schemas. `vendor-inputs/` is ignored by Git. If the file you supply is not exactly the one this example was written for, it refuses to start rather than guess.
 
-### Honest limits
-
-- **Wire shape, not behaviour.** The mock validates every request and its own replies against the release. That does not tell you how a real Fiserv system answers.
-- **No product claim.** These are Fiserv's generic Banking Hub definitions. They do not say which values a particular Fiserv core uses.
-- **One mock value is invented.** The release requires an account status code but declares no values for it. The mock sends `FictionalMockStatus`; the client never reads it.
-- **Identity is simulated.** One fixed fictional caller. This is not bank sign-in.
-- **Older samples for two labels.** `Avail` and `Total` come from Fiserv's official R2026.3.3 sample collection, not from this release (see above).
-- **A private journal.** The host keeps a small local journal so an unknown transfer outcome blocks the next transfer, even after a restart. It holds no amount, account or transcript.
-- **Not done yet:** a recorded spoken run and response-time measurement.
-
-## For developers
+### For developers
 
 ```bash
 make test           # source, host and server tests; contract tests skip without the release file

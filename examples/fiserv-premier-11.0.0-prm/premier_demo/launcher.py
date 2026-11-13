@@ -56,15 +56,15 @@ def main(project):
         return 2
     except VendorChanged as changed:
         print("Not ready. Fiserv has changed something this example uses since the files it was tested with ("
-              + TESTED_WITH + "): " + "; ".join(changed.changes) + '. See "Vendor file versions" in README.md.')
+              + TESTED_WITH + "): " + "; ".join(changed.changes) + '. See "Vendor files and versions" in README.md.')
         return 2
     except ContractError as error:
         if str(error) == "could_not_check":
             print("Not ready. Could not check your Fiserv download against what this example sends and reads, "
-                  'so it will not start on it. See "Vendor file versions" in README.md.')
+                  'so it will not start on it. See "Vendor files and versions" in README.md.')
             return 2
         print("Not ready. The file in vendor-inputs/ cannot be read the way this example expects. "
-              'See "Vendor file versions" in README.md.')
+              'See "Vendor files and versions" in README.md.')
         return 2
     if contract.newer_archive or contract.newer_files:
         print("Your Fiserv download differs from the one this example was tested with (" + TESTED_WITH

@@ -1245,6 +1245,78 @@ def check_index_rows(projects: list[Project]) -> list[Finding]:
     return findings
 
 
+# The four direct bank examples share one README layout for junior developers:
+# the same second-level headings, in the same order, and no others.
+BANK_EXAMPLES = ("jack-henry-symitar", "jack-henry-silverlake", "fiserv-premier-11.0.0-prm",
+                 "fiserv-banking-hub-11.0.0.2026.4.1")
+BANK_README_HEADINGS = (
+    "What this example shows",
+    "What you need",
+    "Start it",
+    "Try these conversations",
+    "What is happening",
+    "Vendor files and versions",
+    "Change it",
+    "Troubleshooting",
+    "Files",
+)
+
+
+def _level_two_headings(text: str) -> list[tuple[int, str]]:
+    """(line, title) for each '## ' heading outside fenced code blocks."""
+    headings, fence = [], None  # the open fence's character and length, if any
+    for number, line in enumerate(text.splitlines(), 1):
+        stripped = line.lstrip()
+        marker = re.match(r"(`{3,}|~{3,})", stripped)
+        if marker:
+            run = marker.group(1)
+            if fence is None:
+                fence = (run[0], len(run))
+                continue
+            # Only a run of the same character, at least as long, and with nothing
+            # after it closes the block; a shorter inner fence is block content.
+            if run[0] == fence[0] and len(run) >= fence[1] and not stripped[len(run):].strip():
+                fence = None
+                continue
+        if fence is None and line.startswith("## "):
+            headings.append((number, line[3:].strip()))
+    return headings
+
+
+def check_bank_readmes() -> list[Finding]:
+    """Each bank example README has exactly the shared headings, in order."""
+    findings: list[Finding] = []
+    for name in BANK_EXAMPLES:
+        folder = REPO_ROOT / "examples" / name
+        if not folder.is_dir():
+            continue
+        readme = folder / "README.md"
+        rel = f"examples/{name}/README.md"
+        if not readme.is_file():
+            findings.append(Finding("bank-readme", rel, None, "missing README.md"))
+            continue
+        found = _level_two_headings(_read(readme))
+        titles = [title for _, title in found]
+        if titles == list(BANK_README_HEADINGS):
+            continue
+        for title in BANK_README_HEADINGS:
+            if title not in titles:
+                findings.append(Finding("bank-readme", rel, None,
+                                        f"missing the heading '## {title}'"))
+        for line, title in found:
+            if title not in BANK_README_HEADINGS:
+                findings.append(Finding("bank-readme", rel, line,
+                                        f"'## {title}' is not one of the shared bank README headings; "
+                                        f"make it a '###' under the closest one"))
+        present = [title for title in titles if title in BANK_README_HEADINGS]
+        expected = [title for title in BANK_README_HEADINGS if title in present]
+        if present != expected or len(present) != len(set(present)):
+            findings.append(Finding("bank-readme", rel, None,
+                                    "headings are out of order or repeated; the order is: "
+                                    + " > ".join(BANK_README_HEADINGS)))
+    return findings
+
+
 def check_heroes_layout() -> list[Finding]:
     """Rasa Heroes cohorts follow one shape, so a wave is never half-filed."""
     findings: list[Finding] = []
@@ -1364,6 +1436,7 @@ CHECKS = {
     # resource in either is unreachable if its index does not list it.
     "index-rows": lambda p, s, e: check_index_rows(p + s),
     "heroes-layout": lambda p, s, e: check_heroes_layout(),
+    "bank-readme": lambda p, s, e: check_bank_readmes(),
 }
 
 

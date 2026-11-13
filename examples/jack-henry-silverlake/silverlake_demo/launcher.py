@@ -61,11 +61,11 @@ def main(project):
         return 2
     except VendorChanged as error:
         print("Not ready. Jack Henry has changed something this example uses since the files it was tested with ("
-              + TESTED_WITH + "): " + "; ".join(error.changes) + '. See "Vendor file versions" in README.md.')
+              + TESTED_WITH + "): " + "; ".join(error.changes) + '. See "Vendor files and versions" in README.md.')
         return 2
     except ContractError:
         print("Not ready. The file in vendor-inputs/ cannot be read the way this example expects. "
-              'See "Vendor file versions" in README.md.')
+              'See "Vendor files and versions" in README.md.')
         return 2
     if contract.newer_archive:
         print("Your Jack Henry download differs from the one this example was tested with (" + TESTED_WITH
