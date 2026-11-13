@@ -136,10 +136,15 @@ async def _unresolved(host):
     if host.last_submit_state == "unknown":
         return True
     try:
-        data = _payload(await host.client.call(host.session, "banking_transfer_status", {}))
+        result = await host.client.call(host.session, "banking_transfer_status", {})
+        if result.isError:
+            return True  # the status was never learned: never invite a new transfer
+        data = _payload(result)
     except Exception:
         return True  # cannot tell: never invite a new transfer
-    return data.get("state") in {"unknown", "pending"}
+    # Only a successful read of a recognized, resolved state allows new-request advice;
+    # unknown, pending, missing or unrecognized all fail closed.
+    return data.get("state") not in {"none", "accepted", "refused", "rejected"}
 
 
 async def _read(context, name, arguments):
