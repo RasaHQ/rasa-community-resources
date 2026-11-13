@@ -207,7 +207,9 @@ Ctrl+C stops the application, not the Codespace. Stopping a Codespace ends its c
 
 ## Try these conversations
 
-**Your first goal:** open the assistant and ask, “What is my checking balance?” With the initial demo data, the expected answer is **USD 1,250.00 available**.
+Each start uses different fictional amounts and transactions. The first line the start-up prints shows the seed, for example `Demo data seed: 4711; set DEMO_SEED=4711 to get the same data again.` Start with `DEMO_SEED=4711 make run` to get that run's data again. The expected amounts and dates below are the reference data; to follow them exactly, start with `DEMO_SEED=0 make run`.
+
+**Your first goal:** open the assistant and ask, “What is my checking balance?” With the reference demo data (start with `DEMO_SEED=0 make run`), the expected answer is **USD 1,250.00 available**.
 
 Then type or say these, one at a time:
 

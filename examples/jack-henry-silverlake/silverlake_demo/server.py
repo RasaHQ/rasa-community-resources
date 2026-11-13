@@ -267,8 +267,11 @@ def serve_backend():
     except ContractError as exc:
         print(str(exc), flush=True)
         raise SystemExit(3)
+    from .demo_data import REFERENCE_SEED, choose_seed, generate
+    # The launcher chose and printed the seed and passes it in DEMO_SEED; without it, use the reference data.
+    seed = choose_seed(os.environ) if "DEMO_SEED" in os.environ else REFERENCE_SEED
     mock_socket = socket.socket(fileno=int(mock_fd))
-    serve(SilverLakeMock(contract, fault=fault), mock_socket)
+    serve(SilverLakeMock(contract, fault=fault, data=generate(seed)), mock_socket)
     client = SilverLakeClient(contract, f"http://127.0.0.1:{mock_socket.getsockname()[1]}")
     folder = Path(os.environ.get("SILVERLAKE_JOURNAL_DIR") or
                   Path(__file__).resolve().parents[1] / "var" / "private" / "journal")

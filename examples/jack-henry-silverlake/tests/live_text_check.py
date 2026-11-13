@@ -1,8 +1,9 @@
 """Manual end-to-end text check through the REST channel. NOT part of `make test`.
 
 It starts the example (`run_demo.py --text-api`), sends the README conversation as
-text and checks the answers. It needs the jXchange archive in vendor-inputs/ and the three
-Codespaces secrets, and it makes real model calls (a few cents). Run it only on
+text and checks the answers on the reference data (it sets DEMO_SEED=0). It needs
+the jXchange archive in vendor-inputs/ and the three Codespaces secrets, and it
+makes real model calls (a few cents). Run it only on
 purpose:  uv run --locked python tests/live_text_check.py
 """
 import json
@@ -42,7 +43,7 @@ def say(sender, message):
 
 def main():
     process = subprocess.Popen([sys.executable, "run_demo.py", "--text-api", "--port", str(PORT)], cwd=ROOT,
-                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=dict(os.environ))
+                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env={**os.environ, "DEMO_SEED": "0"})
     try:
         deadline = time.time() + 180
         for line in process.stdout:

@@ -257,6 +257,7 @@ def serve_backend():
     from .client import BankingHubClient
     from .contract import ContractError, BankingHubContract
     from .host import Journal
+    from .demo_data import REFERENCE_SEED, choose_seed, generate
     from .mock import MOCK_ORGANIZATION, BankingHubMock, serve
     mock_fd, mcp_fd, fault = sys.argv[1], sys.argv[2], sys.argv[3]
     try:
@@ -265,7 +266,9 @@ def serve_backend():
         print(str(exc), flush=True)
         raise SystemExit(3)
     mock_socket = socket.socket(fileno=int(mock_fd))
-    mock = BankingHubMock(contract, fault=fault)
+    # The launcher chose the seed and printed it; it passes it here as DEMO_SEED.
+    seed = choose_seed(os.environ) if "DEMO_SEED" in os.environ else REFERENCE_SEED
+    mock = BankingHubMock(contract, fault=fault, data=generate(seed))
     serve(mock, mock_socket)
     port = mock_socket.getsockname()[1]
     client = BankingHubClient(contract, f"http://127.0.0.1:{port}", MOCK_ORGANIZATION)

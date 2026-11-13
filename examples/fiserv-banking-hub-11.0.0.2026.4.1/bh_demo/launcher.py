@@ -14,6 +14,7 @@ from urllib.parse import urlencode
 
 from .client import BankingHubClient  # noqa: F401  (imported to fail early if broken)
 from .contract import ContractError, MissingContractInput, BankingHubContract
+from .demo_data import choose_seed, seed_line
 
 EXPECTED_RASA = "3.21.0.dev5"
 SECRETS = ("RASA_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY")
@@ -48,6 +49,13 @@ def main(project):
     if not 1024 <= args.port <= 65535:
         parser.error("choose an unprivileged Inspector port")
     project = Path(project).resolve()
+    # Each start draws new fictional amounts unless DEMO_SEED pins them; the seed is the first line.
+    try:
+        seed = choose_seed(os.environ)
+    except ValueError as bad:
+        print("Not ready. " + str(bad) + " Use DEMO_SEED=0 for the README's checked sequence.")
+        return 2
+    print(seed_line(seed), flush=True)
     # Step 1: the learner-supplied vendor definitions. Stop with a plain message.
     try:
         BankingHubContract.from_path()
@@ -91,6 +99,7 @@ def main(project):
                                    if key in {"PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "PYTHONPATH",
                                               "SYSTEMROOT", "BANKINGHUB_JOURNAL"}}
             backend_environment["BANKINGHUB_HOST_CAPABILITY"] = capability
+            backend_environment["DEMO_SEED"] = str(seed)  # the backend builds the mock from this seed
             server = subprocess.Popen(
                 [sys.executable, "-m", "bh_demo.server", str(mock_socket.fileno()),
                  str(mcp_socket.fileno()), args.fault], env=backend_environment, cwd=project,

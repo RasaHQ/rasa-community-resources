@@ -136,6 +136,8 @@ Start with these lines, one at a time:
 - "Move 25 dollars from DDA-A to SDA-A."
 - "Confirm transfer."
 
+Each start uses different fictional balances and loan payments (this release has no transaction history to vary). The first line `make run` prints shows the seed, for example `Demo data seed: 4821; set DEMO_SEED=4821 to get the same data again.` Start with `DEMO_SEED=4821 make run` to get that run's data again. To follow the checked sequence below exactly, start with `DEMO_SEED=0 make run`: seed 0 is the reference data the tables use.
+
 ### The full checked sequence
 
 The assistant already knows one fictional customer. Send each sentence and wait for the reply. The account names use the release's own codes: `DDA`, `SDA` and `LOAN`. The release does not say which product each code names, so the assistant never calls them checking or savings.
@@ -235,7 +237,7 @@ A small exercise: change a fictional balance in the mock bank and hear the new a
 
 1. Open `bh_demo/mock.py`. Find the `ACCOUNTS` table. The first row, `"5550010001"`, is the account the assistant calls `DDA-A`. Money is kept in cents, so `"avail": 125000` is USD 1,250.00.
 2. Change `125000` to another number, for example `99900` (USD 999.00). Save the file.
-3. Stop the example with **Ctrl+C** if it is running, then start it again with `make run`.
+3. Stop the example with **Ctrl+C** if it is running, then start it again with `DEMO_SEED=0 make run` (the reference data, where this exact amount applies).
 4. In the Inspector, ask "What is the balance of DDA-A?". The reply now gives your new amount.
 5. Change the number back to `125000` when you are done. The tests and the checked sequence in [Try these conversations](#try-these-conversations) expect USD 1,250.00.
 

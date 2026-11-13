@@ -264,7 +264,10 @@ def serve_backend():
         print(str(exc), flush=True)
         raise SystemExit(3)
     mock_socket = socket.socket(fileno=int(mock_fd))
-    mock = PremierMock(contract, fault=fault)
+    from .demo_data import REFERENCE_SEED, generate
+    # The launcher chooses the seed once and passes it here, so both agree.
+    seed = int(os.environ.get("DEMO_SEED", REFERENCE_SEED))
+    mock = PremierMock(contract, fault=fault, data=generate(seed))
     serve(mock, mock_socket)
     port = mock_socket.getsockname()[1]
     client = PremierClient(contract, f"http://127.0.0.1:{port}", MOCK_ORGANIZATION)

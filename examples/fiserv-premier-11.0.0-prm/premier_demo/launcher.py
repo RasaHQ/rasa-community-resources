@@ -14,6 +14,7 @@ from urllib.parse import urlencode
 
 from .client import PremierClient  # noqa: F401  (imported to fail early if broken)
 from .contract import TESTED_WITH, ContractError, MissingContractInput, PremierContract, VendorChanged
+from .demo_data import choose_seed, seed_line
 
 EXPECTED_RASA = "3.21.0.dev5"
 SECRETS = ("RASA_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY")
@@ -38,6 +39,13 @@ def _listener():
 
 
 def main(project):
+    # The demo data seed is chosen once and printed first, so any run can be repeated.
+    try:
+        seed = choose_seed(os.environ)
+    except ValueError as error:
+        print("Not ready. " + str(error))
+        return 2
+    print(seed_line(seed), flush=True)
     parser = argparse.ArgumentParser(description="Start the fictional Premier banking example.")
     parser.add_argument("--port", type=int, default=5005)
     parser.add_argument("--fault", choices=["none", "transfer-response-lost"], default="none",
@@ -102,6 +110,7 @@ def main(project):
                                    if key in {"PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "PYTHONPATH",
                                               "SYSTEMROOT", "PREMIER_JOURNAL"}}
             backend_environment["PREMIER_HOST_CAPABILITY"] = capability
+            backend_environment["DEMO_SEED"] = str(seed)  # the mock uses generate(seed)
             server = subprocess.Popen(
                 [sys.executable, "-m", "premier_demo.server", str(mock_socket.fileno()),
                  str(mcp_socket.fileno()), args.fault], env=backend_environment, cwd=project,

@@ -140,6 +140,21 @@ def reply(operation: str, body: ET.Element):
     return parse(REPLY[operation], body)
 
 
+def reply_element(model, element: str | None = None) -> ET.Element:
+    """A reply dataclass (the mock's replies) as its body element, after the strict check.
+
+    For LOAN_PAYMENT, `element` names the element it becomes (LnInfoRec). A field
+    of the wrong type fails here with ModelError, before the reply is sent."""
+    if type(model) not in REPLY.values() and type(model) is not LOAN_PAYMENT:
+        raise ModelError("unsupported_reply")
+    try:
+        return ET.fromstring(to_xml(model, element))
+    except ModelError:
+        raise
+    except Exception:
+        raise ModelError("model_mismatch") from None
+
+
 def to_xml(model, element: str | None = None) -> str:
     """Any generated dataclass as XML text (tests use it for reply round trips).
 

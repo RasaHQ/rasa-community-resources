@@ -10,16 +10,21 @@ and adapter; it never proves compatibility with Fiserv systems.
 """
 from __future__ import annotations
 
+from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-import json
 from threading import Lock, Thread
 
+from pydantic import ValidationError
+
 from .contract import ContractError, PremierContract
+from .vendor_api import dumps, loads, reply_body
 
 MOCK_ORGANIZATION = "FICTIONAL-MOCK-ORG"
 PROVIDER = "FictionalMockPremier"
 
-# Authored fictional data. Money is kept in cents; the wire carries JSON numbers.
+# Authored fictional data. Money is kept in whole cents; each reply is built through
+# its generated model with the amount as an exact Decimal, and the wire carries
+# that Decimal as a JSON number (never a float).
 ACCOUNTS = {
     "5550010001": {"type": "DDA", "party": "PARTY-A", "avail": 125000, "ledger": 127500},
     "5550010002": {"type": "DDA", "party": "PARTY-A", "avail": 30000, "ledger": 30000},
@@ -46,7 +51,20 @@ PAGE = 3
 
 
 def _amount(cents: int) -> dict:
-    return {"Amt": cents / 100, "CurCode": {"CurCodeType": "ISO4217-Alpha", "CurCodeValue": "USD"}}
+    if isinstance(cents, bool) or not isinstance(cents, int):
+        raise TypeError("money is whole cents")
+    return {"Amt": Decimal(cents).scaleb(-2),
+            "CurCode": {"CurCodeType": "ISO4217-Alpha", "CurCodeValue": "USD"}}
+
+
+def _cents(amount) -> int | None:
+    """A request amount (Decimal or int, never float) in whole cents, or None if it is not a finite number."""
+    if isinstance(amount, bool) or not isinstance(amount, (Decimal, int)):
+        return None
+    try:
+        return int((Decimal(amount) * 100).to_integral_value(ROUND_HALF_EVEN))
+    except (InvalidOperation, ValueError, OverflowError):
+        return None
 
 
 def _status(code="0", description="Success", severity="Info"):
@@ -55,11 +73,16 @@ def _status(code="0", description="Success", severity="Info"):
 
 
 class PremierMock:
-    def __init__(self, contract: PremierContract, *, fault: str = "none"):
+    def __init__(self, contract: PremierContract, *, fault: str = "none", data: dict | None = None):
+        """``data`` is {"accounts": ..., "transactions": ...} from demo_data.generate;
+        None (the default, used by the tests) means the reference data above."""
         if fault not in {"none", "transfer-response-lost"}:
             raise ValueError("unknown fault")
         self.contract, self.fault = contract, fault
-        self.accounts = {key: dict(value) for key, value in ACCOUNTS.items()}
+        accounts = ACCOUNTS if data is None else data["accounts"]
+        transactions = TRANSACTIONS if data is None else data["transactions"]
+        self.accounts = {key: dict(value) for key, value in accounts.items()}
+        self.transactions = {key: list(rows) for key, rows in transactions.items()}
         self.lock = Lock()
         self.transfers = 0
 
@@ -73,7 +96,8 @@ class PremierMock:
                 for ident, account in sorted(self.accounts.items()) if account["party"] == party]
         if not rows:
             return None
-        return {"Status": _status(), "RecCtrlOut": {"SentRecCount": len(rows)}, "PartyAcctRelRec": rows}
+        return reply_body("party", {"Status": _status(), "RecCtrlOut": {"SentRecCount": len(rows)},
+                                    "PartyAcctRelRec": rows})
 
     def _account(self, body, key):
         keys = body["AcctSel"]["AcctKeys"]
@@ -94,24 +118,24 @@ class PremierMock:
                 "AcctBal": [{"BalType": "PayOffAmt", "CurAmt": _amount(account["payoff"])},
                             {"BalType": "PastDue", "CurAmt": _amount(account["past_due"])},
                             {"BalType": "PmtDue", "CurAmt": _amount(account["pmt_due"])}]}
-        return {"Status": _status(), "AcctRec": record}
+        return reply_body(key, {"Status": _status(), "AcctRec": record})
 
     def _transactions(self, body):
         selection = body["AcctTrnSel"]
         ident = selection["AcctKeys"]["AcctId"]
-        if ident not in TRANSACTIONS or self.accounts[ident]["type"] != "DDA":
+        if ident not in self.transactions or self.accounts[ident]["type"] != "DDA":
             return None
         cursor = body.get("RecCtrlIn", {}).get("Cursor")
         start = int(cursor) if cursor is not None and cursor.isdigit() else 0
-        rows = TRANSACTIONS[ident][start:start + PAGE]
+        rows = self.transactions[ident][start:start + PAGE]
         records = [{"AcctTrnKeys": {"AcctKeys": {"AcctId": ident, "AcctType": "DDA"}, "AcctTrnIdent": row[0]},
                     "AcctTrnInfo": {"DrCrType": row[2], "PostedDt": row[1], "TrnAmt": _amount(row[3]),
                                     "Desc": [row[4]]},
                     "AcctTrnStatus": {"AcctTrnStatusCode": "Valid"}} for row in rows]
         out = {"SentRecCount": len(records)}
-        if start + PAGE < len(TRANSACTIONS[ident]):
+        if start + PAGE < len(self.transactions[ident]):
             out["Cursor"] = str(start + PAGE)
-        return {"Status": _status(), "RecCtrlOut": out, "AcctTrnRec": records}
+        return reply_body("trn", {"Status": _status(), "RecCtrlOut": out, "AcctTrnRec": records})
 
     def _transfer(self, body):
         info = body["XferInfo"]
@@ -119,23 +143,25 @@ class PremierMock:
             return 400, None
         source = self.accounts.get(info["FromAcctRef"]["AcctKeys"]["AcctId"])
         target = self.accounts.get(info["ToAcctRef"]["AcctKeys"]["AcctId"])
-        amount = round(info["CurAmt"]["Amt"] * 100)
+        amount = _cents(info["CurAmt"]["Amt"])
         if (source is None or target is None or source["type"] != "DDA" or target["type"] != "DDA"
                 or info["FromAcctRef"]["AcctKeys"].get("AcctType") != "DDA"
                 or info["ToAcctRef"]["AcctKeys"].get("AcctType") != "DDA"
-                or source["party"] != target["party"] or amount <= 0
+                or source["party"] != target["party"] or amount is None or amount <= 0
                 or info["CurAmt"]["CurCode"]["CurCodeValue"] != "USD"
                 or info["FromAcctRef"]["AcctKeys"]["AcctId"] == info["ToAcctRef"]["AcctKeys"]["AcctId"]
                 or amount > source["avail"]):
             return 422, None
+        # Build the reply through its model before any money moves.
+        response = reply_body("xfer", {"Status": _status(), "XferStatusRec": {
+            "XferKeys": {"AcctKeys": {"AcctId": info["FromAcctRef"]["AcctKeys"]["AcctId"], "AcctType": "DDA"}},
+            "XferStatus": {"XferStatusCode": "Valid"}}})
         source["avail"] -= amount
         source["ledger"] -= amount
         target["avail"] += amount
         target["ledger"] += amount
         self.transfers += 1
-        return 201, {"Status": _status(), "XferStatusRec": {
-            "XferKeys": {"AcctKeys": {"AcctId": info["FromAcctRef"]["AcctKeys"]["AcctId"], "AcctType": "DDA"}},
-            "XferStatus": {"XferStatusCode": "Valid"}}}
+        return 201, response
 
     # -- wire -------------------------------------------------------------
     def handle(self, path: str, header_value: str | None, raw: bytes):
@@ -143,12 +169,12 @@ class PremierMock:
         route = {self.contract.path(key): key for key in ("party", "trn", "xfer")}
         try:
             if path == self.contract.path("dda"):
-                body = json.loads(raw)
+                body = loads(raw)  # numbers as exact Decimal, never float
                 key = self.contract.document_for_account(
                     body.get("AcctSel", {}).get("AcctKeys", {}).get("AcctType"))
             elif path in route:
                 key = route[path]
-                body = json.loads(raw)
+                body = loads(raw)
             else:
                 return 404, {"Status": _status("404", "Unknown operation", "Error")}, False
             self.contract.validate_header(key, header_value or "")
@@ -156,16 +182,20 @@ class PremierMock:
         except (ContractError, ValueError, TypeError, AttributeError):
             return 400, {"Status": _status("400", "Invalid request", "Error")}, False
         with self.lock:
-            if key in {"dda", "loan"}:
-                response, status = self._account(body, key), 200
-            elif key == "party":
-                response, status = self._party(body), 200
-            elif key == "trn":
-                response, status = self._transactions(body), 200
-            else:
-                status, response = self._transfer(body)
-                if status == 201 and self.fault == "transfer-response-lost":
-                    return 0, None, True
+            try:
+                if key in {"dda", "loan"}:
+                    response, status = self._account(body, key), 200
+                elif key == "party":
+                    response, status = self._party(body), 200
+                elif key == "trn":
+                    response, status = self._transactions(body), 200
+                else:
+                    status, response = self._transfer(body)
+            except ValidationError:
+                # A reply that does not fit its model is never sent.
+                return 500, {"Status": _status("500", "Mock produced an invalid reply", "Error")}, False
+            if key == "xfer" and status == 201 and self.fault == "transfer-response-lost":
+                return 0, None, True
             if response is None:
                 # The pinned default schema requires success fields, so an error
                 # body cannot satisfy it. Recorded limitation: the mock returns a
@@ -188,7 +218,7 @@ def serve(mock: PremierMock, sock) -> ThreadingHTTPServer:
                 self.close_connection = True
                 self.connection.close()
                 return
-            payload = json.dumps(body).encode()
+            payload = dumps(body).encode()
             self.send_response(status)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(payload)))
