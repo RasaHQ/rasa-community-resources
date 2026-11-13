@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "held": ">=3.22.0.dev0",
+  "reason": "Rasa Pro 3.22 validates the catalog but silently ignores agent.yml keys the projects rely on (references, prompts.text_rules, prompts.voice_rules, prompts.ack_rule) and breaks the Symitar voice_privacy engines and the voice router's vendor_metadata at runtime. Adopting it would change behavior without a failing check.",
+  "lift": "Delete this file in the change that migrates those keys at bump time and makes both engines work on 3.21 and 3.22."
+}
