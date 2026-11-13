@@ -10,7 +10,11 @@ from host import Refused
 from journal import Journal
 from mock_server import FIXTURE,FixtureState
 from native_host import Gateway
+from recorded_exchanges import EXCHANGES
 from vendor_client import ClientError,ErrorCode,VendorResult
+
+
+RECORDED={operation:body for operation,side,status,_,body in EXCHANGES if side=='response' and status==200}
 
 
 class Client:
@@ -18,11 +22,11 @@ class Client:
     async def call(self,name,body):
         self.sends.append((name,body))
         if self.failure:raise ClientError(self.failure)
-        if name=='postTransfer':return VendorResult(name,200,{'status':'success','receiptId':None})
-        if name=='findAccountBy':return VendorResult(name,200,{'shares':[]})
-        if name=='findAccountByWithBalances':return VendorResult(name,200,{'shares':[{'shareId':'0001','availableBalance':'1200.50'}]})
-        if name=='searchLoans':return VendorResult(name,200,[{'loanId':'0001','paymentDue':'250.75','dueDate':'2026-12-01','payment':'240.00','minimumPayment':'200.00','pastDueAmount':'35.25'}])
-        if name=='calculateLoanPayoffQuote':return VendorResult(name,200,{'totalPayoffAmount':'4901.33','payoffDate':body['payoffDate']})
+        # Schema-valid replies: the example's own recorded traffic on the reference data.
+        if name in RECORDED:
+            data=deepcopy(RECORDED[name])
+            if name=='calculateLoanPayoffQuote':data['payoffDate']=body['payoffDate']
+            return VendorResult(name,200,data)
         raise ValueError('unsupported_fixture')
 
 
