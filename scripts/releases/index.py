@@ -8,7 +8,7 @@ import urllib.request
 import zipfile
 from datetime import datetime, timezone
 from packaging.version import Version, InvalidVersion
-from packaging.specifiers import SpecifierSet
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
 
 PACKAGE = 'rasa-pro'
 REQUIRED_MODULE = 'rasa/mantle/'
@@ -58,18 +58,36 @@ def inspect_release(version, data=None, fetch=None):
 
 
 HOLD = Path(__file__).resolve().parents[2] / 'RASA_RELEASE_HOLD.json'
+FROM_FILE = object()  # default: read the repository's hold file
 
 
-def load_hold(path=HOLD):
-    return json.loads(path.read_text()) if path.exists() else None
+def validate_hold(hold):
+    """A present hold must be complete; anything else fails closed, never lifts the hold."""
+    if not isinstance(hold, dict):
+        raise ValueError('A release hold must be a JSON object')
+    spec, reason = hold.get('held'), hold.get('reason')
+    if not isinstance(spec, str) or not spec.strip() or not isinstance(reason, str) or not reason.strip():
+        raise ValueError('A release hold needs a non-empty held range and reason')
+    try:
+        SpecifierSet(spec, prereleases=True)
+    except InvalidSpecifier:
+        raise ValueError('A release hold has an invalid held range') from None
+    return hold
+
+
+def load_hold(path=None):
+    """None only when the file is absent; a present file is validated or the run fails."""
+    path = HOLD if path is None else path
+    if not path.exists():
+        return None
+    return validate_hold(json.loads(path.read_text()))
 
 
 def held(version, hold):
-    """The hold that keeps this version from being adopted, or None."""
-    if not hold:
+    """The hold that keeps this version from being adopted, or None when there is no hold."""
+    if hold is None:
         return None
-    if not hold.get('reason') or not hold.get('held'):
-        raise ValueError('A release hold needs both held and reason')
+    validate_hold(hold)
     return hold if SpecifierSet(hold['held'], prereleases=True).contains(version) else None
 
 
@@ -77,9 +95,11 @@ def unheld(versions, hold):
     return [v for v in versions if not held(v, hold)]
 
 
-def discover(data=None, inspect=inspect_release, hold=None):
+def discover(data=None, inspect=inspect_release, hold=FROM_FILE):
     data = data or get_json(f'https://pypi.org/pypi/{PACKAGE}/json')
-    hold = load_hold() if hold is None else hold
+    hold = load_hold() if hold is FROM_FILE else hold
+    if hold is not None:
+        validate_hold(hold)
     # A held release is never selected; the newest unheld release is.
     versions = unheld(candidates(data), hold)
     if not versions:

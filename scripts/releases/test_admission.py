@@ -34,7 +34,7 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(result['reason'], 'ignores keys the catalog relies on')
         self.assertEqual(decide('3.21.0.dev5', releases('3.21.0.dev5', '3.21.1'), hold=hold)['status'], 'candidate')
         self.assertEqual(decide('3.21.0.dev5', data)['status'], 'candidate')
-        with self.assertRaisesRegex(ValueError, 'needs both'):
+        with self.assertRaisesRegex(ValueError, 'non-empty'):
             held('3.22.0.dev4', {'held': '>=3.22.0.dev0'})
 
     def test_the_newest_unheld_release_is_still_proposed_during_a_hold(self):
@@ -52,6 +52,41 @@ class AdmissionTests(unittest.TestCase):
         report = discover(data, inspect=lambda v: seen.append(v) or {'version': v, 'mantlePresent': True}, hold=hold)
         self.assertEqual(report['selected']['version'], '3.21.1')
         self.assertNotIn('3.22.0.dev4', seen)
+
+    BAD_HOLDS = ('{}', '[]', 'false', 'null', '0', '""', '"  "', '{"held": "", "reason": "x"}',
+                 '{"held": ">=3.22.0.dev0", "reason": ""}', '{"held": "not a range", "reason": "x"}', 'not json')
+
+    def test_a_present_but_malformed_hold_fails_closed_in_admission(self):
+        import admission, index
+        data = releases('3.21.0.dev5', '3.22.0.dev4')
+        for content in self.BAD_HOLDS:
+            with self.subTest(content=content), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / 'RASA_RELEASE_HOLD.json'
+                path.write_text(content)
+                with patch.object(index, 'HOLD', path), patch('admission.get_json', return_value=data), \
+                        patch('maintenance.execute') as execute, patch('maintenance.handoff'), \
+                        patch('maintenance.subprocess.check_output', return_value='a' * 40):
+                    with self.assertRaises(ValueError):
+                        admission.check()
+                    self.assertEqual(run('catalog', 'companion', Path(tmp) / 'out'), 1)
+                    execute.assert_not_called()
+
+    def test_a_present_but_malformed_hold_fails_closed_in_discovery(self):
+        import index
+        data = releases('3.21.0.dev5', '3.22.0.dev4')
+        for content in self.BAD_HOLDS:
+            with self.subTest(content=content), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / 'RASA_RELEASE_HOLD.json'
+                path.write_text(content)
+                inspected = []
+                with patch.object(index, 'HOLD', path), self.assertRaises(ValueError):
+                    index.discover(data, inspect=lambda v: inspected.append(v) or {'version': v, 'mantlePresent': True})
+                self.assertEqual(inspected, [])
+
+    def test_only_an_absent_hold_file_lifts_the_hold(self):
+        import index
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertIsNone(index.load_hold(Path(tmp) / 'RASA_RELEASE_HOLD.json'))
 
     def test_the_repository_hold_covers_every_3_22_prerelease(self):
         import json
