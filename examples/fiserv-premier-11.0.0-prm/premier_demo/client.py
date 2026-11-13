@@ -52,10 +52,11 @@ class PremierClient:
         self.contract, self.base, self.organization, self.timeout = (
             contract, base_url.rstrip("/"), organization_id, timeout)
 
-    def _send(self, key: str, header: str, body: dict):
-        """One HTTP POST. Returns (status, parsed JSON or None). Subclasses add auth."""
+    def _send(self, key: str, header: str, wire: str):
+        """One HTTP POST of the exact, already validated wire text. Returns (status, parsed
+        JSON or None), numbers read as Decimal. Subclasses add auth."""
         with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False) as http:
-            reply = http.post(self.base + self.contract.path(key), content=dumps(body),
+            reply = http.post(self.base + self.contract.path(key), content=wire,
                               headers={"EFXHeader": header, "Content-Type": "application/json"})
         try:
             # Numbers are read as Decimal, never as float.
@@ -65,8 +66,10 @@ class PremierClient:
 
     def _post(self, key: str, body: dict, *, write=False):
         try:
-            self.contract.validate_request(key, body)
-        except ContractError:
+            wire = dumps(body)
+            # Validate the exact bytes that will be sent, read back the way a server reads them.
+            self.contract.validate_request(key, json.loads(wire, parse_float=Decimal))
+        except (ContractError, TypeError, ValueError):
             raise Unavailable("invalid_request") from None
         header = json.dumps({"OrganizationId": self.organization, "TrnId": str(uuid4()),
                              "Context": {"ClientAppName": "rasa-community-fiserv-premier",
@@ -76,7 +79,7 @@ class PremierClient:
         except ContractError:
             raise Unavailable("invalid_header") from None
         try:
-            status, data = self._send(key, header, body)
+            status, data = self._send(key, header, wire)
         except Unavailable:
             raise  # refused before sending (for example by the quota ledger)
         except Exception:

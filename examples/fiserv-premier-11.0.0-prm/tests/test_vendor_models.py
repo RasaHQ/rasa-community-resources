@@ -99,6 +99,24 @@ class AmountPrecision(unittest.TestCase):
                 text, account = self.text_with("loan", payoff, raw)
                 self.assertEqual(self.client_with(text).current_payoff(account)["amount"], shown)
 
+    def test_a_string_that_looks_like_a_marker_is_sent_unchanged(self):
+        # An earlier encoder swapped placeholder strings back into numbers; a legal string
+        # field holding that text was rewritten. The encoder now writes each value by type.
+        old_marker = "\u0000decimal0\u0000"
+        body = request_body("xfer", {"XferInfo": {
+            "TransferType": "FundsTransfer",
+            "FromAcctRef": {"AcctKeys": {"AcctId": old_marker, "AcctType": "DDA"}},
+            "ToAcctRef": {"AcctKeys": {"AcctId": "2", "AcctType": "DDA"}},
+            "CurAmt": {"Amt": Decimal("0.30"), "CurCode": {"CurCodeType": "ISO4217-Alpha", "CurCodeValue": "USD"}}}})
+        wire = dumps(body)
+        self.assertEqual(loads(wire), body)  # the wire text reads back as exactly the validated body
+        self.assertEqual(loads(wire)["XferInfo"]["FromAcctRef"]["AcctKeys"]["AcctId"], old_marker)
+        self.assertIn('"Amt":0.30', wire)
+
+    def test_a_float_is_never_written(self):
+        with self.assertRaises(TypeError):
+            dumps({"Amt": 0.1})
+
     def test_requests_carry_exact_numbers_on_the_wire(self):
         body = request_body("xfer", {"XferInfo": {
             "TransferType": "FundsTransfer",
