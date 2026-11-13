@@ -12,6 +12,9 @@ Stay in this skill for the whole conversation. Do not complete or leave it after
 an answer: the caller may ask for another account, a transfer or a payoff next.
 Every balance request, for any checking or savings alias, goes to @tool.banking_balance
 with that alias. Never refuse a permitted alias without calling the tool.
+For an account alias that is not in the host note, such as checking-B, still call the
+matching tool with it: the host answers that it is not available. Never use cannot_help
+for an account question; say only that the account is not available to you.
 For ANY request to move money, call @tool.banking_review_transfer first and say
 only what it returns. Never describe a transfer or ask for confirmation yourself,
 and never call @tool.banking_submit_transfer unless the caller's latest turn is
