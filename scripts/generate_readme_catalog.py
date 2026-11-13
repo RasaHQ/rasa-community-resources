@@ -82,14 +82,20 @@ MAX_NAME = 60
 CONFUSING_TERMS = ("account boundary", "memory owner", "response owner")
 GENERIC_OPENINGS = ("a guide to", "guide to", "best practices", "introduction to", "an introduction to")
 LISTICLE_RE = re.compile(r"^\d+\s")
-# A catalog name says what the resource is, not what to do: a bare command verb in front fails.
-# "How to ..." passes, and so do questions and noun phrases.
+# A catalog name says what the resource is, not what to do: a command in front fails.
+# "How to ..." passes, and so do questions and noun phrases. A listed verb leads a command only
+# when what follows is its object: a determiner or pronoun ("Build the ..."), a capitalised name
+# ("Use Rime ..."), or an -ing form ("Stop sending ..."). Followed by a lower-case noun it is
+# read as a noun ("Design patterns for ...", "Stop sequences for ...").
 IMPERATIVE_LEADS = frozenset({
     "add", "ask", "avoid", "build", "call", "catch", "check", "choose", "compare", "connect", "create",
     "debug", "deploy", "design", "evaluate", "explain", "find", "fix", "get", "give", "guard", "handle",
     "keep", "learn", "let", "make", "measure", "migrate", "move", "prevent", "protect", "read", "replace",
     "route", "run", "scale", "see", "send", "set", "ship", "start", "stop", "swap", "teach", "try", "turn",
     "understand", "use", "verify", "write"})
+OBJECT_STARTERS = frozenset({
+    "a", "all", "an", "any", "every", "each", "her", "his", "it", "its", "more", "my", "no", "our", "that",
+    "the", "their", "them", "these", "this", "those", "up", "your"})
 MIN_NAME_WORDS = 3
 # At most this many names in one industry table may start with the same two words.
 MAX_SHARED_OPENING = 2
@@ -120,14 +126,22 @@ def kind_of(path: str) -> str:
             "starter-pack": "starter", "heroes": "heroes"}.get(top, "example")
 
 
+def _leads_with_command(name: str) -> bool:
+    words = name.split()
+    if len(words) < 2 or words[0].casefold() not in IMPERATIVE_LEADS:
+        return False
+    following = words[1].strip("(),.:;'\"")
+    return (following.casefold() in OBJECT_STARTERS or following[:1].isupper()
+            or following.casefold().endswith("ing"))
+
+
 def check_catalog_name(name: str, others: list[str] | tuple[str, ...] = ()) -> list[str]:
     """Every naming rule the name breaks, in plain words. `others` are the names already taken."""
     problems = []
     lowered = name.casefold()
     if len(name) > MAX_NAME:
         problems.append(f"is {len(name)} characters; keep it to {MAX_NAME} or fewer")
-    first = lowered.split(" ", 1)[0] if lowered else ""
-    if first in IMPERATIVE_LEADS:
+    if _leads_with_command(name):
         problems.append(f"starts with the command '{name.split(' ', 1)[0]}'; name what the resource is instead")
     for term in CONFUSING_TERMS:
         if term in lowered:

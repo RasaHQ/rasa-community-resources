@@ -157,6 +157,15 @@ class CheckTests(unittest.TestCase):
         self.assertFalse(any("command" in p for p in c.check_catalog_name("Which voice vendor handles failover?")))
         self.assertTrue(any("command" in p for p in c.check_catalog_name("Use Rime for voice banking")))
 
+    def test_a_listed_verb_followed_by_a_noun_is_a_noun_phrase(self):
+        command = lambda name: any("command" in p for p in c.check_catalog_name(name))
+        for noun_phrase in ("Design patterns for voice agents", "Stop sequences for voice models"):
+            self.assertFalse(command(noun_phrase), noun_phrase)
+            self.assertEqual(c.check_catalog_name(noun_phrase), [], noun_phrase)
+        for imperative in ("Design Rasa voice agents", "Stop sending duplicate requests",
+                           "Build the Atlas voice travel agent step by step", "Use your own voice vendor"):
+            self.assertTrue(command(imperative), imperative)
+
     def test_shared_openings_within_one_industry_are_limited(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
