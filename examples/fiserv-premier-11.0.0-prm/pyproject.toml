@@ -22,3 +22,8 @@ required-secrets = ["OPENAI_API_KEY", "DEEPGRAM_API_KEY"]
 [tool.uv]
 prerelease = "allow"
 package = false
+
+[dependency-groups]
+# Development only: regenerates premier_demo/vendor_models/ from the pinned Fiserv
+# archive (make models). Never installed for running the example.
+models = ["datamodel-code-generator==0.87.0"]

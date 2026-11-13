@@ -19,13 +19,15 @@ from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
 import json
-import math
 from urllib.parse import urlsplit
 from uuid import uuid4
 
 import httpx
 
+from pydantic import ValidationError
+
 from .contract import SUCCESS, ContractError, BankingHubContract
+from .vendor_api import dumps, present, reply, request_body
 
 ACCOUNT_TYPES = frozenset({"DDA", "SDA", "LOAN"})  # declared in the same release
 
@@ -51,15 +53,18 @@ def _efx(data) -> tuple[str, str]:
 
 
 def _money(node) -> Decimal:
-    if not isinstance(node, dict) or not isinstance(node.get("CurCode"), dict):
+    """A CurAmt model: the amount in USD, to the cent."""
+    node = present(node)
+    code = present(node.cur_code) if node is not None else None
+    if code is None:
         raise Unavailable("no_amount")
-    if node["CurCode"].get("CurCodeValue") != "USD":
+    if present(code.cur_code_value) != "USD":
         raise Unavailable("currency")
-    raw = node.get("Amt")
-    if isinstance(raw, bool) or not isinstance(raw, (int, float)) or not math.isfinite(raw):
+    raw = present(node.amt)  # a Decimal: replies are parsed and modelled without floats
+    if isinstance(raw, bool) or not isinstance(raw, Decimal) or not raw.is_finite():
         raise Unavailable("no_amount")
     try:
-        return Decimal(str(raw)).quantize(Decimal("0.01"))
+        return raw.quantize(Decimal("0.01"))
     except InvalidOperation:
         raise Unavailable("no_amount") from None
 
@@ -77,16 +82,17 @@ def _closed(method):
     def wrapper(*args, **kwargs):
         try:
             return method(*args, **kwargs)
-        except (KeyError, TypeError, AttributeError, OverflowError):
+        except (KeyError, TypeError, AttributeError, OverflowError, ValidationError):
             raise Unavailable("malformed_reply") from None
     wrapper.__name__, wrapper.__doc__ = method.__name__, method.__doc__
     return wrapper
 
 
 def _exactly_one(entries, field, label):
+    entries = present(entries)
     if not isinstance(entries, list):
         raise Unavailable("no_" + label.lower())
-    found = [entry for entry in entries if isinstance(entry, dict) and entry.get(field) == label]
+    found = [entry for entry in entries if present(getattr(entry, field, None)) == label]
     if len(found) != 1:  # missing or repeated: unavailable, never the first one
         raise Unavailable("no_" + label.lower())
     return found[0]
@@ -104,8 +110,10 @@ class BankingHubClient:
 
     def _post(self, key: str, body: dict, *, write=False) -> dict:
         try:
-            self.contract.validate_request(key, body)
-        except ContractError:
+            wire = dumps(body)
+            # Validate the exact bytes that will be sent, read back the way a server reads them.
+            self.contract.validate_request(key, json.loads(wire, parse_float=Decimal))
+        except (ContractError, TypeError, ValueError):
             raise Unavailable("invalid_request") from None
         header = json.dumps({"OrganizationId": self.organization, "TrnId": str(uuid4()),
                              "Context": {"ClientAppName": "rasa-community-fiserv-banking-hub",
@@ -116,7 +124,7 @@ class BankingHubClient:
             raise Unavailable("invalid_header") from None
         try:
             with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False) as http:
-                reply = http.post(self.base + self.contract.path(key), content=json.dumps(body),
+                reply = http.post(self.base + self.contract.path(key), content=wire,
                                   headers={"EFXHeader": header, "Content-Type": "application/json"})
         except Exception:
             # A write may have reached the bank before the connection failed.
@@ -128,7 +136,7 @@ class BankingHubClient:
                 raise Unavailable("status_" + str(reply.status_code))
             raise UnknownOutcome("unexpected_status")
         try:
-            data = json.loads(reply.content, object_pairs_hook=_no_duplicate_keys)
+            data = json.loads(reply.content, object_pairs_hook=_no_duplicate_keys, parse_float=Decimal)
         except ValueError:
             raise (UnknownOutcome("invalid_reply") if write else Unavailable("invalid_response")) from None
         try:
@@ -147,45 +155,51 @@ class BankingHubClient:
     @_closed
     def party_accounts(self, party_id: str) -> list[tuple[str, str]]:
         try:
-            data = self._post("party", {"PartyAcctRelSel": {"PartyKeys": {"PartyId": party_id}},
-                                        "RecCtrlIn": {"MaxRecLimit": 20}})
+            data = self._post("party", request_body("party", {"PartyAcctRelSel": {"PartyKeys": {"PartyId": party_id}},
+                                                              "RecCtrlIn": {"MaxRecLimit": 20}}))
         except NoRecords:
             return []
-        rows = data.get("PartyAcctRelRec")
+        rows = present(reply("party", data).party_acct_rel_rec)
         if not isinstance(rows, list) or not rows:
             raise Unavailable("no_relationship_record")  # Status alone is not an empty list
         related = []
         for row in rows:
-            keys = row["PartyAcctRelKeys"].get("AcctKeys", {})
-            if (row["PartyAcctRelStatus"]["PartyAcctRelStatusCode"] == "Valid"
-                    and keys.get("AcctType") in ACCOUNT_TYPES and isinstance(keys.get("AcctId"), str)):
-                related.append((keys["AcctId"], keys["AcctType"]))
+            keys = present(present(row.party_acct_rel_keys).acct_keys)
+            account_type = present(keys.acct_type) if keys is not None else None
+            account_id = present(keys.acct_id) if keys is not None else None
+            if (present(present(row.party_acct_rel_status).party_acct_rel_status_code) == "Valid"
+                    and account_type in ACCOUNT_TYPES and isinstance(account_id, str)):
+                related.append((account_id, str(account_type)))
         return related
 
     @_closed
     def _record(self, account_id: str, account_type: str) -> dict:
-        data = self._post("acct", {"AcctSel": {"AcctKeys": {"AcctId": account_id, "AcctType": account_type}}})
-        record = data.get("AcctRec")
-        if (not isinstance(record, dict) or record["AcctKeys"].get("AcctId") != account_id
-                or record["AcctKeys"].get("AcctType") != account_type):
+        data = self._post("acct", request_body("acct", {"AcctSel": {"AcctKeys": {"AcctId": account_id,
+                                                                                 "AcctType": account_type}}}))
+        record = present(reply("acct", data).acct_rec)
+        keys = present(record.acct_keys) if record is not None else None
+        if (keys is None or present(keys.acct_id) != account_id or present(keys.acct_type) != account_type):
             raise Unavailable("no_matching_account")  # never read a cross-type record
         return record
 
     @_closed
     def available_balance(self, account_id: str) -> Decimal:
         """The one DepositAcctInfo.AcctBal entry with BalType exactly "Avail"."""
-        balances = self._record(account_id, "DDA").get("DepositAcctInfo", {}).get("AcctBal")
-        return _money(_exactly_one(balances, "BalType", "Avail").get("CurAmt"))
+        deposit = present(self._record(account_id, "DDA").deposit_acct_info)
+        balances = present(deposit.acct_bal) if deposit is not None else None
+        return _money(_exactly_one(balances, "bal_type", "Avail").cur_amt)
 
     @_closed
     def loan_payment(self, account_id: str) -> dict:
         """NextPmt PmtDt and the one PmtCompositeAmt entry typed exactly "Total"."""
-        next_payment = self._record(account_id, "LOAN").get("LoanAcctInfo", {}).get("NextPmt", {})
-        date = next_payment.get("PmtDt") if isinstance(next_payment, dict) else None
+        loan = present(self._record(account_id, "LOAN").loan_acct_info)
+        next_payment = present(loan.next_pmt) if loan is not None else None
+        date = present(next_payment.pmt_dt) if next_payment is not None else None
+        date = date.isoformat() if hasattr(date, "isoformat") else date  # the model reads a date
         if not isinstance(date, str) or not date:
             raise Unavailable("no_next_payment_date")
-        total = _exactly_one(next_payment.get("PmtCompositeAmt"), "CompositeCurAmtType", "Total")
-        return {"due_date": date, "amount": format(_money(total.get("CurAmt")), "f"), "currency": "USD"}
+        total = _exactly_one(next_payment.pmt_composite_amt, "composite_cur_amt_type", "Total")
+        return {"due_date": date, "amount": format(_money(total.cur_amt), "f"), "currency": "USD"}
 
     def transfer(self, source_id: str, source_type: str, destination_id: str, destination_type: str,
                  amount: Decimal) -> str:
@@ -195,13 +209,17 @@ class BankingHubClient:
         values. Fiserv's official Premier Add Transfer samples omit it, so this
         request omits it too, and carries no recurrence fields.
         """
-        if Decimal(repr(float(amount))) != amount:
-            return "refused"  # the wire number must be exactly the reviewed amount
+        if not amount.is_finite() or amount != amount.quantize(Decimal("0.01")):
+            return "refused"  # the reviewed amount, to the cent, and nothing else
         body = {"XferInfo": {
             "FromAcctRef": {"AcctKeys": {"AcctId": source_id, "AcctType": source_type}},
             "ToAcctRef": {"AcctKeys": {"AcctId": destination_id, "AcctType": destination_type}},
-            "CurAmt": {"Amt": float(amount), "CurCode": {"CurCodeType": "ISO4217-Alpha",
+            "CurAmt": {"Amt": amount, "CurCode": {"CurCodeType": "ISO4217-Alpha",
                                                           "CurCodeValue": "USD"}}}}
+        try:
+            body = request_body("xfer", body)
+        except ValidationError:
+            return "refused"  # never sent: the body does not fit the model
         try:
             data = self._post("xfer", body, write=True)
         except Unavailable:
@@ -209,8 +227,10 @@ class BankingHubClient:
             # request or header) or the vendor answered 4xx: a clean refusal.
             return "refused"
         try:
-            status = data.get("XferStatusRec", {}).get("XferStatus", {}).get("XferStatusCode")
-        except AttributeError:
+            record = present(reply("xfer", data).xfer_status_rec)
+            state = present(record.xfer_status) if record is not None else None
+            status = present(state.xfer_status_code) if state is not None else None
+        except (AttributeError, ValidationError):
             raise UnknownOutcome("malformed_reply") from None  # sent; the effect is not known
         if status == "Valid":
             return "accepted"  # Valid is not proof of final posting

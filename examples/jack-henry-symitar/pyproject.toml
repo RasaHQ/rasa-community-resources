@@ -12,3 +12,8 @@ dependencies = [
 [tool.uv]
 package = false
 prerelease = "allow"
+
+[dependency-groups]
+# Development only: regenerates vendor_models/ from the pinned Jack Henry files
+# (make models). Never installed for running the example.
+models = ["datamodel-code-generator==0.87.0"]

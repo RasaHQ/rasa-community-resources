@@ -10,7 +10,11 @@ from host import Refused
 from journal import Journal
 from mock_server import FIXTURE,FixtureState
 from native_host import Gateway
+from recorded_exchanges import EXCHANGES
 from vendor_client import ClientError,ErrorCode,VendorResult
+
+
+RECORDED={operation:body for operation,side,status,_,body in EXCHANGES if side=='response' and status==200}
 
 
 class Client:
@@ -18,11 +22,11 @@ class Client:
     async def call(self,name,body):
         self.sends.append((name,body))
         if self.failure:raise ClientError(self.failure)
-        if name=='postTransfer':return VendorResult(name,200,{'status':'success','receiptId':None})
-        if name=='findAccountBy':return VendorResult(name,200,{'shares':[]})
-        if name=='findAccountByWithBalances':return VendorResult(name,200,{'shares':[{'shareId':'0001','availableBalance':'1200.50'}]})
-        if name=='searchLoans':return VendorResult(name,200,[{'loanId':'0001','paymentDue':'250.75','dueDate':'2026-12-01','payment':'240.00','minimumPayment':'200.00','pastDueAmount':'35.25'}])
-        if name=='calculateLoanPayoffQuote':return VendorResult(name,200,{'totalPayoffAmount':'4901.33','payoffDate':body['payoffDate']})
+        # Schema-valid replies: the example's own recorded traffic on the reference data.
+        if name in RECORDED:
+            data=deepcopy(RECORDED[name])
+            if name=='calculateLoanPayoffQuote':data['payoffDate']=body['payoffDate']
+            return VendorResult(name,200,data)
         raise ValueError('unsupported_fixture')
 
 
@@ -143,6 +147,19 @@ class NativeHostTests(unittest.TestCase):
         self.assertEqual(self.gateway.call(self.token,'banking_balance',{'account':'checking'})['state'],'available')
         self.assertEqual(self.client.sends[0][0],'findAccountByWithBalances')
         self.assertFalse(any(name=='postTransfer' for name,_ in self.client.sends))
+
+    def test_history_reads_a_reply_whose_rows_omit_an_optional_field(self):
+        self.turn(1,'verify me')
+        original=RECORDED['searchAccountTransactions']
+        reply=deepcopy(original)
+        for row in reply['transactions']:row.pop('description',None)
+        RECORDED['searchAccountTransactions']=reply
+        self.addCleanup(RECORDED.__setitem__,'searchAccountTransactions',original)
+        self.turn(2,'show my checking history')
+        result=self.gateway.call(self.token,'banking_history',{'account':'checking','start_date':'2026-11-01','end_date':'2026-11-30'})
+        self.assertEqual(result['state'],'available')
+        self.assertTrue(result['entries'])
+        self.assertTrue(all(entry['description'] is None for entry in result['entries']))
 
     def test_loan_mapping_uses_current_due_and_date_independently(self):
         self.turn(1,'loan facts')

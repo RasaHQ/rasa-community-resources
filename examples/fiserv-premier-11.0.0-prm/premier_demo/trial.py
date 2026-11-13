@@ -72,7 +72,7 @@ class TrialClient(PremierClient):
         self._token, self._ledger, self._reservation, self._transport = token, ledger, reservation, transport
         self._sleep = sleep or time.sleep
 
-    def _send(self, key, header, body):
+    def _send(self, key, header, wire):
         # Wait for the spacing rule instead of failing every read after the first.
         wait = self._ledger.seconds_until_core()
         if 0 < wait <= 7.0:
@@ -81,14 +81,15 @@ class TrialClient(PremierClient):
             self._ledger.charge_core_attempt(self._reservation)  # BEFORE the physical call
         except QuotaRefused as refused:
             raise Unavailable("quota_" + str(refused)) from None
+        from decimal import Decimal
         import json
         with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False,
                           transport=self._transport) as http:
-            reply = http.post(self.base + self.contract.path(key), content=json.dumps(body),
+            reply = http.post(self.base + self.contract.path(key), content=wire,
                               headers={"EFXHeader": header, "Content-Type": "application/json",
                                        "Authorization": "Bearer " + self._token})
         try:
-            return reply.status_code, reply.json()
+            return reply.status_code, json.loads(reply.content, parse_float=Decimal)  # never a float
         except ValueError:
             return reply.status_code, None
 
