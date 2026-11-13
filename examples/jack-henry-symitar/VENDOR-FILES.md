@@ -26,10 +26,12 @@ What changed between versions is in [CHANGELOG.md](CHANGELOG.md).
 
 ## If you download newer files
 
-At start, the example compares your files with the hashes above. If they differ, it does not stop straight away. It checks exactly what it uses, as listed in `USED` in `contract_inputs.py`:
+At start, the example compares your files with the hashes above. If they differ, it does not stop straight away. It checks the shape of exactly what it uses, as listed in `USED` in `contract_inputs.py`:
 
 - the six operations and their addresses;
-- each request field it sends, with its type, and the required fields around it;
-- each field it reads from a successful (200) reply, with its type.
+- each request field it sends, with its type, format, allowed values and limits, and the required fields around it;
+- each field it reads from a successful (200) reply, with the same details.
+
+This is a check of shape only. If Jack Henry changed what a field means but kept its shape, the check cannot see it.
 
 If none of that changed, it starts and prints: "Your Jack Henry files differ from the ones this example was tested with (…); everything this example uses is unchanged." If any of it changed, it stops and names the operation and field. Then this example needs an update: please open an issue.

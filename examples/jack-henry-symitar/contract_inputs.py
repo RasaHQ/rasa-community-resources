@@ -47,9 +47,10 @@ USED = {
                                "recipient.shareId", "amount"), "reads": ("status",)},
 }
 OPERATIONS = frozenset(USED)
-# sha256 of used_surface() for the files in PINS. It changes only when something
-# in USED changes: a path, a sent or read field, its type, format, enum or
-# pattern, or a newly required request field.
+# sha256 of used_surface() for the files in PINS. It changes only when the shape
+# of something in USED changes: a path, a sent or read field, its type, format,
+# enum, pattern or limits (minimum, maximum, lengths, item counts), or a newly
+# required request field. It cannot see a change of meaning that keeps the shape.
 USED_SURFACE_SHA256 = "bc038e258b235f8c8ddf0f3eb89617c38542b567aa7f0e495420115319ca30d8"
 
 
@@ -153,9 +154,13 @@ def _resolve(node, document, depth=0):
     return node if isinstance(node, dict) else {}
 
 
+_DESCRIBED = ("type", "format", "enum", "pattern", "nullable", "minimum", "maximum", "exclusiveMinimum",
+              "exclusiveMaximum", "minLength", "maxLength", "minItems", "maxItems", "additionalProperties")
+
+
 def _describe(schema, document):
     schema = _resolve(schema, document)
-    return {key: schema[key] for key in ("type", "format", "enum", "pattern", "nullable") if key in schema}
+    return {key: schema[key] for key in _DESCRIBED if key in schema and not isinstance(schema[key], dict)}
 
 
 def _walk(schema, path, document, required_trail):

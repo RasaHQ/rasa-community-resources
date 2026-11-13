@@ -125,12 +125,17 @@ class ContractTests(unittest.TestCase):
             body.setdefault("properties", {})["memberNumbers"] = {"type": "array", "items": {"type": "string"}}
             body["required"] = sorted(set(body.get("required", [])) | {"memberNumbers"})
 
+        def limit_account_number(document):
+            body = resolve(document, operation(document, "searchLoans")["requestBody"]["content"]["application/json"]["schema"])
+            resolve(document, body["properties"]["accountNumber"])["maxLength"] = 3
+
         def remove_transfers(document):
             operation(document, "postTransfer")["operationId"] = "postTransferV2"
 
         cases = (("loans", payoff_amount_type, "calculateLoanPayoffQuote response field totalPayoffAmount changed"),
                  ("transactions", drop_next_offset, "searchAccountTransactions response field paging.nextOffset changed"),
                  ("loans", require_new_field, "searchLoans now requires different request fields"),
+                 ("loans", limit_account_number, "searchLoans request field accountNumber changed"),
                  ("transfers", remove_transfers, "postTransfer is no longer in the files"))
         for family, edit, expected in cases:
             with self.subTest(expected=expected), self.assertRaises(VendorChanged) as caught:
