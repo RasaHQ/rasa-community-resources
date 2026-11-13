@@ -162,6 +162,17 @@ class HostPolicy:
             raise Refused("outside_scope")
 
     @_serialized
+    def preflight(self, session: Session, intent: TransferIntent) -> None:
+        """The checks review() makes, without creating or arming anything.
+
+        Run before the canonical review text is spoken, so a stale assurance is
+        refused before the caller hears a review that could never be confirmed.
+        review() still re-checks everything when the delivered review is armed."""
+        self._require_binding(session)
+        self._assurance(session, self.TRANSFER_LIFETIME, self._now())
+        self._scope(session, intent)
+
+    @_serialized
     def review(self, session: Session, intent: TransferIntent, user_turn: int) -> Review:
         self._require_binding(session)
         # Any new intent invalidates the old pending consent, even if it refuses.

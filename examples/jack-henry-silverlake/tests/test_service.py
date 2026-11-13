@@ -66,9 +66,8 @@ class ServiceTests(unittest.TestCase):
         review = self.service.review_transfer(token, "checking-A", "savings-A", "1", "USD")
         self.service.arm(token, review["review"], 4)  # 59 s: transfer still allowed
         self.service.assure(token, 60)
-        review = self.service.review_transfer(token, "checking-A", "savings-A", "1", "USD")
-        with self.assertRaises(Refused):
-            self.service.arm(token, review["review"], 6)  # 60 s: no transfer grant
+        with self.assertRaisesRegex(Refused, "assurance_expired"):  # 60 s: no transfer grant,
+            self.service.review_transfer(token, "checking-A", "savings-A", "1", "USD")  # not even a review
         for bad in (-1, float("nan"), float("inf"), True, "0", 10 ** 9):
             with self.assertRaises(Refused):
                 self.service.assure(token, bad)
@@ -99,9 +98,23 @@ class ServiceTests(unittest.TestCase):
     def test_transfer_needs_assurance_younger_than_60_seconds(self):
         token = self.build()
         self.clock.now += 60
-        review = self.service.review_transfer(token, "checking-A", "savings-A", "5", "USD")
+        # Refused before any review text exists, so the caller never hears a review
+        # that could not be confirmed.
+        with self.assertRaisesRegex(Refused, "assurance_expired"):
+            self.service.review_transfer(token, "checking-A", "savings-A", "5", "USD")
         with self.assertRaises(Refused):
+            self.service.arm(token, "no-draft", 4)
+        self.assertEqual(self.fx.mock.transfers, 0)
+
+    def test_arming_still_rechecks_the_assurance_after_a_fresh_preflight(self):
+        token = self.build()
+        self.clock.now += 59
+        review = self.service.review_transfer(token, "checking-A", "savings-A", "5", "USD")  # still fresh
+        self.clock.now += 1  # expires while the review is being spoken
+        with self.assertRaisesRegex(Refused, "assurance_expired"):
             self.service.arm(token, review["review"], 4)
+        with self.assertRaises(Refused):
+            self.service.confirm_and_send(token, "confirm transfer", 5)
         self.assertEqual(self.fx.mock.transfers, 0)
 
     def test_unknown_outcome_holds_the_principal_across_sessions_and_restart(self):

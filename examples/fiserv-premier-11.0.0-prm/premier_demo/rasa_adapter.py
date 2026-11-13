@@ -129,6 +129,34 @@ NO_ACTIVE_REVIEW_TEXT = ("The transfer review was cancelled or is no longer acti
                          "Request a new transfer before confirming.")
 
 
+UNKNOWN_OUTCOME_TEXT = "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status."
+EXPIRED_REVIEW_TEXT = ("Your verification has expired, so this transfer was not reviewed and nothing was sent. "
+                       "Say verify me, then ask for the transfer again.")
+REVIEW_NOT_MADE_TEXT = "That transfer was not reviewed, and nothing was sent."
+REVIEW_UNAVAILABLE_TEXT = ("The transfer review is unavailable, and nothing was sent. "
+                           "Check the original transfer status before making another request.")
+STALE_REVIEW_TEXT = ("That review can no longer be confirmed, and nothing was sent. "
+                     "Say verify me if needed, then ask for the transfer again.")
+OUTSIDE_SCOPE_TEXT = ("That transfer was not reviewed, and nothing was sent: only transfers between "
+                      "your own listed accounts are supported.")
+
+
+def _review_refusal_text(reason):
+    """Host-owned words for a review that was not made: the model never improvises
+    retry advice for a refused, unresolved or failed transfer review."""
+    if reason == "outcome_unresolved":
+        return UNKNOWN_OUTCOME_TEXT
+    if reason in _EXPIRED:
+        return EXPIRED_REVIEW_TEXT
+    if reason in _OUT_OF_SCOPE:
+        return OUTSIDE_SCOPE_TEXT
+    return REVIEW_NOT_MADE_TEXT
+
+
+_EXPIRED = frozenset({"assurance_required"})
+_OUT_OF_SCOPE = frozenset({"account_unavailable", "unsupported_transfer"})
+
+
 async def _unresolved(host):
     """True while the host's journal holds an unknown or pending outcome.
 
@@ -158,7 +186,7 @@ async def _read(context, name, arguments):
                 return ToolResult(llm_response={"state": "confirmation_pending",
                                                 "instruction": "Call banking_submit_transfer now."})
             if await _unresolved(host):  # an unknown outcome is never retried, even after a restart
-                await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
+                await deliver_reply(context, UNKNOWN_OUTCOME_TEXT)
                 return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
             await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)
             return ToolResult(llm_response={"state": "not_submitted", "reason": "no_active_review"})
@@ -232,6 +260,7 @@ async def banking_review_transfer(source: str, destination: str, amount: str,
         async with host.lock:
             return await _review_locked(host, context, source, destination, amount, currency)
     except Exception:
+        await deliver_reply(context, REVIEW_UNAVAILABLE_TEXT)
         return ToolResult(llm_response={"state": "refused", "reason": "review_unavailable"})
 
 
@@ -265,6 +294,15 @@ async def _review_locked(host, context, source, destination, amount, currency):
         host.last_submit_state = None
         remember_delivery()
         return ToolResult(llm_response={"state": "review_delivered"})
+    if result.get("state") == "refused":
+        # No review was made: the host says so, so no retry advice is improvised. An
+        # unknown earlier outcome outranks every other reason (a stale verification
+        # may be checked first), so the retained status is read before any advice.
+        reason = result.get("reason")
+        text = _review_refusal_text(reason)
+        if reason != "outcome_unresolved" and await _unresolved(host):
+            text = UNKNOWN_OUTCOME_TEXT
+        await deliver_reply(context, text)
     return ToolResult(llm_response=_safe(result))
 
 
@@ -283,7 +321,7 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
                 or len(_users(context)) != host.pending_turn + 1
                 or not _is_confirmation(native.turn.text)):
             if await _unresolved(host):
-                await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
+                await deliver_reply(context, UNKNOWN_OUTCOME_TEXT)
                 return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
             await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)
             return ToolResult(llm_response={"state": "refused", "reason": "new_review_required"})

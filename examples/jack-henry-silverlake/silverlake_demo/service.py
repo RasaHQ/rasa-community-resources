@@ -165,6 +165,10 @@ class SilverLakeService:
             if self.journal.held(conversation.session.principal):
                 raise Refused("outcome_unresolved")
             conversation.policy.cancel()
+            conversation.draft = None
+            # Refuse a stale assurance now, before any review text is spoken; arming
+            # after delivery still re-checks it.
+            conversation.policy.preflight(conversation.session, intent)
             draft = uuid.uuid4().hex
             conversation.draft = (draft, intent)
             return {"review": draft, "source": source, "destination": destination,
