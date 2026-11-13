@@ -4,7 +4,7 @@
 
 Ask for your balance, explore recent transactions, and request a transfer between your checking and savings accounts—all through a conversation. This example connects a Rasa assistant to a **local simulation of the Jack Henry SilverLake core through the jXchange banking API**. It was tested with the **Jack Henry jXchange TPG R2026.1.00 XSD archive as published 3 Nov 2026**; see [Vendor files and versions](#vendor-files-and-versions).
 
-> **Demo status:** text conversations have been checked with a real model. A recorded spoken run and response-time measurements are still outstanding. The voice walkthrough below describes the intended experience; it is not a claim that the full voice path has been verified.
+> **Demo status:** text conversations have been checked with a real model. A recorded spoken run and response-time measurements are still outstanding. The voice walkthrough below describes the intended experience. The recorded qualification covers source tests with the real schemas and a live text check over the REST text channel.
 >
 > All people, accounts, and amounts are fictional. No request goes to a real bank. The language-model and speech services are external services, so use only fictional information.
 
@@ -251,7 +251,7 @@ Try these additional checks:
 | Ask for another person's account, such as `checking-B` | The assistant refuses access |
 | Attempt a transfer after verification expires | If refused for stale verification, say “Verify me,” then request the transfer again |
 
-If a transfer result is **unknown**, do not repeatedly submit it or delete the journal to clear the block. The example deliberately holds further transfers for that caller because it cannot establish what happened. See [Transfer safeguards](#transfer-safeguards).
+If a transfer result is **unknown**, do not repeatedly submit it or delete the journal to clear the block. The example holds further transfers for that caller while the first request’s outcome remains unresolved. See [Transfer safeguards](#transfer-safeguards).
 
 ## What is happening
 
@@ -307,7 +307,7 @@ The transfer reply controls have source tests. A fresh end-to-end run of this re
 
 ### Limits to understand before adapting this demo
 
-- **Valid structure does not prove real-bank compatibility.** A schema-valid message follows the published format. It does not establish how a real SilverLake system behaves or which fields a particular loan type supports.
+- **Published format and real-bank settings need separate checks.** A schema-valid message follows the published format. These results cover the local simulation and the payoff dates its fictional data supplies. Check the real SilverLake configuration and supported fields for each loan type with the API owner.
 - **Identity is simulated.** There is one fixed fictional caller. This is not bank sign-in or production identity verification.
 - **Acceptance is not completion.** `RsStat` Success means the request was accepted, not that it was posted.
 - **Missing data stays missing.** The assistant reports a supplied payoff quote; it does not invent one for an unsupported date.
