@@ -10,40 +10,41 @@ from enum import StrEnum
 from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.experimental.missing_sentinel import MISSING
 
 
 class FindAccountByRequest(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    accountNumber: str | None = None
-    activeCardNumber: Annotated[str | None, Field(max_length=30)] = None
-    anyCardNumber: Annotated[str | None, Field(max_length=30)] = None
-    draft: Annotated[str | None, Field(max_length=10)] = None
-    homeUser: Annotated[str | None, Field(max_length=20)] = None
-    lookupNumber: Annotated[str | None, Field(max_length=20)] = None
-    lookupType: Annotated[int | None, Field(ge=0, le=99)] = None
-    memberNumbers: list[str] | None = None
-    micr: Annotated[str | None, Field(max_length=22)] = None
-    shortName: str | None = None
+    accountNumber: str | None | MISSING = MISSING
+    activeCardNumber: Annotated[str | None | MISSING, Field(max_length=30)] = MISSING
+    anyCardNumber: Annotated[str | None | MISSING, Field(max_length=30)] = MISSING
+    draft: Annotated[str | None | MISSING, Field(max_length=10)] = MISSING
+    homeUser: Annotated[str | None | MISSING, Field(max_length=20)] = MISSING
+    lookupNumber: Annotated[str | None | MISSING, Field(max_length=20)] = MISSING
+    lookupType: Annotated[int | None | MISSING, Field(ge=0, le=99)] = MISSING
+    memberNumbers: list[str] | None | MISSING = MISSING
+    micr: Annotated[str | None | MISSING, Field(max_length=22)] = MISSING
+    shortName: str | None | MISSING = MISSING
 
 
 class AccessItem(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    accessType: str | None = None
-    accountNumber: str | None = None
-    enableDeposit: str | None = None
-    enableFm: str | None = None
-    enableInquiry: str | None = None
-    enableWithdrawal: str | None = None
-    extLoanAccount: str | None = None
-    id: str | None = None
-    idType: str | None = None
-    locator: str | None = None
-    qualifier: str | None = None
-    recordChangeDate: str | None = None
+    accessType: str | None | MISSING = MISSING
+    accountNumber: str | None | MISSING = MISSING
+    enableDeposit: str | None | MISSING = MISSING
+    enableFm: str | None | MISSING = MISSING
+    enableInquiry: str | None | MISSING = MISSING
+    enableWithdrawal: str | None | MISSING = MISSING
+    extLoanAccount: str | None | MISSING = MISSING
+    id: str | None | MISSING = MISSING
+    idType: str | None | MISSING = MISSING
+    locator: str | None | MISSING = MISSING
+    qualifier: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
 
 
 class AccountWarning(BaseModel):
@@ -53,7 +54,7 @@ class AccountWarning(BaseModel):
     code: Annotated[int, Field(ge=0, le=999)]
     description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
-    expirationDate: str | None = None
+    expirationDate: str | None | MISSING = MISSING
     inquiryRestriction: int
     maintenanceRestriction: int
     tellerRestriction: int
@@ -66,7 +67,7 @@ class CardWarning(BaseModel):
     code: Annotated[int, Field(ge=0, le=999)]
     description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
-    expirationDate: str | None = None
+    expirationDate: str | None | MISSING = MISSING
     inquiryRestriction: int
     maintenanceRestriction: int
     tellerRestriction: int
@@ -76,167 +77,167 @@ class Name(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    extendedName: str | None = None
-    first: str | None = None
-    last: str | None = None
-    locator: str | None = None
-    longName: str | None = None
-    middle: str | None = None
-    nameFormat: str | None = None
-    shortName: str | None = None
-    subType: str | None = None
-    suffix: str | None = None
-    title: str | None = None
-    type: str | None = None
+    extendedName: str | None | MISSING = MISSING
+    first: str | None | MISSING = MISSING
+    last: str | None | MISSING = MISSING
+    locator: str | None | MISSING = MISSING
+    longName: str | None | MISSING = MISSING
+    middle: str | None | MISSING = MISSING
+    nameFormat: str | None | MISSING = MISSING
+    shortName: str | None | MISSING = MISSING
+    subType: str | None | MISSING = MISSING
+    suffix: str | None | MISSING = MISSING
+    title: str | None | MISSING = MISSING
+    type: str | None | MISSING = MISSING
 
 
 class SecurityCode(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    description: str | None = None
+    code: int | MISSING = MISSING
+    description: str | MISSING = MISSING
 
 
 class User(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class Card(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    access: list[AccessItem] | None = None
-    accountNumber: str | None = None
-    accountWarnings: list[AccountWarning] | None = None
-    activeDate: str | None = None
-    atmCount: str | None = None
-    atmCountLimit: str | None = None
-    atmTempLimit: str | None = None
-    authAmount: str | None = None
-    authCount: str | None = None
-    authCountLimit: str | None = None
-    authLimit: str | None = None
-    authTempLimit: str | None = None
-    billPayAmount: str | None = None
-    billPayCount: str | None = None
-    billPayCountLimit: str | None = None
-    billPayLimit: str | None = None
-    billPayMax: str | None = None
-    blockCode: str | None = None
-    cardWarnings: list[CardWarning] | None = None
-    chkId: str | None = None
-    closeDate: str | None = None
-    createdAtBranch: str | None = None
-    createdByUser: str | None = None
-    credDebAmount: str | None = None
-    credDebCount: str | None = None
-    credDebCountLimit: str | None = None
-    credDebLimit: str | None = None
-    creditCardId: str | None = None
-    depAmount: str | None = None
-    depCount: str | None = None
-    depCountLimit: str | None = None
-    depLimit: str | None = None
-    depMax: str | None = None
-    description: str | None = None
-    digitalIssueExcept: str | None = None
-    digitalIssueStatus: str | None = None
-    effectiveDate: str | None = None
-    emvChipProfile: str | None = None
-    extraEmboss: str | None = None
-    fileUpdateManagerException: str | None = None
-    imageRefDate: str | None = None
-    imageRefIssueCount: str | None = None
-    imageRefNumber: str | None = None
-    instantIssue: str | None = None
-    issueCode: str | None = None
-    issueDate: str | None = None
-    lastAddrChgDate: str | None = None
-    limitAmount: str | None = None
-    limitDays: str | None = None
-    locId: str | None = None
-    locator: str | None = None
-    miscAmount: str | None = None
-    miscCount: str | None = None
-    miscCountLimit: str | None = None
-    miscLimit: str | None = None
-    nameType: str | None = None
-    names: list[Name] | None = None
-    notes: list[Note] | None = None
-    onlineCardIssue: str | None = None
-    onlineRushIssue: str | None = None
-    posAmount: str | None = None
-    posCount: str | None = None
-    posCountLimit: str | None = None
-    posLimit: str | None = None
-    posTempLimit: str | None = None
-    prevActivationDate: str | None = None
-    reclassCode: str | None = None
-    recordChangeDate: str | None = None
-    reissueCode: str | None = None
-    reissueMonths: str | None = None
-    savId: str | None = None
-    singleUsageMax: str | None = None
-    status: str | None = None
-    statusReason: str | None = None
-    suffix: str | None = None
-    tempLimitEndDate: str | None = None
-    tempLimitStartDate: str | None = None
-    type: str | None = None
-    usageAmount: str | None = None
-    usageDate: str | None = None
-    usageLimit: str | None = None
-    wdCheckAmount: str | None = None
-    wdCheckCount: str | None = None
-    wdCheckCountLimit: str | None = None
-    wdCheckLimit: str | None = None
-    wdCheckMax: str | None = None
-    xferAmount: str | None = None
-    xferCount: str | None = None
-    xferCountLimit: str | None = None
-    xferLimit: str | None = None
-    xferMax: str | None = None
+    access: list[AccessItem] | MISSING = MISSING
+    accountNumber: str | None | MISSING = MISSING
+    accountWarnings: list[AccountWarning] | MISSING = MISSING
+    activeDate: str | None | MISSING = MISSING
+    atmCount: str | None | MISSING = MISSING
+    atmCountLimit: str | None | MISSING = MISSING
+    atmTempLimit: str | None | MISSING = MISSING
+    authAmount: str | None | MISSING = MISSING
+    authCount: str | None | MISSING = MISSING
+    authCountLimit: str | None | MISSING = MISSING
+    authLimit: str | None | MISSING = MISSING
+    authTempLimit: str | None | MISSING = MISSING
+    billPayAmount: str | None | MISSING = MISSING
+    billPayCount: str | None | MISSING = MISSING
+    billPayCountLimit: str | None | MISSING = MISSING
+    billPayLimit: str | None | MISSING = MISSING
+    billPayMax: str | None | MISSING = MISSING
+    blockCode: str | None | MISSING = MISSING
+    cardWarnings: list[CardWarning] | MISSING = MISSING
+    chkId: str | None | MISSING = MISSING
+    closeDate: str | None | MISSING = MISSING
+    createdAtBranch: str | None | MISSING = MISSING
+    createdByUser: str | None | MISSING = MISSING
+    credDebAmount: str | None | MISSING = MISSING
+    credDebCount: str | None | MISSING = MISSING
+    credDebCountLimit: str | None | MISSING = MISSING
+    credDebLimit: str | None | MISSING = MISSING
+    creditCardId: str | None | MISSING = MISSING
+    depAmount: str | None | MISSING = MISSING
+    depCount: str | None | MISSING = MISSING
+    depCountLimit: str | None | MISSING = MISSING
+    depLimit: str | None | MISSING = MISSING
+    depMax: str | None | MISSING = MISSING
+    description: str | None | MISSING = MISSING
+    digitalIssueExcept: str | None | MISSING = MISSING
+    digitalIssueStatus: str | None | MISSING = MISSING
+    effectiveDate: str | None | MISSING = MISSING
+    emvChipProfile: str | None | MISSING = MISSING
+    extraEmboss: str | None | MISSING = MISSING
+    fileUpdateManagerException: str | None | MISSING = MISSING
+    imageRefDate: str | None | MISSING = MISSING
+    imageRefIssueCount: str | None | MISSING = MISSING
+    imageRefNumber: str | None | MISSING = MISSING
+    instantIssue: str | None | MISSING = MISSING
+    issueCode: str | None | MISSING = MISSING
+    issueDate: str | None | MISSING = MISSING
+    lastAddrChgDate: str | None | MISSING = MISSING
+    limitAmount: str | None | MISSING = MISSING
+    limitDays: str | None | MISSING = MISSING
+    locId: str | None | MISSING = MISSING
+    locator: str | None | MISSING = MISSING
+    miscAmount: str | None | MISSING = MISSING
+    miscCount: str | None | MISSING = MISSING
+    miscCountLimit: str | None | MISSING = MISSING
+    miscLimit: str | None | MISSING = MISSING
+    nameType: str | None | MISSING = MISSING
+    names: list[Name] | MISSING = MISSING
+    notes: list[Note] | MISSING = MISSING
+    onlineCardIssue: str | None | MISSING = MISSING
+    onlineRushIssue: str | None | MISSING = MISSING
+    posAmount: str | None | MISSING = MISSING
+    posCount: str | None | MISSING = MISSING
+    posCountLimit: str | None | MISSING = MISSING
+    posLimit: str | None | MISSING = MISSING
+    posTempLimit: str | None | MISSING = MISSING
+    prevActivationDate: str | None | MISSING = MISSING
+    reclassCode: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
+    reissueCode: str | None | MISSING = MISSING
+    reissueMonths: str | None | MISSING = MISSING
+    savId: str | None | MISSING = MISSING
+    singleUsageMax: str | None | MISSING = MISSING
+    status: str | None | MISSING = MISSING
+    statusReason: str | None | MISSING = MISSING
+    suffix: str | None | MISSING = MISSING
+    tempLimitEndDate: str | None | MISSING = MISSING
+    tempLimitStartDate: str | None | MISSING = MISSING
+    type: str | None | MISSING = MISSING
+    usageAmount: str | None | MISSING = MISSING
+    usageDate: str | None | MISSING = MISSING
+    usageLimit: str | None | MISSING = MISSING
+    wdCheckAmount: str | None | MISSING = MISSING
+    wdCheckCount: str | None | MISSING = MISSING
+    wdCheckCountLimit: str | None | MISSING = MISSING
+    wdCheckLimit: str | None | MISSING = MISSING
+    wdCheckMax: str | None | MISSING = MISSING
+    xferAmount: str | None | MISSING = MISSING
+    xferCount: str | None | MISSING = MISSING
+    xferCountLimit: str | None | MISSING = MISSING
+    xferLimit: str | None | MISSING = MISSING
+    xferMax: str | None | MISSING = MISSING
 
 
 class Account(BaseModel):
@@ -246,10 +247,10 @@ class Account(BaseModel):
     accountId: Annotated[
         str, Field(max_length=34, min_length=1, pattern='^[a-zA-Z0-9]+$')
     ]
-    currentRelationshipCode: int | None = None
-    currentRelationshipName: str | None = None
-    negativeBalanceDate: str | None = None
-    restrict: int | None = None
+    currentRelationshipCode: int | None | MISSING = MISSING
+    currentRelationshipName: str | MISSING = MISSING
+    negativeBalanceDate: str | None | MISSING = MISSING
+    restrict: int | MISSING = MISSING
 
 
 class AccountStatus(StrEnum):
@@ -264,7 +265,7 @@ class LoanWarning(BaseModel):
     code: Annotated[int, Field(ge=0, le=999)]
     description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
-    expirationDate: str | None = None
+    expirationDate: str | None | MISSING = MISSING
     inquiryRestriction: int
     maintenanceRestriction: int
     tellerRestriction: int
@@ -274,44 +275,44 @@ class User1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User1 | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User1 | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class RelationshipCode(StrEnum):
@@ -354,7 +355,7 @@ class Relationship(BaseModel):
         extra='ignore',
     )
     memberName: str
-    memberRecordNumber: str | None = None
+    memberRecordNumber: str | None | MISSING = MISSING
     relationshipCode: RelationshipCode
 
 
@@ -363,218 +364,218 @@ class Loan(BaseModel):
         extra='ignore',
     )
     account: Account
-    accountNumber: str | None = None
+    accountNumber: str | None | MISSING = MISSING
     accountStatus: AccountStatus
     accountWarnings: list[AccountWarning]
-    accrualStatus: str | None = None
-    activityDate: str | None = None
-    alternateNameLocator: str | None = None
-    alternateNameType: str | None = None
-    approvalCode: str | None = None
-    approvalDate: str | None = None
-    apr: str | None = None
-    availableCredit: str | None = None
-    balance: str | None = None
-    branch: str | None = None
-    chargeOffAmount: str | None = None
-    chargeOffDate: str | None = None
-    chargeOffType: str | None = None
-    closeDate: str | None = None
-    createdAtBranch: str | None = None
-    createdByUser: str | None = None
-    creditLimit: str | None = None
-    creditReportLastStatus: str | None = None
-    creditReportingCode: str | None = None
-    description: str | None = None
-    dueDate: str | None = None
-    intUnpaidBilled: str | None = None
-    interestLastYear: str | None = None
-    interestRate: str | None = None
-    interestYtd: str | None = None
-    lastFmDate: str | None = None
-    lastPaymentAmount: str | None = None
-    lastPaymentDate: str | None = None
-    lastTranDate: str | None = None
-    lateChargeAccrued: str | None = None
-    lateChargeDate: str | None = None
-    lateChargeDue: str | None = None
-    lateChargeLastYear: str | None = None
-    lateChargeType: str | None = None
-    lateChargeUnpaid: str | None = None
-    lateChargeYtd: str | None = None
-    loanCode: str | None = None
-    loanCodeName: str | None = None
-    loanId: str | None = None
-    loanType: str | None = None
+    accrualStatus: str | None | MISSING = MISSING
+    activityDate: str | None | MISSING = MISSING
+    alternateNameLocator: str | None | MISSING = MISSING
+    alternateNameType: str | None | MISSING = MISSING
+    approvalCode: str | None | MISSING = MISSING
+    approvalDate: str | None | MISSING = MISSING
+    apr: str | None | MISSING = MISSING
+    availableCredit: str | None | MISSING = MISSING
+    balance: str | MISSING = MISSING
+    branch: str | None | MISSING = MISSING
+    chargeOffAmount: str | None | MISSING = MISSING
+    chargeOffDate: str | None | MISSING = MISSING
+    chargeOffType: str | None | MISSING = MISSING
+    closeDate: str | None | MISSING = MISSING
+    createdAtBranch: str | None | MISSING = MISSING
+    createdByUser: str | None | MISSING = MISSING
+    creditLimit: str | None | MISSING = MISSING
+    creditReportLastStatus: str | None | MISSING = MISSING
+    creditReportingCode: str | None | MISSING = MISSING
+    description: str | None | MISSING = MISSING
+    dueDate: str | None | MISSING = MISSING
+    intUnpaidBilled: str | None | MISSING = MISSING
+    interestLastYear: str | None | MISSING = MISSING
+    interestRate: str | None | MISSING = MISSING
+    interestYtd: str | None | MISSING = MISSING
+    lastFmDate: str | None | MISSING = MISSING
+    lastPaymentAmount: str | None | MISSING = MISSING
+    lastPaymentDate: str | None | MISSING = MISSING
+    lastTranDate: str | None | MISSING = MISSING
+    lateChargeAccrued: str | None | MISSING = MISSING
+    lateChargeDate: str | None | MISSING = MISSING
+    lateChargeDue: str | None | MISSING = MISSING
+    lateChargeLastYear: str | None | MISSING = MISSING
+    lateChargeType: str | None | MISSING = MISSING
+    lateChargeUnpaid: str | None | MISSING = MISSING
+    lateChargeYtd: str | None | MISSING = MISSING
+    loanCode: str | None | MISSING = MISSING
+    loanCodeName: str | None | MISSING = MISSING
+    loanId: str | None | MISSING = MISSING
+    loanType: str | None | MISSING = MISSING
     loanWarnings: list[LoanWarning]
-    maturityDate: str | None = None
-    minimumPayment: str | None = None
-    nickname: str | None = None
+    maturityDate: str | None | MISSING = MISSING
+    minimumPayment: str | None | MISSING = MISSING
+    nickname: str | None | MISSING = MISSING
     notes: list[Note1]
-    openDate: str | None = None
-    originalBalance: str | None = None
-    pastDueAmount: str | None = None
-    payment: str | None = None
-    paymentDue: str | None = None
-    payoffAmount: str | None = None
-    recordChangeDate: str | None = None
+    openDate: str | None | MISSING = MISSING
+    originalBalance: str | None | MISSING = MISSING
+    pastDueAmount: str | None | MISSING = MISSING
+    payment: str | None | MISSING = MISSING
+    paymentDue: str | None | MISSING = MISSING
+    payoffAmount: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
     relationships: list[Relationship]
-    statementDate: str | None = None
-    statementGroup: str | None = None
-    statementMailCode: str | None = None
-    statementMailCodeName: str | None = None
-    statementPrevDate: str | None = None
+    statementDate: str | None | MISSING = MISSING
+    statementGroup: str | None | MISSING = MISSING
+    statementMailCode: str | None | MISSING = MISSING
+    statementMailCodeName: str | None | MISSING = MISSING
+    statementPrevDate: str | None | MISSING = MISSING
 
 
 class IdentDocFlag(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    entryId: int | None = None
-    flag: int | None = None
+    entryId: int | MISSING = MISSING
+    flag: int | MISSING = MISSING
 
 
 class IdentIdType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    entryId: int | None = None
-    type: int | None = None
+    entryId: int | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Member(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeDuty: str | None = None
-    addressType: str | None = None
-    beneficialOwner: str | None = None
-    beneficialPercent: str | None = None
-    beneficiaryPercent: str | None = None
-    chapter4StatusCode: str | None = None
-    confidential: str | None = None
-    crNameChgDate: str | None = None
-    ctrExempt: str | None = None
-    currGrossMonthPay: str | None = None
-    currNetMonthPay: str | None = None
-    dbaNameFormat: str | None = None
-    dbaShortName: str | None = None
-    ecoaCode: str | None = None
-    effectiveDate: str | None = None
-    expirationDate: str | None = None
-    firstName: str | None = None
-    formW8OnFile: str | None = None
-    headquarters: str | None = None
-    identDocFlags: list[IdentDocFlag] | None = None
-    identIdTypes: list[IdentIdType] | None = None
-    irs1042SAmendNum: str | None = None
-    irsCorrection: str | None = None
-    last: str | None = None
-    lastAddrChgDate: str | None = None
-    locator: str | None = None
-    longName: str | None = None
-    mailOverride: str | None = None
-    marketingAddress: str | None = None
-    mbrAddrFileType: str | None = None
-    mbrCreateDate: str | None = None
-    mbrFileType: str | None = None
-    mbrFmLastDate: str | None = None
-    mbrRecordChangeDate: str | None = None
-    mbrStatus: str | None = None
-    mbrStatusFmDate: str | None = None
-    memberNumLink: str | None = None
-    memberNumLinkChgDate: str | None = None
-    memberNumber: str | None = None
-    middleName: str | None = None
-    mobilePhone: str | None = None
-    nameFormat: str | None = None
-    nraTaxRate: str | None = None
-    phoneType: str | None = None
-    preferredContact: str | None = None
-    preferredContactMethod: str | None = None
-    recordChangeDate: str | None = None
-    restrict: str | None = None
-    shortName: str | None = None
-    ssn: str | None = None
-    ssnCertification: str | None = None
-    ssnOverride: str | None = None
-    ssnType: str | None = None
-    subType: str | None = None
-    substantialOwner: str | None = None
-    suffix: str | None = None
-    title: str | None = None
-    type: str | None = None
-    usPersonFlag: str | None = None
-    userAmount1: str | None = None
-    userAmount2: str | None = None
+    activeDuty: str | None | MISSING = MISSING
+    addressType: str | None | MISSING = MISSING
+    beneficialOwner: str | None | MISSING = MISSING
+    beneficialPercent: str | None | MISSING = MISSING
+    beneficiaryPercent: str | None | MISSING = MISSING
+    chapter4StatusCode: str | None | MISSING = MISSING
+    confidential: str | None | MISSING = MISSING
+    crNameChgDate: str | None | MISSING = MISSING
+    ctrExempt: str | None | MISSING = MISSING
+    currGrossMonthPay: str | None | MISSING = MISSING
+    currNetMonthPay: str | None | MISSING = MISSING
+    dbaNameFormat: str | None | MISSING = MISSING
+    dbaShortName: str | None | MISSING = MISSING
+    ecoaCode: str | None | MISSING = MISSING
+    effectiveDate: str | None | MISSING = MISSING
+    expirationDate: str | None | MISSING = MISSING
+    firstName: str | None | MISSING = MISSING
+    formW8OnFile: str | None | MISSING = MISSING
+    headquarters: str | None | MISSING = MISSING
+    identDocFlags: list[IdentDocFlag] | MISSING = MISSING
+    identIdTypes: list[IdentIdType] | MISSING = MISSING
+    irs1042SAmendNum: str | None | MISSING = MISSING
+    irsCorrection: str | None | MISSING = MISSING
+    last: str | None | MISSING = MISSING
+    lastAddrChgDate: str | None | MISSING = MISSING
+    locator: str | None | MISSING = MISSING
+    longName: str | None | MISSING = MISSING
+    mailOverride: str | None | MISSING = MISSING
+    marketingAddress: str | None | MISSING = MISSING
+    mbrAddrFileType: str | None | MISSING = MISSING
+    mbrCreateDate: str | None | MISSING = MISSING
+    mbrFileType: str | None | MISSING = MISSING
+    mbrFmLastDate: str | None | MISSING = MISSING
+    mbrRecordChangeDate: str | None | MISSING = MISSING
+    mbrStatus: str | None | MISSING = MISSING
+    mbrStatusFmDate: str | None | MISSING = MISSING
+    memberNumLink: str | None | MISSING = MISSING
+    memberNumLinkChgDate: str | None | MISSING = MISSING
+    memberNumber: str | None | MISSING = MISSING
+    middleName: str | None | MISSING = MISSING
+    mobilePhone: str | None | MISSING = MISSING
+    nameFormat: str | None | MISSING = MISSING
+    nraTaxRate: str | None | MISSING = MISSING
+    phoneType: str | None | MISSING = MISSING
+    preferredContact: str | None | MISSING = MISSING
+    preferredContactMethod: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
+    restrict: str | None | MISSING = MISSING
+    shortName: str | None | MISSING = MISSING
+    ssn: str | None | MISSING = MISSING
+    ssnCertification: str | None | MISSING = MISSING
+    ssnOverride: str | None | MISSING = MISSING
+    ssnType: str | None | MISSING = MISSING
+    subType: str | None | MISSING = MISSING
+    substantialOwner: str | None | MISSING = MISSING
+    suffix: str | None | MISSING = MISSING
+    title: str | None | MISSING = MISSING
+    type: str | None | MISSING = MISSING
+    usPersonFlag: str | None | MISSING = MISSING
+    userAmount1: str | None | MISSING = MISSING
+    userAmount2: str | None | MISSING = MISSING
 
 
 class User2(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note2(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User2 | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User2 | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class Preference(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    access: list[AccessItem] | None = None
-    accountNumber: str | None = None
-    depLimit: str | None = None
-    depMax: str | None = None
-    hbEnable: str | None = None
-    hbUsername: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: str | None = None
-    lastTranDate: str | None = None
-    locator: str | None = None
-    locked: str | None = None
-    pwdResetDate: str | None = None
-    wdCashLimit: str | None = None
-    wdCashMax: str | None = None
-    wdCheckLimit: str | None = None
-    wdCheckMax: str | None = None
-    xferLimit: str | None = None
-    xferMax: str | None = None
+    access: list[AccessItem] | MISSING = MISSING
+    accountNumber: str | None | MISSING = MISSING
+    depLimit: str | None | MISSING = MISSING
+    depMax: str | None | MISSING = MISSING
+    hbEnable: str | None | MISSING = MISSING
+    hbUsername: str | None | MISSING = MISSING
+    lastLogonDate: str | None | MISSING = MISSING
+    lastLogonTime: str | None | MISSING = MISSING
+    lastTranDate: str | None | MISSING = MISSING
+    locator: str | None | MISSING = MISSING
+    locked: str | None | MISSING = MISSING
+    pwdResetDate: str | None | MISSING = MISSING
+    wdCashLimit: str | None | MISSING = MISSING
+    wdCashMax: str | None | MISSING = MISSING
+    wdCheckLimit: str | None | MISSING = MISSING
+    wdCheckMax: str | None | MISSING = MISSING
+    xferLimit: str | None | MISSING = MISSING
+    xferMax: str | None | MISSING = MISSING
 
 
 class AccountByMicr(BaseModel):
@@ -584,54 +585,54 @@ class AccountByMicr(BaseModel):
     accountId: Annotated[
         str, Field(max_length=34, min_length=1, pattern='^[a-zA-Z0-9]+$')
     ]
-    currentRelationshipCode: int | None = None
-    currentRelationshipName: str | None = None
-    negativeBalanceDate: str | None = None
-    restrict: int | None = None
+    currentRelationshipCode: int | None | MISSING = MISSING
+    currentRelationshipName: str | MISSING = MISSING
+    negativeBalanceDate: str | None | MISSING = MISSING
+    restrict: int | MISSING = MISSING
 
 
 class User3(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note3(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User3 | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User3 | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class Relationship1(BaseModel):
@@ -639,7 +640,7 @@ class Relationship1(BaseModel):
         extra='ignore',
     )
     memberName: str
-    memberRecordNumber: str | None = None
+    memberRecordNumber: str | None | MISSING = MISSING
     relationshipCode: RelationshipCode
 
 
@@ -650,7 +651,7 @@ class ShareWarning(BaseModel):
     code: Annotated[int, Field(ge=0, le=999)]
     description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
-    expirationDate: str | None = None
+    expirationDate: str | None | MISSING = MISSING
     inquiryRestriction: int
     maintenanceRestriction: int
     tellerRestriction: int
@@ -661,176 +662,176 @@ class Share(BaseModel):
         extra='ignore',
     )
     account: Account
-    accountByMicr: AccountByMicr | None = None
-    accountNumber: str | None = None
+    accountByMicr: AccountByMicr | None | MISSING = MISSING
+    accountNumber: str | None | MISSING = MISSING
     accountStatus: AccountStatus
     accountWarnings: list[AccountWarning]
-    activityDate: str | None = None
-    alternateNameLocator: str | None = None
-    alternateNameType: str | None = None
-    amortizationSchd: str | None = None
-    amortizationSchdType: str | None = None
-    analysisPmtIdType: str | None = None
-    availableBalance: str | None = None
-    balance: str | None = None
-    bondIntLastYear: str | None = None
-    bondIntYtd: str | None = None
-    branch: str | None = None
-    bumpRate: str | None = None
-    callItemSchd: str | None = None
-    callItemSchdType: str | None = None
-    cappedFeesAmountCap: str | None = None
-    cappedFeesAmtPeriod: str | None = None
-    cappedFeesCntPeriod: str | None = None
-    cappedFeesCountCap: str | None = None
-    cddivAccrLastYr: str | None = None
-    cddivAccrYtd: str | None = None
-    chapter4WithheldLstYr: str | None = None
-    chapter4WithheldYtd: str | None = None
-    chapter4WithholdingCode: str | None = None
-    chargeOffAmount: str | None = None
-    chargeOffDate: str | None = None
-    chargeOffType: str | None = None
-    closeDate: str | None = None
-    corporateUserTransferCode: str | None = None
-    courtesyFeeLy: str | None = None
-    courtesyFeeMtd: str | None = None
-    courtesyFeeYtd: str | None = None
-    courtesyPayLastYear: str | None = None
-    courtesyPayMonthToDate: str | None = None
-    courtesyPayYtd: str | None = None
-    createdAtBranch: str | None = None
-    createdByUser: str | None = None
-    creditReportLastStatus: str | None = None
-    creditReportOriginalAmountRptd: str | None = None
-    creditReportingCode: str | None = None
-    cuTotalsUseCode: str | None = None
-    currDivPayable: str | None = None
-    currMonthPaidDiv: str | None = None
-    description: str | None = None
-    divAccrual: str | None = None
-    divAccrualDate: str | None = None
-    divDisbUpdtActvtyD: str | None = None
-    divFromOpen: str | None = None
-    divLastYear: str | None = None
-    divPeriodBalDays: str | None = None
-    divPeriodStart: str | None = None
-    divPostCode: str | None = None
-    divRate: str | None = None
-    divType: str | None = None
-    divYtd: str | None = None
-    dividendDue: str | None = None
-    dividendRateMargin: str | None = None
-    dividendRateMarginSign: str | None = None
-    dividendRateMax: str | None = None
-    dividendRateMin: str | None = None
-    dividendRatePeriodFreq: str | None = None
+    activityDate: str | None | MISSING = MISSING
+    alternateNameLocator: str | None | MISSING = MISSING
+    alternateNameType: str | None | MISSING = MISSING
+    amortizationSchd: str | None | MISSING = MISSING
+    amortizationSchdType: str | None | MISSING = MISSING
+    analysisPmtIdType: str | None | MISSING = MISSING
+    availableBalance: str | MISSING = MISSING
+    balance: str | MISSING = MISSING
+    bondIntLastYear: str | None | MISSING = MISSING
+    bondIntYtd: str | None | MISSING = MISSING
+    branch: str | None | MISSING = MISSING
+    bumpRate: str | None | MISSING = MISSING
+    callItemSchd: str | None | MISSING = MISSING
+    callItemSchdType: str | None | MISSING = MISSING
+    cappedFeesAmountCap: str | None | MISSING = MISSING
+    cappedFeesAmtPeriod: str | None | MISSING = MISSING
+    cappedFeesCntPeriod: str | None | MISSING = MISSING
+    cappedFeesCountCap: str | None | MISSING = MISSING
+    cddivAccrLastYr: str | None | MISSING = MISSING
+    cddivAccrYtd: str | None | MISSING = MISSING
+    chapter4WithheldLstYr: str | None | MISSING = MISSING
+    chapter4WithheldYtd: str | None | MISSING = MISSING
+    chapter4WithholdingCode: str | None | MISSING = MISSING
+    chargeOffAmount: str | None | MISSING = MISSING
+    chargeOffDate: str | None | MISSING = MISSING
+    chargeOffType: str | None | MISSING = MISSING
+    closeDate: str | None | MISSING = MISSING
+    corporateUserTransferCode: str | None | MISSING = MISSING
+    courtesyFeeLy: str | None | MISSING = MISSING
+    courtesyFeeMtd: str | None | MISSING = MISSING
+    courtesyFeeYtd: str | None | MISSING = MISSING
+    courtesyPayLastYear: str | None | MISSING = MISSING
+    courtesyPayMonthToDate: str | None | MISSING = MISSING
+    courtesyPayYtd: str | None | MISSING = MISSING
+    createdAtBranch: str | None | MISSING = MISSING
+    createdByUser: str | None | MISSING = MISSING
+    creditReportLastStatus: str | None | MISSING = MISSING
+    creditReportOriginalAmountRptd: str | None | MISSING = MISSING
+    creditReportingCode: str | None | MISSING = MISSING
+    cuTotalsUseCode: str | None | MISSING = MISSING
+    currDivPayable: str | None | MISSING = MISSING
+    currMonthPaidDiv: str | None | MISSING = MISSING
+    description: str | None | MISSING = MISSING
+    divAccrual: str | None | MISSING = MISSING
+    divAccrualDate: str | None | MISSING = MISSING
+    divDisbUpdtActvtyD: str | None | MISSING = MISSING
+    divFromOpen: str | None | MISSING = MISSING
+    divLastYear: str | None | MISSING = MISSING
+    divPeriodBalDays: str | None | MISSING = MISSING
+    divPeriodStart: str | None | MISSING = MISSING
+    divPostCode: str | None | MISSING = MISSING
+    divRate: str | None | MISSING = MISSING
+    divType: str | None | MISSING = MISSING
+    divYtd: str | None | MISSING = MISSING
+    dividendDue: str | None | MISSING = MISSING
+    dividendRateMargin: str | None | MISSING = MISSING
+    dividendRateMarginSign: str | None | MISSING = MISSING
+    dividendRateMax: str | None | MISSING = MISSING
+    dividendRateMin: str | None | MISSING = MISSING
+    dividendRatePeriodFreq: str | None | MISSING = MISSING
     eligibleForWires: bool
-    escrowLastYear: str | None = None
-    escrowYtd: str | None = None
-    extAchXfrDailyLimitIn: str | None = None
-    extAchXfrDailyLimitOut: str | None = None
-    feeExemptCrtsyBal: str | None = None
-    insuranceMaximum: str | None = None
-    insuranceType: str | None = None
-    irs1042SUfid: str | None = None
-    irsCode: str | None = None
-    irsPlan: str | None = None
+    escrowLastYear: str | None | MISSING = MISSING
+    escrowYtd: str | None | MISSING = MISSING
+    extAchXfrDailyLimitIn: str | None | MISSING = MISSING
+    extAchXfrDailyLimitOut: str | None | MISSING = MISSING
+    feeExemptCrtsyBal: str | None | MISSING = MISSING
+    insuranceMaximum: str | None | MISSING = MISSING
+    insuranceType: str | None | MISSING = MISSING
+    irs1042SUfid: str | None | MISSING = MISSING
+    irsCode: str | None | MISSING = MISSING
+    irsPlan: str | None | MISSING = MISSING
     isMicr: bool
-    lastDirectDepAmt: str | None = None
-    lastDivAmount: str | None = None
-    lastDivDate: str | None = None
-    lastFmDate: str | None = None
-    lastPurgeDate: str | None = None
-    lastTranDate: str | None = None
-    ledgerAccrual: str | None = None
-    loanPaymentHold: str | None = None
-    maturityPostCode: str | None = None
-    mcDivLastYear: str | None = None
-    mcDivYtd: str | None = None
-    memberBranchSupport: str | None = None
-    memberUserTransferCode: str | None = None
-    micrAcctNumber: str | None = None
-    minimumBalance: str | None = None
-    minimumDeposit: str | None = None
-    minimumWithdrawal: str | None = None
-    mtdAccruedDivs: str | None = None
-    mtdEarnedDivs: str | None = None
-    mtdPaidDivs: str | None = None
-    mtdPriorRateAccrual: str | None = None
-    negativeBalanceNoticeNumber: str | None = None
-    negativeBalanceNoticeType: str | None = None
-    nickname: str | None = None
+    lastDirectDepAmt: str | None | MISSING = MISSING
+    lastDivAmount: str | None | MISSING = MISSING
+    lastDivDate: str | None | MISSING = MISSING
+    lastFmDate: str | None | MISSING = MISSING
+    lastPurgeDate: str | None | MISSING = MISSING
+    lastTranDate: str | None | MISSING = MISSING
+    ledgerAccrual: str | None | MISSING = MISSING
+    loanPaymentHold: str | None | MISSING = MISSING
+    maturityPostCode: str | None | MISSING = MISSING
+    mcDivLastYear: str | None | MISSING = MISSING
+    mcDivYtd: str | None | MISSING = MISSING
+    memberBranchSupport: str | None | MISSING = MISSING
+    memberUserTransferCode: str | None | MISSING = MISSING
+    micrAcctNumber: str | None | MISSING = MISSING
+    minimumBalance: str | None | MISSING = MISSING
+    minimumDeposit: str | None | MISSING = MISSING
+    minimumWithdrawal: str | None | MISSING = MISSING
+    mtdAccruedDivs: str | None | MISSING = MISSING
+    mtdEarnedDivs: str | None | MISSING = MISSING
+    mtdPaidDivs: str | None | MISSING = MISSING
+    mtdPriorRateAccrual: str | None | MISSING = MISSING
+    negativeBalanceNoticeNumber: str | None | MISSING = MISSING
+    negativeBalanceNoticeType: str | None | MISSING = MISSING
+    nickname: str | None | MISSING = MISSING
     notes: list[Note3]
-    nsfFeeLy: str | None = None
-    nsfFeeMtd: str | None = None
-    nsfFeeYtd: str | None = None
-    nsfLastYear: str | None = None
-    nsfMonthToDate: str | None = None
-    nsfYtd: str | None = None
-    openDate: str | None = None
-    originalBalance: str | None = None
-    originalDeposit: str | None = None
-    originalDepositDate: str | None = None
-    overdraftFeeLastYr: str | None = None
-    overdraftFeeYtd: str | None = None
-    overdraftTolerance: str | None = None
-    payeeNameLocator: str | None = None
-    payeeNameType: str | None = None
-    penaltyLastYear: str | None = None
-    penaltyType: str | None = None
-    penaltyYtd: str | None = None
-    periodicCap: str | None = None
-    periodicStartRate: str | None = None
-    positivePayDraft: str | None = None
-    putItemSchd: str | None = None
-    putItemSchdType: str | None = None
-    recordChangeDate: str | None = None
-    regDCheckCount: str | None = None
-    regDCtrStartDay: str | None = None
-    regDTransferCount: str | None = None
-    regECount: str | None = None
+    nsfFeeLy: str | None | MISSING = MISSING
+    nsfFeeMtd: str | None | MISSING = MISSING
+    nsfFeeYtd: str | None | MISSING = MISSING
+    nsfLastYear: str | None | MISSING = MISSING
+    nsfMonthToDate: str | None | MISSING = MISSING
+    nsfYtd: str | None | MISSING = MISSING
+    openDate: str | None | MISSING = MISSING
+    originalBalance: str | None | MISSING = MISSING
+    originalDeposit: str | None | MISSING = MISSING
+    originalDepositDate: str | None | MISSING = MISSING
+    overdraftFeeLastYr: str | None | MISSING = MISSING
+    overdraftFeeYtd: str | None | MISSING = MISSING
+    overdraftTolerance: str | None | MISSING = MISSING
+    payeeNameLocator: str | None | MISSING = MISSING
+    payeeNameType: str | None | MISSING = MISSING
+    penaltyLastYear: str | None | MISSING = MISSING
+    penaltyType: str | None | MISSING = MISSING
+    penaltyYtd: str | None | MISSING = MISSING
+    periodicCap: str | None | MISSING = MISSING
+    periodicStartRate: str | None | MISSING = MISSING
+    positivePayDraft: str | None | MISSING = MISSING
+    putItemSchd: str | None | MISSING = MISSING
+    putItemSchdType: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
+    regDCheckCount: str | None | MISSING = MISSING
+    regDCtrStartDay: str | None | MISSING = MISSING
+    regDTransferCount: str | None | MISSING = MISSING
+    regECount: str | None | MISSING = MISSING
     relationships: list[Relationship1]
-    renewShareType: str | None = None
-    renewTermFreq: str | None = None
-    renewTermPeriod: str | None = None
-    shareCode: str | None = None
-    shareId: str | None = None
-    shareType: str | None = None
+    renewShareType: str | None | MISSING = MISSING
+    renewTermFreq: str | None | MISSING = MISSING
+    renewTermPeriod: str | None | MISSING = MISSING
+    shareCode: str | None | MISSING = MISSING
+    shareId: str | None | MISSING = MISSING
+    shareType: str | None | MISSING = MISSING
     shareWarnings: list[ShareWarning]
     standardAnalysis: bool
-    stateWithholdingCode: str | None = None
-    stateWithholdingLastQtr: str | None = None
-    stateWithholdingLastYear: str | None = None
-    stateWithholdingQtd: str | None = None
-    stateWithholdingYtd: str | None = None
-    statementDate: str | None = None
-    statementGroup: str | None = None
-    statementMailCode: str | None = None
-    statementMailCodeName: str | None = None
-    statementPrevDate: str | None = None
-    sweepBalanceType: str | None = None
-    sweepPriority: str | None = None
-    sweepTargetMaximum: str | None = None
-    sweepTargetMinimum: str | None = None
-    termFrequency: str | None = None
-    termPeriod: str | None = None
-    unpaidFeeLastYear: str | None = None
-    unpaidFeeYtd: str | None = None
-    userAmount1: str | None = None
-    userAmount2: str | None = None
-    withdrawalCount: str | None = None
-    withdrawalFeeCount: str | None = None
-    withdrawalFeeType: str | None = None
-    withdrawalLimit: str | None = None
-    withdrawnFromOpen: str | None = None
-    withholdingCode: str | None = None
-    withholdingLastYear: str | None = None
-    withholdingYtd: str | None = None
-    xfrLastYear: str | None = None
-    xfrMonthToDate: str | None = None
-    xfrYtd: str | None = None
-    yearEndBalance: str | None = None
+    stateWithholdingCode: str | None | MISSING = MISSING
+    stateWithholdingLastQtr: str | None | MISSING = MISSING
+    stateWithholdingLastYear: str | None | MISSING = MISSING
+    stateWithholdingQtd: str | None | MISSING = MISSING
+    stateWithholdingYtd: str | None | MISSING = MISSING
+    statementDate: str | None | MISSING = MISSING
+    statementGroup: str | None | MISSING = MISSING
+    statementMailCode: str | None | MISSING = MISSING
+    statementMailCodeName: str | None | MISSING = MISSING
+    statementPrevDate: str | None | MISSING = MISSING
+    sweepBalanceType: str | None | MISSING = MISSING
+    sweepPriority: str | None | MISSING = MISSING
+    sweepTargetMaximum: str | None | MISSING = MISSING
+    sweepTargetMinimum: str | None | MISSING = MISSING
+    termFrequency: str | None | MISSING = MISSING
+    termPeriod: str | None | MISSING = MISSING
+    unpaidFeeLastYear: str | None | MISSING = MISSING
+    unpaidFeeYtd: str | None | MISSING = MISSING
+    userAmount1: str | None | MISSING = MISSING
+    userAmount2: str | None | MISSING = MISSING
+    withdrawalCount: str | None | MISSING = MISSING
+    withdrawalFeeCount: str | None | MISSING = MISSING
+    withdrawalFeeType: str | None | MISSING = MISSING
+    withdrawalLimit: str | None | MISSING = MISSING
+    withdrawnFromOpen: str | None | MISSING = MISSING
+    withholdingCode: str | None | MISSING = MISSING
+    withholdingLastYear: str | None | MISSING = MISSING
+    withholdingYtd: str | None | MISSING = MISSING
+    xfrLastYear: str | None | MISSING = MISSING
+    xfrMonthToDate: str | None | MISSING = MISSING
+    xfrYtd: str | None | MISSING = MISSING
+    yearEndBalance: str | None | MISSING = MISSING
 
 
 class FindAccountByResponse(BaseModel):
@@ -839,7 +840,7 @@ class FindAccountByResponse(BaseModel):
     )
     cards: list[Card]
     loans: list[Loan]
-    members: list[Member] | None = None
+    members: list[Member] | MISSING = MISSING
     notes: list[Note2]
     preferences: list[Preference]
     shares: list[Share]
@@ -849,7 +850,7 @@ class FindAccountByResponse1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    data: dict[str, Any] | None = None
+    data: dict[str, Any] | None | MISSING = MISSING
     details: list[str]
     title: str
     type: str
@@ -859,201 +860,201 @@ class FindAccountByWithBalancesRequest(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    accountNumber: str | None = None
-    activeCardNumber: Annotated[str | None, Field(max_length=30)] = None
-    anyCardNumber: Annotated[str | None, Field(max_length=30)] = None
-    draft: Annotated[str | None, Field(max_length=10)] = None
-    homeUser: Annotated[str | None, Field(max_length=20)] = None
-    lookupNumber: Annotated[str | None, Field(max_length=20)] = None
-    lookupType: Annotated[int | None, Field(ge=0, le=99)] = None
-    memberNumbers: list[str] | None = None
-    micr: Annotated[str | None, Field(max_length=22)] = None
-    shortName: str | None = None
+    accountNumber: str | None | MISSING = MISSING
+    activeCardNumber: Annotated[str | None | MISSING, Field(max_length=30)] = MISSING
+    anyCardNumber: Annotated[str | None | MISSING, Field(max_length=30)] = MISSING
+    draft: Annotated[str | None | MISSING, Field(max_length=10)] = MISSING
+    homeUser: Annotated[str | None | MISSING, Field(max_length=20)] = MISSING
+    lookupNumber: Annotated[str | None | MISSING, Field(max_length=20)] = MISSING
+    lookupType: Annotated[int | None | MISSING, Field(ge=0, le=99)] = MISSING
+    memberNumbers: list[str] | None | MISSING = MISSING
+    micr: Annotated[str | None | MISSING, Field(max_length=22)] = MISSING
+    shortName: str | None | MISSING = MISSING
 
 
 class User4(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note4(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User4 | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User4 | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class Card1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    access: list[AccessItem] | None = None
-    accountNumber: str | None = None
-    accountWarnings: list[AccountWarning] | None = None
-    activeDate: str | None = None
-    atmCount: str | None = None
-    atmCountLimit: str | None = None
-    atmTempLimit: str | None = None
-    authAmount: str | None = None
-    authCount: str | None = None
-    authCountLimit: str | None = None
-    authLimit: str | None = None
-    authTempLimit: str | None = None
-    billPayAmount: str | None = None
-    billPayCount: str | None = None
-    billPayCountLimit: str | None = None
-    billPayLimit: str | None = None
-    billPayMax: str | None = None
-    blockCode: str | None = None
-    cardWarnings: list[CardWarning] | None = None
-    chkId: str | None = None
-    closeDate: str | None = None
-    createdAtBranch: str | None = None
-    createdByUser: str | None = None
-    credDebAmount: str | None = None
-    credDebCount: str | None = None
-    credDebCountLimit: str | None = None
-    credDebLimit: str | None = None
-    creditCardId: str | None = None
-    depAmount: str | None = None
-    depCount: str | None = None
-    depCountLimit: str | None = None
-    depLimit: str | None = None
-    depMax: str | None = None
-    description: str | None = None
-    digitalIssueExcept: str | None = None
-    digitalIssueStatus: str | None = None
-    effectiveDate: str | None = None
-    emvChipProfile: str | None = None
-    extraEmboss: str | None = None
-    fileUpdateManagerException: str | None = None
-    imageRefDate: str | None = None
-    imageRefIssueCount: str | None = None
-    imageRefNumber: str | None = None
-    instantIssue: str | None = None
-    issueCode: str | None = None
-    issueDate: str | None = None
-    lastAddrChgDate: str | None = None
-    limitAmount: str | None = None
-    limitDays: str | None = None
-    locId: str | None = None
-    locator: str | None = None
-    miscAmount: str | None = None
-    miscCount: str | None = None
-    miscCountLimit: str | None = None
-    miscLimit: str | None = None
-    nameType: str | None = None
-    names: list[Name] | None = None
-    notes: list[Note4] | None = None
-    onlineCardIssue: str | None = None
-    onlineRushIssue: str | None = None
-    posAmount: str | None = None
-    posCount: str | None = None
-    posCountLimit: str | None = None
-    posLimit: str | None = None
-    posTempLimit: str | None = None
-    prevActivationDate: str | None = None
-    reclassCode: str | None = None
-    recordChangeDate: str | None = None
-    reissueCode: str | None = None
-    reissueMonths: str | None = None
-    savId: str | None = None
-    singleUsageMax: str | None = None
-    status: str | None = None
-    statusReason: str | None = None
-    suffix: str | None = None
-    tempLimitEndDate: str | None = None
-    tempLimitStartDate: str | None = None
-    type: str | None = None
-    usageAmount: str | None = None
-    usageDate: str | None = None
-    usageLimit: str | None = None
-    wdCheckAmount: str | None = None
-    wdCheckCount: str | None = None
-    wdCheckCountLimit: str | None = None
-    wdCheckLimit: str | None = None
-    wdCheckMax: str | None = None
-    xferAmount: str | None = None
-    xferCount: str | None = None
-    xferCountLimit: str | None = None
-    xferLimit: str | None = None
-    xferMax: str | None = None
+    access: list[AccessItem] | MISSING = MISSING
+    accountNumber: str | None | MISSING = MISSING
+    accountWarnings: list[AccountWarning] | MISSING = MISSING
+    activeDate: str | None | MISSING = MISSING
+    atmCount: str | None | MISSING = MISSING
+    atmCountLimit: str | None | MISSING = MISSING
+    atmTempLimit: str | None | MISSING = MISSING
+    authAmount: str | None | MISSING = MISSING
+    authCount: str | None | MISSING = MISSING
+    authCountLimit: str | None | MISSING = MISSING
+    authLimit: str | None | MISSING = MISSING
+    authTempLimit: str | None | MISSING = MISSING
+    billPayAmount: str | None | MISSING = MISSING
+    billPayCount: str | None | MISSING = MISSING
+    billPayCountLimit: str | None | MISSING = MISSING
+    billPayLimit: str | None | MISSING = MISSING
+    billPayMax: str | None | MISSING = MISSING
+    blockCode: str | None | MISSING = MISSING
+    cardWarnings: list[CardWarning] | MISSING = MISSING
+    chkId: str | None | MISSING = MISSING
+    closeDate: str | None | MISSING = MISSING
+    createdAtBranch: str | None | MISSING = MISSING
+    createdByUser: str | None | MISSING = MISSING
+    credDebAmount: str | None | MISSING = MISSING
+    credDebCount: str | None | MISSING = MISSING
+    credDebCountLimit: str | None | MISSING = MISSING
+    credDebLimit: str | None | MISSING = MISSING
+    creditCardId: str | None | MISSING = MISSING
+    depAmount: str | None | MISSING = MISSING
+    depCount: str | None | MISSING = MISSING
+    depCountLimit: str | None | MISSING = MISSING
+    depLimit: str | None | MISSING = MISSING
+    depMax: str | None | MISSING = MISSING
+    description: str | None | MISSING = MISSING
+    digitalIssueExcept: str | None | MISSING = MISSING
+    digitalIssueStatus: str | None | MISSING = MISSING
+    effectiveDate: str | None | MISSING = MISSING
+    emvChipProfile: str | None | MISSING = MISSING
+    extraEmboss: str | None | MISSING = MISSING
+    fileUpdateManagerException: str | None | MISSING = MISSING
+    imageRefDate: str | None | MISSING = MISSING
+    imageRefIssueCount: str | None | MISSING = MISSING
+    imageRefNumber: str | None | MISSING = MISSING
+    instantIssue: str | None | MISSING = MISSING
+    issueCode: str | None | MISSING = MISSING
+    issueDate: str | None | MISSING = MISSING
+    lastAddrChgDate: str | None | MISSING = MISSING
+    limitAmount: str | None | MISSING = MISSING
+    limitDays: str | None | MISSING = MISSING
+    locId: str | None | MISSING = MISSING
+    locator: str | None | MISSING = MISSING
+    miscAmount: str | None | MISSING = MISSING
+    miscCount: str | None | MISSING = MISSING
+    miscCountLimit: str | None | MISSING = MISSING
+    miscLimit: str | None | MISSING = MISSING
+    nameType: str | None | MISSING = MISSING
+    names: list[Name] | MISSING = MISSING
+    notes: list[Note4] | MISSING = MISSING
+    onlineCardIssue: str | None | MISSING = MISSING
+    onlineRushIssue: str | None | MISSING = MISSING
+    posAmount: str | None | MISSING = MISSING
+    posCount: str | None | MISSING = MISSING
+    posCountLimit: str | None | MISSING = MISSING
+    posLimit: str | None | MISSING = MISSING
+    posTempLimit: str | None | MISSING = MISSING
+    prevActivationDate: str | None | MISSING = MISSING
+    reclassCode: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
+    reissueCode: str | None | MISSING = MISSING
+    reissueMonths: str | None | MISSING = MISSING
+    savId: str | None | MISSING = MISSING
+    singleUsageMax: str | None | MISSING = MISSING
+    status: str | None | MISSING = MISSING
+    statusReason: str | None | MISSING = MISSING
+    suffix: str | None | MISSING = MISSING
+    tempLimitEndDate: str | None | MISSING = MISSING
+    tempLimitStartDate: str | None | MISSING = MISSING
+    type: str | None | MISSING = MISSING
+    usageAmount: str | None | MISSING = MISSING
+    usageDate: str | None | MISSING = MISSING
+    usageLimit: str | None | MISSING = MISSING
+    wdCheckAmount: str | None | MISSING = MISSING
+    wdCheckCount: str | None | MISSING = MISSING
+    wdCheckCountLimit: str | None | MISSING = MISSING
+    wdCheckLimit: str | None | MISSING = MISSING
+    wdCheckMax: str | None | MISSING = MISSING
+    xferAmount: str | None | MISSING = MISSING
+    xferCount: str | None | MISSING = MISSING
+    xferCountLimit: str | None | MISSING = MISSING
+    xferLimit: str | None | MISSING = MISSING
+    xferMax: str | None | MISSING = MISSING
 
 
 class User5(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note5(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User5 | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User5 | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class Relationship2(BaseModel):
@@ -1061,7 +1062,7 @@ class Relationship2(BaseModel):
         extra='ignore',
     )
     memberName: str
-    memberRecordNumber: str | None = None
+    memberRecordNumber: str | None | MISSING = MISSING
     relationshipCode: RelationshipCode
 
 
@@ -1070,246 +1071,246 @@ class Loan1(BaseModel):
         extra='ignore',
     )
     account: Account
-    accountNumber: str | None = None
+    accountNumber: str | None | MISSING = MISSING
     accountStatus: AccountStatus
     accountWarnings: list[AccountWarning]
-    accrualStatus: str | None = None
-    activityDate: str | None = None
-    alternateNameLocator: str | None = None
-    alternateNameType: str | None = None
-    approvalCode: str | None = None
-    approvalDate: str | None = None
-    apr: str | None = None
-    availableCredit: str | None = None
-    balance: str | None = None
-    branch: str | None = None
-    chargeOffAmount: str | None = None
-    chargeOffDate: str | None = None
-    chargeOffType: str | None = None
-    closeDate: str | None = None
-    createdAtBranch: str | None = None
-    createdByUser: str | None = None
-    creditLimit: str | None = None
-    creditReportLastStatus: str | None = None
-    creditReportingCode: str | None = None
-    description: str | None = None
-    dueDate: str | None = None
-    intUnpaidBilled: str | None = None
-    interestLastYear: str | None = None
-    interestRate: str | None = None
-    interestYtd: str | None = None
-    lastFmDate: str | None = None
-    lastPaymentAmount: str | None = None
-    lastPaymentDate: str | None = None
-    lastTranDate: str | None = None
-    lateChargeAccrued: str | None = None
-    lateChargeDate: str | None = None
-    lateChargeDue: str | None = None
-    lateChargeLastYear: str | None = None
-    lateChargeType: str | None = None
-    lateChargeUnpaid: str | None = None
-    lateChargeYtd: str | None = None
-    loanCode: str | None = None
-    loanCodeName: str | None = None
-    loanId: str | None = None
-    loanType: str | None = None
+    accrualStatus: str | None | MISSING = MISSING
+    activityDate: str | None | MISSING = MISSING
+    alternateNameLocator: str | None | MISSING = MISSING
+    alternateNameType: str | None | MISSING = MISSING
+    approvalCode: str | None | MISSING = MISSING
+    approvalDate: str | None | MISSING = MISSING
+    apr: str | None | MISSING = MISSING
+    availableCredit: str | None | MISSING = MISSING
+    balance: str | MISSING = MISSING
+    branch: str | None | MISSING = MISSING
+    chargeOffAmount: str | None | MISSING = MISSING
+    chargeOffDate: str | None | MISSING = MISSING
+    chargeOffType: str | None | MISSING = MISSING
+    closeDate: str | None | MISSING = MISSING
+    createdAtBranch: str | None | MISSING = MISSING
+    createdByUser: str | None | MISSING = MISSING
+    creditLimit: str | None | MISSING = MISSING
+    creditReportLastStatus: str | None | MISSING = MISSING
+    creditReportingCode: str | None | MISSING = MISSING
+    description: str | None | MISSING = MISSING
+    dueDate: str | None | MISSING = MISSING
+    intUnpaidBilled: str | None | MISSING = MISSING
+    interestLastYear: str | None | MISSING = MISSING
+    interestRate: str | None | MISSING = MISSING
+    interestYtd: str | None | MISSING = MISSING
+    lastFmDate: str | None | MISSING = MISSING
+    lastPaymentAmount: str | None | MISSING = MISSING
+    lastPaymentDate: str | None | MISSING = MISSING
+    lastTranDate: str | None | MISSING = MISSING
+    lateChargeAccrued: str | None | MISSING = MISSING
+    lateChargeDate: str | None | MISSING = MISSING
+    lateChargeDue: str | None | MISSING = MISSING
+    lateChargeLastYear: str | None | MISSING = MISSING
+    lateChargeType: str | None | MISSING = MISSING
+    lateChargeUnpaid: str | None | MISSING = MISSING
+    lateChargeYtd: str | None | MISSING = MISSING
+    loanCode: str | None | MISSING = MISSING
+    loanCodeName: str | None | MISSING = MISSING
+    loanId: str | None | MISSING = MISSING
+    loanType: str | None | MISSING = MISSING
     loanWarnings: list[LoanWarning]
-    maturityDate: str | None = None
-    minimumPayment: str | None = None
-    nickname: str | None = None
+    maturityDate: str | None | MISSING = MISSING
+    minimumPayment: str | None | MISSING = MISSING
+    nickname: str | None | MISSING = MISSING
     notes: list[Note5]
-    openDate: str | None = None
-    originalBalance: str | None = None
-    pastDueAmount: str | None = None
-    payment: str | None = None
-    paymentDue: str | None = None
-    payoffAmount: str | None = None
-    recordChangeDate: str | None = None
+    openDate: str | None | MISSING = MISSING
+    originalBalance: str | None | MISSING = MISSING
+    pastDueAmount: str | None | MISSING = MISSING
+    payment: str | None | MISSING = MISSING
+    paymentDue: str | None | MISSING = MISSING
+    payoffAmount: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
     relationships: list[Relationship2]
-    statementDate: str | None = None
-    statementGroup: str | None = None
-    statementMailCode: str | None = None
-    statementMailCodeName: str | None = None
-    statementPrevDate: str | None = None
+    statementDate: str | None | MISSING = MISSING
+    statementGroup: str | None | MISSING = MISSING
+    statementMailCode: str | None | MISSING = MISSING
+    statementMailCodeName: str | None | MISSING = MISSING
+    statementPrevDate: str | None | MISSING = MISSING
 
 
 class Member1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeDuty: str | None = None
-    addressType: str | None = None
-    beneficialOwner: str | None = None
-    beneficialPercent: str | None = None
-    beneficiaryPercent: str | None = None
-    chapter4StatusCode: str | None = None
-    confidential: str | None = None
-    crNameChgDate: str | None = None
-    ctrExempt: str | None = None
-    currGrossMonthPay: str | None = None
-    currNetMonthPay: str | None = None
-    dbaNameFormat: str | None = None
-    dbaShortName: str | None = None
-    ecoaCode: str | None = None
-    effectiveDate: str | None = None
-    expirationDate: str | None = None
-    firstName: str | None = None
-    formW8OnFile: str | None = None
-    headquarters: str | None = None
-    identDocFlags: list[IdentDocFlag] | None = None
-    identIdTypes: list[IdentIdType] | None = None
-    irs1042SAmendNum: str | None = None
-    irsCorrection: str | None = None
-    last: str | None = None
-    lastAddrChgDate: str | None = None
-    locator: str | None = None
-    longName: str | None = None
-    mailOverride: str | None = None
-    marketingAddress: str | None = None
-    mbrAddrFileType: str | None = None
-    mbrCreateDate: str | None = None
-    mbrFileType: str | None = None
-    mbrFmLastDate: str | None = None
-    mbrRecordChangeDate: str | None = None
-    mbrStatus: str | None = None
-    mbrStatusFmDate: str | None = None
-    memberNumLink: str | None = None
-    memberNumLinkChgDate: str | None = None
-    memberNumber: str | None = None
-    middleName: str | None = None
-    mobilePhone: str | None = None
-    nameFormat: str | None = None
-    nraTaxRate: str | None = None
-    phoneType: str | None = None
-    preferredContact: str | None = None
-    preferredContactMethod: str | None = None
-    recordChangeDate: str | None = None
-    restrict: str | None = None
-    shortName: str | None = None
-    ssn: str | None = None
-    ssnCertification: str | None = None
-    ssnOverride: str | None = None
-    ssnType: str | None = None
-    subType: str | None = None
-    substantialOwner: str | None = None
-    suffix: str | None = None
-    title: str | None = None
-    type: str | None = None
-    usPersonFlag: str | None = None
-    userAmount1: str | None = None
-    userAmount2: str | None = None
+    activeDuty: str | None | MISSING = MISSING
+    addressType: str | None | MISSING = MISSING
+    beneficialOwner: str | None | MISSING = MISSING
+    beneficialPercent: str | None | MISSING = MISSING
+    beneficiaryPercent: str | None | MISSING = MISSING
+    chapter4StatusCode: str | None | MISSING = MISSING
+    confidential: str | None | MISSING = MISSING
+    crNameChgDate: str | None | MISSING = MISSING
+    ctrExempt: str | None | MISSING = MISSING
+    currGrossMonthPay: str | None | MISSING = MISSING
+    currNetMonthPay: str | None | MISSING = MISSING
+    dbaNameFormat: str | None | MISSING = MISSING
+    dbaShortName: str | None | MISSING = MISSING
+    ecoaCode: str | None | MISSING = MISSING
+    effectiveDate: str | None | MISSING = MISSING
+    expirationDate: str | None | MISSING = MISSING
+    firstName: str | None | MISSING = MISSING
+    formW8OnFile: str | None | MISSING = MISSING
+    headquarters: str | None | MISSING = MISSING
+    identDocFlags: list[IdentDocFlag] | MISSING = MISSING
+    identIdTypes: list[IdentIdType] | MISSING = MISSING
+    irs1042SAmendNum: str | None | MISSING = MISSING
+    irsCorrection: str | None | MISSING = MISSING
+    last: str | None | MISSING = MISSING
+    lastAddrChgDate: str | None | MISSING = MISSING
+    locator: str | None | MISSING = MISSING
+    longName: str | None | MISSING = MISSING
+    mailOverride: str | None | MISSING = MISSING
+    marketingAddress: str | None | MISSING = MISSING
+    mbrAddrFileType: str | None | MISSING = MISSING
+    mbrCreateDate: str | None | MISSING = MISSING
+    mbrFileType: str | None | MISSING = MISSING
+    mbrFmLastDate: str | None | MISSING = MISSING
+    mbrRecordChangeDate: str | None | MISSING = MISSING
+    mbrStatus: str | None | MISSING = MISSING
+    mbrStatusFmDate: str | None | MISSING = MISSING
+    memberNumLink: str | None | MISSING = MISSING
+    memberNumLinkChgDate: str | None | MISSING = MISSING
+    memberNumber: str | None | MISSING = MISSING
+    middleName: str | None | MISSING = MISSING
+    mobilePhone: str | None | MISSING = MISSING
+    nameFormat: str | None | MISSING = MISSING
+    nraTaxRate: str | None | MISSING = MISSING
+    phoneType: str | None | MISSING = MISSING
+    preferredContact: str | None | MISSING = MISSING
+    preferredContactMethod: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
+    restrict: str | None | MISSING = MISSING
+    shortName: str | None | MISSING = MISSING
+    ssn: str | None | MISSING = MISSING
+    ssnCertification: str | None | MISSING = MISSING
+    ssnOverride: str | None | MISSING = MISSING
+    ssnType: str | None | MISSING = MISSING
+    subType: str | None | MISSING = MISSING
+    substantialOwner: str | None | MISSING = MISSING
+    suffix: str | None | MISSING = MISSING
+    title: str | None | MISSING = MISSING
+    type: str | None | MISSING = MISSING
+    usPersonFlag: str | None | MISSING = MISSING
+    userAmount1: str | None | MISSING = MISSING
+    userAmount2: str | None | MISSING = MISSING
 
 
 class User6(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note6(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User6 | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User6 | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class Preference1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    access: list[AccessItem] | None = None
-    accountNumber: str | None = None
-    depLimit: str | None = None
-    depMax: str | None = None
-    hbEnable: str | None = None
-    hbUsername: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: str | None = None
-    lastTranDate: str | None = None
-    locator: str | None = None
-    locked: str | None = None
-    pwdResetDate: str | None = None
-    wdCashLimit: str | None = None
-    wdCashMax: str | None = None
-    wdCheckLimit: str | None = None
-    wdCheckMax: str | None = None
-    xferLimit: str | None = None
-    xferMax: str | None = None
+    access: list[AccessItem] | MISSING = MISSING
+    accountNumber: str | None | MISSING = MISSING
+    depLimit: str | None | MISSING = MISSING
+    depMax: str | None | MISSING = MISSING
+    hbEnable: str | None | MISSING = MISSING
+    hbUsername: str | None | MISSING = MISSING
+    lastLogonDate: str | None | MISSING = MISSING
+    lastLogonTime: str | None | MISSING = MISSING
+    lastTranDate: str | None | MISSING = MISSING
+    locator: str | None | MISSING = MISSING
+    locked: str | None | MISSING = MISSING
+    pwdResetDate: str | None | MISSING = MISSING
+    wdCashLimit: str | None | MISSING = MISSING
+    wdCashMax: str | None | MISSING = MISSING
+    wdCheckLimit: str | None | MISSING = MISSING
+    wdCheckMax: str | None | MISSING = MISSING
+    xferLimit: str | None | MISSING = MISSING
+    xferMax: str | None | MISSING = MISSING
 
 
 class User7(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note7(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User7 | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User7 | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class Relationship3(BaseModel):
@@ -1317,7 +1318,7 @@ class Relationship3(BaseModel):
         extra='ignore',
     )
     memberName: str
-    memberRecordNumber: str | None = None
+    memberRecordNumber: str | None | MISSING = MISSING
     relationshipCode: RelationshipCode
 
 
@@ -1326,176 +1327,176 @@ class Share1(BaseModel):
         extra='ignore',
     )
     account: Account
-    accountByMicr: AccountByMicr | None = None
-    accountNumber: str | None = None
+    accountByMicr: AccountByMicr | None | MISSING = MISSING
+    accountNumber: str | None | MISSING = MISSING
     accountStatus: AccountStatus
     accountWarnings: list[AccountWarning]
-    activityDate: str | None = None
-    alternateNameLocator: str | None = None
-    alternateNameType: str | None = None
-    amortizationSchd: str | None = None
-    amortizationSchdType: str | None = None
-    analysisPmtIdType: str | None = None
-    availableBalance: str | None = None
-    balance: str | None = None
-    bondIntLastYear: str | None = None
-    bondIntYtd: str | None = None
-    branch: str | None = None
-    bumpRate: str | None = None
-    callItemSchd: str | None = None
-    callItemSchdType: str | None = None
-    cappedFeesAmountCap: str | None = None
-    cappedFeesAmtPeriod: str | None = None
-    cappedFeesCntPeriod: str | None = None
-    cappedFeesCountCap: str | None = None
-    cddivAccrLastYr: str | None = None
-    cddivAccrYtd: str | None = None
-    chapter4WithheldLstYr: str | None = None
-    chapter4WithheldYtd: str | None = None
-    chapter4WithholdingCode: str | None = None
-    chargeOffAmount: str | None = None
-    chargeOffDate: str | None = None
-    chargeOffType: str | None = None
-    closeDate: str | None = None
-    corporateUserTransferCode: str | None = None
-    courtesyFeeLy: str | None = None
-    courtesyFeeMtd: str | None = None
-    courtesyFeeYtd: str | None = None
-    courtesyPayLastYear: str | None = None
-    courtesyPayMonthToDate: str | None = None
-    courtesyPayYtd: str | None = None
-    createdAtBranch: str | None = None
-    createdByUser: str | None = None
-    creditReportLastStatus: str | None = None
-    creditReportOriginalAmountRptd: str | None = None
-    creditReportingCode: str | None = None
-    cuTotalsUseCode: str | None = None
-    currDivPayable: str | None = None
-    currMonthPaidDiv: str | None = None
-    description: str | None = None
-    divAccrual: str | None = None
-    divAccrualDate: str | None = None
-    divDisbUpdtActvtyD: str | None = None
-    divFromOpen: str | None = None
-    divLastYear: str | None = None
-    divPeriodBalDays: str | None = None
-    divPeriodStart: str | None = None
-    divPostCode: str | None = None
-    divRate: str | None = None
-    divType: str | None = None
-    divYtd: str | None = None
-    dividendDue: str | None = None
-    dividendRateMargin: str | None = None
-    dividendRateMarginSign: str | None = None
-    dividendRateMax: str | None = None
-    dividendRateMin: str | None = None
-    dividendRatePeriodFreq: str | None = None
+    activityDate: str | None | MISSING = MISSING
+    alternateNameLocator: str | None | MISSING = MISSING
+    alternateNameType: str | None | MISSING = MISSING
+    amortizationSchd: str | None | MISSING = MISSING
+    amortizationSchdType: str | None | MISSING = MISSING
+    analysisPmtIdType: str | None | MISSING = MISSING
+    availableBalance: str | MISSING = MISSING
+    balance: str | MISSING = MISSING
+    bondIntLastYear: str | None | MISSING = MISSING
+    bondIntYtd: str | None | MISSING = MISSING
+    branch: str | None | MISSING = MISSING
+    bumpRate: str | None | MISSING = MISSING
+    callItemSchd: str | None | MISSING = MISSING
+    callItemSchdType: str | None | MISSING = MISSING
+    cappedFeesAmountCap: str | None | MISSING = MISSING
+    cappedFeesAmtPeriod: str | None | MISSING = MISSING
+    cappedFeesCntPeriod: str | None | MISSING = MISSING
+    cappedFeesCountCap: str | None | MISSING = MISSING
+    cddivAccrLastYr: str | None | MISSING = MISSING
+    cddivAccrYtd: str | None | MISSING = MISSING
+    chapter4WithheldLstYr: str | None | MISSING = MISSING
+    chapter4WithheldYtd: str | None | MISSING = MISSING
+    chapter4WithholdingCode: str | None | MISSING = MISSING
+    chargeOffAmount: str | None | MISSING = MISSING
+    chargeOffDate: str | None | MISSING = MISSING
+    chargeOffType: str | None | MISSING = MISSING
+    closeDate: str | None | MISSING = MISSING
+    corporateUserTransferCode: str | None | MISSING = MISSING
+    courtesyFeeLy: str | None | MISSING = MISSING
+    courtesyFeeMtd: str | None | MISSING = MISSING
+    courtesyFeeYtd: str | None | MISSING = MISSING
+    courtesyPayLastYear: str | None | MISSING = MISSING
+    courtesyPayMonthToDate: str | None | MISSING = MISSING
+    courtesyPayYtd: str | None | MISSING = MISSING
+    createdAtBranch: str | None | MISSING = MISSING
+    createdByUser: str | None | MISSING = MISSING
+    creditReportLastStatus: str | None | MISSING = MISSING
+    creditReportOriginalAmountRptd: str | None | MISSING = MISSING
+    creditReportingCode: str | None | MISSING = MISSING
+    cuTotalsUseCode: str | None | MISSING = MISSING
+    currDivPayable: str | None | MISSING = MISSING
+    currMonthPaidDiv: str | None | MISSING = MISSING
+    description: str | None | MISSING = MISSING
+    divAccrual: str | None | MISSING = MISSING
+    divAccrualDate: str | None | MISSING = MISSING
+    divDisbUpdtActvtyD: str | None | MISSING = MISSING
+    divFromOpen: str | None | MISSING = MISSING
+    divLastYear: str | None | MISSING = MISSING
+    divPeriodBalDays: str | None | MISSING = MISSING
+    divPeriodStart: str | None | MISSING = MISSING
+    divPostCode: str | None | MISSING = MISSING
+    divRate: str | None | MISSING = MISSING
+    divType: str | None | MISSING = MISSING
+    divYtd: str | None | MISSING = MISSING
+    dividendDue: str | None | MISSING = MISSING
+    dividendRateMargin: str | None | MISSING = MISSING
+    dividendRateMarginSign: str | None | MISSING = MISSING
+    dividendRateMax: str | None | MISSING = MISSING
+    dividendRateMin: str | None | MISSING = MISSING
+    dividendRatePeriodFreq: str | None | MISSING = MISSING
     eligibleForWires: bool
-    escrowLastYear: str | None = None
-    escrowYtd: str | None = None
-    extAchXfrDailyLimitIn: str | None = None
-    extAchXfrDailyLimitOut: str | None = None
-    feeExemptCrtsyBal: str | None = None
-    insuranceMaximum: str | None = None
-    insuranceType: str | None = None
-    irs1042SUfid: str | None = None
-    irsCode: str | None = None
-    irsPlan: str | None = None
+    escrowLastYear: str | None | MISSING = MISSING
+    escrowYtd: str | None | MISSING = MISSING
+    extAchXfrDailyLimitIn: str | None | MISSING = MISSING
+    extAchXfrDailyLimitOut: str | None | MISSING = MISSING
+    feeExemptCrtsyBal: str | None | MISSING = MISSING
+    insuranceMaximum: str | None | MISSING = MISSING
+    insuranceType: str | None | MISSING = MISSING
+    irs1042SUfid: str | None | MISSING = MISSING
+    irsCode: str | None | MISSING = MISSING
+    irsPlan: str | None | MISSING = MISSING
     isMicr: bool
-    lastDirectDepAmt: str | None = None
-    lastDivAmount: str | None = None
-    lastDivDate: str | None = None
-    lastFmDate: str | None = None
-    lastPurgeDate: str | None = None
-    lastTranDate: str | None = None
-    ledgerAccrual: str | None = None
-    loanPaymentHold: str | None = None
-    maturityPostCode: str | None = None
-    mcDivLastYear: str | None = None
-    mcDivYtd: str | None = None
-    memberBranchSupport: str | None = None
-    memberUserTransferCode: str | None = None
-    micrAcctNumber: str | None = None
-    minimumBalance: str | None = None
-    minimumDeposit: str | None = None
-    minimumWithdrawal: str | None = None
-    mtdAccruedDivs: str | None = None
-    mtdEarnedDivs: str | None = None
-    mtdPaidDivs: str | None = None
-    mtdPriorRateAccrual: str | None = None
-    negativeBalanceNoticeNumber: str | None = None
-    negativeBalanceNoticeType: str | None = None
-    nickname: str | None = None
+    lastDirectDepAmt: str | None | MISSING = MISSING
+    lastDivAmount: str | None | MISSING = MISSING
+    lastDivDate: str | None | MISSING = MISSING
+    lastFmDate: str | None | MISSING = MISSING
+    lastPurgeDate: str | None | MISSING = MISSING
+    lastTranDate: str | None | MISSING = MISSING
+    ledgerAccrual: str | None | MISSING = MISSING
+    loanPaymentHold: str | None | MISSING = MISSING
+    maturityPostCode: str | None | MISSING = MISSING
+    mcDivLastYear: str | None | MISSING = MISSING
+    mcDivYtd: str | None | MISSING = MISSING
+    memberBranchSupport: str | None | MISSING = MISSING
+    memberUserTransferCode: str | None | MISSING = MISSING
+    micrAcctNumber: str | None | MISSING = MISSING
+    minimumBalance: str | None | MISSING = MISSING
+    minimumDeposit: str | None | MISSING = MISSING
+    minimumWithdrawal: str | None | MISSING = MISSING
+    mtdAccruedDivs: str | None | MISSING = MISSING
+    mtdEarnedDivs: str | None | MISSING = MISSING
+    mtdPaidDivs: str | None | MISSING = MISSING
+    mtdPriorRateAccrual: str | None | MISSING = MISSING
+    negativeBalanceNoticeNumber: str | None | MISSING = MISSING
+    negativeBalanceNoticeType: str | None | MISSING = MISSING
+    nickname: str | None | MISSING = MISSING
     notes: list[Note7]
-    nsfFeeLy: str | None = None
-    nsfFeeMtd: str | None = None
-    nsfFeeYtd: str | None = None
-    nsfLastYear: str | None = None
-    nsfMonthToDate: str | None = None
-    nsfYtd: str | None = None
-    openDate: str | None = None
-    originalBalance: str | None = None
-    originalDeposit: str | None = None
-    originalDepositDate: str | None = None
-    overdraftFeeLastYr: str | None = None
-    overdraftFeeYtd: str | None = None
-    overdraftTolerance: str | None = None
-    payeeNameLocator: str | None = None
-    payeeNameType: str | None = None
-    penaltyLastYear: str | None = None
-    penaltyType: str | None = None
-    penaltyYtd: str | None = None
-    periodicCap: str | None = None
-    periodicStartRate: str | None = None
-    positivePayDraft: str | None = None
-    putItemSchd: str | None = None
-    putItemSchdType: str | None = None
-    recordChangeDate: str | None = None
-    regDCheckCount: str | None = None
-    regDCtrStartDay: str | None = None
-    regDTransferCount: str | None = None
-    regECount: str | None = None
+    nsfFeeLy: str | None | MISSING = MISSING
+    nsfFeeMtd: str | None | MISSING = MISSING
+    nsfFeeYtd: str | None | MISSING = MISSING
+    nsfLastYear: str | None | MISSING = MISSING
+    nsfMonthToDate: str | None | MISSING = MISSING
+    nsfYtd: str | None | MISSING = MISSING
+    openDate: str | None | MISSING = MISSING
+    originalBalance: str | None | MISSING = MISSING
+    originalDeposit: str | None | MISSING = MISSING
+    originalDepositDate: str | None | MISSING = MISSING
+    overdraftFeeLastYr: str | None | MISSING = MISSING
+    overdraftFeeYtd: str | None | MISSING = MISSING
+    overdraftTolerance: str | None | MISSING = MISSING
+    payeeNameLocator: str | None | MISSING = MISSING
+    payeeNameType: str | None | MISSING = MISSING
+    penaltyLastYear: str | None | MISSING = MISSING
+    penaltyType: str | None | MISSING = MISSING
+    penaltyYtd: str | None | MISSING = MISSING
+    periodicCap: str | None | MISSING = MISSING
+    periodicStartRate: str | None | MISSING = MISSING
+    positivePayDraft: str | None | MISSING = MISSING
+    putItemSchd: str | None | MISSING = MISSING
+    putItemSchdType: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
+    regDCheckCount: str | None | MISSING = MISSING
+    regDCtrStartDay: str | None | MISSING = MISSING
+    regDTransferCount: str | None | MISSING = MISSING
+    regECount: str | None | MISSING = MISSING
     relationships: list[Relationship3]
-    renewShareType: str | None = None
-    renewTermFreq: str | None = None
-    renewTermPeriod: str | None = None
-    shareCode: str | None = None
-    shareId: str | None = None
-    shareType: str | None = None
+    renewShareType: str | None | MISSING = MISSING
+    renewTermFreq: str | None | MISSING = MISSING
+    renewTermPeriod: str | None | MISSING = MISSING
+    shareCode: str | None | MISSING = MISSING
+    shareId: str | None | MISSING = MISSING
+    shareType: str | None | MISSING = MISSING
     shareWarnings: list[ShareWarning]
     standardAnalysis: bool
-    stateWithholdingCode: str | None = None
-    stateWithholdingLastQtr: str | None = None
-    stateWithholdingLastYear: str | None = None
-    stateWithholdingQtd: str | None = None
-    stateWithholdingYtd: str | None = None
-    statementDate: str | None = None
-    statementGroup: str | None = None
-    statementMailCode: str | None = None
-    statementMailCodeName: str | None = None
-    statementPrevDate: str | None = None
-    sweepBalanceType: str | None = None
-    sweepPriority: str | None = None
-    sweepTargetMaximum: str | None = None
-    sweepTargetMinimum: str | None = None
-    termFrequency: str | None = None
-    termPeriod: str | None = None
-    unpaidFeeLastYear: str | None = None
-    unpaidFeeYtd: str | None = None
-    userAmount1: str | None = None
-    userAmount2: str | None = None
-    withdrawalCount: str | None = None
-    withdrawalFeeCount: str | None = None
-    withdrawalFeeType: str | None = None
-    withdrawalLimit: str | None = None
-    withdrawnFromOpen: str | None = None
-    withholdingCode: str | None = None
-    withholdingLastYear: str | None = None
-    withholdingYtd: str | None = None
-    xfrLastYear: str | None = None
-    xfrMonthToDate: str | None = None
-    xfrYtd: str | None = None
-    yearEndBalance: str | None = None
+    stateWithholdingCode: str | None | MISSING = MISSING
+    stateWithholdingLastQtr: str | None | MISSING = MISSING
+    stateWithholdingLastYear: str | None | MISSING = MISSING
+    stateWithholdingQtd: str | None | MISSING = MISSING
+    stateWithholdingYtd: str | None | MISSING = MISSING
+    statementDate: str | None | MISSING = MISSING
+    statementGroup: str | None | MISSING = MISSING
+    statementMailCode: str | None | MISSING = MISSING
+    statementMailCodeName: str | None | MISSING = MISSING
+    statementPrevDate: str | None | MISSING = MISSING
+    sweepBalanceType: str | None | MISSING = MISSING
+    sweepPriority: str | None | MISSING = MISSING
+    sweepTargetMaximum: str | None | MISSING = MISSING
+    sweepTargetMinimum: str | None | MISSING = MISSING
+    termFrequency: str | None | MISSING = MISSING
+    termPeriod: str | None | MISSING = MISSING
+    unpaidFeeLastYear: str | None | MISSING = MISSING
+    unpaidFeeYtd: str | None | MISSING = MISSING
+    userAmount1: str | None | MISSING = MISSING
+    userAmount2: str | None | MISSING = MISSING
+    withdrawalCount: str | None | MISSING = MISSING
+    withdrawalFeeCount: str | None | MISSING = MISSING
+    withdrawalFeeType: str | None | MISSING = MISSING
+    withdrawalLimit: str | None | MISSING = MISSING
+    withdrawnFromOpen: str | None | MISSING = MISSING
+    withholdingCode: str | None | MISSING = MISSING
+    withholdingLastYear: str | None | MISSING = MISSING
+    withholdingYtd: str | None | MISSING = MISSING
+    xfrLastYear: str | None | MISSING = MISSING
+    xfrMonthToDate: str | None | MISSING = MISSING
+    xfrYtd: str | None | MISSING = MISSING
+    yearEndBalance: str | None | MISSING = MISSING
 
 
 class FindAccountByWithBalancesResponse(BaseModel):
@@ -1504,7 +1505,7 @@ class FindAccountByWithBalancesResponse(BaseModel):
     )
     cards: list[Card1]
     loans: list[Loan1]
-    members: list[Member1] | None = None
+    members: list[Member1] | MISSING = MISSING
     notes: list[Note6]
     preferences: list[Preference1]
     shares: list[Share1]
@@ -1514,7 +1515,7 @@ class FindAccountByWithBalancesResponse1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    data: dict[str, Any] | None = None
+    data: dict[str, Any] | None | MISSING = MISSING
     details: list[str]
     title: str
     type: str

@@ -7,9 +7,10 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Any
+from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+from pydantic.experimental.missing_sentinel import MISSING
 
 
 class Donor(BaseModel):
@@ -17,8 +18,8 @@ class Donor(BaseModel):
         extra='ignore',
     )
     accountNumber: str
-    loanId: str | None = None
-    shareId: str
+    loanId: str | None | MISSING = MISSING
+    shareId: Annotated[str | None, Field(...)]
 
 
 class Donor1(BaseModel):
@@ -26,8 +27,8 @@ class Donor1(BaseModel):
         extra='ignore',
     )
     accountNumber: str
-    loanId: str
-    shareId: str | None = None
+    loanId: Annotated[str | None, Field(...)]
+    shareId: str | None | MISSING = MISSING
 
 
 class Recipient(BaseModel):
@@ -35,8 +36,8 @@ class Recipient(BaseModel):
         extra='ignore',
     )
     accountNumber: str
-    loanId: str | None = None
-    shareId: str
+    loanId: str | None | MISSING = MISSING
+    shareId: Annotated[str | None, Field(...)]
 
 
 class Recipient1(BaseModel):
@@ -44,8 +45,8 @@ class Recipient1(BaseModel):
         extra='ignore',
     )
     accountNumber: str
-    loanId: str
-    shareId: str | None = None
+    loanId: Annotated[str | None, Field(...)]
+    shareId: str | None | MISSING = MISSING
 
 
 class PostTransferRequest(BaseModel):
@@ -53,7 +54,7 @@ class PostTransferRequest(BaseModel):
         extra='ignore',
     )
     amount: str
-    description: str | None = None
+    description: str | None | MISSING = MISSING
     donor: Donor | Donor1
     recipient: Recipient | Recipient1
 
@@ -66,16 +67,16 @@ class PostTransferResponse(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    confirmationNumber: str | None = None
-    receiptId: str | None = None
-    status: Status | None = None
+    confirmationNumber: str | None | MISSING = MISSING
+    receiptId: str | None | MISSING = MISSING
+    status: Status | MISSING = MISSING
 
 
 class PostTransferResponse1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    data: dict[str, Any] | None = None
+    data: dict[str, Any] | None | MISSING = MISSING
     details: list[str]
     title: str
     type: str

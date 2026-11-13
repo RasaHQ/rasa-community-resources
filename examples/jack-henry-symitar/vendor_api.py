@@ -9,6 +9,7 @@ request and reply is still validated against the pinned files on the wire.
 from __future__ import annotations
 
 from pydantic import BaseModel
+from pydantic.experimental.missing_sentinel import MISSING
 
 from vendor_models import accounts, loans, transactions, transfers
 
@@ -36,6 +37,11 @@ PROBLEM: dict[str, type[BaseModel]] = {"postTransfer": transfers.PostTransferRes
 def request_body(operation: str, **fields) -> dict:
     """A request body built through its model: a missing required field or a wrong type fails here."""
     return REQUEST[operation].model_validate(fields).model_dump(mode="json", by_alias=True, exclude_unset=True)
+
+
+def present(value):
+    """An optional field's value, or None when the reply left it out (MISSING)."""
+    return None if value is MISSING else value
 
 
 def reply(operation: str, data) -> BaseModel:

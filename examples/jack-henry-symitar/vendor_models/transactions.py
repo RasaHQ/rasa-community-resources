@@ -11,6 +11,7 @@ from typing import Any
 from uuid import UUID
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, RootModel
+from pydantic.experimental.missing_sentinel import MISSING
 
 
 class SearchAccountTransactionsRequest1(BaseModel):
@@ -18,12 +19,12 @@ class SearchAccountTransactionsRequest1(BaseModel):
         extra='ignore',
     )
     accountNumber: str
-    count: int | None = None
+    count: int | MISSING = MISSING
     endDate: str
-    loanId: str | None = None
-    offset: str | None = None
+    loanId: str | MISSING = MISSING
+    offset: str | MISSING = MISSING
     shareId: str
-    sourceCode: str | None = None
+    sourceCode: str | MISSING = MISSING
     startDate: str
 
 
@@ -32,12 +33,12 @@ class SearchAccountTransactionsRequest2(BaseModel):
         extra='ignore',
     )
     accountNumber: str
-    count: int | None = None
+    count: int | MISSING = MISSING
     endDate: str
     loanId: str
-    offset: str | None = None
-    shareId: str | None = None
-    sourceCode: str | None = None
+    offset: str | MISSING = MISSING
+    shareId: str | MISSING = MISSING
+    sourceCode: str | MISSING = MISSING
     startDate: str
 
 
@@ -53,7 +54,7 @@ class Paging(BaseModel):
     )
     nextOffset: str
     results: int
-    total: int | None = None
+    total: int | None | MISSING = MISSING
 
 
 class Status(StrEnum):
@@ -65,9 +66,9 @@ class Dispute(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    decision: str | None = None
+    decision: str | MISSING = MISSING
     exceptionItemId: UUID
-    resolvedDateTime: AwareDatetime | None = None
+    resolvedDateTime: AwareDatetime | MISSING = MISSING
     status: Status
 
 
@@ -82,8 +83,8 @@ class Transaction(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    actionCode: str | None = None
-    activityDate: str | None = None
+    actionCode: str | None | MISSING = MISSING
+    activityDate: str | None | MISSING = MISSING
     adjustmentCode: int
     amount: str
     balanceChange: str
@@ -92,34 +93,34 @@ class Transaction(BaseModel):
     branch: int
     commentCode: int
     comments: list[str]
-    confirmationNumber: str | None = None
+    confirmationNumber: str | None | MISSING = MISSING
     confirmationSeq: int
     consoleNumber: int
-    description: str | None = None
+    description: str | None | MISSING = MISSING
     dispositionFee: str
-    dispute: Dispute | None = None
-    effectiveDate: str | None = None
+    dispute: Dispute | MISSING = MISSING
+    effectiveDate: str | None | MISSING = MISSING
     escrowAmount: str
     escrowAppliedBalChg: str
     escrowUnpaidBalChg: str
     feeAmount: str
     feeCountBy: int
     feeExmtCrtsyAmt: str
-    id: str | None = None
+    id: str | None | MISSING = MISSING
     idType: int
     interest: str
-    lastTranDate: str | None = None
+    lastTranDate: str | None | MISSING = MISSING
     lateChgFieldsValid: int
     lateChgUnpaidChgAmt: str
     lateChgWaivedAmt: str
     miscExpenseAmount: str
     newBalance: str
-    postDate: str | None = None
-    postTime: str | None = None
+    postDate: str | None | MISSING = MISSING
+    postTime: str | None | MISSING = MISSING
     prevAvailBalance: str
     prevLateChgAccrued: str
     processorUser: int
-    receiptId: UUID | None = None
+    receiptId: UUID | None | MISSING = MISSING
     recurringTran: int
     regDCheckCode: int
     regDTransferCode: int
@@ -127,11 +128,11 @@ class Transaction(BaseModel):
     salesTaxAmount: str
     securityLevels: int
     sequenceNumber: int
-    sourceCode: str | None = None
-    statementDescription: str | None = None
-    statementEntryId: str | None = None
+    sourceCode: str | None | MISSING = MISSING
+    statementDescription: str | None | MISSING = MISSING
+    statementEntryId: str | None | MISSING = MISSING
     subSource: int
-    subSourceDescr: str | None = None
+    subSourceDescr: str | None | MISSING = MISSING
     terminationFee: str
     transactionType: TransactionType
     transferCode: int
@@ -153,7 +154,7 @@ class SearchAccountTransactionsResponse1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    data: dict[str, Any] | None = None
+    data: dict[str, Any] | None | MISSING = MISSING
     details: list[str]
     title: str
     type: str

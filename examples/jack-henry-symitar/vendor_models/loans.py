@@ -10,6 +10,7 @@ from enum import StrEnum
 from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic.experimental.missing_sentinel import MISSING
 
 
 class CalculateLoanPayoffQuoteRequest(BaseModel):
@@ -25,34 +26,34 @@ class AccountDetails(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    amountPastDueByPayoffDate: str | None = None
-    dueDate: str | None = None
-    interestDue: str | None = None
-    interestRate: str | None = None
-    interestType: str | None = None
-    lateChargeDue: str | None = None
-    pastDuePayoffCount: str | None = None
-    principalBalance: str | None = None
+    amountPastDueByPayoffDate: str | MISSING = MISSING
+    dueDate: str | MISSING = MISSING
+    interestDue: str | MISSING = MISSING
+    interestRate: str | MISSING = MISSING
+    interestType: str | MISSING = MISSING
+    lateChargeDue: str | MISSING = MISSING
+    pastDuePayoffCount: str | MISSING = MISSING
+    principalBalance: str | MISSING = MISSING
 
 
 class CalculateLoanPayoffQuoteResponse(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    accountDetails: AccountDetails | None = None
-    disclaimerText: list[str] | None = None
-    loanEligible: bool | None = None
-    maxDays: int | None = None
-    payoffDate: str | None = None
-    summaryText: list[str] | None = None
-    totalPayoffAmount: str | None = None
+    accountDetails: AccountDetails | MISSING = MISSING
+    disclaimerText: list[str] | MISSING = MISSING
+    loanEligible: bool | MISSING = MISSING
+    maxDays: int | MISSING = MISSING
+    payoffDate: str | MISSING = MISSING
+    summaryText: list[str] | MISSING = MISSING
+    totalPayoffAmount: str | MISSING = MISSING
 
 
 class CalculateLoanPayoffQuoteResponse1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    data: dict[str, Any] | None = None
+    data: dict[str, Any] | None | MISSING = MISSING
     details: list[str]
     title: str
     type: str
@@ -63,7 +64,7 @@ class SearchLoansRequest(BaseModel):
         extra='ignore',
     )
     accountNumber: str
-    loanId: str | None = None
+    loanId: str | MISSING = MISSING
 
 
 class Account(BaseModel):
@@ -73,10 +74,10 @@ class Account(BaseModel):
     accountId: Annotated[
         str, Field(max_length=34, min_length=1, pattern='^[a-zA-Z0-9]+$')
     ]
-    currentRelationshipCode: int | None = None
-    currentRelationshipName: str | None = None
-    negativeBalanceDate: str | None = None
-    restrict: int | None = None
+    currentRelationshipCode: int | None | MISSING = MISSING
+    currentRelationshipName: str | MISSING = MISSING
+    negativeBalanceDate: str | None | MISSING = MISSING
+    restrict: int | MISSING = MISSING
 
 
 class AccountStatus(StrEnum):
@@ -91,7 +92,7 @@ class AccountWarning(BaseModel):
     code: Annotated[int, Field(ge=0, le=999)]
     description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
-    expirationDate: str | None = None
+    expirationDate: str | None | MISSING = MISSING
     inquiryRestriction: int
     maintenanceRestriction: int
     tellerRestriction: int
@@ -104,7 +105,7 @@ class LoanWarning(BaseModel):
     code: Annotated[int, Field(ge=0, le=999)]
     description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
-    expirationDate: str | None = None
+    expirationDate: str | None | MISSING = MISSING
     inquiryRestriction: int
     maintenanceRestriction: int
     tellerRestriction: int
@@ -114,52 +115,52 @@ class SecurityCode(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    description: str | None = None
+    code: int | MISSING = MISSING
+    description: str | MISSING = MISSING
 
 
 class User(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    activeMode: int | None = None
-    assignedBranch: int | None = None
-    deptName: str | None = None
-    directory: str | None = None
-    email: str | None = None
-    extension: str | None = None
-    jobFunction: str | None = None
-    jobTitle: str | None = None
-    lastLogonDate: str | None = None
-    lastLogonTime: int | None = None
-    location: str | None = None
-    managersName: str | None = None
-    name: str | None = None
+    activeMode: int | MISSING = MISSING
+    assignedBranch: int | MISSING = MISSING
+    deptName: str | MISSING = MISSING
+    directory: str | MISSING = MISSING
+    email: str | MISSING = MISSING
+    extension: str | MISSING = MISSING
+    jobFunction: str | MISSING = MISSING
+    jobTitle: str | MISSING = MISSING
+    lastLogonDate: str | MISSING = MISSING
+    lastLogonTime: int | MISSING = MISSING
+    location: str | MISSING = MISSING
+    managersName: str | MISSING = MISSING
+    name: str | MISSING = MISSING
     number: int
-    onlineAccess: int | None = None
-    phone: str | None = None
-    recordChangeDate: str | None = None
-    secondaryId: str | None = None
-    securityCodes: list[SecurityCode] | None = None
-    type: int | None = None
+    onlineAccess: int | MISSING = MISSING
+    phone: str | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    secondaryId: str | MISSING = MISSING
+    securityCodes: list[SecurityCode] | MISSING = MISSING
+    type: int | MISSING = MISSING
 
 
 class Note(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    code: int | None = None
-    enterDate: str | None = None
-    enterTime: int | None = None
-    expirationDate: str | None = None
-    id: str | None = None
-    idType: int | None = None
-    locator: int | None = None
-    recordChangeDate: str | None = None
-    text: str | None = None
-    user: User | None = None
-    voidFlag: int | None = None
-    voidedBy: int | None = None
+    code: int | MISSING = MISSING
+    enterDate: str | MISSING = MISSING
+    enterTime: int | MISSING = MISSING
+    expirationDate: str | MISSING = MISSING
+    id: str | MISSING = MISSING
+    idType: int | MISSING = MISSING
+    locator: int | MISSING = MISSING
+    recordChangeDate: str | MISSING = MISSING
+    text: str | MISSING = MISSING
+    user: User | MISSING = MISSING
+    voidFlag: int | MISSING = MISSING
+    voidedBy: int | MISSING = MISSING
 
 
 class RelationshipCode(StrEnum):
@@ -202,7 +203,7 @@ class Relationship(BaseModel):
         extra='ignore',
     )
     memberName: str
-    memberRecordNumber: str | None = None
+    memberRecordNumber: str | None | MISSING = MISSING
     relationshipCode: RelationshipCode
 
 
@@ -211,67 +212,67 @@ class SearchLoansResponseItem(BaseModel):
         extra='ignore',
     )
     account: Account
-    accountNumber: str | None = None
+    accountNumber: str | None | MISSING = MISSING
     accountStatus: AccountStatus
     accountWarnings: list[AccountWarning]
-    accrualStatus: str | None = None
-    activityDate: str | None = None
-    alternateNameLocator: str | None = None
-    alternateNameType: str | None = None
-    approvalCode: str | None = None
-    approvalDate: str | None = None
-    apr: str | None = None
-    availableCredit: str | None = None
-    balance: str | None = None
-    branch: str | None = None
-    chargeOffAmount: str | None = None
-    chargeOffDate: str | None = None
-    chargeOffType: str | None = None
-    closeDate: str | None = None
-    createdAtBranch: str | None = None
-    createdByUser: str | None = None
-    creditLimit: str | None = None
-    creditReportLastStatus: str | None = None
-    creditReportingCode: str | None = None
-    description: str | None = None
-    dueDate: str | None = None
-    intUnpaidBilled: str | None = None
-    interestLastYear: str | None = None
-    interestRate: str | None = None
-    interestYtd: str | None = None
-    lastFmDate: str | None = None
-    lastPaymentAmount: str | None = None
-    lastPaymentDate: str | None = None
-    lastTranDate: str | None = None
-    lateChargeAccrued: str | None = None
-    lateChargeDate: str | None = None
-    lateChargeDue: str | None = None
-    lateChargeLastYear: str | None = None
-    lateChargeType: str | None = None
-    lateChargeUnpaid: str | None = None
-    lateChargeYtd: str | None = None
-    loanCode: str | None = None
-    loanCodeName: str | None = None
-    loanId: str | None = None
-    loanType: str | None = None
+    accrualStatus: str | None | MISSING = MISSING
+    activityDate: str | None | MISSING = MISSING
+    alternateNameLocator: str | None | MISSING = MISSING
+    alternateNameType: str | None | MISSING = MISSING
+    approvalCode: str | None | MISSING = MISSING
+    approvalDate: str | None | MISSING = MISSING
+    apr: str | None | MISSING = MISSING
+    availableCredit: str | None | MISSING = MISSING
+    balance: str | MISSING = MISSING
+    branch: str | None | MISSING = MISSING
+    chargeOffAmount: str | None | MISSING = MISSING
+    chargeOffDate: str | None | MISSING = MISSING
+    chargeOffType: str | None | MISSING = MISSING
+    closeDate: str | None | MISSING = MISSING
+    createdAtBranch: str | None | MISSING = MISSING
+    createdByUser: str | None | MISSING = MISSING
+    creditLimit: str | None | MISSING = MISSING
+    creditReportLastStatus: str | None | MISSING = MISSING
+    creditReportingCode: str | None | MISSING = MISSING
+    description: str | None | MISSING = MISSING
+    dueDate: str | None | MISSING = MISSING
+    intUnpaidBilled: str | None | MISSING = MISSING
+    interestLastYear: str | None | MISSING = MISSING
+    interestRate: str | None | MISSING = MISSING
+    interestYtd: str | None | MISSING = MISSING
+    lastFmDate: str | None | MISSING = MISSING
+    lastPaymentAmount: str | None | MISSING = MISSING
+    lastPaymentDate: str | None | MISSING = MISSING
+    lastTranDate: str | None | MISSING = MISSING
+    lateChargeAccrued: str | None | MISSING = MISSING
+    lateChargeDate: str | None | MISSING = MISSING
+    lateChargeDue: str | None | MISSING = MISSING
+    lateChargeLastYear: str | None | MISSING = MISSING
+    lateChargeType: str | None | MISSING = MISSING
+    lateChargeUnpaid: str | None | MISSING = MISSING
+    lateChargeYtd: str | None | MISSING = MISSING
+    loanCode: str | None | MISSING = MISSING
+    loanCodeName: str | None | MISSING = MISSING
+    loanId: str | None | MISSING = MISSING
+    loanType: str | None | MISSING = MISSING
     loanWarnings: list[LoanWarning]
-    maturityDate: str | None = None
-    minimumPayment: str | None = None
-    nickname: str | None = None
+    maturityDate: str | None | MISSING = MISSING
+    minimumPayment: str | None | MISSING = MISSING
+    nickname: str | None | MISSING = MISSING
     notes: list[Note]
-    openDate: str | None = None
-    originalBalance: str | None = None
-    pastDueAmount: str | None = None
-    payment: str | None = None
-    paymentDue: str | None = None
-    payoffAmount: str | None = None
-    recordChangeDate: str | None = None
+    openDate: str | None | MISSING = MISSING
+    originalBalance: str | None | MISSING = MISSING
+    pastDueAmount: str | None | MISSING = MISSING
+    payment: str | None | MISSING = MISSING
+    paymentDue: str | None | MISSING = MISSING
+    payoffAmount: str | None | MISSING = MISSING
+    recordChangeDate: str | None | MISSING = MISSING
     relationships: list[Relationship]
-    statementDate: str | None = None
-    statementGroup: str | None = None
-    statementMailCode: str | None = None
-    statementMailCodeName: str | None = None
-    statementPrevDate: str | None = None
+    statementDate: str | None | MISSING = MISSING
+    statementGroup: str | None | MISSING = MISSING
+    statementMailCode: str | None | MISSING = MISSING
+    statementMailCodeName: str | None | MISSING = MISSING
+    statementPrevDate: str | None | MISSING = MISSING
 
 
 class SearchLoansResponse(RootModel[list[SearchLoansResponseItem]]):
@@ -282,7 +283,7 @@ class SearchLoansResponse1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
     )
-    data: dict[str, Any] | None = None
+    data: dict[str, Any] | None | MISSING = MISSING
     details: list[str]
     title: str
     type: str

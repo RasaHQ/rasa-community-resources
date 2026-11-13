@@ -61,7 +61,22 @@ class RecordedTrafficRoundTrip(unittest.TestCase):
                         if operation == "searchAccountTransactions" and side == "response")
         row = dict(recorded["transactions"][0])
         row.pop("description")
-        self.assertIsNone(Transaction.model_validate(row).description)
+        from vendor_api import present
+        self.assertIsNone(present(Transaction.model_validate(row).description))
+
+    def test_missing_and_null_are_different(self):
+        # loanId is optional and not nullable: it may be left out, but never sent as null.
+        self.assertEqual(request_body("searchLoans", accountNumber="0000000001"), {"accountNumber": "0000000001"})
+        with self.assertRaises(ValidationError):
+            request_body("searchLoans", accountNumber="0000000001", loanId=None)
+        # receiptId is nullable: null is accepted and kept.
+        receipt = {"status": "success", "receiptId": None, "confirmationNumber": None}
+        self.assertEqual(REPLY["postTransfer"].model_validate(receipt).model_dump(mode="json", by_alias=True,
+                                                                                  exclude_unset=True), receipt)
+        # status is optional and not nullable: leaving it out is fine, null is refused.
+        self.assertEqual(REPLY["postTransfer"].model_validate({}).model_dump(mode="json", exclude_unset=True), {})
+        with self.assertRaises(ValidationError):
+            reply("postTransfer", {"status": None})
 
     def test_every_operation_has_a_request_and_a_reply_model(self):
         operations = {operation for operation, *_ in EXCHANGES}

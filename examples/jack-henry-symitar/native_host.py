@@ -17,7 +17,7 @@ import uuid
 
 from host import HostPolicy, Refused, Session, TransferIntent
 from journal import JournalRefused
-from vendor_api import reply, request_body
+from vendor_api import present, reply, request_body
 from vendor_client import ClientError, ErrorCode
 
 
@@ -201,7 +201,7 @@ class Gateway:
         outcome = 'unknown'
         try:
             result = asyncio.run(self.client.call('postTransfer',body))
-            outcome = 'accepted' if reply('postTransfer',result.data).status == 'success' else 'unknown'
+            outcome = 'accepted' if present(reply('postTransfer',result.data).status) == 'success' else 'unknown'
         except ClientError as error:
             if error.code in {ErrorCode.INVALID_REQUEST,ErrorCode.VENDOR_REJECTED}:
                 outcome = 'rejected'
@@ -267,8 +267,8 @@ class Gateway:
                 if alias not in self.shares:raise Refused('outside_scope')
                 data=reply('findAccountByWithBalances',self._read(binding,'findAccountByWithBalances',
                     request_body('findAccountByWithBalances',accountNumber=number),alias))
-                row=next((r for r in data.shares if r.shareId==self.shares[alias]),None)
-                amount=self._money(row.availableBalance if row else None)
+                row=next((r for r in data.shares if present(r.shareId)==self.shares[alias]),None)
+                amount=self._money(present(row.availableBalance) if row else None)
                 return {'state':'available' if amount is not None else 'unavailable','account':alias,'amount':amount,'currency':'USD','balance_type':'available'}
             if name == 'banking_history':
                 alias=args['account']
@@ -276,19 +276,20 @@ class Gateway:
                 data=reply('searchAccountTransactions',self._read(binding,'searchAccountTransactions',
                     request_body('searchAccountTransactions',accountNumber=number,shareId=self.shares[alias],
                         startDate=args['start_date'],endDate=args['end_date'],count=20,offset='0'),alias))
-                entries=[{'date':row.postDate,'description':row.description,'amount':self._money(row.amount)} for row in data.transactions or []]
-                return {'state':'available','account':alias,'entries':entries,'more':bool(data.paging.nextOffset),'currency':'USD'}
+                entries=[{'date':present(row.postDate),'description':present(row.description),'amount':self._money(present(row.amount))}
+                         for row in present(data.transactions) or []]
+                return {'state':'available','account':alias,'entries':entries,'more':bool(present(data.paging.nextOffset)),'currency':'USD'}
             alias=args.get('loan')
             if alias not in self.loans:raise Refused('outside_scope')
             if name == 'banking_loan_payment':
                 rows=reply('searchLoans',self._read(binding,'searchLoans',
                     request_body('searchLoans',accountNumber=number,loanId=self.loans[alias]),alias)).root
-                row=next((r for r in rows if r.loanId==self.loans[alias]),None)
+                row=next((r for r in rows if present(r.loanId)==self.loans[alias]),None)
                 return {'state':'available' if row else 'unavailable','loan':alias,
-                        'current_payment_due':self._money(row.paymentDue if row else None),
-                        'next_due_date':row.dueDate if row else None,'currency':'USD','meaning':'current payment due and next due date are separate facts'}
+                        'current_payment_due':self._money(present(row.paymentDue) if row else None),
+                        'next_due_date':present(row.dueDate) if row else None,'currency':'USD','meaning':'current payment due and next due date are separate facts'}
             if name == 'banking_payoff':
                 data=reply('calculateLoanPayoffQuote',self._read(binding,'calculateLoanPayoffQuote',
                     request_body('calculateLoanPayoffQuote',accountNumber=number,loanId=self.loans[alias],payoffDate=args['payoff_date']),alias))
-                return {'state':'available','loan':alias,'amount':self._money(data.totalPayoffAmount),'as_of':data.payoffDate,'currency':'USD','scope':'dated fictional quote, not a payment'}
+                return {'state':'available','loan':alias,'amount':self._money(present(data.totalPayoffAmount)),'as_of':present(data.payoffDate),'currency':'USD','scope':'dated fictional quote, not a payment'}
             raise Refused('unsupported_tool')
