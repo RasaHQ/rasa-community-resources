@@ -129,6 +129,20 @@ NO_ACTIVE_REVIEW_TEXT = ("The transfer review was cancelled or is no longer acti
                          "Request a new transfer before confirming.")
 
 
+async def _unresolved(host):
+    """True while the host's journal holds an unknown or pending outcome.
+
+    The journal survives a restart; last_submit_state lives only in this
+    process, so both are consulted before any new-request advice."""
+    if host.last_submit_state == "unknown":
+        return True
+    try:
+        data = _payload(await host.client.call(host.session, "banking_transfer_status", {}))
+    except Exception:
+        return True  # cannot tell: never invite a new transfer
+    return data.get("state") in {"unknown", "pending"}
+
+
 async def _read(context, name, arguments):
     try:
         host = await _host(context)
@@ -138,7 +152,7 @@ async def _read(context, name, arguments):
             if host.pending:
                 return ToolResult(llm_response={"state": "confirmation_pending",
                                                 "instruction": "Call banking_submit_transfer now."})
-            if host.last_submit_state == "unknown":  # an unknown outcome is never retried
+            if await _unresolved(host):  # an unknown outcome is never retried, even after a restart
                 await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
                 return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
             await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)
@@ -263,7 +277,7 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
         if (not host.pending or context.is_cancelled
                 or len(_users(context)) != host.pending_turn + 1
                 or not _is_confirmation(native.turn.text)):
-            if host.last_submit_state == "unknown":
+            if await _unresolved(host):
                 await deliver_reply(context, "The earlier transfer outcome is unknown. Do not retry. Check the original transfer status.")
                 return ToolResult(llm_response={"state": "unknown", "reason": "no_retry_check_original_status"})
             await deliver_reply(context, NO_ACTIVE_REVIEW_TEXT)

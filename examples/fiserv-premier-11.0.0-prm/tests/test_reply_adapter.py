@@ -104,6 +104,20 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("Request a new transfer",self.messages[-1])
         self.assertEqual(self.host.sends,1)
 
+    async def test_an_unknown_outcome_held_across_a_restart_is_never_retried(self):
+        # After a restart the conversation is new (no last_submit_state), but the
+        # host's journal still holds the unknown outcome.
+        self.host.sends,self.host.state=1,"unknown"
+        self.assertIsNone(self.conversation.last_submit_state)
+        for text,tool in (("Confirm transfer.",adapter.banking_submit_transfer),("Yes.",adapter.banking_transfer_status)):
+            with self.subTest(text=text):
+                self.turn(text);policy._delivered.clear();policy._sent.clear()
+                result=await tool(context=self.context)
+                self.assertEqual(result.llm_response["state"],"unknown")
+                self.assertIn("Do not retry",self.messages[-1])
+                self.assertNotIn("Request a new transfer",self.messages[-1])
+        self.assertEqual(self.host.sends,1)
+
     async def test_unknown_outcome_never_invites_a_new_transfer(self):
         await self.review();self.host.state="unknown";self.turn("confirm transfer")
         await adapter.banking_submit_transfer(context=self.context)
