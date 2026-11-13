@@ -201,6 +201,67 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.llm_response,{"state":"refused","reason":"say_verify_me"})
         self.assertEqual(self.host.assured,[])
         self.assertEqual(self.messages,[])
+    async def test_a_refused_review_gets_host_words_and_never_retry_advice(self):
+        # The host refuses the review: the caller hears fixed host words, so the
+        # model cannot compose its own retry advice; nothing is armed or sent.
+        for reason,expected in (("outcome_unresolved","Do not retry. Check the original transfer status."),
+                                ("assurance_expired","Say verify me, then ask for the transfer again."),
+                                ("some_other_reason","That transfer was not reviewed, and nothing was sent.")):
+            with self.subTest(reason=reason):
+                self.messages.clear();policy._sent.clear();policy._delivered.clear();self.turn("move money "+reason)
+                self.host.review_reply={"state":"refused","reason":reason}
+                result=await self.review()
+                self.assertEqual(result.llm_response,{"state":"refused","reason":reason})
+                self.assertEqual(len(self.messages),1)
+                self.assertIn(expected,self.messages[0])
+                self.assertFalse(any(m.startswith("Review:") for m in self.messages))
+                self.assertIsNone(self.conversation.pending)
+                self.assertTrue(policy.delivery_pending())  # the model adds nothing this turn
+        self.assertEqual(self.host.sends,0)
+
+    async def test_an_unknown_earlier_outcome_outranks_an_expired_verification(self):
+        # The host may report the stale verification first; the retained unknown
+        # outcome is still read, and the caller is told not to retry.
+        self.host.review_reply={"state":"refused","reason":"assurance_expired"}
+        self.host.status_reply=SimpleNamespace(isError=False,structuredContent={"state":"unknown"})
+        result=await self.review()
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"assurance_expired"})
+        self.assertEqual(len(self.messages),1)
+        self.assertIn("Do not retry. Check the original transfer status.",self.messages[0])
+        self.assertNotIn("ask for the transfer again",self.messages[0])
+
+    async def test_a_review_that_fails_says_nothing_was_sent(self):
+        async def broken(*args):raise RuntimeError("host down")
+        self.host.call=broken
+        result=await self.review()
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"review_unavailable"})
+        self.assertIn("nothing was sent",self.messages[-1])
+        self.assertIn("Check the original transfer status",self.messages[-1])
+
+    async def test_a_spoken_review_that_cannot_be_armed_is_withdrawn_in_host_words(self):
+        # The assurance can expire between the preflight and arming: the caller then
+        # hears that the review can no longer be confirmed, and a confirm sends nothing.
+        from silverlake_demo.hostclient import HostRefused
+        def refuse(*args):raise HostRefused("assurance_expired")
+        self.host.arm=refuse
+        result=await self.review()
+        self.assertEqual(result.llm_response,{"state":"refused","reason":"assurance_expired"})
+        self.assertTrue(self.messages[0].startswith("Review:"))
+        self.assertIn("can no longer be confirmed, and nothing was sent",self.messages[-1])
+        self.assertIsNone(self.conversation.pending)
+        self.turn("confirm transfer")
+        result=await adapter.banking_submit_transfer(context=self.context)
+        self.assertEqual(result.llm_response["state"],"refused")
+        self.assertEqual(self.host.sends,0)
+
+    async def test_an_unarmable_review_with_an_unknown_earlier_outcome_says_do_not_retry(self):
+        from silverlake_demo.hostclient import HostRefused
+        def refuse(*args):raise HostRefused("assurance_expired")
+        self.host.arm=refuse
+        self.host.status_reply=SimpleNamespace(isError=False,structuredContent={"state":"unknown"})
+        await self.review()
+        self.assertIn("Do not retry. Check the original transfer status.",self.messages[-1])
+
 
 class Host:
     def __init__(self):self.reviews=0;self.sends=0;self.state="accepted";self.assured=[]
@@ -208,6 +269,8 @@ class Host:
     async def call(self,session,name,args):
         if name=="banking_review_transfer":
             self.reviews+=1
+            if getattr(self,"review_reply",None) is not None:
+                return SimpleNamespace(isError=False,structuredContent=self.review_reply)
             data=dict(state="pending",review="private-review",source="checking-A",destination="savings-A",amount="5.00",currency="USD")
         elif name=="banking_transfer_status":
             if getattr(self,"status_reply",None) is not None:return self.status_reply
