@@ -55,14 +55,14 @@ class DriftTests(unittest.TestCase):
                                                   "hashes": {"vendor-inputs/a.zip": "ab" * 32}})
         title, body = drift.report("fiserv-premier-11.0.0-prm", today="13 Nov 2026")
         self.assertEqual(title, "Vendor drift: Fiserv files changed for fiserv-premier-11.0.0-prm")
-        self.assertIn("everything the example uses unchanged", body)
+        self.assertIn("still accept everything the example sends and reads", body)
         self.assertIn("### 13 Nov 2026: files as downloaded 13 Nov 2026", body)
         self.assertIn("ab" * 32, body)
         self.write("jack-henry-symitar", {"status": "changed", "tested_with": "X", "hashes": {},
                                           "changes": ["postTransfer request field amount changed"]})
         title, body = drift.report("jack-henry-symitar", today="13 Nov 2026")
         self.assertIn("now stops at start-up", body)
-        self.assertIn("- postTransfer request field amount changed", body)
+        self.assertIn("- `postTransfer request field amount changed`", body)
 
     def test_a_check_that_did_not_run_is_reported_as_could_not_check(self):
         drift.download("jack-henry-silverlake", opener=lambda request, timeout: Reply(b"zip bytes"))
@@ -74,7 +74,16 @@ class DriftTests(unittest.TestCase):
     def test_no_result_at_all_is_reported_as_could_not_check(self):
         title, body = drift.report("jack-henry-symitar", today="13 Nov 2026")
         self.assertEqual(title, "Vendor drift: could not check jack-henry-symitar")
-        self.assertIn("no result recorded", body)
+        self.assertIn("No result was recorded", body)
+        self.assertNotIn("were downloaded", body)
+
+    def test_validators_that_could_not_run_are_reported_as_could_not_check(self):
+        self.assertEqual(drift._contract_error(Exception("could_not_check"), "X")["status"], "could_not_check")
+        self.assertEqual(drift._contract_error(Exception("invalid_contract"), "X")["status"], "unreadable")
+        self.write("fiserv-premier-11.0.0-prm", {"status": "could_not_check", "tested_with": "X"})
+        title, body = drift.report("fiserv-premier-11.0.0-prm", today="13 Nov 2026")
+        self.assertEqual(title, "Vendor drift: could not check fiserv-premier-11.0.0-prm")
+        self.assertIn("validators could not run", body)
 
     def test_vendor_text_is_shown_literally(self):
         self.write("fiserv-premier-11.0.0-prm", {"status": "unreadable", "detail": "bad `x` <b>\n@team"})

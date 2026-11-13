@@ -64,7 +64,7 @@ jobs:
         run: |
           set -eu
           title_file="vendor-drift-results/$PROJECT.title"
-          [ -f "$title_file" ] || { echo "Unchanged: no issue."; exit 0; }
+          [ -f "$title_file" ] || { echo "No issue text was written for $PROJECT."; exit 0; }
           title="$(cat "$title_file")"
           number="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$title\"" \
                     --json number,title --jq "map(select(.title == \"$title\")) | .[0].number // empty")"

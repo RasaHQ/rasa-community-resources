@@ -10,10 +10,14 @@ Three steps, run per example by .github/workflows/vendor-drift.yml:
   report <example>    turn the result into an issue title and body (with a
                       ready-to-paste CHANGELOG entry), or nothing when unchanged.
 
-A result is one of: "same" (the files are the ones the example was tested with),
-"compatible" (they differ, but everything the example uses is unchanged),
-"changed" (something it uses changed; named), "unreadable" (the files cannot be
-read the way the example expects) or "download_failed". Only "same" is quiet.
+Each example's own check validates its recorded traffic (every request it sends
+and every reply it reads, fictional data) against the downloaded files with the
+OpenAPI or XSD validators it uses at runtime. A result is one of: "same" (the
+files are the ones the example was tested with), "compatible" (they differ, but
+still accept all of that traffic), "changed" (some of it is no longer accepted;
+named), "unreadable" (the files cannot be read the way the example expects),
+"could_not_check" (the validators could not run on the files) or
+"download_failed". Only "same" is quiet.
 """
 from __future__ import annotations
 
@@ -48,7 +52,7 @@ EXAMPLES = {
     },
 }
 MAX_BYTES = 16 * 1024 * 1024
-KNOWN = {"same", "compatible", "changed", "unreadable", "download_failed"}
+KNOWN = {"same", "compatible", "changed", "unreadable", "download_failed"}  # could_not_check is reported as not checked
 
 
 def _code(text) -> str:
@@ -90,6 +94,12 @@ def download(example: str, opener=urllib.request.urlopen) -> dict:
     return result
 
 
+def _contract_error(error, tested_with) -> dict:
+    if str(error) == "could_not_check":  # the validators could not run: never a verdict
+        return {"status": "could_not_check", "tested_with": tested_with}
+    return {"status": "unreadable", "detail": str(error)[:200], "tested_with": tested_with}
+
+
 def _check_symitar() -> dict:
     from contract_inputs import TESTED_WITH, ContractError, SymitarContract, VendorChanged, load_inputs
     try:
@@ -97,7 +107,7 @@ def _check_symitar() -> dict:
     except VendorChanged as error:
         return {"status": "changed", "changes": list(error.changes), "tested_with": TESTED_WITH}
     except ContractError as error:
-        return {"status": "unreadable", "detail": str(error)[:200], "tested_with": TESTED_WITH}
+        return _contract_error(error, TESTED_WITH)
     status = "compatible" if contract.newer_files else "same"
     return {"status": status, "files": list(contract.newer_files), "tested_with": TESTED_WITH}
 
@@ -113,7 +123,7 @@ def _check_silverlake() -> dict:
     except VendorChanged as error:
         return {"status": "changed", "changes": list(error.changes), "tested_with": TESTED_WITH}
     except ContractError as error:
-        return {"status": "unreadable", "detail": str(error)[:200], "tested_with": TESTED_WITH}
+        return _contract_error(error, TESTED_WITH)
     if changed:
         return {"status": "changed", "changes": changed, "tested_with": TESTED_WITH}
     return {"status": "compatible" if contract.newer_archive else "same", "tested_with": TESTED_WITH}
@@ -126,7 +136,7 @@ def _check_premier() -> dict:
     except VendorChanged as error:
         return {"status": "changed", "changes": list(error.changes), "tested_with": TESTED_WITH}
     except ContractError as error:
-        return {"status": "unreadable", "detail": str(error)[:200], "tested_with": TESTED_WITH}
+        return _contract_error(error, TESTED_WITH)
     differs = contract.newer_archive or bool(contract.newer_files)
     return {"status": "compatible" if differs else "same", "files": list(contract.newer_files),
             "tested_with": TESTED_WITH}
@@ -171,20 +181,27 @@ def report(example: str, today: str | None = None):
         return title, body
     if status not in KNOWN:
         title = f"Vendor drift: could not check {example}"
-        body = ("The files were downloaded, but the compatibility check did not run or did not finish "
-                f"(last recorded step: {_code(status)}). See the workflow run's log.\n\nThis is not a "
-                "\"no change\" result: the files were not checked today.")
+        if status == "could_not_check":
+            what = "The files were downloaded, but the example's validators could not run on them."
+        elif status == "no result recorded":
+            what = "No result was recorded: the download or the check did not run."
+        else:
+            what = ("The files were downloaded, but the compatibility check did not run or did not finish "
+                    f"(last recorded step: {_code(status)}).")
+        body = (what + " See the workflow run's log.\n\nThis is not a \"no change\" result: "
+                "the files were not checked today.")
         return title, body
     title = f"Vendor drift: {vendor} files changed for {example}"
     if status == "compatible":
         verdict = (f"The downloaded files differ from the ones this example was tested with ({tested}), "
-                   "but the start-up check found everything the example uses unchanged. The example still "
+                   "but they still accept everything the example sends and reads. The example still "
                    "starts. Update the pins and VENDOR-FILES.md within a day.")
-        effect = "none detected by the start-up shape check."
+        effect = "none: the files still accept all of the example's recorded traffic."
     elif status == "changed":
-        changes = "\n".join("- " + change for change in result.get("changes", []))
-        verdict = (f"Something this example uses changed since {tested}. The example now stops at start-up "
-                   f"for learners who download today's files:\n\n{changes}")
+        changes = "\n".join("- " + _code(change) for change in result.get("changes", []))
+        verdict = (f"The downloaded files no longer accept some of what this example sends or reads "
+                   f"(tested with {tested}). The example now stops at start-up for learners who download "
+                   f"today's files:\n\n{changes}")
         effect = "affected: " + "; ".join(result.get("changes", [])) + "."
     else:
         verdict = (f"The downloaded files cannot be read the way this example expects "
@@ -222,7 +239,7 @@ def main(argv):
         out = Path(os.environ.get("DRIFT_ISSUE_DIR", RESULTS))
         out.mkdir(exist_ok=True)
         if issue is None:
-            print("unchanged: no issue")
+            print("Same files as tested: no issue.")
             (out / (example + ".none")).write_text("")
         else:
             (out / (example + ".title")).write_text(issue[0])
