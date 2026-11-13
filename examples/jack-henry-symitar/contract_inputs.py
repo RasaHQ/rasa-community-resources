@@ -1,13 +1,20 @@
 # SPDX-License-Identifier: MIT
-"""Load privately fetched, pinned Symitar OpenAPI inputs without network access.
+"""Load privately fetched Symitar OpenAPI inputs without network access.
 
 Vendor documents are not bundled or relicensed here. The caller supplies the
-four exact downloaded byte strings. A different release needs reviewed pins.
+four downloaded byte strings. PINS records the exact files this example was
+tested with (see VENDOR-FILES.md). Jack Henry serves each file from one URL
+that always returns its newest version, so a learner may download newer bytes.
+Then this module checks exactly what the example uses (USED): the operations,
+the request fields it sends with their types and the required fields around
+them, and the success-response fields it reads. If none of that changed, the
+example runs and says so; if any of it changed, it stops and names it.
 Requires PyYAML and openapi-schema-validator (OpenAPI 3.0 semantics).
 """
 from __future__ import annotations
 
 import hashlib
+import json
 from typing import Mapping
 from pathlib import Path
 
@@ -23,10 +30,27 @@ PINS = {
     "loans": "2631ee0b97790009624ca3f9c8d233855d0ecf06556a8f0134770a831801c914",
     "transfers": "bd5ec66744b21cb3632d37e2cbdb53bbf7f3bd79cb7047cafafa9caca186de95",
 }
-OPERATIONS = frozenset({
-    "findAccountBy", "findAccountByWithBalances", "searchAccountTransactions",
-    "searchLoans", "calculateLoanPayoffQuote", "postTransfer",
-})
+TESTED_WITH = "Jack Henry Symitar files as published 12 Nov 2026, 22:38 UTC"  # see VENDOR-FILES.md
+# Everything this example sends to or reads from each vendor operation. A path
+# segment "x[]" is the items of array x; "[]" is the items of a top-level array.
+USED = {
+    "findAccountBy": {"sends": ("accountNumber",), "reads": ()},
+    "findAccountByWithBalances": {"sends": ("accountNumber",),
+                                  "reads": ("shares[].shareId", "shares[].availableBalance")},
+    "searchAccountTransactions": {"sends": ("accountNumber", "shareId", "startDate", "endDate", "count", "offset"),
+                                  "reads": ("transactions[].postDate", "transactions[].description",
+                                            "transactions[].amount", "paging.nextOffset")},
+    "searchLoans": {"sends": ("accountNumber", "loanId"), "reads": ("[].loanId", "[].paymentDue", "[].dueDate")},
+    "calculateLoanPayoffQuote": {"sends": ("accountNumber", "loanId", "payoffDate"),
+                                 "reads": ("totalPayoffAmount", "payoffDate")},
+    "postTransfer": {"sends": ("donor.accountNumber", "donor.shareId", "recipient.accountNumber",
+                               "recipient.shareId", "amount"), "reads": ("status",)},
+}
+OPERATIONS = frozenset(USED)
+# sha256 of used_surface() for the files in PINS. It changes only when something
+# in USED changes: a path, a sent or read field, its type, format, enum or
+# pattern, or a newly required request field.
+USED_SURFACE_SHA256 = "bc038e258b235f8c8ddf0f3eb89617c38542b567aa7f0e495420115319ca30d8"
 
 
 class ContractError(Exception):
@@ -35,6 +59,14 @@ class ContractError(Exception):
 
 class MissingContractInput(ContractError):
     """Launch stops; contract tests may explicitly skip only this case."""
+
+
+class VendorChanged(ContractError):
+    """Something this example uses changed in the supplied vendor files."""
+
+    def __init__(self, changes):
+        self.changes = tuple(changes)
+        super().__init__("vendor_changed: " + "; ".join(self.changes))
 
 
 def load_inputs(directory: Path | None = None) -> dict[str, bytes]:
@@ -56,8 +88,17 @@ def load_inputs(directory: Path | None = None) -> dict[str, bytes]:
             continue
         except OSError:
             raise ContractError("vendor_input_unreadable") from None
-        if len(raw) > 1_048_576 or hashlib.sha256(raw).hexdigest() != digest:
+        if len(raw) > 1_048_576:
             raise ContractError("vendor_input_invalid: " + relative.as_posix())
+        if hashlib.sha256(raw).hexdigest() != digest:
+            # A newer file is checked in full later; one that is not even an OpenAPI
+            # document is reported now, so a missing file elsewhere cannot hide it.
+            try:
+                document = yaml.safe_load(raw)
+            except Exception:
+                document = None
+            if not isinstance(document, dict) or "openapi" not in document or "paths" not in document:
+                raise ContractError("vendor_input_invalid: " + relative.as_posix())
         inputs[family] = raw
     if missing:
         raise MissingContractInput(
@@ -91,11 +132,111 @@ def _escape(value):
     return value.replace("~", "~0").replace("/", "~1")
 
 
+def _resolve(node, document, depth=0):
+    """Follow local $ref and merge allOf, enough to compare the fields used."""
+    if depth > 40:
+        raise ContractError("invalid_contract")
+    while isinstance(node, dict) and "$ref" in node:
+        node = _pointer(document, node["$ref"])
+    if isinstance(node, dict) and "allOf" in node:
+        merged = {key: value for key, value in node.items() if key != "allOf"}
+        properties, required = dict(merged.get("properties", {})), list(merged.get("required", []))
+        for part in node["allOf"]:
+            part = _resolve(part, document, depth + 1)
+            properties.update(part.get("properties", {}))
+            required += part.get("required", [])
+            for key in ("type", "nullable", "items"):
+                if key in part and key not in merged:
+                    merged[key] = part[key]
+        merged["properties"], merged["required"] = properties, sorted(set(required))
+        node = merged
+    return node if isinstance(node, dict) else {}
+
+
+def _describe(schema, document):
+    schema = _resolve(schema, document)
+    return {key: schema[key] for key in ("type", "format", "enum", "pattern", "nullable") if key in schema}
+
+
+def _walk(schema, path, document, required_trail):
+    """The resolved schema at path, recording the required list of each object passed."""
+    node = _resolve(schema, document)
+    for token in [t for t in path.split(".") if t]:
+        name, is_items = (token[:-2], True) if token.endswith("[]") else (token, False)
+        if name:
+            if required_trail is not None:
+                required_trail.append(sorted(node.get("required", [])))
+            properties = node.get("properties", {})
+            if name not in properties:
+                return None
+            node = _resolve(properties[name], document)
+        if is_items:
+            if "items" not in node:
+                return None
+            node = _resolve(node["items"], document)
+    return node
+
+
+def used_surface(documents: Mapping[str, dict]) -> dict:
+    """Exactly what this example relies on, extracted from parsed vendor documents."""
+    surface = {}
+    for document in documents.values():
+        for path, methods in document.get("paths", {}).items():
+            for method, operation in methods.items():
+                name = operation.get("operationId") if isinstance(operation, dict) else None
+                if name not in USED:
+                    continue
+                entry = {"method": method, "path": path, "sends": {}, "required": [], "reads": {}}
+                request = operation.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema")
+                for field in USED[name]["sends"]:
+                    trail = []
+                    node = _walk(request, field, document, trail) if request is not None else None
+                    entry["sends"][field] = _describe(node, document) if node is not None else "missing"
+                    entry["required"].append(trail)
+                ok = operation.get("responses", {}).get("200", {})
+                schema = ok.get("content", {}).get("application/json", {}).get("schema")
+                entry["reads"]["200"] = "present" if schema is not None else "missing"
+                for field in USED[name]["reads"]:
+                    node = _walk(schema, field, document, None) if schema is not None else None
+                    entry["reads"][field] = _describe(node, document) if node is not None else "missing"
+                surface[name] = entry
+    for name in USED:
+        surface.setdefault(name, "missing")
+    return surface
+
+
+def surface_digest(surface: dict) -> str:
+    return hashlib.sha256(json.dumps(surface, sort_keys=True).encode()).hexdigest()
+
+
+def _changes(expected: dict, actual: dict) -> list[str]:
+    changes = []
+    for name in sorted(USED):
+        old, new = expected.get(name), actual.get(name)
+        if old == new:
+            continue
+        if not isinstance(new, dict):
+            changes.append(name + " is no longer in the files")
+            continue
+        for part in ("method", "path"):
+            if old.get(part) != new.get(part):
+                changes.append(f"{name} {part} changed")
+        for side in ("sends", "reads"):
+            for field in sorted(set(old.get(side, {})) | set(new.get(side, {}))):
+                if old.get(side, {}).get(field) != new.get(side, {}).get(field):
+                    changes.append(f"{name} {'request' if side == 'sends' else 'response'} field {field} changed")
+        if old.get("required") != new.get("required"):
+            changes.append(f"{name} now requires different request fields")
+    return changes or ["the operations this example uses changed"]
+
+
 class SymitarContract:
     """Pinned operation schemas; does not certify provider deployment semantics."""
 
     def __init__(self, inputs: Mapping[str, bytes]):
         self._operations = {}
+        self.newer_files = ()  # families whose bytes differ from PINS but stay compatible
+        documents = {}
         try:
             if set(inputs) != set(PINS):
                 raise ContractError("missing_contract")
@@ -103,9 +244,8 @@ class SymitarContract:
                 raw = inputs[family]
                 if not isinstance(raw, bytes) or len(raw) > 1_048_576:
                     raise ContractError("invalid_contract")
-                if hashlib.sha256(raw).hexdigest() != digest:
-                    raise ContractError("contract_drift")
                 document = yaml.safe_load(raw)
+                documents[family] = document
                 if document.get("openapi") != "3.0.1" or document["info"]["version"] != "v1":
                     raise ContractError("unsupported_contract")
                 _references(document, document)
@@ -137,6 +277,14 @@ class SymitarContract:
                                 ) for media in response.get("content", {})
                             }
                         self._operations[name] = (path, request, responses)
+            drifted = tuple(family for family, digest in PINS.items()
+                            if hashlib.sha256(inputs[family]).hexdigest() != digest)
+            if drifted:
+                surface = used_surface(documents)
+                if surface_digest(surface) != USED_SURFACE_SHA256:
+                    from used_surface_expected import EXPECTED
+                    raise VendorChanged(_changes(EXPECTED, surface))
+                self.newer_files = drifted
             if set(self._operations) != OPERATIONS:
                 raise ContractError("missing_operation")
         except ContractError:

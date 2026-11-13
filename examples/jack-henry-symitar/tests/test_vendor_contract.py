@@ -79,11 +79,72 @@ class ContractTests(unittest.TestCase):
                 self.assertTrue(path.startswith("/a/api/symitar/v1/{InstitutionUniversalId}/"))
         self.assertTrue(self.contract.request("postTransfer", REQUESTS["postTransfer"]).endswith("/transfers"))
 
-    def test_hash_drift_is_rejected(self):
+    def test_a_newer_file_that_changes_nothing_used_still_loads_and_says_so(self):
         raw = dict(self.raw)
-        raw["loans"] += b"\n"
-        with self.assertRaisesRegex(ContractError, "contract_drift"):
-            SymitarContract(raw)
+        raw["loans"] += b"\n"  # different bytes, same content
+        contract = SymitarContract(raw)
+        self.assertEqual(contract.newer_files, ("loans",))
+        self.assertEqual(SymitarContract(self.raw).newer_files, ())
+
+    def test_a_change_to_anything_used_stops_and_names_it(self):
+        import yaml
+        from contract_inputs import VendorChanged
+
+        def changed(family, edit):
+            document = yaml.safe_load(self.raw[family])
+            edit(document)
+            raw = dict(self.raw)
+            raw[family] = yaml.safe_dump(document).encode()
+            return raw
+
+        def operation(document, name):
+            return next(op for methods in document["paths"].values() for op in methods.values()
+                        if isinstance(op, dict) and op.get("operationId") == name)
+
+        def resolve(document, node):
+            while isinstance(node, dict) and "$ref" in node:
+                target = document
+                for part in node["$ref"][2:].split("/"):
+                    target = target[part.replace("~1", "/").replace("~0", "~")]
+                node = target
+            return node
+
+        def payoff_amount_type(document):
+            ok = operation(document, "calculateLoanPayoffQuote")["responses"]["200"]
+            body = resolve(document, ok["content"]["application/json"]["schema"])
+            resolve(document, body["properties"]["totalPayoffAmount"])["type"] = "number"
+
+        def drop_next_offset(document):
+            ok = operation(document, "searchAccountTransactions")["responses"]["200"]
+            body = resolve(document, ok["content"]["application/json"]["schema"])
+            paging = resolve(document, body["properties"]["paging"])
+            paging["properties"].pop("nextOffset")
+
+        def require_new_field(document):
+            body = resolve(document, operation(document, "searchLoans")["requestBody"]["content"]["application/json"]["schema"])
+            body.setdefault("properties", {})["memberNumbers"] = {"type": "array", "items": {"type": "string"}}
+            body["required"] = sorted(set(body.get("required", [])) | {"memberNumbers"})
+
+        def remove_transfers(document):
+            operation(document, "postTransfer")["operationId"] = "postTransferV2"
+
+        cases = (("loans", payoff_amount_type, "calculateLoanPayoffQuote response field totalPayoffAmount changed"),
+                 ("transactions", drop_next_offset, "searchAccountTransactions response field paging.nextOffset changed"),
+                 ("loans", require_new_field, "searchLoans now requires different request fields"),
+                 ("transfers", remove_transfers, "postTransfer is no longer in the files"))
+        for family, edit, expected in cases:
+            with self.subTest(expected=expected), self.assertRaises(VendorChanged) as caught:
+                SymitarContract(changed(family, edit))
+            self.assertIn(expected, caught.exception.changes)
+            self.assertNotIn("contract_drift", str(caught.exception))
+
+    def test_the_recorded_surface_is_exactly_the_pinned_files(self):
+        import yaml
+        from contract_inputs import USED_SURFACE_SHA256, surface_digest, used_surface
+        from used_surface_expected import EXPECTED
+        surface = used_surface({family: yaml.safe_load(raw) for family, raw in self.raw.items()})
+        self.assertEqual(surface, EXPECTED)
+        self.assertEqual(surface_digest(surface), USED_SURFACE_SHA256)
 
     def test_missing_document_refuses(self):
         raw = dict(self.raw)

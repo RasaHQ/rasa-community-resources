@@ -34,6 +34,12 @@ Status:        Development branch; see the PR for current native qualification
 
 For the other Jack Henry API, see the separate [SilverLake jXchange example](../jack-henry-silverlake/). SilverLake uses simple object access protocol (SOAP) messages in extensible markup language (XML). Symitar uses a representational state transfer (REST) API.
 
+## Vendor file versions
+
+This example was tested with **Jack Henry Symitar files as published 12 Nov 2026, 22:38 UTC**. Jack Henry serves each file from one address that always returns its newest version, so you may download newer files. [VENDOR-FILES.md](VENDOR-FILES.md) lists the exact files and what the example checks when yours are newer. [CHANGELOG.md](CHANGELOG.md) records what changed in each version and in the example.
+
+If the start-up says Jack Henry changed something this example uses, it names the operation and field. Your files are newer than this example; please open an issue.
+
 ## What you will learn
 
 - Connect a conversational assistant to banking tools.
@@ -120,7 +126,7 @@ mkdir -p vendor-inputs/accounts vendor-inputs/transactions vendor-inputs/loans v
 
 The Explorer is the file-and-folder panel in the editor. Right-click each destination folder, choose **Upload…**, and select its matching saved file.
 
-**Checkpoint:** all four files are in the locations shown above. The program checks their hashes before building the mock. A hash is a fingerprint of a file's exact bytes. A changed or missing file stops startup; do not edit the expected hashes to get past it.
+**Checkpoint:** all four files are in the locations shown above. The program checks their hashes before building the mock. A hash is a fingerprint of a file's exact bytes. A missing file stops startup. A newer file starts the example only if nothing it uses has changed (see [Vendor file versions](#vendor-file-versions)); do not edit the expected hashes to get past a stop.
 
 This example has no `make download` target. Download and upload the four files yourself. Vendor definitions are ignored by Git and are not included in this repository.
 
