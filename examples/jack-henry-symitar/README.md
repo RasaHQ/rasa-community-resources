@@ -126,7 +126,7 @@ mkdir -p vendor-inputs/accounts vendor-inputs/transactions vendor-inputs/loans v
 
 The Explorer is the file-and-folder panel in the editor. Right-click each destination folder, choose **Upload…**, and select its matching saved file.
 
-**Checkpoint:** all four files are in the locations shown above. The program checks their hashes before building the mock. A hash is a fingerprint of a file's exact bytes. A missing file stops startup. A newer file starts the example only if it still accepts everything the example sends and reads (see [Vendor file versions](#vendor-file-versions)); do not edit the expected hashes to get past a stop.
+**Checkpoint:** all four files are in the locations shown above. The program checks their hashes before building the mock. A hash is a fingerprint of a file's exact bytes. A missing file stops startup. A newer file starts the example only if it still accepts everything the example sends and reads and its replies are unchanged (see [Vendor file versions](#vendor-file-versions)); do not edit the expected hashes to get past a stop.
 
 This example has no `make download` target. Download and upload the four files yourself. Vendor definitions are ignored by Git and are not included in this repository.
 

@@ -211,18 +211,57 @@ class ContractTests(unittest.TestCase):
 
         self.assert_stops("transfers", narrow_status, "postTransfer 200 response is no longer valid at status")
 
-    def test_documentation_changes_and_a_new_optional_field_still_load(self):
+    def test_documentation_changes_and_a_new_optional_request_field_still_load(self):
         def describe(document):
             target = self._resolve(document, self._request_root(document, "postTransfer")["properties"]["amount"])
             target["description"] = "Reworded by the vendor."
             target["example"] = "9.99"
+            reply = self._resolve(document, self._reply_root(document, "postTransfer")["properties"]["status"])
+            reply["description"] = "Reworded by the vendor."
+            self._operation(document, "postTransfer")["summary"] = "Reworded summary."
 
-        def new_sibling(document):
+        def new_request_field(document):
+            self._request_root(document, "postTransfer")["properties"]["memo"] = {"type": "string"}
+
+        self.assertEqual(SymitarContract(self._edited("transfers", describe)).newer_files, ("transfers",))
+        self.assertEqual(SymitarContract(self._edited("transfers", new_request_field)).newer_files, ("transfers",))
+
+    def test_a_relaxed_or_otherwise_changed_reply_stops_even_though_old_replies_still_fit(self):
+        def optional(document):
+            root = self._reply_root(document, "searchAccountTransactions")
+            self.assertTrue(root.get("required"))
+            root["required"] = root["required"][1:]
+
+        def nullable(document):
+            self._resolve(document, self._reply_root(document, "postTransfer")["properties"]["status"])["nullable"] = True
+
+        def wider_enum(document):
+            status = self._resolve(document, self._reply_root(document, "postTransfer")["properties"]["status"])
+            status["enum"] = list(status["enum"]) + ["pending-review"]
+
+        def new_reply_field(document):
             paging = self._resolve(document, self._reply_root(document, "searchAccountTransactions")["properties"]["paging"])
             paging["properties"]["previousOffset"] = {"type": "string", "nullable": True}
 
-        self.assertEqual(SymitarContract(self._edited("transfers", describe)).newer_files, ("transfers",))
-        self.assertEqual(SymitarContract(self._edited("transactions", new_sibling)).newer_files, ("transactions",))
+        for family, edit, operation in (("transactions", optional, "searchAccountTransactions"),
+                                        ("transfers", nullable, "postTransfer"),
+                                        ("transfers", wider_enum, "postTransfer"),
+                                        ("transactions", new_reply_field, "searchAccountTransactions")):
+            with self.subTest(edit=edit.__name__):
+                self.assert_stops(family, edit,
+                                  f"the reply of {operation} changed; review it and record a new version")
+
+    def test_the_reply_digests_match_the_pinned_files(self):
+        import yaml
+        from contract_inputs import REPLY_SHA256, reply_schema
+        found = {}
+        for raw in self.raw.values():
+            document = yaml.safe_load(raw)
+            for methods in document["paths"].values():
+                for operation in methods.values():
+                    if isinstance(operation, dict) and operation.get("operationId") in OPERATIONS:
+                        found[operation["operationId"]] = reply_schema(operation, document)
+        self.assertEqual(found, REPLY_SHA256)
 
     def test_reference_cycles_are_refused_with_a_clear_reason_not_a_hang(self):
         def self_cycle(document):

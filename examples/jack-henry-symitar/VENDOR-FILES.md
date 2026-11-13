@@ -32,7 +32,9 @@ At start, the example compares your files with the hashes above. If they differ,
 - the reply it reads from each one;
 - the refusals it handles (a problem reply and a bodiless 401).
 
-If your files still accept all of it, the example starts and prints: "Your Jack Henry files differ from the ones this example was tested with (…); everything this example uses is unchanged."
+It also compares the replies: for each of the six operations, every reply the files declare (each status code, references inlined, with only descriptions, examples and summaries left out) must be exactly the same as in the pinned files. A reply that became looser, for example a field no longer required, a value that may now be null or a longer list of allowed values, would still accept the recorded replies, yet the example could receive something it was never tested with. Any difference stops start-up with "the reply of <operation> changed; review it and record a new version".
+
+If your files still accept all of the traffic and every reply is unchanged, the example starts and prints: "Your Jack Henry files differ from the ones this example was tested with (…); everything this example uses is unchanged."
 
 If they do not, it stops and names the operation and what the files no longer accept. If the check itself cannot run on your files, it stops with "Could not check".
 

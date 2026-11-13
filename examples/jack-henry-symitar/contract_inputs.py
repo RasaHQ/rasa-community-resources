@@ -15,6 +15,7 @@ Requires PyYAML and openapi-schema-validator (OpenAPI 3.0 semantics).
 from __future__ import annotations
 
 import hashlib
+import json
 from typing import Mapping
 from pathlib import Path
 
@@ -37,6 +38,20 @@ TESTED_WITH = "Jack Henry Symitar files as published 12 Nov 2026, 22:38 UTC"  # 
 OPERATIONS = frozenset({"findAccountBy", "findAccountByWithBalances", "searchAccountTransactions",
                         "searchLoans", "calculateLoanPayoffQuote", "postTransfer"})
 _MAX_HOPS = 64
+# sha256 of reply_schema() for each operation in the pinned files: every declared
+# response status and media type, references inlined, with only description,
+# example(s) and summary removed. A newer file must give exactly the same digest,
+# because a relaxed reply (a field no longer required, nullable, a wider enum or
+# type) would still accept the recorded replies yet send the example something new.
+REPLY_SHA256 = {
+    "calculateLoanPayoffQuote": "6f9cc8a359a85d25f6ec6516ea3915004568dfc7846c785967aa9e39bb543c75",
+    "findAccountBy": "0f3e2b30952fe70bb07c3a94eb341b1d54c043d242ea35e80de8d9e05f37aa27",
+    "findAccountByWithBalances": "0f3e2b30952fe70bb07c3a94eb341b1d54c043d242ea35e80de8d9e05f37aa27",
+    "postTransfer": "3d35448f43dc304d10fac43135fdb6fd4604658a5a2bdc2067a322350c0e3e8f",
+    "searchAccountTransactions": "1563c421eb696290b2488af85bf6c1a21be7659ab51e501ca2071295db471dfc",
+    "searchLoans": "c873b145f45e549904701894243fe4209d8505b14f6266d1be2a62c9b7d9e4d7",
+}
+_DOC_ONLY = frozenset({"description", "example", "examples", "summary"})
 
 
 class ContractError(Exception):
@@ -128,11 +143,38 @@ def _escape(value):
     return value.replace("~", "~0").replace("/", "~1")
 
 
+def _inline(node, document, stack=(), depth=0):
+    """node with every local $ref replaced by its target, documentation removed."""
+    if depth > 200:
+        raise ContractError("schema_too_deep")
+    if isinstance(node, dict):
+        if "$ref" in node:
+            reference = node["$ref"]
+            if reference in stack:  # a recursive schema: name the loop, do not unroll it
+                return {"$recursive": reference}
+            target = _inline(_pointer(document, reference), document, stack + (reference,), depth + 1)
+            rest = {key: _inline(value, document, stack, depth + 1) for key, value in node.items()
+                    if key != "$ref" and key not in _DOC_ONLY}
+            return {"$inlined": target, **rest} if rest else target
+        return {key: _inline(value, document, stack, depth + 1) for key, value in sorted(node.items())
+                if key not in _DOC_ONLY}
+    if isinstance(node, list):
+        return [_inline(value, document, stack, depth + 1) for value in node]
+    return node
+
+
+def reply_schema(operation: dict, document: dict) -> str:
+    """sha256 of an operation's resolved replies (all declared statuses)."""
+    replies = _inline(operation.get("responses", {}), document)
+    return hashlib.sha256(json.dumps(replies, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
 class SymitarContract:
     """Pinned operation schemas; does not certify provider deployment semantics."""
 
     def __init__(self, inputs: Mapping[str, bytes]):
         self._operations = {}
+        self._replies = {}
         self.newer_files = ()  # families whose bytes differ from PINS but stay compatible
         try:
             if set(inputs) != set(PINS):
@@ -173,10 +215,14 @@ class SymitarContract:
                                 ) for media in response.get("content", {})
                             }
                         self._operations[name] = (path, request, responses)
+                        self._replies[name] = reply_schema(operation, document)
             drifted = tuple(family for family, digest in PINS.items()
                             if hashlib.sha256(inputs[family]).hexdigest() != digest)
             if drifted:
-                problems = self.exchange_problems()
+                problems = [f"the reply of {name} changed; review it and record a new version"
+                            for name in sorted(OPERATIONS)
+                            if name in self._replies and self._replies[name] != REPLY_SHA256[name]]
+                problems += self.exchange_problems()
                 if problems:
                     raise VendorChanged(problems)
                 self.newer_files = drifted
