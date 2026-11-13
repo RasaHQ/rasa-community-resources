@@ -342,3 +342,41 @@ class ReplyDigestNames(unittest.TestCase):
         self.assertNotEqual(reply_schema("xfer", nullable), reply_schema("xfer", base))
         self.assertNotEqual(reply_schema("xfer", widened), reply_schema("xfer", base))
         self.assertEqual(reply_schema("xfer", reworded), reply_schema("xfer", base))
+
+
+    def test_names_and_literals_count_annotations_do_not(self):
+        import copy
+        from premier_demo.contract import MEMBERS, reply_schema
+        base = {"201": {"description": "OK", "headers": {"summary": {"schema": {"type": "string"}}},
+                        "links": {"example": {"operationId": "x", "description": "A link."}},
+                        "content": {"application/json": {"schema": {
+                            "type": "object", "description": "A reply.",
+                            "discriminator": {"propertyName": "kind", "mapping": {"description": "#/components/schemas/E"}},
+                            "properties": {"kind": {"type": "string", "enum": [{"description": "a"}], "default": {"summary": "s"},
+                                                    "description": "The kind."}}}}}}}
+
+        def changed(edit):
+            document = copy.deepcopy(base)
+            edit(document)
+            return document
+
+        def schema(document):
+            return document["201"]["content"]["application/json"]["schema"]
+
+        variants = {
+            "enum literal": lambda d: schema(d)["properties"]["kind"]["enum"][0].update(description="b"),
+            "default literal": lambda d: schema(d)["properties"]["kind"]["default"].update(summary="t"),
+            "header named summary": lambda d: d["201"]["headers"]["summary"]["schema"].update(type="integer"),
+            "link named example": lambda d: d["201"]["links"]["example"].update(operationId="y"),
+            "mapping key description": lambda d: schema(d)["discriminator"]["mapping"].update(description="#/components/schemas/F"),
+        }
+        reworded = changed(lambda d: (schema(d).update(description="Reworded."), d["201"].update(description="Fine"),
+                                      d["201"]["links"]["example"].update(description="Other."),
+                                      schema(d)["properties"]["kind"].update(description="Other.")))
+
+        path = MEMBERS["xfer"][3]
+        digest = lambda responses: reply_schema("xfer", {"paths": {path: {"post": {"responses": responses}}}})
+        for name, edit in variants.items():
+            with self.subTest(change=name):
+                self.assertNotEqual(digest(changed(edit)), digest(base))
+        self.assertEqual(digest(reworded), digest(base))
