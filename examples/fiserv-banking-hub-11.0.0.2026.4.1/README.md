@@ -271,6 +271,8 @@ Wait until the terminal prints `Rasa server is up and running`. If the link stil
 | `bh_demo/contract.py` | Checks the downloaded ZIP and builds request and response checks from four of Fiserv's release files |
 | `bh_demo/mock.py` | The local mock bank: the release's paths and bodies, fictional data, every reply checked against the release |
 | `bh_demo/client.py` | Our direct client for four release operations, with Fiserv's success rules and the exact `Avail` and `Total` labels |
+| `bh_demo/vendor_models/`, `bh_demo/vendor_api.py`, `make_models.py` | Pydantic models generated from the pinned release for the three operations the client calls (names, types, required fields, allowed values; no vendor descriptions), and the map from each operation to its request and reply model. The client builds requests and reads replies through them |
+| `bh_demo/recorded_exchanges.py` | The example's own requests and replies (fictional data), which the models must read and give back unchanged |
 | `bh_demo/server.py` | The MCP server the assistant calls: exactly seven tools |
 | `bh_demo/host.py` | Identity simulator, permitted reads, the transfer review, one confirmed send, a private journal, and the plain "not available" answers |
 | `lib/`, `hooks.py` | Presentation controls: your aliases at the start, no repeated text, and only the host announces a review or an acceptance |
@@ -278,7 +280,7 @@ Wait until the terminal prints `Rasa server is up and running`. If the link stil
 
 ### What stays out of this repository
 
-No Fiserv file is stored here: no ZIP, no extracted definition and no copy of its schemas. `vendor-inputs/` is ignored by Git. If the file you supply is not exactly the one this example was written for, it refuses to start rather than guess.
+No Fiserv file is stored here: no ZIP, no extracted definition and no copy of its schemas. The generated models in `bh_demo/vendor_models/` hold interface facts only (field names, types, required fields and allowed values for the three operations used), with no descriptions or examples from Fiserv. `vendor-inputs/` is ignored by Git. If the file you supply is not exactly the one this example was written for, it refuses to start rather than guess.
 
 ### For developers
 
@@ -286,6 +288,8 @@ No Fiserv file is stored here: no ZIP, no extracted definition and no copy of it
 make test           # source, host and server tests; contract tests skip without the release file
 make contract-test  # the contract tests (need the release file; skipped without it)
 make validate       # Rasa project validation
+make models         # regenerate bh_demo/vendor_models/ (needs the release file)
+make models-check   # fail if the committed models differ from a fresh generation
 ```
 
 CI has no Fiserv file, so contract-dependent tests print that they were skipped. A skipped input never qualifies the contract.
