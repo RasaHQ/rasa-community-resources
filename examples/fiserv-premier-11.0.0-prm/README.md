@@ -468,6 +468,7 @@ When asking for help, include the step number, command or fictional prompt, expe
 | `premier_demo/client.py` | The direct Banking Hub client for five operations |
 | `premier_demo/mock.py` | Fiserv's paths and message bodies with fictional data |
 | `premier_demo/contract.py`, `premier_demo/recorded_exchanges.py` | ZIP verification, request/response checks built from Fiserv's files, and the recorded traffic checked against a newer download |
+| `premier_demo/vendor_models/`, `premier_demo/vendor_api.py`, `make_models.py` | Pydantic models generated from the five pinned Fiserv definitions (names, types, required fields, allowed values; no vendor descriptions), and the map from each definition to its request and reply model. The client builds requests and reads replies through them |
 
 ### Supported banking operations
 
@@ -502,6 +503,8 @@ make test
 ```
 
 Runs source and mock tests. Tests that require the Fiserv file skip if it is missing.
+
+To regenerate the models after a vendor update (needs the pinned ZIP in `vendor-inputs/`), run `make models`; `make models-check` fails if the committed models differ from a fresh generation. The generator, datamodel-code-generator, is installed only for these two commands.
 
 ```bash
 make contract-test
