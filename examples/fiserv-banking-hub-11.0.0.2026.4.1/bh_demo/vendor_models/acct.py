@@ -3,11 +3,13 @@
 # Source: Fiserv Bank_Sol_Org-AcctService-11.0.0-resolved.yaml, sha256 3bcc50c8bb22e633c7cec484cd2d4216a677bbcb8d0759740d92fdce31b5e365
 # from esf-service-swagger-release-11.0.0.2026.4.1.zip, sha256 844bb52475f442da9b96a093c3443c4d9b6a47e7c9834c509f0cf92a117f2fd3
 # Interface facts only (names, types, required, nullable, limits, allowed values);
+# every number is a Decimal, so money and rates never pass through a float;
 # descriptions and examples are removed before generation.
 
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal
 from enum import IntEnum, StrEnum
 from typing import Annotated
 
@@ -182,7 +184,7 @@ class BalCutOffDataType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_cut_off_amt: Annotated[float | MISSING, Field(alias='BalCutOffAmt')] = MISSING
+    bal_cut_off_amt: Annotated[Decimal | MISSING, Field(alias='BalCutOffAmt')] = MISSING
     bal_cut_off_type: Annotated[str | MISSING, Field(alias='BalCutOffType')] = MISSING
     bal_cut_off_type_enum_desc: Annotated[
         str | MISSING, Field(alias='BalCutOffTypeEnumDesc', max_length=80)
@@ -243,7 +245,7 @@ class CRADataType(BaseModel):
     cra_loan_type_enum_desc: Annotated[
         str | MISSING, Field(alias='CRALoanTypeEnumDesc', max_length=80)
     ] = MISSING
-    cra_new_funds: Annotated[float | MISSING, Field(alias='CRANewFunds')] = MISSING
+    cra_new_funds: Annotated[Decimal | MISSING, Field(alias='CRANewFunds')] = MISSING
     cra_reporting_category: Annotated[
         str | MISSING, Field(alias='CRAReportingCategory')
     ] = MISSING
@@ -317,10 +319,10 @@ class CorrespondingPoolDataType(BaseModel):
         int | MISSING, Field(alias='CorrespondingPoolIndex')
     ] = MISSING
     corresponding_pool_rate: Annotated[
-        float | MISSING, Field(alias='CorrespondingPoolRate')
+        Decimal | MISSING, Field(alias='CorrespondingPoolRate')
     ] = MISSING
     corresponding_pool_variance: Annotated[
-        float | MISSING, Field(alias='CorrespondingPoolVariance')
+        Decimal | MISSING, Field(alias='CorrespondingPoolVariance')
     ] = MISSING
 
 
@@ -414,11 +416,11 @@ class DeferredFeeDataType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
-    prior_earning_amt: Annotated[float | MISSING, Field(alias='PriorEarningAmt')] = (
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
+    prior_earning_amt: Annotated[Decimal | MISSING, Field(alias='PriorEarningAmt')] = (
         MISSING
     )
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
 
 
 class DelinquentRateDataType(BaseModel):
@@ -428,7 +430,7 @@ class DelinquentRateDataType(BaseModel):
     )
     delinquent_days: Annotated[int | MISSING, Field(alias='DelinquentDays')] = MISSING
     delinquent_int_rate: Annotated[
-        float | MISSING, Field(alias='DelinquentIntRate')
+        Decimal | MISSING, Field(alias='DelinquentIntRate')
     ] = MISSING
     delinquent_rate_type: Annotated[
         str | MISSING, Field(alias='DelinquentRateType', max_length=80)
@@ -519,7 +521,7 @@ class FDICAmountType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amount: Annotated[float | MISSING, Field(alias='Amount')] = MISSING
+    amount: Annotated[Decimal | MISSING, Field(alias='Amount')] = MISSING
     fdic_amount_type: Annotated[str, Field(alias='FDICAmountType')]
 
 
@@ -592,9 +594,9 @@ class FeeCostDataType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
-    prior_cost_amt: Annotated[float | MISSING, Field(alias='PriorCostAmt')] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
+    prior_cost_amt: Annotated[Decimal | MISSING, Field(alias='PriorCostAmt')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
 
 
 class DescriptionOption(StrEnum):
@@ -789,13 +791,13 @@ class NegativeAmortDataType(BaseModel):
     fully_reamortization_term: Annotated[
         int | MISSING, Field(alias='FullyReamortizationTerm')
     ] = MISSING
-    max_loan_percent: Annotated[float | MISSING, Field(alias='MaxLoanPercent')] = (
+    max_loan_percent: Annotated[Decimal | MISSING, Field(alias='MaxLoanPercent')] = (
         MISSING
     )
     next_fully_reamortization_dt: Annotated[
         date | MISSING, Field(alias='NextFullyReamortizationDt')
     ] = MISSING
-    payment_cap: Annotated[float | MISSING, Field(alias='PaymentCap')] = MISSING
+    payment_cap: Annotated[Decimal | MISSING, Field(alias='PaymentCap')] = MISSING
     reamortization_interval: Annotated[
         int | MISSING, Field(alias='ReamortizationInterval')
     ] = MISSING
@@ -997,7 +999,7 @@ class PromotionalRateType(BaseModel):
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
     ] = MISSING
-    margin: Annotated[float | MISSING, Field(alias='Margin')] = MISSING
+    margin: Annotated[Decimal | MISSING, Field(alias='Margin')] = MISSING
     margin_type: Annotated[MarginTypeType | MISSING, Field(alias='MarginType')] = (
         MISSING
     )
@@ -1029,8 +1031,12 @@ class RateChangeRangeMaxMinType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    max_rate_change: Annotated[float | MISSING, Field(alias='MaxRateChange')] = MISSING
-    min_rate_change: Annotated[float | MISSING, Field(alias='MinRateChange')] = MISSING
+    max_rate_change: Annotated[Decimal | MISSING, Field(alias='MaxRateChange')] = (
+        MISSING
+    )
+    min_rate_change: Annotated[Decimal | MISSING, Field(alias='MinRateChange')] = (
+        MISSING
+    )
     rate_change_range: Annotated[str | MISSING, Field(alias='RateChangeRange')] = (
         MISSING
     )
@@ -1232,10 +1238,10 @@ class SplitRateDataType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    over_rate: Annotated[float | MISSING, Field(alias='OverRate')] = MISSING
+    over_rate: Annotated[Decimal | MISSING, Field(alias='OverRate')] = MISSING
     rate_change_dt: Annotated[date | MISSING, Field(alias='RateChangeDt')] = MISSING
     split_amt: Annotated[int | MISSING, Field(alias='SplitAmt')] = MISSING
-    under_rate: Annotated[float | MISSING, Field(alias='UnderRate')] = MISSING
+    under_rate: Annotated[Decimal | MISSING, Field(alias='UnderRate')] = MISSING
 
 
 class StartDayMonthType(BaseModel):
@@ -1254,7 +1260,7 @@ class StepRateType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     step: Annotated[str | MISSING, Field(alias='Step', max_length=3)] = MISSING
 
 
@@ -1303,7 +1309,7 @@ class StudentLoanDataType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    ovrd_rate: Annotated[float | MISSING, Field(alias='OvrdRate')] = MISSING
+    ovrd_rate: Annotated[Decimal | MISSING, Field(alias='OvrdRate')] = MISSING
     student_action_code: Annotated[
         str | MISSING, Field(alias='StudentActionCode', max_length=80)
     ] = MISSING
@@ -1731,7 +1737,7 @@ class IntBearingEscrowType(BaseModel):
         ),
     ] = MISSING
     next_int_pmt_dt: Annotated[date | MISSING, Field(alias='NextIntPmtDt')] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
 
 
 class IntPmtFrequencyType(RecurRuleType):
@@ -1760,7 +1766,7 @@ class MaturityIntCalcDataType(BaseModel):
     maturity_int_interval: Annotated[
         int | MISSING, Field(alias='MaturityIntInterval')
     ] = MISSING
-    maturity_int_rate: Annotated[float | MISSING, Field(alias='MaturityIntRate')] = (
+    maturity_int_rate: Annotated[Decimal | MISSING, Field(alias='MaturityIntRate')] = (
         MISSING
     )
     maturity_int_rate_type: Annotated[
@@ -1782,7 +1788,7 @@ class MaxRTDCurAmtType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[CurCodeType | MISSING, Field(alias='CurCode')] = MISSING
 
 
@@ -1925,7 +1931,7 @@ class WithholdingDataType(BaseModel):
         str | MISSING, Field(alias='WithholdingCodeEnumDesc', max_length=80)
     ] = MISSING
     withholding_percent: Annotated[
-        float | MISSING, Field(alias='WithholdingPercent')
+        Decimal | MISSING, Field(alias='WithholdingPercent')
     ] = MISSING
     withholding_type: Annotated[
         WithholdingTypeType | MISSING, Field(alias='WithholdingType')
@@ -1988,7 +1994,7 @@ class AcctPeriodDataType(BaseModel):
     acct_period_type_enum_desc: Annotated[
         str | MISSING, Field(alias='AcctPeriodTypeEnumDesc', max_length=80)
     ] = MISSING
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     amt_seq_id: Annotated[str | MISSING, Field(alias='AmtSeqId', max_length=10)] = (
         MISSING
     )
@@ -2010,7 +2016,7 @@ class AcctPeriodDataType(BaseModel):
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     total_in_period: Annotated[
         TotalInPeriodType | MISSING, Field(alias='TotalInPeriod')
     ] = MISSING
@@ -2073,7 +2079,7 @@ class CheckCreditDataType(BaseModel):
     )
     acct_keys: Annotated[AcctKeysType | MISSING, Field(alias='AcctKeys')] = MISSING
     incremental_adv_amt: Annotated[
-        float | MISSING, Field(alias='IncrementalAdvAmt')
+        Decimal | MISSING, Field(alias='IncrementalAdvAmt')
     ] = MISSING
     incremental_adv_option: Annotated[
         str | MISSING, Field(alias='IncrementalAdvOption')
@@ -2148,7 +2154,7 @@ class CurAmtType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[CurCodeType | MISSING, Field(alias='CurCode')] = MISSING
 
 
@@ -2205,11 +2211,11 @@ class DeferredFeeType(BaseModel):
         date | MISSING, Field(alias='DeferredFirstPmtDt')
     ] = MISSING
     deferred_loan_balance: Annotated[
-        float | MISSING, Field(alias='DeferredLoanBalance')
+        Decimal | MISSING, Field(alias='DeferredLoanBalance')
     ] = MISSING
-    deferred_loan_rate: Annotated[float | MISSING, Field(alias='DeferredLoanRate')] = (
-        MISSING
-    )
+    deferred_loan_rate: Annotated[
+        Decimal | MISSING, Field(alias='DeferredLoanRate')
+    ] = MISSING
     deferred_pmt_freq: Annotated[FreqType | MISSING, Field(alias='DeferredPmtFreq')] = (
         MISSING
     )
@@ -2259,7 +2265,7 @@ class EarlyPayoffTierDataType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     cur_amt: Annotated[CurAmtType | MISSING, Field(alias='CurAmt')] = MISSING
     tier_ident: Annotated[str | MISSING, Field(alias='TierIdent', max_length=36)] = (
         MISSING
@@ -2340,7 +2346,7 @@ class FeeEarningDataType(BaseModel):
     financial_charge_ind: Annotated[
         bool | MISSING, Field(alias='FinancialChargeInd')
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     term: Annotated[TermType | MISSING, Field(alias='Term')] = MISSING
 
 
@@ -2459,7 +2465,9 @@ class InheritedAcctDataType(BaseModel):
     inherited_plan_type_enum_desc: Annotated[
         str | MISSING, Field(alias='InheritedPlanTypeEnumDesc', max_length=80)
     ] = MISSING
-    life_expectancy: Annotated[float | MISSING, Field(alias='LifeExpectancy')] = MISSING
+    life_expectancy: Annotated[Decimal | MISSING, Field(alias='LifeExpectancy')] = (
+        MISSING
+    )
     name: Annotated[str | MISSING, Field(alias='Name', max_length=80)] = MISSING
     oldest_beneficiary_birth_dt: Annotated[
         date | MISSING, Field(alias='OldestBeneficiaryBirthDt')
@@ -2764,7 +2772,7 @@ class PendingLateFeeType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     eff_dt: Annotated[
         str | MISSING,
         Field(
@@ -2838,7 +2846,7 @@ class PmtSchedType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     cur_amt: Annotated[CurAmtType | MISSING, Field(alias='CurAmt')] = MISSING
     escrow_amt: Annotated[EscrowAmtType | MISSING, Field(alias='EscrowAmt')] = MISSING
     extension_nbr: Annotated[int | MISSING, Field(alias='ExtensionNbr')] = MISSING
@@ -2871,7 +2879,7 @@ class PmtSchedType(BaseModel):
     pmt_sched_ident: Annotated[
         str | MISSING, Field(alias='PmtSchedIdent', max_length=36)
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     recur_model: Annotated[RecurModelType | MISSING, Field(alias='RecurModel')] = (
         MISSING
     )
@@ -2892,12 +2900,12 @@ class PmtTermReviewType(BaseModel):
         MISSING
     )
     lead_days: Annotated[int | MISSING, Field(alias='LeadDays')] = MISSING
-    max_pmt_change: Annotated[float | MISSING, Field(alias='MaxPmtChange')] = MISSING
+    max_pmt_change: Annotated[Decimal | MISSING, Field(alias='MaxPmtChange')] = MISSING
     max_pmt_decrease_life: Annotated[
-        float | MISSING, Field(alias='MaxPmtDecreaseLife')
+        Decimal | MISSING, Field(alias='MaxPmtDecreaseLife')
     ] = MISSING
     max_pmt_increase_life: Annotated[
-        float | MISSING, Field(alias='MaxPmtIncreaseLife')
+        Decimal | MISSING, Field(alias='MaxPmtIncreaseLife')
     ] = MISSING
     max_term_change: Annotated[int | MISSING, Field(alias='MaxTermChange')] = MISSING
     max_term_decrease: Annotated[int | MISSING, Field(alias='MaxTermDecrease')] = (
@@ -2906,7 +2914,7 @@ class PmtTermReviewType(BaseModel):
     max_term_increase: Annotated[int | MISSING, Field(alias='MaxTermIncrease')] = (
         MISSING
     )
-    min_pmt_change: Annotated[float | MISSING, Field(alias='MinPmtChange')] = MISSING
+    min_pmt_change: Annotated[Decimal | MISSING, Field(alias='MinPmtChange')] = MISSING
     month: Annotated[int | MISSING, Field(alias='Month')] = MISSING
     next_pmt_insurance_term_review_dt: Annotated[
         date | MISSING, Field(alias='NextPmtInsuranceTermReviewDt')
@@ -3156,7 +3164,7 @@ class PrepayPenaltyType(CurAmtType):
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
     ] = MISSING
-    increment_amt: Annotated[float | MISSING, Field(alias='IncrementAmt')] = MISSING
+    increment_amt: Annotated[Decimal | MISSING, Field(alias='IncrementAmt')] = MISSING
     max_prepay_penalty_amt: Annotated[
         MaxPrepayPenaltyAmtType | MISSING, Field(alias='MaxPrepayPenaltyAmt')
     ] = MISSING
@@ -3207,19 +3215,19 @@ class RateMatrixTierType(BaseModel):
     high_cur_amt: Annotated[HighCurAmtType | MISSING, Field(alias='HighCurAmt')] = (
         MISSING
     )
-    high_int_apy: Annotated[float | MISSING, Field(alias='HighIntAPY')] = MISSING
-    int_apr: Annotated[float | MISSING, Field(alias='IntAPR')] = MISSING
-    int_apy: Annotated[float | MISSING, Field(alias='IntAPY')] = MISSING
+    high_int_apy: Annotated[Decimal | MISSING, Field(alias='HighIntAPY')] = MISSING
+    int_apr: Annotated[Decimal | MISSING, Field(alias='IntAPR')] = MISSING
+    int_apy: Annotated[Decimal | MISSING, Field(alias='IntAPY')] = MISSING
     low_cur_amt: Annotated[LowCurAmtType | MISSING, Field(alias='LowCurAmt')] = MISSING
-    low_int_apy: Annotated[float | MISSING, Field(alias='LowIntAPY')] = MISSING
-    margin: Annotated[float | MISSING, Field(alias='Margin')] = MISSING
+    low_int_apy: Annotated[Decimal | MISSING, Field(alias='LowIntAPY')] = MISSING
+    margin: Annotated[Decimal | MISSING, Field(alias='Margin')] = MISSING
     margin_type: Annotated[MarginTypeType | MISSING, Field(alias='MarginType')] = (
         MISSING
     )
     margin_type_enum_desc: Annotated[
         str | MISSING, Field(alias='MarginTypeEnumDesc', max_length=80)
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     rate_index: Annotated[int | MISSING, Field(alias='RateIndex')] = MISSING
     rate_index_enum_desc: Annotated[
         str | MISSING, Field(alias='RateIndexEnumDesc', max_length=80)
@@ -3294,13 +3302,15 @@ class RenewalDataType(BaseModel):
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
     ] = MISSING
-    orig_issue_rate: Annotated[float | MISSING, Field(alias='OrigIssueRate')] = MISSING
+    orig_issue_rate: Annotated[Decimal | MISSING, Field(alias='OrigIssueRate')] = (
+        MISSING
+    )
     orig_mat_dt: Annotated[date | MISSING, Field(alias='OrigMatDt')] = MISSING
     prod_int_rate_id: Annotated[
         str | MISSING, Field(alias='ProdIntRateId', max_length=36)
     ] = MISSING
-    rate_factor: Annotated[float | MISSING, Field(alias='RateFactor')] = MISSING
-    rate_variance: Annotated[float | MISSING, Field(alias='RateVariance')] = MISSING
+    rate_factor: Annotated[Decimal | MISSING, Field(alias='RateFactor')] = MISSING
+    rate_variance: Annotated[Decimal | MISSING, Field(alias='RateVariance')] = MISSING
     renewal_frequency: Annotated[
         RenewalFrequencyType | MISSING, Field(alias='RenewalFrequency')
     ] = MISSING
@@ -3311,7 +3321,7 @@ class RenewalDataType(BaseModel):
     renewal_product_ident: Annotated[
         str | MISSING, Field(alias='RenewalProductIdent', max_length=42)
     ] = MISSING
-    renewal_rate: Annotated[float | MISSING, Field(alias='RenewalRate')] = MISSING
+    renewal_rate: Annotated[Decimal | MISSING, Field(alias='RenewalRate')] = MISSING
     renewal_term_code: Annotated[
         str | MISSING, Field(alias='RenewalTermCode', max_length=80)
     ] = MISSING
@@ -3420,9 +3430,9 @@ class SBADataType(BaseModel):
         validate_by_name=True,
     )
     approval_dt: Annotated[date | MISSING, Field(alias='ApprovalDt')] = MISSING
-    basis_point_fee_amt: Annotated[float | MISSING, Field(alias='BasisPointFeeAmt')] = (
-        MISSING
-    )
+    basis_point_fee_amt: Annotated[
+        Decimal | MISSING, Field(alias='BasisPointFeeAmt')
+    ] = MISSING
     colson_report_ind: Annotated[bool | MISSING, Field(alias='ColsonReportInd')] = (
         MISSING
     )
@@ -3430,12 +3440,12 @@ class SBADataType(BaseModel):
     fee_calc_option: Annotated[
         FeeCalcOptionType | MISSING, Field(alias='FeeCalcOption')
     ] = MISSING
-    fee_pct: Annotated[float | MISSING, Field(alias='FeePct')] = MISSING
+    fee_pct: Annotated[Decimal | MISSING, Field(alias='FeePct')] = MISSING
     future_fee_calc_option: Annotated[
         FeeCalcOptionType | MISSING, Field(alias='FutureFeeCalcOption')
     ] = MISSING
     gp_number: Annotated[int | MISSING, Field(alias='GPNumber')] = MISSING
-    guarantee_pct: Annotated[float | MISSING, Field(alias='GuaranteePct')] = MISSING
+    guarantee_pct: Annotated[Decimal | MISSING, Field(alias='GuaranteePct')] = MISSING
     next_fee_calc_chg_dt: Annotated[date | MISSING, Field(alias='NextFeeCalcChgDt')] = (
         MISSING
     )
@@ -3458,8 +3468,10 @@ class SinglePremiumInsuranceType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    balloon_pmt_amt: Annotated[float | MISSING, Field(alias='BalloonPmtAmt')] = MISSING
-    cancel_amt: Annotated[float | MISSING, Field(alias='CancelAmt')] = MISSING
+    balloon_pmt_amt: Annotated[Decimal | MISSING, Field(alias='BalloonPmtAmt')] = (
+        MISSING
+    )
+    cancel_amt: Annotated[Decimal | MISSING, Field(alias='CancelAmt')] = MISSING
     cancel_dt: Annotated[date | MISSING, Field(alias='CancelDt')] = MISSING
     cancel_reason_code: Annotated[
         str | MISSING, Field(alias='CancelReasonCode', max_length=80)
@@ -3487,8 +3499,8 @@ class SinglePremiumInsuranceType(BaseModel):
     insurance_type_enum_desc: Annotated[
         str | MISSING, Field(alias='InsuranceTypeEnumDesc', max_length=80)
     ] = MISSING
-    loan_rate: Annotated[float | MISSING, Field(alias='LoanRate')] = MISSING
-    pmt_amt: Annotated[float | MISSING, Field(alias='PmtAmt')] = MISSING
+    loan_rate: Annotated[Decimal | MISSING, Field(alias='LoanRate')] = MISSING
+    pmt_amt: Annotated[Decimal | MISSING, Field(alias='PmtAmt')] = MISSING
     product_ident: Annotated[
         str | MISSING, Field(alias='ProductIdent', max_length=42)
     ] = MISSING
@@ -3567,7 +3579,7 @@ class TaxDataType(BaseModel):
     )
     cur_amt: Annotated[CurAmtType | MISSING, Field(alias='CurAmt')] = MISSING
     org: Annotated[str | MISSING, Field(alias='Org', max_length=36)] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     tax_type: Annotated[str | MISSING, Field(alias='TaxType')] = MISSING
     tax_type_enum_desc: Annotated[
         str | MISSING, Field(alias='TaxTypeEnumDesc', max_length=80)
@@ -3849,7 +3861,9 @@ class BeneficiaryDataType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    beneficiary_amt: Annotated[float | MISSING, Field(alias='BeneficiaryAmt')] = MISSING
+    beneficiary_amt: Annotated[Decimal | MISSING, Field(alias='BeneficiaryAmt')] = (
+        MISSING
+    )
     beneficiary_desc: Annotated[
         str | MISSING, Field(alias='BeneficiaryDesc', max_length=80)
     ] = MISSING
@@ -3860,7 +3874,7 @@ class BeneficiaryDataType(BaseModel):
         str | MISSING, Field(alias='BeneficiaryLevelEnumDesc', max_length=80)
     ] = MISSING
     beneficiary_percent: Annotated[
-        float | MISSING, Field(alias='BeneficiaryPercent')
+        Decimal | MISSING, Field(alias='BeneficiaryPercent')
     ] = MISSING
     beneficiary_type: Annotated[str | MISSING, Field(alias='BeneficiaryType')] = MISSING
     beneficiary_type_enum_desc: Annotated[
@@ -3992,7 +4006,9 @@ class CreditBureauAcctDataType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    balloon_pmt_amt: Annotated[float | MISSING, Field(alias='BalloonPmtAmt')] = MISSING
+    balloon_pmt_amt: Annotated[Decimal | MISSING, Field(alias='BalloonPmtAmt')] = (
+        MISSING
+    )
     bureau_acct_type: Annotated[
         str | MISSING, Field(alias='BureauAcctType', max_length=80)
     ] = MISSING
@@ -4025,9 +4041,9 @@ class CreditBureauAcctDataType(BaseModel):
         date | MISSING, Field(alias='FirstDelinquencyDt')
     ] = MISSING
     freq: Annotated[FreqType | MISSING, Field(alias='Freq')] = MISSING
-    orig_charge_off_amt: Annotated[float | MISSING, Field(alias='OrigChargeOffAmt')] = (
-        MISSING
-    )
+    orig_charge_off_amt: Annotated[
+        Decimal | MISSING, Field(alias='OrigChargeOffAmt')
+    ] = MISSING
     pmt_rating: Annotated[str | MISSING, Field(alias='PmtRating', max_length=80)] = (
         MISSING
     )
@@ -4060,7 +4076,7 @@ class CreditRiskType(BaseModel):
         str | MISSING, Field(alias='InternalScoreEnumDesc', max_length=80)
     ] = MISSING
     loan_amt: Annotated[LoanAmtType | MISSING, Field(alias='LoanAmt')] = MISSING
-    loan_pct: Annotated[float | MISSING, Field(alias='LoanPct')] = MISSING
+    loan_pct: Annotated[Decimal | MISSING, Field(alias='LoanPct')] = MISSING
     risk_category: Annotated[str, Field(alias='RiskCategory')]
     risk_category_enum_desc: Annotated[
         str | MISSING, Field(alias='RiskCategoryEnumDesc', max_length=80)
@@ -4076,7 +4092,7 @@ class DealerType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bank_earning_rate: Annotated[float | MISSING, Field(alias='BankEarningRate')] = (
+    bank_earning_rate: Annotated[Decimal | MISSING, Field(alias='BankEarningRate')] = (
         MISSING
     )
     condition: Annotated[str | MISSING, Field(alias='Condition')] = MISSING
@@ -4123,7 +4139,7 @@ class DealerType(BaseModel):
         str | MISSING, Field(alias='DealerReserveMethod')
     ] = MISSING
     dealer_reserve_rate: Annotated[
-        float | MISSING, Field(alias='DealerReserveRate')
+        Decimal | MISSING, Field(alias='DealerReserveRate')
     ] = MISSING
     dealer_reserve_type: Annotated[
         str | MISSING, Field(alias='DealerReserveType', max_length=80)
@@ -4134,10 +4150,10 @@ class DealerType(BaseModel):
     indirect_lending_ind: Annotated[
         bool | MISSING, Field(alias='IndirectLendingInd')
     ] = MISSING
-    margin: Annotated[float | MISSING, Field(alias='Margin')] = MISSING
+    margin: Annotated[Decimal | MISSING, Field(alias='Margin')] = MISSING
     payoff_option: Annotated[str | MISSING, Field(alias='PayoffOption')] = MISSING
     recourse_days: Annotated[int | MISSING, Field(alias='RecourseDays')] = MISSING
-    recourse_pct: Annotated[float | MISSING, Field(alias='RecoursePct')] = MISSING
+    recourse_pct: Annotated[Decimal | MISSING, Field(alias='RecoursePct')] = MISSING
     scheduled_int_amt: Annotated[
         ScheduledIntAmtType | MISSING, Field(alias='ScheduledIntAmt')
     ] = MISSING
@@ -4199,13 +4215,13 @@ class ExpectedCreditLossDataType(BaseModel):
         str | MISSING, Field(alias='CurCreditScore', max_length=4)
     ] = MISSING
     cur_debt_coverage_ratio: Annotated[
-        float | MISSING, Field(alias='CurDebtCoverageRatio')
+        Decimal | MISSING, Field(alias='CurDebtCoverageRatio')
     ] = MISSING
     orig_credit_score: Annotated[
         str | MISSING, Field(alias='OrigCreditScore', max_length=4)
     ] = MISSING
     orig_debt_coverage_ratio: Annotated[
-        float | MISSING, Field(alias='OrigDebtCoverageRatio')
+        Decimal | MISSING, Field(alias='OrigDebtCoverageRatio')
     ] = MISSING
     orig_fair_market_value: Annotated[
         OrigFairMarketValueType | MISSING, Field(alias='OrigFairMarketValue')
@@ -4250,7 +4266,7 @@ class FeeTierType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     cur_amt: Annotated[CurAmtType | MISSING, Field(alias='CurAmt')] = MISSING
     high_cur_amt: Annotated[HighCurAmtType | MISSING, Field(alias='HighCurAmt')] = (
         MISSING
@@ -4264,7 +4280,7 @@ class FeeType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     charge_fee_ind: Annotated[bool | MISSING, Field(alias='ChargeFeeInd')] = MISSING
     company: Annotated[str | MISSING, Field(alias='Company', max_length=60)] = MISSING
     cur_amt: Annotated[CurAmtType | MISSING, Field(alias='CurAmt')] = MISSING
@@ -4352,9 +4368,9 @@ class FeeType(BaseModel):
     ovrd_fee_defaults_ind: Annotated[
         bool | MISSING, Field(alias='OvrdFeeDefaultsInd')
     ] = MISSING
-    pre_pay_bal_percent: Annotated[float | MISSING, Field(alias='PrePayBalPercent')] = (
-        MISSING
-    )
+    pre_pay_bal_percent: Annotated[
+        Decimal | MISSING, Field(alias='PrePayBalPercent')
+    ] = MISSING
     pre_pay_max_amt: Annotated[
         PrePayMaxAmtType | MISSING, Field(alias='PrePayMaxAmt')
     ] = MISSING
@@ -4425,9 +4441,9 @@ class HomeMortgageDisclosureType(BaseModel):
         str | MISSING, Field(alias='ImprovementCodeEnumDesc', max_length=80)
     ] = MISSING
     income_amt: Annotated[LoanAmtType | MISSING, Field(alias='IncomeAmt')] = MISSING
-    insurance_paid_amt: Annotated[float | MISSING, Field(alias='InsurancePaidAmt')] = (
-        MISSING
-    )
+    insurance_paid_amt: Annotated[
+        Decimal | MISSING, Field(alias='InsurancePaidAmt')
+    ] = MISSING
     investor_conform_ind: Annotated[
         bool | MISSING, Field(alias='InvestorConformInd')
     ] = MISSING
@@ -4500,8 +4516,10 @@ class InsuranceType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    balloon_pmt_amt: Annotated[float | MISSING, Field(alias='BalloonPmtAmt')] = MISSING
-    cancel_amt: Annotated[float | MISSING, Field(alias='CancelAmt')] = MISSING
+    balloon_pmt_amt: Annotated[Decimal | MISSING, Field(alias='BalloonPmtAmt')] = (
+        MISSING
+    )
+    cancel_amt: Annotated[Decimal | MISSING, Field(alias='CancelAmt')] = MISSING
     cancel_dt: Annotated[date | MISSING, Field(alias='CancelDt')] = MISSING
     cancel_reason_code: Annotated[
         str | MISSING, Field(alias='CancelReasonCode', max_length=80)
@@ -4543,14 +4561,14 @@ class InsuranceType(BaseModel):
     insurance_type_enum_desc: Annotated[
         str | MISSING, Field(alias='InsuranceTypeEnumDesc', max_length=80)
     ] = MISSING
-    joint_rate: Annotated[float | MISSING, Field(alias='JointRate')] = MISSING
-    loan_rate: Annotated[float | MISSING, Field(alias='LoanRate')] = MISSING
+    joint_rate: Annotated[Decimal | MISSING, Field(alias='JointRate')] = MISSING
+    loan_rate: Annotated[Decimal | MISSING, Field(alias='LoanRate')] = MISSING
     max_coverage_amt: Annotated[
         MaxCoverageAmtType | MISSING, Field(alias='MaxCoverageAmt')
     ] = MISSING
-    ovrd_rate: Annotated[float | MISSING, Field(alias='OvrdRate')] = MISSING
+    ovrd_rate: Annotated[Decimal | MISSING, Field(alias='OvrdRate')] = MISSING
     ovrd_rate_ind: Annotated[bool | MISSING, Field(alias='OvrdRateInd')] = MISSING
-    pmt_amt: Annotated[float | MISSING, Field(alias='PmtAmt')] = MISSING
+    pmt_amt: Annotated[Decimal | MISSING, Field(alias='PmtAmt')] = MISSING
     prepaid_insurance_amt: Annotated[
         PrepaidInsuranceAmtType | MISSING, Field(alias='PrepaidInsuranceAmt')
     ] = MISSING
@@ -4564,7 +4582,7 @@ class InsuranceType(BaseModel):
     secondary_insured_person: Annotated[
         InsuredPersonType | MISSING, Field(alias='SecondaryInsuredPerson')
     ] = MISSING
-    single_rate: Annotated[float | MISSING, Field(alias='SingleRate')] = MISSING
+    single_rate: Annotated[Decimal | MISSING, Field(alias='SingleRate')] = MISSING
     term: Annotated[TermType | MISSING, Field(alias='Term')] = MISSING
 
 
@@ -4650,7 +4668,7 @@ class IntRateDataType(BaseModel):
     based_on_code_enum_desc: Annotated[
         str | MISSING, Field(alias='BasedOnCodeEnumDesc', max_length=80)
     ] = MISSING
-    based_on_value: Annotated[float | MISSING, Field(alias='BasedOnValue')] = MISSING
+    based_on_value: Annotated[Decimal | MISSING, Field(alias='BasedOnValue')] = MISSING
     cap_frequency: Annotated[
         CapFrequencyType | MISSING, Field(alias='CapFrequency')
     ] = MISSING
@@ -4660,7 +4678,7 @@ class IntRateDataType(BaseModel):
         str | MISSING, Field(alias='DailyAccrualEnumDesc', max_length=80)
     ] = MISSING
     daily_accrual_factor: Annotated[
-        float | MISSING, Field(alias='DailyAccrualFactor')
+        Decimal | MISSING, Field(alias='DailyAccrualFactor')
     ] = MISSING
     eff_dt: Annotated[
         str | MISSING,
@@ -4675,9 +4693,9 @@ class IntRateDataType(BaseModel):
         MISSING
     )
     interest_accrued_to_date_amt: Annotated[
-        float | MISSING, Field(alias='InterestAccruedToDateAmt')
+        Decimal | MISSING, Field(alias='InterestAccruedToDateAmt')
     ] = MISSING
-    minimum_interest: Annotated[float | MISSING, Field(alias='MinimumInterest')] = (
+    minimum_interest: Annotated[Decimal | MISSING, Field(alias='MinimumInterest')] = (
         MISSING
     )
     rate_matrix_tier: Annotated[
@@ -4758,7 +4776,9 @@ class LOCScheduleType(BaseModel):
     advance_code_enum_desc: Annotated[
         str | MISSING, Field(alias='AdvanceCodeEnumDesc', max_length=80)
     ] = MISSING
-    balloon_pmt_amt: Annotated[float | MISSING, Field(alias='BalloonPmtAmt')] = MISSING
+    balloon_pmt_amt: Annotated[Decimal | MISSING, Field(alias='BalloonPmtAmt')] = (
+        MISSING
+    )
     limit_amt: Annotated[LimitAmtType | MISSING, Field(alias='LimitAmt')] = MISSING
     loan_note_type: Annotated[str | MISSING, Field(alias='LoanNoteType')] = MISSING
     loan_note_type_enum_desc: Annotated[
@@ -4800,7 +4820,7 @@ class LateFeeType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     cur_amt: Annotated[CurAmtType | MISSING, Field(alias='CurAmt')] = MISSING
     fee_billing_option: Annotated[
         FeeBillingOptionType | MISSING, Field(alias='FeeBillingOption')
@@ -4848,7 +4868,7 @@ class LateFeeType(BaseModel):
         bool | MISSING, Field(alias='PreventLateFeeInd')
     ] = MISSING
     ratio_to_full_payment: Annotated[
-        float | MISSING, Field(alias='RatioToFullPayment')
+        Decimal | MISSING, Field(alias='RatioToFullPayment')
     ] = MISSING
     ref_data: Annotated[RefDataType | MISSING, Field(alias='RefData')] = MISSING
     sched_pmt_late_fee_ind: Annotated[
@@ -4959,7 +4979,7 @@ class PendingRateType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    based_on_value: Annotated[float | MISSING, Field(alias='BasedOnValue')] = MISSING
+    based_on_value: Annotated[Decimal | MISSING, Field(alias='BasedOnValue')] = MISSING
     eff_dt: Annotated[
         str | MISSING,
         Field(
@@ -4971,25 +4991,31 @@ class PendingRateType(BaseModel):
         IntPmtFrequencyType | MISSING, Field(alias='IntPmtFrequency')
     ] = MISSING
     lead_days: Annotated[int | MISSING, Field(alias='LeadDays')] = MISSING
-    max_rate_change: Annotated[float | MISSING, Field(alias='MaxRateChange')] = MISSING
+    max_rate_change: Annotated[Decimal | MISSING, Field(alias='MaxRateChange')] = (
+        MISSING
+    )
     next_rate_change_dt: Annotated[date | MISSING, Field(alias='NextRateChangeDt')] = (
         MISSING
     )
     prod_int_rate_id: Annotated[
         str | MISSING, Field(alias='ProdIntRateId', max_length=36)
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     rate_change_recur_type: Annotated[
         RateChangeRecurTypeType | MISSING, Field(alias='RateChangeRecurType')
     ] = MISSING
-    rate_factor: Annotated[float | MISSING, Field(alias='RateFactor')] = MISSING
-    rate_factor_two: Annotated[float | MISSING, Field(alias='RateFactorTwo')] = MISSING
-    rate_over_split: Annotated[float | MISSING, Field(alias='RateOverSplit')] = MISSING
-    rate_under_split: Annotated[float | MISSING, Field(alias='RateUnderSplit')] = (
+    rate_factor: Annotated[Decimal | MISSING, Field(alias='RateFactor')] = MISSING
+    rate_factor_two: Annotated[Decimal | MISSING, Field(alias='RateFactorTwo')] = (
         MISSING
     )
-    rate_variance: Annotated[float | MISSING, Field(alias='RateVariance')] = MISSING
-    rate_variance_two: Annotated[float | MISSING, Field(alias='RateVarianceTwo')] = (
+    rate_over_split: Annotated[Decimal | MISSING, Field(alias='RateOverSplit')] = (
+        MISSING
+    )
+    rate_under_split: Annotated[Decimal | MISSING, Field(alias='RateUnderSplit')] = (
+        MISSING
+    )
+    rate_variance: Annotated[Decimal | MISSING, Field(alias='RateVariance')] = MISSING
+    rate_variance_two: Annotated[Decimal | MISSING, Field(alias='RateVarianceTwo')] = (
         MISSING
     )
     recur_interval: Annotated[int | MISSING, Field(alias='RecurInterval')] = MISSING
@@ -5008,7 +5034,7 @@ class PositivePayType(BaseModel):
     )
     contact: Annotated[ContactType | MISSING, Field(alias='Contact')] = MISSING
     delivery_method: Annotated[str | MISSING, Field(alias='DeliveryMethod')] = MISSING
-    tolerance_amt: Annotated[float | MISSING, Field(alias='ToleranceAmt')] = MISSING
+    tolerance_amt: Annotated[Decimal | MISSING, Field(alias='ToleranceAmt')] = MISSING
 
 
 class PrincipalDispDataType(BaseModel):
@@ -5058,9 +5084,11 @@ class ScheduledRateType(BaseModel):
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
-    rate_over_split: Annotated[float | MISSING, Field(alias='RateOverSplit')] = MISSING
-    rate_under_split: Annotated[float | MISSING, Field(alias='RateUnderSplit')] = (
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
+    rate_over_split: Annotated[Decimal | MISSING, Field(alias='RateOverSplit')] = (
+        MISSING
+    )
+    rate_under_split: Annotated[Decimal | MISSING, Field(alias='RateUnderSplit')] = (
         MISSING
     )
     split_rate_amt: Annotated[
@@ -5114,7 +5142,7 @@ class DishonoredFeeType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     cur_amt: Annotated[CurAmtType | MISSING, Field(alias='CurAmt')] = MISSING
     desc: Annotated[str | MISSING, Field(alias='Desc', max_length=200)] = MISSING
     fee_calc_option: Annotated[
@@ -5318,8 +5346,8 @@ class RateChangeDataType(BaseModel):
     based_on_code_enum_desc: Annotated[
         str | MISSING, Field(alias='BasedOnCodeEnumDesc', max_length=80)
     ] = MISSING
-    based_on_value: Annotated[float | MISSING, Field(alias='BasedOnValue')] = MISSING
-    ceiling_rate: Annotated[float | MISSING, Field(alias='CeilingRate')] = MISSING
+    based_on_value: Annotated[Decimal | MISSING, Field(alias='BasedOnValue')] = MISSING
+    ceiling_rate: Annotated[Decimal | MISSING, Field(alias='CeilingRate')] = MISSING
     day_of_month: Annotated[DayOfMonthType | MISSING, Field(alias='DayOfMonth')] = (
         MISSING
     )
@@ -5330,7 +5358,7 @@ class RateChangeDataType(BaseModel):
     fixed_rate_lead_days: Annotated[int | MISSING, Field(alias='FixedRateLeadDays')] = (
         MISSING
     )
-    floor_rate: Annotated[float | MISSING, Field(alias='FloorRate')] = MISSING
+    floor_rate: Annotated[Decimal | MISSING, Field(alias='FloorRate')] = MISSING
     increase_only_ind: Annotated[bool | MISSING, Field(alias='IncreaseOnlyInd')] = (
         MISSING
     )
@@ -5339,13 +5367,17 @@ class RateChangeDataType(BaseModel):
     )
     lead_days: Annotated[int | MISSING, Field(alias='LeadDays')] = MISSING
     lead_days_option: Annotated[str | MISSING, Field(alias='LeadDaysOption')] = MISSING
-    max_rate_change: Annotated[float | MISSING, Field(alias='MaxRateChange')] = MISSING
+    max_rate_change: Annotated[Decimal | MISSING, Field(alias='MaxRateChange')] = (
+        MISSING
+    )
     max_rate_increase_life: Annotated[
-        float | MISSING, Field(alias='MaxRateIncreaseLife')
+        Decimal | MISSING, Field(alias='MaxRateIncreaseLife')
     ] = MISSING
-    min_rate_change: Annotated[float | MISSING, Field(alias='MinRateChange')] = MISSING
+    min_rate_change: Annotated[Decimal | MISSING, Field(alias='MinRateChange')] = (
+        MISSING
+    )
     min_rate_decrease_life: Annotated[
-        float | MISSING, Field(alias='MinRateDecreaseLife')
+        Decimal | MISSING, Field(alias='MinRateDecreaseLife')
     ] = MISSING
     month: Annotated[int | MISSING, Field(alias='Month')] = MISSING
     next_rate_change_dt: Annotated[date | MISSING, Field(alias='NextRateChangeDt')] = (
@@ -5361,7 +5393,7 @@ class RateChangeDataType(BaseModel):
     pending_rate: Annotated[
         list[PendingRateType] | MISSING, Field(alias='PendingRate')
     ] = MISSING
-    prior_rate: Annotated[float | MISSING, Field(alias='PriorRate')] = MISSING
+    prior_rate: Annotated[Decimal | MISSING, Field(alias='PriorRate')] = MISSING
     rate_adjuster_eff_dt: Annotated[
         date | MISSING, Field(alias='RateAdjusterEffDt')
     ] = MISSING
@@ -5378,7 +5410,9 @@ class RateChangeDataType(BaseModel):
     rate_calc_method_enum_desc: Annotated[
         str | MISSING, Field(alias='RateCalcMethodEnumDesc', max_length=80)
     ] = MISSING
-    rate_carry_over: Annotated[float | MISSING, Field(alias='RateCarryOver')] = MISSING
+    rate_carry_over: Annotated[Decimal | MISSING, Field(alias='RateCarryOver')] = (
+        MISSING
+    )
     rate_carry_over_option: Annotated[
         str | MISSING, Field(alias='RateCarryOverOption')
     ] = MISSING
@@ -5404,11 +5438,13 @@ class RateChangeDataType(BaseModel):
     rate_change_recur_type_enum_desc: Annotated[
         str | MISSING, Field(alias='RateChangeRecurTypeEnumDesc', max_length=80)
     ] = MISSING
-    rate_factor: Annotated[float | MISSING, Field(alias='RateFactor')] = MISSING
-    rate_factor_three: Annotated[float | MISSING, Field(alias='RateFactorThree')] = (
+    rate_factor: Annotated[Decimal | MISSING, Field(alias='RateFactor')] = MISSING
+    rate_factor_three: Annotated[Decimal | MISSING, Field(alias='RateFactorThree')] = (
         MISSING
     )
-    rate_factor_two: Annotated[float | MISSING, Field(alias='RateFactorTwo')] = MISSING
+    rate_factor_two: Annotated[Decimal | MISSING, Field(alias='RateFactorTwo')] = (
+        MISSING
+    )
     rate_pricing_method: Annotated[str | MISSING, Field(alias='RatePricingMethod')] = (
         MISSING
     )
@@ -5421,11 +5457,11 @@ class RateChangeDataType(BaseModel):
     rate_pricing_table_enum_desc: Annotated[
         str | MISSING, Field(alias='RatePricingTableEnumDesc', max_length=80)
     ] = MISSING
-    rate_variance: Annotated[float | MISSING, Field(alias='RateVariance')] = MISSING
+    rate_variance: Annotated[Decimal | MISSING, Field(alias='RateVariance')] = MISSING
     rate_variance_three: Annotated[
-        float | MISSING, Field(alias='RateVarianceThree')
+        Decimal | MISSING, Field(alias='RateVarianceThree')
     ] = MISSING
-    rate_variance_two: Annotated[float | MISSING, Field(alias='RateVarianceTwo')] = (
+    rate_variance_two: Annotated[Decimal | MISSING, Field(alias='RateVarianceTwo')] = (
         MISSING
     )
     recur_end_date: Annotated[date | MISSING, Field(alias='RecurEndDate')] = MISSING
@@ -5434,7 +5470,9 @@ class RateChangeDataType(BaseModel):
     review_plan_ident: Annotated[
         str | MISSING, Field(alias='ReviewPlanIdent', max_length=36)
     ] = MISSING
-    rounding_factor: Annotated[float | MISSING, Field(alias='RoundingFactor')] = MISSING
+    rounding_factor: Annotated[Decimal | MISSING, Field(alias='RoundingFactor')] = (
+        MISSING
+    )
     rounding_option: Annotated[
         RoundingOptionType | MISSING, Field(alias='RoundingOption')
     ] = MISSING
@@ -5610,7 +5648,7 @@ class AcctInfoType(BaseModel):
     doc_distribution_option_enum_desc: Annotated[
         str | MISSING, Field(alias='DocDistributionOptionEnumDesc', max_length=80)
     ] = MISSING
-    effective_rate: Annotated[float | MISSING, Field(alias='EffectiveRate')] = MISSING
+    effective_rate: Annotated[Decimal | MISSING, Field(alias='EffectiveRate')] = MISSING
     electronic_banking_opt: Annotated[
         str | MISSING, Field(alias='ElectronicBankingOpt')
     ] = MISSING
@@ -5763,7 +5801,7 @@ class AcctInfoType(BaseModel):
     promotional_rate: Annotated[
         PromotionalRateType | MISSING, Field(alias='PromotionalRate')
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     rate_change_data: Annotated[
         list[RateChangeDataType] | MISSING, Field(alias='RateChangeData')
     ] = MISSING
@@ -5823,7 +5861,7 @@ class AcctInfoType(BaseModel):
     sic_sub_code_enum_desc: Annotated[
         str | MISSING, Field(alias='SICSubCodeEnumDesc', max_length=80)
     ] = MISSING
-    stated_apr: Annotated[float | MISSING, Field(alias='StatedAPR')] = MISSING
+    stated_apr: Annotated[Decimal | MISSING, Field(alias='StatedAPR')] = MISSING
     sweep_bal_relationship_ind: Annotated[
         bool | MISSING, Field(alias='SweepBalRelationshipInd')
     ] = MISSING
@@ -6192,7 +6230,7 @@ class LoanAcctInfoType(AcctInfoType):
     loc_schedule: Annotated[
         list[LOCScheduleType] | MISSING, Field(alias='LOCSchedule')
     ] = MISSING
-    ltv_pct: Annotated[float | MISSING, Field(alias='LTVPct')] = MISSING
+    ltv_pct: Annotated[Decimal | MISSING, Field(alias='LTVPct')] = MISSING
     last_installment_dt: Annotated[date | MISSING, Field(alias='LastInstallmentDt')] = (
         MISSING
     )
@@ -6221,9 +6259,9 @@ class LoanAcctInfoType(AcctInfoType):
     loan_source: Annotated[str | MISSING, Field(alias='LoanSource', max_length=80)] = (
         MISSING
     )
-    min_finance_charge: Annotated[float | MISSING, Field(alias='MinFinanceCharge')] = (
-        MISSING
-    )
+    min_finance_charge: Annotated[
+        Decimal | MISSING, Field(alias='MinFinanceCharge')
+    ] = MISSING
     months_extended_count: Annotated[
         int | MISSING, Field(alias='MonthsExtendedCount')
     ] = MISSING
@@ -6344,7 +6382,7 @@ class LoanAcctInfoType(AcctInfoType):
     renewal_acct_id: Annotated[
         str | MISSING, Field(alias='RenewalAcctId', max_length=36)
     ] = MISSING
-    renewal_amount: Annotated[float | MISSING, Field(alias='RenewalAmount')] = MISSING
+    renewal_amount: Annotated[Decimal | MISSING, Field(alias='RenewalAmount')] = MISSING
     report_purpose_code: Annotated[
         str | MISSING, Field(alias='ReportPurposeCode', max_length=80)
     ] = MISSING
@@ -6374,7 +6412,7 @@ class LoanAcctInfoType(AcctInfoType):
     ] = MISSING
     sold_amt: Annotated[SoldAmtType | MISSING, Field(alias='SoldAmt')] = MISSING
     sold_loan_ind: Annotated[bool | MISSING, Field(alias='SoldLoanInd')] = MISSING
-    sold_percent: Annotated[float | MISSING, Field(alias='SoldPercent')] = MISSING
+    sold_percent: Annotated[Decimal | MISSING, Field(alias='SoldPercent')] = MISSING
     student_loan_data: Annotated[
         StudentLoanDataType | MISSING, Field(alias='StudentLoanData')
     ] = MISSING
@@ -6501,7 +6539,7 @@ class AcctCDARSDataType(BaseModel):
     contact_name: Annotated[
         str | MISSING, Field(alias='ContactName', max_length=40)
     ] = MISSING
-    effective_rate: Annotated[float | MISSING, Field(alias='EffectiveRate')] = MISSING
+    effective_rate: Annotated[Decimal | MISSING, Field(alias='EffectiveRate')] = MISSING
     in_house_acct_ref: Annotated[
         InHouseAcctRefType | MISSING, Field(alias='InHouseAcctRef')
     ] = MISSING
@@ -6515,7 +6553,7 @@ class AcctCDARSDataType(BaseModel):
     principal_disp_data: Annotated[
         PrincipalDispDataType | MISSING, Field(alias='PrincipalDispData')
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     retirement_plan_type: Annotated[
         str | MISSING, Field(alias='RetirementPlanType', max_length=80)
     ] = MISSING

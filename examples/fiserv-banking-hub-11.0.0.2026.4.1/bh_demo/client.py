@@ -19,7 +19,6 @@ from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
 import json
-import math
 from urllib.parse import urlsplit
 from uuid import uuid4
 
@@ -28,7 +27,7 @@ import httpx
 from pydantic import ValidationError
 
 from .contract import SUCCESS, ContractError, BankingHubContract
-from .vendor_api import present, reply, request_body
+from .vendor_api import dumps, present, reply, request_body
 
 ACCOUNT_TYPES = frozenset({"DDA", "SDA", "LOAN"})  # declared in the same release
 
@@ -61,11 +60,11 @@ def _money(node) -> Decimal:
         raise Unavailable("no_amount")
     if present(code.cur_code_value) != "USD":
         raise Unavailable("currency")
-    raw = present(node.amt)
-    if isinstance(raw, bool) or not isinstance(raw, (int, float)) or not math.isfinite(raw):
+    raw = present(node.amt)  # a Decimal: replies are parsed and modelled without floats
+    if isinstance(raw, bool) or not isinstance(raw, Decimal) or not raw.is_finite():
         raise Unavailable("no_amount")
     try:
-        return Decimal(str(raw)).quantize(Decimal("0.01"))
+        return raw.quantize(Decimal("0.01"))
     except InvalidOperation:
         raise Unavailable("no_amount") from None
 
@@ -123,7 +122,7 @@ class BankingHubClient:
             raise Unavailable("invalid_header") from None
         try:
             with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False) as http:
-                reply = http.post(self.base + self.contract.path(key), content=json.dumps(body),
+                reply = http.post(self.base + self.contract.path(key), content=dumps(body),
                                   headers={"EFXHeader": header, "Content-Type": "application/json"})
         except Exception:
             # A write may have reached the bank before the connection failed.
@@ -135,7 +134,7 @@ class BankingHubClient:
                 raise Unavailable("status_" + str(reply.status_code))
             raise UnknownOutcome("unexpected_status")
         try:
-            data = json.loads(reply.content, object_pairs_hook=_no_duplicate_keys)
+            data = json.loads(reply.content, object_pairs_hook=_no_duplicate_keys, parse_float=Decimal)
         except ValueError:
             raise (UnknownOutcome("invalid_reply") if write else Unavailable("invalid_response")) from None
         try:
@@ -208,12 +207,12 @@ class BankingHubClient:
         values. Fiserv's official Premier Add Transfer samples omit it, so this
         request omits it too, and carries no recurrence fields.
         """
-        if Decimal(repr(float(amount))) != amount:
-            return "refused"  # the wire number must be exactly the reviewed amount
+        if not amount.is_finite() or amount != amount.quantize(Decimal("0.01")):
+            return "refused"  # the reviewed amount, to the cent, and nothing else
         body = {"XferInfo": {
             "FromAcctRef": {"AcctKeys": {"AcctId": source_id, "AcctType": source_type}},
             "ToAcctRef": {"AcctKeys": {"AcctId": destination_id, "AcctType": destination_type}},
-            "CurAmt": {"Amt": float(amount), "CurCode": {"CurCodeType": "ISO4217-Alpha",
+            "CurAmt": {"Amt": amount, "CurCode": {"CurCodeType": "ISO4217-Alpha",
                                                           "CurCodeValue": "USD"}}}}
         try:
             body = request_body("xfer", body)

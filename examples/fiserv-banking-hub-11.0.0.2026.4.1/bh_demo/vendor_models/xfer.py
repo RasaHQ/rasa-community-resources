@@ -3,11 +3,13 @@
 # Source: Fiserv Bank_Sol_Org-XferService-11.0.0-resolved.yaml, sha256 ff1a683ae0bbc4ff755a9c9bc1896198a2695a6483c4552e805642c19085f0da
 # from esf-service-swagger-release-11.0.0.2026.4.1.zip, sha256 844bb52475f442da9b96a093c3443c4d9b6a47e7c9834c509f0cf92a117f2fd3
 # Interface facts only (names, types, required, nullable, limits, allowed values);
+# every number is a Decimal, so money and rates never pass through a float;
 # descriptions and examples are removed before generation.
 
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal
 from enum import IntEnum, StrEnum
 from typing import Annotated
 
@@ -627,7 +629,7 @@ class CurAmtType(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[CurCodeType | MISSING, Field(alias='CurCode')] = MISSING
 
 
@@ -1064,7 +1066,7 @@ class AcctInfoDtlType(BaseModel):
     maturity_dt: Annotated[date | MISSING, Field(alias='MaturityDt')] = MISSING
     name: Annotated[str | MISSING, Field(alias='Name', max_length=80)] = MISSING
     open_dt: Annotated[date | MISSING, Field(alias='OpenDt')] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
 
 
 class CompositeCurAmtType(BaseModel):
@@ -1163,7 +1165,7 @@ class XferInfoType(BaseModel):
     approval_person_enum_desc: Annotated[
         str | MISSING, Field(alias='ApprovalPersonEnumDesc', max_length=80)
     ] = MISSING
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     branch_ident: Annotated[
         str | MISSING, Field(alias='BranchIdent', max_length=22)
     ] = MISSING

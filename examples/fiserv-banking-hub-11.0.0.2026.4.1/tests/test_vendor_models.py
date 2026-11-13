@@ -7,7 +7,15 @@ import unittest
 from pydantic import ValidationError
 
 from bh_demo.recorded_exchanges import EXCHANGES
-from bh_demo.vendor_api import REPLY, REQUEST, present, reply, request_body
+from decimal import Decimal
+import json
+
+from bh_demo.vendor_api import REPLY, REQUEST, dumps, loads, plain, present, reply, request_body
+
+
+def exact(body):
+    """A recorded body as the client reads it from the wire: numbers as Decimal, never float."""
+    return json.loads(json.dumps(body), parse_float=Decimal)
 
 
 class RecordedTrafficRoundTrip(unittest.TestCase):
@@ -16,8 +24,9 @@ class RecordedTrafficRoundTrip(unittest.TestCase):
         for key, side, status, body in EXCHANGES:
             with self.subTest(key=key, side=side, status=status):
                 model = REQUEST[key] if side == "request" else REPLY[key]
-                again = model.model_validate(body).model_dump(mode="json", by_alias=True, exclude_unset=True)
-                self.assertEqual(again, body)
+                again = plain(model.model_validate(exact(body)))
+                self.assertEqual(again, exact(body))
+                self.assertEqual(loads(dumps(again)), exact(body))  # and back to the same JSON numbers
         self.assertEqual(len(EXCHANGES), 8)
 
     def test_every_operation_has_a_request_and_a_reply_model(self):
@@ -46,6 +55,53 @@ class MissingIsNotNull(unittest.TestCase):
         changed["AcctRec"].pop("LoanAcctInfo", None)
         record = reply("acct", changed).acct_rec
         self.assertIsNone(present(record.deposit_acct_info))
+
+
+class AmountPrecision(unittest.TestCase):
+    """Money is Decimal end to end: exact on both read paths and on the wire."""
+
+    def client_with(self, reply_text):
+        from bh_demo.client import BankingHubClient
+
+        class Replay(BankingHubClient):
+            def _post(self, key, body, *, write=False):
+                # As the real _post does: the raw reply text parsed without floats.
+                return json.loads(reply_text, parse_float=Decimal)
+        return Replay.__new__(Replay)
+
+    def recorded_reply(self, account_type):
+        for (key, side, _, body), (_, _, _, answer) in zip(EXCHANGES[::2], EXCHANGES[1::2]):
+            if key == "acct" and body["AcctSel"]["AcctKeys"]["AcctType"] == account_type:
+                return copy.deepcopy(answer)
+        raise AssertionError("no recorded " + account_type + " reply")
+
+    def with_amount(self, account_type, raw_number):
+        answer = self.recorded_reply(account_type)
+        holder = (answer["AcctRec"]["DepositAcctInfo"]["AcctBal"] if account_type == "DDA"
+                  else answer["AcctRec"]["LoanAcctInfo"]["NextPmt"]["PmtCompositeAmt"])
+        for entry in holder:
+            if entry.get("BalType") == "Avail" or entry.get("CompositeCurAmtType") == "Total":
+                entry["CurAmt"]["Amt"] = "@AMOUNT@"
+        # The amount goes into the reply text exactly as written, as a bank would send it.
+        return json.dumps(answer).replace('"@AMOUNT@"', raw_number), answer["AcctRec"]["AcctKeys"]["AcctId"]
+
+    def test_both_read_paths_show_each_amount_exactly(self):
+        for raw, shown in (("9007199254740993", "9007199254740993.00"), ("0.1", "0.10"), ("0.2", "0.20"),
+                           ("1250.07", "1250.07")):
+            with self.subTest(amount=raw):
+                text, account = self.with_amount("DDA", raw)
+                self.assertEqual(str(self.client_with(text).available_balance(account)), shown)
+                text, account = self.with_amount("LOAN", raw)
+                self.assertEqual(self.client_with(text).loan_payment(account)["amount"], shown)
+
+    def test_requests_carry_exact_numbers_on_the_wire(self):
+        body = request_body("xfer", {"XferInfo": {
+            "FromAcctRef": {"AcctKeys": {"AcctId": "1", "AcctType": "DDA"}},
+            "ToAcctRef": {"AcctKeys": {"AcctId": "2", "AcctType": "SDA"}},
+            "CurAmt": {"Amt": Decimal("0.30"), "CurCode": {"CurCodeType": "ISO4217-Alpha", "CurCodeValue": "USD"}}}})
+        self.assertIsInstance(body["XferInfo"]["CurAmt"]["Amt"], Decimal)
+        self.assertIn('"Amt":0.30', dumps(body))
+        self.assertEqual(dumps({"Amt": Decimal("9007199254740993")}), '{"Amt":9007199254740993}')
 
 
 @unittest.skipUnless(importlib.util.find_spec("datamodel_code_generator"),
