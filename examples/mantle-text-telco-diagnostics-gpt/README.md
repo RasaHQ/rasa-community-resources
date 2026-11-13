@@ -15,6 +15,8 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers letting an LLM agent send commands to customer devices
 Time:          15 minutes to run the agent; about 7 minutes and 1.20 USD for the live conversation suite
+Industry:      Telco
+You learn:     How to keep diagnostics, a reboot and a factory reset apart, so an outage never triggers a reset.
 ```
 
 A Rasa Mantle text agent for one casebook case,

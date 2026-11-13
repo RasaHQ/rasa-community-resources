@@ -15,6 +15,8 @@
     Installation: rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners whose agents hand callers to humans and whose callers then repeat themselves
     Time:          30–45 minutes
+    Industry:      General
+    You learn:     How to pass what the agent already knows to a human, so callers never repeat themselves.
 
 **A handoff is a state transfer, not a phone transfer.** The measure of a good
 one is that the human starts from what the agent already knew, and the caller is

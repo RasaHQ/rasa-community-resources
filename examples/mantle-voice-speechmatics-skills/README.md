@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners whose ASR provider is not one Rasa ships
 Time:          45–60 minutes
+Industry:      Banking
+You learn:     How to write a custom speech-to-text (ASR) engine for a provider that Rasa does not ship.
 ```
 
 The same banking agent as [`mantle-voice-rime-skills`](../mantle-voice-rime-skills),

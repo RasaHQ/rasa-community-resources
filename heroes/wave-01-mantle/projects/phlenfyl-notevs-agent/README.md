@@ -20,6 +20,8 @@ Verified with: rasa-pro 3.19.0.dev5, Python 3.10-3.13, uv
 Wave:          wave-01-mantle
 Audience:      Developers building tool-calling Mantle agents against a local service
 Time:          20–30 minutes (uv sync + first chat), plus ~12 minutes for ./retest.sh
+Industry:      IT
+You learn:     How a local Mantle agent works with your VS Code notes through tool calls.
 ```
 
 A local, Rasa Mantle-powered conversational agent for talking to your

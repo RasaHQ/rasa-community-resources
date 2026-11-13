@@ -14,6 +14,8 @@ Assessed by: not_provided — independent fresh-clone acceptance pending
 Verified with: Python 3.12, the committed registry locks; complete demo qualification pending
 Audience: Practitioners connecting Rasa Mantle to a managed specialist
 Time: Allow time for the first dependency download
+Industry: Travel
+You learn: How a Mantle agent shows a pre-flight briefing built from public sources beside the conversation.
 
 **Self-paced start:** [SELF-PACED-GUIDE.md](SELF-PACED-GUIDE.md) gives five checkpoints with expected behavior and failure cases.
 

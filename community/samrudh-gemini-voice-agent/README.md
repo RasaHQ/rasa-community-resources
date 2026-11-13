@@ -17,6 +17,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners who want a Mantle voice agent without an OpenAI key
 Time:          30–45 minutes
+Industry:      Travel
+You learn:     How to run a Mantle voice agent on Google Gemini with local embeddings and no OpenAI key.
 ```
 
 The [Atlas voice travel agent](../../examples/mantle-voice-agent) reconfigured

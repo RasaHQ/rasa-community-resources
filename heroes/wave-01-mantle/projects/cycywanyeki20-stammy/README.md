@@ -17,6 +17,8 @@ Assessed by:   Rasa Community maintainers (source integration only)
 Verified with: pending upstream validation
 Installation:  rasa-pro 3.20.0.dev6 (maintainer integration target)
 Wave:          wave-01-mantle
+Industry:      Healthcare
+You learn:     How a text demo offers speech practice prompts to children and caregivers without diagnosing.
 ```
 
 This contribution offers text-based speech practice prompts for children and

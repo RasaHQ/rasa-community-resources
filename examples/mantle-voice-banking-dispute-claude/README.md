@@ -15,6 +15,8 @@ Assessed by:   Claude Code (casebook case-build pilot; live runs recorded in cas
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM voice agent in front of card disputes
 Time:          15 minutes to run the agent; about 25 minutes and 1.92 USD for the live call suite
+Industry:      Banking
+You learn:     How to file a card dispute by voice without promising a refund before any review.
 ```
 
 A Rasa Mantle voice agent for one casebook case,

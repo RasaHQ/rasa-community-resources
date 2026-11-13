@@ -19,6 +19,8 @@ not authenticate a customer.
 **Verified with:** Rasa Pro 3.21.0.dev5, typesafe-sdk 0.7.4 and Python 3.12.13.
 The initial offline run passed 22 controls; the cold-archive control needs
 licensed training first. Jev responses were scripted through the actual SDK.
+**Industry:** General
+**You learn:** How to let a local model propose an account and have Rasa ask the user to confirm it.
 
 Run `make install`, `make demo` and `make test` here. `make worker` serves scripted
 SDK responses; `make worker-local` uses the separately running pinned Laya model; `make worker-live` requires `TYPESAFE_API_KEY` and sends paid Jev

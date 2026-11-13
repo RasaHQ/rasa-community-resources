@@ -4,6 +4,11 @@
 
 By the end you will have built a **traveler-facing Mantle agent** that calls public data services. You will also have used a different **Mantle factory agent** that takes a developer brief, asks permission to start an OpenAI hosted Agents API session and returns a candidate for another travel agent. You can inspect every tool call and run the resulting agent yourself.
 
+```text
+Industry:      General
+You learn:     How to build a traveler-facing Mantle agent and use a factory agent that builds another one.
+```
+
 **Join the Rasa Community:** [rasa.community/join](https://rasa.community/join/)
 
 **Printing for the room?** The one-page [printed setup sheet (PDF)](handout/rasa-travel-workshop-one-pager.pdf) walks a participant through steps A to D with a QR code for the Codespace.

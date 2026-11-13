@@ -18,6 +18,8 @@ conclusion is not treated as a verified source.
 **Assessed on:** 2026-10-11
 **Assessed by:** Native tool tests, project validation, licensed training and cold archive load
 **Verified with:** Rasa Pro 3.21.0.dev5, langchain-core 1.6.6; 25 distinct native controls across both projects; no model conversation or audio qualification
+**Industry:** General
+**You learn:** How to give an existing LangChain retriever a Rasa conversation that explains the sources it found.
 
 ## Run the example
 

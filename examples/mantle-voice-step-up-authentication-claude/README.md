@@ -15,6 +15,8 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting Claude behind a Rasa voice agent that changes someone's access
 Time:          15 minutes to run the agent; about 25 minutes and 2.55 USD for the live call suite
+Industry:      IT
+You learn:     How to change someone's access only after a fresh approval on their own registered phone.
 ```
 
 A Rasa Mantle voice agent for one casebook case,

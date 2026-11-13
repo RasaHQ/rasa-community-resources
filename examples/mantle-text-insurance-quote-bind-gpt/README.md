@@ -15,6 +15,8 @@ Assessed by:   Claude Code (casebook case builds, batch 1; live runs recorded in
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent between a quote screen and a binding service
 Time:          15 minutes to run the agent; about 10 minutes and 1.60 USD for the live conversation suite
+Industry:      Insurance
+You learn:     How to keep an estimate, an offer and a bound policy apart, with confirmation before binding.
 ```
 
 A Rasa Mantle text agent for one casebook case,

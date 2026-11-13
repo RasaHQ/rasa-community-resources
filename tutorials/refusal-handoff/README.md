@@ -14,6 +14,8 @@
 **Verified with:** rasa-pro 3.21.0.dev5, Python 3.12; current checks are offline
 **Audience:** Engineers writing and testing an agent's refusal branch
 **Time:** About 20 minutes for the offline exercise; allow extra time for model trials
+**Industry:** General
+**You learn:** How to check that an agent hands off to staff after a tool refuses, instead of finding a detour.
 
 A tool can refuse a task while the assistant keeps looking for another way to
 finish it. This example gives you a task that cannot succeed, a simulated staff

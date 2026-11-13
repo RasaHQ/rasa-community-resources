@@ -15,6 +15,8 @@ Assessed by:   Rod Rivera (automated checks listed in qualification-runtime.json
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, mcp 1.28.1  # rasa-version-ignore: historical assessment; current scope in qualification-runtime.json
 Audience:      Engineers connecting MCP tools to a Rasa agent
 Time:          About 30 minutes for the local exercise, excluding installation
+Industry:      General
+You learn:     How to check that a tool which needs confirmation does not run until the user agrees.
 ```
 
 Use this pattern to check what your agent does when a model requests a tool

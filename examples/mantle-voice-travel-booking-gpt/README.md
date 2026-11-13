@@ -13,6 +13,8 @@ Author:        Rasa Community
 Assessed on:   2026-10-04
 Assessed by:   Codex (tutorial source and publication-boundary review)
 Verified with: Python 3.12; uv.lock pins rasa-pro 3.21.0.dev5
+Industry:      Travel
+You learn:     How to change a booked flight together with its linked services, with confirmation, by voice.
 ```
 
 A browser voice tutorial for changing a selected flight together with its

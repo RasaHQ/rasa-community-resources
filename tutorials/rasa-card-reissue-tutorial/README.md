@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners whose agent can do something that cannot be undone
 Time:          45–60 minutes
+Industry:      General
+You learn:     How to guard an action that cannot be undone, such as posting a card to a new address.
 ```
 
 Ask a scaffolded banking agent to send a replacement card somewhere, and it

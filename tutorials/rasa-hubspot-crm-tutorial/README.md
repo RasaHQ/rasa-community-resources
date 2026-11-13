@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners wiring an agent to a system of record
 Time:          45–60 minutes, plus 20–30 for the MCP chapter
+Industry:      General
+You learn:     How to connect an agent to a CRM over REST and then MCP, and handle timeouts and outages.
 ```
 
 A support agent that looks a customer up in HubSpot, reads their open tickets,

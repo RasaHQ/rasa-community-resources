@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Anyone comparing agent frameworks, or porting a CALM v1 agent
 Time:          60–90 minutes
+Industry:      General
+You learn:     How LangGraph's customer-support bot looks when it is rebuilt as Rasa Mantle skills.
 ```
 
 The Swiss Airlines travel assistant from

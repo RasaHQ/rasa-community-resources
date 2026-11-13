@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice banking agents with Rasa Skills
 Time:          75–90 minutes
+Industry:      Banking
+You learn:     How a voice banking agent built with Rasa skills checks balances, sends money and blocks cards.
 ```
 
 Build a **voice** retail banking agent with the new Rasa **Skills / Mantle**

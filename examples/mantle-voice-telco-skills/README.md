@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice telecom care agents with Rasa Skills
 Time:          75–90 minutes
+Industry:      Telco
+You learn:     How a voice telecom agent troubleshoots slow internet, explains bills and resets routers.
 ```
 
 A production-style **voice telecom care agent** built with the new Rasa **Skills / Mantle** architecture and **Deepgram** for speech-to-text and text-to-speech.

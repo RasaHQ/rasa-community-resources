@@ -15,6 +15,8 @@ Assessed by:   Claude Code (casebook case-build pilot; live runs recorded in cas
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM voice agent in front of card servicing
 Time:          15 minutes to run the agent; about 20 minutes and 2.70 USD for the live call suite
+Industry:      Banking
+You learn:     How to block exactly the one card the caller names and confirms, not every card on the account.
 ```
 
 A Rasa Mantle voice agent for one casebook case,

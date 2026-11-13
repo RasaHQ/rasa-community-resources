@@ -15,6 +15,8 @@
     Installation: rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners building Mantle agents who want every conversation personalized
     Time:          15–20 minutes
+    Industry:      General
+    You learn:     How to greet every customer by name by looking up their profile once, at session start.
 
 Personalize **every** conversation — greet the customer by name and reuse their
 profile across all skills — by resolving identity once, at session start, into

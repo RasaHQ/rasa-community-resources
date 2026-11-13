@@ -15,6 +15,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      AI teams rehearsing evidence, authorization and recovery boundaries
 Time:          20–40 minutes per case; optional model integration takes longer
+Industry:      General
+You learn:     How to spot where a proposed action, its authorization and its service receipt disagree, offline.
 
 This project accompanies 62 fictional scenarios, each with six role exercises.
 It is a shared **synthetic evidence lab**. It does not implement a bank, clinic,

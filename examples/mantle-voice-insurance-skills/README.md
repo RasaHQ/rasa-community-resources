@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice insurance agents with Rasa Skills
 Time:          75–90 minutes
+Industry:      Insurance
+You learn:     How a voice insurance agent files claims, checks claim status and books inspections.
 ```
 
 A production-style **voice insurance agent** built with Rasa **Skills / Mantle** (`rasa.mantle`) and **Deepgram** for speech-to-text (Flux) and text-to-speech (Aura).

@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners running voice agents who cannot afford one vendor to be single points of failure
 Time:          30–45 minutes
+Industry:      General
+You learn:     How to switch to another speech vendor when one fails, so a voice call keeps going.
 ```
 
 Rasa picks **one** ASR and **one** TTS engine per call. If that vendor fails,

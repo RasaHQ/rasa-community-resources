@@ -16,6 +16,8 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice appointment agents with Rasa Skills
 Time:          60–75 minutes
+Industry:      Healthcare
+You learn:     How a voice assistant books clinic appointments, manages contacts and hands off to the clinic team.
 ```
 
 A production-style **voice appointment-booking agent** for a medical clinic, built with the new Rasa **Skills / Mantle** architecture and **Deepgram** for speech-to-text and text-to-speech.

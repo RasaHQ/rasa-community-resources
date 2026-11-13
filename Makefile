@@ -59,7 +59,7 @@ PRE      := $(shell $(LIST) --uv-prerelease-args 2>/dev/null)
 .DEFAULT_GOAL := help
 
 .PHONY: help check-uv list status outdated update migrate migrate-dry latest \
-        lint test-scripts validate ci validate-full catalog \
+        lint test-scripts validate ci validate-full catalog readme-catalog \
         lock-all install-all check-all test-all verify-all clean-all \
         snapshots check-snapshots \
         _require-projects
@@ -122,6 +122,7 @@ help: ## Show this help message
 	@echo '  $(GREEN)make lint$(RESET)              Static checks only ($(GREEN)--json$(RESET) via scripts/lint_repo.py)'
 	@echo '  $(GREEN)make test-scripts$(RESET)      Unit-test the tooling'
 	@echo '  $(GREEN)make catalog$(RESET)           Rebuild CATALOG.md and catalog/case-builds.json'
+	@echo '  $(GREEN)make readme-catalog$(RESET)    Rebuild the resource catalog in README.md'
 	@echo ''
 	@echo '$(YELLOW)▸ Two tiers (docs/SNAPSHOTS.md)$(RESET)'
 	@echo '  $(DIM)Maintained:$(RESET) examples/ tutorials/ patterns/ — one shared pin, migrated together'
@@ -221,6 +222,10 @@ SITE ?=
 catalog: ## Rebuild CATALOG.md and catalog/case-builds.json from the case builds
 	@$(PYTHON) $(SCRIPTS)/catalog_case_builds.py $(if $(SITE),--site $(SITE) --site-ref origin/main,)
 
+# The resource catalog in the root README. `make validate` fails when it is stale.
+readme-catalog: ## Rebuild the resource catalog in README.md from each resource's README
+	@$(PYTHON) $(SCRIPTS)/generate_readme_catalog.py
+
 test-voice-latency: ## Offline timing parser, privacy and bounded process controls
 	@$(PYTHON) -B -m unittest discover -s $(SCRIPTS)/tests -p 'test_voice_*.py'
 
@@ -235,6 +240,8 @@ validate: test-voice-latency ## Offline correctness gate (lint + unit tests + dr
 	@$(PYTHON) -m unittest discover -s scripts -p test_release_migration.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_compatibility_scope.py
 	@$(PYTHON) scripts/generate_codespaces.py --check
+	@$(PYTHON) -m unittest discover -s scripts -p test_readme_catalog.py
+	@$(PYTHON) scripts/generate_readme_catalog.py --check
 	@$(PYTHON) -m unittest discover -s scripts -p test_public_tutorial_delta.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_casebook_explanations.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_self_contained.py

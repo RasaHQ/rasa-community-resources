@@ -33,6 +33,8 @@ Verified with: Real OpenAPI validators and loopback mock built from the pinned r
 Installation:  rasa-pro 3.21.0.dev5, Python 3.12
 Audience:      Developers building banking voice assistants
 Time:          Not yet measured
+Industry:      Banking
+You learn:     How a voice assistant uses only the values a published banking API defines, and never guesses the rest.
 ```
 
 ## What you need
