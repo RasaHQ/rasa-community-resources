@@ -15,6 +15,7 @@ from uuid import uuid4
 import httpx
 
 from .contract import ContractError, PremierContract
+from .vendor_api import reply, request_body
 
 
 class Unavailable(Exception):
@@ -29,11 +30,11 @@ class UnknownOutcome(Exception):
     """A write was sent but no usable reply arrived. Never resend."""
 
 
-def _money(node) -> Decimal:
-    value = Decimal(str(node["Amt"]))
-    if node["CurCode"]["CurCodeValue"] != "USD":
+def _money(amount) -> Decimal:
+    """A CurAmt model: the amount in USD, to the cent."""
+    if amount is None or amount.cur_code is None or amount.cur_code.cur_code_value != "USD":
         raise Unavailable("currency")
-    return value.quantize(Decimal("0.01"))
+    return Decimal(str(amount.amt)).quantize(Decimal("0.01"))
 
 
 class PremierClient:
@@ -95,18 +96,20 @@ class PremierClient:
 
     def party_accounts(self, party_id: str) -> list[tuple[str, str]]:
         try:
-            data = self._post("party", {"PartyAcctRelSel": {"PartyKeys": {"PartyId": party_id}},
-                                        "RecCtrlIn": {"MaxRecLimit": 20}})
+            data = reply("party", self._post("party", request_body("party", {
+                "PartyAcctRelSel": {"PartyKeys": {"PartyId": party_id}}, "RecCtrlIn": {"MaxRecLimit": 20}})))
         except NoRecords:
             return []
-        return [(row["PartyAcctRelKeys"]["AcctKeys"]["AcctId"],
-                 row["PartyAcctRelKeys"]["AcctKeys"]["AcctType"]) for row in data["PartyAcctRelRec"]]
+        return [(row.party_acct_rel_keys.acct_keys.acct_id, row.party_acct_rel_keys.acct_keys.acct_type)
+                for row in data.party_acct_rel_rec]
 
     def available_balance(self, account_id: str) -> Decimal:
-        data = self._post("dda", {"AcctSel": {"AcctKeys": {"AcctId": account_id, "AcctType": "DDA"}}})
-        for entry in data["AcctRec"].get("DepositAcctInfo", {}).get("AcctBal", []):
-            if entry["BalType"] == "Avail":  # no ledger, current or memo fallback
-                return _money(entry["CurAmt"])
+        data = reply("dda", self._post("dda", request_body("dda", {
+            "AcctSel": {"AcctKeys": {"AcctId": account_id, "AcctType": "DDA"}}})))
+        deposit = data.acct_rec.deposit_acct_info
+        for entry in (deposit.acct_bal or []) if deposit else []:
+            if entry.bal_type == "Avail":  # no ledger, current or memo fallback
+                return _money(entry.cur_amt)
         raise Unavailable("no_available_balance")
 
     def transactions(self, account_id: str, cursor: str | None = None):
@@ -114,35 +117,38 @@ class PremierClient:
                                "TrnPostType": "ExcludeMemoPost"}}
         if cursor:
             body["RecCtrlIn"] = {"Cursor": cursor}
-        data = self._post("trn", body)
+        data = reply("trn", self._post("trn", request_body("trn", body)))
         rows = []
-        for record in data["AcctTrnRec"]:
-            info = record["AcctTrnInfo"]
-            if "PostedDt" not in info or "TrnAmt" not in info or "DrCrType" not in info:
+        for record in data.acct_trn_rec:
+            info = record.acct_trn_info
+            if info is None or info.posted_dt is None or info.trn_amt is None or info.dr_cr_type is None:
                 continue  # an absent field is unavailable, never guessed
-            rows.append({"date": info["PostedDt"][:10], "direction": info["DrCrType"].lower(),
-                         "amount": format(_money(info["TrnAmt"]), "f"), "currency": "USD"})
-        return rows, data["RecCtrlOut"].get("Cursor")
+            rows.append({"date": str(info.posted_dt)[:10], "direction": str(info.dr_cr_type).lower(),
+                         "amount": format(_money(info.trn_amt), "f"), "currency": "USD"})
+        return rows, data.rec_ctrl_out.cursor
 
-    def _loan(self, account_id: str) -> dict:
-        data = self._post("loan", {"AcctSel": {"AcctKeys": {"AcctId": account_id, "AcctType": "LOAN"}}})
-        return data["AcctRec"].get("LoanAcctInfo", {})
+    def _loan(self, account_id: str):
+        data = reply("loan", self._post("loan", request_body("loan", {
+            "AcctSel": {"AcctKeys": {"AcctId": account_id, "AcctType": "LOAN"}}})))
+        return data.acct_rec.loan_acct_info
 
     def loan_payment(self, account_id: str):
         """NextPmt Total and PmtDt only; never sum parts or use due/past-due."""
-        next_payment = self._loan(account_id).get("NextPmt", {})
-        total = [part for part in next_payment.get("PmtCompositeAmt", [])
-                 if part.get("CompositeCurAmtType") == "Total"]
-        if len(total) != 1 or "PmtDt" not in next_payment:
+        info = self._loan(account_id)
+        next_payment = info.next_pmt if info else None
+        total = [part for part in (next_payment.pmt_composite_amt or []) if part.composite_cur_amt_type == "Total"
+                 ] if next_payment else []
+        if len(total) != 1 or next_payment.pmt_dt is None:
             raise Unavailable("no_next_payment")
-        return {"due_date": next_payment["PmtDt"], "amount": format(_money(total[0]["CurAmt"]), "f"),
+        return {"due_date": str(next_payment.pmt_dt), "amount": format(_money(total[0].cur_amt), "f"),
                 "currency": "USD"}
 
     def current_payoff(self, account_id: str):
         """Current PayOffAmt only; a dated quote is a different operation."""
-        for entry in self._loan(account_id).get("AcctBal", []):
-            if entry["BalType"] == "PayOffAmt":
-                return {"amount": format(_money(entry["CurAmt"]), "f"), "currency": "USD"}
+        info = self._loan(account_id)
+        for entry in (info.acct_bal or []) if info else []:
+            if entry.bal_type == "PayOffAmt":
+                return {"amount": format(_money(entry.cur_amt), "f"), "currency": "USD"}
         raise Unavailable("no_payoff")
 
     def transfer(self, source_id: str, destination_id: str, amount: Decimal) -> str:
@@ -154,11 +160,19 @@ class PremierClient:
             "CurAmt": {"Amt": float(amount), "CurCode": {"CurCodeType": "ISO4217-Alpha",
                                                           "CurCodeValue": "USD"}}}}
         try:
+            body = request_body("xfer", body)
+        except ValueError:
+            return "refused"  # never sent: the body does not fit the model
+        try:
             data = self._post("xfer", body, write=True)
         except Unavailable:
             # For a write, Unavailable means the request was never sent (invalid
             # request or header) or the vendor answered 4xx: a clean refusal.
             return "refused"
-        if data["XferStatusRec"]["XferStatus"]["XferStatusCode"] != "Valid":
+        try:
+            status = reply("xfer", data).xfer_status_rec.xfer_status.xfer_status_code
+        except (ValueError, AttributeError):
+            raise UnknownOutcome("malformed_reply") from None  # sent; the effect is not known
+        if status != "Valid":
             raise UnknownOutcome("unrecognised_status")
         return "accepted"  # Valid is not proof of final posting

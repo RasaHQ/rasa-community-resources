@@ -1,4 +1,4 @@
-.PHONY: run test contract-test validate
+.PHONY: run test contract-test validate models models-check
 
 run:
 	uv run --locked python run_demo.py --port 5005
@@ -11,3 +11,9 @@ contract-test:
 
 validate:
 	uv run --locked python -c "from rasa.mantle.validation import validate_project; validate_project('.')"
+
+models:
+	uv run --locked --group models python make_models.py
+
+models-check:
+	uv run --locked --group models python make_models.py --check
