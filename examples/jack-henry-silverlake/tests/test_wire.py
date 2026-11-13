@@ -123,3 +123,63 @@ class LostReply(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class VendorVersions(unittest.TestCase):
+    """A newer Jack Henry archive starts the example only if everything it uses still fits."""
+
+    @classmethod
+    def setUpClass(cls):
+        load_contract()  # skips without the learner-supplied archive
+        from silverlake_demo.contract import default_path
+        cls.source = default_path()
+
+    def rebuilt(self, folder, member, old, new, every=False):
+        target = Path(folder) / ARCHIVE_NAME
+        with zipfile.ZipFile(self.source) as src, zipfile.ZipFile(target, "w") as out:
+            for info in src.infolist():
+                data = src.read(info)
+                if info.filename.endswith("/" + member):
+                    if old is None:
+                        data += new
+                    else:
+                        self.assertTrue(data.count(old) >= 1 if every else data.count(old) == 1)
+                        data = data.replace(old, new)
+                out.writestr(info, data)
+        return target
+
+    def contract_for(self, folder, path):
+        from silverlake_demo.contract import SilverLakeContract
+        return SilverLakeContract.from_path(path, Path(folder) / "cache")
+
+    def test_the_pinned_archive_is_not_newer_and_fits(self):
+        from silverlake_demo.compat import changed_operations
+        with tempfile.TemporaryDirectory() as folder:
+            contract = self.contract_for(folder, self.source)
+            self.assertFalse(contract.newer_archive)
+            self.assertEqual(changed_operations(contract), [])
+
+    def test_a_newer_archive_that_changes_nothing_used_still_fits(self):
+        from silverlake_demo.compat import changed_operations
+        with tempfile.TemporaryDirectory() as folder:
+            path = self.rebuilt(folder, "TPG_InquiryMaster.xsd", None, b"\n<!-- republished -->\n")
+            contract = self.contract_for(folder, path)
+            self.assertTrue(contract.newer_archive)
+            self.assertEqual(changed_operations(contract), [])
+
+    def test_a_change_to_anything_used_is_named(self):
+        from silverlake_demo.compat import changed_operations
+        from silverlake_demo.contract import VendorChanged
+        with tempfile.TemporaryDirectory() as folder:
+            # The available balance is gone from the inquiry replies that declared it.
+            path = self.rebuilt(folder, "TPG_InquiryMaster.xsd",
+                                b'<xsd:element minOccurs="0" name="AvlBal" nillable="true" type="AvlBal_Type" />', b"",
+                                every=True)
+            self.assertIn("AcctBalInq request or reply no longer fits the schemas",
+                          changed_operations(self.contract_for(folder, path)))
+        with tempfile.TemporaryDirectory() as folder:
+            path = self.rebuilt(folder, "TPG_Transaction.wsdl", b'soapAction="http://jackhenry.com/ws/XferAdd"',
+                                b'soapAction="http://jackhenry.com/ws/XferAddV2"')
+            with self.assertRaises(VendorChanged) as raised:
+                self.contract_for(folder, path)
+            self.assertIn("XferAdd SOAPAction changed or removed", raised.exception.changes)

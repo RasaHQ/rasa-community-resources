@@ -36,6 +36,12 @@ Time:          Not yet measured
 
 **Which version do I need?** This example targets the Premier-specific `11.0.0_PRM` definitions in `BankingHub_Premier_api_specs.zip`. The newer general Banking Hub release `11.0.0.2026.4.1` has different response structures and is not a replacement input for this folder. Use the API definitions required by your bank.
 
+## Vendor file versions
+
+This example was tested with the **Fiserv Banking Hub Premier 11.0.0_PRM specifications as downloaded 12 Nov 2026**. [VENDOR-FILES.md](VENDOR-FILES.md) lists the exact files and what the example checks if your download differs. [CHANGELOG.md](CHANGELOG.md) records what changed in each version and in the example.
+
+If the start-up says Fiserv changed something this example uses, it names it. Your download is newer than this example; please open an issue.
+
 ## What you will learn
 
 By running this example, you will see how to:
@@ -112,7 +118,7 @@ Do this in a browser on your own computer:
 
 An **API definition** describes the operations a service exposes and the structure of its requests and responses. This example uses Fiserv's definitions to build a mock and check its messages.
 
-The example expects a specific version of the ZIP, not simply any file with that name. Startup checks its contents using a **hash**, a fingerprint of the file. If Fiserv changes the download, a maintainer must review and pin the new version before this example can use it.
+The example was tested with one specific version of the ZIP (see [VENDOR-FILES.md](VENDOR-FILES.md)). Startup compares your download with it using a **hash**, a fingerprint of the file. If Fiserv has changed the download, the example still starts when nothing it uses changed, and says so; if something it uses changed, it stops and names it.
 
 **Checkpoint:** the original `BankingHub_Premier_api_specs.zip` is on your computer, ready to upload. If the portal no longer offers that file, ask the maintainers rather than substituting a different product's specifications.
 
@@ -158,7 +164,7 @@ make run
 Look for:
 
 ```text
-Vendor definitions: found and hash-verified
+Vendor definitions: found and checked
 ```
 
 Then find the line beginning:
@@ -252,7 +258,7 @@ Ctrl+C stops the application, not the Codespace. Stopping a Codespace ends its c
 | You cannot find the Premier ZIP on the Fiserv portal | Check that you are viewing Banking Hub's Premier specifications. If the download has changed, ask the maintainers. |
 | `make` cannot find the requested task | Check that you used this README's badge and that your terminal is in the example folder. |
 | `Not ready.` reports a missing vendor file | Check the exact filename and location: `vendor-inputs/BankingHub_Premier_api_specs.zip` inside this example. |
-| The ZIP fails hash verification | Keep the original download intact. A newly published archive needs maintainer review; renaming or repackaging it will not make its contents match. |
+| Startup says Fiserv changed something this example uses | Your download is newer than this example. Keep it intact and open an issue; renaming or repackaging it will not help. |
 | A secret is missing | Check its exact name, Codespaces settings, and repository access. Stop and restart the Codespace after adding or changing secrets. |
 | A provider reports authentication or quota errors | Check the key and available usage in that provider's dashboard. Do not print or share the key. |
 | The Inspector does not open | Confirm that `make run` is still running. Try the globe icon for port `5005` in the **Ports** tab. |
