@@ -19,12 +19,13 @@ What changed between versions is in [CHANGELOG.md](CHANGELOG.md).
 
 ## If you download a different archive
 
-At start, the example compares your archive and the five definitions with the hashes above. If they differ, it does not stop straight away. It checks the shape of exactly what it uses, as listed in `USED` in `premier_demo/contract.py`:
+At start, the example compares your archive and the five definitions with the hashes above. If they differ, it does not stop straight away. It checks its own recorded traffic against your definitions, using the same OpenAPI validators it uses while running. The traffic is in `premier_demo/recorded_exchanges.py`, all fictional data:
 
-- each of the five operations, at its address;
-- each request field it sends, with its type, format, allowed values and limits, and the required fields around it;
-- each field it reads from a successful reply, with the same details.
+- the `EFXHeader` and every request it sends to the five operations;
+- the reply it reads from each one.
 
-If none of that changed, it starts and prints: "Your Fiserv download differs from the one this example was tested with (…); everything this example uses is unchanged." If any of it changed, or a definition is missing, it stops and names it. Then this example needs an update: please open an issue.
+If your definitions still accept all of it, the example starts and prints: "Your Fiserv download differs from the one this example was tested with (…); everything this example uses is unchanged."
 
-This is a check of shape only. If Fiserv changed what a field means but kept its shape, the check cannot see it.
+If they do not, or a definition or operation is missing, it stops and names the operation and what the definitions no longer accept. If the check itself cannot run on your files, it stops with "Could not check". Then this example needs an update: please open an issue.
+
+The check is about the shape of the data. If Fiserv changed what a field means but kept its shape, the check cannot see it.

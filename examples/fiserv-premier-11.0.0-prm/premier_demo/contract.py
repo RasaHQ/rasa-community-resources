@@ -4,8 +4,10 @@
 The vendor ZIP is never bundled, fetched or relicensed here. The learner
 downloads it by hand; this module checks the whole archive hash, then reads
 only the five pinned members, with hard size limits, and builds request and
-response validators from those exact bytes. A changed upstream file needs
-reviewed new pins, never silent acceptance.
+response validators from those bytes. If the archive differs from the pinned
+one, it validates the example's own recorded traffic (recorded_exchanges.py)
+against the new files with those same validators: all valid, the example runs
+and says so; anything rejected, it stops and names the operation.
 """
 from __future__ import annotations
 
@@ -16,6 +18,8 @@ import re
 import zipfile
 
 import yaml
+from jsonschema import Draft4Validator
+from jsonschema.exceptions import best_match
 from openapi_schema_validator import OAS30ReadValidator, OAS30WriteValidator
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT4
@@ -48,40 +52,7 @@ MEMBERS = {
 }
 SUCCESS = {"party": "200", "dda": "200", "loan": "200", "trn": "200", "xfer": "201"}
 TESTED_WITH = "Fiserv Banking Hub Premier 11.0.0_PRM specifications as downloaded 12 Nov 2026"  # VENDOR-FILES.md
-# Everything this example sends to or reads from each pinned document. A path
-# segment "x[]" is the items of array x.
-USED = {
-    "party": {"sends": ("PartyAcctRelSel.PartyKeys.PartyId", "RecCtrlIn.MaxRecLimit"),
-              "reads": ("Status.Severity", "PartyAcctRelRec[].PartyAcctRelKeys.AcctKeys.AcctId",
-                        "PartyAcctRelRec[].PartyAcctRelKeys.AcctKeys.AcctType")},
-    "dda": {"sends": ("AcctSel.AcctKeys.AcctId", "AcctSel.AcctKeys.AcctType"),
-            "reads": ("AcctRec.DepositAcctInfo.AcctBal[].BalType", "AcctRec.DepositAcctInfo.AcctBal[].CurAmt.Amt",
-                      "AcctRec.DepositAcctInfo.AcctBal[].CurAmt.CurCode.CurCodeValue")},
-    "trn": {"sends": ("AcctTrnSel.AcctKeys.AcctId", "AcctTrnSel.AcctKeys.AcctType", "AcctTrnSel.TrnPostType",
-                      "RecCtrlIn.Cursor"),
-            "reads": ("AcctTrnRec[].AcctTrnInfo.PostedDt", "AcctTrnRec[].AcctTrnInfo.DrCrType",
-                      "AcctTrnRec[].AcctTrnInfo.TrnAmt.Amt", "AcctTrnRec[].AcctTrnInfo.TrnAmt.CurCode.CurCodeValue",
-                      "RecCtrlOut.Cursor")},
-    "loan": {"sends": ("AcctSel.AcctKeys.AcctId", "AcctSel.AcctKeys.AcctType"),
-             "reads": ("AcctRec.LoanAcctInfo.NextPmt.PmtDt",
-                       "AcctRec.LoanAcctInfo.NextPmt.PmtCompositeAmt[].CompositeCurAmtType",
-                       "AcctRec.LoanAcctInfo.NextPmt.PmtCompositeAmt[].CurAmt.Amt",
-                       "AcctRec.LoanAcctInfo.NextPmt.PmtCompositeAmt[].CurAmt.CurCode.CurCodeValue",
-                       "AcctRec.LoanAcctInfo.AcctBal[].BalType", "AcctRec.LoanAcctInfo.AcctBal[].CurAmt.Amt",
-                       "AcctRec.LoanAcctInfo.AcctBal[].CurAmt.CurCode.CurCodeValue")},
-    "xfer": {"sends": ("XferInfo.TransferType", "XferInfo.FromAcctRef.AcctKeys.AcctId",
-                       "XferInfo.FromAcctRef.AcctKeys.AcctType", "XferInfo.ToAcctRef.AcctKeys.AcctId",
-                       "XferInfo.ToAcctRef.AcctKeys.AcctType", "XferInfo.CurAmt.Amt",
-                       "XferInfo.CurAmt.CurCode.CurCodeType", "XferInfo.CurAmt.CurCode.CurCodeValue"),
-             "reads": ("XferStatusRec.XferStatus.XferStatusCode",)},
-}
-# sha256 of used_surface() for the pinned members. Each used field is recorded by
-# its whole schema (every validation keyword, refs inlined, allOf/oneOf/anyOf
-# kept; only documentation keys such as description and example are left out),
-# plus the operation, path, the required lists around sent fields and the own
-# rules of every container passed on the way to a used field. Any
-# difference stops start-up. It cannot see a change of meaning that keeps the shape.
-USED_SURFACE_SHA256 = "b4d6e005242c4b1d32fc9603481cb11b337a1516745391ff81577a3b50a10073"
+_MAX_HOPS = 64
 
 
 class ContractError(Exception):
@@ -93,7 +64,10 @@ class MissingContractInput(ContractError):
 
 
 class VendorChanged(ContractError):
-    """Something this example uses changed in the supplied Fiserv archive."""
+    """The supplied Fiserv archive no longer accepts this example's recorded traffic.
+
+    Each change names the operation and the validator's message, which may quote
+    a schema value from the vendor file (for example an allowed enum value)."""
 
     def __init__(self, changes):
         self.changes = tuple(changes)
@@ -178,175 +152,25 @@ def _pointer(document, reference):
     return value
 
 
-_MAX_HOPS = 64
-
-
-def _follow(node, document, stack):
-    """Follow local $refs with a cycle guard; returns (schema, references followed)."""
-    while isinstance(node, dict) and "$ref" in node:
-        reference = node["$ref"]
-        if reference in stack:
-            raise ContractError("schema_reference_cycle: " + str(reference))
-        if len(stack) >= _MAX_HOPS:
-            raise ContractError("schema_too_deep")
-        stack = stack + (reference,)
-        node = _pointer(document, reference)
-    return node, stack
-
-
-def _resolve(node, document, stack=()):
-    """A schema with $refs followed and allOf merged, to find properties and required lists."""
-    node, stack = _follow(node, document, stack)
-    if isinstance(node, dict) and "allOf" in node:
-        merged = {key: value for key, value in node.items() if key != "allOf"}
-        properties, required = dict(merged.get("properties", {})), list(merged.get("required", []))
-        for part in node["allOf"]:
-            part = _resolve(part, document, stack)
-            properties.update(part.get("properties", {}))
-            required += part.get("required", [])
-            for key in ("type", "nullable", "items"):
-                if key in part and key not in merged:
-                    merged[key] = part[key]
-        merged["properties"], merged["required"] = properties, sorted(set(required))
-        node = merged
-    return node if isinstance(node, dict) else {}
-
-
-# Keys that only document a schema; every other key counts as validation.
-_DOC_ONLY = frozenset({"description", "example", "examples", "title", "externalDocs", "deprecated", "xml"})
-
-
-def _canonical(node, document, stack=()):
-    """The whole schema of a used field: refs inlined, allOf/oneOf/anyOf kept, every
-    validation keyword included. Any difference in it counts as a change (fail closed)."""
-    if len(stack) > _MAX_HOPS:
-        raise ContractError("schema_too_deep")
-    if isinstance(node, dict):
-        if "$ref" in node:
-            target, deeper = _follow(node, document, stack)
-            return _canonical(target, document, deeper)
-        return {key: _canonical(value, document, stack) for key, value in sorted(node.items())
-                if key not in _DOC_ONLY and not str(key).startswith("x-")}
-    if isinstance(node, list):
-        return [_canonical(value, document, stack) for value in node]
-    return node
-
-
-def _describe(schema, document):
-    return _canonical(schema, document)
-
-
-_COMPOSITIONS = ("allOf", "oneOf", "anyOf")
-
-
-def _container(raw, document, stack=()):
-    """A container passed on the way to a used field, from its unmerged schema: every
-    rule except its children (properties, items, required lists) and documentation,
-    including the rules inside each allOf, oneOf and anyOf part. Sibling fields the
-    example does not use are left out; the container's own rules count."""
-    node, stack = _follow(raw, document, stack)
-    if not isinstance(node, dict):
-        return node
-    own = {}
-    for key, value in node.items():
-        if key in ("properties", "items", "required") or key in _DOC_ONLY or str(key).startswith("x-"):
-            continue
-        if key in _COMPOSITIONS and isinstance(value, list):
-            own[key] = [_container(part, document, stack) for part in value]
-        else:
-            own[key] = _canonical(value, document, stack)
-    return own
-
-
-def _walk(schema, path, document, required_trail, containers):
-    """The unresolved schema of the field at path. Records the required list of each
-    object passed (for sent fields) and every container's own rules (both directions)."""
-    node, raw = _resolve(schema, document), schema
-    for token in [t for t in path.split(".") if t]:
-        name, is_items = (token[:-2], True) if token.endswith("[]") else (token, False)
-        if name:
-            containers.append(_container(raw, document))
-            if required_trail is not None:
-                required_trail.append(sorted(node.get("required", [])))
-            properties = node.get("properties", {})
-            if name not in properties:
-                return None
-            raw = properties[name]
-            node = _resolve(raw, document)
-        if is_items:
-            containers.append(_container(raw, document))
-            if "items" not in node:
-                return None
-            raw = node["items"]
-            node = _resolve(raw, document)
-    return raw
-
-
-def used_surface(documents: dict) -> dict:
-    """Exactly what this example relies on, from the parsed pinned documents."""
-    surface = {}
-    for key, (_, _, operation_id, path) in MEMBERS.items():
-        document = documents.get(key)
-        post = (document or {}).get("paths", {}).get(path, {}).get("post")
-        if not isinstance(post, dict) or post.get("operationId") != operation_id:
-            surface[key] = "missing"
-            continue
-        entry = {"path": path, "operation": operation_id, "sends": {}, "required": [], "reads": {}, "containers": {}}
-        request = post.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema")
-        for field in USED[key]["sends"]:
-            trail, containers = [], []
-            node = _walk(request, field, document, trail, containers) if request is not None else None
-            entry["sends"][field] = _describe(node, document) if node is not None else "missing"
-            entry["required"].append(trail)
-            entry["containers"]["sends " + field] = containers
-        status = SUCCESS[key]
-        schema = post.get("responses", {}).get(status, {}).get("content", {}).get("application/json", {}).get("schema")
-        entry["reads"][status] = "present" if schema is not None else "missing"
-        for field in USED[key]["reads"]:
-            containers = []
-            node = _walk(schema, field, document, None, containers) if schema is not None else None
-            entry["reads"][field] = _describe(node, document) if node is not None else "missing"
-            entry["containers"]["reads " + field] = containers
-        surface[key] = entry
-    return surface
-
-
-def surface_digest(surface: dict) -> str:
-    return hashlib.sha256(json.dumps(surface, sort_keys=True).encode()).hexdigest()
-
-
-def _changes(expected: dict, actual: dict) -> list:
-    changes = []
-    for key in sorted(USED):
-        old, new = expected.get(key), actual.get(key)
-        if old == new:
-            continue
-        name = MEMBERS[key][2] + " (" + key + ")"
-        if not isinstance(new, dict):
-            changes.append(name + " is no longer in its document")
-            continue
-        for side in ("sends", "reads"):
-            for field in sorted(set(old.get(side, {})) | set(new.get(side, {}))):
-                if old.get(side, {}).get(field) != new.get(side, {}).get(field):
-                    changes.append(f"{name} {'request' if side == 'sends' else 'response'} field {field} changed")
-        if old.get("required") != new.get("required"):
-            changes.append(name + " now requires different request fields")
-        for field in sorted(set(old.get("containers", {})) | set(new.get("containers", {}))):
-            if old.get("containers", {}).get(field) != new.get("containers", {}).get(field):
-                side, path = field.split(" ", 1)
-                changes.append(f"{name} {'request' if side == 'sends' else 'response'} structure around {path} changed")
-    return changes or ["the operations this example uses changed"]
-
-
 def _check_local_references(node, root):
     if isinstance(node, dict):
         if "$ref" in node:
             ref = node["$ref"]
             if not isinstance(ref, str) or not ref.startswith("#/"):
                 raise ContractError("nonlocal_reference")
-            cursor = root
-            for part in ref[2:].split("/"):
-                cursor = cursor[part.replace("~1", "/").replace("~0", "~")]
+            # A chain of references that only point at further references, and comes
+            # back to itself, has no schema at its end: refuse it by name.
+            seen, target = [], node
+            while isinstance(target, dict) and "$ref" in target:
+                ref = target["$ref"]
+                if not isinstance(ref, str) or not ref.startswith("#/"):
+                    raise ContractError("nonlocal_reference")
+                if ref in seen or len(seen) > _MAX_HOPS:
+                    raise ContractError("schema_reference_cycle: " + str(node["$ref"]))
+                seen.append(ref)
+                target = root
+                for part in ref[2:].split("/"):
+                    target = target[part.replace("~1", "/").replace("~0", "~")]
         for child in node.values():
             _check_local_references(child, root)
     elif isinstance(node, list):
@@ -404,17 +228,66 @@ class PremierContract:
                 raise ContractError("missing_contract")
             drifted = tuple(key for key, (_, digest, _, _) in MEMBERS.items()
                             if hashlib.sha256(members[key]).hexdigest() != digest)
+            self._documents = {}
+            for key, raw in members.items():
+                try:
+                    self._documents[key] = _Document(key, raw)
+                except (KeyError, TypeError, ContractError) as error:
+                    _, _, operation, path = MEMBERS[key]
+                    moved = not isinstance(error, ContractError) or str(error) == "unsupported_operation"
+                    if key in drifted and moved:
+                        raise VendorChanged([f"{operation} ({key}) is no longer at {path}"]) from None
+                    raise
             if drifted:
-                surface = used_surface({key: yaml.safe_load(raw) for key, raw in members.items()})
-                if surface_digest(surface) != USED_SURFACE_SHA256:
-                    from .used_surface_expected import EXPECTED
-                    raise VendorChanged(_changes(EXPECTED, surface))
+                problems = self.exchange_problems()
+                if problems:
+                    raise VendorChanged(problems)
                 self.newer_files = drifted
-            self._documents = {key: _Document(key, raw) for key, raw in members.items()}
         except ContractError:
             raise
         except Exception:
             raise ContractError("invalid_contract") from None
+
+    def exchange_problems(self) -> list[str]:
+        """Validate every recorded exchange with this contract's runtime validators.
+
+        Returns one line per exchange the files no longer accept, naming the
+        operation and the validator's message. If the validators cannot run on
+        the files at all, raises ContractError("could_not_check").
+        """
+        from .recorded_exchanges import EXCHANGES
+        problems = []
+        try:
+            for key, side, status, body in EXCHANGES:
+                document = self._documents[key]
+                operation = MEMBERS[key][2]
+                if side == "header":
+                    errors = Draft4Validator(document.header_schema).iter_errors(json.loads(body))
+                    label = f"{operation} ({key}) EFXHeader"
+                    instance = json.loads(body)
+                elif side == "request":
+                    errors = document.request.iter_errors(body)
+                    label = f"{operation} ({key}) request"
+                    instance = body
+                else:
+                    label = f"{operation} ({key}) {status} response"
+                    validator = document.responses.get(str(status))
+                    if validator is None:
+                        problems.append(f"{label} is no longer declared")
+                        continue
+                    errors = validator.iter_errors(body)
+                    instance = body
+                error = best_match(errors)
+                if error is not None:
+                    where = "/".join(str(part) for part in error.absolute_path) or "the whole body"
+                    message = str(error.message)
+                    if message.startswith(repr(error.instance)):  # don't repeat the recorded body
+                        message = "the recorded value" + message[len(repr(error.instance)):]
+                    message = " ".join(message.split())
+                    problems.append(f"{label} is no longer valid at {where}: {message[:200]}")
+        except Exception:
+            raise ContractError("could_not_check") from None
+        return problems
 
     @classmethod
     def from_path(cls, path: Path | None = None) -> "PremierContract":
@@ -456,7 +329,6 @@ class PremierContract:
             header = json.loads(header_value)
             if not isinstance(header, dict):
                 raise ValueError()
-            from jsonschema import Draft4Validator
             Draft4Validator(document.header_schema).validate(header)
             return header
         except Exception:

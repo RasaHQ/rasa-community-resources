@@ -304,7 +304,7 @@ The journal lives in `var/private/`. It records a caller, opaque review ID, stat
 | `premier_demo/host.py` | Simulated identity, transfer review, confirmation, one send, and the durable journal |
 | `premier_demo/client.py` | The direct Banking Hub client for five operations |
 | `premier_demo/mock.py` | Fiserv's paths and message bodies with fictional data |
-| `premier_demo/contract.py` | ZIP verification and request/response checks built from Fiserv's files |
+| `premier_demo/contract.py`, `premier_demo/recorded_exchanges.py` | ZIP verification, request/response checks built from Fiserv's files, and the recorded traffic checked against a newer download |
 
 ### Supported banking operations
 

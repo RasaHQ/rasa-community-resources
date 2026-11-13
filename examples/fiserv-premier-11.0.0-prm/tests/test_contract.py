@@ -132,36 +132,25 @@ class VendorVersions(unittest.TestCase):
         pinned = PremierContract.from_path()
         self.assertEqual((pinned.newer_archive, pinned.newer_files), (False, ()))
 
-    def test_a_change_to_anything_used_stops_and_names_it(self):
-        from premier_demo.contract import VendorChanged
-
-        def xfer_status_type(document):
-            ok = self._post(document, "xfer")["responses"]["201"]["content"]["application/json"]["schema"]
-            body = self._resolve(document, ok)
-            rec = self._resolve(document, body["properties"]["XferStatusRec"])
-            status = self._resolve(document, rec["properties"]["XferStatus"])
-            self._resolve(document, status["properties"]["XferStatusCode"])["type"] = "integer"
-
-        def dda_new_required(document):
-            body = self._resolve(document, self._post(document, "dda")["requestBody"]["content"]["application/json"]["schema"])
-            body["required"] = sorted(set(body.get("required", [])) | {"NewRequiredField"})
-
-        cases = ((("xfer", xfer_status_type), None,
-                  "XferAddOper (xfer) response field XferStatusRec.XferStatus.XferStatusCode changed"),
-                 (("dda", dda_new_required), None, "getAccountsSecured (dda) now requires different request fields"),
-                 (None, "trn", "AcctTrnService-11.0.0_PRM-Inq_DDA.yaml is no longer in the archive"))
-        for edit, drop, expected in cases:
-            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as folder:
-                with self.assertRaises(VendorChanged) as raised:
-                    PremierContract.from_path(self.rebuilt(folder, edit_member=edit, drop=drop))
-                self.assertIn(expected, raised.exception.changes)
+    def test_the_recorded_exchanges_are_valid_on_the_pinned_archive_and_cover_every_document(self):
+        from premier_demo.contract import MEMBERS
+        from premier_demo.recorded_exchanges import EXCHANGES
+        self.assertEqual(PremierContract.from_path().exchange_problems(), [])
+        for side in ("header", "request", "response"):
+            self.assertEqual({key for key, kind, *_ in EXCHANGES if kind == side}, set(MEMBERS))
 
     def _acct_id_holder(self, document):
         """The properties object that holds AcctSel.AcctKeys.AcctId in the DDA request."""
-        node = self._resolve(document, self._post(document, "dda")["requestBody"]["content"]["application/json"]["schema"])
+        node = self._request_root(document, "dda")
         for name in ("AcctSel", "AcctKeys"):
             node = self._resolve(document, node["properties"][name])
         return node["properties"]
+
+    def _request_root(self, document, key):
+        return self._resolve(document, self._post(document, key)["requestBody"]["content"]["application/json"]["schema"])
+
+    def _reply_root(self, document, key, status="200"):
+        return self._resolve(document, self._post(document, key)["responses"][status]["content"]["application/json"]["schema"])
 
     def _edit_yaml(self, edit):
         import yaml
@@ -172,74 +161,104 @@ class VendorVersions(unittest.TestCase):
             return yaml.safe_dump(document).encode()
         return apply
 
-    def test_any_validation_keyword_on_a_used_field_counts_and_documentation_does_not(self):
+    def assert_stops(self, key, edit, prefix):
+        from premier_demo.contract import VendorChanged
+        with tempfile.TemporaryDirectory() as folder:
+            with self.assertRaises(VendorChanged) as raised:
+                PremierContract.from_path(self.rebuilt(folder, edit_member=(key, self._edit_yaml(edit))))
+        self.assertTrue(any(change.startswith(prefix) for change in raised.exception.changes),
+                        raised.exception.changes)
+
+    def assert_loads(self, key, edit):
+        with tempfile.TemporaryDirectory() as folder:
+            contract = PremierContract.from_path(self.rebuilt(folder, edit_member=(key, self._edit_yaml(edit))))
+        self.assertEqual(contract.newer_files, (key,))
+
+    def _xfer_status_code(self, document):
+        record = self._resolve(document, self._reply_root(document, "xfer", "201")["properties"]["XferStatusRec"])
+        status = self._resolve(document, record["properties"]["XferStatus"])
+        return self._resolve(document, status["properties"]["XferStatusCode"])
+
+    def test_a_change_the_recorded_traffic_no_longer_fits_stops_and_names_it(self):
         from premier_demo.contract import VendorChanged
 
-        def max_length(document):
+        def xfer_status_type(document):
+            self._xfer_status_code(document)["type"] = "integer"
+
+        def dda_new_required(document):
+            body = self._request_root(document, "dda")
+            body["required"] = sorted(set(body.get("required", [])) | {"NewRequiredField"})
+
+        def acct_id_max_length_in_all_of(document):
             holder = self._acct_id_holder(document)
             holder["AcctId"] = {"allOf": [holder["AcctId"]], "maxLength": 1}
 
-        def reworded(document):
-            holder = self._acct_id_holder(document)
-            target = self._resolve(document, holder["AcctId"])
-            target["description"] = "Reworded by the vendor."
-
-        with tempfile.TemporaryDirectory() as folder:
-            with self.assertRaises(VendorChanged) as raised:
-                PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(max_length))))
-            self.assertIn("getAccountsSecured (dda) request field AcctSel.AcctKeys.AcctId changed",
-                          raised.exception.changes)
-        with tempfile.TemporaryDirectory() as folder:
-            contract = PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(reworded))))
-            self.assertEqual(contract.newer_files, ("dda",))
-
-    def test_a_container_rule_on_the_way_to_a_used_field_counts_but_a_new_sibling_does_not(self):
-        from premier_demo.contract import VendorChanged
-
-        def balances(document):
-            body = self._resolve(document, self._post(document, "dda")["responses"]["200"]["content"]["application/json"]["schema"])
-            record = self._resolve(document, body["properties"]["AcctRec"])
+        def fewer_balances(document):
+            record = self._resolve(document, self._reply_root(document, "dda")["properties"]["AcctRec"])
             info = self._resolve(document, record["properties"]["DepositAcctInfo"])
-            return info
+            self._resolve(document, info["properties"]["AcctBal"])["maxItems"] = 0
 
-        def fewer_items(document):
-            info = balances(document)
-            self._resolve(document, info["properties"]["AcctBal"])["maxItems"] = 1
+        def operation_renamed(document):
+            self._post(document, "xfer")["operationId"] = "XferAddOperV2"
 
-        def new_sibling(document):
-            balances(document)["properties"]["NewOptionalField"] = {"type": "string"}
-
+        cases = (("xfer", xfer_status_type, "XferAddOper (xfer) 201 response is no longer valid at XferStatusRec/XferStatus/XferStatusCode"),
+                 ("dda", dda_new_required, "getAccountsSecured (dda) request is no longer valid at the whole body"),
+                 ("dda", acct_id_max_length_in_all_of, "getAccountsSecured (dda) request is no longer valid at AcctSel/AcctKeys/AcctId"),
+                 ("dda", fewer_balances, "getAccountsSecured (dda) 200 response is no longer valid at AcctRec/DepositAcctInfo/AcctBal"),
+                 ("xfer", operation_renamed, "XferAddOper (xfer) is no longer at /xferservice/payments/transfers"))
+        for key, edit, prefix in cases:
+            with self.subTest(edit=edit.__name__):
+                self.assert_stops(key, edit, prefix)
         with tempfile.TemporaryDirectory() as folder:
             with self.assertRaises(VendorChanged) as raised:
-                PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(fewer_items))))
-            self.assertIn("getAccountsSecured (dda) response structure around AcctRec.DepositAcctInfo.AcctBal[].BalType changed",
-                          raised.exception.changes)
-        with tempfile.TemporaryDirectory() as folder:
-            contract = PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(new_sibling))))
-            self.assertEqual(contract.newer_files, ("dda",))
+                PremierContract.from_path(self.rebuilt(folder, drop="trn"))
+            self.assertIn("AcctTrnService-11.0.0_PRM-Inq_DDA.yaml is no longer in the archive", raised.exception.changes)
 
-    def test_a_rule_on_the_request_root_or_a_nested_container_counts_even_inside_allof(self):
-        from premier_demo.contract import VendorChanged
+    def test_a_required_field_added_inside_oneof_or_anyof_branches_stops(self):
+        def one_of(document):
+            self._request_root(document, "dda")["oneOf"] = [{"required": ["NewRequiredField"]},
+                                                            {"required": ["OtherNewField"]}]
 
-        def request_root(document):
-            return self._resolve(document, self._post(document, "dda")["requestBody"]["content"]["application/json"]["schema"])
+        def any_of(document):
+            self._request_root(document, "xfer")["anyOf"] = [{"required": ["NewRequiredField"]},
+                                                             {"required": ["OtherNewField"]}]
+
+        self.assert_stops("dda", one_of, "getAccountsSecured (dda) request is no longer valid")
+        self.assert_stops("xfer", any_of, "XferAddOper (xfer) request is no longer valid")
+
+    def test_a_rule_on_the_request_root_or_a_nested_object_stops_even_inside_allof(self):
+        def root_direct(document):
+            self._request_root(document, "dda")["maxProperties"] = 0
 
         def root_composed(document):
-            request_root(document)["allOf"] = [{"maxProperties": 0}]  # original keys kept
+            self._request_root(document, "dda")["allOf"] = [{"maxProperties": 0}]  # original keys kept
 
         def nested_composed(document):
-            properties = request_root(document)["properties"]
+            properties = self._request_root(document, "dda")["properties"]
             properties["AcctSel"] = {"allOf": [properties["AcctSel"], {"maxProperties": 0}]}
 
-        def root_direct(document):
-            request_root(document)["maxProperties"] = 0
+        for edit, where in ((root_direct, "the whole body"), (root_composed, "the whole body"),
+                            (nested_composed, "AcctSel")):
+            with self.subTest(edit=edit.__name__):
+                self.assert_stops("dda", edit, "getAccountsSecured (dda) request is no longer valid at " + where)
 
-        for edit in (root_direct, root_composed, nested_composed):
-            with self.subTest(edit=edit.__name__), tempfile.TemporaryDirectory() as folder:
-                with self.assertRaises(VendorChanged) as raised:
-                    PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(edit))))
-                self.assertIn("getAccountsSecured (dda) request structure around AcctSel.AcctKeys.AcctId changed",
-                              raised.exception.changes)
+    def test_a_narrowed_enum_on_a_value_the_example_reads_stops(self):
+        def narrow(document):
+            code = self._xfer_status_code(document)
+            code["enum"] = [value for value in code.get("enum", []) if value != "Valid"] or ["Rejected"]
+
+        self.assert_stops("xfer", narrow, "XferAddOper (xfer) 201 response is no longer valid at XferStatusRec/XferStatus/XferStatusCode")
+
+    def test_documentation_changes_and_a_new_optional_field_still_load(self):
+        def reworded(document):
+            self._resolve(document, self._acct_id_holder(document)["AcctId"])["description"] = "Reworded by the vendor."
+
+        def new_sibling(document):
+            record = self._resolve(document, self._reply_root(document, "dda")["properties"]["AcctRec"])
+            self._resolve(document, record["properties"]["DepositAcctInfo"])["properties"]["NewOptionalField"] = {"type": "string"}
+
+        self.assert_loads("dda", reworded)
+        self.assert_loads("dda", new_sibling)
 
     def test_reference_cycles_are_refused_with_a_clear_reason_not_a_hang(self):
         def self_cycle(document):
@@ -256,10 +275,10 @@ class VendorVersions(unittest.TestCase):
                 with self.assertRaisesRegex(ContractError, "schema_reference_cycle"):
                     PremierContract.from_path(self.rebuilt(folder, edit_member=("dda", self._edit_yaml(edit))))
 
-    def test_the_recorded_surface_is_exactly_the_pinned_files(self):
-        import yaml
-        from premier_demo.contract import USED_SURFACE_SHA256, surface_digest, used_surface
-        from premier_demo.used_surface_expected import EXPECTED
-        surface = used_surface({key: yaml.safe_load(raw) for key, raw in load_members().items()})
-        self.assertEqual(surface, EXPECTED)
-        self.assertEqual(surface_digest(surface), USED_SURFACE_SHA256)
+    def test_a_validator_that_cannot_run_is_could_not_check_never_compatible(self):
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as folder:
+            archive = self.rebuilt(folder, edit_member=("loan", None))
+            with mock.patch("premier_demo.contract.best_match", side_effect=RuntimeError("validator broke")):
+                with self.assertRaisesRegex(ContractError, "could_not_check"):
+                    PremierContract.from_path(archive)

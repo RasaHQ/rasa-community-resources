@@ -58,7 +58,11 @@ def main(project):
         print("Not ready. Fiserv has changed something this example uses since the files it was tested with ("
               + TESTED_WITH + "): " + "; ".join(changed.changes) + '. See "Vendor file versions" in README.md.')
         return 2
-    except ContractError:
+    except ContractError as error:
+        if str(error) == "could_not_check":
+            print("Not ready. Could not check your Fiserv download against what this example sends and reads, "
+                  'so it will not start on it. See "Vendor file versions" in README.md.')
+            return 2
         print("Not ready. The file in vendor-inputs/ cannot be read the way this example expects. "
               'See "Vendor file versions" in README.md.')
         return 2
