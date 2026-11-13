@@ -76,11 +76,20 @@ WIP = "work in progress"
 BANK_KEYS_NOTE = ("The bank integrations need a Rasa license, an OpenAI key and a Deepgram key. "
                   "[rasa.community/keys](https://rasa.community/keys/) shows how to get each one.")
 
-# Catalog name rules. The shorthand terms are the rasa.community title checker's confusingTitleTerms.
+# The catalog-name check: this repository's own rules for the short names in the README catalog.
+# The shorthand terms are the same ones rasa.community's titles avoid.
 MAX_NAME = 60
 CONFUSING_TERMS = ("account boundary", "memory owner", "response owner")
 GENERIC_OPENINGS = ("a guide to", "guide to", "best practices", "introduction to", "an introduction to")
 LISTICLE_RE = re.compile(r"^\d+\s")
+# A catalog name says what the resource is, not what to do: a bare command verb in front fails.
+# "How to ..." passes, and so do questions and noun phrases.
+IMPERATIVE_LEADS = frozenset({
+    "add", "ask", "avoid", "build", "call", "catch", "check", "choose", "compare", "connect", "create",
+    "debug", "deploy", "design", "evaluate", "explain", "find", "fix", "get", "give", "guard", "handle",
+    "keep", "learn", "let", "make", "measure", "migrate", "move", "prevent", "protect", "read", "replace",
+    "route", "run", "scale", "see", "send", "set", "ship", "start", "stop", "swap", "teach", "try", "turn",
+    "understand", "use", "verify", "write"})
 MIN_NAME_WORDS = 3
 # At most this many names in one industry table may start with the same two words.
 MAX_SHARED_OPENING = 2
@@ -117,6 +126,9 @@ def check_catalog_name(name: str, others: list[str] | tuple[str, ...] = ()) -> l
     lowered = name.casefold()
     if len(name) > MAX_NAME:
         problems.append(f"is {len(name)} characters; keep it to {MAX_NAME} or fewer")
+    first = lowered.split(" ", 1)[0] if lowered else ""
+    if first in IMPERATIVE_LEADS:
+        problems.append(f"starts with the command '{name.split(' ', 1)[0]}'; name what the resource is instead")
     for term in CONFUSING_TERMS:
         if term in lowered:
             problems.append(f"uses the shorthand {term!r}; say plainly what the resource is")

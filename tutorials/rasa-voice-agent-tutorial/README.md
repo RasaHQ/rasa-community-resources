@@ -18,7 +18,7 @@ Audience:      Practitioners following the hosted voice agent tutorial
 Time:          60–90 minutes
 Industry:      General
 You learn:     How to build the Atlas voice travel agent step by step with Rasa skills and Deepgram.
-Catalog name:  Build the Atlas voice travel agent step by step
+Catalog name:  Atlas voice travel agent tutorial, step by step
 ```
 
 Flagship companion repository for the tutorial

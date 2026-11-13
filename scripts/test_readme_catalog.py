@@ -148,6 +148,15 @@ class CheckTests(unittest.TestCase):
         fields = c.read_fields("# T\n\n**Status:** work in progress\n")
         self.assertEqual(fields["Status"][0], "work in progress")
 
+    def test_a_name_may_not_lead_with_a_command(self):
+        problems = c.check_catalog_name("Build the Atlas voice travel agent step by step")
+        self.assertTrue(any("starts with the command 'Build'" in p for p in problems), problems)
+        self.assertEqual(c.check_catalog_name("Atlas voice travel agent tutorial, step by step"), [])
+        self.assertEqual(c.check_catalog_name("Guarding card reissue to a new address"), [])
+        self.assertEqual(c.check_catalog_name("How to build a voice travel agent"), [])
+        self.assertFalse(any("command" in p for p in c.check_catalog_name("Which voice vendor handles failover?")))
+        self.assertTrue(any("command" in p for p in c.check_catalog_name("Use Rime for voice banking")))
+
     def test_shared_openings_within_one_industry_are_limited(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
