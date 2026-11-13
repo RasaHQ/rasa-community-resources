@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reject vendor definition bytes tracked in the three direct banking examples.
+"""Reject vendor definition bytes tracked in the direct banking examples.
 
 Inspect index blobs rather than ignored files or local downloaded inputs. This
 is a source hygiene check; passing it does not qualify a vendor contract/mock.
@@ -25,6 +25,12 @@ BANNED_HASHES = frozenset({
     "f2ff471b945b938ae0173ba2174eeb9fbb30c678c3232f177566bb27143b5108",
     "559ce0113d96260ce4f7437c0dfd3a6ad49c0d976fc29abfdfaa31680dafbd22",
     "65404b27b99d12bedc5cddf5d714dc6117d2d4fb3896e7d18d3067e324f4f7a8",
+    # Fiserv Banking Hub release 11.0.0.2026.4.1: the archive and its four read members.
+    "844bb52475f442da9b96a093c3443c4d9b6a47e7c9834c509f0cf92a117f2fd3",
+    "75abe3ac04300b85e176e48acaccf6597380dfab22cda4c6d4005a318cacb8c2",
+    "3bcc50c8bb22e633c7cec484cd2d4216a677bbcb8d0759740d92fdce31b5e365",
+    "1eb4d5a8a98a2be84d47356716055cf3d0e49a376e4f78056aa5e9830366267f",
+    "ff1a683ae0bbc4ff755a9c9bc1896198a2695a6483c4552e805642c19085f0da",
 })
 SCHEMA_MARKERS = (
     rb'(?m)^\s*[\'\"]?(?:openapi|swagger)[\'\"]?\s*:',
@@ -44,7 +50,7 @@ def git(root: Path, *args: str) -> bytes:
 def in_scope(path: PurePosixPath) -> bool:
     return (len(path.parts) > 2 and path.parts[0] == "examples"
             and (path.parts[1].startswith("jack-henry-")
-                 or path.parts[1] == "fiserv-premier-11.0.0-prm"))
+                 or path.parts[1] in {"fiserv-premier-11.0.0-prm", "fiserv-banking-hub-11.0.0.2026.4.1"}))
 
 
 def findings(root: Path) -> list[tuple[str, str]]:

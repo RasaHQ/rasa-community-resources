@@ -19,9 +19,9 @@ class BankingScopeTests(unittest.TestCase):
         self.assertEqual(selected(self.root),[])
 
     def test_present_complete_examples_are_selected_and_old_names_ignored(self):
-        for name in ('jack-henry-symitar','jack-henry-silverlake','fiserv-premier-11.0.0-prm','jack-henry-banking','fiserv-banking'):
+        for name in ('jack-henry-symitar','jack-henry-silverlake','fiserv-premier-11.0.0-prm','fiserv-banking-hub-11.0.0.2026.4.1','jack-henry-banking','fiserv-banking'):
             self.complete(name)
-        self.assertEqual(selected(self.root),['jack-henry-symitar','jack-henry-silverlake','fiserv-premier-11.0.0-prm'])
+        self.assertEqual(selected(self.root),['jack-henry-symitar','jack-henry-silverlake','fiserv-premier-11.0.0-prm','fiserv-banking-hub-11.0.0.2026.4.1'])
 
     def test_partial_example_fails_instead_of_silently_skipping(self):
         (self.root/'examples/jack-henry-symitar').mkdir(parents=True)

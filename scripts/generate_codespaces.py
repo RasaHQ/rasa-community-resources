@@ -267,6 +267,12 @@ def manifest(project) -> dict:
         secrets['ANTHROPIC_API_KEY'] = False
         remote_env[LICENSE_ALIAS] = '${containerEnv:RASA_LICENSE}'
         provider_note = 'Groq is the default provider. OpenAI or Anthropic keys are only needed when you select that provider in the project setup.'
+    if project.rel == 'examples/fiserv-banking-hub-11.0.0.2026.4.1':
+        # The learner supplies the vendor release file by hand before the first run.
+        before_first = ("Download Fiserv's release ZIP and upload it to `vendor-inputs/` in this folder "
+                        "(README steps 1 and 3); without it `make run` stops with a plain message.")
+        see = ("`Vendor definitions: found and hash-verified`, then `Rasa server is up and running`; "
+               "only then open the printed Inspector link.")
     if snapshot and 'backend' in targets:
         forward = sorted(set(forward) | {int(n) for n in re.findall(
             r'--port\s+(\d{4,5})\b', recipe((project.path / 'Makefile').read_text(), 'backend'))})
