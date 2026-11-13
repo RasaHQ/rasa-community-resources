@@ -14,7 +14,7 @@ import time
 import tomllib
 from urllib.parse import urlencode
 
-from contract_inputs import ContractError,MissingContractInput,SymitarContract,load_inputs
+from contract_inputs import TESTED_WITH,ContractError,MissingContractInput,SymitarContract,VendorChanged,load_inputs
 from fixture_control import INSTANCE,current,reset
 from journal import Journal
 from local_transport import LocalTransport
@@ -118,10 +118,20 @@ def main():
         inputs=load_inputs();contract=SymitarContract(inputs)
     except MissingContractInput as error:
         print('Not ready. '+str(error));return 2
-    except ContractError:
-        print('Not ready. A vendor definition differs from its pinned bytes; preserve it and supply the exact official file.');return 2
+    except VendorChanged as error:
+        print('Not ready. Jack Henry has changed something this example uses since the files it was tested with ('
+              +TESTED_WITH+'): '+'; '.join(error.changes)+'. See "Vendor file versions" in README.md.');return 2
+    except ContractError as error:
+        if str(error)=='could_not_check':
+            print('Not ready. Could not check your Jack Henry files against what this example sends and reads, '
+                  'so it will not start on them. See "Vendor file versions" in README.md.');return 2
+        print('Not ready. The Jack Henry files in vendor-inputs/ cannot be read the way this example expects. '
+              'See "Vendor file versions" in README.md.');return 2
+    if contract.newer_files:
+        print('Your Jack Henry files differ from the ones this example was tested with ('+TESTED_WITH
+              +'); everything this example uses is unchanged.')
     if args.check_inputs:
-        print('All four manual vendor inputs match the pinned hashes and local references. No bank connection.');return 0
+        print('All four manual vendor inputs are readable and accept everything this example sends and reads. No bank connection.');return 0
     from dotenv import load_dotenv
     load_dotenv(ROOT/'.env',override=False)
     missing=[key for key in ('RASA_LICENSE','OPENAI_API_KEY','DEEPGRAM_API_KEY') if not os.environ.get(key,'').strip()]
