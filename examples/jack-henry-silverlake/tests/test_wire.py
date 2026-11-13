@@ -178,6 +178,15 @@ class VendorVersions(unittest.TestCase):
             self.assertIn("AcctBalInq request or reply no longer fits the schemas",
                           changed_operations(self.contract_for(folder, path)))
         with tempfile.TemporaryDirectory() as folder:
+            # XferAdd's request no longer accepts AcctIdTo: the client's transfer() returns
+            # "refused" without raising, which must still be named, never "unchanged".
+            path = self.rebuilt(folder, "TPG_TransactionMaster.xsd",
+                                b'<xsd:element minOccurs="0" name="AcctIdTo" nillable="true" type="AcctIdTo_CType" />',
+                                b'<xsd:element minOccurs="0" name="AcctIdDest" nillable="true" type="AcctIdTo_CType" />',
+                                every=True)
+            self.assertIn("XferAdd request or reply no longer fits the schemas",
+                          changed_operations(self.contract_for(folder, path)))
+        with tempfile.TemporaryDirectory() as folder:
             path = self.rebuilt(folder, "TPG_Transaction.wsdl", b'soapAction="http://jackhenry.com/ws/XferAdd"',
                                 b'soapAction="http://jackhenry.com/ws/XferAddV2"')
             with self.assertRaises(VendorChanged) as raised:

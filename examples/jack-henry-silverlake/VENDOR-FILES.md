@@ -19,7 +19,7 @@ What changed between versions is in [CHANGELOG.md](CHANGELOG.md).
 At start, the example compares your archive with the hashes above. If it differs, it does not stop straight away. It checks exactly what it uses:
 
 - the SOAPAction of each of its six operations in the WSDLs;
-- every request it sends and every reply it reads, for each of the six operations. It builds them with its own client and mock, in memory, and validates each element against the schemas in your archive.
+- every request it sends and every reply it reads, for each of the six operations. It builds them with its own client and mock, in memory, and validates each element against the schemas in your archive. Each of the six calls must also give exactly its known result on the example's fictional data, such as an accepted transfer and the expected balance. Anything else counts as a change.
 
 If all of that still fits, it starts and prints: "Your Jack Henry download differs from the one this example was tested with (…); everything this example uses is unchanged." If something no longer fits, it stops and names the operation. Then this example needs an update: please open an issue.
 
