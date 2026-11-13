@@ -21,6 +21,16 @@ def redact(text, env=None):
     return re.sub(r'(https?://)[^/\s:@]+:[^/\s@]+@', r'\1[REDACTED]@', text)
 
 
+TAIL_CHARS = 12000
+# Lines that name a failure, in order: a failed check, a validation count, or one validation problem.
+FAILURE_LINE = re.compile(r'\u2717|Project validation found \d+ problem|\[mantle\.validation\.|\bFAILED\b|##\[error\]')
+
+
+def failure_summary(text):
+    """Every line in the output that names a failure, however long the output is."""
+    return [line.rstrip() for line in text.splitlines() if FAILURE_LINE.search(line)]
+
+
 def write_json(path, data):
     path.write_text(json.dumps(data, indent=2) + '\n')
 
@@ -42,7 +52,12 @@ def execute(label, command, output, timeout=2400):
         code, text = 127, str(error)
     text = redact(text)
     path.write_text(text)
-    print(text[-12000:], flush=True)
+    summary = failure_summary(text)
+    if summary:
+        # The tail below can hide earlier failures in a long run; this lists every one.
+        print(f'Failure summary for {label} ({len(summary)} lines; full log: {path.name}):', flush=True)
+        print('\n'.join(summary), flush=True)
+    print(text[-TAIL_CHARS:], flush=True)
     return {'step': label, 'command': command, 'exitCode': code,
             'startedAt': started, 'log': path.name}
 
