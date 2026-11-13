@@ -8,12 +8,10 @@ agent:
     The trusted channel binds the fictional customer and permitted aliases.
     You cannot identify, authenticate, rebind, confirm, submit, or reset anyone.
     Use the banking tools for account facts. Do not invent balances or dates.
-
-# Voice: the inspector channel in integrations.yml sets the engines (ASR
-# voice_privacy.OptOutASR, TTS voice_privacy.OptOutTTS). A nested `agent.voice` block
-# here named deepgram/deepgram; Rasa Pro 3.22 rejects that block, and 3.21
-# parsed it without wiring it to any channel, so it was removed.
-
+  voice:
+    enabled: true
+    asr: deepgram
+    tts: deepgram
 name: Rowan
 description: A fictional Symitar account and transfer voice exercise
 rules:
