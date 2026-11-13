@@ -36,6 +36,12 @@ Time:          Not yet measured
 
 For the other Jack Henry API, see the separate [Symitar-in-Platform example](../jack-henry-symitar/). Its representational state transfer (REST) API uses different definitions from SilverLake's jXchange.
 
+## Vendor file versions
+
+This example was tested with the **Jack Henry jXchange TPG R2026.1.00 XSD archive as published 3 Nov 2026**. [VENDOR-FILES.md](VENDOR-FILES.md) lists the exact files and what the example checks if your download differs. [CHANGELOG.md](CHANGELOG.md) records what changed in each version and in the example.
+
+If the start-up says Jack Henry changed something this example uses, it names it. Your download is newer than this example; please open an issue.
+
 ## What you will learn
 
 By running this example, you will see how to:
@@ -137,7 +143,7 @@ make run
 The first start takes longer while the schemas load. Look for:
 
 ```text
-Vendor definitions: found and hash-verified
+Vendor definitions: found and checked
 ```
 
 Then find the line beginning:
@@ -308,7 +314,7 @@ No Jack Henry archive or extracted schema is included in this repository. You do
 - `var/` holds runtime data and is ignored by Git.
 - `var/private/journal/` holds the transfer journal. It records a caller, an opaque operation ID, and a state—never an amount, account, or transcript.
 
-The archive is **pinned**: the example expects one specific version and verifies its hash, a fingerprint of its contents. A different file causes startup to fail instead of silently changing the API definitions.
+The archive is **pinned**: the example records the exact version it was tested with and its hash, a fingerprint of its contents (see [VENDOR-FILES.md](VENDOR-FILES.md)). A different archive starts the example only if every request it sends and every reply it reads still fit the schemas; otherwise startup stops and names the operation.
 
 ## Run the checks
 

@@ -12,7 +12,7 @@ import tempfile
 import time
 from urllib.parse import urlencode
 
-from .contract import ContractError, MissingContractInput, SilverLakeContract
+from .contract import TESTED_WITH, ContractError, MissingContractInput, SilverLakeContract, VendorChanged
 
 EXPECTED_RASA = "3.21.0.dev5"
 SECRETS = ("RASA_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY")
@@ -49,14 +49,27 @@ def main(project):
     project = Path(project).resolve()
     # Step 1: the learner-supplied vendor definitions. Stop with a plain message.
     try:
-        SilverLakeContract.from_path()
+        contract = SilverLakeContract.from_path()
+        changed = []
+        if contract.newer_archive:
+            from .compat import changed_operations
+            changed = changed_operations(contract)
+        if changed:
+            raise VendorChanged(changed)
     except MissingContractInput as missing:
         print("Not ready. " + str(missing))
         return 2
-    except ContractError:
-        print("Not ready. The file in vendor-inputs/ is not the expected Jack Henry download. "
-              "Delete it and download it again from the official link in the README.")
+    except VendorChanged as error:
+        print("Not ready. Jack Henry has changed something this example uses since the files it was tested with ("
+              + TESTED_WITH + "): " + "; ".join(error.changes) + '. See "Vendor file versions" in README.md.')
         return 2
+    except ContractError:
+        print("Not ready. The file in vendor-inputs/ cannot be read the way this example expects. "
+              'See "Vendor file versions" in README.md.')
+        return 2
+    if contract.newer_archive:
+        print("Your Jack Henry download differs from the one this example was tested with (" + TESTED_WITH
+              + "); everything this example uses is unchanged.")
     from dotenv import load_dotenv
     load_dotenv(project / ".env", override=False)
     missing = [key for key in SECRETS if not os.environ.get(key, "").strip()]
@@ -127,7 +140,7 @@ def main(project):
                 integrations["channels"].pop("rest", None)
             write_yaml(integrations, run / "integrations.yml")
             (run / "agent.yml").write_bytes((project / "agent.yml").read_bytes())
-            print("Vendor definitions: found and hash-verified. Mode: local SOAP mock checked against them.")
+            print("Vendor definitions: found and checked. Mode: local SOAP mock checked against them.")
             print("This mock uses fictional data only. It proves the conversation, not SilverLake compatibility.")
             print("Identity: one private teaching host, a fixed simulated caller; not real bank sign-in.")
             print("Use only fictional speech. The speech provider receives audio; opt-out is not zero retention.")
