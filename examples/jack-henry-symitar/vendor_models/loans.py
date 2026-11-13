@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 class CalculateLoanPayoffQuoteRequest(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str
     loanId: str
@@ -23,7 +23,7 @@ class CalculateLoanPayoffQuoteRequest(BaseModel):
 
 class AccountDetails(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     amountPastDueByPayoffDate: str | None = None
     dueDate: str | None = None
@@ -37,7 +37,7 @@ class AccountDetails(BaseModel):
 
 class CalculateLoanPayoffQuoteResponse(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountDetails: AccountDetails | None = None
     disclaimerText: list[str] | None = None
@@ -50,16 +50,17 @@ class CalculateLoanPayoffQuoteResponse(BaseModel):
 
 class CalculateLoanPayoffQuoteResponse1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     data: dict[str, Any] | None = None
     details: list[str]
+    title: str
     type: str
 
 
 class SearchLoansRequest(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str
     loanId: str | None = None
@@ -67,7 +68,7 @@ class SearchLoansRequest(BaseModel):
 
 class Account(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountId: Annotated[
         str, Field(max_length=34, min_length=1, pattern='^[a-zA-Z0-9]+$')
@@ -85,9 +86,10 @@ class AccountStatus(StrEnum):
 
 class AccountWarning(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: Annotated[int, Field(ge=0, le=999)]
+    description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
     expirationDate: str | None = None
     inquiryRestriction: int
@@ -97,9 +99,10 @@ class AccountWarning(BaseModel):
 
 class LoanWarning(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: Annotated[int, Field(ge=0, le=999)]
+    description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
     expirationDate: str | None = None
     inquiryRestriction: int
@@ -109,14 +112,15 @@ class LoanWarning(BaseModel):
 
 class SecurityCode(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
+    description: str | None = None
 
 
 class User(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -142,7 +146,7 @@ class User(BaseModel):
 
 class Note(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -195,7 +199,7 @@ class RelationshipCode(StrEnum):
 
 class Relationship(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     memberName: str
     memberRecordNumber: str | None = None
@@ -204,7 +208,7 @@ class Relationship(BaseModel):
 
 class SearchLoansResponseItem(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     account: Account
     accountNumber: str | None = None
@@ -229,6 +233,7 @@ class SearchLoansResponseItem(BaseModel):
     creditLimit: str | None = None
     creditReportLastStatus: str | None = None
     creditReportingCode: str | None = None
+    description: str | None = None
     dueDate: str | None = None
     intUnpaidBilled: str | None = None
     interestLastYear: str | None = None
@@ -275,8 +280,9 @@ class SearchLoansResponse(RootModel[list[SearchLoansResponseItem]]):
 
 class SearchLoansResponse1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     data: dict[str, Any] | None = None
     details: list[str]
+    title: str
     type: str

@@ -28,6 +28,41 @@ class RecordedTrafficRoundTrip(unittest.TestCase):
                 checked += 1
         self.assertEqual(checked, 13)
 
+    def test_no_recorded_field_is_left_undeclared_by_its_model(self):
+        # extra="allow" would otherwise hide a field the generator dropped.
+        from pydantic import BaseModel, RootModel
+
+        def undeclared(value, where):
+            if isinstance(value, RootModel):
+                return undeclared(value.root, where)
+            if isinstance(value, BaseModel):
+                found = [f"{where}.{key}" for key in (value.model_extra or {})]
+                for name in type(value).model_fields:
+                    found += undeclared(getattr(value, name), f"{where}.{name}")
+                return found
+            if isinstance(value, list):
+                return [item for index, entry in enumerate(value) for item in undeclared(entry, f"{where}[{index}]")]
+            return []
+
+        for operation, side, status, media, body in EXCHANGES:
+            if body is None:
+                continue
+            model = REQUEST[operation] if side == "request" else REPLY[operation] if status == 200 else PROBLEM[operation]
+            with self.subTest(operation=operation, side=side, status=status):
+                self.assertEqual(undeclared(model.model_validate(body), operation), [])
+
+    def test_a_field_named_description_is_part_of_the_model(self):
+        from vendor_models.transactions import Transaction
+        self.assertIn("description", Transaction.model_fields)
+
+    def test_a_reply_without_an_optional_field_is_read_safely(self):
+        from vendor_models.transactions import Transaction
+        recorded = next(body for operation, side, status, media, body in EXCHANGES
+                        if operation == "searchAccountTransactions" and side == "response")
+        row = dict(recorded["transactions"][0])
+        row.pop("description")
+        self.assertIsNone(Transaction.model_validate(row).description)
+
     def test_every_operation_has_a_request_and_a_reply_model(self):
         operations = {operation for operation, *_ in EXCHANGES}
         self.assertEqual(set(REQUEST), operations)

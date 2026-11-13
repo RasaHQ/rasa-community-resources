@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict
 
 class Donor(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str
     loanId: str | None = None
@@ -23,7 +23,7 @@ class Donor(BaseModel):
 
 class Donor1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str
     loanId: str
@@ -32,7 +32,7 @@ class Donor1(BaseModel):
 
 class Recipient(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str
     loanId: str | None = None
@@ -41,7 +41,7 @@ class Recipient(BaseModel):
 
 class Recipient1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str
     loanId: str
@@ -50,9 +50,10 @@ class Recipient1(BaseModel):
 
 class PostTransferRequest(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     amount: str
+    description: str | None = None
     donor: Donor | Donor1
     recipient: Recipient | Recipient1
 
@@ -63,7 +64,7 @@ class Status(StrEnum):
 
 class PostTransferResponse(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     confirmationNumber: str | None = None
     receiptId: str | None = None
@@ -72,8 +73,9 @@ class PostTransferResponse(BaseModel):
 
 class PostTransferResponse1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     data: dict[str, Any] | None = None
     details: list[str]
+    title: str
     type: str

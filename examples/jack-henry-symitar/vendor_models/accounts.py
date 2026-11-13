@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class FindAccountByRequest(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str | None = None
     activeCardNumber: Annotated[str | None, Field(max_length=30)] = None
@@ -30,7 +30,7 @@ class FindAccountByRequest(BaseModel):
 
 class AccessItem(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accessType: str | None = None
     accountNumber: str | None = None
@@ -48,9 +48,10 @@ class AccessItem(BaseModel):
 
 class AccountWarning(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: Annotated[int, Field(ge=0, le=999)]
+    description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
     expirationDate: str | None = None
     inquiryRestriction: int
@@ -60,9 +61,10 @@ class AccountWarning(BaseModel):
 
 class CardWarning(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: Annotated[int, Field(ge=0, le=999)]
+    description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
     expirationDate: str | None = None
     inquiryRestriction: int
@@ -72,7 +74,7 @@ class CardWarning(BaseModel):
 
 class Name(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     extendedName: str | None = None
     first: str | None = None
@@ -84,19 +86,21 @@ class Name(BaseModel):
     shortName: str | None = None
     subType: str | None = None
     suffix: str | None = None
+    title: str | None = None
     type: str | None = None
 
 
 class SecurityCode(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
+    description: str | None = None
 
 
 class User(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -122,7 +126,7 @@ class User(BaseModel):
 
 class Note(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -140,7 +144,7 @@ class Note(BaseModel):
 
 class Card(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     access: list[AccessItem] | None = None
     accountNumber: str | None = None
@@ -175,6 +179,7 @@ class Card(BaseModel):
     depCountLimit: str | None = None
     depLimit: str | None = None
     depMax: str | None = None
+    description: str | None = None
     digitalIssueExcept: str | None = None
     digitalIssueStatus: str | None = None
     effectiveDate: str | None = None
@@ -236,7 +241,7 @@ class Card(BaseModel):
 
 class Account(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountId: Annotated[
         str, Field(max_length=34, min_length=1, pattern='^[a-zA-Z0-9]+$')
@@ -254,9 +259,10 @@ class AccountStatus(StrEnum):
 
 class LoanWarning(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: Annotated[int, Field(ge=0, le=999)]
+    description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
     expirationDate: str | None = None
     inquiryRestriction: int
@@ -266,7 +272,7 @@ class LoanWarning(BaseModel):
 
 class User1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -292,7 +298,7 @@ class User1(BaseModel):
 
 class Note1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -345,7 +351,7 @@ class RelationshipCode(StrEnum):
 
 class Relationship(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     memberName: str
     memberRecordNumber: str | None = None
@@ -354,7 +360,7 @@ class Relationship(BaseModel):
 
 class Loan(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     account: Account
     accountNumber: str | None = None
@@ -379,6 +385,7 @@ class Loan(BaseModel):
     creditLimit: str | None = None
     creditReportLastStatus: str | None = None
     creditReportingCode: str | None = None
+    description: str | None = None
     dueDate: str | None = None
     intUnpaidBilled: str | None = None
     interestLastYear: str | None = None
@@ -421,7 +428,7 @@ class Loan(BaseModel):
 
 class IdentDocFlag(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     entryId: int | None = None
     flag: int | None = None
@@ -429,7 +436,7 @@ class IdentDocFlag(BaseModel):
 
 class IdentIdType(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     entryId: int | None = None
     type: int | None = None
@@ -437,7 +444,7 @@ class IdentIdType(BaseModel):
 
 class Member(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeDuty: str | None = None
     addressType: str | None = None
@@ -495,6 +502,7 @@ class Member(BaseModel):
     subType: str | None = None
     substantialOwner: str | None = None
     suffix: str | None = None
+    title: str | None = None
     type: str | None = None
     usPersonFlag: str | None = None
     userAmount1: str | None = None
@@ -503,7 +511,7 @@ class Member(BaseModel):
 
 class User2(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -529,7 +537,7 @@ class User2(BaseModel):
 
 class Note2(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -547,7 +555,7 @@ class Note2(BaseModel):
 
 class Preference(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     access: list[AccessItem] | None = None
     accountNumber: str | None = None
@@ -571,7 +579,7 @@ class Preference(BaseModel):
 
 class AccountByMicr(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountId: Annotated[
         str, Field(max_length=34, min_length=1, pattern='^[a-zA-Z0-9]+$')
@@ -584,7 +592,7 @@ class AccountByMicr(BaseModel):
 
 class User3(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -610,7 +618,7 @@ class User3(BaseModel):
 
 class Note3(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -628,7 +636,7 @@ class Note3(BaseModel):
 
 class Relationship1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     memberName: str
     memberRecordNumber: str | None = None
@@ -637,9 +645,10 @@ class Relationship1(BaseModel):
 
 class ShareWarning(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: Annotated[int, Field(ge=0, le=999)]
+    description: str
     entryId: Annotated[int, Field(ge=0, le=19)]
     expirationDate: str | None = None
     inquiryRestriction: int
@@ -649,7 +658,7 @@ class ShareWarning(BaseModel):
 
 class Share(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     account: Account
     accountByMicr: AccountByMicr | None = None
@@ -698,6 +707,7 @@ class Share(BaseModel):
     cuTotalsUseCode: str | None = None
     currDivPayable: str | None = None
     currMonthPaidDiv: str | None = None
+    description: str | None = None
     divAccrual: str | None = None
     divAccrualDate: str | None = None
     divDisbUpdtActvtyD: str | None = None
@@ -825,7 +835,7 @@ class Share(BaseModel):
 
 class FindAccountByResponse(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     cards: list[Card]
     loans: list[Loan]
@@ -837,16 +847,17 @@ class FindAccountByResponse(BaseModel):
 
 class FindAccountByResponse1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     data: dict[str, Any] | None = None
     details: list[str]
+    title: str
     type: str
 
 
 class FindAccountByWithBalancesRequest(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str | None = None
     activeCardNumber: Annotated[str | None, Field(max_length=30)] = None
@@ -862,7 +873,7 @@ class FindAccountByWithBalancesRequest(BaseModel):
 
 class User4(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -888,7 +899,7 @@ class User4(BaseModel):
 
 class Note4(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -906,7 +917,7 @@ class Note4(BaseModel):
 
 class Card1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     access: list[AccessItem] | None = None
     accountNumber: str | None = None
@@ -941,6 +952,7 @@ class Card1(BaseModel):
     depCountLimit: str | None = None
     depLimit: str | None = None
     depMax: str | None = None
+    description: str | None = None
     digitalIssueExcept: str | None = None
     digitalIssueStatus: str | None = None
     effectiveDate: str | None = None
@@ -1002,7 +1014,7 @@ class Card1(BaseModel):
 
 class User5(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -1028,7 +1040,7 @@ class User5(BaseModel):
 
 class Note5(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -1046,7 +1058,7 @@ class Note5(BaseModel):
 
 class Relationship2(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     memberName: str
     memberRecordNumber: str | None = None
@@ -1055,7 +1067,7 @@ class Relationship2(BaseModel):
 
 class Loan1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     account: Account
     accountNumber: str | None = None
@@ -1080,6 +1092,7 @@ class Loan1(BaseModel):
     creditLimit: str | None = None
     creditReportLastStatus: str | None = None
     creditReportingCode: str | None = None
+    description: str | None = None
     dueDate: str | None = None
     intUnpaidBilled: str | None = None
     interestLastYear: str | None = None
@@ -1122,7 +1135,7 @@ class Loan1(BaseModel):
 
 class Member1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeDuty: str | None = None
     addressType: str | None = None
@@ -1180,6 +1193,7 @@ class Member1(BaseModel):
     subType: str | None = None
     substantialOwner: str | None = None
     suffix: str | None = None
+    title: str | None = None
     type: str | None = None
     usPersonFlag: str | None = None
     userAmount1: str | None = None
@@ -1188,7 +1202,7 @@ class Member1(BaseModel):
 
 class User6(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -1214,7 +1228,7 @@ class User6(BaseModel):
 
 class Note6(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -1232,7 +1246,7 @@ class Note6(BaseModel):
 
 class Preference1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     access: list[AccessItem] | None = None
     accountNumber: str | None = None
@@ -1256,7 +1270,7 @@ class Preference1(BaseModel):
 
 class User7(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     activeMode: int | None = None
     assignedBranch: int | None = None
@@ -1282,7 +1296,7 @@ class User7(BaseModel):
 
 class Note7(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     code: int | None = None
     enterDate: str | None = None
@@ -1300,7 +1314,7 @@ class Note7(BaseModel):
 
 class Relationship3(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     memberName: str
     memberRecordNumber: str | None = None
@@ -1309,7 +1323,7 @@ class Relationship3(BaseModel):
 
 class Share1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     account: Account
     accountByMicr: AccountByMicr | None = None
@@ -1358,6 +1372,7 @@ class Share1(BaseModel):
     cuTotalsUseCode: str | None = None
     currDivPayable: str | None = None
     currMonthPaidDiv: str | None = None
+    description: str | None = None
     divAccrual: str | None = None
     divAccrualDate: str | None = None
     divDisbUpdtActvtyD: str | None = None
@@ -1485,7 +1500,7 @@ class Share1(BaseModel):
 
 class FindAccountByWithBalancesResponse(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     cards: list[Card1]
     loans: list[Loan1]
@@ -1497,8 +1512,9 @@ class FindAccountByWithBalancesResponse(BaseModel):
 
 class FindAccountByWithBalancesResponse1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     data: dict[str, Any] | None = None
     details: list[str]
+    title: str
     type: str

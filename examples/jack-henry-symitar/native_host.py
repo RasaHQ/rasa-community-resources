@@ -188,15 +188,16 @@ class Gateway:
     def _dispatch(self, binding, permit):
         # HostPolicy rechecked authority, exact review and immediately next raw
         # user turn. There is no model-supplied confirmation or session field.
-        try:
-            self.journal.reserve(self.principal, permit.operation_id, self.journal.epoch)
-        except JournalRefused:
-            return {'state':'refused','reason':'unresolved_or_unavailable_journal'}
         intent = permit.intent
+        # Built (and checked) before anything is reserved, so a bad body leaves no reserved operation.
         body = request_body('postTransfer',
             donor={'accountNumber':self.fixture['account_number'],'shareId':self.shares[intent.source]},
             recipient={'accountNumber':self.fixture['account_number'],'shareId':self.shares[intent.destination]},
             amount=format(Decimal(intent.amount),'.2f'))
+        try:
+            self.journal.reserve(self.principal, permit.operation_id, self.journal.epoch)
+        except JournalRefused:
+            return {'state':'refused','reason':'unresolved_or_unavailable_journal'}
         outcome = 'unknown'
         try:
             result = asyncio.run(self.client.call('postTransfer',body))

@@ -15,7 +15,7 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, RootModel
 
 class SearchAccountTransactionsRequest1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str
     count: int | None = None
@@ -29,7 +29,7 @@ class SearchAccountTransactionsRequest1(BaseModel):
 
 class SearchAccountTransactionsRequest2(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     accountNumber: str
     count: int | None = None
@@ -49,7 +49,7 @@ class SearchAccountTransactionsRequest(
 
 class Paging(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     nextOffset: str
     results: int
@@ -63,7 +63,7 @@ class Status(StrEnum):
 
 class Dispute(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     decision: str | None = None
     exceptionItemId: UUID
@@ -80,7 +80,7 @@ class TransactionType(StrEnum):
 
 class Transaction(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     actionCode: str | None = None
     activityDate: str | None = None
@@ -95,6 +95,7 @@ class Transaction(BaseModel):
     confirmationNumber: str | None = None
     confirmationSeq: int
     consoleNumber: int
+    description: str | None = None
     dispositionFee: str
     dispute: Dispute | None = None
     effectiveDate: str | None = None
@@ -142,7 +143,7 @@ class Transaction(BaseModel):
 
 class SearchAccountTransactionsResponse(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     paging: Paging
     transactions: list[Transaction]
@@ -150,8 +151,9 @@ class SearchAccountTransactionsResponse(BaseModel):
 
 class SearchAccountTransactionsResponse1(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='ignore',
     )
     data: dict[str, Any] | None = None
     details: list[str]
+    title: str
     type: str

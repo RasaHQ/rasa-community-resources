@@ -148,6 +148,19 @@ class NativeHostTests(unittest.TestCase):
         self.assertEqual(self.client.sends[0][0],'findAccountByWithBalances')
         self.assertFalse(any(name=='postTransfer' for name,_ in self.client.sends))
 
+    def test_history_reads_a_reply_whose_rows_omit_an_optional_field(self):
+        self.turn(1,'verify me')
+        original=RECORDED['searchAccountTransactions']
+        reply=deepcopy(original)
+        for row in reply['transactions']:row.pop('description',None)
+        RECORDED['searchAccountTransactions']=reply
+        self.addCleanup(RECORDED.__setitem__,'searchAccountTransactions',original)
+        self.turn(2,'show my checking history')
+        result=self.gateway.call(self.token,'banking_history',{'account':'checking','start_date':'2026-11-01','end_date':'2026-11-30'})
+        self.assertEqual(result['state'],'available')
+        self.assertTrue(result['entries'])
+        self.assertTrue(all(entry['description'] is None for entry in result['entries']))
+
     def test_loan_mapping_uses_current_due_and_date_independently(self):
         self.turn(1,'loan facts')
         result=self.gateway.call(self.token,'banking_loan_payment',{'loan':'car'})

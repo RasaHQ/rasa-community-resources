@@ -27,8 +27,14 @@ from contract_inputs import OPERATIONS, PINS, load_inputs
 GENERATOR = "datamodel-code-generator==0.87.0"
 OUTPUT = Path(__file__).resolve().parent / "vendor_models"
 FAMILIES = ("accounts", "transactions", "loans", "transfers")
-# Everything that is prose or metadata, not part of the interface.
+# Everything that is prose or metadata, not part of the interface. Removed only where it
+# annotates a schema or an operation, never as a key of a name map or inside a literal value.
 DROP = frozenset({"description", "example", "examples", "title", "externalDocs", "summary", "tags"})
+# Maps whose keys are names (fields, media types, status codes, headers, links).
+NAME_MAPS = frozenset({"properties", "patternProperties", "responses", "content", "headers", "links", "mapping",
+                       "schemas"})
+# Keywords whose value is a literal JSON value: kept exactly, never filtered.
+LITERALS = frozenset({"enum", "default", "const"})
 ARGUMENTS = (
     "--input-file-type", "openapi",
     "--openapi-scopes", "schemas", "paths",
@@ -39,7 +45,11 @@ ARGUMENTS = (
     "--use-annotated",
     "--field-constraints",
     "--use-operation-id-as-name",
-    "--extra-fields", "allow",
+    # Exact models: a field the schema does not declare is not kept, so a field lost
+    # in generation shows up in the round-trip test instead of hiding in model_extra.
+    # (Not "forbid": the schema itself allows extra fields, and the OpenAPI validators
+    # stay the authority on what a reply may carry.)
+    "--extra-fields", "ignore",
     "--disable-timestamp",
     "--formatters", "black", "isort",
 )
@@ -48,8 +58,16 @@ ARGUMENTS = (
 def _interface(node):
     """The schema without prose: names, types, required, nullable, enums and limits."""
     if isinstance(node, dict):
-        return {key: _interface(value) for key, value in node.items()
-                if key not in DROP and not str(key).startswith("x-")}
+        kept = {}
+        for key, value in node.items():
+            if key in LITERALS:
+                kept[key] = value
+            elif key in NAME_MAPS and isinstance(value, dict):
+                # Keys here are names, such as a field called "description": keep every one.
+                kept[key] = {name: _interface(item) for name, item in value.items()}
+            elif key not in DROP and not str(key).startswith("x-"):
+                kept[key] = _interface(value)
+        return kept
     if isinstance(node, list):
         return [_interface(value) for value in node]
     return node
