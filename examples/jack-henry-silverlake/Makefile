@@ -1,4 +1,4 @@
-.PHONY: run test validate download
+.PHONY: run test validate download models models-check
 
 ARCHIVE := vendor-inputs/TPG_R2026.1.00_XSD.zip
 URL     := https://jkhy.github.io/devrel-assets/cms-files/soap/TPG_R2026.1.00_XSD.zip
@@ -19,3 +19,10 @@ download:
 	@mkdir -p vendor-inputs
 	@curl -fsSL -o $(ARCHIVE).part "$(URL)"
 	@echo "$(SHA256)  $(ARCHIVE).part" | sha256sum -c --quiet - && mv $(ARCHIVE).part $(ARCHIVE) && echo "Saved and checked: $(ARCHIVE)" || { rm -f $(ARCHIVE).part; echo "The download does not match the expected file. Nothing was saved."; exit 1; }
+
+# Regenerate silverlake_demo/vendor_models/ from the pinned archive (needs it in vendor-inputs/).
+models:
+	uv run --locked --group models python make_models.py
+
+models-check:
+	uv run --locked --group models python make_models.py --check

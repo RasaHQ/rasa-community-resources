@@ -366,9 +366,12 @@ After the walkthrough, use this map to find the relevant implementation:
 | `silverlake_demo/server.py` | The MCP server's seven tools |
 | `silverlake_demo/service.py` | How the host policy and journal connect to the client |
 | `host.py`, `journal.py` | Verification requirements, transfer review, next-turn confirmation, and durable state |
-| `silverlake_demo/client.py` | Direct jXchange requests |
+| `silverlake_demo/client.py` | Direct jXchange requests, built and read through the generated models |
 | `silverlake_demo/mock.py` | Six simulated jXchange operations and fictional data; validation of every SOAP body |
 | `silverlake_demo/contract.py` | Archive checks, safe extraction, WSDL SOAPActions, and schema loading |
+| `silverlake_demo/vendor_models/`, `make_models.py` | Python dataclasses generated with xsdata from the two pinned jXchange schemas (names, types, required fields; no vendor descriptions), kept to what the six operations' requests and replies reach. For `AcctInq`, only the loan payment record the client reads (`LnAcctInqRec` / `x_LnInfoRec` / `LnInfoRec`) is generated, not the whole `AcctInqResponse`, which alone would be about 49,000 lines |
+| `silverlake_demo/vendor_api.py` | Which model belongs to each request and reply, XML reading and writing through them, and a strict Pydantic `TypeAdapter` check of every model |
+| `silverlake_demo/recorded_exchanges.py` | The example's own recorded SOAP bodies (fictional data), used by the model round-trip tests |
 
 ### Supported banking operations
 
@@ -404,6 +407,8 @@ make test
 ```
 
 Runs source, host, journal, and SOAP mock tests. **Schema tests skip if the archive is missing.** Run `make download` first if you want those tests included, and inspect the results for skipped tests.
+
+The models in `silverlake_demo/vendor_models/` are generated, never edited by hand. To regenerate them (needs the pinned archive in `vendor-inputs/`), run `make models`; `make models-check` fails if the committed models differ from a fresh generation. The example needs one new runtime dependency, `xsdata==26.10` (without its `[cli]` extra): the client builds every request and reads every reply through these dataclasses with xsdata's XML parser and serializer, and the generated classes use its date type. The generator itself (`xsdata[cli]`) and its ruff formatter are in the development-only `models` group and are installed only for these two commands. Money and rates are `Decimal` throughout; no amount passes through a float. The models keep everything the six operations' requests and replies reach, with one exception: for `AcctInq`, only the loan payment record the client reads is generated, not the whole `AcctInqResponse`. The schema validation of every SOAP body stays as before; the models add typed access on top of it.
 
 ```bash
 make validate
