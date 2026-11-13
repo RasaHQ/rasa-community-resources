@@ -15,7 +15,7 @@ from uuid import uuid4
 import httpx
 
 from .contract import ContractError, PremierContract
-from .vendor_api import present, reply, request_body
+from .vendor_api import dumps, present, reply, request_body
 
 
 class Unavailable(Exception):
@@ -36,7 +36,10 @@ def _money(amount) -> Decimal:
     code = present(amount.cur_code) if amount is not None else None
     if code is None or present(code.cur_code_value) != "USD" or present(amount.amt) is None:
         raise Unavailable("currency")
-    return Decimal(str(amount.amt)).quantize(Decimal("0.01"))
+    value = amount.amt  # a Decimal: replies are parsed and modelled without floats
+    if not isinstance(value, Decimal) or not value.is_finite():
+        raise Unavailable("currency")
+    return value.quantize(Decimal("0.01"))
 
 
 class PremierClient:
@@ -52,10 +55,11 @@ class PremierClient:
     def _send(self, key: str, header: str, body: dict):
         """One HTTP POST. Returns (status, parsed JSON or None). Subclasses add auth."""
         with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False) as http:
-            reply = http.post(self.base + self.contract.path(key), content=json.dumps(body),
+            reply = http.post(self.base + self.contract.path(key), content=dumps(body),
                               headers={"EFXHeader": header, "Content-Type": "application/json"})
         try:
-            return reply.status_code, reply.json()
+            # Numbers are read as Decimal, never as float.
+            return reply.status_code, json.loads(reply.content, parse_float=Decimal)
         except ValueError:
             return reply.status_code, None
 
@@ -163,11 +167,13 @@ class PremierClient:
 
     def transfer(self, source_id: str, destination_id: str, amount: Decimal) -> str:
         """One immediate own-account FundsTransfer. Returns accepted, never posted."""
+        if not amount.is_finite() or amount != amount.quantize(Decimal("0.01")):
+            return "refused"  # the reviewed amount, to the cent, and nothing else
         body = {"XferInfo": {
             "TransferType": "FundsTransfer",
             "FromAcctRef": {"AcctKeys": {"AcctId": source_id, "AcctType": "DDA"}},
             "ToAcctRef": {"AcctKeys": {"AcctId": destination_id, "AcctType": "DDA"}},
-            "CurAmt": {"Amt": float(amount), "CurCode": {"CurCodeType": "ISO4217-Alpha",
+            "CurAmt": {"Amt": amount, "CurCode": {"CurCodeType": "ISO4217-Alpha",
                                                           "CurCodeValue": "USD"}}}}
         try:
             body = request_body("xfer", body)

@@ -3,11 +3,13 @@
 # Source: Fiserv PartyAcctRelService-11.0.0_PRM-Inq_ByParty.yaml, sha256 c9de4806467223179c0208d7b44781e3b2a8b642f4612664bd356ac2595ceab8
 # from BankingHub_Premier_api_specs.zip, sha256 65404b27b99d12bedc5cddf5d714dc6117d2d4fb3896e7d18d3067e324f4f7a8
 # Interface facts only (names, types, required, nullable, limits, allowed values);
+# every number is a Decimal, so money and rates never pass through a float;
 # descriptions and examples are removed before generation.
 
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal
 from enum import StrEnum
 from typing import Annotated
 
@@ -174,7 +176,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctPer
     acct_period_type: Annotated[
         AcctPeriodType | MISSING, Field(alias='AcctPeriodType')
     ] = MISSING
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     count: Annotated[int | MISSING, Field(alias='Count')] = MISSING
     last_occur_ind: Annotated[bool | MISSING, Field(alias='LastOccurInd')] = MISSING
     last_occurance_dt: Annotated[
@@ -184,7 +186,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctPer
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
 
 
 class Language(StrEnum):
@@ -956,7 +958,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoCurAmt(
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoCurAmtCurCode
         | MISSING,
@@ -971,7 +973,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtC
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtCurAmtCurCode
         | MISSING,
@@ -1002,7 +1004,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoInitial
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoInitialAmountCurCode
         | MISSING,
@@ -1017,7 +1019,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmt
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmtCurAmtCurCode
         | MISSING,
@@ -1486,7 +1488,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfo(BaseMo
     product_ident: Annotated[
         str | MISSING, Field(alias='ProductIdent', max_length=42)
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     relationship_mgr: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoRelationshipMgr
@@ -1651,7 +1653,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfo(BaseModel):
     ] = MISSING
     nickname: Annotated[str | MISSING, Field(alias='Nickname', max_length=80)] = MISSING
     owner_ind: Annotated[bool | MISSING, Field(alias='OwnerInd')] = MISSING
-    owner_percent: Annotated[float | MISSING, Field(alias='OwnerPercent')] = MISSING
+    owner_percent: Annotated[Decimal | MISSING, Field(alias='OwnerPercent')] = MISSING
     party_acct_rel_data: Annotated[
         list[PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyAcctRelData]
         | MISSING,

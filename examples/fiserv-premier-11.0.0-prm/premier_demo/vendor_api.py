@@ -9,6 +9,9 @@ every request and reply is still validated against the pinned definitions.
 """
 from __future__ import annotations
 
+from decimal import Decimal
+import json
+
 from pydantic import BaseModel
 from pydantic.experimental.missing_sentinel import MISSING
 
@@ -32,8 +35,54 @@ REPLY: dict[str, type[BaseModel]] = {
 
 
 def request_body(key: str, value: dict) -> dict:
-    """A request body built through its model: a missing required field or a wrong type fails here."""
-    return REQUEST[key].model_validate(value).model_dump(mode="json", by_alias=True, exclude_unset=True)
+    """A request body built through its model: a missing required field or a wrong type fails here.
+
+    Numbers stay exact Decimal; see plain()."""
+    return plain(REQUEST[key].model_validate(value))
+
+
+def plain(model: BaseModel):
+    """The model as JSON values, with every number as an exact Decimal.
+
+    Pydantic's JSON mode writes enums and dates the way the wire needs them but turns a
+    Decimal into a string; Python mode keeps the Decimal. Take the JSON form, and put the
+    Decimal back wherever the Python form holds one."""
+    options = {"by_alias": True, "exclude_unset": True}
+    return _merge(model.model_dump(mode="python", **options), model.model_dump(mode="json", **options))
+
+
+def _merge(python, as_json):
+    if isinstance(python, Decimal):
+        return python
+    if isinstance(python, dict):
+        return {key: _merge(python[key], as_json[key]) for key in python}
+    if isinstance(python, list):
+        return [_merge(left, right) for left, right in zip(python, as_json)]
+    return as_json
+
+
+def loads(raw) -> object:
+    """JSON with every non-integer number read as Decimal, never as a float."""
+    return json.loads(raw, parse_float=Decimal)
+
+
+def dumps(value) -> str:
+    """JSON with each Decimal written as its exact number, never through a float."""
+    marks = {}
+
+    def mark(item):
+        if isinstance(item, Decimal):
+            if not item.is_finite():
+                raise ValueError("not a finite number")
+            token = f"\u0000decimal{len(marks)}\u0000"
+            marks[token] = format(item, "f")
+            return token
+        raise TypeError(f"not JSON serialisable: {type(item).__name__}")
+
+    text = json.dumps(value, default=mark, separators=(",", ":"))
+    for token, number in marks.items():
+        text = text.replace(json.dumps(token), number)
+    return text
 
 
 def present(value):

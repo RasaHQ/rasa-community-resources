@@ -3,11 +3,13 @@
 # Source: Fiserv AcctService-11.0.0_PRM-Inq_LOAN.yaml, sha256 55d60b2ab23714821bed9510c9d2d94175bd13ca220bbb9be700490a472569c9
 # from BankingHub_Premier_api_specs.zip, sha256 65404b27b99d12bedc5cddf5d714dc6117d2d4fb3896e7d18d3067e324f4f7a8
 # Interface facts only (names, types, required, nullable, limits, allowed values);
+# every number is a Decimal, so money and rates never pass through a float;
 # descriptions and examples are removed before generation.
 
 from __future__ import annotations
 
 from datetime import date as date_aliased
+from decimal import Decimal
 from enum import StrEnum
 from typing import Annotated, Any
 
@@ -383,7 +385,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoAcctPeriodData(BaseModel):
     acct_period_type: Annotated[
         AcctPeriodType | MISSING, Field(alias='AcctPeriodType')
     ] = MISSING
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     amt_seq_id: Annotated[str | MISSING, Field(alias='AmtSeqId', max_length=10)] = (
         MISSING
     )
@@ -551,7 +553,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoCurAmt2(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoAddOnInterestAmtCurCode | MISSING,
         Field(alias='CurCode'),
@@ -602,11 +604,11 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoDeferredFeeData(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
-    prior_earning_amt: Annotated[float | MISSING, Field(alias='PriorEarningAmt')] = (
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
+    prior_earning_amt: Annotated[Decimal | MISSING, Field(alias='PriorEarningAmt')] = (
         MISSING
     )
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecLoanAcctInfoDelinquentRateData(BaseModel):
@@ -616,7 +618,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoDelinquentRateData(BaseModel)
     )
     delinquent_days: Annotated[int | MISSING, Field(alias='DelinquentDays')] = MISSING
     delinquent_int_rate: Annotated[
-        float | MISSING, Field(alias='DelinquentIntRate')
+        Decimal | MISSING, Field(alias='DelinquentIntRate')
     ] = MISSING
     delinquent_rate_type: Annotated[
         str | MISSING, Field(alias='DelinquentRateType')
@@ -659,7 +661,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoExpensesFinancedAmt(BaseModel
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoAddOnInterestAmtCurCode | MISSING,
         Field(alias='CurCode'),
@@ -691,7 +693,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoFDICAmount(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amount: Annotated[float | MISSING, Field(alias='Amount')] = MISSING
+    amount: Annotated[Decimal | MISSING, Field(alias='Amount')] = MISSING
     fdic_amount_type: Annotated[FdicAmountType, Field(alias='FDICAmountType')]
 
 
@@ -757,9 +759,9 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoFeeCostData(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
-    prior_cost_amt: Annotated[float | MISSING, Field(alias='PriorCostAmt')] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
+    prior_cost_amt: Annotated[Decimal | MISSING, Field(alias='PriorCostAmt')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecLoanAcctInfoFeeEarningDataTerm(BaseModel):
@@ -776,7 +778,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoFeesFinancedAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoAddOnInterestAmtCurCode | MISSING,
         Field(alias='CurCode'),
@@ -788,7 +790,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoFeesPrepaidAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoAddOnInterestAmtCurCode | MISSING,
         Field(alias='CurCode'),
@@ -800,7 +802,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoFixedPremiumAmt1(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
 
 
 class MortgageType(StrEnum):
@@ -839,7 +841,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoHomeMortgageDisclosureCRAData
     cra_loan_type: Annotated[CraLoanType | MISSING, Field(alias='CRALoanType')] = (
         MISSING
     )
-    cra_new_funds: Annotated[float | MISSING, Field(alias='CRANewFunds')] = MISSING
+    cra_new_funds: Annotated[Decimal | MISSING, Field(alias='CRANewFunds')] = MISSING
     cra_reporting_ind: Annotated[bool | MISSING, Field(alias='CRAReportingInd')] = (
         MISSING
     )
@@ -974,7 +976,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoIntRateDataRateMatrixTier(Bas
         extra='ignore',
         validate_by_name=True,
     )
-    int_apr: Annotated[float | MISSING, Field(alias='IntAPR')] = MISSING
+    int_apr: Annotated[Decimal | MISSING, Field(alias='IntAPR')] = MISSING
     rate_index: Annotated[int | MISSING, Field(alias='RateIndex')] = MISSING
     tier: Annotated[str | MISSING, Field(alias='Tier', max_length=32)] = MISSING
 
@@ -984,9 +986,9 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoIntRateDataSplitRateData(Base
         extra='ignore',
         validate_by_name=True,
     )
-    over_rate: Annotated[float | MISSING, Field(alias='OverRate')] = MISSING
+    over_rate: Annotated[Decimal | MISSING, Field(alias='OverRate')] = MISSING
     split_amt: Annotated[int | MISSING, Field(alias='SplitAmt')] = MISSING
-    under_rate: Annotated[float | MISSING, Field(alias='UnderRate')] = MISSING
+    under_rate: Annotated[Decimal | MISSING, Field(alias='UnderRate')] = MISSING
 
 
 class RecurType2(StrEnum):
@@ -1078,7 +1080,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoLoanBillingAutoPmtDraftAmt(
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1148,7 +1150,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoMaxCoverageAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1160,7 +1162,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoMaxCurAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1172,7 +1174,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoMinCurAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1256,7 +1258,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoOtherEscrowAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1352,8 +1354,8 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoPmtTermReview(BaseModel):
         validate_by_name=True,
     )
     lead_days: Annotated[int | MISSING, Field(alias='LeadDays')] = MISSING
-    max_pmt_change: Annotated[float | MISSING, Field(alias='MaxPmtChange')] = MISSING
-    min_pmt_change: Annotated[float | MISSING, Field(alias='MinPmtChange')] = MISSING
+    max_pmt_change: Annotated[Decimal | MISSING, Field(alias='MaxPmtChange')] = MISSING
+    min_pmt_change: Annotated[Decimal | MISSING, Field(alias='MinPmtChange')] = MISSING
     next_pmt_term_review_dt: Annotated[
         date_aliased | MISSING, Field(alias='NextPmtTermReviewDt')
     ] = MISSING
@@ -1394,7 +1396,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoPrePayMaxAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1503,7 +1505,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoSoldAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecLoanAcctInfoSplitRateAmt1(BaseModel):
@@ -1511,7 +1513,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoSplitRateAmt1(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1532,7 +1534,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoStudentLoanData(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    ovrd_rate: Annotated[float | MISSING, Field(alias='OvrdRate')] = MISSING
+    ovrd_rate: Annotated[Decimal | MISSING, Field(alias='OvrdRate')] = MISSING
     student_action_code: Annotated[str | MISSING, Field(alias='StudentActionCode')] = (
         MISSING
     )
@@ -1698,7 +1700,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoAddOnInterestAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoAddOnInterestAmtCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1724,7 +1726,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoCurAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1736,7 +1738,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoCurAmt1(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoCurAmt1CurCode | MISSING,
         Field(alias='CurCode'),
@@ -1748,7 +1750,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoDealerReserveAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1768,11 +1770,11 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoDeferredFee(BaseModel):
         date_aliased | MISSING, Field(alias='DeferredFirstPmtDt')
     ] = MISSING
     deferred_loan_balance: Annotated[
-        float | MISSING, Field(alias='DeferredLoanBalance')
+        Decimal | MISSING, Field(alias='DeferredLoanBalance')
     ] = MISSING
-    deferred_loan_rate: Annotated[float | MISSING, Field(alias='DeferredLoanRate')] = (
-        MISSING
-    )
+    deferred_loan_rate: Annotated[
+        Decimal | MISSING, Field(alias='DeferredLoanRate')
+    ] = MISSING
     deferred_pmt_freq: Annotated[str | MISSING, Field(alias='DeferredPmtFreq')] = (
         MISSING
     )
@@ -1822,7 +1824,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoEarlyPayoffTableEarlyPayoffTi
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     cur_amt: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoCurAmt | MISSING,
         Field(alias='CurAmt'),
@@ -1834,7 +1836,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoEscrowAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1848,7 +1850,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoEscrowCtrlDataEscrowMinShorta
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1871,7 +1873,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoFixedPremiumAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1885,7 +1887,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoHomeMortgageDisclosureHAMPDat
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoHomeMortgageDisclosureHAMPDataForbearanceAmtCurCode
         | MISSING,
@@ -1898,7 +1900,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmount(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
@@ -1933,7 +1935,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoInsurance(BaseModel):
     product_ident: Annotated[
         str | MISSING, Field(alias='ProductIdent', max_length=42)
     ] = MISSING
-    single_rate: Annotated[float | MISSING, Field(alias='SingleRate')] = MISSING
+    single_rate: Annotated[Decimal | MISSING, Field(alias='SingleRate')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecLoanAcctInfoIntRateData(BaseModel):
@@ -1949,10 +1951,10 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoIntRateData(BaseModel):
         MISSING
     )
     daily_accrual_factor: Annotated[
-        float | MISSING, Field(alias='DailyAccrualFactor')
+        Decimal | MISSING, Field(alias='DailyAccrualFactor')
     ] = MISSING
     grace_days: Annotated[int | MISSING, Field(alias='GraceDays')] = MISSING
-    minimum_interest: Annotated[float | MISSING, Field(alias='MinimumInterest')] = (
+    minimum_interest: Annotated[Decimal | MISSING, Field(alias='MinimumInterest')] = (
         MISSING
     )
     rate_matrix_tier: Annotated[
@@ -1998,7 +2000,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoLateFee(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     fee_calc_option: Annotated[
         FeeCalcOption1 | MISSING, Field(alias='FeeCalcOption')
     ] = MISSING
@@ -2047,7 +2049,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoPendingAvailCreditMaxCreditLi
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoPendingAvailCreditMaxCreditLimitAmtCurCode
         | MISSING,
@@ -2160,8 +2162,10 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoScheduledRate(BaseModel):
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
     ] = MISSING
-    rate_over_split: Annotated[float | MISSING, Field(alias='RateOverSplit')] = MISSING
-    rate_under_split: Annotated[float | MISSING, Field(alias='RateUnderSplit')] = (
+    rate_over_split: Annotated[Decimal | MISSING, Field(alias='RateOverSplit')] = (
+        MISSING
+    )
+    rate_under_split: Annotated[Decimal | MISSING, Field(alias='RateUnderSplit')] = (
         MISSING
     )
     split_rate_amt: Annotated[
@@ -2175,8 +2179,10 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoSinglePremiumInsurance(BaseMo
         extra='ignore',
         validate_by_name=True,
     )
-    balloon_pmt_amt: Annotated[float | MISSING, Field(alias='BalloonPmtAmt')] = MISSING
-    cancel_amt: Annotated[float | MISSING, Field(alias='CancelAmt')] = MISSING
+    balloon_pmt_amt: Annotated[Decimal | MISSING, Field(alias='BalloonPmtAmt')] = (
+        MISSING
+    )
+    cancel_amt: Annotated[Decimal | MISSING, Field(alias='CancelAmt')] = MISSING
     cancel_dt: Annotated[
         str | MISSING,
         Field(
@@ -2208,8 +2214,8 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoSinglePremiumInsurance(BaseMo
     insurance_start_dt: Annotated[
         date_aliased | MISSING, Field(alias='InsuranceStartDt')
     ] = MISSING
-    loan_rate: Annotated[float | MISSING, Field(alias='LoanRate')] = MISSING
-    pmt_amt: Annotated[float | MISSING, Field(alias='PmtAmt')] = MISSING
+    loan_rate: Annotated[Decimal | MISSING, Field(alias='LoanRate')] = MISSING
+    pmt_amt: Annotated[Decimal | MISSING, Field(alias='PmtAmt')] = MISSING
     product_ident: Annotated[
         str | MISSING, Field(alias='ProductIdent', max_length=42)
     ] = MISSING
@@ -2224,7 +2230,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoSplitRateAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoSplitRateAmtCurCode | MISSING,
         Field(alias='CurCode'),
@@ -2314,7 +2320,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoDealer(BaseModel):
         Field(alias='DealerReserveAmt'),
     ] = MISSING
     dealer_reserve_rate: Annotated[
-        float | MISSING, Field(alias='DealerReserveRate')
+        Decimal | MISSING, Field(alias='DealerReserveRate')
     ] = MISSING
     dealer_reserve_type: Annotated[str | MISSING, Field(alias='DealerReserveType')] = (
         MISSING
@@ -2384,7 +2390,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoFee(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    bal_percent: Annotated[float | MISSING, Field(alias='BalPercent')] = MISSING
+    bal_percent: Annotated[Decimal | MISSING, Field(alias='BalPercent')] = MISSING
     cur_amt: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoCurAmt1 | MISSING,
         Field(alias='CurAmt'),
@@ -2431,9 +2437,9 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoFee(BaseModel):
         GetAccountsSecuredResponseAcctRecLoanAcctInfoMinCurAmt | MISSING,
         Field(alias='MinCurAmt'),
     ] = MISSING
-    pre_pay_bal_percent: Annotated[float | MISSING, Field(alias='PrePayBalPercent')] = (
-        MISSING
-    )
+    pre_pay_bal_percent: Annotated[
+        Decimal | MISSING, Field(alias='PrePayBalPercent')
+    ] = MISSING
     pre_pay_max_amt: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoPrePayMaxAmt | MISSING,
         Field(alias='PrePayMaxAmt'),
@@ -2596,7 +2602,9 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoPendingRate(BaseModel):
         ),
     ] = MISSING
     lead_days: Annotated[int | MISSING, Field(alias='LeadDays')] = MISSING
-    max_rate_change: Annotated[float | MISSING, Field(alias='MaxRateChange')] = MISSING
+    max_rate_change: Annotated[Decimal | MISSING, Field(alias='MaxRateChange')] = (
+        MISSING
+    )
     next_rate_change_dt: Annotated[
         date_aliased | MISSING, Field(alias='NextRateChangeDt')
     ] = MISSING
@@ -2606,14 +2614,18 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoPendingRate(BaseModel):
     rate_change_recur_type: Annotated[
         str | MISSING, Field(alias='RateChangeRecurType')
     ] = MISSING
-    rate_factor: Annotated[float | MISSING, Field(alias='RateFactor')] = MISSING
-    rate_factor_two: Annotated[float | MISSING, Field(alias='RateFactorTwo')] = MISSING
-    rate_over_split: Annotated[float | MISSING, Field(alias='RateOverSplit')] = MISSING
-    rate_under_split: Annotated[float | MISSING, Field(alias='RateUnderSplit')] = (
+    rate_factor: Annotated[Decimal | MISSING, Field(alias='RateFactor')] = MISSING
+    rate_factor_two: Annotated[Decimal | MISSING, Field(alias='RateFactorTwo')] = (
         MISSING
     )
-    rate_variance: Annotated[float | MISSING, Field(alias='RateVariance')] = MISSING
-    rate_variance_two: Annotated[float | MISSING, Field(alias='RateVarianceTwo')] = (
+    rate_over_split: Annotated[Decimal | MISSING, Field(alias='RateOverSplit')] = (
+        MISSING
+    )
+    rate_under_split: Annotated[Decimal | MISSING, Field(alias='RateUnderSplit')] = (
+        MISSING
+    )
+    rate_variance: Annotated[Decimal | MISSING, Field(alias='RateVariance')] = MISSING
+    rate_variance_two: Annotated[Decimal | MISSING, Field(alias='RateVarianceTwo')] = (
         MISSING
     )
     recur_interval_: Annotated[int | MISSING, Field(alias='RecurInterval ')] = MISSING
@@ -2650,7 +2662,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoPmtSched(BaseModel):
     pmt_sched_ident: Annotated[
         str | MISSING, Field(alias='PmtSchedIdent', max_length=36)
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     recur_model: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoRecurModel | MISSING,
         Field(alias='RecurModel'),
@@ -2665,9 +2677,9 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoRateChangeData(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    ceiling_rate: Annotated[float | MISSING, Field(alias='CeilingRate')] = MISSING
+    ceiling_rate: Annotated[Decimal | MISSING, Field(alias='CeilingRate')] = MISSING
     day_of_month: Annotated[str | MISSING, Field(alias='DayOfMonth')] = MISSING
-    floor_rate: Annotated[float | MISSING, Field(alias='FloorRate')] = MISSING
+    floor_rate: Annotated[Decimal | MISSING, Field(alias='FloorRate')] = MISSING
     next_rate_change_dt: Annotated[
         date_aliased | MISSING, Field(alias='NextRateChangeDt')
     ] = MISSING
@@ -2678,14 +2690,18 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfoRateChangeData(BaseModel):
     rate_change_recur_type: Annotated[
         RateChangeRecurType | MISSING, Field(alias='RateChangeRecurType')
     ] = MISSING
-    rate_factor: Annotated[float | MISSING, Field(alias='RateFactor')] = MISSING
-    rate_factor_two: Annotated[float | MISSING, Field(alias='RateFactorTwo')] = MISSING
-    rate_variance: Annotated[float | MISSING, Field(alias='RateVariance')] = MISSING
-    rate_variance_two: Annotated[float | MISSING, Field(alias='RateVarianceTwo')] = (
+    rate_factor: Annotated[Decimal | MISSING, Field(alias='RateFactor')] = MISSING
+    rate_factor_two: Annotated[Decimal | MISSING, Field(alias='RateFactorTwo')] = (
+        MISSING
+    )
+    rate_variance: Annotated[Decimal | MISSING, Field(alias='RateVariance')] = MISSING
+    rate_variance_two: Annotated[Decimal | MISSING, Field(alias='RateVarianceTwo')] = (
         MISSING
     )
     recur_interval: Annotated[int | MISSING, Field(alias='RecurInterval')] = MISSING
-    rounding_factor: Annotated[float | MISSING, Field(alias='RoundingFactor')] = MISSING
+    rounding_factor: Annotated[Decimal | MISSING, Field(alias='RoundingFactor')] = (
+        MISSING
+    )
     rounding_option: Annotated[
         RoundingOption | MISSING, Field(alias='RoundingOption')
     ] = MISSING
@@ -2944,7 +2960,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfo(BaseModel):
         GetAccountsSecuredResponseAcctRecLoanAcctInfoLOCAdvance | MISSING,
         Field(alias='LOCAdvance'),
     ] = MISSING
-    ltv_pct: Annotated[float | MISSING, Field(alias='LTVPct')] = MISSING
+    ltv_pct: Annotated[Decimal | MISSING, Field(alias='LTVPct')] = MISSING
     last_pmt: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoLastPmt | MISSING,
         Field(alias='LastPmt'),
@@ -3044,7 +3060,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfo(BaseModel):
     product_ident: Annotated[
         str | MISSING, Field(alias='ProductIdent', max_length=42)
     ] = MISSING
-    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    rate: Annotated[Decimal | MISSING, Field(alias='Rate')] = MISSING
     rate_change_data: Annotated[
         list[GetAccountsSecuredResponseAcctRecLoanAcctInfoRateChangeData] | MISSING,
         Field(alias='RateChangeData'),
@@ -3061,7 +3077,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfo(BaseModel):
     renewal_acct_id: Annotated[
         str | MISSING, Field(alias='RenewalAcctId', max_length=36)
     ] = MISSING
-    renewal_amount: Annotated[float | MISSING, Field(alias='RenewalAmount')] = MISSING
+    renewal_amount: Annotated[Decimal | MISSING, Field(alias='RenewalAmount')] = MISSING
     renewal_data: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoRenewalData | MISSING,
         Field(alias='RenewalData'),
@@ -3099,7 +3115,7 @@ class GetAccountsSecuredResponseAcctRecLoanAcctInfo(BaseModel):
         GetAccountsSecuredResponseAcctRecLoanAcctInfoSoldAmt | MISSING,
         Field(alias='SoldAmt'),
     ] = MISSING
-    sold_percent: Annotated[float | MISSING, Field(alias='SoldPercent')] = MISSING
+    sold_percent: Annotated[Decimal | MISSING, Field(alias='SoldPercent')] = MISSING
     student_loan_data: Annotated[
         GetAccountsSecuredResponseAcctRecLoanAcctInfoStudentLoanData | MISSING,
         Field(alias='StudentLoanData'),

@@ -76,6 +76,9 @@ def _interface(node):
                 kept[key] = {name: _interface(item) for name, item in value.items()}
             elif key not in DROP and not str(key).startswith("x-"):
                 kept[key] = _interface(value)
+        # Money and rates are Decimal end to end: every `number` is generated as Decimal.
+        if kept.get("type") == "number":
+            kept["format"] = "decimal"
         # OpenAPI 3.0: `nullable: true` beside an `enum` that does not list null still
         # rejects null (the example's runtime OAS30 validators agree), so it is not nullable.
         if kept.get("nullable") is True and isinstance(kept.get("enum"), list) and None not in kept["enum"]:
@@ -133,6 +136,7 @@ def header(key: str, raw: bytes) -> str:
         f"# Source: Fiserv {member}, sha256 {hashlib.sha256(raw).hexdigest()}\n"
         f"# from BankingHub_Premier_api_specs.zip, sha256 {ARCHIVE_SHA256}\n"
         "# Interface facts only (names, types, required, nullable, limits, allowed values);\n"
+        "# every number is a Decimal, so money and rates never pass through a float;\n"
         "# descriptions and examples are removed before generation.\n"
     )
 

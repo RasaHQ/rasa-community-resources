@@ -3,10 +3,12 @@
 # Source: Fiserv AcctTrnService-11.0.0_PRM-Inq_DDA.yaml, sha256 349840d8eba2444fcb0da5fda2512c9c4f524b38550a383dac6174eda7dfe772
 # from BankingHub_Premier_api_specs.zip, sha256 65404b27b99d12bedc5cddf5d714dc6117d2d4fb3896e7d18d3067e324f4f7a8
 # Interface facts only (names, types, required, nullable, limits, allowed values);
+# every number is a Decimal, so money and rates never pass through a float;
 # descriptions and examples are removed before generation.
 
 from __future__ import annotations
 
+from decimal import Decimal
 from enum import StrEnum
 from typing import Annotated, Any
 
@@ -178,7 +180,7 @@ class AcctTrnInqOperBySecuredResponseAcctTrnInfoCheckFloatAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         AcctTrnInqOperBySecuredResponseAcctTrnInfoCheckFloatAmtCurCode | MISSING,
         Field(alias='CurCode'),
@@ -202,7 +204,7 @@ class AcctTrnInqOperBySecuredResponseAcctTrnInfoTrnAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         AcctTrnInqOperBySecuredResponseAcctTrnInfoTrnAmtCurCode | MISSING,
         Field(alias='CurCode'),

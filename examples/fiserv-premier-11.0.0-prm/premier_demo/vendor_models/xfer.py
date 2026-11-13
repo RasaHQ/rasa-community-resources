@@ -3,10 +3,12 @@
 # Source: Fiserv XferService-11.0.0_PRM-Add_Immediate.yaml, sha256 2c151366144ff8aae930311ae5a51798b0038e39ef776878ae8bb14b8a16ed99
 # from BankingHub_Premier_api_specs.zip, sha256 65404b27b99d12bedc5cddf5d714dc6117d2d4fb3896e7d18d3067e324f4f7a8
 # Interface facts only (names, types, required, nullable, limits, allowed values);
+# every number is a Decimal, so money and rates never pass through a float;
 # descriptions and examples are removed before generation.
 
 from __future__ import annotations
 
+from decimal import Decimal
 from enum import StrEnum
 from typing import Annotated, Any
 
@@ -225,7 +227,7 @@ class XferAddOperRequestXferInfoCurAmt(BaseModel):
         extra='ignore',
         validate_by_name=True,
     )
-    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    amt: Annotated[Decimal | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         XferAddOperRequestXferInfoCurAmtCurCode | MISSING, Field(alias='CurCode')
     ] = MISSING
