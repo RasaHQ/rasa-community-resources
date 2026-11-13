@@ -8,7 +8,7 @@ from rasa.mantle.hooks.payloads import ModelResponsePayload
 
 class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        policy._delivered.clear()
+        policy._delivered.clear();policy._retries.clear()
         self.native=SimpleNamespace(sender_id="caller",turn=object(),is_cancelled=False)
         self.patch=patch.object(policy,"current_turn_context",return_value=self.native)
         self.patch.start();self.addCleanup(self.patch.stop)
@@ -34,6 +34,62 @@ class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(consumer._dispatch_tool_calls.await_count,1)
         self.assertEqual(consumer._dispatch_tool_calls.call_args.args[0][0].tool_name,"listen")
 
+    async def test_model_text_imitating_a_host_review_or_acceptance_is_retried_then_replaced(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
+        for text in ("Review: transfer USD 2.00 from checking to savings. Say yes or confirm transfer next.",
+                     "The fictional transfer was accepted. Accepted does not mean posted. This is not a real payment.",
+                     "Your transfer request was accepted."):
+            with self.subTest(text=text):
+                self.native.turn=object()
+                for _ in range(policy._MAX_RETRIES):
+                    with self.assertRaises(RetryModel) as raised:
+                        await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
+                    self.assertIn("banking_review_transfer",raised.exception.feedback)
+                reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
+                self.assertEqual(reply.text,policy.NO_TRANSFER_TEXT)
+
+    async def test_a_session_start_pass_speaks_nothing_and_steers_nothing(self):
+        for text in ("How can I assist you with your banking accounts today?",
+                     "Review: transfer USD 2.00 from checking to savings.",
+                     "Your simulated verification was refreshed."):
+            with self.subTest(text=text):
+                self.native.turn=SimpleNamespace(text="Verify me.",trigger="session_start")
+                reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
+                self.assertIsNone(reply.text)
+                self.assertEqual([c["tool_name"] for c in reply.tool_calls],["listen"])
+
+    async def test_verify_me_answered_in_text_is_steered_to_its_trigger(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
+        self.native.turn=SimpleNamespace(text="Verify me.")
+        with self.assertRaises(RetryModel) as raised:
+            await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text="How can I help?",tool_calls=[]))
+        self.assertIn("banking_refresh_verification",raised.exception.feedback)
+
+    def test_the_retry_note_never_invites_a_new_transfer_after_an_unknown_outcome(self):
+        self.assertIn("banking_transfer_status",policy.RETRY_REVIEW)
+        self.assertIn("never request a new transfer",policy.RETRY_REVIEW)
+
+    async def test_after_a_dispatch_without_delivery_the_fallback_claims_no_send_and_no_new_transfer(self):
+        # The host may have observed a raw confirmation and sent the transfer, then
+        # failed to deliver its reply: no remembered delivery, outcome pending/unknown.
+        self.native.turn=object()
+        policy._retries[self.native.sender_id]=(self.native.turn,policy._MAX_RETRIES)
+        reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",
+            text="The fictional transfer was accepted. Accepted does not mean posted.",tool_calls=[]))
+        lowered=reply.text.casefold()
+        self.assertNotIn("accepted",lowered)
+        for claim in ("nothing was sent","no transfer was sent","not sent","new transfer","try again","retry"):
+            self.assertNotIn(claim,lowered)
+        self.assertIn("transfer status",lowered)
+
+    async def test_ordinary_text_and_a_real_host_delivery_are_untouched(self):
+        plain=ModelResponsePayload(sender_id="caller",text="Your checking balance is USD 1,200.50.",tool_calls=[])
+        self.assertEqual((await policy.keep_host_reply_once(plain)).text,plain.text)
+        policy.remember_delivery()
+        after=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",
+            text="The fictional transfer was accepted.",tool_calls=[]))
+        self.assertIsNone(after.text)
+
     async def test_actual_snapshot_loader_registers_and_invokes_our_hook(self):
         # Other snapshot tests intentionally evict lib modules. Use a fresh
         # consumer process, with the SDK's real ContextVar, rather than an old
@@ -49,11 +105,13 @@ from rasa.mantle.hooks.loader import load_hooks
 from rasa.mantle.hooks.payloads import ModelResponsePayload
 from rasa.mantle.orchestration.turn_context import _current_turn_ctx
 registry=load_hooks(Path.cwd())
-assert registry.modifier_count==1
+assert registry.modifier_count==2
+reply_hook=[h for h in registry.all_hooks() if h.func.__name__=="banking_host_reply"][0]
+assert [h for h in registry.all_hooks() if h.func.__name__=="banking_alias_context"]
 from lib import reply_policy
 _current_turn_ctx.set(SimpleNamespace(sender_id="caller",turn=object(),is_cancelled=False))
 reply_policy.remember_delivery()
-reply=asyncio.run(registry.all_hooks()[0].func(ModelResponsePayload(sender_id="caller",text="duplicate")))
+reply=asyncio.run(reply_hook.func(ModelResponsePayload(sender_id="caller",text="duplicate")))
 assert reply.text is None
 assert [call["tool_name"] for call in reply.tool_calls]==["listen"]
 """
@@ -87,3 +145,41 @@ assert [call["tool_name"] for call in reply.tool_calls]==["listen"]
         policy.remember_delivery()
         self.assertFalse(policy.delivery_pending())
         self.assertEqual(policy._delivered,{})
+
+    async def test_verify_me_declined_before_the_skill_is_active_asks_for_activation_first(self):
+        from rasa.mantle.hooks.exceptions import RetryModel
+        from types import SimpleNamespace as NS
+        for calls in ([], [{"id": "c", "tool_name": "cannot_help", "tool_args": {}, "type": "function"}]):
+            with self.subTest(calls=calls):
+                policy._retries.clear(); policy._offered_tools.clear()
+                self.native.turn = NS(text="Verify me.")
+                policy.remember_offered_tools(NS(tool_names=["activate", "cannot_help"]))
+                with self.assertRaises(RetryModel) as raised:
+                    await policy.keep_host_reply_once(ModelResponsePayload(
+                        sender_id="caller", text=None if calls else "How can I help?", tool_calls=calls))
+                self.assertIn("activate", raised.exception.feedback)
+                policy.remember_offered_tools(NS(tool_names=["banking_refresh_verification", "listen"]))
+                with self.assertRaises(RetryModel) as raised:
+                    await policy.keep_host_reply_once(ModelResponsePayload(
+                        sender_id="caller", text=None if calls else "How can I help?", tool_calls=calls))
+                self.assertNotIn("activate", raised.exception.feedback)
+                self.assertIn("banking_refresh_verification", raised.exception.feedback)
+
+    def test_the_request_hook_records_the_offered_tools(self):
+        source = (__import__("pathlib").Path(__file__).resolve().parents[1] / "hooks.py").read_text()
+        self.assertIn("remember_offered_tools(payload)", source)
+
+    async def test_a_written_review_becomes_the_review_call_only_for_the_amount_asked(self):
+        from types import SimpleNamespace as NS
+        text="Review: transfer USD 2.00 from checking to savings. Say yes or confirm transfer next to submit exactly this fictional transfer. Anything else cancels it."
+        self.native.turn=NS(text="Review a transfer of 2 from checking to savings.")
+        reply=await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
+        self.assertIsNone(reply.text)
+        self.assertEqual([(c["tool_name"],c["tool_args"]) for c in reply.tool_calls],
+                         [("banking_review_transfer",{"source":"checking","destination":"savings","amount":"2.00"})])
+        from rasa.mantle.hooks.exceptions import RetryModel
+        for raw in ("Yes.","Review a transfer of 5 from checking to savings.","What happened to my transfer?"):
+            with self.subTest(raw=raw):
+                policy._retries.clear();self.native.turn=NS(text=raw)
+                with self.assertRaises(RetryModel):  # never invented from a confirmation or another amount
+                    await policy.keep_host_reply_once(ModelResponsePayload(sender_id="caller",text=text,tool_calls=[]))
