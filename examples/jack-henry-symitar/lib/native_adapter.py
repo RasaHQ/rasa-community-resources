@@ -101,7 +101,7 @@ async def _conversation(context):
 _OUTCOMES={'accepted','rejected','unknown','not_dispatched'}
 UNKNOWN_TEXT='The transfer outcome is unknown. Do not retry. Check the original transfer status.'
 ACCOUNT_NOT_AVAILABLE_TEXT='That account is not available to you. Nothing was read or sent.'
-NO_ACTIVE_REVIEW_TEXT='The transfer review was cancelled or is no longer active. Request a new transfer before confirming.'
+NO_ACTIVE_REVIEW_TEXT='The transfer review was canceled or is no longer active. Request a new transfer before confirming.'
 _STATUS_TEXT={
     'accepted':'The fictional transfer was accepted. Accepted does not mean posted. This is not a real payment.',
     'rejected':'The fictional transfer was rejected.',

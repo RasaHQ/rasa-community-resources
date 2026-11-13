@@ -162,7 +162,7 @@ Now try a transfer. Send these one at a time, in this order:
 | "Move 25 dollars from DDA-A to SDA-A." | "Review: transfer USD 25.00 from DDA-A to SDA-A. To submit exactly this transfer, say confirm transfer next. Anything else cancels this review." |
 | "Confirm transfer." | "The transfer request was accepted. Accepted does not mean posted." |
 | "Move 7 dollars from DDA-A to SDA-A." | A new review for USD 7.00, in the same words |
-| "No, do not transfer." | The review was cancelled and nothing was sent |
+| "No, do not transfer." | The review was canceled and nothing was sent |
 | "Confirm transfer." | There is no active review: ask for a new transfer |
 
 **Checkpoint:** you heard each review once, and "accepted" only after you said "confirm transfer". Accepted means the bank took the request, not that the money has posted. After the first transfer, "What is the balance of DDA-A?" says **USD 1,225.00**. Verification lasts about a minute: if a transfer says it needs verification, say "Verify me." and ask again.

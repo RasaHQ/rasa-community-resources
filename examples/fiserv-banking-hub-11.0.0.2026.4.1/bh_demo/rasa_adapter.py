@@ -125,7 +125,7 @@ async def _host(context, *, create=True):
 
 
 _CONFIRMATIONS = {"yes", "confirm", "confirmed", "confirm transfer"}
-NO_ACTIVE_REVIEW_TEXT = ("The transfer review was cancelled or is no longer active. "
+NO_ACTIVE_REVIEW_TEXT = ("The transfer review was canceled or is no longer active. "
                          "Request a new transfer before confirming.")
 
 
