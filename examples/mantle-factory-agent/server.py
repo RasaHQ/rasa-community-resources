@@ -81,7 +81,7 @@ def mcp_app():
                 env_file=os.environ.get('FACTORY_ENV_FILE') or None)
             # Local evidence and attempt paths never enter the conversation.
             allowed = ('verdict', 'failing_test', 'fingerprint', 'seconds',
-                       'mode', 'builder_calls', 'reason')
+                       'mode', 'builder_calls', 'builder_model', 'reason')
             safe_result = {key: result[key] for key in allowed if key in result}
             record_tool_event({'event': 'end', 'kind': kind, 'elapsed_seconds': round(time.monotonic() - started, 3), 'result': safe_result})
             return safe_result

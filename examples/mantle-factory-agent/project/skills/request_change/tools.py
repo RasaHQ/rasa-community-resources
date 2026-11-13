@@ -1,8 +1,16 @@
-"""Verdict card: built by code from the gate record and sent straight to the dialogue."""
+"""Verdict card: built by code from the gate record and sent straight to the dialogue.
+
+The card tools take no verdict values. They read the result that run_factory
+itself returned in this turn, as recorded on the tracker, so a model cannot put
+a verdict, a test name or a count on the card that the gate did not produce.
+"""
+import json
 import re
 
 from rasa.mantle.tools.decorator import ToolContext, tool
 from rasa.mantle.tools.result import ToolResult
+
+VERDICTS = ('ACCEPT', 'REJECT', 'NOT_READY')
 
 MARK = {'ACCEPT': '🟢', 'REJECT': '🔴', 'NOT_READY': '🟡'}
 HEADLINE = {
@@ -13,7 +21,67 @@ HEADLINE = {
 BAR = {'ACCEPT': '▰▰▰▰▰▰▰▰▰▰', 'REJECT': '▰▰▰▰▰▱▱▱▱▱', 'NOT_READY': '▱▱▱▱▱▱▱▱▱▱'}
 
 
-def card_text(request, verdict, failing_test, fingerprint, mode, builder_calls, seconds, reason):
+def _record(value):
+    """The gate record inside a tool result, or None."""
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except ValueError:
+            return None
+    if isinstance(value, dict):
+        if value.get('verdict') in VERDICTS:
+            return value
+        for key in ('structuredContent', 'content', 'text', 'value', 'result'):
+            found = _record(value.get(key))
+            if found:
+                return found
+    if isinstance(value, list):
+        for item in value:
+            found = _record(item)
+            if found:
+                return found
+    return None
+
+
+def _number(value, kind, default):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return default
+    return kind(value)
+
+
+def last_gate(events):
+    """(request, record) from the latest successful run_factory call in this turn.
+
+    Only events after the caller's latest message count, so an earlier turn's
+    verdict is never shown again. Returns None when there is none."""
+    latest = max((i for i, event in enumerate(events) if type(event).__name__ == 'UserUttered'), default=-1)
+    for event in reversed(events[latest + 1:]):
+        if type(event).__name__ not in ('McpToolExecuted', 'ToolExecuted'):
+            continue
+        if not str(getattr(event, 'tool_name', '')).endswith('run_factory') or getattr(event, 'is_error', False):
+            continue
+        record = _record(getattr(event, 'result', None))
+        if record is None:
+            continue
+        arguments = getattr(event, 'arguments', None) or getattr(event, 'tool_args', None) or {}
+        request = arguments.get('request') if isinstance(arguments, dict) else None
+        return str(request or 'unknown'), {
+            'verdict': record['verdict'],
+            'failing_test': str(record.get('failing_test') or ''),
+            'fingerprint': str(record.get('fingerprint') or ''),
+            'mode': 'LIVE' if record.get('mode') == 'LIVE' else 'SCRIPTED',
+            'builder_model': str(record.get('builder_model') or ''),
+            'builder_calls': _number(record.get('builder_calls'), int, 0),
+            'seconds': _number(record.get('seconds'), float, 0.0),
+            'reason': str(record.get('reason') or ''),
+        }
+    return None
+
+
+NO_GATE = {'card': 'not_shown', 'reason': 'no run_factory result in this turn'}
+
+
+def card_text(request, verdict, failing_test, fingerprint, mode, builder_calls, seconds, reason, builder_model=''):
     verdict = verdict if verdict in MARK else 'NOT_READY'
     lines = [
         f'{MARK[verdict]}  {HEADLINE[verdict]}',
@@ -21,7 +89,7 @@ def card_text(request, verdict, failing_test, fingerprint, mode, builder_calls, 
         f'Request   {request}',
     ]
     if mode == 'LIVE':
-        lines.append(f'Builder   LIVE, gpt-6-astra · {builder_calls} tool calls · {seconds} s')
+        lines.append(f'Builder   LIVE{", " + builder_model if builder_model else ""} · {builder_calls} tool calls · {seconds} s')
     else:
         lines.append('Builder   SCRIPTED · supplied attempt · 0 model calls')
     lines.append(f'Gate      {BAR[verdict]}')
@@ -35,21 +103,25 @@ def card_text(request, verdict, failing_test, fingerprint, mode, builder_calls, 
     return '\n'.join(lines)
 
 
-@tool(description='Show the verdict card for a finished factory check. Call once, right after run_factory returns, with its values.')
-async def show_verdict_card(request: str, verdict: str, failing_test: str = '', fingerprint: str = '',
-                            mode: str = 'SCRIPTED', builder_calls: int = 0, seconds: float = 0.0,
-                            reason: str = '', context: ToolContext = None) -> ToolResult:
-    await context.send(card_text(request, verdict, failing_test, fingerprint, mode, builder_calls, seconds, reason))
-    return ToolResult(llm_response={'card': 'shown'})
+@tool(description='Show the verdict card for the factory check just run in this turn. Takes no values: '
+                   'the card is built from run_factory\'s own result.')
+async def show_verdict_card(context: ToolContext = None) -> ToolResult:
+    found = last_gate(context.events)
+    if found is None:
+        return ToolResult(llm_response=NO_GATE)
+    request, gate = found
+    await context.send(card_text(request, **gate))
+    return ToolResult(llm_response={'card': 'shown', 'verdict': gate['verdict']})
 
 
-def card_svg(request, verdict, failing_test, fingerprint, mode, builder_calls, seconds, reason=''):
+def card_svg(request, verdict, failing_test, fingerprint, mode, builder_calls, seconds, reason='', builder_model=''):
     from html import escape
     verdict = verdict if verdict in MARK else 'NOT_READY'
     colour = {'ACCEPT': '#1f9d55', 'REJECT': '#d64545', 'NOT_READY': '#d49a00'}[verdict]
     passed = {'ACCEPT': 10, 'REJECT': 5, 'NOT_READY': 0}[verdict]
     cells = ''.join(f'<rect x="{24 + i * 30}" y="132" width="24" height="12" rx="3" fill="{colour if i < passed else "#d9dee7"}"/>' for i in range(10))
-    builder = f'LIVE · gpt-6-astra · {builder_calls} tool calls · {seconds} s' if mode == 'LIVE' else 'SCRIPTED · supplied attempt · 0 model calls'
+    model = f' · {builder_model}' if builder_model else ''
+    builder = f'LIVE{model} · {builder_calls} tool calls · {seconds} s' if mode == 'LIVE' else 'SCRIPTED · supplied attempt · 0 model calls'
     detail = f'Failed: {failing_test}' if verdict == 'REJECT' else f'Attempt {fingerprint[:12]}…' if fingerprint else (reason or 'No verdict was obtained.')
     def wrap(value, width):
         out, line = [], ''
@@ -78,15 +150,20 @@ def card_svg(request, verdict, failing_test, fingerprint, mode, builder_calls, s
             f'<text x="24" y="{height - 14}" font-size="11" fill="#8a93a1">Judged only · nothing released or deployed</text></svg>')
 
 
-@tool(description='Show the verdict as a picture card for a finished factory check. Call once, right after run_factory returns, with its values.')
-async def show_verdict_image(request: str, verdict: str, failing_test: str = '', fingerprint: str = '',
-                             mode: str = 'SCRIPTED', builder_calls: int = 0, seconds: float = 0.0,
-                             reason: str = '', context: ToolContext = None) -> ToolResult:
+@tool(description='Show the verdict as a picture card for the factory check just run in this turn. '
+                   'Takes no values: the card is built from run_factory\'s own result.')
+async def show_verdict_image(context: ToolContext = None) -> ToolResult:
     from urllib.parse import quote
     from rasa.mantle.orchestration.turn_context import current_turn_context
     from rasa.shared.core.events import BotUttered
+    found = last_gate(context.events)
+    if found is None:
+        return ToolResult(llm_response=NO_GATE)
+    request, gate = found
     turn = current_turn_context()
-    uri = 'data:image/svg+xml;utf8,' + quote(card_svg(request, verdict, failing_test, fingerprint, mode, builder_calls, seconds, reason))
+    if turn.is_cancelled:  # the caller interrupted: record and send nothing
+        return ToolResult(llm_response={'card': 'not_shown', 'reason': 'interrupted'})
+    uri = 'data:image/svg+xml;utf8,' + quote(card_svg(request, **gate))
     turn.tracker_handle.apply_events([BotUttered(text='', data={'image': uri}, metadata={'mantle_response_source': 'tool'})])
     await turn.output_channel.send_response(turn.sender_id, {'text': '', 'image': uri})
-    return ToolResult(llm_response={'card': 'shown'})
+    return ToolResult(llm_response={'card': 'shown', 'verdict': gate['verdict']})
