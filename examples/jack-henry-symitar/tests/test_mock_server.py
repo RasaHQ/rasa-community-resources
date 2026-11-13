@@ -92,7 +92,9 @@ class ContractMockTests(unittest.TestCase):
 
     def test_changed_and_missing_definitions_stop_mock_construction(self):
         changed = dict(self.inputs)
-        changed["accounts"] += b"\n"
+        changed["accounts"] = changed["accounts"].replace(b"operationId: findAccountByWithBalances",
+                                                          b"operationId: findAccountByWithBalancesV2")
+        self.assertNotEqual(changed["accounts"], self.inputs["accounts"])
         with self.assertRaises(ContractError):
             SymitarMock(changed, self.state)
         with tempfile.TemporaryDirectory() as empty, self.assertRaises(MissingContractInput):

@@ -24,6 +24,7 @@ WSDLS = {
     "TPG_Inquiry.wsdl": "f2ff471b945b938ae0173ba2174eeb9fbb30c678c3232f177566bb27143b5108",
     "TPG_Transaction.wsdl": "559ce0113d96260ce4f7437c0dfd3a6ad49c0d976fc29abfdfaa31680dafbd22",
 }
+TESTED_WITH = "Jack Henry jXchange TPG R2026.1.00 XSD archive as published 3 Nov 2026"  # VENDOR-FILES.md
 MAX_ARCHIVE = 4 * 1024 * 1024
 MAX_MEMBERS = 64
 MAX_EXTRACTED = 16 * 1024 * 1024
@@ -45,6 +46,14 @@ class ContractError(Exception):
 
 class MissingContractInput(ContractError):
     """Launch stops; contract tests may explicitly skip only this case."""
+
+
+class VendorChanged(ContractError):
+    """Something this example uses changed in the supplied Jack Henry archive."""
+
+    def __init__(self, changes):
+        self.changes = tuple(changes)
+        super().__init__("vendor_changed: " + "; ".join(self.changes))
 
 
 def example_root() -> Path:
@@ -76,9 +85,10 @@ def extract(path: Path | None = None, cache: Path | None = None) -> Path:
     if size > MAX_ARCHIVE:
         raise ContractError("vendor_input_invalid")
     raw = path.read_bytes()
-    if hashlib.sha256(raw).hexdigest() != ARCHIVE_SHA256:
-        raise ContractError("vendor_input_invalid")
-    cache = cache or example_root() / "var" / "cache" / ("jxchange-" + ARCHIVE_SHA256[:16])
+    # A different archive hash alone does not stop the example; the operations it
+    # uses are checked against the supplied schemas (see compat.py).
+    digest = hashlib.sha256(raw).hexdigest()
+    cache = cache or example_root() / "var" / "cache" / ("jxchange-" + digest[:16])
     marker = cache / ".complete"
     if not marker.is_file():
         tmp = cache.with_name(cache.name + ".partial")
@@ -108,11 +118,11 @@ def extract(path: Path | None = None, cache: Path | None = None) -> Path:
             raise ContractError("vendor_input_invalid") from None
         shutil.rmtree(cache, ignore_errors=True)
         tmp.rename(cache)
-        marker.write_text(ARCHIVE_SHA256)
+        marker.write_text(digest)
     folder = cache / PREFIX
-    for name, digest in WSDLS.items():
-        if hashlib.sha256((folder / name).read_bytes()).hexdigest() != digest:
-            raise ContractError("vendor_input_invalid")
+    for name in WSDLS:
+        if not (folder / name).is_file():
+            raise VendorChanged([name + " is no longer in the archive"])
     return folder
 
 
@@ -140,11 +150,14 @@ class SilverLakeContract:
         xmlschema.limits.MAX_MODEL_DEPTH = max(xmlschema.limits.MAX_MODEL_DEPTH, 200)
         try:
             self.actions = {}
+            moved = []
             for operation, (wsdl, _) in OPERATIONS.items():
                 found = _soap_actions(folder / wsdl).get(operation)
                 if found != "http://jackhenry.com/ws/" + operation:
-                    raise ContractError("unsupported_operation")
+                    moved.append(operation + " SOAPAction changed or removed")
                 self.actions[operation] = found
+            if moved:
+                raise VendorChanged(moved)
             options = dict(allow="sandbox", defuse="always")
             # The archive's XML-signature schema declares a DTD entity, which we
             # refuse to process; that optional security namespace stays unresolved.
@@ -160,7 +173,14 @@ class SilverLakeContract:
 
     @classmethod
     def from_path(cls, path: Path | None = None, cache: Path | None = None) -> "SilverLakeContract":
-        return cls(extract(path, cache))
+        path = path or default_path()
+        folder = extract(path, cache)
+        contract = cls(folder)
+        contract.newer_archive = hashlib.sha256(path.read_bytes()).hexdigest() != ARCHIVE_SHA256 or any(
+            hashlib.sha256((folder / name).read_bytes()).hexdigest() != digest for name, digest in WSDLS.items())
+        return contract
+
+    newer_archive = False
 
     def schema_for(self, element: str):
         base = element[:-len("Response")] if element.endswith("Response") else element
