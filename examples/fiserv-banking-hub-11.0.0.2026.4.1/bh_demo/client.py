@@ -110,8 +110,10 @@ class BankingHubClient:
 
     def _post(self, key: str, body: dict, *, write=False) -> dict:
         try:
-            self.contract.validate_request(key, body)
-        except ContractError:
+            wire = dumps(body)
+            # Validate the exact bytes that will be sent, read back the way a server reads them.
+            self.contract.validate_request(key, json.loads(wire, parse_float=Decimal))
+        except (ContractError, TypeError, ValueError):
             raise Unavailable("invalid_request") from None
         header = json.dumps({"OrganizationId": self.organization, "TrnId": str(uuid4()),
                              "Context": {"ClientAppName": "rasa-community-fiserv-banking-hub",
@@ -122,7 +124,7 @@ class BankingHubClient:
             raise Unavailable("invalid_header") from None
         try:
             with httpx.Client(trust_env=False, timeout=self.timeout, follow_redirects=False) as http:
-                reply = http.post(self.base + self.contract.path(key), content=dumps(body),
+                reply = http.post(self.base + self.contract.path(key), content=wire,
                                   headers={"EFXHeader": header, "Content-Type": "application/json"})
         except Exception:
             # A write may have reached the bank before the connection failed.

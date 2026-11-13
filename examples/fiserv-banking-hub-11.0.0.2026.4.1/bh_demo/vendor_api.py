@@ -63,22 +63,31 @@ def loads(raw) -> object:
 
 
 def dumps(value) -> str:
-    """JSON with each Decimal written as its exact number, never through a float."""
-    marks = {}
+    """JSON text written directly, with each Decimal as its exact number token.
 
-    def mark(item):
-        if isinstance(item, Decimal):
-            if not item.is_finite():
-                raise ValueError("not a finite number")
-            token = f"\u0000decimal{len(marks)}\u0000"
-            marks[token] = format(item, "f")
-            return token
-        raise TypeError(f"not JSON serialisable: {type(item).__name__}")
-
-    text = json.dumps(value, default=mark, separators=(",", ":"))
-    for token, number in marks.items():
-        text = text.replace(json.dumps(token), number)
-    return text
+    No string substitution and no float anywhere: every value is encoded by type, so a
+    string field can never be mistaken for a number. A float is refused outright."""
+    if value is None:
+        return "null"
+    if value is True:
+        return "true"
+    if value is False:
+        return "false"
+    if isinstance(value, Decimal):
+        if not value.is_finite():
+            raise ValueError("not a finite number")
+        return format(value, "f")
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, str):
+        return json.dumps(value)
+    if isinstance(value, dict):
+        if not all(isinstance(key, str) for key in value):
+            raise TypeError("JSON object keys must be strings")
+        return "{" + ",".join(json.dumps(key) + ":" + dumps(item) for key, item in value.items()) + "}"
+    if isinstance(value, (list, tuple)):
+        return "[" + ",".join(dumps(item) for item in value) + "]"
+    raise TypeError(f"not written to the wire: {type(value).__name__}")  # floats included
 
 
 def present(value):
