@@ -1,3 +1,4 @@
+import io
 import json
 import os
 from pathlib import Path
@@ -6,8 +7,33 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
-from maintenance import execute, handoff, redact, run
+from maintenance import execute, failure_summary, handoff, redact, run
 from propose import allowed_path, changed_identity
+
+
+class FailureSummaryTest(unittest.TestCase):
+    def test_every_failure_is_listed_even_far_before_the_tail(self):
+        early = ("\u2717  validate_project failed\n"
+                 "rasa.exceptions.ValidationError: Project validation found 2 problem(s):\n"
+                 "  [mantle.validation.memory.description_not_exposed] Project memory field 'a' declares a description.\n")
+        text = early + ("ok line\n" * 5000) + "\u2717 check patterns/last\n"
+        summary = failure_summary(text)
+        self.assertEqual(len(summary), 4)
+        self.assertIn("Project validation found 2 problem(s):", summary[1])
+        self.assertTrue(summary[-1].endswith("check patterns/last"))
+
+    def test_a_clean_run_has_no_summary(self):
+        self.assertEqual(failure_summary("\u2713 validate_project passed\nall good\n"), [])
+
+    def test_execute_prints_the_summary_before_the_tail(self):
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)
+            script = "print('\\u2717 check patterns/first'); print('x' * 20000); print('\\u2717 check patterns/last')"
+            with patch('sys.stdout', new_callable=io.StringIO) as printed:
+                execute('gates', [sys.executable, '-c', script], out)
+            shown = printed.getvalue()
+            self.assertIn('Failure summary for gates (2 lines', shown)
+            self.assertIn('check patterns/first', shown.split('x' * 100)[0])
 
 
 class MaintenanceTests(unittest.TestCase):
