@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: vendor-drift
+  cancel-in-progress: false
+
 jobs:
   selected:
     runs-on: ubuntu-latest
@@ -50,8 +54,10 @@ jobs:
             cd "$(git rev-parse --show-toplevel)/examples/${{ matrix.project }}"
             uv run --locked python ../../scripts/vendor_drift.py check "${{ matrix.project }}"
       - name: Write the issue text, if any
+        if: ${{ always() }}
         run: python3 scripts/vendor_drift.py report "${{ matrix.project }}"
       - name: Open or update the issue
+        if: ${{ always() }}
         env:
           GH_TOKEN: ${{ github.token }}
           PROJECT: ${{ matrix.project }}

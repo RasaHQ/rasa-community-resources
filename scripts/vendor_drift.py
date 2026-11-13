@@ -48,6 +48,12 @@ EXAMPLES = {
     },
 }
 MAX_BYTES = 16 * 1024 * 1024
+KNOWN = {"same", "compatible", "changed", "unreadable", "download_failed"}
+
+
+def _code(text) -> str:
+    """Vendor- or network-supplied text, shown literally in a public issue."""
+    return "`" + str(text).replace("`", "'").replace("\n", " ")[:300] + "`"
 
 
 def _result_path(example: str) -> Path:
@@ -147,7 +153,8 @@ def check(example: str) -> dict:
 
 def report(example: str, today: str | None = None):
     """(title, body) for an issue, or None when the files are unchanged."""
-    result = json.loads(_result_path(example).read_text())
+    path = _result_path(example)
+    result = json.loads(path.read_text()) if path.exists() else {"status": "no result recorded"}
     status = result.get("status")
     if status == "same":
         return None
@@ -159,8 +166,14 @@ def report(example: str, today: str | None = None):
     if status == "download_failed":
         title = f"Vendor drift: could not check {example}"
         body = (f"The daily check could not download `{result['file']}` from {result['url']} "
-                f"({result['detail']}).\n\nThis is not a \"no change\" result: the files were not checked "
+                f"({_code(result['detail'])}).\n\nThis is not a \"no change\" result: the files were not checked "
                 f"today. If it repeats, the example's download route needs attention.")
+        return title, body
+    if status not in KNOWN:
+        title = f"Vendor drift: could not check {example}"
+        body = ("The files were downloaded, but the compatibility check did not run or did not finish "
+                f"(last recorded step: {_code(status)}). See the workflow run's log.\n\nThis is not a "
+                "\"no change\" result: the files were not checked today.")
         return title, body
     title = f"Vendor drift: {vendor} files changed for {example}"
     if status == "compatible":
@@ -175,7 +188,7 @@ def report(example: str, today: str | None = None):
         effect = "affected: " + "; ".join(result.get("changes", [])) + "."
     else:
         verdict = (f"The downloaded files cannot be read the way this example expects "
-                   f"({result.get('detail', 'no detail')}). The example stops at start-up.")
+                   f"({_code(result.get('detail', 'no detail'))}). The example stops at start-up.")
         effect = "affected: the files cannot be read as expected."
     body = f"""{verdict}
 

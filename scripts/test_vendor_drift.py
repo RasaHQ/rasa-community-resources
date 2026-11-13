@@ -64,6 +64,23 @@ class DriftTests(unittest.TestCase):
         self.assertIn("now stops at start-up", body)
         self.assertIn("- postTransfer request field amount changed", body)
 
+    def test_a_check_that_did_not_run_is_reported_as_could_not_check(self):
+        drift.download("jack-henry-silverlake", opener=lambda request, timeout: Reply(b"zip bytes"))
+        title, body = drift.report("jack-henry-silverlake", today="13 Nov 2026")  # still "downloaded"
+        self.assertEqual(title, "Vendor drift: could not check jack-henry-silverlake")
+        self.assertIn("compatibility check did not run", body)
+        self.assertNotIn("cannot be read", body)
+
+    def test_no_result_at_all_is_reported_as_could_not_check(self):
+        title, body = drift.report("jack-henry-symitar", today="13 Nov 2026")
+        self.assertEqual(title, "Vendor drift: could not check jack-henry-symitar")
+        self.assertIn("no result recorded", body)
+
+    def test_vendor_text_is_shown_literally(self):
+        self.write("fiserv-premier-11.0.0-prm", {"status": "unreadable", "detail": "bad `x` <b>\n@team"})
+        _, body = drift.report("fiserv-premier-11.0.0-prm", today="13 Nov 2026")
+        self.assertIn("`bad 'x' <b> @team`", body)
+
     def test_every_example_has_a_check_and_files(self):
         self.assertEqual(set(drift.CHECKS), set(drift.EXAMPLES))
         for example in drift.EXAMPLES.values():
