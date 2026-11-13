@@ -21,6 +21,11 @@ BANNED_HASHES = frozenset({
     "c1659b038b1d7bd9c89a63ad2e688a27d89cbc1d18477627d9e0105d87f10d96",
     "050962d37b56c1a35eddb7795b3fa9e4c1c6db10b01f4f5b2b46a9f4537092a5",
     "bd5ec66744b21cb3632d37e2cbdb53bbf7f3bd79cb7047cafafa9caca186de95",
+    # Symitar accounts, transactions and loans as republished 2026-11-13 (optional
+    # memberNumbers filter; documented 404 responses). transfers.yaml unchanged.
+    "d6370f663f53973dfc52d931333bdc350dc39f6c2680998a9054030668b4820f",
+    "9662089e4943dea29e8d109419388bb971301890f0ca07a4a2eff55cee19fe8d",
+    "2631ee0b97790009624ca3f9c8d233855d0ecf06556a8f0134770a831801c914",
     "a433a01b05925bd9af2bb12184046443574eba98c4fbf65b716b73cad6ff7900",
     "f2ff471b945b938ae0173ba2174eeb9fbb30c678c3232f177566bb27143b5108",
     "559ce0113d96260ce4f7437c0dfd3a6ad49c0d976fc29abfdfaa31680dafbd22",

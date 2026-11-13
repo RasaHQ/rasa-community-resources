@@ -18,9 +18,9 @@ from referencing.jsonschema import DRAFT4
 
 SOURCE_BASE = "https://jackhenry.dev/digital-core-api-docs/symitar-in-platform/api-reference/v1/"
 PINS = {
-    "accounts": "bc18c382889a9de6f2d244e033d223981bfb77ceb85cbfee96cb603354a53399",
-    "transactions": "c1659b038b1d7bd9c89a63ad2e688a27d89cbc1d18477627d9e0105d87f10d96",
-    "loans": "050962d37b56c1a35eddb7795b3fa9e4c1c6db10b01f4f5b2b46a9f4537092a5",
+    "accounts": "d6370f663f53973dfc52d931333bdc350dc39f6c2680998a9054030668b4820f",
+    "transactions": "9662089e4943dea29e8d109419388bb971301890f0ca07a4a2eff55cee19fe8d",
+    "loans": "2631ee0b97790009624ca3f9c8d233855d0ecf06556a8f0134770a831801c914",
     "transfers": "bd5ec66744b21cb3632d37e2cbdb53bbf7f3bd79cb7047cafafa9caca186de95",
 }
 OPERATIONS = frozenset({
