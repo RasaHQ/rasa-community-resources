@@ -279,7 +279,12 @@ class VendorVersions(unittest.TestCase):
             record = self._resolve(document, self._reply_root(document, "dda")["properties"]["AcctRec"])
             self._resolve(document, record["properties"]["DepositAcctInfo"])["properties"]["NewOptionalField"] = {"type": "string"}
 
+        def new_reply_field_named_summary(document):
+            self._reply_root(document, "xfer", "201").setdefault("properties", {})["summary"] = {
+                "type": "string", "nullable": True}
+
         for key, edit, label in (("xfer", optional, "XferAddOper (xfer)"), ("xfer", nullable, "XferAddOper (xfer)"),
+                                 ("xfer", new_reply_field_named_summary, "XferAddOper (xfer)"),
                                  ("xfer", wider_enum, "XferAddOper (xfer)"),
                                  ("dda", new_reply_field, "getAccountsSecured (dda)")):
             with self.subTest(edit=edit.__name__):
@@ -313,3 +318,27 @@ class VendorVersions(unittest.TestCase):
             with mock.patch("premier_demo.contract.best_match", side_effect=RuntimeError("validator broke")):
                 with self.assertRaisesRegex(ContractError, "could_not_check"):
                     PremierContract.from_path(archive)
+
+
+class ReplyDigestNames(unittest.TestCase):
+    """A field called description or example is part of the reply, not an annotation."""
+
+    def test_a_field_named_like_an_annotation_counts_and_a_real_annotation_does_not(self):
+        import copy
+        from premier_demo.contract import MEMBERS, reply_schema
+        path = MEMBERS["xfer"][3]
+        base = {"paths": {path: {"post": {"responses": {"201": {"content": {"application/json": {"schema": {
+            "type": "object", "description": "A reply.",
+            "properties": {"description": {"type": "string"}, "example": {"$ref": "#/components/schemas/E"}}}}}}}}}},
+            "components": {"schemas": {"E": {"type": "string", "example": "x"}}}}
+        schema = lambda d: d["paths"][path]["post"]["responses"]["201"]["content"]["application/json"]["schema"]
+        nullable = copy.deepcopy(base)
+        schema(nullable)["properties"]["description"]["nullable"] = True
+        widened = copy.deepcopy(base)
+        widened["components"]["schemas"]["E"]["type"] = ["string", "null"]
+        reworded = copy.deepcopy(base)
+        schema(reworded)["description"] = "Reworded."
+        reworded["components"]["schemas"]["E"]["example"] = "y"
+        self.assertNotEqual(reply_schema("xfer", nullable), reply_schema("xfer", base))
+        self.assertNotEqual(reply_schema("xfer", widened), reply_schema("xfer", base))
+        self.assertEqual(reply_schema("xfer", reworded), reply_schema("xfer", base))

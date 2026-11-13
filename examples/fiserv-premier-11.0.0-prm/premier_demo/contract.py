@@ -67,6 +67,7 @@ REPLY_SHA256 = {
     "xfer": "6e6e4a9a308f2b40855d693d60f40434a39ebcdf01a2f8162dcee2e5b04fe17b",
 }
 _DOC_ONLY = frozenset({"description", "example", "examples", "summary"})
+_NAME_MAPS = frozenset({"properties", "patternProperties"})  # maps of field names to schemas
 
 
 class ContractError(Exception):
@@ -202,11 +203,19 @@ def _inline(node, document, stack=(), depth=0):
             if reference in stack:  # a recursive schema: name the loop, do not unroll it
                 return {"$recursive": reference}
             target = _inline(_pointer(document, reference), document, stack + (reference,), depth + 1)
-            rest = {key: _inline(value, document, stack, depth + 1) for key, value in node.items()
-                    if key != "$ref" and key not in _DOC_ONLY}
+            rest = _inline({key: value for key, value in node.items() if key != "$ref"},
+                           document, stack, depth + 1)
             return {"$inlined": target, **rest} if rest else target
-        return {key: _inline(value, document, stack, depth + 1) for key, value in sorted(node.items())
-                if key not in _DOC_ONLY}
+        inlined = {}
+        for key, value in sorted(node.items()):
+            if key in _NAME_MAPS and isinstance(value, dict):
+                # Keys here are field names, not annotations: keep every one, even a
+                # field called "description" or "example".
+                inlined[key] = {name: _inline(schema, document, stack, depth + 1)
+                                for name, schema in sorted(value.items())}
+            elif key not in _DOC_ONLY:
+                inlined[key] = _inline(value, document, stack, depth + 1)
+        return inlined
     if isinstance(node, list):
         return [_inline(value, document, stack, depth + 1) for value in node]
     return node
