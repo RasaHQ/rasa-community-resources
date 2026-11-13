@@ -358,4 +358,4 @@ make validate
 
 To regenerate the models after a vendor update (needs the four files in `vendor-inputs/`), run `make models`; `make models-check` fails if the committed models differ from a fresh generation. The generator, datamodel-code-generator, is installed only for these two commands.
 
-`make test` runs source, state, transport, and snapshot controls. `make contract-test` runs the vendor contract tests. Contract-dependent tests need the four vendor files and skip without them. Conformance is shown by a run in which those tests pass. `make validate` checks the Rasa configuration. None of these is a spoken conversation check.
+`make test` runs source, state, transport, and snapshot controls. `make contract-test` runs the vendor contract tests. Contract-dependent tests need the four vendor files and skip without them; only a run in which they pass shows conformance to those contracts. `make validate` checks the Rasa configuration. None of these is a spoken conversation check.
