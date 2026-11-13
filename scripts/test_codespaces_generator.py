@@ -178,10 +178,14 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertEqual(body["features"][sshd[0]], {})
 
     def test_readme_discloses_what_the_ssh_feature_changes(self):
-        text = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        text = (REPO_ROOT / "docs" / "MAINTAINING.md").read_text(encoding="utf-8")
         for phrase in ("PermitRootLogin yes", "port 2222", "gh codespace ssh", "PAM", "has not verified who or what can reach"):
             self.assertIn(phrase, text)
         self.assertNotIn("reaching it needs", text)
+        # The root README keeps the setup anchor every resource links to, and points to the disclosure.
+        root = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("](docs/MAINTAINING.md", root)
+        self.assertIn("\n## Run any resource in a GitHub Codespace\n", root)
 
     def test_license_alias_comes_from_remote_env_for_resources_that_read_the_older_name(self):
         aliased = [g.manifest(p)["path"] for p in discover_projects("catalog") if g.manifest(p)["alias_license"]]

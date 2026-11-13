@@ -121,6 +121,7 @@ REPO_DOCS = (
     "CONTRIBUTING.md",
     "Makefile",
     "docs/MIGRATING.md",
+    "docs/MAINTAINING.md",
     "docs/RESOURCE_TEMPLATE.md",
 )
 # Per-project docs rewritten during a migration.

@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of a change that takes effect on a future date
 Time:          15 minutes to run the agent; about 15 minutes and 2 USD for the live conversation suite
+Industry:      Utilities
+You learn:     How to schedule a home move so the supply stays on until the exact day the customer gave.
+Catalog name:  Home move energy scheduling chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

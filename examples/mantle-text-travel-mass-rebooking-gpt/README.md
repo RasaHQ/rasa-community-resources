@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of scarce inventory during a disruption
 Time:          15 minutes to run the agent; about 8 minutes and 2.10 USD for the live conversation suite
+Industry:      Travel
+You learn:     How to keep a seat offer, a seat hold and a committed rebooking apart after a storm.
+Catalog name:  Mass flight rebooking chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

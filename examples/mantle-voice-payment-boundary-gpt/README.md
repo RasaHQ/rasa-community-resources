@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting payments behind a Rasa voice agent
 Time:          15 minutes to run the agent; about 25 minutes and 2.65 USD for the live call suite
+Industry:      Retail
+You learn:     How to keep card numbers out of a voice agent's records and take payment through a secure link.
+Catalog name:  Card-safe order payment voice agent (GPT)
 ```
 
 A Rasa Mantle voice agent for one casebook case,

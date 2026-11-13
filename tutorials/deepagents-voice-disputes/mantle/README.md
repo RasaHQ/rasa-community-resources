@@ -14,3 +14,6 @@ Follow [the complete tutorial](../README.md). This project owns the conversation
 **Assessed on:** 2026-10-10
 **Assessed by:** Native confirmation-gate and invoker controls
 **Verified with:** Rasa Pro 3.21.0.dev5 native confirmation gate and invoker with a controlled tracker; assess speech accuracy through the configured voice channel
+**Industry:** General
+**You learn:** How a Mantle voice agent uses a Deep Agents researcher but submits a charge review only after confirmation.
+**Catalog name:** Card dispute voice agent with a Deep Agents researcher

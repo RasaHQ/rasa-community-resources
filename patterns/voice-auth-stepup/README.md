@@ -16,6 +16,9 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners building voice agents that can do something worth stealing
 Time:          40–60 minutes
+Industry:      General
+You learn:     How to ask for stronger identity checks at the moment a caller tries a riskier action.
+Catalog name:  Risk-based voice authentication step-up
 ```
 
 Most voice agents authenticate like a bouncer: once, at the door, and then you

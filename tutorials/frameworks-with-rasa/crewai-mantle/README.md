@@ -17,6 +17,9 @@ tool failures before returning research to the conversation.
 **Assessed on:** 2026-10-11
 **Assessed by:** Native task-record controls, decorated Mantle bindings and licensed build qualification
 **Verified with:** Rasa Pro 3.21.0.dev5, CrewAI 1.15.27 and Python 3.12.13; 36 native controls, project validation, licensed training and cold archive load passed
+**Industry:** General
+**You learn:** How to give an existing CrewAI research crew a Rasa conversation that checks its results.
+**Catalog name:** CrewAI research crew with a Rasa conversation
 
 ## Start both selected runtimes
 

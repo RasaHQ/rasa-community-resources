@@ -13,6 +13,9 @@ Author: Rasa Community
 Assessed on: 2026-10-09
 Assessed by: Codex; offline source, tool checks and native loopback qualification
 Verified with: Python 3.12; see uv.lock; loopback responses qualify integration, not model performance
+Industry: General
+You learn: How to move a Deep Agents database chat to Rasa Mantle with the same read-only SQL tools.
+Catalog name: Deep Agents SQL chat migration to Mantle
 ```
 
 Follow [the tutorial README](../README.md) for setup, scope and troubleshooting.

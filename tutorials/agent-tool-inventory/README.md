@@ -14,6 +14,9 @@ Assessed by: Rasa Community
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience: Engineers reviewing the tools exposed by a trusted Mantle project
 Time: 30–45 minutes
+Industry: General
+You learn: How to list an agent's tools, save a reviewed list and make a check fail when the list changes.
+Catalog name: Agent tool inventory and change check
 
 When you add a tool to an agent, the list your team reviewed can fall behind.
 In this exercise, you will generate that list from Mantle’s Python tool loader,

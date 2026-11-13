@@ -31,7 +31,10 @@ Author:        Rasa Community contributors
 Assessed on:   2026-11-12
 Assessed by:   Contract, state and transport checks; native voice qualification recorded separately
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12
-Status:        Development branch; see the PR for current native qualification
+Record status: Development branch; see the PR for current native qualification
+Industry:      Banking
+You learn:     How to connect a voice assistant to banking tools and never resend a transfer whose outcome is unclear.
+Catalog name:  Jack Henry Symitar credit union voice demo
 ```
 
 </details>

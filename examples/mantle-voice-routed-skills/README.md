@@ -16,6 +16,9 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners running a Rasa voice agent that is not allowed to go quiet
 Time:          30–45 minutes
+Industry:      Banking
+You learn:     How to keep a voice agent talking when a speech vendor stops answering, by trying the next one.
+Catalog name:  Banking voice agent with speech vendor failover
 ```
 
 The same banking agent as [`mantle-voice-rime-skills`](../mantle-voice-rime-skills)

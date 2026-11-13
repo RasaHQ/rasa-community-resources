@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of admissions and financial-aid questions
 Time:          15 minutes to run the agent; about 8 minutes and 1.30 USD for the live conversation suite
+Industry:      Education
+You learn:     How to report a received aid form as a stage, never as an award decision.
+Catalog name:  University enrolment and aid chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

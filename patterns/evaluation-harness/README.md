@@ -15,6 +15,9 @@
     Installation: rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners who need to know whether a change to their agent made it better or worse
     Time:          45–60 minutes
+    Industry:      General
+    You learn:     How to test an agent with tracker assertions, an LLM judge and a simulated user.
+    Catalog name:  Agent evaluation with simulated users and an LLM judge
 
 Three different questions get asked about an agent, and they need three
 different instruments:

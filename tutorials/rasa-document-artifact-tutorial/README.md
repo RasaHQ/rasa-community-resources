@@ -15,6 +15,9 @@
     Installation: rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
     Audience:      Practitioners building agents whose deliverable is a FILE — a suitability record, a claim summary, a mandate — and who cannot afford a plausible number in it
     Time:          45–60 minutes
+    Industry:      General
+    You learn:     How to build a document from checked data, so the model can never write a figure into it.
+    Catalog name:  Documents built from checked data, not model text
 
 **A bank asked for an agent that produces a document, not advice.** The obvious
 build is a conversational PDF generator: let the model write prose into a file.

@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of billing support options
 Time:          15 minutes to run the agent; about 10 minutes and 1.90 USD for the live conversation suite
+Industry:      Utilities
+You learn:     How to explain a budget plan without treating the estimate as a change to the balance owed.
+Catalog name:  Energy budget plan chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

@@ -439,6 +439,16 @@ def projects():
     return discover_projects('catalog') + discover_projects('snapshots')
 
 
+# The workshop's own configuration is kept by hand (it is not generated), so it is listed separately.
+WORKSHOP = {"path": "workshops/software-factories-masterclass", "slug": "travel-factory"}
+
+
+def launch_matrix() -> list[dict]:
+    """Every resource with an Open in GitHub Codespaces button, as {path, slug}."""
+    paths = [project.rel for project in projects()] + [item["path"] for item in MANUAL]
+    return [{"path": path, "slug": slug(path)} for path in paths] + [dict(WORKSHOP)]
+
+
 def plan() -> list[tuple[Path, str]]:
     changes: list[tuple[Path, str]] = []
     entries = [manifest(project) for project in projects()] + [manual_manifest(m) for m in MANUAL]
@@ -457,11 +467,7 @@ def main() -> int:
     parser.add_argument("--list-json", action="store_true", help="print the resources as a JSON matrix for CI")
     args = parser.parse_args()
     if args.list_json:
-        paths = [project.rel for project in projects()] + [item["path"] for item in MANUAL]
-        matrix = [{"path": path, "slug": slug(path)} for path in paths]
-        # The workshop's own configuration is kept by hand (it is not generated), so list it here for CI.
-        matrix.append({"path": "workshops/software-factories-masterclass", "slug": "travel-factory"})
-        print(json.dumps(matrix))
+        print(json.dumps(launch_matrix()))
         return 0
     if args.list:
         for project in projects():

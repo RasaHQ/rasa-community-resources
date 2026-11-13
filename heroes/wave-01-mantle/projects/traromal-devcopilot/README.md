@@ -20,6 +20,9 @@ Save a DeepSeek account key as `DEEPSEEK_API_KEY`. This Codespace maps it to the
     Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
     Audience:      Practitioners building voice developer-operations agents with Rasa Skills
     Time:          60–90 minutes
+    Industry:      IT
+    You learn:     How a hands-free voice assistant for developers manages tasks, tickets, deploys and reminders.
+    Catalog name:  DevPilot developer voice assistant
 
 DevPilot is a hands-free **voice assistant for developers**. It listens when you
 talk, figures out what you want, and does the work — pulling up your task queue,

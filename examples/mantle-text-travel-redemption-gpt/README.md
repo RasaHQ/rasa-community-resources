@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds, batch 1; live runs recorded in
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of a loyalty or payments ledger
 Time:          15 minutes to run the agent; about 7 minutes and 1.35 USD for the live conversation suite
+Industry:      Travel
+You learn:     How to take reward points only when the held seat and the booking both go through.
+Catalog name:  Rewards points redemption chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

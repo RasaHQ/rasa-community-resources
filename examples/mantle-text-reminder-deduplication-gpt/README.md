@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of outbound patient or customer notifications
 Time:          15 minutes to run the agent; about 10 minutes and 1 USD for the live conversation suite
+Industry:      Healthcare
+You learn:     How to send one reminder per booking version, so a moved appointment never gets two reminders.
+Catalog name:  Appointment reminder chat agent (GPT)
 ```
 
 A Rasa Mantle text agent for one casebook case,

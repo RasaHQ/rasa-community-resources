@@ -16,6 +16,9 @@ Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv  # rasa-version-ignore: hi
 Installation:  rasa-pro 3.21.0.dev5 (automated check scope in COMPATIBILITY.json)
 Audience:      Practitioners choosing a TTS provider for a Rasa voice agent
 Time:          30–45 minutes
+Industry:      Banking
+You learn:     How to make a voice agent speak with Rime text-to-speech (TTS) using one block of configuration.
+Catalog name:  Rime text-to-speech voice banking agent
 ```
 
 A small banking voice agent whose point is the **speaking half** of the voice

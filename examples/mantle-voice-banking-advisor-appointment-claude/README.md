@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting Claude behind a Rasa voice agent that books appointments
 Time:          15 minutes to run the agent; about 35 minutes and 2.60 USD for the live call suite
+Industry:      Banking
+You learn:     How to book an advisor appointment only with a team that can handle the customer's question.
+Catalog name:  Bank advisor booking voice agent (Claude)
 ```
 
 A Rasa Mantle voice agent for one casebook case,

@@ -1,231 +1,205 @@
 # Rasa Community Resources
 
-**New: the Rasa Travel Agent Factory masterclass.** [Start here: credentials, Codespaces and your first live result](workshops/software-factories-masterclass/README.md) · [Teaching deck](workshops/software-factories-masterclass/slides/masterclass-slides.pdf) · [Instructor card](workshops/software-factories-masterclass/FACILITATOR.md) · [Printed setup sheet (PDF)](workshops/software-factories-masterclass/handout/rasa-travel-workshop-one-pager.pdf) · [Join the Rasa Community](https://rasa.community/join/)
+This repository holds the code for the tutorials, example agents and workshops on [rasa.community](https://rasa.community/), ready to run in your browser.
 
-Choose what you want to do:
+## Start here
 
-- **Learn at your own pace:** [Build your first Mantle agent](https://rasa.community/library/tutorials/mantle-starter-pack/) with a self-paced tutorial and a runnable companion.
-- **Join the live workshop:** [Open the Rasa Travel Agent Factory Codespace](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/travel-factory/devcontainer.json) to speak to a Mantle travel agent and review agents that Codex and a hosted OpenAI Agents session build. It needs your own Rasa, OpenAI and Deepgram keys. [First time? Follow the step-by-step guide.](workshops/software-factories-masterclass/README.md)
-- **Run a finished agent:** [Start with the Atlas voice agent](examples/mantle-voice-agent/README.md) to try a complete travel assistant before adapting it.
-- **Find a reusable pattern:** [Browse patterns](patterns/README.md) for focused implementations you can bring into an existing agent.
-- **Contribute a resource:** [Read the contribution guide](CONTRIBUTING.md) to choose a folder, check your example, and keep its authors credited.
+Pick one:
 
-This is the code companion to [rasa.community](https://rasa.community/). Tutorials, examples, and reference code live in their own folders, with setup instructions and the versions they were tested against. For the presenter-led Software Factories workshop, follow the [workshop guide](workshops/software-factories-masterclass/README.md). It needs no local installation; the hosted builds use your own OpenAI key and can incur charges.
-
-## Banking examples
-
-The banking examples are being built as independent folders, each with its own
-MCP server, vendor-contract mock, data, tests, and voice agent:
-
-- [Jack Henry Symitar / SymXchange — in development](https://github.com/RasaHQ/rasa-community-resources/pull/205)
-- [Jack Henry SilverLake / jXchange — in development](https://github.com/RasaHQ/rasa-community-resources/pull/206)
-- [Fiserv Premier / Banking Hub — in development](https://github.com/RasaHQ/rasa-community-resources/pull/209)
-
-These pull requests are the current implementation work. The earlier shared
-banking demo has been removed. Use the replacement's README when it is merged.
-
-## Browse the repository
-
-Use the category catalogs below when you already know what you need. For isolated local development, read [workspaces and environments](docs/WORKSPACES.md) before installing a resource.
-
-## What this is
-
-- **Tutorials**—end-to-end walkthroughs, each self-contained, each runnable
-- **Example projects**—complete agents you can clone and adapt, not fragments
-- **Reference code**—patterns for recurring problems: tool design, evaluation, deployment, observability, human handover
-- **Workshop material**—slides, exercises, and solutions from community sessions and conferences
-
-## What this is not
-
-- **Not the product documentation.** The canonical reference is [rasa.com/docs](https://rasa.com/docs/). This repository is educational material.
-- **Not the Rasa framework itself.** Rasa Pro is commercial. Running these resources requires a license key (free for developers—see Requirements).
-- **Not a support channel.** Product issues belong with Rasa support or the product repositories. Questions about material here belong in the [community](https://info.rasa.com/community).
-
----
-
-## Featured resources
-
-| Resource | Persona | Domain | Path |
-|---|---|---|---|
-| Atlas voice travel agent | Atlas | Horizon Travel | [`examples/mantle-voice-agent`](examples/mantle-voice-agent) |
-| Rasano voice banking | Rasano | Retail banking | [`examples/mantle-voice-banking-skills`](examples/mantle-voice-banking-skills) |
-| Telano voice telecom care | Telano | Telecom | [`examples/mantle-voice-telco-skills`](examples/mantle-voice-telco-skills) |
-| Poly voice insurance | Poly | Insurance | [`examples/mantle-voice-insurance-skills`](examples/mantle-voice-insurance-skills) |
-| Schedora voice appointments | Schedora | Clinic booking | [`examples/mantle-voice-appointment-skills`](examples/mantle-voice-appointment-skills) |
-| Autono voice car purchase | Autono | Auto retail | [`examples/mantle-voice-car-purchase-skills`](examples/mantle-voice-car-purchase-skills) |
-| Vela voice banking (Rime text-to-speech (TTS)) | Vela | Retail banking | [`examples/mantle-voice-rime-skills`](examples/mantle-voice-rime-skills) |
-| Vela voice banking (Speechmatics automatic speech recognition (ASR)) | Vela | Retail banking | [`examples/mantle-voice-speechmatics-skills`](examples/mantle-voice-speechmatics-skills) |
-| Atlas voice tutorial tree | Atlas | Horizon Travel | [`tutorials/rasa-voice-agent-tutorial`](tutorials/rasa-voice-agent-tutorial) |
-| Voice vendor router (ASR/TTS failover and vendor swapping) |—| Voice infrastructure | [`patterns/voice-vendor-router`](patterns/voice-vendor-router) |
-
-Full catalogs (including empty areas accepting contributions) live in each category README below.
-
----
-
-## Repository map
-
-The repository holds two kinds of material under two different promises.
-
-**Maintained catalog**—one shared Rasa Pro pin, migrated together, expected to
-stay green for as long as it is checked in. Contributed work lives here too:
-an example pinned to a release the catalog has moved off is one nobody clones.
-
-| Path | What it holds | Catalog |
-|---|---|---|
-| [`tutorials/`](tutorials/) | Step-by-step walkthroughs with runnable code | [tutorials/README.md](tutorials/README.md) |
-| [`examples/`](examples/) | Complete clone-and-run agents | [examples/README.md](examples/README.md) |
-| [`patterns/`](patterns/) | Small reference implementations of recurring problems | [patterns/README.md](patterns/README.md)—accepting contributions |
-| [`workshops/`](workshops/) | Slides, exercises, and solutions from sessions | [workshops/README.md](workshops/README.md)—accepting contributions |
-| [`snippets/`](snippets/) | Short pieces too small to be a pattern | [snippets/README.md](snippets/README.md)—accepting contributions |
-| [`community/`](community/) | Resources written by practitioners, credited to their authors | [community/README.md](community/README.md)—accepting contributions |
-
-**Frozen snapshots**—dated cohort records, pinned to the version their authors
-verified and not migrated forward. Still required to be reproducible: a real
-`uv.lock`, a name, and a date.
-
-| Path | What it holds | Index |
-|---|---|---|
-| [`heroes/`](heroes/) | Rasa Heroes cohort projects, one directory per wave | [heroes/README.md](heroes/README.md)—accepting waves |
-
-Why the split, and what each tier guarantees: [`docs/SNAPSHOTS.md`](docs/SNAPSHOTS.md).
-
-As the repository grows, **category READMEs are the live inventory**. This root page stays a map and a starting point—not a list of every subdirectory.
-
----
-
-## How to read a resource
-
-Every resource directory opens its `README.md` with a block like this:
-
-```text
-Author:        Rod Rivera
-Assessed on:   2026-08-13
-Assessed by:   Rod Rivera
-Verified with: rasa-pro 3.21.0.dev5, Python 3.11+, uv
-Audience:      Practitioners building voice agents with Rasa Skills
-Time:          75–90 minutes
-```
-
-Read **Assessed on** first. If it is more than six months old, the pin has likely moved. Open an issue if something no longer runs. Material that cannot be re-verified is archived rather than left implying it still works.
-
-Multiple authors are listed comma-separated on the `Author` line. Credit is permanent—see [MAINTAINERS.md](MAINTAINERS.md).
-
----
-
-## Requirements
-
-Resources here typically assume:
-
-- Python 3.11 or later (see each resource’s `Verified with` line)
-- [uv](https://docs.astral.sh/uv/) for dependency management
-- A `RASA_LICENSE` key—the [Developer Edition](https://rasa.community/license/) key is free
-- A large language model (LLM) provider key, typically `OPENAI_API_KEY`
-- For voice examples: a `DEEPGRAM_API_KEY`
-
-Individual resources state any additional requirements.
-
----
+- **Follow a tutorial:** [Build your first Mantle agent](https://rasa.community/library/tutorials/mantle-starter-pack/) at your own pace. Mantle is the agent engine in Rasa Pro that most resources here use.
+- **Run a finished example:** [Atlas, a voice travel agent](examples/mantle-voice-agent/README.md) that you can talk to and then change.
+- **Join the workshop:** [Build a travel agent with Rasa Mantle and Codex](workshops/software-factories-masterclass/README.md), with step-by-step setup.
 
 ## Run any resource in a GitHub Codespace
 
-Every example, tutorial, pattern and community resource opens in its own Codespace with its locked dependencies installed, and its README starts with an **Open in GitHub Codespaces** button. Nothing needs installing on your laptop.
+A Codespace is a temporary computer that GitHub runs for you. Its editor and terminal open in your browser, so you install nothing on your laptop. Each resource opens in its own Codespace with its dependencies already installed.
 
-1. Get a free [Rasa Developer Edition license](https://rasa.community/#request-license) and the provider key your resource names (OpenAI, Anthropic, Gemini, Deepgram and so on).
-2. Open [GitHub → Settings → Codespaces](https://github.com/settings/codespaces), choose **New secret**, and save each value under the exact name the resource's README lists, such as `RASA_LICENSE` or `OPENAI_API_KEY`. Under **Repository access**, pick `RasaHQ/rasa-community-resources`. You do this once; every resource reuses the secrets.
-3. Click the resource's **Open in GitHub Codespaces** button, choose **Create codespace**, and wait for the install to finish.
-4. Run the first command in the README. It checks the install without calling a model.
+1. **Get your keys.** Request a free [Rasa Developer Edition license](https://rasa.community/license/). Then get the provider keys the resource's README names, usually an OpenAI API key.
+2. **Save them as Codespaces secrets.** A secret is a name paired with a hidden value. Open [GitHub → Settings → Codespaces](https://github.com/settings/codespaces), choose **New secret**, and use these exact names: `RASA_LICENSE` for the license, `OPENAI_API_KEY` for OpenAI, and `DEEPGRAM_API_KEY` for voice resources (Deepgram turns speech into text and text into speech). Add others, such as `ANTHROPIC_API_KEY` or `GEMINI_API_KEY`, when the resource's README names them. Under **Repository access**, pick `RasaHQ/rasa-community-resources`. You do this once; every resource reuses the secrets.
+3. **Click the resource's own button.** Open the resource's README, click **Open in GitHub Codespaces**, choose **Create codespace**, and wait until the setup log ends with `READY`.
+4. **Run the first command.** Under the button, the README gives the first command to run and says what you should see.
 
 Use each resource's own button, not the Codespaces picker: the picker lists every configuration in this repository, and only the button opens the right one. The one exception is the Software Factories masterclass, which has its own guide.
 
-**What the SSH feature changes.** Each configuration adds the dev container `sshd` feature (pinned to version 1.1.0) so that maintainers and instructors can check a Codespace with `gh codespace ssh`. It installs the OpenSSH server and client and `lsof`, creates an SSH group, edits the PAM configuration, sets `PermitRootLogin yes` in the SSH server configuration, and starts the server on port 2222 from an entrypoint script. These configurations forward no port for it and set no password by default, and the intended way to reach it is `gh codespace ssh` with your own GitHub sign-in through GitHub's tunnel. The feature does not make that client the only route, and this repository has not verified who or what can reach port 2222 from inside or outside the Codespace. This is the published feature's documented behaviour, not something these configurations test. It affects only the Codespace, never your laptop.
+If you add or fix a secret after the Codespace exists, stop and reopen that Codespace so it picks the secret up.
 
-If you add or fix a secret after the Codespace exists, stop and reopen that Codespace so it picks the secret up. The configurations are generated by `python3 scripts/generate_codespaces.py` from each resource's own files; do not edit them by hand.
+Each Codespace also runs an SSH server (a way to log in to it remotely) so that maintainers can check it. [Read what the SSH feature changes](docs/MAINTAINING.md#codespaces-configurations).
 
-## Validating the catalog
+<!-- catalog:start -->
+<!-- Generated by scripts/generate_readme_catalog.py from each resource's README. Do not edit by hand; run `make readme-catalog`. -->
 
-Correctness here is checked by running a command, not by reading the tree. From
-the repository root:
+## Find a resource by industry
 
-```bash
-make validate        # ~2s, offline, no uv needed—run before every commit
-make ci              # + install every resource and run validate_project
-make validate-full   # + rasa train everywhere (needs RASA_LICENSE)
-```
+There are 82 resources: 4 bank integrations, 19 voice agents, 22 text agents, 1 example, 19 tutorials, 6 patterns, 1 community, 1 workshop, 9 Heroes wave projects. 1 more is still a work in progress, listed at the end. Each **Open** link starts that resource's own Codespace; it is the same link as the button in its README. **General** resources teach a technique that works in any industry.
 
-`make validate` unit-tests the tooling, then lints both tiers: version and
-lockfile consistency, skill authoring rules, resource metadata, committed
-secrets, and—for frozen snapshots—that each one's pin, lock, and
-`Verified with:` line agree. The same target runs in continuous integration (CI) on every pull request
-and weekly. What each check enforces—and how to fix a failure—is in
-[`docs/VALIDATION.md`](docs/VALIDATION.md).
+### Banking
 
----
+The bank integrations need a Rasa license, an OpenAI key and a Deepgram key. [rasa.community/keys](https://rasa.community/keys/) shows how to get each one.
 
-## Keeping resources on the latest Rasa Pro
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Fiserv Banking Hub voice banking demo](examples/fiserv-banking-hub-11.0.0.2026.4.1/) | Bank integration | How a voice assistant uses only the values a published banking API defines, and never guesses the rest. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-banking-hub-11.0.0.2026.4.1/devcontainer.json) |
+| [Fiserv Premier voice banking demo](examples/fiserv-premier-11.0.0-prm/) | Bank integration | How to connect a voice assistant to banking tools and confirm a transfer before it is sent. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-fiserv-premier-11.0.0-prm/devcontainer.json) |
+| [Jack Henry SilverLake voice banking demo](examples/jack-henry-silverlake/) | Bank integration | How to connect a voice assistant to banking tools and check requests against a published API format. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-silverlake/devcontainer.json) |
+| [Jack Henry Symitar credit union voice demo](examples/jack-henry-symitar/) | Bank integration | How to connect a voice assistant to banking tools and never resend a transfer whose outcome is unclear. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-symitar/devcontainer.json) |
+| [Bank advisor booking voice agent (Claude)](examples/mantle-voice-banking-advisor-appointment-claude/) | Voice agent | How to book an advisor appointment only with a team that can handle the customer's question. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-banking-advisor-appointment-claude/devcontainer.json) |
+| [Banking voice agent with speech vendor failover](examples/mantle-voice-routed-skills/) | Voice agent | How to keep a voice agent talking when a speech vendor stops answering, by trying the next one. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-routed-skills/devcontainer.json) |
+| [Card charge dispute voice agent (Claude)](examples/mantle-voice-banking-dispute-claude/) | Voice agent | How to file a card dispute by voice without promising a refund before any review. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-banking-dispute-claude/devcontainer.json) |
+| [Custom Speechmatics speech-to-text engine](examples/mantle-voice-speechmatics-skills/) | Voice agent | How to write a custom speech-to-text (ASR) engine for a provider that Rasa does not ship. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-speechmatics-skills/devcontainer.json) |
+| [Lost card blocking voice agent (GPT)](examples/mantle-voice-banking-block-card-gpt/) | Voice agent | How to block exactly the one card the caller names and confirms, not every card on the account. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-banking-block-card-gpt/devcontainer.json) |
+| [Rasano retail banking voice agent](examples/mantle-voice-banking-skills/) | Voice agent | How a voice banking agent built with Rasa skills checks balances, sends money and blocks cards. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-banking-skills/devcontainer.json) |
+| [Rime text-to-speech voice banking agent](examples/mantle-voice-rime-skills/) | Voice agent | How to make a voice agent speak with Rime text-to-speech (TTS) using one block of configuration. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-rime-skills/devcontainer.json) |
+| [Spanish debt collections voice agent (Gemini)](examples/mantle-voice-banking-collections-gemini/) | Voice agent | How a Spanish voice agent records only permitted repayment plans and passes hardship cases to a team. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-banking-collections-gemini/devcontainer.json) |
+| [Loan payoff quote chat agent (Claude)](examples/mantle-text-banking-loan-servicing-claude/) | Text agent | How to quote a loan payoff only from a dated quote, never from yesterday's balance. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-banking-loan-servicing-claude/devcontainer.json) |
+| [Money transfer chat agent with ledger checks (GPT)](examples/mantle-text-banking-transfer-gpt/) | Text agent | How to let the bank's ledger, not the model, decide whether a transfer can go through. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-banking-transfer-gpt/devcontainer.json) |
+| [Transaction history search chat agent (GPT)](examples/mantle-text-banking-statement-search-gpt/) | Text agent | How to search transactions so each answer states its dates, its statuses and whether it is complete. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-banking-statement-search-gpt/devcontainer.json) |
+| [Transfer step-up verification chat agent (GPT)](examples/mantle-text-banking-risk-step-up-gpt/) | Text agent | How to require a fresh verification for each transfer, not just a sign-in. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-banking-risk-step-up-gpt/devcontainer.json) |
 
-Every resource in the **maintained catalog**—including everything under
-`community/`—pins the same Rasa Pro version, recorded in
-[`RASA_PRO_VERSION`](RASA_PRO_VERSION). Only frozen wave projects under
-`heroes/` are left out, and [`docs/SNAPSHOTS.md`](docs/SNAPSHOTS.md) explains
-why. From the repository root:
+### Insurance
 
-```bash
-make status        # detect pin / lock / README drift
-make outdated      # check PyPI for a newer rasa-pro release
-make migrate       # rewrite pins, docs, and uv.lock files
-make check-all     # sync + assert version + validate_project
-make test-all      # also rasa train when RASA_LICENSE is available
-```
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Poly insurance claims voice agent](examples/mantle-voice-insurance-skills/) | Voice agent | How a voice insurance agent files claims, checks claim status and books inspections. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-insurance-skills/devcontainer.json) |
+| [Roadside assistance dispatch voice agent (Claude)](examples/mantle-voice-insurance-roadside-claude/) | Voice agent | How to send roadside help to where the car is now, as the caller confirmed, not to the policy address. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-insurance-roadside-claude/devcontainer.json) |
+| [Insurance claim filing chat agent (Claude)](examples/mantle-text-insurance-file-claim-claude/) | Text agent | How to file a claim only when the claims system confirms it, and let the tool send the reference. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-insurance-file-claim-claude/devcontainer.json) |
+| [Insurance quote and bind chat agent (GPT)](examples/mantle-text-insurance-quote-bind-gpt/) | Text agent | How to keep an estimate, an offer and a bound policy apart, with confirmation before binding. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-insurance-quote-bind-gpt/devcontainer.json) |
+| [Policy and claim status chat agent (Gemini)](examples/mantle-text-insurance-policy-status-gemini/) | Text agent | How to answer policy questions without reading an active policy as cover for a particular loss. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-insurance-policy-status-gemini/devcontainer.json) |
 
-Override the target with `make migrate VERSION=3.21.0.dev5`, preview it first with
-`make migrate-dry VERSION=3.21.0.dev5`, or jump to the newest stable release with
-`make latest`. Full maintainer and local-user notes:
-[`docs/MIGRATING.md`](docs/MIGRATING.md).
+### Telco
 
-Frozen material has its own two commands—`make snapshots` to see what is
-frozen and at which pin, `make check-snapshots` to install each one against the
-pin it carries.
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Telano telecom support voice agent](examples/mantle-voice-telco-skills/) | Voice agent | How a voice telecom agent troubleshoots slow internet, explains bills and resets routers. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-telco-skills/devcontainer.json) |
+| [Contract cancellation and retention chat agent (GPT)](examples/mantle-text-telco-retention-gpt/) | Text agent | How to record a cancellation first and stop making offers once the customer says no. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-telco-retention-gpt/devcontainer.json) |
+| [Router diagnostics and outage chat agent (GPT)](examples/mantle-text-telco-diagnostics-gpt/) | Text agent | How to keep diagnostics, a reboot and a factory reset apart, so an outage never triggers a reset. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-telco-diagnostics-gpt/devcontainer.json) |
 
----
+### Travel
 
-## Contributing
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Atlas travel assistant voice agent](examples/mantle-voice-agent/) | Voice agent | How to run a voice travel assistant built with Rasa skills and Deepgram speech-to-text and text-to-speech. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-agent/devcontainer.json) |
+| [Flight change voice agent with linked services (GPT)](examples/mantle-voice-travel-booking-gpt/) | Voice agent | How to change a booked flight together with its linked services, with confirmation, by voice. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-travel-booking-gpt/devcontainer.json) |
+| [Mass flight rebooking chat agent (GPT)](examples/mantle-text-travel-mass-rebooking-gpt/) | Text agent | How to keep a seat offer, a seat hold and a committed rebooking apart after a storm. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-travel-mass-rebooking-gpt/devcontainer.json) |
+| [Rewards points redemption chat agent (GPT)](examples/mantle-text-travel-redemption-gpt/) | Text agent | How to take reward points only when the held seat and the booking both go through. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-travel-redemption-gpt/devcontainer.json) |
+| [Storm disruption seat hold chat agent (GPT)](examples/mantle-text-disruption-mode-gpt/) | Text agent | How to keep a seat search, a seat hold and a confirmed journey apart while a storm cancels flights. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-disruption-mode-gpt/devcontainer.json) |
+| [Gemini voice travel agent with local embeddings](community/samrudh-gemini-voice-agent/) | Community | How to run a Mantle voice agent on Google Gemini with local embeddings and no OpenAI key. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/community-samrudh-gemini-voice-agent/devcontainer.json) |
 
-Contributions are welcome. Contributors are credited by name on the resources they write.
+### Retail
 
-The three things that matter most:
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Autono car buying voice agent](examples/mantle-voice-car-purchase-skills/) | Voice agent | How a voice car-buying assistant researches cars, reserves one at a dealer and quotes financing. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-car-purchase-skills/devcontainer.json) |
+| [Card-safe order payment voice agent (GPT)](examples/mantle-voice-payment-boundary-gpt/) | Voice agent | How to keep card numbers out of a voice agent's records and take payment through a secure link. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-payment-boundary-gpt/devcontainer.json) |
+| [Parcel tracking voice agent (Gemini)](examples/mantle-voice-retail-order-status-gemini/) | Voice agent | How to tell a customer where a parcel is without calling a warehouse label a delivery. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-retail-order-status-gemini/devcontainer.json) |
+| [Accessory compatibility shopping chat agent (GPT)](examples/mantle-text-retail-guided-selling-gpt/) | Text agent | How to recommend an accessory only when the product data shows that it fits. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-retail-guided-selling-gpt/devcontainer.json) |
+| [Returns and exchanges chat agent (Claude)](examples/mantle-text-retail-return-claude/) | Text agent | How to start a return without promising a refund before the item is received and inspected. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-retail-return-claude/devcontainer.json) |
+| [Subscription pause and cancel chat agent (GPT)](examples/mantle-text-retail-loyalty-gpt/) | Text agent | How to keep stopping a renewal, pausing and cancelling now as three separate confirmed actions. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-retail-loyalty-gpt/devcontainer.json) |
+| [Coffee shop ordering and loyalty assistant](heroes/wave-01-mantle/projects/samrudh-coffee-shop/) | Heroes wave | How a coffee shop assistant serves customers, baristas and managers with separate skills and roles. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-samrudh-coffee-shop/devcontainer.json) |
 
-1. **One resource per pull request**
-2. **It has to run**—with versions and an assessment date in the README
-3. **Write for peers**—including what breaks
+### Healthcare
 
-If your resource is not the canonical answer to its problem—a provider swap, a
-deployment shape, a specific integration—contribute it to
-[`community/`](community/). It is maintained on the catalog pin like everything
-else, so it does not go stale. Migration is the maintainers' job, and whoever
-bumps it re-runs it and puts their own name on `Assessed by`. `Author` stays
-yours permanently.
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Prescription refill voice agent with on-device speech](examples/mantle-voice-healthcare-refill-request-gpt-local/) | Voice agent | How to run a voice agent whose speech stays on a Mac and that never approves a prescription. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-healthcare-refill-request-gpt-local/devcontainer.json) |
+| [Schedora clinic appointment voice agent](examples/mantle-voice-appointment-skills/) | Voice agent | How a voice assistant books clinic appointments, manages contacts and hands off to the clinic team. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-appointment-skills/devcontainer.json) |
+| [Appointment reminder chat agent (GPT)](examples/mantle-text-reminder-deduplication-gpt/) | Text agent | How to send one reminder per booking version, so a moved appointment never gets two reminders. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-reminder-deduplication-gpt/devcontainer.json) |
+| [Patient intake and insurance check chat agent (Gemini)](examples/mantle-text-healthcare-intake-gemini/) | Text agent | How to check insurance eligibility without promising the patient that the visit will be paid for. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-healthcare-intake-gemini/devcontainer.json) |
+| [NourishHer nutrition coaching voice agent](heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice/) | Heroes wave | How a voice nutrition companion plans meals, logs food and hands red-flag symptoms to a human. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-malar-saravanan-nourishher-voice/devcontainer.json) |
+| [Speech practice prompts for children](heroes/wave-01-mantle/projects/cycywanyeki20-stammy/) | Heroes wave | How a text demo offers speech practice prompts to children and caregivers without diagnosing. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-cycywanyeki20-stammy/devcontainer.json) |
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for folder choice, the resource template, and the PR checklist. Review ownership and response times are in [MAINTAINERS.md](MAINTAINERS.md). Everyone participates under the [Code of Conduct](CODE_OF_CONDUCT.md).
+### Utilities
 
----
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Energy bill payment plan chat agent (GPT)](examples/mantle-text-payment-plan-authority-gpt/) | Text agent | How to present a payment plan without letting the model make up an amount or a term. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-payment-plan-authority-gpt/devcontainer.json) |
+| [Energy budget plan chat agent (GPT)](examples/mantle-text-utilities-budget-plan-gpt/) | Text agent | How to explain a budget plan without treating the estimate as a change to the balance owed. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-utilities-budget-plan-gpt/devcontainer.json) |
+| [Home move energy scheduling chat agent (GPT)](examples/mantle-text-utilities-service-move-gpt/) | Text agent | How to schedule a home move so the supply stays on until the exact day the customer gave. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-utilities-service-move-gpt/devcontainer.json) |
+| [Solar and wind site assessment assistant](heroes/wave-01-mantle/projects/ElarbiB-terra-energy/) | Heroes wave | How a voice and text assistant with a FastAPI backend assesses a site's solar and wind potential. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-ElarbiB-terra-energy/devcontainer.json) |
 
-## Going further
+### Education
 
-- **[Rasa University](https://rasa.com/university/)**—structured courses and Developer Certification
-- **[rasa.community](https://rasa.community/)**—community hub, heroes program, and educational library
-- **[`heroes/`](heroes/)**—what each Rasa Heroes cohort actually built, wave by wave
-- **[rasa.com/docs](https://rasa.com/docs/)**—product documentation
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [University enrolment and aid chat agent (GPT)](examples/mantle-text-education-enrolment-gpt/) | Text agent | How to report a received aid form as a stage, never as an award decision. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-education-enrolment-gpt/devcontainer.json) |
 
----
+### IT
 
-## Maintainers
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [IT account unlock voice agent with phone approval (Claude)](examples/mantle-voice-step-up-authentication-claude/) | Voice agent | How to change someone's access only after a fresh approval on their own registered phone. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-voice-step-up-authentication-claude/devcontainer.json) |
+| [IT helpdesk access request chat agent (Claude)](examples/mantle-text-internal-it-helpdesk-claude/) | Text agent | How to grant access only with the role owner's approval, never because a request sounds urgent. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-text-internal-it-helpdesk-claude/devcontainer.json) |
+| [DevPilot developer voice assistant](heroes/wave-01-mantle/projects/traromal-devcopilot/) | Heroes wave | How a hands-free voice assistant for developers manages tasks, tickets, deploys and reminders. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-traromal-devcopilot/devcontainer.json) |
+| [VS Code notes chat agent](heroes/wave-01-mantle/projects/phlenfyl-notevs-agent/) | Heroes wave | How a local Mantle agent works with your VS Code notes through tool calls. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-phlenfyl-notevs-agent/devcontainer.json) |
 
-Editorial direction and day-to-day stewardship of this catalog are led by **[Rod Rivera](https://profrod.ai/)** (developer relations at Rasa), with area ownership open to practitioners who contribute and stay. The goal is a multi-author commons: resources name their authors, area owners review their folders, and credit is never stripped.
+### General
 
-Full ownership tables, review standards, and succession notes: [MAINTAINERS.md](MAINTAINERS.md).
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Software factory agent with locked tests](examples/mantle-factory-agent/) | Example | How a Mantle agent sends a change request to a software factory whose locked tests accept or reject it. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-factory-agent/devcontainer.json) |
+| [Agent tool inventory and change check](tutorials/agent-tool-inventory/) | Tutorial | How to list an agent's tools, save a reviewed list and make a check fail when the list changes. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-agent-tool-inventory/devcontainer.json) |
+| [Agno shopping assistant with Rasa return checks](tutorials/frameworks-with-rasa/agno-mantle/) | Tutorial | How to add a return check, based on a written policy, to an existing Agno shopping assistant. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-frameworks-with-rasa-agno-mantle/devcontainer.json) |
+| [Atlas voice travel agent tutorial, step by step](tutorials/rasa-voice-agent-tutorial/) | Tutorial | How to build the Atlas voice travel agent step by step with Rasa skills and Deepgram. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-voice-agent-tutorial/devcontainer.json) |
+| [Card dispute voice agent with a Deep Agents researcher](tutorials/deepagents-voice-disputes/mantle/) | Tutorial | How a Mantle voice agent uses a Deep Agents researcher but submits a charge review only after confirmation. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-deepagents-voice-disputes-mantle/devcontainer.json) |
+| [Casebook lab for agent authorization checks](tutorials/rasa-ai-team-casebook/) | Tutorial | How to spot where a proposed action, its authorization and its service receipt disagree, offline. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-ai-team-casebook/devcontainer.json) |
+| [Clinic refill voice agent built with Rasa](tutorials/voice-agent-three-frameworks/rasa/) | Tutorial | How a Rasa voice agent sends a refill request only after identity, selection and confirmation checks. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-voice-agent-three-frameworks-rasa/devcontainer.json) |
+| [CrewAI research crew with a Rasa conversation](tutorials/frameworks-with-rasa/crewai-mantle/) | Tutorial | How to give an existing CrewAI research crew a Rasa conversation that checks its results. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-frameworks-with-rasa-crewai-mantle/devcontainer.json) |
+| [Deep Agents SQL chat migration to Mantle](tutorials/deepagents-to-mantle/mantle/) | Tutorial | How to move a Deep Agents database chat to Rasa Mantle with the same read-only SQL tools. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-deepagents-to-mantle-mantle/devcontainer.json) |
+| [Documents built from checked data, not model text](tutorials/rasa-document-artifact-tutorial/) | Tutorial | How to build a document from checked data, so the model can never write a figure into it. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-document-artifact-tutorial/devcontainer.json) |
+| [Guarding card reissue to a new address](tutorials/rasa-card-reissue-tutorial/) | Tutorial | How to guard an action that cannot be undone, such as posting a card to a new address. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-card-reissue-tutorial/devcontainer.json) |
+| [HubSpot CRM support agent over REST and MCP](tutorials/rasa-hubspot-crm-tutorial/) | Tutorial | How to connect an agent to a CRM over REST and then MCP, and handle timeouts and outages. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-hubspot-crm-tutorial/devcontainer.json) |
+| [LangChain retriever with a Rasa conversation](tutorials/frameworks-with-rasa/langchain-mantle/) | Tutorial | How to give an existing LangChain retriever a Rasa conversation that explains the sources it found. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-frameworks-with-rasa-langchain-mantle/devcontainer.json) |
+| [LangGraph statement workflow with Rasa dialogue](tutorials/frameworks-with-rasa/langgraph-mantle/) | Tutorial | How to put a Rasa conversation in front of an existing LangGraph statement workflow. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-frameworks-with-rasa-langgraph-mantle/devcontainer.json) |
+| [LangGraph support bot rebuilt in Rasa](tutorials/rasa-langgraph-comparison-tutorial/) | Tutorial | How LangGraph's customer-support bot looks when it is rebuilt as Rasa Mantle skills. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-langgraph-comparison-tutorial/devcontainer.json) |
+| [Local model account selector with confirmation](tutorials/jev-with-rasa/mantle/) | Tutorial | How to let a local model propose an account and have Rasa ask the user to confirm it. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-jev-with-rasa-mantle/devcontainer.json) |
+| [Pipecat voice pipeline with Rasa dialogue](tutorials/frameworks-with-rasa/pipecat-mantle/) | Tutorial | How to add Rasa dialogue to an existing Pipecat voice pipeline and keep its speech services. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-frameworks-with-rasa-pipecat-mantle/devcontainer.json) |
+| [Staff handoff after a tool refusal](tutorials/refusal-handoff/) | Tutorial | How to check that an agent hands off to staff after a tool refuses, instead of finding a detour. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-refusal-handoff/devcontainer.json) |
+| [Strands tools with a Rasa conversation](tutorials/frameworks-with-rasa/strands-mantle/) | Tutorial | How to give existing Strands tools a Rasa conversation that asks for missing details. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-frameworks-with-rasa-strands-mantle/devcontainer.json) |
+| [Where tools and memory belong in a Mantle agent](tutorials/rasa-tools-and-memory-tutorial/) | Tutorial | How to decide whether a tool or a memory field belongs to one skill or to the whole agent. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/tutorials-rasa-tools-and-memory-tutorial/devcontainer.json) |
+| [Agent evaluation with simulated users and an LLM judge](patterns/evaluation-harness/) | Pattern | How to test an agent with tracker assertions, an LLM judge and a simulated user. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-evaluation-harness/devcontainer.json) |
+| [Human handoff with full conversation context](patterns/voice-handoff-context/) | Pattern | How to pass what the agent already knows to a human, so callers never repeat themselves. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-voice-handoff-context/devcontainer.json) |
+| [MCP tool confirmation test](patterns/mcp-confirmation-gate/) | Pattern | How to check that a tool which needs confirmation does not run until the user agrees. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-mcp-confirmation-gate/devcontainer.json) |
+| [Personalized greeting at session start](patterns/session-start-personalization/) | Pattern | How to greet every customer by name by looking up their profile once, at session start. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-session-start-personalization/devcontainer.json) |
+| [Risk-based voice authentication step-up](patterns/voice-auth-stepup/) | Pattern | How to ask for stronger identity checks at the moment a caller tries a riskier action. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-voice-auth-stepup/devcontainer.json) |
+| [Voice vendor router for speech failover](patterns/voice-vendor-router/) | Pattern | How to switch to another speech vendor when one fails, so a voice call keeps going. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/patterns-voice-vendor-router/devcontainer.json) |
+| [Travel agent factory workshop with Codex](workshops/software-factories-masterclass/) | Workshop | How to build a traveler-facing Mantle agent and use a factory agent that builds another one. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/travel-factory/devcontainer.json) |
+| [Civic complaint voice line](heroes/wave-01-mantle/projects/samakshmehra-civico/) | Heroes wave | How a voice complaint line turns an unstructured call into a validated, routed and trackable report. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-samakshmehra-civico/devcontainer.json) |
+| [HR policy, leave and ticket assistant](heroes/wave-01-mantle/projects/chandratechblog-hrassistant/) | Heroes wave | How an HR assistant explains policies and creates leave requests and tickets after confirmation. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-chandratechblog-hrassistant/devcontainer.json) |
+| [Mantle skill scoring with NVIDIA SkillEvaluator](heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval/) | Heroes wave | How to score Mantle skills with NVIDIA SkillEvaluator after converting them to Agent Skills packages. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/heroes-wave-01-mantle-projects-incrementaliser-rasa-skill-eval/devcontainer.json) |
 
-Security reports: [SECURITY.md](SECURITY.md)—do not open a public issue.
+## Find a resource by kind
+
+- **Bank integration** (4): [Fiserv Banking Hub voice banking demo](examples/fiserv-banking-hub-11.0.0.2026.4.1/) · [Fiserv Premier voice banking demo](examples/fiserv-premier-11.0.0-prm/) · [Jack Henry SilverLake voice banking demo](examples/jack-henry-silverlake/) · [Jack Henry Symitar credit union voice demo](examples/jack-henry-symitar/)
+- **Voice agent** (19): [Atlas travel assistant voice agent](examples/mantle-voice-agent/) · [Autono car buying voice agent](examples/mantle-voice-car-purchase-skills/) · [Bank advisor booking voice agent (Claude)](examples/mantle-voice-banking-advisor-appointment-claude/) · [Banking voice agent with speech vendor failover](examples/mantle-voice-routed-skills/) · [Card charge dispute voice agent (Claude)](examples/mantle-voice-banking-dispute-claude/) · [Card-safe order payment voice agent (GPT)](examples/mantle-voice-payment-boundary-gpt/) · [Custom Speechmatics speech-to-text engine](examples/mantle-voice-speechmatics-skills/) · [Flight change voice agent with linked services (GPT)](examples/mantle-voice-travel-booking-gpt/) · [IT account unlock voice agent with phone approval (Claude)](examples/mantle-voice-step-up-authentication-claude/) · [Lost card blocking voice agent (GPT)](examples/mantle-voice-banking-block-card-gpt/) · [Parcel tracking voice agent (Gemini)](examples/mantle-voice-retail-order-status-gemini/) · [Poly insurance claims voice agent](examples/mantle-voice-insurance-skills/) · [Prescription refill voice agent with on-device speech](examples/mantle-voice-healthcare-refill-request-gpt-local/) · [Rasano retail banking voice agent](examples/mantle-voice-banking-skills/) · [Rime text-to-speech voice banking agent](examples/mantle-voice-rime-skills/) · [Roadside assistance dispatch voice agent (Claude)](examples/mantle-voice-insurance-roadside-claude/) · [Schedora clinic appointment voice agent](examples/mantle-voice-appointment-skills/) · [Spanish debt collections voice agent (Gemini)](examples/mantle-voice-banking-collections-gemini/) · [Telano telecom support voice agent](examples/mantle-voice-telco-skills/)
+- **Text agent** (22): [Accessory compatibility shopping chat agent (GPT)](examples/mantle-text-retail-guided-selling-gpt/) · [Appointment reminder chat agent (GPT)](examples/mantle-text-reminder-deduplication-gpt/) · [Contract cancellation and retention chat agent (GPT)](examples/mantle-text-telco-retention-gpt/) · [Energy bill payment plan chat agent (GPT)](examples/mantle-text-payment-plan-authority-gpt/) · [Energy budget plan chat agent (GPT)](examples/mantle-text-utilities-budget-plan-gpt/) · [Home move energy scheduling chat agent (GPT)](examples/mantle-text-utilities-service-move-gpt/) · [Insurance claim filing chat agent (Claude)](examples/mantle-text-insurance-file-claim-claude/) · [Insurance quote and bind chat agent (GPT)](examples/mantle-text-insurance-quote-bind-gpt/) · [IT helpdesk access request chat agent (Claude)](examples/mantle-text-internal-it-helpdesk-claude/) · [Loan payoff quote chat agent (Claude)](examples/mantle-text-banking-loan-servicing-claude/) · [Mass flight rebooking chat agent (GPT)](examples/mantle-text-travel-mass-rebooking-gpt/) · [Money transfer chat agent with ledger checks (GPT)](examples/mantle-text-banking-transfer-gpt/) · [Patient intake and insurance check chat agent (Gemini)](examples/mantle-text-healthcare-intake-gemini/) · [Policy and claim status chat agent (Gemini)](examples/mantle-text-insurance-policy-status-gemini/) · [Returns and exchanges chat agent (Claude)](examples/mantle-text-retail-return-claude/) · [Rewards points redemption chat agent (GPT)](examples/mantle-text-travel-redemption-gpt/) · [Router diagnostics and outage chat agent (GPT)](examples/mantle-text-telco-diagnostics-gpt/) · [Storm disruption seat hold chat agent (GPT)](examples/mantle-text-disruption-mode-gpt/) · [Subscription pause and cancel chat agent (GPT)](examples/mantle-text-retail-loyalty-gpt/) · [Transaction history search chat agent (GPT)](examples/mantle-text-banking-statement-search-gpt/) · [Transfer step-up verification chat agent (GPT)](examples/mantle-text-banking-risk-step-up-gpt/) · [University enrolment and aid chat agent (GPT)](examples/mantle-text-education-enrolment-gpt/)
+- **Example** (1): [Software factory agent with locked tests](examples/mantle-factory-agent/)
+- **Tutorial** (19): [Agent tool inventory and change check](tutorials/agent-tool-inventory/) · [Agno shopping assistant with Rasa return checks](tutorials/frameworks-with-rasa/agno-mantle/) · [Atlas voice travel agent tutorial, step by step](tutorials/rasa-voice-agent-tutorial/) · [Card dispute voice agent with a Deep Agents researcher](tutorials/deepagents-voice-disputes/mantle/) · [Casebook lab for agent authorization checks](tutorials/rasa-ai-team-casebook/) · [Clinic refill voice agent built with Rasa](tutorials/voice-agent-three-frameworks/rasa/) · [CrewAI research crew with a Rasa conversation](tutorials/frameworks-with-rasa/crewai-mantle/) · [Deep Agents SQL chat migration to Mantle](tutorials/deepagents-to-mantle/mantle/) · [Documents built from checked data, not model text](tutorials/rasa-document-artifact-tutorial/) · [Guarding card reissue to a new address](tutorials/rasa-card-reissue-tutorial/) · [HubSpot CRM support agent over REST and MCP](tutorials/rasa-hubspot-crm-tutorial/) · [LangChain retriever with a Rasa conversation](tutorials/frameworks-with-rasa/langchain-mantle/) · [LangGraph statement workflow with Rasa dialogue](tutorials/frameworks-with-rasa/langgraph-mantle/) · [LangGraph support bot rebuilt in Rasa](tutorials/rasa-langgraph-comparison-tutorial/) · [Local model account selector with confirmation](tutorials/jev-with-rasa/mantle/) · [Pipecat voice pipeline with Rasa dialogue](tutorials/frameworks-with-rasa/pipecat-mantle/) · [Staff handoff after a tool refusal](tutorials/refusal-handoff/) · [Strands tools with a Rasa conversation](tutorials/frameworks-with-rasa/strands-mantle/) · [Where tools and memory belong in a Mantle agent](tutorials/rasa-tools-and-memory-tutorial/)
+- **Pattern** (6): [Agent evaluation with simulated users and an LLM judge](patterns/evaluation-harness/) · [Human handoff with full conversation context](patterns/voice-handoff-context/) · [MCP tool confirmation test](patterns/mcp-confirmation-gate/) · [Personalized greeting at session start](patterns/session-start-personalization/) · [Risk-based voice authentication step-up](patterns/voice-auth-stepup/) · [Voice vendor router for speech failover](patterns/voice-vendor-router/)
+- **Community** (1): [Gemini voice travel agent with local embeddings](community/samrudh-gemini-voice-agent/)
+- **Workshop** (1): [Travel agent factory workshop with Codex](workshops/software-factories-masterclass/)
+- **Heroes wave** (9): [Civic complaint voice line](heroes/wave-01-mantle/projects/samakshmehra-civico/) · [Coffee shop ordering and loyalty assistant](heroes/wave-01-mantle/projects/samrudh-coffee-shop/) · [DevPilot developer voice assistant](heroes/wave-01-mantle/projects/traromal-devcopilot/) · [HR policy, leave and ticket assistant](heroes/wave-01-mantle/projects/chandratechblog-hrassistant/) · [Mantle skill scoring with NVIDIA SkillEvaluator](heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval/) · [NourishHer nutrition coaching voice agent](heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice/) · [Solar and wind site assessment assistant](heroes/wave-01-mantle/projects/ElarbiB-terra-energy/) · [Speech practice prompts for children](heroes/wave-01-mantle/projects/cycywanyeki20-stammy/) · [VS Code notes chat agent](heroes/wave-01-mantle/projects/phlenfyl-notevs-agent/)
+
+## Work in progress
+
+These resources are not finished yet. Their READMEs say what still needs checking.
+
+| Resource | Kind | What you learn | Open |
+| --- | --- | --- | --- |
+| [Pre-flight briefing agent with OpenAI Agents](examples/mantle-flight-briefing-openai-agents/) | Example | How a Mantle agent shows a pre-flight briefing built from public sources beside the conversation. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-flight-briefing-openai-agents/devcontainer.json) |
+
+<!-- catalog:end -->
+
+## Contribute
+
+New resources and fixes are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains how to choose a folder, check your resource and keep its authors credited. Everyone takes part under the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+This is teaching material, not the product documentation (see [rasa.com/docs](https://rasa.com/docs/)) and not a support channel: product issues go to Rasa support, and questions about this material to the [community](https://info.rasa.com/community).
+
+To report a security problem, follow [SECURITY.md](SECURITY.md). Do not open a public issue.
 
 ## License
 
 The tutorials, examples, and reference code in this repository are released under the Apache License 2.0—see [LICENSE](LICENSE). That license covers the teaching material here only. Rasa Pro is a commercial framework under its own terms.
+
+---
+
+Maintaining this repository? Read [docs/MAINTAINING.md](docs/MAINTAINING.md).

@@ -12,6 +12,12 @@ This is a Rasa Mantle agent that connects to a small, dark software factory (dar
 
 Here you run it in scripted mode, which needs no OpenAI key. A live coding builder is optional and comes after.
 
+```text
+Industry:      General
+You learn:     How a Mantle agent sends a change request to a software factory whose locked tests accept or reject it.
+Catalog name:  Software factory agent with locked tests
+```
+
 ## What you need
 
 - A machine with a proven no-network wrapper: macOS `sandbox-exec`, or on Linux `unshare` or bubblewrap (see `isolation.py` in the chapter 6 folder). A wrapper counts only after it runs Python and stops a connection to a local listener. Without one the factory says NOT_READY and never claims ACCEPT.

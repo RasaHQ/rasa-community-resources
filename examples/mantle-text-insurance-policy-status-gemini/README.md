@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case-build pilot; live runs recorded in cas
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of policy and claim status
 Time:          15 minutes to run the agent; about 25 minutes and 1.50 USD for the live conversation suite
+Industry:      Insurance
+You learn:     How to answer policy questions without reading an active policy as cover for a particular loss.
+Catalog name:  Policy and claim status chat agent (Gemini)
 ```
 
 A Rasa Mantle text agent for one casebook case,

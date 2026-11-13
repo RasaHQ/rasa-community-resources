@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM agent in front of patient intake and insurance checks
 Time:          15 minutes to run the agent; about 12 minutes, 1.70 USD and 156 Gemini requests for the live conversation suite
+Industry:      Healthcare
+You learn:     How to check insurance eligibility without promising the patient that the visit will be paid for.
+Catalog name:  Patient intake and insurance check chat agent (Gemini)
 ```
 
 A Rasa Mantle text agent for one casebook case,

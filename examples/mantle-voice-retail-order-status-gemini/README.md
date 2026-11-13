@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting an LLM voice agent in front of order tracking
 Time:          15 minutes to run the agent; about 20 minutes and 0.90 USD for the live call suite
+Industry:      Retail
+You learn:     How to tell a customer where a parcel is without calling a warehouse label a delivery.
+Catalog name:  Parcel tracking voice agent (Gemini)
 ```
 
 A Rasa Mantle voice agent for one casebook case,

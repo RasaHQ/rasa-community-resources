@@ -6,6 +6,9 @@ Assessed by: Elarbi B
 Verified with: rasa-pro 3.20.0.dev6, Python 3.11+, uv
 Audience: Developers building a voice + text Rasa Mantle assistant with a FastAPI backend for renewable-energy site assessment
 Time: 15 min
+Industry: Utilities
+You learn: How a voice and text assistant with a FastAPI backend assesses a site's solar and wind potential.
+Catalog name: Solar and wind site assessment assistant
 ---
 
 # Terra — TerraEnergy

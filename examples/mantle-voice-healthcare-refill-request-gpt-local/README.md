@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case-build pilot; live runs recorded in cas
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv, macOS 26.6.2 on an Apple M4 Pro (64 GB)
 Audience:      Engineers who want a voice agent whose audio stays on the machine
 Time:          30 minutes to build the speech runtime and run the agent; about 30 minutes and 2.40 USD for the live call suite
+Industry:      Healthcare
+You learn:     How to run a voice agent whose speech stays on a Mac and that never approves a prescription.
+Catalog name:  Prescription refill voice agent with on-device speech
 ```
 
 A Rasa Mantle voice agent for one casebook case,

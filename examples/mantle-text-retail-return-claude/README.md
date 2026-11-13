@@ -15,6 +15,9 @@ Assessed by:   Claude Code (casebook case builds; live runs recorded in case-bui
 Verified with: rasa-pro 3.21.0.dev5, Python 3.12, uv
 Audience:      Engineers putting Claude behind a Rasa web-chat agent that takes actions
 Time:          15 minutes to run the agent; about 10 minutes and 1.55 USD for the live conversation suite
+Industry:      Retail
+You learn:     How to start a return without promising a refund before the item is received and inspected.
+Catalog name:  Returns and exchanges chat agent (Claude)
 ```
 
 A Rasa Mantle text agent for one casebook case,
