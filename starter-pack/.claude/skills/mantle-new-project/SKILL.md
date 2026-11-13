@@ -98,14 +98,9 @@ rules:
   - "Activate a skill only when the request clearly matches it."
 ```
 
-For a **voice** agent add, inside the `agent:` block:
-
-```yaml
-  voice:
-    enabled: true
-    asr: deepgram          # or a dotted path to a custom engine class
-    tts: deepgram
-```
+For a **voice** agent, set the engines on the channel in `integrations.yml`
+(section 4), not in agent.yml. A nested `agent.voice` block is ignored by Rasa
+Pro 3.21 and rejected by 3.22.
 
 ## 4. integrations.yml — llm is a model-group reference
 
@@ -129,6 +124,11 @@ channels:
     enabled: true
   inspector:
     enabled: true
+    # Voice agents only: the engines for this channel.
+    asr:
+      name: deepgram       # or a dotted path to a custom engine class
+    tts:
+      name: deepgram
 ```
 
 ## 5. memory.yml — project memory is tool-written
@@ -140,9 +140,15 @@ channels:
 # level. LLM-settable fields belong in skills/<id>/memory.yml.
 authenticated:
   type: bool
-  description: Whether the caller has proven their identity this session.
+  # Whether the caller has proven their identity this session.
   initial_value: false
 ```
+
+Document a project field with a YAML comment, not `description:`. The model
+cannot set project fields, so it never sees their description, and Rasa Pro
+3.22 rejects one (`mantle.validation.memory.description_not_exposed`).
+Skill-scoped `llm_settable` fields keep `description:`, because the model
+reads it.
 
 ## 6. Skills — at least one real skill plus a greeting
 

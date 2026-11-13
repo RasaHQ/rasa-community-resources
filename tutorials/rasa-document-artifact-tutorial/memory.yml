@@ -11,21 +11,19 @@
 # someone else.
 document_id:
   type: text
-  description: Identifier of the suitability record being assembled on this call.
+  # Identifier of the suitability record being assembled on this call.
 client_id:
   type: text
-  description: Client the record concerns. Resolved from the custodian extract, never asserted by the caller.
+  # Client the record concerns. Resolved from the custodian extract, never asserted by the caller.
 addressed_to:
   type: categorical
   enum_values: [client, adviser, client_and_adviser]
-  description: >
-    Who the finished record is addressed to. One of the two NEGOTIATED fields —
-    a selection from a closed set, made in conversation, never free text.
+  # Who the finished record is addressed to. One of the two NEGOTIATED fields —
+  # a selection from a closed set, made in conversation, never free text.
 last_rendered_path:
   type: text
-  description: Where the last derived document was written. Set by render_document, read back to the caller.
+  # Where the last derived document was written. Set by render_document, read back to the caller.
 unsourced_count:
   type: text
-  description: >
-    How many declared fields had no source at the last render. Read aloud so the
-    caller learns about a gap from the agent rather than from the document.
+  # How many declared fields had no source at the last render. Read aloud so the
+  # caller learns about a gap from the agent rather than from the document.

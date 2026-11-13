@@ -192,7 +192,7 @@ ordered collection, confirmation, and verbatim success text.
 
 | Path | Purpose |
 | --- | --- |
-| `agent.yml` | Identity, persona (Atlas), voice flags, rules |
+| `agent.yml` | Identity, persona (Atlas), rules |
 | `integrations.yml` | OpenAI LLM + Inspector Deepgram ASR/TTS |
 | `memory.yml` | Project-wide session memory |
 | `responses.yml` | Project-wide verbatim responses |
@@ -276,6 +276,12 @@ Changed during review, from the original submission:
   not to a provider configuration.
 - Brought from `3.19.0.dev5` onto the current catalog pin, with the lock
   regenerated.
+- For Rasa Pro 3.22: the nested `agent.voice` block (Deepgram ASR and TTS)
+  was removed from `agent.yml`, because 3.22 rejects it and 3.21 never wired
+  it to a channel. The same Deepgram engines stay on the inspector channel in
+  `integrations.yml`. The `description:` on each project memory field became
+  a YAML comment, because 3.22 rejects descriptions on fields the model
+  cannot set.
 
 ## Licence
 

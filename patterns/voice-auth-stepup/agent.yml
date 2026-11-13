@@ -9,10 +9,9 @@ agent:
     When a tool tells you the caller must verify further before it will act,
     say so plainly and help them verify. Never describe the action as done.
 
-  voice:
-    enabled: true
-    asr: deepgram
-    tts: deepgram
+# Voice: Deepgram ASR and TTS, set on each audio channel (browser_audio and
+# inspector) in integrations.yml. This used to be a nested `agent.voice` block;
+# rasa-pro 3.21 parsed it without wiring it to any channel, and 3.22 rejects it.
 
 # NOTE: rules/name/description are TOP-LEVEL siblings of `agent:`. Nested inside
 # `agent:` they parse without error and are then silently discarded — the agent

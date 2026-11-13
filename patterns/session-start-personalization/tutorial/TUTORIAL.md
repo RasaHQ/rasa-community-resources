@@ -107,23 +107,23 @@ Nothing can be written that is not declared. Root `memory.yml`:
 ```yaml
 customer_name:
   type: text
-  description: The name to address the customer by. Set at session start.
+  # The name to address the customer by. Set at session start.
 customer_tier:
   type: text
-  description: The customer's membership tier, e.g. Premier.
+  # The customer's membership tier, e.g. Premier.
 member_since:
   type: text
-  description: The year the customer joined.
+  # The year the customer joined.
 time_of_day:
   type: categorical
   enum_values: [morning, afternoon, evening]
-  description: Part of day, computed at session start.
+  # Part of day, computed at session start.
 default_account_id:
   type: text
-  description: Account id of the customer's usual account.
+  # Account id of the customer's usual account.
 default_account_label:
   type: text
-  description: Human-readable label of the usual account.
+  # Human-readable label of the usual account.
 ```
 
 These live at **project** scope, so every skill can read them — which is the
@@ -131,6 +131,10 @@ point, since the greeting and the transactions skill both need them.
 
 None of them is `llm_settable`. Only the tool writes here, so the agent cannot
 invent a membership year.
+
+Each field is documented with a YAML comment rather than `description:`. The
+model cannot set project fields, so it never reads their description, and Rasa
+Pro 3.22 rejects one.
 
 ---
 

@@ -289,7 +289,7 @@ The harness is shared by every case build:
 
 - Mantle reads voice channels from `integrations.yml` only.
   `browser_audio` needs `server_url`, `asr` and `tts`; `agent.voice` in
-  `agent.yml` is parsed and ignored.
+  `agent.yml` is parsed and ignored, and Rasa Pro 3.22 rejects it.
 - The handshake names the sample rate; there is no negotiation. Caller audio
   must already be at that rate.
 - The session start appears in the tracker as a user event with the text

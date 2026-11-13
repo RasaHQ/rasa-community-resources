@@ -46,19 +46,25 @@ rules:
 
 ## Voice agents
 
-Voice config DOES live inside the `agent:` block:
+Voice engines do NOT go in agent.yml. Set ASR and TTS on each channel that
+carries audio, in `integrations.yml`:
 
 ```yaml
-agent:
-  id: my-voice-agent
-  language: en
-  persona: |
-    ...
-  voice:
+channels:
+  inspector:
     enabled: true
-    asr: deepgram                     # built-in name, or a dotted path
-    tts: deepgram                     # e.g. voicerouter.RoutedTTS
+    asr:
+      name: deepgram                  # built-in name, or a dotted path
+    tts:
+      name: deepgram                  # e.g. voicerouter.RoutedTTS
 ```
+
+Do not add a nested `agent.voice` block. Rasa Pro 3.21 parses it but never
+wires it to a channel, and 3.22 rejects it with
+`mantle.validation.config.invalid_agent_section`. Rasa Pro 3.22 adds a
+top-level `voice:` block, but its `asr` and `tts` are model group ids, not
+engine names, and 3.21 does not read it, so the channel is the one place that
+works on both.
 
 Custom ASR/TTS engines are referenced by dotted import path exactly like any
 custom engine class — the class must be importable from the project root.
@@ -71,6 +77,7 @@ or two short spoken sentences") — long text answers are painful read aloud.
    must return nothing.)
 2. Persona says what the agent must NOT invent, and routes it to tools?
 3. Rules are short imperatives, not paragraphs?
-4. If voice: `voice:` inside `agent:`, engines resolvable?
+4. If voice: no `voice:` inside `agent:`; each audio channel in
+   `integrations.yml` names resolvable `asr` and `tts` engines?
 5. Run `python3 scripts/lint_mantle.py --check agent-top-level-keys` — it
    derives the block's own indentation, so 4-space files don't slip past.

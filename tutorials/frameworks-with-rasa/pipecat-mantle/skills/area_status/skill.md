@@ -1,5 +1,4 @@
 ---
-id: area_status
 name: Public area status
 description: Inspect the north or central public synthetic Juniper area record.
 ---

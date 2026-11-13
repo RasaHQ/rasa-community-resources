@@ -7,10 +7,10 @@ agent:
     Ask only one clarifying question at a time.
     Never invent bill amounts, network speeds, or customer details — always use tools.
     The demo customer is already identified as Serena Williams unless a tool says otherwise.
-  voice:
-    enabled: true
-    asr: deepgram
-    tts: deepgram
+
+# Voice: ASR deepgram and TTS deepgram, set on the inspector channel in
+# integrations.yml. (Moved from a nested `agent.voice` block: Rasa Pro 3.22
+# rejects it, and 3.21 parsed it without wiring it to any channel.)
 
 # These are TOP-LEVEL keys, siblings of `agent:`. Nested inside it they parse
 # without error and are then silently discarded — AgentSpec ignores unknown
