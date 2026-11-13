@@ -268,6 +268,21 @@ class NativeTransportTests(unittest.IsolatedAsyncioTestCase):
             events.append({'event':'user','text':text,'timestamp':time.time()});native.turn=SimpleNamespace(text=text)
         return native_adapter,Context(),native,say
 
+    async def test_another_account_is_refused_in_host_words_never_answered_from_the_callers_own(self):
+        native_adapter,context,native,say=self.harness('foreign-alias')
+        from lib import reply_policy
+        with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native),patch.object(reply_policy,'current_turn_context',return_value=native):
+            say('What is available in checking-B?')
+            result=await native_adapter.banking_balance('checking',context=context)  # the model's substitution
+            self.assertEqual(result.llm_response,{'state':'refused','reason':'account_not_available'})
+            self.assertEqual(context.messages[-1],native_adapter.ACCOUNT_NOT_AVAILABLE_TEXT)
+            self.assertTrue(reply_policy.delivery_pending())  # the model adds nothing this turn
+            self.assertEqual(self.vendor.sends,[])
+            say('What is available in checking?')
+            reply_policy._delivered.clear()
+            result=await native_adapter.banking_balance('checking',context=context)
+            self.assertEqual(result.llm_response['state'],'available')
+
     async def test_a_later_verify_me_never_speaks_the_older_confirmation_sentence(self):
         native_adapter,context,native,say=self.harness('n2-verify')
         with patch.dict('os.environ',{'SYMITAR_HOST_URL':self.url,'SYMITAR_HOST_CAPABILITY':'x'*40}),patch.object(native_adapter,'current_turn_context',return_value=native):

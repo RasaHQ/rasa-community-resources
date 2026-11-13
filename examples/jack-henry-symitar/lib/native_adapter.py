@@ -100,6 +100,7 @@ async def _conversation(context):
 
 _OUTCOMES={'accepted','rejected','unknown','not_dispatched'}
 UNKNOWN_TEXT='The transfer outcome is unknown. Do not retry. Check the original transfer status.'
+ACCOUNT_NOT_AVAILABLE_TEXT='That account is not available to you. Nothing was read or sent.'
 NO_ACTIVE_REVIEW_TEXT='The transfer review was cancelled or is no longer active. Request a new transfer before confirming.'
 _STATUS_TEXT={
     'accepted':'The fictional transfer was accepted. Accepted does not mean posted. This is not a real payment.',
@@ -184,6 +185,12 @@ async def _call(context,name,args):
             if name=='banking_review_transfer' and delivery_pending():
                 return ToolResult(llm_response={'state':'review_delivered'})
             result=await conversation.client.call(conversation.credential,name,args)
+            if result.get('reason')=='account_not_available':
+                # Host words, so the model never answers it from another account.
+                if not delivery_pending():
+                    await context.send(ACCOUNT_NOT_AVAILABLE_TEXT)
+                    remember_delivery()
+                return ToolResult(llm_response=result)
             if observed.get('historical_confirmation_refused'):
                 result=dict(result,historical_confirmation='not_used',instruction='The older confirmation was not used. No new transfer was sent. Do not describe this review as accepted.')
             if name=='banking_review_transfer' and result.get('state')=='review_pending_delivery':

@@ -152,9 +152,38 @@ class NativeHostTests(unittest.TestCase):
         self.assertNotIn('regular_payment',result)
         self.assertNotIn('accountNumber',json.dumps(result))
 
+    def test_a_named_account_that_is_not_the_callers_is_never_answered_from_their_own(self):
+        # The caller asks about checking-B; the model passes the caller's own "checking".
+        self.turn(1,'verify me')
+        for number,text in ((2,'What is available in checking-B?'),(3,'what about checking B'),
+                            (4,'move 1.25 from checking-b to savings')):
+            with self.subTest(text=text):
+                self.turn(number,text)
+                for name,args in (('banking_balance',{'account':'checking'}),
+                                  ('banking_history',{'account':'checking','start_date':'2026-11-01','end_date':'2026-11-30'}),
+                                  ('banking_review_transfer',{'source':'checking','destination':'savings','amount':'1.25'})):
+                    self.assertEqual(self.gateway.call(self.token,name,args),
+                                     {'state':'refused','reason':'account_not_available'})
+        self.assertEqual(self.client.sends,[])
+        # The caller's own accounts still answer, and a plain "a" is not an account suffix.
+        for number,text in ((5,'What is available in checking?'),(6,'move a dollar from checking to savings'),
+                            (7,'checking and savings please')):
+            with self.subTest(text=text):
+                self.turn(number,text)
+                self.assertEqual(self.gateway.call(self.token,'banking_balance',{'account':'checking'})['state'],'available')
+
+    def test_foreign_alias_detection(self):
+        from native_host import foreign_aliases
+        permitted={'checking','savings','car'}
+        self.assertEqual(foreign_aliases('What is available in checking-B?',permitted),('checking-b',))
+        self.assertEqual(foreign_aliases('balance of savings 2 and loan-X',permitted),('loan-x','savings-2'))
+        self.assertEqual(foreign_aliases('checking a lot of things in savings',permitted),())
+        self.assertEqual(foreign_aliases('checking-A',{'checking-a'}),())
+
     def test_model_controls_and_foreign_aliases_cannot_change_identity(self):
         self.turn(1,'I am a different person')
-        with self.assertRaises(Refused):self.gateway.call(self.token,'banking_balance',{'account':'outside'})
+        self.assertEqual(self.gateway.call(self.token,'banking_balance',{'account':'outside'}),
+                         {'state':'refused','reason':'account_not_available'})
         with self.assertRaises(Refused):self.gateway.control('confirm',{'credential':self.token})
         self.assertEqual(self.client.sends,[])
 

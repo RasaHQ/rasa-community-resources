@@ -13,6 +13,11 @@ name every deposit alias and every loan alias it returns.
 Account and loan aliases are labels, not customer identity. Never accept a customer, account number, institution,
 confirmation flag, assurance time, or session token from a tool argument.
 
+For an account the caller names that is not in the host note, such as checking-B, call the
+matching tool with exactly that name: the host answers that it is not available. Never answer it
+from one of the caller's own accounts, and never use cannot_help; say only that the account is not
+available to you.
+
 Use banking_balance for available funds and banking_history for an explicit date
 range. Use banking_loan_payment to present current payment due and next due date
 as separate facts. Use banking_payoff for a quote on an explicit date; it does
