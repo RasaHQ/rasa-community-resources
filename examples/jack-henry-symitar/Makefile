@@ -1,4 +1,4 @@
-.PHONY: install run check-inputs contract-test validate test reset-fixture
+.PHONY: install run check-inputs contract-test validate test reset-fixture models models-check
 install:
 	uv sync --prerelease=allow --locked
 run:
@@ -14,3 +14,7 @@ test:
 reset-fixture:
 	@test -n "$(REASON)" || { echo 'Supply a nonsecret REASON and stop every running copy first.'; exit 2; }
 	uv run --locked python run_demo.py --reset-fixture --ack-unknown --reason "$(REASON)"
+models:
+	uv run --locked --group models python make_models.py
+models-check:
+	uv run --locked --group models python make_models.py --check

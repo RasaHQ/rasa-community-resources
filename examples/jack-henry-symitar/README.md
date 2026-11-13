@@ -318,6 +318,7 @@ Wait for server readiness, check terminal errors, and use port `5005` in the Por
 | `host.py`, `journal.py` | Private authority, review, confirmation, and retained transfer state |
 | `vendor_client.py`, `mock_server.py` | Symitar-shaped client and fictional mock |
 | `contract_inputs.py`, `recorded_exchanges.py` | Four exact file hashes, OpenAPI checks, and the recorded traffic checked against newer files |
+| `vendor_models/`, `vendor_api.py`, `make_models.py` | Pydantic models generated from the four pinned Jack Henry files (names, types, required fields, allowed values; no vendor descriptions), and the map from each operation to its request and reply model. The host builds requests and reads replies through them |
 | `fixtures/fictional.json` | Fictional accounts, balances, transactions, and loan data |
 
 ### Supported banking operations
@@ -342,5 +343,7 @@ make test
 make contract-test
 make validate
 ```
+
+To regenerate the models after a vendor update (needs the four files in `vendor-inputs/`), run `make models`; `make models-check` fails if the committed models differ from a fresh generation. The generator, datamodel-code-generator, is installed only for these two commands.
 
 `make test` runs source, state, transport, and snapshot controls. `make contract-test` runs the vendor contract tests. Contract-dependent tests skip without the four vendor files; a skip does not prove conformance. `make validate` checks the Rasa configuration. None of these is a spoken conversation check.
